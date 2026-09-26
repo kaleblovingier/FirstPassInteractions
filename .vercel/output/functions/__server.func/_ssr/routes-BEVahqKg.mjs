@@ -13,7 +13,7 @@ import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs"
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
 import { t as Slot } from "../_libs/radix-ui__react-slot.mjs";
 import { a as CartesianGrid, i as Line, n as YAxis, o as ResponsiveContainer, r as XAxis, s as Tooltip, t as LineChart } from "../_libs/recharts+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-D03ESlhA.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BEVahqKg.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function isLoginRequired(result) {
@@ -7513,12 +7513,12 @@ function Badge({ className, tone, ...props }) {
 *  Not FDA-cleared. Not FDA-approved. The Prescribing Information governs. */
 var SOFTWARE = {
 	name: "FirstPass",
-	version: "1.12.0",
-	released: "2026-09-25",
+	version: "1.14.0",
+	released: "2026-09-26",
 	manufacturer: "Kaleb Lovingier",
 	email: "kaleblovingier@gmail.com",
 	phone: "360-707-8923",
-	udi: "FP-SW-1.12.0"
+	udi: "FP-SW-1.14.0"
 };
 var INTENDED_USE = `FirstPass is clinical decision support software intended for use by licensed healthcare professionals to display mapped cytochrome P450 and pharmacodynamic interaction information, FDA-label excerpts (OpenFDA / DailyMed), published scale scores, labeled dose ranges and dose-caps, and cited literature so the healthcare professional can independently review the basis of any recommendation before acting. This desk may be used in educational harm-reduction and recreational-safety review for licensed healthcare professionals and trained safety staff, including analysis of stimulant, sedative, dissociative, and street-supply combinations. Where local drug-checking services are available, purity and content testing services are complementary harm-reduction tools; they are not urine testing, not patient-directed dosing guidance, and not a substitute for the relevant FDA-approved Prescribing Information or local protocols. It is not intended for patient self-treatment, recreational dosing, or direct medical decision-making without independent review of the relevant FDA-approved Prescribing Information and local protocols. It is not intended to diagnose, treat, mitigate, or prevent disease, to generate a prescription, or to replace the FDA-approved Prescribing Information. Displayed dose ranges paraphrase FDA-approved labeling; a user-entered milligram is checked against those rails. The desk does not pick a milligram.`;
 var INDICATIONS = [
@@ -7532,6 +7532,9 @@ var INDICATIONS = [
 	"Showing food, drink, and alcohol rows for the names already on the desk, and pregnancy, CKD, older-adult, and daily-smoke rows labeled as a different host. Those rows are the same map. They are not a clearance and not a milligram.",
 	"Ranking a regimen into pairs by the sharpest collision, and leading with a plain-language sentence of that row. The sentence does not pick a milligram or a next step.",
 	"Listing the pairs on a regimen that had no mapped collision, labeled as not a clearance. A blank pair is not a statement that the combination is safe.",
+	"Showing every pair on a regimen in one grid. Each cell is a severity or no mapped collision. A blank cell is not a clearance.",
+	"On a mapped cell, naming the direction of the sharpest row. On a blank cell, saying whether the pair shares an enzyme with no perpetrator, or a perpetrator that does not land. A blank reason is not a clearance.",
+	"When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
 	"On request, three separate readers (pair, gap, trainee) restate the check already on screen. A reader cannot add a finding, a milligram, or a clearance.",
 	"Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock does not pick a milligram.",
 	"Displaying study cards (rounds, named labeled pairs, formulary CYP roles, FDA fold-change grades, and mechanism cards from the selected pair) so a healthcare trainee can rehearse the basis, mark misses, and review them. Not an exam key and not a milligram.",
@@ -9246,10 +9249,45 @@ function unmappedPairs(ids, hit) {
 		const title = [DRUG_BY_ID[real[i]].name, DRUG_BY_ID[real[j]].name].sort((a, b) => a.localeCompare(b)).join(" · ");
 		out.push({
 			key,
-			title
+			title,
+			reason: blankReason(real[i], real[j])
 		});
 	}
 	return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+function blankReason(aId, bId) {
+	const a = DRUG_BY_ID[aId];
+	const b = DRUG_BY_ID[bId];
+	if (!a || !b) return "Not a clearance.";
+	const substrates = (id) => DRUG_BY_ID[id]?.enzymes.filter((e) => e.kind === "substrate") ?? [];
+	const perps = (id) => DRUG_BY_ID[id]?.enzymes.filter((e) => e.kind !== "substrate") ?? [];
+	const shared = [...new Set(substrates(aId).map((e) => e.enzyme))].filter((enzyme) => substrates(bId).some((e) => e.enzyme === enzyme));
+	const near = (perpId, otherId) => perps(perpId).find((role) => !substrates(otherId).some((e) => e.enzyme === role.enzyme));
+	const fromA = near(aId, bId);
+	const fromB = near(bId, aId);
+	const miss = fromA ? {
+		name: a.name,
+		role: fromA,
+		other: b.name
+	} : fromB ? {
+		name: b.name,
+		role: fromB,
+		other: a.name
+	} : null;
+	const verb = miss?.role.kind === "inducer" ? "speeds" : "slows";
+	if (shared.length && miss) return `No perpetrator on shared ${shared[0]}. ${miss.name} ${verb} ${miss.role.enzyme}, and ${miss.other} is not on it.`;
+	if (shared.length) return `Both are ${shared.slice(0, 2).join(" and ")} substrates. No perpetrator was mapped.`;
+	if (miss) return `${miss.name} ${verb} ${miss.role.enzyme}. ${miss.other} is not a ${miss.role.enzyme} substrate on this map.`;
+	return "No shared enzyme and no stacked-effect row on this map.";
+}
+function directionLine(f) {
+	const a = actors(f);
+	if (!a.verb || a.verb === "with") {
+		const effect = f.effect?.split("·")[0]?.trim();
+		return effect ? effect.charAt(0).toUpperCase() + effect.slice(1) : a.left;
+	}
+	const short = a.verb.replace(/ of$/, "");
+	return short.charAt(0).toUpperCase() + short.slice(1);
 }
 function actors(f) {
 	const names = f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id);
@@ -9311,12 +9349,10 @@ function CheckBoard({ ids, findings, counts, host }) {
 	const [showAll, setShowAll] = (0, import_react.useState)(false);
 	const [tier, setTier] = (0, import_react.useState)("all");
 	const [showFood, setShowFood] = (0, import_react.useState)(false);
-	const [showQuiet, setShowQuiet] = (0, import_react.useState)(false);
 	if (scope !== pairKey) {
 		setScope(pairKey);
 		setShowAll(false);
 		setShowFood(false);
-		setShowQuiet(false);
 		setTier("all");
 		setOpenId(rows[0]?.id ?? food[0]?.id ?? null);
 	}
@@ -9417,6 +9453,21 @@ function CheckBoard({ ids, findings, counts, host }) {
 					children: t === "all" ? `All ${rows.length}` : `${SEVERITY_LABEL[t]} ${counts[t]}`
 				}, t))
 			})] }) : null,
+			regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PairGrid, {
+				hits: regimenGroups(rows).pairs.map((g) => ({
+					key: g.key,
+					title: g.title,
+					line: directionLine(g.rows[0]),
+					severity: g.rows[0].severity,
+					findingId: g.rows[0].id
+				})),
+				blanks: quietPairs,
+				onOpen: (id) => {
+					setTier("all");
+					setShowAll(true);
+					setOpenId(id);
+				}
+			}) : null,
 			!regimen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoleGrid, {
 				ids,
 				rows
@@ -9496,34 +9547,6 @@ function CheckBoard({ ids, findings, counts, host }) {
 				className: "text-xs leading-relaxed text-muted",
 				children: quietEnzymes
 			}) : null,
-			quietPairs.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "space-y-2",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-					type: "button",
-					onClick: () => setShowQuiet((v) => !v),
-					"aria-expanded": showQuiet,
-					className: "flex h-11 w-full items-center justify-between gap-3 text-left",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "text-sm text-fg",
-						children: quietPairs.length === 1 ? "1 pair with no mapped collision" : `${quietPairs.length} pairs with no mapped collision`
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle",
-						children: [showQuiet ? "Hide" : "Show", " · not a clearance"]
-					})]
-				}), showQuiet ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
-					className: "space-y-1",
-					children: quietPairs.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
-						className: "rounded-md bg-bg-sunken px-3 py-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-fg",
-							children: p.title
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-xs leading-relaxed text-muted",
-							children: "No mapped collision on this pair. A blank here is not a clearance, and a note under Across the desk can still name both."
-						})]
-					}, p.key))
-				}) : null]
-			}) : null,
 			regimen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RoleGrid, {
 				ids,
 				rows
@@ -9587,6 +9610,71 @@ function CheckBoard({ ids, findings, counts, host }) {
 				}, lane.id))]
 			}) : null,
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DeskReaders, { brief: readerBrief })
+		]
+	});
+}
+function PairGrid({ hits, blanks, onOpen }) {
+	if (hits.length + blanks.length < 2) return null;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-2",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-baseline justify-between gap-3",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "font-mono text-[11px] uppercase tracking-[0.18em] text-muted",
+					children: "Every pair"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "font-mono text-[10px] uppercase tracking-wide text-subtle",
+					children: [
+						hits.length,
+						" mapped · ",
+						blanks.length,
+						" blank"
+					]
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "grid grid-cols-2 gap-1.5",
+				children: [hits.map((cell) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					type: "button",
+					onClick: () => onOpen(cell.findingId),
+					className: "min-h-11 rounded-md bg-bg-sunken px-2.5 py-2 text-left",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: cn("inline-flex rounded-sm px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide", severitySurface(cell.severity)),
+							children: SEVERITY_LABEL[cell.severity]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "mt-1 block text-xs leading-snug text-fg",
+							children: cell.title
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "mt-0.5 block text-[11px] leading-snug text-muted",
+							children: cell.line
+						})
+					]
+				}, cell.key)), blanks.map((cell) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "min-h-11 rounded-md bg-bg-sunken px-2.5 py-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "font-mono text-[10px] uppercase tracking-wide text-subtle",
+							children: "No mapped collision"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "mt-1 block text-xs leading-snug text-muted",
+							children: cell.title
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "mt-0.5 block text-[11px] leading-snug text-subtle",
+							children: cell.reason
+						})
+					]
+				}, cell.key))]
+			}),
+			blanks.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "text-[11px] leading-relaxed text-subtle",
+				children: "A blank cell says why this map stayed quiet. It is not a clearance."
+			}) : null
 		]
 	});
 }
@@ -9681,13 +9769,25 @@ function verdictTitle(f) {
 	return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : raw;
 }
 function quietLine(ids, findings) {
-	const seen = /* @__PURE__ */ new Set();
-	for (const id of ids) for (const e of DRUG_BY_ID[id]?.enzymes ?? []) seen.add(e.enzyme);
+	const roles = /* @__PURE__ */ new Map();
+	for (const id of ids) for (const e of DRUG_BY_ID[id]?.enzymes ?? []) {
+		const row = roles.get(e.enzyme) ?? {
+			sub: false,
+			perp: false
+		};
+		if (e.kind === "substrate") row.sub = true;
+		else row.perp = true;
+		roles.set(e.enzyme, row);
+	}
 	const hit = new Set(findings.flatMap((f) => f.enzymes));
-	const quiet = [...seen].filter((e) => !hit.has(e));
-	if (seen.size === 0) return "No enzyme role was on the map for this list. Effect-stacking flags were still compared.";
+	const quiet = [...roles.entries()].filter(([enzyme]) => !hit.has(enzyme));
+	if (roles.size === 0) return "No enzyme role was on the map for this list. Effect-stacking flags were still compared.";
 	if (quiet.length === 0) return "";
-	return `Also checked, no collision on: ${quiet.join(", ")}.`;
+	return `Compared, not a clearance: ${quiet.map(([enzyme, role]) => {
+		if (role.sub && !role.perp) return `${enzyme}, no perpetrator mapped`;
+		if (role.perp && !role.sub) return `${enzyme}, no victim mapped`;
+		return `${enzyme}, no pair written`;
+	}).join("; ")}.`;
 }
 function CheckRow({ finding, open, onToggle, action }) {
 	const a = actors(finding);

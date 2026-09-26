@@ -3,12 +3,12 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.12.0",
-  released: "2026-09-25",
+  version: "1.14.0",
+  released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "kaleblovingier@gmail.com",
   phone: "360-707-8923",
-  udi: "FP-SW-1.12.0",
+  udi: "FP-SW-1.14.0",
 } as const;
 
 /** 21 CFR / FDA CDS Guidance (Sept 28, 2022) posture — not a clearance. */
@@ -29,6 +29,9 @@ export const INDICATIONS = [
   "Showing food, drink, and alcohol rows for the names already on the desk, and pregnancy, CKD, older-adult, and daily-smoke rows labeled as a different host. Those rows are the same map. They are not a clearance and not a milligram.",
   "Ranking a regimen into pairs by the sharpest collision, and leading with a plain-language sentence of that row. The sentence does not pick a milligram or a next step.",
   "Listing the pairs on a regimen that had no mapped collision, labeled as not a clearance. A blank pair is not a statement that the combination is safe.",
+  "Showing every pair on a regimen in one grid. Each cell is a severity or no mapped collision. A blank cell is not a clearance.",
+  "On a mapped cell, naming the direction of the sharpest row. On a blank cell, saying whether the pair shares an enzyme with no perpetrator, or a perpetrator that does not land. A blank reason is not a clearance.",
+  "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "On request, three separate readers (pair, gap, trainee) restate the check already on screen. A reader cannot add a finding, a milligram, or a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock does not pick a milligram.",
   "Displaying study cards (rounds, named labeled pairs, formulary CYP roles, FDA fold-change grades, and mechanism cards from the selected pair) so a healthcare trainee can rehearse the basis, mark misses, and review them. Not an exam key and not a milligram.",

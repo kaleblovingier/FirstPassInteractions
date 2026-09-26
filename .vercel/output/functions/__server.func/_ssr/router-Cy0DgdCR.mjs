@@ -4,7 +4,7 @@ import { _ as useRouter, f as createRouter, g as createRootRoute, h as createFil
 import { r as CONNECTOR_TOKEN_READY_EVENT } from "./types-DXXiBr9d.mjs";
 import { n as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-BGeb0Hjk.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-Cy0DgdCR.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
@@ -364,7 +364,7 @@ var Route$2 = createRootRoute({
 		})]
 	})
 });
-var $$splitComponentImporter = () => import("./routes-D03ESlhA.mjs");
+var $$splitComponentImporter = () => import("./routes-BEVahqKg.mjs");
 var Route$1 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter, "component") });
 var Route = createFileRoute("/api/stripe/webhook")({ server: { handlers: { POST: async ({ request }) => {
 	const { handleStripeWebhook } = await import("./stripe.server-Dmhe25Fl.mjs");
