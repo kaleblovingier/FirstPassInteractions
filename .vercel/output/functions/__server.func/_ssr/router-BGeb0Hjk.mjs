@@ -4,7 +4,7 @@ import { _ as useRouter, f as createRouter, g as createRootRoute, h as createFil
 import { r as CONNECTOR_TOKEN_READY_EVENT } from "./types-DXXiBr9d.mjs";
 import { n as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-CRNl1UW1.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-BGeb0Hjk.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
@@ -297,7 +297,7 @@ function PreviewHostBridge() {
 	}, [router]);
 	return null;
 }
-var styles_default = "/assets/styles-BvgEcPHV.css";
+var styles_default = "/assets/styles-BuzU8JKU.css";
 var APP_NAME = "FirstPass";
 var Route$2 = createRootRoute({
 	head: () => ({
@@ -310,7 +310,7 @@ var Route$2 = createRootRoute({
 			{ title: APP_NAME },
 			{
 				name: "description",
-				content: "CYP450 desk for ketamine, entactogens, psychedelics, and psychiatric regimens — pharmacokinetic collisions and pharmacodynamic synergies."
+				content: "FirstPass is a medicine-interaction learning desk: plain-language summaries first, then clinical pathway detail and sources. Free for up to five medicines."
 			},
 			{
 				name: "theme-color",
@@ -364,10 +364,10 @@ var Route$2 = createRootRoute({
 		})]
 	})
 });
-var $$splitComponentImporter = () => import("./routes-BWTXYgTu.mjs");
+var $$splitComponentImporter = () => import("./routes-D03ESlhA.mjs");
 var Route$1 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter, "component") });
 var Route = createFileRoute("/api/stripe/webhook")({ server: { handlers: { POST: async ({ request }) => {
-	const { handleStripeWebhook } = await import("./stripe.server-DTgxibw0.mjs");
+	const { handleStripeWebhook } = await import("./stripe.server-Dmhe25Fl.mjs");
 	return handleStripeWebhook(request);
 } } } });
 var rootRouteChildren = {

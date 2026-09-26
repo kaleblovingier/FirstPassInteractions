@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/plans-CGEFIPbO.js
+//#region node_modules/.nitro/vite/services/ssr/assets/plans-BgnLeOVu.js
 /** Public pay / write lines — the operator asked these onto the desk. */
 var OPERATOR = {
 	name: "Kaleb Lovingier",
@@ -34,6 +34,26 @@ var PAY_RAILS = [
 		href: OPERATOR.paypalUrl
 	}
 ];
+/** Buyer-facing three-step path when Stripe is deferred (Venmo / Cash App / PayPal). */
+var MANUAL_UNLOCK_STEPS = [
+	{
+		n: "1",
+		title: "Pay $79 once",
+		detail: "Venmo, Cash App, or PayPal — open a rail below and send founding."
+	},
+	{
+		n: "2",
+		title: "Get your key",
+		detail: "After payment clears, you get a signed key by email or text (FP-LIFE-…). Nothing unlocks by itself."
+	},
+	{
+		n: "3",
+		title: "Redeem on this desk",
+		detail: "Paste the key below and hit Redeem. Host factors, enzyme atlas, and export open on this browser."
+	}
+];
+/** Soft unlock note — no clinical claims; PI / Safety page still govern. */
+var FOUNDING_UNLOCKS = "Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.";
 var SITE = {
 	repo: "https://github.com/kaleblovingier/FirstPassInteractions",
 	pages: "https://kaleblovingier.github.io/FirstPassInteractions/",
@@ -46,24 +66,24 @@ var TRY_THREE = [
 	{
 		id: "oral-k-gf",
 		title: "Oral ketamine × grapefruit",
-		punch: "F rises. Half-life does not. Overlay IV — the ghost is untouched."
+		punch: "More of the dose may reach the bloodstream by mouth. How long it lasts does not change the same way. Compare with IV — that path skips the gut step."
 	},
 	{
 		id: "dxm-pm",
-		title: "DXM in a 2D6 poor metabolizer, q8h",
-		punch: "Accumulation Rac ~2.7×. Dextrorphan falls. Once vs q8h is the lesson."
+		title: "DXM in a 2D6 poor metabolizer, every 8 hours",
+		punch: "In a slow metabolizer, cough medicine can build up with repeat doses. Once versus every 8 hours is the teaching point."
 	},
 	{
 		id: "tac-gf",
 		title: "Tacrolimus × grapefruit",
-		punch: "Kitchen collision. Bioavailability up, t½ still 12 h. Gut 3A4, not hepatic."
+		punch: "A kitchen interaction: more of the transplant medicine may get absorbed. The gut enzyme matters here more than the liver story alone."
 	}
 ];
 var COMMERCE = {
 	founding: 79,
 	payUrl: OPERATOR.venmoUrl,
 	operatorContact: OPERATOR.email,
-	pitch: "A CYP450 desk for ketamine clinics, MAT, harm-reduction staff, and pharmacy students. Up to five-drug collision checks stay free. Host factors, the atlas, and export are licensed."
+	pitch: "A medicine-interaction learning desk for ketamine clinics, MAT and harm-reduction teams, and pharmacy students. Free forever: check up to five medicines. Founding lifetime ($79 once) unlocks host factors, the enzyme atlas, metabolite maps, and export — yours on this desk."
 };
 var BUYERS = [
 	{
@@ -88,14 +108,14 @@ var BUYERS = [
 	}
 ];
 function payClose(price = COMMERCE.founding) {
-	return `Pay $${price} via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After payment clears, the operator emails or texts a signed key from Foundry — paste it under Pro → Redeem.`;
+	return `Pay $${price} once via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After it clears you get a signed key by email or text — paste it under Plans → Redeem. Three steps: pay → get key → redeem.`;
 }
 function salesDm(price = COMMERCE.founding) {
 	return [
-		"I built FirstPass — a CYP450 desk that maps ketamine, MAT, street adulterants (xylazine, nitazenes), and the usual psych stack, including grapefruit, smoke, and metabolizer status.",
+		"I built FirstPass — a learning desk that maps how medicines interact for ketamine clinics, MAT, street adulterants (xylazine, nitazenes), and common psych stacks — including grapefruit, smoking, and metabolizer status.",
 		"",
-		"Free: up to five-drug collision checks.",
-		`Founding license: $${price} once. Host factors, metabolites, enzyme atlas, export. Yours on this desk.`,
+		"Free: check up to five medicines for mapped interactions.",
+		`Founding license: $${price} once. Patient factors, metabolite maps, enzyme atlas, and export — yours on this desk.`,
 		"",
 		SITE.url,
 		"",
@@ -107,10 +127,10 @@ function salesDm(price = COMMERCE.founding) {
 }
 function buyerDm(who, price = COMMERCE.founding) {
 	return [
-		`I built FirstPass — a CYP450 desk for ${BUYERS.find((b) => b.who === who)?.hook ?? "the maps you keep asking pharmacy for"}.`,
+		`I built FirstPass — a medicine-interaction learning desk for ${BUYERS.find((b) => b.who === who)?.hook ?? "the maps you keep asking pharmacy for"}.`,
 		"",
-		"Up to five-drug collision checks stay free so you can kick the tires.",
-		`Founding license is $${price} once: host factors, metabolites, enzyme atlas, JSON/CSV export.`,
+		"Checking up to five medicines stays free so you can kick the tires.",
+		`Founding license is $${price} once: patient factors, metabolite maps, enzyme atlas, and JSON/CSV export.`,
 		"",
 		SITE.url,
 		"",
@@ -124,12 +144,12 @@ function launchTweet(price = COMMERCE.founding) {
 	return [
 		"FirstPass is a CYP450 desk for ketamine clinics, MAT, and pharmacy students.",
 		"",
-		"Up to five-drug collision checks stay free.",
+		"Free up to five drugs on the desk.",
 		`Founding license $${price} once — host factors, enzyme atlas, export.`,
 		SITE.url,
 		"Pay with card on the desk, or Venmo / Cash App / PayPal.",
 		"",
-		"Educational model. Not a charting system."
+		"Educational model. Not FDA-cleared. Empty tray is not proof a combination is safe."
 	].join("\n");
 }
 function launchPosts(price = COMMERCE.founding, url = SITE.pages) {
@@ -145,7 +165,7 @@ function launchPosts(price = COMMERCE.founding, url = SITE.pages) {
 				"1/",
 				"FirstPass is a CYP450 desk for ketamine clinics, MAT, and pharmacy students.",
 				"",
-				"Up to five-drug collision checks stay free. Founding license $" + price + " once.",
+				"Free up to five drugs on the desk. Founding license $" + price + " once.",
 				"",
 				"2/",
 				"Three cases the desk actually draws:",
@@ -247,7 +267,7 @@ function fulfillKey(opts) {
 		"",
 		opts.key,
 		"",
-		"Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise: Pro → paste the key → Redeem.",
+		"Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise: Plans → paste the key → Redeem (pay → key → redeem).",
 		"",
 		SITE.url,
 		"",
@@ -269,7 +289,7 @@ function invoiceText(opts) {
 		`Write: ${OPERATOR.email} · ${OPERATOR.phone}`,
 		"",
 		"After payment you receive a key like FP-LIFE-A1B2C3D4-9F3C2A1B.",
-		"Paste it under Pro → Redeem on the desk.",
+		"Paste it under Plans → Redeem on the desk (pay → key → redeem).",
 		opts.keyHint ? `Key: ${opts.keyHint}` : ""
 	].filter((l) => l !== "").join("\n");
 }
@@ -279,52 +299,52 @@ function tweetFor(regimen, highest, headline) {
 var PLANS = [
 	{
 		id: "free",
-		name: "Desk",
-		tagline: "Up to five-drug CYP and PD collisions.",
+		name: "Free desk",
+		tagline: "Check up to five medicines — no card required.",
 		monthly: 0,
 		yearly: 0,
 		features: [
-			"Search the 1,700+ compound formulary (WHO / US fills plus vitamin-shop bottles)",
+			"Search 1,700+ medicines and supplements",
 			"Up to five drugs on the desk",
-			"PK / PD collision cards",
-			"DrugBank, CPIC / PharmGKB, Stahl receptor cards",
-			"PubMed citation shelf (curated PMIDs + live NCBI)",
-			"Concentration-time sketch (five-drug AUCR, q8h accumulation)",
-			"CYP occupancy heatmap",
+			"Interaction cards: how levels change and how effects can stack",
+			"DrugBank, genetics teaching cards, and receptor teaching cards",
+			"PubMed citation shelf (curated papers + live search)",
+			"Simple concentration sketch (relative exposure and repeat-dose build-up)",
+			"Enzyme occupancy heatmap",
 			"Share a one-line map"
 		]
 	},
 	{
 		id: "pro",
 		name: "Pro",
-		tagline: "Host factors, metabolites, the atlas.",
+		tagline: "Host factors, metabolites, and the enzyme atlas.",
 		monthly: 12,
 		yearly: 99,
 		lifetime: 79,
 		highlighted: true,
 		features: [
-			"Eight-drug regimens",
-			"CYP2D6 / 2C19 / 2C9 / 2B6 phenotype",
-			"Smoke, alcohol pattern, ketamine & cannabis route",
-			"Age (Beers), kidney, pregnancy / lactation",
-			"Metabolite maps",
-			"Stack load meters",
+			"Everything on the free desk",
+			"Up to eight medicines on the list",
+			"Metabolizer status for common CYP enzymes",
+			"Smoking, alcohol pattern, and ketamine / cannabis route",
+			"Age (Beers), kidney, pregnancy / lactation teaching cards",
+			"Metabolite maps and stack-load meters",
 			"Enzyme atlas",
-			"Full copyable collision report"
+			"Full copyable interaction report"
 		]
 	},
 	{
 		id: "lab",
-		name: "Founding / Lab",
-		tagline: "Lifetime desk, or a teaching seat.",
+		name: "Founding",
+		tagline: "$79 once — Pro tools plus export, for life.",
 		monthly: 29,
 		yearly: 249,
 		lifetime: 79,
 		features: [
 			"Everything in Pro",
-			"JSON + CSV export",
-			"Founding lifetime at $79 once",
-			"License receipt for the lab book",
+			"JSON + CSV export for the lab book",
+			"Founding lifetime at $79 once (no subscription)",
+			"License receipt you can keep",
 			"Priority formulary additions"
 		]
 	}
@@ -340,4 +360,4 @@ function maxDrugs(plan) {
 	return plan === "free" ? 5 : 8;
 }
 //#endregion
-export { priceFor as _, PLANS as a, tweetFor as b, TRY_THREE as c, fulfillKeys as d, invoiceText as f, payClose as g, maxDrugs as h, PAY_RAILS as i, buyerDm as l, launchTweet as m, COMMERCE as n, PLAN_BY_ID as o, launchPosts as p, OPERATOR as r, SITE as s, BUYERS as t, fulfillKey as u, requestLicense as v, salesDm as y };
+export { tweetFor as S, maxDrugs as _, OPERATOR as a, requestLicense as b, PLAN_BY_ID as c, buyerDm as d, fulfillKey as f, launchTweet as g, launchPosts as h, MANUAL_UNLOCK_STEPS as i, SITE as l, invoiceText as m, COMMERCE as n, PAY_RAILS as o, fulfillKeys as p, FOUNDING_UNLOCKS as r, PLANS as s, BUYERS as t, TRY_THREE as u, payClose as v, salesDm as x, priceFor as y };

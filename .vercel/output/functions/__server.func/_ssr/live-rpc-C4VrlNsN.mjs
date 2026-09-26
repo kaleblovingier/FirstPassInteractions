@@ -1,8 +1,8 @@
 import { t as createServerFn } from "./ssr.mjs";
 import { t as __exportAll } from "./rolldown-runtime-D7D4PA-g.mjs";
-import { o as DRUG_BY_ID } from "./catalog-DDHUkv_i.mjs";
+import { o as DRUG_BY_ID } from "./catalog-CTuuS4jP.mjs";
 import { t as createServerRpc } from "./createServerRpc-A6pJPYTF.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/live-rpc-1M0qYM0y.js
+//#region node_modules/.nitro/vite/services/ssr/assets/live-rpc-C4VrlNsN.js
 var EMPTY_LIVE = {
 	label: null,
 	faers: [],
@@ -46,7 +46,7 @@ var lookupLiveSources_createServerFn_handler = createServerRpc({
 var lookupLiveSources = createServerFn({ method: "POST" }).validator((input) => ({ id: readString(input, "id") })).handler(lookupLiveSources_createServerFn_handler, async ({ data }) => {
 	const drug = DRUG_BY_ID[data.id];
 	if (!drug) return miss(data.id, "Not on this shelf.");
-	const { lookupLive } = await import("./live.server-DQbmeCAd.mjs");
+	const { lookupLive } = await import("./live.server-9IG4xw5L.mjs");
 	return lookupLive(drug.id, drug.name);
 });
 var lookupRxnavInteractions_createServerFn_handler = createServerRpc({
@@ -55,7 +55,7 @@ var lookupRxnavInteractions_createServerFn_handler = createServerRpc({
 	filename: "src/lib/drugs/live-rpc.ts"
 }, (opts) => lookupRxnavInteractions.__executeServer(opts));
 var lookupRxnavInteractions = createServerFn({ method: "POST" }).validator((input) => ({ ids: readIds(input) })).handler(lookupRxnavInteractions_createServerFn_handler, async ({ data }) => {
-	const { lookupInteractions } = await import("./rxnav.server-C2rc7YSO.mjs");
+	const { lookupInteractions } = await import("./rxnav.server-D8lJe1D9.mjs");
 	return lookupInteractions(data.ids);
 });
 var searchTrials_createServerFn_handler = createServerRpc({

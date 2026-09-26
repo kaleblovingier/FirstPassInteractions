@@ -1,5 +1,5 @@
-import { o as DRUG_BY_ID } from "./catalog-DDHUkv_i.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/psychonaut-lk1QLUaU.js
+import { o as DRUG_BY_ID } from "./catalog-CTuuS4jP.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/psychonaut-E5EOmg0d.js
 /**
 * PsychonautWiki / TripSit teaching — paraphrases, not a protocol, not a milligram.
 * Live wiki intros are sanitized of dosage, volumetric, and route how-to before they land.

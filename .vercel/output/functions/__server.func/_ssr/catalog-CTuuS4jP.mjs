@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/catalog-DDHUkv_i.js
+//#region node_modules/.nitro/vite/services/ssr/assets/catalog-CTuuS4jP.js
 function card(partial) {
 	return partial;
 }
@@ -1253,7 +1253,7 @@ function hasClinic(id) {
 var CLINIC_PREG_AVOID = Object.entries(CLINIC).filter(([, v]) => v.pregnancy === "avoid").map(([id]) => id);
 var CLINIC_BEERS = Object.entries(CLINIC).filter(([, v]) => Boolean(v.beers)).map(([id]) => id);
 Object.entries(CLINIC).filter(([, v]) => v.renal === "avoid" || v.renal === "caution").map(([id]) => id);
-function sub$1(enzyme, sensitivity, pathway = "clearance", nti = false) {
+function sub$2(enzyme, sensitivity, pathway = "clearance", nti = false) {
 	return {
 		enzyme,
 		kind: "substrate",
@@ -1262,14 +1262,14 @@ function sub$1(enzyme, sensitivity, pathway = "clearance", nti = false) {
 		nti
 	};
 }
-function inh$1(enzyme, strength) {
+function inh$2(enzyme, strength) {
 	return {
 		enzyme,
 		kind: "inhibitor",
 		strength
 	};
 }
-function ind$1(enzyme, strength) {
+function ind$2(enzyme, strength) {
 	return {
 		enzyme,
 		kind: "inducer",
@@ -1280,11 +1280,11 @@ function enz(s) {
 	if (!s) return [];
 	return s.split(";").map((part) => {
 		const [k, e, v] = part.split(":");
-		if (k === "s") return sub$1(e, v);
-		if (k === "sa") return sub$1(e, v, "activation");
-		if (k === "sn") return sub$1(e, v, "clearance", true);
-		if (k === "i") return inh$1(e, v);
-		return ind$1(e, v);
+		if (k === "s") return sub$2(e, v);
+		if (k === "sa") return sub$2(e, v, "activation");
+		if (k === "sn") return sub$2(e, v, "clearance", true);
+		if (k === "i") return inh$2(e, v);
+		return ind$2(e, v);
 	});
 }
 function row(r) {
@@ -15212,6 +15212,254 @@ var CLINIC_FORMULARY = [
 	]
 ].map(row);
 CLINIC_FORMULARY.length;
+function sub$1(enzyme, sensitivity, pathway = "clearance", nti = false) {
+	return {
+		enzyme,
+		kind: "substrate",
+		sensitivity,
+		pathway,
+		nti
+	};
+}
+function inh$1(enzyme, strength) {
+	return {
+		enzyme,
+		kind: "inhibitor",
+		strength
+	};
+}
+function ind$1(enzyme, strength) {
+	return {
+		enzyme,
+		kind: "inducer",
+		strength
+	};
+}
+function d$1(id, name, brands, cls, enzymes, pd, toxicityHint, extra) {
+	return {
+		id,
+		name,
+		brands,
+		cls,
+		aliases: extra?.aliases ?? [],
+		enzymes,
+		pd,
+		toxicityHint,
+		note: extra?.note,
+		kind: extra?.kind ?? "drug"
+	};
+}
+/** Extra formulary rows merged after the teaching core + clinic pack. */
+var MODERN_FORMULARY = [
+	d$1("dulaglutide", "Dulaglutide", ["Trulicity"], "GLP-1 agonist", [], ["hypoglycemic"], "Stacked hypoglycemia with sulfonylureas / insulin; delayed gastric emptying", {
+		aliases: ["trulicity"],
+		note: "Weekly GLP-1 peptide. Not a CYP substrate. Same SU/insulin hypo map and delayed emptying as semaglutide."
+	}),
+	d$1("liraglutide", "Liraglutide", ["Victoza", "Saxenda"], "GLP-1 agonist", [], ["hypoglycemic"], "Stacked hypoglycemia with sulfonylureas / insulin; delayed gastric emptying", {
+		aliases: ["victoza", "saxenda"],
+		note: "Daily GLP-1. Peptide — no CYP. Hypoglycemia is the secretagogue pair."
+	}),
+	d$1("daridorexant", "Daridorexant", ["Quviviq"], "Dual orexin antagonist (hypnotic)", [sub$1("CYP3A4", "major")], ["cns-depressant", "benzo-zdrug"], "Next-day sedation; 3A4 victim; stacked CNS depression with opioids / alcohol", {
+		aliases: ["quviviq"],
+		note: "DORA like suvorexant/lemborexant. Strong 3A4 inhibitors raise exposure. Treat PD with opioids and alcohol as an airway stack, not a free sleep pill."
+	}),
+	d$1("cariprazine", "Cariprazine", ["Vraylar"], "Atypical antipsychotic (D3/D2 partial)", [sub$1("CYP3A4", "major")], ["qt-possible", "seizure-lowering"], "Akathisia, 3A4 victim toxicity; QT possible", {
+		aliases: ["vraylar"],
+		note: "Long-lived active metabolites. Strong 3A4 inhibitors (ritonavir, azoles) raise exposure. Not a serotonergic MAOI pair on this desk."
+	}),
+	d$1("lumateperone", "Lumateperone", ["Caplyta"], "Atypical antipsychotic", [sub$1("CYP3A4", "major")], ["qt-possible", "cns-depressant"], "Sedation; 3A4 victim; stacked CNS depression", {
+		aliases: ["caplyta"],
+		note: "Food raises absorption. Strong 3A4 inhibitors and inducers matter. PI governs dose cuts — this desk does not dose it."
+	}),
+	d$1("brexpiprazole", "Brexpiprazole", ["Rexulti"], "Atypical antipsychotic (D2 partial)", [sub$1("CYP3A4", "major"), sub$1("CYP2D6", "major")], ["qt-possible", "seizure-lowering"], "Akathisia; 3A4/2D6 victim toxicity", {
+		aliases: ["rexulti"],
+		note: "Dual 3A4 and 2D6 clearance. Paroxetine, fluoxetine, and ritonavir-class boosters raise levels. PI has the tables."
+	}),
+	d$1("asenapine", "Asenapine", ["Saphris", "Secuado"], "Atypical antipsychotic (SL / patch)", [sub$1("CYP1A2", "major")], ["qt-possible", "cns-depressant"], "Sedation, QT possible; smoke induction can lower levels", {
+		aliases: ["saphris", "secuado"],
+		note: "Sublingual / patch. Smoking induces 1A2 — levels can fall when someone lights up, rise on quit. Also UGT1A4 on the label. Not swallowed."
+	}),
+	d$1("iloperidone", "Iloperidone", ["Fanapt"], "Atypical antipsychotic", [sub$1("CYP3A4", "major"), sub$1("CYP2D6", "major")], ["qt-known"], "QT prolongation; 3A4/2D6 victim", {
+		aliases: ["fanapt"],
+		note: "Labeled QT. Strong 3A4 or 2D6 inhibitors raise exposure. Pair with methadone / macrolides is a QT stack on this desk."
+	}),
+	d$1("pimavanserin", "Pimavanserin", ["Nuplazid"], "5-HT2A inverse agonist (Parkinson psychosis)", [sub$1("CYP3A4", "major")], ["qt-known"], "QT prolongation; 3A4 victim", {
+		aliases: ["nuplazid"],
+		note: "No D2 block. Strong 3A4 inhibitors raise levels and QT risk. PI governs — not a dose card."
+	}),
+	d$1("gepirone", "Gepirone", ["Exxua"], "5-HT1A agonist antidepressant", [sub$1("CYP3A4", "major")], ["serotonergic", "qt-known"], "QT prolongation; serotonin syndrome with MAOIs; 3A4 victim", {
+		aliases: ["exxua"],
+		note: "Extended-release 5-HT1A agonist. Strong 3A4 inhibitors are a hard stop on the label. MAOIs remain contraindicated."
+	}),
+	d$1("zuranolone", "Zuranolone", ["Zurzuvae"], "Neuroactive steroid GABA-A PAM", [sub$1("CYP3A4", "major")], ["cns-depressant", "benzo-zdrug"], "CNS depression; 3A4 victim; stacked sedation with opioids / alcohol / benzos", {
+		aliases: ["zurzuvae"],
+		note: "14-day postpartum depression course. Fat meal required. Strong 3A4 perpetrators matter. Treat PD as a CNS-depressant stack."
+	}),
+	d$1("nirmatrelvir", "Nirmatrelvir", [], "COVID-19 protease inhibitor", [inh$1("CYP3A4", "strong")], [], "Raises 3A4-victim levels when boosted; search Paxlovid for the marketed pair", {
+		aliases: ["pf-07321332"],
+		note: "The protease half of Paxlovid. Alone it is not the product on the shelf — ritonavir boost is the perpetrator story. Prefer the Paxlovid row for teaching."
+	}),
+	d$1("bictegravir", "Bictegravir", ["Biktarvy"], "HIV INSTI", [sub$1("CYP3A4", "major")], [], "Victim of strong 3A4 inducers (rifampin, carbamazepine)", {
+		aliases: ["biktarvy", "bic"],
+		note: "Usually coformulated. CYP3A4 + UGT1A1 clearance. Strong inducers can steal it. Not a major perpetrator on this desk."
+	}),
+	d$1("cabotegravir", "Cabotegravir", [
+		"Vocabria",
+		"Apretude",
+		"Cabenuva"
+	], "HIV INSTI (oral / LA)", [], [], "Inducer interactions via UGT partners; long-acting residual exposure", {
+		aliases: [
+			"apretude",
+			"cabenuva",
+			"vocabria"
+		],
+		note: "Long-acting PrEP / treatment. Mostly UGT1A1 — quiet CYP row on this desk. Rifampin-class inducers still matter on the label."
+	}),
+	d$1("lenacapavir", "Lenacapavir", ["Sunlenca", "Yeztugo"], "HIV capsid inhibitor", [
+		sub$1("CYP3A4", "major"),
+		inh$1("CYP3A4", "moderate"),
+		inh$1("P-gp", "moderate")
+	], [], "3A4/P-gp victim and moderate perpetrator; long residual effect", {
+		aliases: ["sunlenca", "yeztugo"],
+		note: "Twice-yearly injectable option. Moderate 3A4/P-gp inhibition can raise sensitive victims. Strong inducers steal it."
+	}),
+	d$1("letermovir", "Letermovir", ["Prevymis"], "CMV terminase inhibitor", [sub$1("CYP3A4", "minor"), inh$1("CYP3A4", "moderate")], [], "Raises tacrolimus / cyclosporine / sirolimus; 3A4/OATP interactions", {
+		aliases: ["prevymis"],
+		note: "Transplant CMV prophylaxis. Moderate 3A4 inhibition plus OATP effects raise calcineurin / mTOR levels — TDM is the clinical move. Desk is educational only."
+	}),
+	d$1("maribavir", "Maribavir", ["Livtencity"], "CMV UL97 kinase inhibitor", [sub$1("CYP3A4", "major"), ind$1("CYP3A4", "weak")], [], "3A4 victim; can lower some immunosuppressant levels", {
+		aliases: ["livtencity"],
+		note: "Post-transplant refractory CMV. Watch 3A4 perpetrators and immunosuppressant TDM on the PI."
+	}),
+	d$1("molnupiravir", "Molnupiravir", ["Lagevrio"], "COVID-19 antiviral (mutagenic ribonucleoside)", [], [], "Not a CYP perpetrator; pregnancy contraindication on label", {
+		aliases: ["lagevrio"],
+		note: "Minimal drug–drug CYP map. The teaching point is indication / pregnancy labeling, not a desk collision."
+	}),
+	d$1("remdesivir", "Remdesivir", ["Veklury"], "COVID-19 nucleotide antiviral", [], ["hepatotoxic", "nephrotoxic"], "LFTs / renal vehicle concerns; limited CYP perpetrator story", {
+		aliases: ["veklury"],
+		note: "IV hospital antiviral. Not a ritonavir-style booster. Hepatic labs dominate over CYP cards."
+	}),
+	d$1("upadacitinib", "Upadacitinib", ["Rinvoq"], "JAK inhibitor", [sub$1("CYP3A4", "major")], ["immunosuppressant", "hepatotoxic"], "Infection risk; 3A4 victim; stacked immuno toxicity", {
+		aliases: ["rinvoq"],
+		note: "Strong 3A4 inhibitors and inducers change exposure. Not a serotonergic row."
+	}),
+	d$1("tofacitinib", "Tofacitinib", ["Xeljanz"], "JAK inhibitor", [sub$1("CYP3A4", "major"), sub$1("CYP2C19", "minor")], ["immunosuppressant", "hepatotoxic"], "Infection / thrombosis signals on label; 3A4 victim", {
+		aliases: ["xeljanz"],
+		note: "Moderate/strong CYP3A4 inhibitors raise levels. PI has the tables — desk is educational only."
+	}),
+	d$1("baricitinib", "Baricitinib", ["Olumiant"], "JAK inhibitor", [], ["immunosuppressant", "nephrotoxic"], "Infection risk; OAT3 interactions; renal clearance", {
+		aliases: ["olumiant"],
+		note: "Mostly renal / OAT3, not a classic CYP perpetrator. Strong OAT3 inhibitors (e.g. probenecid) matter on the label."
+	}),
+	d$1("ritlecitinib", "Ritlecitinib", ["Litfulo"], "JAK3 / TEC inhibitor", [sub$1("CYP3A4", "major")], ["immunosuppressant"], "Infection risk; 3A4 victim", {
+		aliases: ["litfulo"],
+		note: "Alopecia areata JAK. Strong 3A4 perpetrators change exposure."
+	}),
+	d$1("deucravacitinib", "Deucravacitinib", ["Sotyktu"], "TYK2 inhibitor", [
+		sub$1("CYP1A2", "minor"),
+		sub$1("CYP2B6", "minor"),
+		sub$1("CYP3A4", "minor")
+	], ["immunosuppressant"], "Infection risk; modest CYP map", {
+		aliases: ["sotyktu"],
+		note: "Allosteric TYK2. Quieter CYP story than JAK1/3 drugs; still immuno."
+	}),
+	d$1("apremilast", "Apremilast", ["Otezla"], "PDE4 inhibitor", [sub$1("CYP3A4", "major")], [], "GI intolerance; 3A4 victim / inducer loss of efficacy", {
+		aliases: ["otezla"],
+		note: "Strong 3A4 inducers (rifampin, carbamazepine, St John's wort) can steal it."
+	}),
+	d$1("etodesnitazene", "Etodesnitazene", [], "Benzimidazole opioid (nitazene)", [sub$1("CYP3A4", "major")], ["opioid", "cns-depressant"], "High-potency μ-agonist respiratory arrest; 3A4 victim; benzo/xylazine airway stack", {
+		aliases: ["etazene-desnitro", "nitazene"],
+		note: "Nitazene class. Treat like other benzimidazole opioids next to benzos, alcohol, and xylazine. Naloxone reverses μ — not α2."
+	}),
+	d$1("n-pyrrolidino-etonitazene", "N-Pyrrolidino etonitazene", [], "Benzimidazole opioid (nitazene)", [sub$1("CYP3A4", "major")], ["opioid", "cns-depressant"], "Extremely high-potency μ-agonist; respiratory arrest; 3A4 victim", {
+		aliases: [
+			"npe",
+			"protonitazepyne",
+			"pyrrolidino-etonitazene",
+			"nitazene"
+		],
+		note: "Among the hotter nitazene analogues reported in toxicology. Teaching card only — potency estimates vary; PI/forensic sources govern."
+	}),
+	d$1("butonitazene", "Butonitazene", [], "Benzimidazole opioid (nitazene)", [sub$1("CYP3A4", "major")], ["opioid", "cns-depressant"], "μ-agonist respiratory arrest; 3A4 victim; stacked CNS depression", { aliases: ["butonitazene", "nitazene"] }),
+	d$1("flunitazene", "Flunitazene", [], "Benzimidazole opioid (nitazene)", [sub$1("CYP3A4", "major")], ["opioid", "cns-depressant"], "μ-agonist respiratory arrest; 3A4 victim", { aliases: ["flu-nitazene", "nitazene"] }),
+	d$1("brorphine", "Brorphine", [], "Street synthetic opioid", [sub$1("CYP3A4", "major")], ["opioid", "cns-depressant"], "μ-agonist respiratory arrest; often cut into fake tablets", {
+		aliases: ["brorphine"],
+		note: "Appeared in pressed 'oxycodone' supply. Same airway map as illicit fentanyl next to benzos and xylazine."
+	}),
+	d$1("u-47700", "U-47700", [], "Street synthetic opioid (AH-series related)", [sub$1("CYP3A4", "major")], ["opioid", "cns-depressant"], "μ-agonist respiratory arrest; 3A4 victim", {
+		aliases: [
+			"u47700",
+			"pink",
+			"u-4"
+		],
+		note: "Research chemical opioid from earlier waves. Treat as a full μ-agonist on this desk."
+	}),
+	d$1("pyrazolam", "Pyrazolam", [], "Designer benzodiazepine", [], [
+		"benzo-zdrug",
+		"cns-depressant",
+		"seizure-lowering"
+	], "Benzo × opioid airway stack; withdrawal seizures", {
+		aliases: ["pyrazolam"],
+		note: "Triazolobenzodiazepine RC. Quiet CYP map vs alprazolam — PD with opioids and alcohol still dominates."
+	}),
+	d$1("flubromazepam", "Flubromazepam", [], "Designer benzodiazepine", [sub$1("CYP3A4", "major")], [
+		"benzo-zdrug",
+		"cns-depressant",
+		"seizure-lowering"
+	], "Very long-acting RC benzo; delayed withdrawal; opioid airway stack", {
+		aliases: ["flubromazepam", "fbzp"],
+		note: "Long half-life. Blackouts and delayed withdrawal seizures are the street pattern. 3A4 still relevant."
+	}),
+	d$1("deschloroetizolam", "Deschloroetizolam", [], "Thienodiazepine (designer)", [sub$1("CYP3A4", "major")], [
+		"benzo-zdrug",
+		"cns-depressant",
+		"seizure-lowering"
+	], "Etizolam-family CNS depression; opioid airway stack", {
+		aliases: ["etizolam-deschloro", "deschloro-etizolam"],
+		note: "Thienodiazepine cousin of etizolam. Same teaching map: 3A4 + opioid/alcohol airway."
+	}),
+	d$1("meclonazepam", "Meclonazepam", [], "Designer benzodiazepine", [sub$1("CYP3A4", "major")], [
+		"benzo-zdrug",
+		"cns-depressant",
+		"seizure-lowering"
+	], "Clonazepam-family RC; opioid airway stack", { aliases: ["meclonazepam"] }),
+	d$1("phenazolam", "Phenazolam", [], "Designer benzodiazepine", [sub$1("CYP3A4", "major")], [
+		"benzo-zdrug",
+		"cns-depressant",
+		"seizure-lowering"
+	], "High-potency RC benzo; blackout and opioid airway stack", {
+		aliases: ["phenazolam", "clobromazolam"],
+		note: "Sometimes sold as clonazolam. Treat as a high-potency 3A4 benzo."
+	}),
+	d$1("eutylone", "Eutylone", [], "Cathinone stimulant / entactogen", [sub$1("CYP2D6", "major")], [
+		"serotonergic",
+		"stimulant",
+		"seizure-lowering"
+	], "Hyperthermia, serotonin toxicity with MAOIs; 2D6 victim", {
+		aliases: [
+			"bk-ebdb",
+			"n-ethylbutylone",
+			"eutylone"
+		],
+		note: "Appeared in 'Molly' supply. Same MAOI / serotonin map as other methylenedioxy cathinones."
+	}),
+	d$1("n-ethylpentylone", "N-Ethylpentylone", [], "Cathinone stimulant", [sub$1("CYP2D6", "major")], [
+		"serotonergic",
+		"stimulant",
+		"seizure-lowering"
+	], "Severe sympathomimetic and serotonergic toxicity; MAOI crisis", {
+		aliases: [
+			"ephylone",
+			"bk-ebdp",
+			"nep"
+		],
+		note: "Sold as MDMA in some seizures. Hotter stimulant signal than MDMA — still a MAOI contraindication on this desk."
+	}),
+	d$1("mdphp", "MDPHP", [], "Cathinone stimulant (pyrovalerone)", [sub$1("CYP2D6", "minor")], ["stimulant", "seizure-lowering"], "Severe sympathomimetic toxicity; MAOI hypertensive crisis", {
+		aliases: ["mdphp", "monkey dust"],
+		note: "Pyrovalerone-family DAT/NET blocker like α-PVP. Pressor with MAOIs still applies."
+	})
+];
 function b(accession, targets, group = "Approved", extra) {
 	return extra ? {
 		accession,
@@ -20207,9 +20455,15 @@ var raw = [
 	})
 ];
 var coreIds = new Set(raw.map((d) => d.id));
-var DRUGS = [...raw, ...CLINIC_FORMULARY.filter((d) => !coreIds.has(d.id))];
+var clinicExtra = CLINIC_FORMULARY.filter((d) => !coreIds.has(d.id));
+var afterClinic = /* @__PURE__ */ new Set([...coreIds, ...clinicExtra.map((d) => d.id)]);
+var DRUGS = [
+	...raw,
+	...clinicExtra,
+	...MODERN_FORMULARY.filter((d) => !afterClinic.has(d.id))
+];
 var DRUG_BY_ID = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
-var PSYCH_CLS = /SSRI|SNRI|MAOI|antipsychotic|antidepressant|Benzodiazepine|Opioid|Gabapentinoid|Mood stabilizer|NMDA|Dissociative|Psychedelic|Entactogen|Stimulant|Cannabinoid|Alcohol|GHB|Z-hypnotic|Anxiolytic|ADHD|NRI|Nicotine|Methylxanthine|Tricyclic|NaSSA|SARI|NDRI|hypnotic|orexin|Melatonin|kratom|GABA|MAT|Wake-promoting|Pineal|Partial opioid|Opioid antagonist|Atypical opioid|aldehyde|NMDA \/ GABA|nicotinic|Anticonvulsant|Central muscle|AChE|α2-agonist|Nitazene|Designer benzodiazepine|Thienodiazepine|Cathinone|Arylcyclohexylamine|GHB prodrug|Alkyl nitrite|Antidiarrheal|Sedating antihistamine|Veterinary|Barbiturate|NNRTI|NBOMe|Salvinorin|Tropane|H2 blocker|Carbamate|oneirogen|pyrovalerone|NRI analgesic|IV anesthetic|NK1|SPAR|mixed opioid|7-OH|Diacetylmorphine|Street pressed|Local anesthetic/i;
+var PSYCH_CLS = /SSRI|SNRI|MAOI|antipsychotic|antidepressant|Benzodiazepine|Opioid|Gabapentinoid|Mood stabilizer|NMDA|Dissociative|Psychedelic|Entactogen|Stimulant|Cannabinoid|Alcohol|GHB|Z-hypnotic|Anxiolytic|ADHD|NRI|Nicotine|Methylxanthine|Tricyclic|NaSSA|SARI|NDRI|hypnotic|orexin|Melatonin|kratom|GABA|MAT|Wake-promoting|Pineal|Partial opioid|Opioid antagonist|Atypical opioid|aldehyde|NMDA \/ GABA|nicotinic|Anticonvulsant|Central muscle|AChE|α2-agonist|Nitazene|Designer benzodiazepine|Thienodiazepine|Cathinone|neuroactive steroid|Arylcyclohexylamine|GHB prodrug|Alkyl nitrite|Antidiarrheal|Sedating antihistamine|Veterinary|Barbiturate|NNRTI|NBOMe|Salvinorin|Tropane|H2 blocker|Carbamate|oneirogen|pyrovalerone|NRI analgesic|IV anesthetic|NK1|SPAR|mixed opioid|7-OH|Diacetylmorphine|Street pressed|Local anesthetic/i;
 function isPsych(drug) {
 	if (PSYCH_CLS.test(drug.cls)) return true;
 	return drug.pd.some((p) => [
@@ -20537,6 +20791,8 @@ function searchDrugs(query, excludeIds = []) {
 		"warfarin"
 	].map((id) => DRUG_BY_ID[id]).filter((d) => Boolean(d) && !excluded.has(d.id)).slice(0, 16);
 	if (q === "rxnav" || q === "pubchem" || q === "trials" || q === "dailymed" || q === "shortage" || q === "shortages") return DRUGS.filter((d) => !excluded.has(d.id) && d.kind === "drug" && !d.id.startsWith("__")).slice(0, 16);
+	const coreQuery = stripSaltFormTokens(normalizedQuery);
+	const matchQueries = coreQuery !== normalizedQuery ? [normalizedQuery, coreQuery] : [normalizedQuery];
 	const scored = [];
 	for (const drug of DRUGS) {
 		if (excluded.has(drug.id)) continue;
@@ -20551,19 +20807,35 @@ function searchDrugs(query, excludeIds = []) {
 			...brands,
 			...aliases
 		];
-		const compactQuery = normalizedQuery.replace(/\s/g, "");
-		const enzymeHit = drug.enzymes.some((e) => normalizeSearchText(e.enzyme).replace(/\s/g, "").includes(compactQuery));
-		const tokenHit = normalizedQuery.length >= 3 && normalizedQuery.split(" ").every((token) => searchable.some((value) => value.includes(token)));
 		let score = 0;
-		if (searchable.some((value) => value === normalizedQuery)) score = 100;
-		else if (name.startsWith(normalizedQuery) || id.startsWith(normalizedQuery)) score = 80;
-		else if (brands.some((b) => b.startsWith(normalizedQuery)) || aliases.some((a) => a.startsWith(normalizedQuery))) score = 70;
-		else if (name.includes(normalizedQuery) || id.includes(normalizedQuery)) score = 60;
-		else if (brands.some((b) => b.includes(normalizedQuery)) || aliases.some((a) => a.includes(normalizedQuery))) score = 50;
-		else if (tokenHit) score = 45;
-		else if (cls.includes(q)) score = 35;
-		else if (enzymeHit) score = 25;
-		else if (eKindQuery(drug, q)) score = 20;
+		for (const mq of matchQueries) {
+			const compactQuery = mq.replace(/\s/g, "");
+			const enzymeKey = compactEnzymeQuery(mq);
+			const enzymeRoles = drug.enzymes.filter((e) => {
+				const en = normalizeSearchText(e.enzyme).replace(/\s/g, "");
+				if (enzymeKey) return en === enzymeKey || en.includes(enzymeKey.replace(/^cyp/, ""));
+				return compactQuery.length >= 3 && en.includes(compactQuery);
+			});
+			const enzymeHit = enzymeRoles.length > 0;
+			const tokenHit = mq.length >= 3 && mq.split(" ").every((token) => searchable.some((value) => value.includes(token)));
+			let s = 0;
+			if (searchable.some((value) => value === mq)) s = 100;
+			else if (name.startsWith(mq) || id.startsWith(mq)) s = 80;
+			else if (brands.some((b) => b.startsWith(mq)) || aliases.some((a) => a.startsWith(mq))) s = 70;
+			else if (name.includes(mq) || id.includes(mq)) s = 60;
+			else if (brands.some((b) => b.includes(mq)) || aliases.some((a) => a.includes(mq))) s = 50;
+			else if (tokenHit) s = 45;
+			else if (cls.includes(q)) s = 35;
+			else if (enzymeHit && enzymeKey) {
+				const teachIdx = (TEACHING_ENZYME_HITS[enzymeKey] ?? []).indexOf(drug.id);
+				if (teachIdx >= 0) s = 68 - teachIdx;
+				else if (enzymeRoles.some((e) => e.kind === "inhibitor" || e.kind === "inducer")) s = 48;
+				else s = 28;
+			} else if (enzymeHit) s = 25;
+			else if (eKindQuery(drug, q)) s = 20;
+			if (mq === coreQuery && mq !== normalizedQuery && s >= 60) s += 5;
+			if (s > score) score = s;
+		}
 		if (score > 0) scored.push({
 			drug,
 			score
@@ -20580,6 +20852,102 @@ function searchDrugs(query, excludeIds = []) {
 function normalizeSearchText(value) {
 	return value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
 }
+/** Common salt / release tokens users paste after a generic (e.g. metformin hcl). */
+var SALT_FORM_TOKENS = /* @__PURE__ */ new Set([
+	"hcl",
+	"hbr",
+	"hydrochloride",
+	"hydrobromide",
+	"mesylate",
+	"maleate",
+	"succinate",
+	"fumarate",
+	"tartrate",
+	"citrate",
+	"phosphate",
+	"sulfate",
+	"sulphate",
+	"besylate",
+	"tosylate",
+	"acetate",
+	"hippurate",
+	"sodium",
+	"potassium",
+	"calcium",
+	"dihydrate",
+	"monohydrate",
+	"anhydrous",
+	"xr",
+	"er",
+	"sr",
+	"cr",
+	"la",
+	"odt",
+	"ir",
+	"xl"
+]);
+/** Drop trailing salt/release tokens so "metformin hcl" still finds metformin. */
+function stripSaltFormTokens(normalized) {
+	const parts = normalized.split(" ").filter(Boolean);
+	if (parts.length < 2) return normalized;
+	const kept = parts.filter((t) => !SALT_FORM_TOKENS.has(t));
+	return kept.length ? kept.join(" ") : normalized;
+}
+/** Compact forms users type when hunting by enzyme (CYP 3A4, 2D6, …). */
+function compactEnzymeQuery(normalized) {
+	return {
+		cyp3a4: "cyp3a4",
+		"3a4": "cyp3a4",
+		cyp3a5: "cyp3a5",
+		"3a5": "cyp3a5",
+		cyp2d6: "cyp2d6",
+		"2d6": "cyp2d6",
+		cyp2c19: "cyp2c19",
+		"2c19": "cyp2c19",
+		cyp2c9: "cyp2c9",
+		"2c9": "cyp2c9",
+		cyp1a2: "cyp1a2",
+		"1a2": "cyp1a2",
+		cyp2b6: "cyp2b6",
+		"2b6": "cyp2b6",
+		cyp2e1: "cyp2e1",
+		"2e1": "cyp2e1"
+	}[normalized.replace(/\s/g, "")] ?? null;
+}
+/** Prefer well-known teaching perpetrators when someone searches an enzyme name. */
+var TEACHING_ENZYME_HITS = {
+	cyp3a4: [
+		"clarithromycin",
+		"itraconazole",
+		"ketoconazole",
+		"grapefruit",
+		"ritonavir",
+		"rifampin",
+		"carbamazepine"
+	],
+	cyp2d6: [
+		"paroxetine",
+		"fluoxetine",
+		"bupropion",
+		"quinidine",
+		"terbinafine"
+	],
+	cyp2c19: [
+		"omeprazole",
+		"fluoxetine",
+		"fluvoxamine"
+	],
+	cyp2c9: [
+		"amiodarone",
+		"fluconazole",
+		"sulfamethoxazole"
+	],
+	cyp1a2: [
+		"fluvoxamine",
+		"ciprofloxacin",
+		"smoke"
+	]
+};
 function eKindQuery(drug, q) {
 	if (q.includes("inhibit")) return drug.enzymes.some((e) => e.kind === "inhibitor");
 	if (q.includes("induc")) return drug.enzymes.some((e) => e.kind === "inducer");
@@ -20644,7 +21012,7 @@ function familyOf(drug) {
 	if (drug.pd.includes("opioid") || drug.pd.includes("opioid-antagonist") || drug.pd.includes("alpha2-agonist")) return "opioid";
 	if (drug.pd.includes("alcohol") || drug.pd.includes("ghb") || drug.pd.includes("benzo-zdrug")) return "gaba";
 	if (drug.pd.includes("ssri-snri") || drug.pd.includes("maoi") || /antipsychotic|antidepressant|Mood|Tricyclic|NaSSA|SARI|NDRI|Anxiolytic/i.test(drug.cls)) return "psych";
-	if (/Macrolide|Azole|Fluoroquinolone|HIV|Rifamycin|NNRTI|NRTI|INSTI|antiviral|H2 blocker|PK booster|Oxazolidinone|Sulfonamide|Antimycobacterial|HCV|DAA|Allylamine|Beta-lactam|Tetracycline|Cephalosporin|Carbapenem|Aminoglycoside|Glycopeptide|Penicillin|Antimalarial|Echinocandin|Nitroimidazole|Lincosamide|Polymyxin|Monobactam|Protease inhibitor|Anthelmintic|Nitrofuran|Lipopeptide/i.test(drug.cls)) return "id";
+	if (/Macrolide|Azole|Fluoroquinolone|HIV|Rifamycin|NNRTI|NRTI|INSTI|antiviral|CMV |capsid inhibitor|JAK |TYK2 |PDE4 |H2 blocker|PK booster|Oxazolidinone|Sulfonamide|Antimycobacterial|HCV|DAA|Allylamine|Beta-lactam|Tetracycline|Cephalosporin|Carbapenem|Aminoglycoside|Glycopeptide|Penicillin|Antimalarial|Echinocandin|Nitroimidazole|Lincosamide|Polymyxin|Monobactam|Protease inhibitor|Anthelmintic|Nitrofuran|Lipopeptide/i.test(drug.cls)) return "id";
 	if (drug.pd.includes("anticoagulant") || drug.pd.includes("statin") || drug.pd.includes("beta-blocker") || drug.pd.includes("ndhp-ccb") || /Statin|CCB|Beta|ARB|ACE|antiarrhythmic|DOAC|Vitamin K|Cardiac|diuretic|Alpha-1|Fibrate|PDE5|Nitrate|SGLT2|GLP-1|GIP|DPP-4|Antianginal|Mineralocorticoid|P2Y12|thiazide|LMWH|Insulin|ARNI|Heparin/i.test(drug.cls)) return "cardio";
 	if (/TKI|kinase inhibitor|Platinum|Taxane|Anthracycline|Topoisomerase|alkylator|Checkpoint|PARP|BCL-2|CDK4|BTK |EGFR |VEGF |HER2 |SERM|SERD|Aromatase|GnRH|Vinca|microtubule|Proteasome|CELMoD|\bADC\b|chemotherap|cytotoxic|Differentiating|BRAF|MEK|KRAS|PI3K|FLT3|ALK \/|NTRK|Supportive oncology|Classical chemotherapy|CYP17|Antiandrogen|Androgen receptor/i.test(drug.cls)) return "onco";
 	return "other";
