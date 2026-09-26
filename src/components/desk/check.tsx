@@ -2,14 +2,18 @@ import { useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
+import { clockForFinding } from "@/lib/drugs/cyp-protocol";
 import { conditionLanes, foodBeside, sameShelf } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { maxDrugs } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
+import type { ReaderBrief } from "@/lib/drugs/readers";
 import type { EnzymeRole, Finding, HostContext, Severity } from "@/lib/drugs/types";
 import { SEVERITY_LABEL } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
+import { DeskReaders } from "./readers";
+import { watchLine } from "@/lib/drugs/window";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -92,6 +96,22 @@ function regimenGroups(findings: Finding[]) {
   return { pairs, desk: ordered(desk) };
 }
 
+function unmappedPairs(ids: string[], hit: Set<string>) {
+  const real = ids.filter((id) => DRUG_BY_ID[id]);
+  const out: { key: string; title: string }[] = [];
+  for (let i = 0; i < real.length; i++) {
+    for (let j = i + 1; j < real.length; j++) {
+      const key = [real[i], real[j]].sort().join("|");
+      if (hit.has(key)) continue;
+      const title = [DRUG_BY_ID[real[i]].name, DRUG_BY_ID[real[j]].name]
+        .sort((a, b) => a.localeCompare(b))
+        .join(" · ");
+      out.push({ key, title });
+    }
+  }
+  return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+
 function actors(f: Finding): { left: string; verb: string; right: string } {
   const names = f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id);
   const induces = f.tags.includes("inducer");
@@ -148,10 +168,12 @@ export function CheckBoard({
   const [showAll, setShowAll] = useState(false);
   const [tier, setTier] = useState<Severity | "all">("all");
   const [showFood, setShowFood] = useState(false);
+  const [showQuiet, setShowQuiet] = useState(false);
   if (scope !== pairKey) {
     setScope(pairKey);
     setShowAll(false);
     setShowFood(false);
+    setShowQuiet(false);
     setTier("all");
     setOpenId(rows[0]?.id ?? food[0]?.id ?? null);
   }
@@ -171,6 +193,18 @@ export function CheckBoard({
   const regimen = ids.length >= 3;
   const quietEnzymes = quietLine(ids, [...rows, ...food]);
   const plain = lead ? plainLanguageSummary(lead) : "";
+  const quietPairs = ids.length >= 3 ? unmappedPairs(ids, new Set(regimenGroups(rows).pairs.map((p) => p.key))) : [];
+  const readerBrief: ReaderBrief = {
+    names: ids.map((id) => DRUG_BY_ID[id]?.name).filter((name): name is string => Boolean(name)),
+    lead: lead ? `${SEVERITY_LABEL[lead.severity]}: ${verdictTitle(lead)}. ${plain}` : "",
+    rows: rows.slice(0, 6).map((f) => ({
+      severity: f.severity,
+      line: f.headline,
+      why: `${f.effect}. ${f.mechanism}`,
+    })),
+    quiet: quietPairs.map((p) => p.title),
+    food: food.slice(0, 4).map((f) => `${SEVERITY_LABEL[f.severity]}: ${f.headline}`),
+  };
 
   return (
     <section className="space-y-3 rounded-xl bg-surface px-4 py-4 shadow-[var(--shadow-border)] sm:px-5 sm:py-5">
@@ -202,6 +236,8 @@ export function CheckBoard({
           {lead ? SEVERITY_LABEL[lead.severity] : "No mapped hit"}
         </span>
       </div>
+
+      {lead ? <LeadRail finding={lead} /> : null}
 
       {shelf ? (
         <p className="rounded-md bg-bg-sunken px-3 py-2 text-sm leading-relaxed text-fg">
@@ -317,6 +353,38 @@ export function CheckBoard({
 
       {rows.length > 0 && quietEnzymes ? <p className="text-xs leading-relaxed text-muted">{quietEnzymes}</p> : null}
 
+      {quietPairs.length > 0 ? (
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => setShowQuiet((v) => !v)}
+            aria-expanded={showQuiet}
+            className="flex h-11 w-full items-center justify-between gap-3 text-left"
+          >
+            <span className="text-sm text-fg">
+              {quietPairs.length === 1
+                ? "1 pair with no mapped collision"
+                : `${quietPairs.length} pairs with no mapped collision`}
+            </span>
+            <span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
+              {showQuiet ? "Hide" : "Show"} · not a clearance
+            </span>
+          </button>
+          {showQuiet ? (
+            <ul className="space-y-1">
+              {quietPairs.map((p) => (
+                <li key={p.key} className="rounded-md bg-bg-sunken px-3 py-2">
+                  <p className="text-sm text-fg">{p.title}</p>
+                  <p className="text-xs leading-relaxed text-muted">
+                    No mapped collision on this pair. A blank here is not a clearance, and a note under Across the desk can still name both.
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
       {regimen ? <RoleGrid ids={ids} rows={rows} /> : null}
 
       {food.length > 0 ? (
@@ -392,7 +460,41 @@ export function CheckBoard({
           ))}
         </div>
       ) : null}
+      <DeskReaders brief={readerBrief} />
     </section>
+  );
+}
+
+function LeadRail({ finding }: { finding: Finding }) {
+  const card = clockForFinding(finding);
+  const watch = card && finding.kind !== "pd" ? card.start.watch : watchLine(finding);
+  return (
+    <div className="grid gap-2 sm:grid-cols-2">
+      <div className="rounded-md bg-bg-sunken px-3 py-2.5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">Clock · this pair</p>
+        {card ? (
+          <div className="mt-1 space-y-2">
+            <p className="text-sm leading-snug text-fg">
+              {card.start.title}
+              <span className="mt-0.5 block font-mono text-[11px] font-normal text-muted">{card.start.days}</span>
+            </p>
+            <p className="text-sm leading-snug text-fg">
+              {card.stop.title}
+              <span className="mt-0.5 block font-mono text-[11px] font-normal text-muted">{card.stop.days}</span>
+            </p>
+          </div>
+        ) : (
+          <p className="mt-1 text-sm leading-relaxed text-fg">No clock on this map for this pair.</p>
+        )}
+      </div>
+      <div className="rounded-md bg-bg-sunken px-3 py-2.5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">Watch · this pair</p>
+        <p className="mt-1 text-sm leading-relaxed text-fg">{watch}</p>
+      </div>
+      <p className="sm:col-span-2 text-[11px] leading-relaxed text-subtle">
+        This pair only. Not a milligram. If the label disagrees, the label wins.
+      </p>
+    </div>
   );
 }
 

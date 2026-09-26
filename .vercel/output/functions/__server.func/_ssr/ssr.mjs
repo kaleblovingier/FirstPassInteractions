@@ -92,7 +92,7 @@ var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 * the dev styles URL for route-scoped CSS collection.
 */
 async function getStartManifest(matchedRoutes) {
-	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-D8BR9K1r.mjs");
+	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-Cg_ROgZq.mjs");
 	const startManifest = tsrStartManifest();
 	let routes = startManifest.routes;
 	routes[rootRouteId];
@@ -146,15 +146,19 @@ var manifest = {
 	},
 	"81831aa2d98bcaec1ff38c1a504d63093d8f0f5535a3090a7610523dd640ff4e": {
 		functionName: "draftCollected_createServerFn_handler",
-		importer: () => import("./collect-Kfm3R3SL.mjs")
+		importer: () => import("./collect-Cx__fCAb.mjs")
 	},
 	"9a94130689cbcdd872bc21b75ad6a07faed8f6939232c21d280adadc08ffd235": {
 		functionName: "searchPubmed_createServerFn_handler",
 		importer: () => import("./pubmed-rpc-BYstNchS.mjs")
 	},
+	"aba7aab077fdc448ee880715fc2e71987ed329f672eb6beaa99f892f0eccd4e0": {
+		functionName: "readRegimen_createServerFn_handler",
+		importer: () => import("./readers-rpc-DNNtOTte.mjs")
+	},
 	"ac303419f3bd6f94ee837f95e91005a600278deed4876cb96a25aa0d69185951": {
 		functionName: "getConnectorReadiness_createServerFn_handler",
-		importer: () => import("./readiness-BfMcNX-o.mjs")
+		importer: () => import("./readiness-CQPqiG0i.mjs")
 	},
 	"c4b9a08d61fce0057ad5128b30c506678321938dc4e4e2a201694c6b9199409c": {
 		functionName: "mintLicenseKey_createServerFn_handler",
@@ -162,7 +166,7 @@ var manifest = {
 	},
 	"c4c1c686268d315fefc8fab7300663dc1b46f1dfa709dd0bb5dee178f845e24e": {
 		functionName: "collectLicenses_createServerFn_handler",
-		importer: () => import("./collect-Kfm3R3SL.mjs")
+		importer: () => import("./collect-Cx__fCAb.mjs")
 	},
 	"c69551bf536aa5bf57002955495abde08bd40ca864317987f6edb29bb93a15f0": {
 		functionName: "stripeStatus_createServerFn_handler",
@@ -1444,7 +1448,7 @@ var getBaseManifest = getProdBaseManifest;
 var createEarlyHintsForRequest = createEarlyHintsCollector;
 async function loadEntries() {
 	const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-		import("./router-DHHQSbuy.mjs"),
+		import("./router-CRNl1UW1.mjs"),
 		import("./start-5Z2QO8AU.mjs"),
 		import("./empty-plugin-adapters-D9UWiqvJ.mjs")
 	]);

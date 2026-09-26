@@ -594,6 +594,28 @@ export function briefWindow(ids: string[], report: Report, host: HostContext): W
   };
 }
 
+const PAIR_WATCH: Array<[string, string]> = [
+  ["pd-bleed", "Bleed — GI, bruise, black stool. SSRIs add platelet-serotonin depletion."],
+  ["pd-nsaid", "Bleed — GI, bruise, black stool. SSRIs add platelet-serotonin depletion."],
+  ["pd-qt", "Stacked QT — palpitations, syncope, torsades risk. Check electrolytes."],
+  ["pd-opioid-benzo", "Boxed airway — opioid plus a benzo, Z-drug, or gabapentinoid. Pinpoint, hard to arouse, slow to blow off CO₂."],
+  ["pd-gaba-opioid", "Boxed airway — opioid plus a benzo, Z-drug, or gabapentinoid. Pinpoint, hard to arouse, slow to blow off CO₂."],
+  ["pd-nitrate-pde5", "Refractory hypotension — nitrates plus a PDE5 inhibitor. Nitro in the field makes it worse."],
+  ["pd-lithium", "Lithium toxicity — tremor, confusion, GI, ataxia. NSAIDs, ACEI/ARB, and thiazides raise the level."],
+  ["pd-maoi-sero", "Serotonin — agitation, clonus, hyperreflexia, fever, diarrhea. Methadone and fentanyl are serotonergic too."],
+  ["pd-sero", "Serotonin — agitation, clonus, hyperreflexia, fever, diarrhea. Methadone and fentanyl are serotonergic too."],
+  ["pd-opioid-stack", "Two μ-agonists, one airway. Naloxone still reverses the opioid."],
+  ["pd-speedball", "Looking awake is not breathing — the stimulant masks apnea until it wears off."],
+];
+
+/** The watch already written for this kind of row. Otherwise the row's own first sentence. */
+export function watchLine(finding: Finding): string {
+  const known = PAIR_WATCH.find(([suffix]) => finding.id.includes(suffix));
+  if (known) return known[1];
+  const sentence = (finding.clinical || finding.effect || finding.headline).split(/(?<=\.)\s/)[0]?.trim() ?? "";
+  return sentence || "No watch line on this map for this pair.";
+}
+
 export function huddleText(brief: WindowBrief): string {
   const day = new Date().toLocaleDateString("en-US", {
     year: "numeric",

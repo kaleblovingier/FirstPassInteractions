@@ -520,6 +520,20 @@ export function protocolsOnDesk(ids: string[]): ProtocolCard[] {
   return cards;
 }
 
+/** Clock for this finding's own names, not the rest of the desk. Null means the map has no clock. */
+export function clockForFinding(finding: Finding): ProtocolCard | null {
+  const ids = [...new Set(finding.drugIds.filter((id) => DRUG_BY_ID[id] && !isVirtual(id)))];
+  if (ids.length < 2) return null;
+  const cards = protocolsOnDesk(ids).filter((card) => {
+    if (!finding.drugIds.includes(card.perpId)) return false;
+    if (!card.victims.some((v) => finding.drugIds.includes(v.id))) return false;
+    if (finding.enzymes.length && !card.enzymes.some((e) => finding.enzymes.includes(e))) return false;
+    return true;
+  });
+  if (!cards.length) return null;
+  return cards.find((c) => c.perpId === finding.drugIds[0]) ?? cards[0];
+}
+
 export function cypWanted(ids: string[]) {
   if (protocolsOnDesk(ids).length) return true;
   return ids.some((id) => Boolean(TDI[id]) || perpRoles(id).some((r) => r.strength !== "weak"));

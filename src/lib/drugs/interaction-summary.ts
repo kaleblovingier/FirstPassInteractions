@@ -25,9 +25,14 @@ export function plainLanguageSummary(finding: InteractionSummaryLike): string {
   ) {
     outcome = "make one medicine less effective or wear off sooner";
   } else if (
-    mechanism.includes("serotonin") ||
-    clinical.includes("serotonin") ||
-    /agitation|tremor|sweating|fever/.test(clinical)
+    effect.includes("bleed") ||
+    /bleed|hemostasis|\binr\b/.test(clinical) ||
+    clinical.includes("platelet-serotonin")
+  ) {
+    outcome = "raise the chance of bleeding";
+  } else if (
+    (mechanism.includes("serotonin") || /agitation|tremor|sweating|fever/.test(clinical) || clinical.includes("serotonin")) &&
+    !clinical.includes("platelet-serotonin")
   ) {
     outcome = "push serotonin too high and cause agitation, tremor, sweating, or a dangerous fever";
   } else if (/qt|arrhythmia|palpitations|rhythm/.test(clinical)) {
