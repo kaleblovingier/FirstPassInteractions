@@ -46,7 +46,7 @@ published law-firm summaries (Covington, DLA Piper, Faegre Drinker, FDA Law Blog
 |---|---|---|---|
 | 1 | Does not acquire, process, or analyze medical images, IVD signals, or physiologic signal patterns | Inputs are user-picked drug names and host flags. No images or waveforms. | **Review `src/lib/drugs/uds.ts`.** It maps drugs to expected, missed, and false-positive urine immunoassay results. As long as it is a teaching map from drug names and never takes an actual assay result as input, it should stay on the right side. Adding a "enter your cup result" input would put criterion 1 at risk. |
 | 2 | Displays, analyzes, or prints medical information | FDA label excerpts, enzyme maps, published scales, literature. | None found. |
-| 3 | Supports or provides recommendations to an HCP | Intended use names licensed HCPs. No patient-facing dosing UI. | **Intended user drift.** `RECREATIONAL_SAFETY_CONTEXT` adds "trained safety staff," and the harm-reduction pages read as consumer-friendly. Criterion 3 is about HCP users. Decide whether "trained safety staff" means HCPs; if not, narrow it or treat those surfaces as general education. **Dose rails:** checking a user-entered milligram against labeled maxima and caps is a specific output about one patient's dose. It is closer to the edge than the rest of the desk; keep it phrased as the label's number, never a replacement milligram (current copy already does this). |
+| 3 | Supports or provides recommendations to an HCP | Intended use names licensed HCPs, plus health-professions students for supervised education (`INTENDED_USERS`, decided by Kaleb 2026-09-27). No patient-facing dosing UI. | **Resolved in this PR:** "trained safety staff" is gone. Previously: `RECREATIONAL_SAFETY_CONTEXT` adds "trained safety staff," and the harm-reduction pages read as consumer-friendly. Criterion 3 is about HCP users. Decide whether "trained safety staff" means HCPs; if not, narrow it or treat those surfaces as general education. **Dose rails:** checking a user-entered milligram against labeled maxima and caps is a specific output about one patient's dose. It is closer to the edge than the rest of the desk; keep it phrased as the label's number, never a replacement milligram (current copy already does this). |
 | 4 | Lets the HCP independently review the basis, so they do not rely primarily on the output | Each finding carries a `FindingBasis` (FDA boxed, PI, CPIC, PMID, scale, or desk map). | **Biggest gap: basis coverage (section 4).** Also: start/stop safety clocks and "Watch" must not be framed as time-critical alerts, and CYP phenotype rows touch the "genomic data" caution; keep them labeled as CPIC paraphrase, not a PGx result. |
 
 ## 4. Basis coverage measurement
@@ -74,7 +74,18 @@ specific external basis. For CYP inhibitor and inducer rows, that means recordin
 table entry (or PI section) each drug's role came from, per drug, rather than assuming it.
 Do not bulk-label roles as "FDA table" unless each was verified against the table.
 
-## 5. If Kaleb chooses the 510(k) / De Novo path
+## 5. No clinician on the team
+
+As of 2026-09-27 FirstPass has no licensed clinician on staff or as an advisor. The law does not
+require one for non-device CDS, but it affects two things:
+
+- **Claims.** No surface may say or imply clinical review ("reviewed by pharmacists," "vetted,"
+  "clinically validated," "pharmacist-built"). A check of `main` and #53 on 2026-09-26 found none.
+- **Biggest real gap.** A clinical advisor, ideally a PharmD, signing off on contraindicated and
+  major findings is the highest-value credibility step, and any 510(k)/De Novo path would need
+  qualified clinical input for validation and risk review.
+
+## 6. If Kaleb chooses the 510(k) / De Novo path
 
 None of this exists yet. Listed so the scope is visible, not as a plan of record.
 
@@ -97,7 +108,7 @@ None of this exists yet. Listed so the scope is visible, not as a plan of record
   the field (for example to `buildId`) avoids implying device status.
 - Establishment registration, device listing, and user fees would follow clearance.
 
-## 6. Other certifications
+## 7. Other certifications
 
 | Item | Applies today? | Note |
 |---|---|---|
@@ -108,11 +119,11 @@ None of this exists yet. Listed so the scope is visible, not as a plan of record
 | EU MDR / UK MHRA | Only if marketed there. Drug-interaction software is commonly a Class IIa device under EU MDR Rule 11. | Out of scope unless Kaleb plans EU/UK sales. |
 | Stripe / PCI | Card data stays with Stripe Checkout, so PCI scope is the SAQ A level. | Confirm no card data ever touches our servers. |
 
-## 7. Recommended order
+## 8. Recommended order
 
 1. Merge this assessment and the guidance-date fix.
 2. Basis coverage: contraindicated first, then major. Track with `scripts/basis-coverage.ts`.
-3. Decide the "trained safety staff" wording.
+3. Recruit a clinical advisor (PharmD) to review contraindicated and major findings.
 4. Rename the `udi` field.
 5. Validation harness against a published reference table.
 6. Short privacy statement (no PHI stored).
