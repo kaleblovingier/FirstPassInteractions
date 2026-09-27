@@ -1,6 +1,6 @@
 # FirstPass
 
-Clinical decision support desk for licensed healthcare professionals: CYP450 / PD collisions, FDA-label excerpts, and published scales (COWS, CIWA-Ar, Hunter, MME).
+An educational desk for learning how medicines interact: CYP450 and body-effect (PD) collisions, FDA-label excerpts, and published scales (COWS, CIWA-Ar, Hunter, MME). It is a study tool for clinicians and students, not a decision-support system.
 
 The core checker stays free for up to five drugs, including CYP / PD collision cards, the curated formulary, and common-name / brand / alias search. Host factors (phenotype, smoke, alcohol, route), the enzyme atlas, metabolites, and export are licensed. Founding license is **$79 once**.
 
@@ -11,6 +11,18 @@ Intended use, warnings, CDS criteria, and residual risk live on the in-app **IFU
 Pitch: [github.com/kaleblovingier/FirstPassInteractions](https://github.com/kaleblovingier/FirstPassInteractions)
 Pages: [kaleblovingier.github.io/FirstPassInteractions](https://kaleblovingier.github.io/FirstPassInteractions/)
 Deck: [gamma.app/docs/c1sxd9i8iyv80eq](https://gamma.app/docs/c1sxd9i8iyv80eq)
+
+## What's on the desk
+
+- **Gut vs vein.** Shows how much of a drug the gut and liver clear before it reaches the blood when you swallow it, compared with an IV dose.
+- **Phenoconversion.** The same tray twice, with the blocking drug off and then on, so you can see a normal metabolizer start acting like a poor one.
+- **Same drugs, different person.** Flip smoking, a slow CYP2D6, age, kidney function, or pregnancy and see what changed, written as "X before, Y now".
+- **Plain severity.** Avoid together, Serious concern, Use care, and Mild note. These are teaching labels, not a personal risk score.
+- **Watch.** A watchlist that pulls recent OpenFDA label changes for the drugs you care about.
+- **Study and lab book.** Seeded assignments with a three-sentence answer and an exportable receipt.
+- **Share links.** `?case=`, `?pack=`, `?lab=`, and `?brief=` open a sample, a teaching pack, a lab assignment, or a brief.
+
+A short or empty list is not a green light. It only means nothing in the mapped set matched.
 
 ## Try these
 
