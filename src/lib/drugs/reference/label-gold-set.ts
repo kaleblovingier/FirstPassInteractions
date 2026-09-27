@@ -6,9 +6,17 @@
  * flags each pair at least at `expectedFloor`. Educational tool, NOT FDA-cleared.
  * No dosing: quotes are trimmed so they carry no milligram amounts.
  *
- * Inclusion rule: the label must say the combination is contraindicated, or
- * explicitly "avoid" / "not recommended" / "should not be used". Monitoring-only
+ * Wave 1 inclusion rule: the label must say the combination is contraindicated,
+ * or explicitly "avoid" / "not recommended" / "should not be used". Monitoring-only
  * language (e.g. opioid boxed warnings about CYP3A4 inhibitors) does not qualify.
+ *
+ * Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine,
+ * esketamine) also admits an explicit interaction statement in the Boxed Warning
+ * (`boxed-warning`) or in Warnings/Drug Interactions (`warning`), with a per-pair
+ * `expectedFloor` set to the minimum severity the label text supports:
+ *   contraindicated / avoid / boxed-warning  -> major ("Serious concern")
+ *   warning naming overdose / death          -> major
+ *   warning with monitor / dose-change text  -> moderate ("Use care")
  *
  * Quotes are verbatim substrings of the SPL text retrieved on `retrieved`; a
  * "…" marks an elided span. `labelExample` (also verbatim) is used when the
@@ -16,7 +24,13 @@
  */
 import type { Severity } from "../types";
 
-export type LabelClass = "contraindicated" | "avoid";
+export type LabelClass =
+  | "contraindicated"
+  | "avoid"
+  /** Wave 2: the interaction is named in the label's Boxed Warning. */
+  | "boxed-warning"
+  /** Wave 2: explicit interaction statement in Warnings and Precautions / Drug Interactions. */
+  | "warning";
 export type GoldDomain =
   | "statins"
   | "muscle-relaxant"
@@ -26,7 +40,9 @@ export type GoldDomain =
   | "antithrombotic"
   | "gi"
   | "maoi-opioid"
-  | "antimicrobial";
+  | "antimicrobial"
+  | "mat"
+  | "ketamine-clinic";
 
 export interface GoldPair {
   /** Stable id, `drugA+drugB`. */
@@ -52,6 +68,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave. */
+  wave: 1 | 2;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -89,10 +107,16 @@ export const LABEL_SETIDS = {
   rifadin: "1b074c23-dd35-43c9-820c-0e603481fdd3",
   vfend: "08d08721-1f4c-478a-8abf-d9c402d50553",
   norvir: "2849298e-de6e-47bb-8194-56e075b33fc3",
+  // wave 2 (MAT / ketamine clinic)
+  suboxone: "8a5edcf9-828c-4f97-b671-268ab13a8ecd",
+  naltrexone: "06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
+  vivitrol: "cd11c435-b0f0-4bb9-ae78-60f101f3703f",
+  ketalar: "14e8f864-8b8a-4e7e-8439-e510d3107063",
+  spravato: "d81a6a79-a74a-44b7-822c-0dfa3036eaed",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
-type Row = Omit<GoldPair, "id" | "url" | "retrieved" | "expectedFloor" | "expectContraindicated" | "paraphrased"> & {
+type Row = Omit<GoldPair, "id" | "url" | "retrieved" | "expectedFloor" | "expectContraindicated" | "paraphrased" | "wave"> & {
   label: LabelKey;
   paraphrased?: boolean;
 };
@@ -108,13 +132,34 @@ function row(r: Row): GoldPair {
     // Both label classes are serious; the desk should say at least "Serious concern" (major).
     expectedFloor: "major",
     expectContraindicated: r.labelClass === "contraindicated",
+    wave: 1,
+  };
+}
+
+type Row2 = Row & {
+  /** Minimum severity the quoted label text supports (see header). */
+  expectedFloor: Extract<Severity, "major" | "moderate">;
+};
+
+/** Wave 2 row: explicit, label-supported floor instead of the blanket "major". */
+function row2(r: Row2): GoldPair {
+  const { label, paraphrased, expectedFloor, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-09-27",
+    expectedFloor,
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 2,
   };
 }
 
 const ZOCOR_4 =
   "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)";
 
-export const LABEL_GOLD_SET: GoldPair[] = [
+const WAVE_1: GoldPair[] = [
   // ── Statins ────────────────────────────────────────────────────────────
   row({
     drugA: "simvastatin", drugB: "clarithromycin", queries: ["simvastatin", "clarithromycin"],
@@ -404,6 +449,236 @@ export const LABEL_GOLD_SET: GoldPair[] = [
   }),
 ];
 
+// ════════════════════════════════════════════════════════════════════════
+// Wave 2: MAT / ketamine clinic (methadone, buprenorphine, naltrexone,
+// ketamine, esketamine). Floors follow the label text; see file header.
+// ════════════════════════════════════════════════════════════════════════
+const METHADONE_BOX_CYP =
+  "The concomitant use of methadone hydrochloride tablets with all cytochrome P450 3A4, 2B6, 2C19, 2C9 or 2D6 inhibitors … could cause potentially fatal respiratory depression";
+const METHADONE_7_INDUCERS =
+  "The concomitant use of methadone hydrochloride tablets and CYP3A4, CYP2B6, CYP2C19, or CYP2C9 inducers can decrease the plasma concentration of methadone";
+const METHADONE_BOX_CNS =
+  "Concomitant use of opioids with benzodiazepines or other central nervous system (CNS) depressants, including alcohol, may result in profound sedation, respiratory depression, coma, and death.";
+const NALTREXONE_4 = "Naltrexone hydrochloride is contraindicated in:";
+const SPRAVATO_7_1 =
+  "Concomitant use with CNS depressants (e.g., benzodiazepines, opioids, alcohol) may increase sedation … Closely monitor for sedation with concomitant use of SPRAVATO with CNS depressants.";
+const SPRAVATO_7_2 =
+  "Concomitant use with psychostimulants (e.g., amphetamines, methylphenidate, modafinil, armodafinil) may increase blood pressure … Closely monitor blood pressure with concomitant use of SPRAVATO with psychostimulants.";
+
+const WAVE_2: GoldPair[] = [
+  // ── Methadone (Methadone HCl tablets SPL) ─────────────────────────────
+  row2({
+    drugA: "methadone", drugB: "ketoconazole", queries: ["methadone", "ketoconazole"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "Boxed Warning (Cytochrome P450 Interaction); 7 DRUG INTERACTIONS",
+    quote: METHADONE_BOX_CYP,
+    labelExample: "azole-antifungal agents (e.g. ketoconazole)",
+    labelClass: "boxed-warning", expectedFloor: "major", mechanism: "PK", domain: "mat",
+  }),
+  row2({
+    drugA: "methadone", drugB: "fluconazole", queries: ["methadone", "fluconazole"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "Boxed Warning (Cytochrome P450 Interaction); 7 DRUG INTERACTIONS",
+    quote: METHADONE_BOX_CYP,
+    labelExample: "protease inhibitors (e.g., ritonavir), fluconazole, fluvoxamine",
+    labelClass: "boxed-warning", expectedFloor: "major", mechanism: "PK", domain: "mat",
+  }),
+  row2({
+    drugA: "methadone", drugB: "rifampin", queries: ["methadone", "rifampin"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "7 DRUG INTERACTIONS (Inducers of CYP3A4, CYP2B6, CYP2C19, or CYP2C9)",
+    quote: METHADONE_7_INDUCERS,
+    labelExample: "Rifampin, carbamazepine, phenytoin",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PK", domain: "mat",
+    note: "Label outcome is lost efficacy / withdrawal with monitor-and-adjust language, so the supported floor is moderate.",
+  }),
+  row2({
+    drugA: "methadone", drugB: "carbamazepine", queries: ["methadone", "carbamazepine"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "7 DRUG INTERACTIONS (Inducers of CYP3A4, CYP2B6, CYP2C19, or CYP2C9)",
+    quote: METHADONE_7_INDUCERS,
+    labelExample: "Rifampin, carbamazepine, phenytoin",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PK", domain: "mat",
+  }),
+  row2({
+    drugA: "methadone", drugB: "alprazolam", queries: ["methadone", "alprazolam"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "Boxed Warning (Risks From Concomitant Use With Benzodiazepines Or Other CNS Depressants); 5.3",
+    quote: METHADONE_BOX_CNS,
+    labelClass: "boxed-warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    note: "Label names the class (benzodiazepines), not alprazolam specifically.",
+  }),
+  row2({
+    drugA: "methadone", drugB: "ethanol", queries: ["methadone", "alcohol"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "Boxed Warning (Risks From Concomitant Use With Benzodiazepines Or Other CNS Depressants); 5.3",
+    quote: METHADONE_BOX_CNS,
+    labelClass: "boxed-warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+  }),
+  row2({
+    drugA: "methadone", drugB: "gabapentin", queries: ["methadone", "gabapentin"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "5.3 Risks from Concomitant Use with Benzodiazepines or Other CNS Depressants (see Boxed Warning)",
+    quote: "Profound sedation, respiratory depression, coma, and death may result from the concomitant use of methadone hydrochloride tablets with benzodiazepines and/or other CNS depressants … gabapentinoids",
+    labelClass: "boxed-warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    note: "Boxed Warning covers 'other CNS depressants'; 5.3 names gabapentinoids.",
+  }),
+  row2({
+    drugA: "methadone", drugB: "buprenorphine", queries: ["methadone", "buprenorphine"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "7 DRUG INTERACTIONS (Mixed Agonist/Antagonist and Partial Agonist Opioid Analgesics)",
+    quote: "May reduce the analgesic effect of methadone hydrochloride tablets and/or precipitate withdrawal symptoms. … Avoid concomitant use.",
+    labelExample: "Butorphanol, nalbuphine, pentazocine, buprenorphine.",
+    labelClass: "avoid", expectedFloor: "major", mechanism: "PD", domain: "mat",
+  }),
+  row2({
+    drugA: "methadone", drugB: "sotalol", queries: ["methadone", "sotalol"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "Boxed Warning (Life-Threatening QT Prolongation); 5.4; 7 DRUG INTERACTIONS",
+    quote: "Closely monitor patients with risk factors for development of prolonged QT interval, … and those taking medications affecting cardiac conduction",
+    labelExample: "Drugs known to have potential to prolong QT interval: Class I and III antiarrhythmics",
+    labelClass: "boxed-warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    note: "Label names the class (Class III antiarrhythmics); sotalol is a class III agent.",
+  }),
+  row2({
+    drugA: "methadone", drugB: "ondansetron", queries: ["methadone", "ondansetron"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "7 DRUG INTERACTIONS (Serotonergic Drugs); 5.9",
+    quote: "The concomitant use of opioids with other drugs that affect the serotonergic neurotransmitter system has resulted in serotonin syndrome",
+    labelExample: "5-HT3 receptor antagonists",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "mat",
+    note: "Label names the class (5-HT3 receptor antagonists); intervention is evaluate-and-monitor.",
+  }),
+  row2({
+    drugA: "methadone", drugB: "zidovudine", queries: ["methadone", "zidovudine"],
+    labelDrug: "Methadone HCl tablets", label: "methadone", labelSection: "7 DRUG INTERACTIONS (Effects of Methadone on Antiretroviral Agents)",
+    quote: "Experimental evidence demonstrated that methadone increased the AUC of zidovudine, which could result in toxic effects.",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PK", domain: "mat",
+  }),
+  // ── Buprenorphine / buprenorphine-naloxone (Suboxone film SPL) ────────
+  row2({
+    drugA: "buprenorphine", drugB: "alprazolam", queries: ["suboxone", "alprazolam"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "5.3 Managing Risks from Concomitant Use of Benzodiazepines or Other CNS Depressants",
+    quote: "Concomitant use of buprenorphine and benzodiazepines and/or other CNS depressants … increases the risk of adverse reactions including overdose, respiratory depression, and death.",
+    labelClass: "warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    note: "No Boxed Warning on this label; floor is major because the statement names overdose and death. Label names the class.",
+  }),
+  row2({
+    drugA: "buprenorphine", drugB: "ethanol", queries: ["buprenorphine", "alcohol"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "7 DRUG INTERACTIONS (Benzodiazepines and Other CNS Depressants)",
+    quote: "the concomitant use of benzodiazepines or other CNS depressants, including alcohol, increases the risk of respiratory depression, profound sedation, coma, and death",
+    labelClass: "warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+  }),
+  row2({
+    drugA: "buprenorphine", drugB: "pregabalin", queries: ["buprenorphine", "pregabalin"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "5.3 Managing Risks from Concomitant Use of Benzodiazepines or Other CNS Depressants",
+    quote: "Concomitant use of buprenorphine and benzodiazepines and/or other CNS depressants (e.g., … gabapentinoids [gabapentin or pregabalin] … increases the risk of adverse reactions including overdose",
+    labelClass: "warning", expectedFloor: "major", mechanism: "PD", domain: "mat",
+  }),
+  row2({
+    drugA: "buprenorphine", drugB: "ketoconazole", queries: ["buprenorphine", "ketoconazole"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "7 DRUG INTERACTIONS (Inhibitors of CYP3A4)",
+    quote: "The concomitant use of buprenorphine and CYP3A4 inhibitors can increase the plasma concentration of buprenorphine, resulting in increased or prolonged opioid effects",
+    labelExample: "azole-antifungal agents (e.g. ketoconazole)",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PK", domain: "mat",
+  }),
+  row2({
+    drugA: "buprenorphine", drugB: "rifampin", queries: ["suboxone", "rifampin"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "7 DRUG INTERACTIONS (CYP3A4 Inducers)",
+    quote: "The concomitant use of buprenorphine and CYP3A4 inducers can decrease the plasma concentration of buprenorphine",
+    labelExample: "Rifampin, carbamazepine, phenytoin",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PK", domain: "mat",
+  }),
+  row2({
+    drugA: "buprenorphine", drugB: "atazanavir", queries: ["buprenorphine", "atazanavir"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "7 DRUG INTERACTIONS (Antiretrovirals: Protease inhibitors)",
+    quote: "Symptoms of opioid excess have been found in post-marketing reports of patients receiving buprenorphine and atazanavir with and without ritonavir concomitantly.",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PK", domain: "mat",
+  }),
+  row2({
+    drugA: "buprenorphine", drugB: "phenelzine", queries: ["buprenorphine", "phenelzine"],
+    labelDrug: "Suboxone (buprenorphine/naloxone) film", label: "suboxone", labelSection: "7 DRUG INTERACTIONS (Monoamine Oxidase Inhibitors)",
+    quote: "The use of SUBOXONE sublingual film is not recommended for patients taking MAOIs or within 14 days of stopping such treatment.",
+    labelExample: "phenelzine, tranylcypromine, linezolid",
+    labelClass: "avoid", expectedFloor: "major", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  // ── Naltrexone (oral tablets SPL; Vivitrol) ───────────────────────────
+  row2({
+    drugA: "naltrexone", drugB: "methadone", queries: ["naltrexone", "methadone"],
+    labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
+    quote: `${NALTREXONE_4} … Patients currently dependent on opioids, including those currently maintained on opiate agonists (e.g., methadone)`,
+    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+  }),
+  row2({
+    drugA: "naltrexone", drugB: "buprenorphine", queries: ["naltrexone", "buprenorphine"],
+    labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
+    quote: `${NALTREXONE_4} … Patients currently dependent on opioids, including those currently maintained on … partial agonists (e.g., buprenorphine).`,
+    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+  }),
+  row2({
+    drugA: "naltrexone", drugB: "oxycodone", queries: ["naltrexone", "oxycodone"],
+    labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
+    quote: `${NALTREXONE_4} … Patients receiving opioid analgesics.`,
+    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    note: "Label names the class (opioid analgesics).",
+  }),
+  row2({
+    drugA: "naltrexone", drugB: "hydrocodone", queries: ["vivitrol", "hydrocodone"],
+    labelDrug: "Vivitrol (naltrexone ER injectable suspension)", label: "vivitrol", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VIVITROL is contraindicated in: … Patients receiving opioid analgesics",
+    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    note: "Label names the class (opioid analgesics).",
+  }),
+  // ── Ketamine (Ketalar SPL) ────────────────────────────────────────────
+  row2({
+    drugA: "ketamine", drugB: "theophylline", queries: ["ketamine", "theophylline"],
+    labelDrug: "Ketalar (ketamine)", label: "ketalar", labelSection: "7.1 Theophylline or Aminophylline",
+    quote: "Concomitant administration of KETALAR and theophylline or aminophylline may lower the seizure threshold. Consider using an alternative to KETALAR in patients receiving theophylline or aminophylline.",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "ketamine-clinic",
+    note: "'Consider using an alternative' is weaker than 'avoid'; floor set at moderate.",
+  }),
+  row2({
+    drugA: "ketamine", drugB: "lorazepam", queries: ["ketalar", "lorazepam"],
+    labelDrug: "Ketalar (ketamine)", label: "ketalar", labelSection: "7.3 Benzodiazepines, Opioid Analgesics, Or Other CNS Depressants; 5.9",
+    quote: "Concomitant use of ketamine with opioid analgesics, benzodiazepines, or other central nervous system (CNS) depressants … may result in profound sedation, respiratory depression, coma, and death",
+    labelClass: "warning", expectedFloor: "major", mechanism: "PD", domain: "ketamine-clinic",
+    note: "Floor is major because the statement names coma and death. Label names the class.",
+  }),
+  row2({
+    drugA: "ketamine", drugB: "ethanol", queries: ["ketamine", "alcohol"],
+    labelDrug: "Ketalar (ketamine)", label: "ketalar", labelSection: "7.3 Benzodiazepines, Opioid Analgesics, Or Other CNS Depressants; 5.9",
+    quote: "Concomitant use of ketamine with … other central nervous system (CNS) depressants, including alcohol, may result in profound sedation, respiratory depression, coma, and death",
+    labelClass: "warning", expectedFloor: "major", mechanism: "PD", domain: "ketamine-clinic",
+  }),
+  // ── Esketamine (Spravato SPL) ─────────────────────────────────────────
+  row2({
+    drugA: "esketamine", drugB: "alprazolam", queries: ["spravato", "alprazolam"],
+    labelDrug: "Spravato (esketamine)", label: "spravato", labelSection: "7.1 Central Nervous System Depressants; 5.1",
+    quote: SPRAVATO_7_1,
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "ketamine-clinic",
+    note: "Monitor-level language (increased sedation). Label names the class.",
+  }),
+  row2({
+    drugA: "esketamine", drugB: "ethanol", queries: ["esketamine", "alcohol"],
+    labelDrug: "Spravato (esketamine)", label: "spravato", labelSection: "7.1 Central Nervous System Depressants; 5.1",
+    quote: SPRAVATO_7_1,
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "ketamine-clinic",
+  }),
+  row2({
+    drugA: "esketamine", drugB: "amphetamine", queries: ["esketamine", "amphetamine"],
+    labelDrug: "Spravato (esketamine)", label: "spravato", labelSection: "7.2 Psychostimulants; 5.7",
+    quote: SPRAVATO_7_2,
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "ketamine-clinic",
+  }),
+  row2({
+    drugA: "esketamine", drugB: "methylphenidate", queries: ["esketamine", "methylphenidate"],
+    labelDrug: "Spravato (esketamine)", label: "spravato", labelSection: "7.2 Psychostimulants; 5.7",
+    quote: SPRAVATO_7_2,
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "ketamine-clinic",
+  }),
+  row2({
+    drugA: "esketamine", drugB: "phenelzine", queries: ["esketamine", "phenelzine"],
+    labelDrug: "Spravato (esketamine)", label: "spravato", labelSection: "7.3 Monoamine Oxidase Inhibitors (MAOIs); 5.7",
+    quote: "Concomitant use with monoamine oxidase inhibitors (MAOIs) may increase blood pressure … Closely monitor blood pressure with concomitant use of SPRAVATO with MAOIs.",
+    labelClass: "warning", expectedFloor: "moderate", mechanism: "PD", domain: "ketamine-clinic",
+    note: "Label names the class (MAOIs).",
+  }),
+];
+
+export const WAVE_1_COUNT = WAVE_1.length;
+export const WAVE_2_COUNT = WAVE_2.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2];
+
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
  * For formulary owner (Grok Bot 5) review. Do not "fix" these by editing the
@@ -416,6 +691,10 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
   "pimozide+paroxetine", // label: contraindicated (pimozide) · engine: none at pair level
   "thioridazine+fluvoxamine", // label: contraindicated (thioridazine; fluvoxamine 4) · engine: moderate
   "alosetron+fluvoxamine", // label: contraindicated (Lotronex 4.3) · engine: none
+  // wave 2 (MAT / ketamine clinic), for formulary owner (Grok Bot 5) review
+  "methadone+zidovudine", // label: warning, floor moderate (methadone 7: "could result in toxic effects") · engine: none at pair level
+  "buprenorphine+phenelzine", // label: avoid, floor major (Suboxone 7: "not recommended" with MAOIs) · engine: moderate
+  "esketamine+methylphenidate", // label: warning, floor moderate (Spravato 7.2: may increase blood pressure) · engine: none at pair level
 ];
 
 /**
@@ -430,12 +709,23 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   "ergotamine+ritonavir",
   "rifampin+atazanavir",
   "voriconazole+rifampin",
+  // wave 2: naltrexone labels say contraindicated; engine says major ("Serious concern")
+  "naltrexone+methadone", // naltrexone tablets CONTRAINDICATIONS (opiate agonists, e.g., methadone)
+  "naltrexone+buprenorphine", // naltrexone tablets CONTRAINDICATIONS (partial agonists, e.g., buprenorphine)
+  "naltrexone+oxycodone", // naltrexone tablets CONTRAINDICATIONS (opioid analgesics)
+  "naltrexone+hydrocodone", // Vivitrol 4 CONTRAINDICATIONS (opioid analgesics)
 ];
 
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
 export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
   { drug: "flibanserin", reason: "Not in catalog (searchDrugs returns nothing); label has CYP3A4-inhibitor contraindications but was not curated." },
   { drug: "cisapride", reason: "Not in catalog; named in the Norvir contraindication list but not curated." },
+  { drug: "aminophylline", reason: "Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead." },
+  {
+    drug: "buprenorphine/naloxone",
+    reason:
+      "No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.",
+  },
 ];
 
 /** Candidate pairs considered and dropped, with the reason. */
@@ -443,7 +733,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "methadone / buprenorphine / fentanyl + strong CYP3A4 inhibitor or inducer",
     reason:
-      "Labels checked (methadone tablets, buprenorphine/naloxone film, fentanyl transdermal) use monitor/consider-dose-change language, not contraindicated/avoid. Fails the inclusion rule.",
+      "Wave 1: labels use monitor/consider-dose-change language, not contraindicated/avoid, so they failed the wave-1 rule. Wave 2 adds methadone and buprenorphine pairs under 'boxed-warning' / 'warning' with a label-supported floor; fentanyl not curated.",
   },
   {
     pair: "colchicine + clarithromycin",
@@ -452,7 +742,20 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   },
   {
     pair: "ketamine + any",
-    reason: "Ketalar 4 CONTRAINDICATIONS lists no drug-interaction contraindication; nothing to anchor.",
+    reason:
+      "Wave 1: Ketalar 4 CONTRAINDICATIONS lists no drug-interaction contraindication. Wave 2 anchors ketamine pairs on Ketalar 7.1 / 7.3 under 'warning'.",
+  },
+  {
+    pair: "wave 2: methadone + St. John's wort / phenytoin / phenobarbital, other benzodiazepines, erythromycin, fluvoxamine, efavirenz, nevirapine",
+    reason: "Named on the methadone label but trimmed to keep wave 2 near 30 without repeating the same mechanism.",
+  },
+  {
+    pair: "wave 2: naltrexone + thioridazine",
+    reason: "Naltrexone label reports lethargy and somnolence only (no avoid/monitor instruction); too weak to set a floor.",
+  },
+  {
+    pair: "wave 2: esketamine + modafinil / armodafinil / tranylcypromine / opioids; buprenorphine + linezolid / tranylcypromine",
+    reason: "Named on the label but trimmed as mechanism duplicates of pairs already in wave 2.",
   },
   {
     pair: "darunavir + rifampin / St. John's wort",
