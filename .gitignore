@@ -6,3 +6,7 @@
 .project_id
 .vercel-env-upsert.json
 node_modules/
+
+# Vercel builds from source (`npm run build` writes .vercel/output via the
+# Nitro "vercel" preset). Never commit build output or local CLI state.
+.vercel

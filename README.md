@@ -77,6 +77,12 @@ Pay $79 with card on the desk (Stripe), or Venmo / Cash App / PayPal. A signed k
 
 HMAC-signed keys (`FP-LIFE-…`). The five-drug core checker stays free. Founding lifetime is $79.
 
+## Deploy
+
+The desk (`firstpass-desk` on Vercel) deploys from source on every push to `main`. Vercel runs `npm run build` (pinned in `vercel.json`); the Nitro `vercel` preset in `vite.config.ts` writes `.vercel/output` (Build Output API) during that build, then `npm run db:migrate` runs (skips without `DATABASE_URL`).
+
+Never commit `.vercel/output` — it is gitignored. A committed copy is what kept the live desk frozen on an old build: Vercel served it as-is and no source change after it went live. If a deploy looks stale, check the Vercel build log for the `vite build` / `[nitro]` lines and compare `/assets/routes-*.js` on the live site with a fresh local `npm run build`.
+
 ---
 
 ## Map (for the other LLM)
