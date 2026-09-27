@@ -2,10 +2,12 @@
 
 import { citesFor, pubmedUrl } from "./pubmed";
 import { dailymedSearchUrl } from "@/lib/regulatory";
-import { DRUG_BY_ID } from "./catalog";
+import { DRUG_BY_ID, DRUGS } from "./catalog";
+import { FDA_DDI_SOURCE, FDA_DDI_TABLE, type FdaDdiEntry } from "./reference/fda-ddi-table";
+import { buildCatalogMatcher } from "./reference/validate-fda";
 import type { Finding } from "./types";
 
-export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "cpic" | "pubmed" | "scale" | "desk";
+export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "fda-ddi" | "cpic" | "pubmed" | "scale" | "desk";
 
 export interface FindingBasis {
   kind: BasisKind;
@@ -117,6 +119,47 @@ const SCALE: Record<string, string> = {
   mme: "CDC Clinical Practice Guideline for Prescribing Opioids, 2022. Factors, not a ceiling.",
 };
 
+/** catalog id|enzyme -> FDA Table 1 rows for that drug on that enzyme (built once). */
+let FDA_INDEX: Map<string, FdaDdiEntry[]> | null = null;
+function fdaRows(drugId: string, enzyme: string): FdaDdiEntry[] {
+  if (!FDA_INDEX) {
+    FDA_INDEX = new Map();
+    const match = buildCatalogMatcher(DRUGS);
+    for (const e of FDA_DDI_TABLE) {
+      const hit = match(e.drug);
+      if (!hit) continue;
+      const k = `${hit.drug.id}|${e.target}`;
+      const list = FDA_INDEX.get(k) ?? [];
+      list.push(e);
+      FDA_INDEX.set(k, list);
+    }
+  }
+  return FDA_INDEX.get(`${drugId}|${enzyme}`) ?? [];
+}
+
+const SUBSTRATE_WORD = { sensitive: "sensitive", "moderate-sensitive": "moderately sensitive" } as const;
+
+/** FDA Table 1 basis for a pk inhibitor/inducer row, only when FDA lists the perpetrator in that role. */
+function fdaDdiBasis(finding: Finding): FindingBasis | null {
+  if (finding.kind !== "pk") return null;
+  const [perpId, victimId] = finding.drugIds;
+  const enzyme = finding.enzymes[0];
+  const role = finding.tags.find((t) => t === "inhibitor" || t === "inducer");
+  if (!perpId || !victimId || !enzyme || !role) return null;
+  const perp = fdaRows(perpId, enzyme).find((e) => e.kind === role);
+  if (!perp) return null;
+  const perpName = DRUG_BY_ID[perpId]?.name ?? perp.drug;
+  const victimName = DRUG_BY_ID[victimId]?.name ?? victimId;
+  const target = enzyme === "CYP3A4" ? "CYP3A" : enzyme;
+  let detail = `FDA's example-interaction table lists ${perpName} as a ${perp.fdaClass ? `${perp.fdaClass} ` : ""}${target} ${role}`;
+  const sub = fdaRows(victimId, enzyme).find((e) => e.kind === "substrate");
+  if (sub && sub.kind === "substrate") {
+    detail += `, and ${victimName} as a ${sub.fdaClass ? `${SUBSTRATE_WORD[sub.fdaClass]} ` : ""}${target} substrate`;
+  }
+  detail += `. FDA grades the roles; the severity tier on this row is the desk's rule. Table content current as of ${FDA_DDI_SOURCE.contentCurrentAsOf}.`;
+  return { kind: "fda-ddi", label: "FDA interaction table", detail, href: FDA_DDI_SOURCE.url };
+}
+
 function suffixOf(id: string) {
   const parts = id.split("__");
   return parts[parts.length - 1] ?? id;
@@ -144,6 +187,8 @@ export function basisFor(finding: Finding): FindingBasis[] {
       href: name ? dailymedSearchUrl(name) : undefined,
     });
   }
+  const fda = fdaDdiBasis(finding);
+  if (fda) out.push(fda);
   const cites = citesFor(finding.drugIds).slice(0, 1);
   if (cites[0]) {
     out.push({
