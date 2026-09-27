@@ -76,12 +76,34 @@ export const TRY_THREE = [
   },
 ] as const;
 
+/** Plain "who it's for" line — Plans hero and pitch. */
+export const WHO_FOR = "Built for ketamine clinics, MAT and harm-reduction teams, and pharmacy students.";
+
+/** Short Plans FAQ. Contact answers reuse OPERATOR lines only — no new handles. */
+export const PLANS_FAQ = [
+  {
+    q: "Is it a subscription?",
+    a: "No. Founding is $79 once — no renewal, no monthly charge. The free desk stays free.",
+  },
+  {
+    q: "Do I need a card for the free desk?",
+    a: "No. Up to five drugs, no card, no key.",
+  },
+  {
+    q: "I lost my key. Now what?",
+    a: `Write ${OPERATOR.email} or text ${OPERATOR.phone} and ask for a fresh key, then paste it under Redeem.`,
+  },
+  {
+    q: "Is this medical advice?",
+    a: "No. FirstPass is an educational model, not FDA-cleared. The Prescribing Information governs, and an empty result is not proof a combination is safe.",
+  },
+] as const;
+
 export const COMMERCE = {
   founding: 79,
   payUrl: (import.meta.env.VITE_PAY_URL as string | undefined)?.trim() || OPERATOR.venmoUrl,
   operatorContact: (import.meta.env.VITE_OPERATOR_CONTACT as string | undefined)?.trim() || OPERATOR.email,
-  pitch:
-    "A medicine-interaction learning desk for ketamine clinics, MAT and harm-reduction teams, and pharmacy students. Free forever: check up to five medicines. Founding lifetime ($79 once) unlocks host factors, the enzyme atlas, metabolite maps, and export — yours on this desk.",
+  pitch: `A medicine-interaction learning desk. ${WHO_FOR}`,
 };
 
 export const BUYERS = [

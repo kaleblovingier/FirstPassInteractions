@@ -12,16 +12,21 @@ export interface Plan {
   highlighted?: boolean;
 }
 
+/**
+ * Buyer-facing plans. Plans page shows two: Free and Founding ($79 once).
+ * "pro" stays in the list for the 7-day preview and older Pro keys (app labels,
+ * Stripe pricing) — it is not sold as a separate tier on the Plans page.
+ */
 export const PLANS: Plan[] = [
   {
     id: "free",
-    name: "Free desk",
-    tagline: "Check up to five medicines — no card required.",
+    name: "Free",
+    tagline: "Up to five drugs. No card needed.",
     monthly: 0,
     yearly: 0,
     features: [
-      "Search 1,700+ medicines and supplements",
       "Up to five drugs on the desk",
+      "Search 1,700+ medicines and supplements",
       "Interaction cards: how levels change and how effects can stack",
       "DrugBank, genetics teaching cards, and receptor teaching cards",
       "PubMed citation shelf (curated papers + live search)",
@@ -33,17 +38,14 @@ export const PLANS: Plan[] = [
   {
     id: "pro",
     name: "Pro",
-    tagline: "Host factors, metabolites, and the enzyme atlas.",
+    tagline: "7-day preview and older Pro keys — founding tools without export.",
     monthly: 12,
     yearly: 99,
     lifetime: 79,
-    highlighted: true,
     features: [
       "Everything on the free desk",
-      "Up to eight medicines on the list",
-      "Metabolizer status for common CYP enzymes",
-      "Smoking, alcohol pattern, and ketamine / cannabis route",
-      "Age (Beers), kidney, pregnancy / lactation teaching cards",
+      "Up to eight drugs on the desk",
+      "Host factors: metabolizer status, smoking, alcohol pattern, route, age, kidney, pregnancy",
       "Metabolite maps and stack-load meters",
       "Enzyme atlas",
       "Full copyable interaction report",
@@ -52,19 +54,27 @@ export const PLANS: Plan[] = [
   {
     id: "lab",
     name: "Founding",
-    tagline: "$79 once — Pro tools plus export, for life.",
+    tagline: "$79 once. Every tool, for life on this desk.",
     monthly: 29,
     yearly: 249,
     lifetime: 79,
+    highlighted: true,
     features: [
-      "Everything in Pro",
+      "Everything on the free desk",
+      "Up to eight drugs on the desk",
+      "Host factors: metabolizer status, smoking, alcohol pattern, route, age, kidney, pregnancy",
+      "Enzyme atlas",
+      "Metabolite maps and stack-load meters",
+      "Full copyable interaction report",
       "JSON + CSV export for the lab book",
-      "Founding lifetime at $79 once (no subscription)",
-      "License receipt you can keep",
-      "Priority formulary additions",
+      "One payment — no subscription, no renewal",
+      "Signed license key you can keep",
     ],
   },
 ];
+
+/** The two tiers the Plans page sells, in display order. */
+export const PLAN_TIERS = ["free", "lab"] as const satisfies readonly PlanId[];
 
 export const PLAN_BY_ID = Object.fromEntries(PLANS.map((p) => [p.id, p])) as Record<PlanId, Plan>;
 
