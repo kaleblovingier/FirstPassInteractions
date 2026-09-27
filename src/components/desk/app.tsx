@@ -294,7 +294,7 @@ export function DeskApp() {
         <div className="border-b border-border bg-warn-soft">
           <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <p className="max-w-3xl text-sm leading-relaxed text-fg">
-              <span className="font-medium">For clinicians and supervised learning.</span> Not for
+              <span className="font-medium">For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.</span> Not for
               personal treatment, dose changes, or deciding whether to combine substances. This
               educational checker can miss risks and cannot test what is in a product. If someone is
               seriously unwell or may be overdosing, contact local emergency services or a poison
@@ -634,7 +634,7 @@ function EmptyState({
         <p className="max-w-xl text-sm leading-relaxed text-muted">
           {lane === "mat"
             ? "Explore educational examples involving opioid-treatment medicines and other substances. These notes are not a treatment plan; a qualified clinician and current product labeling must guide care."
-            : "Add two or more medicines, supplements, foods, or other substances to see possible concerns in everyday language, with clinical details and sources for review. This is a learning aid for clinicians and supervised education—not personal medical advice. It can miss interactions; no result does not mean a combination is safe."}
+            : "Add two or more medicines, supplements, foods, or other substances to see possible concerns in everyday language, with clinical details and sources for review. This is a learning aid, for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. It is not personal medical advice. It can miss interactions; no result does not mean a combination is safe."}
         </p>
         {undo || recent.length > 0 ? (
           <div className="mt-4 flex flex-col gap-3 rounded-lg bg-bg px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1283,8 +1283,8 @@ function Disclaimer() {
       <p className="text-[11px] font-medium uppercase tracking-wide text-muted">About this desk</p>
       <p className="mt-1.5 text-[11px] leading-relaxed text-subtle">
         Built for learning and clinical review — not a personal treatment guide.{" "}
-        {SOFTWARE.name} {SOFTWARE.version} is an educational clinical decision-support aid for
-        clinicians and supervised learning. {NOT_CLEARED} It can miss risks; an empty result is not
+        {SOFTWARE.name} {SOFTWARE.version} is an educational clinical decision-support aid,
+        for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. {NOT_CLEARED} It can miss risks; an empty result is not
         proof that a combination is safe. It does not identify product contents, diagnose, or tell
         anyone what to start, stop, or change. For care decisions, consult a qualified clinician and
         current FDA-approved labeling. Street-supply entries are teaching examples, not product
