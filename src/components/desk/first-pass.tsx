@@ -6,17 +6,29 @@ export function FirstPassMap({
   cannabisRoute,
   showKetamine,
   showCannabis,
+  trayIds = [],
 }: {
   ketamineRoute: KetamineRoute;
   cannabisRoute: CannabisRoute;
   showKetamine: boolean;
   showCannabis: boolean;
+  /** Desk selection — only name perpetrators that are actually on the tray. */
+  trayIds?: string[];
 }) {
   if (!showKetamine && !showCannabis) return null;
   const oral =
     (showKetamine && ketamineRoute === "oral") || (showCannabis && cannabisRoute === "oral");
   const skip =
     (showKetamine && ketamineRoute === "iv") || (showCannabis && cannabisRoute === "smoked");
+  const tray = new Set(trayIds);
+  const namedPerps = [
+    tray.has("clarithromycin") ? "Clarithromycin" : null,
+    tray.has("grapefruit") ? "grapefruit" : null,
+  ].filter(Boolean) as string[];
+  const oralKetamineNote =
+    namedPerps.length > 0
+      ? `Swallowed ketamine is slowed by gut CYP3A4. ${namedPerps.join(" and ")} on this tray can make this path busier.`
+      : "Swallowed ketamine is slowed by gut CYP3A4. No gut CYP3A4 blocker is on this tray yet, so nothing is mapped here. That is not a green light.";
 
   return (
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
@@ -36,7 +48,7 @@ export function FirstPassMap({
           steps={["Mouth", "Gut enzymes", "Portal vein", "Liver", "Body"]}
           note={
             showKetamine && ketamineRoute === "oral"
-              ? "Swallowed ketamine is slowed by gut CYP3A4. Clarithromycin or grapefruit can make this path busier."
+              ? oralKetamineNote
               : showCannabis && cannabisRoute === "oral"
                 ? "Edible THC is converted toward 11-OH-THC on this path. Smoked THC barely takes the same detour."
                 : "Swallowing puts the gut-and-liver gauntlet between the dose and the rest of the body."
