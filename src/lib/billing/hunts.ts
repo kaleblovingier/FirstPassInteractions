@@ -225,7 +225,7 @@ export const DIRECTORY: Target[] = [
     city: "Seattle",
     who: "In-home nurse KAP",
     site: "https://nomadtherapeutics.org/",
-    hook: "Home ketamine. Route and host factors are the whole safety case.",
+    hook: "Home ketamine. Route and host factors make the teaching case.",
   },
   {
     id: "looking-glass-tacoma",
@@ -275,7 +275,7 @@ export const DIRECTORY: Target[] = [
     city: "Spokane",
     who: "Kelsey Martell, DO",
     site: "https://mountainpsych.com/",
-    hook: "East-side psych + ketamine. Fewer tools out there — a $79 desk is the whole pharmacy consult.",
+    hook: "East-side psych + ketamine. Fewer tools out there — a $79 teaching desk for staff huddles, not a substitute for a pharmacist.",
   },
   {
     id: "illume-wellbeing",

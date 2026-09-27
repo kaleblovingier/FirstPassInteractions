@@ -207,9 +207,9 @@ export function StudyPage() {
   }
 
   function exportReceipt() {
-    // Match desk JSON/CSV: founding / lab license (plan === "lab"). Pro can upgrade.
+    // Match desk JSON/CSV: Founding license (plan === "lab").
     if (plan !== "lab") {
-      openCheckout("lab", "Lab-book receipt export is a founding / lab surface. $79 once.", "life");
+      openCheckout("lab", "Lab-book receipt export is a Founding surface. $79 once.", "life");
       return;
     }
     const receipt = buildReceipt();
@@ -275,7 +275,7 @@ export function StudyPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               {labNeedsPro(assignment) ? (
-                <Badge tone="warn">Pro host</Badge>
+                <Badge tone="warn">Founding host</Badge>
               ) : (
                 <Badge tone="ok">Free</Badge>
               )}
@@ -303,10 +303,10 @@ export function StudyPage() {
                     "h-10 rounded-full px-3 text-xs font-medium",
                     labId === a.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                   )}
-                  title={locked ? "Host factors — founding / Pro" : a.title}
+                  title={locked ? "Host factors — Founding" : a.title}
                 >
                   {a.title}
-                  {locked ? " · Pro" : ""}
+                  {locked ? " · Founding" : ""}
                 </button>
               );
             })}
@@ -330,7 +330,7 @@ export function StudyPage() {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button size="sm" onClick={exportReceipt}>
               <Download className="size-3.5" />
-              {plan === "lab" ? "Export receipt" : "Export receipt · Lab"}
+              {plan === "lab" ? "Export receipt" : "Export receipt · Founding"}
             </Button>
             <Button
               size="sm"
