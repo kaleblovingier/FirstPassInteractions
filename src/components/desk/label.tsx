@@ -168,7 +168,7 @@ export function LabelPage() {
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">CDS posture</p>
         <h2 className="mt-1 font-serif text-lg tracking-tight text-fg">Non-device CDS criteria</h2>
         <p className="mt-1 text-xs text-muted">
-          FDA Clinical Decision Support Software guidance, September 28, 2022. Meeting these criteria is a
+          FDA Clinical Decision Support Software guidance, January 2026 (supersedes the 2022 version). Meeting these criteria is a
           posture, not a clearance.
         </p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-2">
