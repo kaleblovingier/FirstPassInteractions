@@ -561,7 +561,8 @@ function LeadRail({ finding }: { finding: Finding }) {
         <p className="mt-1 text-sm leading-relaxed text-fg">{watch}</p>
       </div>
       <p className="sm:col-span-2 text-[11px] leading-relaxed text-subtle">
-        This pair only. Not a milligram. If the label disagrees, the label wins.
+        This pair only. A study aid for how timing changes the picture, not a real-time alert. Not a
+        milligram. If the label disagrees, the label wins.
       </p>
     </div>
   );

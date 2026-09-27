@@ -1202,7 +1202,8 @@ function HowCard() {
         <li>
           <span className="text-fg">Phenotype.</span> Flip CYP2D6 / 2C19 / 2C9 / 2B6 to poor or
           ultrarapid — a poor metabolizer scores like a strong inhibitor of that enzyme. Poor 2C9
-          metabolizers make warfarin and edible THC hotter.
+          metabolizers make warfarin and edible THC hotter. Pick a status you already know; the rows
+          are a teaching summary of CPIC guidance, not a genetic test result.
         </li>
         <li>
           <span className="text-fg">Host.</span> Daily smoke induces CYP1A2. Chronic alcohol induces
@@ -1246,7 +1247,8 @@ function HowCard() {
           grades (Huang 2007 / 2020 guidance), not vibes. Mechanism-based inhibitors (clarithromycin,
           grapefruit, ritonavir, paroxetine, fluoxetine) destroy the enzyme — stopping yesterday
           does not restore it. Inducers take a week to land and two weeks to leave; the stop is
-          rebound toxicity. Open the CYP tab. Plan the stop on the start day. Not a milligram.
+          rebound toxicity. Open the CYP tab. The stop matters as much as the start. A study aid for how
+          timing changes the picture, not a real-time alert. Not a milligram.
         </li>
         <li>
           <span className="text-fg">Clinic.</span> Allopurinol × azathioprine is xanthine oxidase,

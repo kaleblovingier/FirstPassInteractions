@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   AGE_PLAIN,
   ALCOHOL_PLAIN,
+  ENZYME_SPEED_HELPER,
   ENZYME_SPEED_TITLE,
   HOST_COACH,
   HOST_SECTION_TITLES,
@@ -66,4 +67,13 @@ test("guard: no mg, no dose advice, no safe-to-start, no 'Strong', no arrows or 
     assert.doesNotMatch(s, /\bstrong\b/i, s);
     assert.doesNotMatch(s, /[→←↑↓↔⇒⇐⇔×]|->|<-|=>/, s);
   }
+});
+
+test("enzyme speed helper: a status you already know, a CPIC teaching summary, not a genetic test", () => {
+  assert.match(ENZYME_SPEED_HELPER, /already know/);
+  assert.match(ENZYME_SPEED_HELPER, /teaching summary of CPIC guidance/);
+  assert.match(ENZYME_SPEED_HELPER, /not a genetic test result/);
+  assert.match(ENZYME_SPEED_TITLE.scientific, /CPIC paraphrase/);
+  assert.match(HOST_COACH.footer, /not a genetic test result/);
+  assert.ok(allHostPlainCopy().includes(ENZYME_SPEED_HELPER));
 });

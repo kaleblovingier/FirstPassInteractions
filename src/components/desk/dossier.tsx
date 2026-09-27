@@ -694,7 +694,7 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
                   <span className="font-mono text-xs uppercase tracking-wide text-muted">{row.pheno}</span>
                   <span className="text-sm text-fg">
                     {row.action}
-                    {on ? <span className="ml-2 font-mono text-[10px] uppercase text-accent">this host</span> : null}
+                    {on ? <span className="ml-2 font-mono text-[10px] uppercase text-accent">status you picked</span> : null}
                   </span>
                 </li>
               );
@@ -708,8 +708,10 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
       ))}
       <LiveCpic name={name} />
       <p className="text-[11px] leading-relaxed text-subtle">
-        Plain-language paraphrase of published gene guides (CPIC / DPWG). Open the guideline for the
-        official algorithm. Not a test order, not a dose, and not a green light if a row is quiet.
+        Plain-language paraphrase of published gene guides (CPIC / DPWG). A highlighted row uses a
+        metabolizer status you picked from what you already know; it is a teaching summary, not a
+        genetic test result or a reading of one. Open the guideline for the official algorithm. Not a
+        test order, not a dose, and not a green light if a row is quiet.
       </p>
     </div>
   );

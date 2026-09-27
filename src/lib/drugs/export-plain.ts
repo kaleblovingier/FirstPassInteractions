@@ -27,6 +27,10 @@ export const EXPORT_SECTIONS = {
   findings: { plainTitle: "What to talk through", scientific: "Findings · severity · mechanism" },
 } as const;
 
+/** Note under the person section: metabolizer rows are a known status, read as a CPIC teaching summary. */
+export const EXPORT_PERSON_NOTE =
+  "Metabolizer status is what the team already knew, picked by hand. The desk reads it as a teaching summary of CPIC guidance, not a genetic test result.";
+
 /** Label for the overall ceiling line. */
 export const EXPORT_HIGHEST_LABEL = "Biggest concern on this tray";
 
@@ -83,6 +87,7 @@ export function buildExportReport(input: ExportReportInput): string {
     "",
     heading(EXPORT_SECTIONS.person),
     ...input.person.map((p) => `- ${p.label}: ${p.value}`),
+    EXPORT_PERSON_NOTE,
     "",
     heading(EXPORT_SECTIONS.findings),
   ];

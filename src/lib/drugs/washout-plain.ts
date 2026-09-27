@@ -18,7 +18,7 @@ export const WASHOUT_COACH = {
   kicker: "How this works",
   body: "A washout window is roughly how long a medicine, or its effect on a liver enzyme, keeps lingering after the last dose. Stopping yesterday does not always mean the interaction is gone today.",
   estimate:
-    "These are teaching estimates for independent review, not a restart date. Product labeling and the prescriber govern.",
+    "These are teaching estimates for independent review, not a restart date and not a real-time alert. A study aid for how timing changes the picture. Product labeling and the prescriber govern.",
 } as const;
 
 /** Empty state: nothing mapped is not a green light. */

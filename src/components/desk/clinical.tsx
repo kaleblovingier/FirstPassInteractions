@@ -213,7 +213,8 @@ function CypPanel({ ids }: { ids: string[] }) {
       <p className="text-sm leading-relaxed text-muted">
         FDA DDI grades, start vs stop clocks. TDI linger means {glossWithTerm("tdi")}; induction lag
         means {glossWithTerm("induction")}. Huang 2007 / FDA 2020 teaching — not a milligram and not a
-        hold. The Prescribing Information is the authority.
+        hold. A study aid for how timing changes the picture, not a real-time alert. The Prescribing
+        Information is the authority.
       </p>
 
       <div className="flex flex-wrap gap-1">
@@ -307,8 +308,8 @@ function CypPanel({ ids }: { ids: string[] }) {
 
       {cards[0] ? (
         <article className="rounded-md bg-bg-sunken px-3 py-3">
-          <h3 className="font-serif text-lg tracking-tight text-fg">Safety steps</h3>
-          <p className="mt-1 text-xs text-muted">Teaching checklist for the hottest perpetrator on this desk. Nothing is stored.</p>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Study steps</h3>
+          <p className="mt-1 text-xs text-muted">Teaching checklist for the biggest blocker or booster on this desk. A study aid, not a real-time alert. Nothing is stored.</p>
           <ul className="mt-3 space-y-1">
             {cards[0].steps.map((s) => (
               <li key={s.id}>
@@ -334,7 +335,7 @@ function CypPanel({ ids }: { ids: string[] }) {
         </article>
       ) : (
         <article className="rounded-md bg-bg-sunken px-3 py-3">
-          <h3 className="font-serif text-lg tracking-tight text-fg">Safety steps</h3>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Study steps</h3>
           <ul className="mt-3 space-y-2">
             {SAFETY_CHECKS.map((s) => (
               <li key={s.id}>

@@ -497,7 +497,7 @@ export function briefWindow(ids: string[], report: Report, host: HostContext): W
     if (induction) {
       pushUnique(
         watch,
-        "CYP induction clock — start looks like a stolen dose over a week; stop is rebound toxicity over two. Plan the stop on the start day.",
+        "CYP induction clock — start looks like a stolen dose over a week; stop is rebound toxicity over two. The stop matters as much as the start.",
       );
     }
     if (!tdi && !induction) {
