@@ -273,7 +273,7 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
           price +
           " founding license.",
         "",
-        "Educational model. Not FDA-cleared; the Prescribing Information governs. Source: " + SITE.repo,
+        "Educational interaction reference, not a substitute for clinical judgment. Not FDA-cleared; the Prescribing Information governs. Source: " + SITE.repo,
       ].join("\n"),
     },
     {
@@ -337,7 +337,7 @@ export function invoiceText(opts: {
 }) {
   return [
     "FIRSTPASS DESK LICENSE",
-    "Educational CYP450 / PD teaching map. Not FDA-cleared. Not medical advice.",
+    "Educational interaction reference, not a substitute for clinical judgment. Not FDA-cleared.",
     "",
     `From: ${OPERATOR.name}`,
     `Item: ${opts.plan}`,
