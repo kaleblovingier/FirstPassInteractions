@@ -10,7 +10,7 @@
 const FOUNDING_PRICE = 79;
 
 /** Free desk framing for soft founding-feature coaches. */
-export const FREE_DESK_LINE = "Free desk: up to five drugs for mapped collisions.";
+export const FREE_DESK_LINE = "Free desk: up to five drugs, no card needed.";
 
 /** Founding price line — $79 once. */
 export const FOUNDING_PRICE_LINE = `Founding is $${FOUNDING_PRICE} once.`;
@@ -82,7 +82,7 @@ export function foundingGateCopy(kind: FoundingGateKind): FoundingGateCopy {
       return {
         title: "Export needs founding",
         blurb:
-          "JSON and CSV export for the lab book ships with founding / lab — paste a redeemed key to unlock.",
+          "JSON and CSV export for the lab book ships with founding — paste a redeemed key to unlock.",
         reason: `JSON/CSV export is a founding surface. ${FREE_FOUNDING}`,
       };
     case "report":
