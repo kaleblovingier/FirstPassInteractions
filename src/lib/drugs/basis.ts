@@ -178,7 +178,13 @@ function labelQuoteBasis(finding: Finding): FindingBasis | null {
   );
   if (!g) return null;
   const name = DRUG_BY_ID[g.labelDrug]?.name ?? g.labelDrug;
-  const verdict = g.labelClass === "contraindicated" ? "calls this combination contraindicated" : "says to avoid this combination";
+  const VERDICT: Record<GoldPair["labelClass"], string> = {
+    contraindicated: "calls this combination contraindicated",
+    avoid: "says to avoid this combination",
+    "boxed-warning": "names this interaction in its Boxed Warning",
+    warning: "warns about this interaction",
+  };
+  const verdict = VERDICT[g.labelClass];
   return {
     kind: "fda-pi",
     label: `${name} label, ${g.labelSection}`,
