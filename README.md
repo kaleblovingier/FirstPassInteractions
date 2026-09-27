@@ -26,9 +26,11 @@ A short or empty list is not a green light. It only means nothing in the mapped 
 
 ## Try these
 
-Shareable desk links: `?case=gf-oral-ketamine` loads a sample; `?pack=clinic-onboard` or `?pack=mat-cup` opens a teaching pack (first case loads; the pack strip jumps the rest). `?lab=gf-oral-ketamine` opens Study with a PharmD lab-book assignment (three-sentence answer + receipt export on founding / lab). Add `&flip=1` to invert the ketamine route for oral↔IV contrast. Legacy `?sample=` still works.
+Shareable desk links: `?case=gf-oral-ketamine` loads a sample; `?pack=clinic-onboard`, `?pack=mat-cup`, or `?pack=pharmd` opens a teaching pack (first case loads; the pack strip jumps the rest). `?lab=gf-oral-ketamine` opens Study with a PharmD lab-book assignment (three-sentence answer + receipt export on founding / lab). `?brief=ketamine,alprazolam` loads those catalog ids onto the desk and pairs with **Copy brief** (free teaching copy: sharpest pair first, then whole-desk notes; not the founding Report). Add `&flip=1` to invert the ketamine route for oral↔IV contrast. Legacy `?sample=` still works.
 
 **Lab book** — eight seeded assignments (oral ketamine × grapefruit, DXM 2D6 PM, ketamine × benzo, tacrolimus × GF, xylazine × fentanyl, naltrexone precip, smoke × clozapine, clozapine × lorazepam / Beers). Free desks open free cases; Pro-host cases and receipt JSON/CSV need founding.
+
+**Watch** — pin tray medicines (5 on free desks, 12 on founding) and pull OpenFDA shortage rows plus the top recall or enforcement note. Excerpts are shortened for teaching. Not an alert service; the label and the FDA shortage page still win. An empty pull is not a green light. Pins stay in this browser only (`firstpass.watch.v1`).
 
 1. **Oral ketamine × grapefruit** — F rises. Half-life does not. Overlay IV: the ghost is untouched.
 2. **DXM in a 2D6 poor metabolizer, q8h** — accumulation Rac ~2.7×. Dextrorphan falls.
@@ -38,7 +40,7 @@ Shareable desk links: `?case=gf-oral-ketamine` loads a sample; `?pack=clinic-onb
 6. **Activated charcoal × levothyroxine** — the binder. The dose never arrives. Metamucil does the same.
 7. **Valproate, then flip Pregnant** — teratogen card. Search `pubmed` or open Cites for Bailey, Mega, Krantz, Hunter.
 8. **Lorazepam, flip Geriatric** — Beers 2023. Search `beers`.
-9. **Paroxetine × codeine** — 2D6 phenoconversion. NM on the lab, PM-like on the enzyme. Search `phenoconversion`.
+9. **Paroxetine × codeine** — 2D6 phenoconversion. NM on the lab, PM-like on the enzyme. Open the **Pheno** tab on the clinical board, or the **Phenoconversion** card on **Learn**, for the before-and-after two-panel (same tray, blocker off, then on). Search `phenoconversion`.
 10. **MDMA × sertraline** — Hunter screen. Clonus, not NMS. Search `hunter`.
 11. **Methadone + oxycodone** — MME sketch plus live OpenFDA labels / NIH RxClass. Search `mme` / tap **Ask live sources**.
 12. **Methadone cup** — opiate EIA stays negative. Search `uds`. EDDP is how an OTP proves they swallowed it.
@@ -68,6 +70,7 @@ Pay $79 with card on the desk (Stripe), or Venmo / Cash App / PayPal. A signed k
 | Primary care / IM / transplant | Imuran × Zyloprim, Imdur × Viagra, Flonase × ritonavir, Ozempic × SU |
 | MAT / street-supply desks | Xylazine, nitazenes, designer benzos, naltrexone / loperamide |
 | Pharmacy students | Lab book mode (`?lab=`): three-sentence answers + founding receipt export |
+| Formulary / ops desks | Watch nav: OpenFDA shortage + recall pins for tray drugs (not an alert service) |
 | Harm-reduction and psych NPs | MDMA × SSRI, DXM in 2D6 PMs, grapefruit × oral ketamine |
 
 ## License
@@ -90,7 +93,7 @@ Scholarly apothecary: paper `#efece4`, teal `#2f5d56`, Newsreader + IBM Plex. Au
 | `src/lib/drugs/pubmed.ts` | Curated PMIDs |
 | `src/lib/drugs/pubmed.server.ts` | NCBI E-utilities live search |
 | `src/lib/drugs/clinic.ts` | Pregnancy / Beers / renal / boxed teaching cards |
-| `src/lib/drugs/pheno-convert.ts` | Phenoconversion (inhibitor rewrites genotype) |
+| `src/lib/drugs/pheno-convert.ts` | Phenoconversion (inhibitor rewrites genotype; before/after perpetrator panels on Clinical Pheno + Study) |
 | `src/lib/drugs/reversal.ts` | Antidote / will-not-reverse teaching map |
 | `src/lib/drugs/mme.ts` | CDC 2022 oral MME factors |
 | `src/lib/drugs/syndrome.ts` | Hunter criteria vs NMS |
@@ -110,7 +113,9 @@ Scholarly apothecary: paper `#efece4`, teal `#2f5d56`, Newsreader + IBM Plex. Au
 | `src/lib/drugs/host.ts` | Route, smoke, alcohol, washout |
 | `src/lib/drugs/rounds.ts` | Teaching cases |
 | `src/lib/drugs/samples.ts` | Sample regimens |
-| `src/lib/drugs/permalinks.ts` | `?case=` / `?pack=` / `?lab=` share links and teaching packs |
+| `src/lib/drugs/permalinks.ts` | `?case=` / `?pack=` / `?lab=` / `?brief=` share links and teaching packs |
+| `src/lib/drugs/brief.ts` | Sharpest-pair regimen brief (pairs before whole-desk notes) |
+| `src/lib/drugs/watchlist.ts` | OpenFDA shortage / label watchlist (localStorage) |
 | `src/lib/drugs/lab.ts` | PharmD lab-book assignments + receipt shape |
 | `src/lib/billing/commerce.ts` | Pay rails, DMs, launch posts, invoices |
 | `src/lib/billing/stripe.server.ts` | Stripe Checkout session + paid-session key mint |

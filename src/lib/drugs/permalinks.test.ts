@@ -3,10 +3,12 @@ import assert from "node:assert/strict";
 import {
   PACKS,
   applyPermalink,
+  buildBriefUrl,
   buildCaseUrl,
   buildLabPermalink,
   buildPackUrl,
   flipKetamineRoute,
+  parseBriefIds,
   parsePermalink,
 } from "./permalinks.ts";
 import { LAB_ASSIGNMENTS, labNeedsPro } from "./lab.ts";
@@ -106,4 +108,59 @@ test("lab seed mixes free and Pro-host assignments", () => {
   const pro = LAB_ASSIGNMENTS.filter((a) => labNeedsPro(a));
   assert.ok(free.length >= 4, "enough free assignments");
   assert.ok(pro.length >= 2, "enough Pro-host assignments");
+});
+
+test("brief permalink loads catalog ids and stays kind brief", () => {
+  const resolved = parsePermalink("?brief=ketamine,alprazolam");
+  assert.equal(resolved.kind, "brief");
+  assert.deepEqual(resolved.ids, ["ketamine", "alprazolam"]);
+  assert.equal(resolved.sample, null);
+  assert.equal(resolved.caseId, null);
+});
+
+test("brief ignores unknown and virtual ids", () => {
+  assert.deepEqual(parseBriefIds("ketamine,__smoke,not-a-drug,alprazolam"), ["ketamine", "alprazolam"]);
+});
+
+test("lab beats brief when both present", () => {
+  const resolved = parsePermalink("?lab=gf-oral-ketamine&brief=ketamine,alprazolam");
+  assert.equal(resolved.kind, "lab");
+});
+
+test("case beats brief when both present", () => {
+  const resolved = parsePermalink("?case=ketamine-benzo&brief=ketamine");
+  assert.equal(resolved.kind, "case");
+});
+
+test("buildBriefUrl sets brief param", () => {
+  const url = buildBriefUrl(["ketamine", "alprazolam"], { base: "https://example.test/" });
+  assert.equal(url, "https://example.test/?brief=ketamine%2Calprazolam");
+});
+
+test("applyPermalink loads brief ids", () => {
+  let loaded: string[] = [];
+  const resolved = applyPermalink((ids) => {
+    loaded = ids;
+    return true;
+  }, "?brief=ketamine,alprazolam");
+  assert.equal(resolved.kind, "brief");
+  assert.deepEqual(loaded, ["ketamine", "alprazolam"]);
+});
+
+test("pharmd pack loads first free teaching case", () => {
+  const resolved = parsePermalink("?pack=pharmd");
+  assert.equal(resolved.kind, "pack");
+  assert.equal(resolved.packId, "pharmd");
+  assert.equal(resolved.caseId, PACKS.pharmd.caseIds[0]);
+  assert.equal(resolved.caseId, "gf-oral-ketamine");
+  assert.ok(resolved.ids.length >= 2);
+});
+
+test("pharmd pack cases stay free-friendly", () => {
+  assert.equal(PACKS.pharmd.title, "PharmD lab");
+  for (const id of PACKS.pharmd.caseIds) {
+    const sample = parsePermalink(`?case=${id}`).sample;
+    assert.ok(sample, id);
+    assert.equal(sampleNeedsPro(sample!), false, `${id} should not require Pro host extras`);
+  }
 });

@@ -18,11 +18,13 @@ import {
 import {
   PACKS,
   applyPermalink,
+  buildBriefUrl,
   buildCaseUrl,
   buildPackUrl,
   parsePermalink,
   type PackId,
 } from "@/lib/drugs/permalinks";
+import { buildRegimenBrief } from "@/lib/drugs/brief";
 import { CLASS_TILES, PLATES, plateForDrug, plateForSample } from "@/lib/drugs/visuals";
 import {
   ALCOHOL_LABEL,
@@ -78,6 +80,7 @@ import { WindowBriefing } from "./window";
 import { WindowExtras } from "./tray";
 import { ClinicalBoard } from "./clinical";
 import { StudyPage } from "./study";
+import { WatchPage } from "./watch";
 import { RxnavBoard } from "./rxnav";
 import { LabelPage } from "./label";
 import { PrescribingStrip } from "./pi";
@@ -130,7 +133,7 @@ export function DeskApp() {
     if (resolved.kind === "lab") {
       useDesk.getState().setView("study");
     }
-    // Keep query string so shared ?case= / ?pack= / ?lab= links stay copyable.
+    // brief (and case/pack) stay on desk. Keep query string so shared links stay copyable.
   }, [hydrated, load]);
 
   // Rounds (and other surfaces) may set ?pack= / ?case= after boot — resync strip state.
@@ -255,6 +258,7 @@ export function DeskApp() {
                 [
                   ["desk", "Desk"],
                   ["library", "Library"],
+                  ["watch", "Watch"],
                   ["cites", "Sources"],
                   ["atlas", "CYP map"],
                   ["study", "Learn"],
@@ -336,6 +340,8 @@ export function DeskApp() {
           <RoundsPage />
         ) : view === "study" ? (
           <StudyPage />
+        ) : view === "watch" ? (
+          <WatchPage />
         ) : view === "cites" ? (
           <CitesPage />
         ) : view === "label" ? (
@@ -455,7 +461,7 @@ export function DeskApp() {
                           <StackMeters stacks={report.stacks} />
                         </Paywall>
                       ) : null}
-                      <FindingList findings={report.findings} />
+                      <FindingList findings={report.findings} trayIds={selected} />
                     </>
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
@@ -470,6 +476,7 @@ export function DeskApp() {
                     showCannabis={selected.some((id) =>
                       ["dronabinol", "cannabidiol"].includes(id),
                     )}
+                    trayIds={selected}
                   />
                   {pro ? (
                     <MetaboliteCard ids={selected} />
@@ -517,7 +524,7 @@ export function DeskApp() {
                   {report.findings.length > 0 ? (
                     <>
                       <CollisionMap selected={selected} findings={report.findings} />
-                      <FindingList findings={report.findings} />
+                      <FindingList findings={report.findings} trayIds={selected} />
                     </>
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
@@ -543,6 +550,7 @@ export function DeskApp() {
                     showCannabis={selected.some((id) =>
                       ["dronabinol", "cannabidiol"].includes(id),
                     )}
+                    trayIds={selected}
                   />
                   <CypHeatmap drugs={hostDrugs} colliding={colliding} />
                 </>
@@ -904,13 +912,13 @@ function RiskBanner({
   caseId: string | null;
   packId: PackId | null;
 }) {
-  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
+  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | "brief" | null>(null);
   const openCheckout = useDesk((s) => s.openCheckout);
   const license = useDesk((s) => s.license);
   const highest = report.highest;
   const names = selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean).join(" + ");
 
-  async function write(kind: "full" | "share" | "plain" | "link", text: string) {
+  async function write(kind: "full" | "share" | "plain" | "link" | "brief", text: string) {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(kind);
@@ -982,6 +990,19 @@ function RiskBanner({
     );
   }
 
+  async function copyBrief() {
+    const url =
+      typeof window !== "undefined" ? buildBriefUrl(selected) : buildBriefUrl(selected, { base: "https://firstpass-desk.vercel.app" });
+    const text = buildRegimenBrief({
+      names,
+      findings: report.findings,
+      highest,
+      trayIds: selected,
+      url,
+    });
+    await write("brief", text);
+  }
+
   return (
     <div className="flex flex-col gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
       <div className="flex items-center gap-3">
@@ -1021,6 +1042,10 @@ function RiskBanner({
           {copied === "link" ? "Copied" : "Copy link"}
         </Button>
       ) : null}
+      <Button variant="secondary" size="sm" onClick={() => void copyBrief()} className="h-10 min-w-24 shrink-0">
+        {copied === "brief" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        {copied === "brief" ? "Copied" : "Copy brief"}
+      </Button>
       <Button variant="secondary" size="sm" onClick={() => void shareLine()} className="h-10 min-w-24 shrink-0">
         {copied === "share" ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
         {copied === "share" ? "Copied" : "Share"}

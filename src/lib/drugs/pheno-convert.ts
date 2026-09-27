@@ -184,3 +184,95 @@ export function phenoconversionFindings(drugs: Drug[], host: HostContext): Findi
 export function hasPhenoConvert(ids: string[], host: HostContext) {
   return phenoConvertOnDesk(ids, host).some((r) => r.shifted || (r.inhibitors.length > 0 && r.victims.length > 0));
 }
+
+/** Plain labels for clinical (desk) phenotype — teaching, not a lab report. */
+export const CLINICAL_PHENO_LABEL: Record<ClinicalPheno, string> = {
+  PM: "Poor",
+  IM: "Intermediate",
+  NM: "Normal",
+  UM: "Ultrarapid",
+  "PM-like": "Poor-like (blocked)",
+  "IM-like": "Intermediate-like (slowed)",
+  "NM-like": "Normal-like",
+  induced: "Induced (sped up)",
+};
+
+export function clinicalPhenoLabel(p: ClinicalPheno): string {
+  return CLINICAL_PHENO_LABEL[p] ?? String(p);
+}
+
+export interface PhenoPerpetrator {
+  id: string;
+  name: string;
+  kind: "inhibitor" | "inducer";
+  strength: Strength;
+}
+
+/** One enzyme: same tray with perpetrator(s) off vs on. Never a milligram. */
+export interface PhenoContrast {
+  enzyme: Enzyme;
+  genotype: Metabolizer | "NM";
+  beforeClinical: ClinicalPheno;
+  afterClinical: ClinicalPheno;
+  shifted: boolean;
+  perpetrators: PhenoPerpetrator[];
+  victims: Array<{ id: string; name: string; pathway: "clearance" | "activation" }>;
+  beforeBlurb: string;
+  afterBlurb: string;
+  pearl: string;
+  beforeIds: string[];
+  afterIds: string[];
+}
+
+function blurbsFor(c: Omit<PhenoContrast, "beforeBlurb" | "afterBlurb" | "pearl">, pearl: string) {
+  const geno =
+    c.genotype === "NM"
+      ? "normal"
+      : (METABOLIZER_LABEL[c.genotype] ?? c.genotype).toLowerCase();
+  const beforeBlurb = c.victims.length
+    ? `Lab says ${geno} ${c.enzyme}. The affected medicines stay on the tray and the blocker or inducer is off, so the enzyme still matches the lab report.`
+    : `Lab says ${geno} ${c.enzyme}. Nothing on the tray blocks or speeds this enzyme yet, so the lab result and how the enzyme acts still match.`;
+  const perp = c.perpetrators[0];
+  const afterBlurb = perp
+    ? `${perp.name} (${perp.strength} ${perp.kind}) is on. The chart still lists ${geno}; the enzyme on this desk acts ${clinicalPhenoLabel(c.afterClinical).toLowerCase()}. That is phenoconversion, not a new genotype.`
+    : pearl;
+  return { beforeBlurb, afterBlurb };
+}
+
+/**
+ * Build before/after panels: remove inhibitors/inducers for that enzyme, keep victims.
+ * Contrasts the same tray with perpetrator off vs on.
+ */
+export function phenoContrastsOnDesk(ids: string[], host: HostContext): PhenoContrast[] {
+  const afterRows = phenoConvertOnDesk(ids, host);
+  const out: PhenoContrast[] = [];
+  for (const row of afterRows) {
+    const perpetrators: PhenoPerpetrator[] = [
+      ...row.inhibitors.map((p) => ({ ...p, kind: "inhibitor" as const })),
+      ...row.inducers.map((p) => ({ ...p, kind: "inducer" as const })),
+    ];
+    if (!perpetrators.length) continue;
+    const perpIds = new Set(perpetrators.map((p) => p.id));
+    const beforeIds = ids.filter((id) => !perpIds.has(id));
+    const beforeRow = phenoConvertOnDesk(beforeIds, host).find((r) => r.enzyme === row.enzyme);
+    const beforeClinical: ClinicalPheno = beforeRow?.clinical ?? row.genotype;
+    const base = {
+      enzyme: row.enzyme,
+      genotype: row.genotype,
+      beforeClinical,
+      afterClinical: row.clinical,
+      shifted: row.shifted,
+      perpetrators,
+      victims: row.victims,
+      beforeIds,
+      afterIds: [...ids],
+    };
+    const { beforeBlurb, afterBlurb } = blurbsFor(base, row.pearl);
+    out.push({ ...base, beforeBlurb, afterBlurb, pearl: row.pearl });
+  }
+  return out.sort((a, b) => Number(b.shifted) - Number(a.shifted) || a.enzyme.localeCompare(b.enzyme));
+}
+
+export function hasPhenoContrast(ids: string[], host: HostContext) {
+  return phenoContrastsOnDesk(ids, host).some((c) => c.shifted);
+}

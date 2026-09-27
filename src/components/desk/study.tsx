@@ -24,13 +24,15 @@ import {
   type StudyLane,
   type StudyPile,
 } from "@/lib/drugs/study";
-import { useDesk, usePlan } from "@/lib/drugs/store";
+import { SAMPLE_REGIMENS } from "@/lib/drugs/samples";
+import { hostFromState, useDesk, usePlan } from "@/lib/drugs/store";
 import { LANE_PLATE } from "@/lib/drugs/visuals";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plate } from "./plate";
+import { PhenoContrastBoard } from "./pheno-contrast";
 
 function labIdFromSearch(): string | null {
   if (typeof window === "undefined") return null;
@@ -121,6 +123,21 @@ export function StudyPage() {
       ).findings,
     [selected, phenotypes, smoking, ketamineRoute, cannabisRoute, alcohol, age, kidney, preg, doses],
   );
+  const host = useMemo(
+    () =>
+      hostFromState({
+        phenotypes,
+        smoking,
+        ketamineRoute,
+        cannabisRoute,
+        alcohol,
+        age,
+        kidney,
+        preg,
+      }),
+    [phenotypes, smoking, ketamineRoute, cannabisRoute, alcohol, age, kidney, preg],
+  );
+
   const leadHeadline = findings[0]?.headline ?? null;
   const source = useMemo(() => cardsFor(lane, selected, findings), [lane, selected, findings]);
   const key = `${lane}|${pile}|${epoch}|${source.map((c) => c.id).join(",")}`;
@@ -262,6 +279,44 @@ export function StudyPage() {
               <div className="h-full bg-warn" style={{ width: `${missPct}%` }} />
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Phenoconversion</p>
+            <h3 className="mt-2 font-serif text-xl tracking-tight text-fg">
+              Before and after the blocker
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+              Same tray, blocker or inducer off, then on. The lab result does not change; how the enzyme
+              behaves on this tray does. Five-drug desks stay free. Educational only: not a milligram, not
+              a CDS claim, not a new gene test report.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              const sample = SAMPLE_REGIMENS.find((s) => s.id === "pheno-codeine");
+              if (!sample) return;
+              load(sample.drugIds, {
+                phenotypes: sample.phenotypes,
+                smoking: sample.smoking,
+                ketamineRoute: sample.ketamineRoute,
+                cannabisRoute: sample.cannabisRoute,
+                alcohol: sample.alcohol,
+                doses: sample.doses,
+              });
+              setLane("desk");
+            }}
+          >
+            Load paroxetine with codeine
+          </Button>
+        </div>
+        <div className="mt-4">
+          <PhenoContrastBoard ids={selected} host={host} />
         </div>
       </section>
 
