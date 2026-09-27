@@ -364,7 +364,7 @@ export function kitFor(ids: string[]): KitItem[] {
   const items: KitItem[] = [
     { id: "sitter", label: "Someone stays", hint: "A live person, not a text that goes unread." },
     { id: "phone", label: "Phone + 911", hint: "Good Samaritan laws in most US states cover the caller. Stay." },
-    { id: "position", label: "Recovery position", hint: "Unresponsive but breathing → on their side, airway open, not on their back." },
+    { id: "position", label: "Recovery position", hint: "Unresponsive but breathing: on their side, airway open, not on their back." },
   ];
   if (anyOpioid(ids) || ids.includes("naloxone") || ids.includes("nalmefene") || ids.includes("methadone") || ids.includes("buprenorphine")) {
     items.unshift({
@@ -436,7 +436,7 @@ export function responseSteps(ids: string[]): ResponseStep[] {
       title: "Recovery position",
       body: ghb
         ? "If they are breathing and unresponsive, on their side so vomit drains — mouth down, chin up, not on their back. PsychonautWiki recovery position. GHB has no reversal agent. Time and airway."
-        : "Breathing and unresponsive → on their side, mouth down so vomit drains, chin up. PsychonautWiki / first-aid recovery position. Do not leave them on their back.",
+        : "Breathing and unresponsive: on their side, mouth down so vomit drains, chin up. PsychonautWiki / first-aid recovery position. Do not leave them on their back.",
     },
     {
       n: 6,

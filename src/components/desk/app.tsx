@@ -1202,7 +1202,7 @@ function HowCard() {
         <li>
           <span className="text-fg">Phenotype.</span> Flip CYP2D6 / 2C19 / 2C9 / 2B6 to poor or
           ultrarapid — a poor metabolizer scores like a strong inhibitor of that enzyme. Poor 2C9
-          metabolizers make warfarin and edible THC hotter. Pick a status you already know; the rows
+          metabolizers get more exposure from warfarin and edible THC. Pick a status you already know; the rows
           are a teaching summary of CPIC guidance, not a genetic test result.
         </li>
         <li>

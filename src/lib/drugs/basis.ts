@@ -78,7 +78,7 @@ const PI: Record<string, string> = {
   "clinic-beers": "AGS Beers 2023. Not an FDA box. Confirm against the PI and the geriatric indication.",
   "clinic-renal": "Many labels dose-adjust on Cockcroft–Gault or eGFR. This desk flags CKD; it does not pick a dose.",
   "cyp-clock":
-    "FDA 2020 Clinical Drug Interaction Studies / Huang CPT 2007. Strong ≥5× AUC; strong inducer ≥80% ↓ AUC. Start and stop are different clocks. Not a milligram.",
+    "FDA 2020 Clinical Drug Interaction Studies / Huang CPT 2007. Strong ≥5× AUC; strong inducer lowers AUC by 80% or more. Start and stop are different clocks. Not a milligram.",
   "cyp-dual": "FDA example inhibitors often hit both CYP3A4 and P-gp. Gut first-pass victims move more than a CYP-only row.",
   "pd-carbapenem-vpa":
     "Carbapenem labels (meropenem, ertapenem, imipenem): concomitant valproate — loss of seizure control. UGT / glucuronide recycling, not a CYP isoform. Switch the antibiotic or the AED.",
