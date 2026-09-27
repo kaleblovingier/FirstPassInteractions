@@ -45,7 +45,7 @@ export function Paywall({
             {FOUNDING_PATH_SHORT}
             <span className="font-normal text-muted">
               {" "}
-              · {FOUNDING_PATH_STEPS.map((s) => s.title).join(" → ")}
+              · {FOUNDING_PATH_STEPS.map((s) => s.title).join(", ")}
             </span>
           </p>
           <p className="mt-2 max-w-sm text-[11px] leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>

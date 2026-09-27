@@ -109,12 +109,12 @@ export const COMMERCE = {
 export const BUYERS = [
   {
     who: "Ketamine / esketamine clinics",
-    why: "Oral vs IV first-pass, benzo airway stack, 2B6 phenotype — the map they keep asking pharmacy for.",
+    why: "Oral vs IV first-pass, benzo airway stack, 2B6 phenotype — teaching maps to read alongside the PI, not a substitute for their pharmacist.",
     hook: "oral vs IV ketamine, benzo airway stacks, and 2B6 phenotype",
   },
   {
     who: "MAT and street-supply desks",
-    why: "Xylazine, nitazenes, designer benzos, loperamide, naltrexone. Naloxone will not reverse an α2.",
+    why: "Teaching maps for xylazine, nitazenes, designer benzos, loperamide, and naltrexone, including why naloxone does not reverse xylazine's α2 effect.",
     hook: "xylazine, nitazenes, designer benzos, and the naltrexone / loperamide traps",
   },
   {
@@ -130,7 +130,7 @@ export const BUYERS = [
 ] as const;
 
 export function payClose(price = COMMERCE.founding) {
-  return `Pay $${price} once via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After it clears you get a signed key by email or text — paste it under Plans → Redeem. Three steps: pay → get key → redeem.`;
+  return `Pay $${price} once via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After it clears you get a signed key by email or text — paste it under Redeem on the Plans page. Three steps: pay, get your key, redeem.`;
 }
 
 export function salesDm(price = COMMERCE.founding) {
@@ -138,32 +138,32 @@ export function salesDm(price = COMMERCE.founding) {
     "I built FirstPass — a learning desk that maps how medicines interact for ketamine clinics, MAT, street adulterants (xylazine, nitazenes), and common psych stacks — including grapefruit, smoking, and metabolizer status.",
     "",
     "Free: check up to five medicines for mapped interactions.",
-    `Founding license: $${price} once. Patient factors, metabolite maps, enzyme atlas, and export — yours on this desk.`,
+    `Founding license: $${price} once. Host-factor teaching cards, metabolite maps, enzyme atlas, and export — yours on this desk.`,
     "",
     SITE.url,
     "",
     payClose(price),
     `${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
-    "Educational model — not a clinical system of record.",
+    "Educational model — not FDA-cleared, not a clinical system of record. The Prescribing Information governs.",
   ].join("\n");
 }
 
 export function buyerDm(who: (typeof BUYERS)[number]["who"], price = COMMERCE.founding) {
   const buyer = BUYERS.find((b) => b.who === who);
-  const hook = buyer?.hook ?? "the maps you keep asking pharmacy for";
+  const hook = buyer?.hook ?? "CYP450 and drug-interaction teaching maps";
   return [
     `I built FirstPass — a medicine-interaction learning desk for ${hook}.`,
     "",
     "Checking up to five medicines stays free so you can kick the tires.",
-    `Founding license is $${price} once: patient factors, metabolite maps, enzyme atlas, and JSON/CSV export.`,
+    `Founding license is $${price} once: host-factor teaching cards, metabolite maps, enzyme atlas, and JSON/CSV export.`,
     "",
     SITE.url,
     "",
     payClose(price),
     `${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
-    "Educational model — not a clinical system of record.",
+    "Educational model — not FDA-cleared, not a clinical system of record. The Prescribing Information governs.",
   ].join("\n");
 }
 
@@ -248,7 +248,7 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
       text: [
         "Title: Oral vs IV ketamine first-pass — a CYP3A4 / 2B6 map (educational)",
         "",
-        "Oral ketamine is a first-pass problem. IV is not. Grapefruit knocks out gut 3A4 so oral F rises while t½ stays put; an IV overlay on the same milligram scale stays flat. Strong hepatic 3A4 inhibitors are a different shape.",
+        "Oral ketamine is a first-pass problem. IV is not. Grapefruit inhibits gut 3A4, so oral F can rise while t½ changes little; an IV overlay on the same milligram scale stays flat. Strong hepatic 3A4 inhibitors are a different shape.",
         "",
         "I put that on a desk with 2B6 phenotype, benzo airway stacks, and the usual psych list. Up to five-drug collision checks are free.",
         "",
@@ -271,7 +271,7 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
           price +
           " founding license.",
         "",
-        "Educational model, not clinical decision support. Source: " + SITE.repo,
+        "Educational model. Not FDA-cleared; the Prescribing Information governs. Source: " + SITE.repo,
       ].join("\n"),
     },
     {
@@ -283,7 +283,7 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
       text: [
         "I built FirstPass, an educational CYP450 desk for ketamine clinics, MAT programs, and pharmacy students.",
         "",
-        "Up to five-drug collision checks stay free so a preceptor can open it in rounds. Founding license is $" +
+        "Up to five-drug collision checks stay free so a preceptor can use it for teaching. Founding license is $" +
           price +
           " once: host metabolizer status, smoke and alcohol, metabolites, enzyme atlas, JSON/CSV export.",
         "",
@@ -312,11 +312,11 @@ export function fulfillKey(opts: { key: string; soldTo?: string }) {
     "",
     opts.key,
     "",
-    "Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise: Plans → paste the key → Redeem (pay → key → redeem).",
+    "Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise open Plans, paste the key, and tap Redeem.",
     "",
     SITE.url,
     "",
-    "Educational CYP map — not a clinical system of record.",
+    "Educational CYP map — not FDA-cleared, not a clinical system of record. The Prescribing Information governs, and an empty result is not proof a combination is safe.",
   ]
     .filter((l) => l !== "")
     .join("\n");
@@ -334,7 +334,7 @@ export function invoiceText(opts: {
 }) {
   return [
     "FIRSTPASS DESK LICENSE",
-    "Educational CYP450 / PD map. Not clinical decision support.",
+    "Educational CYP450 / PD teaching map. Not FDA-cleared. Not medical advice.",
     "",
     `From: ${OPERATOR.name}`,
     `Item: ${opts.plan}`,
@@ -343,7 +343,7 @@ export function invoiceText(opts: {
     `Write: ${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
     "After payment you receive a key like FP-LIFE-A1B2C3D4-9F3C2A1B.",
-    "Paste it under Plans → Redeem on the desk (pay → key → redeem).",
+    "Paste it under Redeem on the Plans page of the desk.",
     opts.keyHint ? `Key: ${opts.keyHint}` : "",
   ]
     .filter((l) => l !== "")

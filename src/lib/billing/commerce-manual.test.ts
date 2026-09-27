@@ -27,11 +27,12 @@ test("founding unlock note stays soft and non-clinical", () => {
 });
 
 test("payClose names rails, redeem, and three-step path", () => {
-  assert.match(src, /pay → get key → redeem/i);
+  assert.match(src, /pay, get your key, redeem/i);
   assert.match(src, /Venmo/);
   assert.match(src, /Cash App/);
   assert.match(src, /PayPal/);
-  assert.match(src, /Plans → Redeem/);
+  assert.match(src, /Redeem on the Plans page/);
+  assert.doesNotMatch(src, /→/);
 });
 
 test("PAY_RAILS still lists three written rails", () => {
