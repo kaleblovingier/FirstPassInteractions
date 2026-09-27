@@ -22,32 +22,37 @@ export function FirstPassMap({
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
-          <h2 className="font-serif text-lg tracking-tight text-fg">First-pass river</h2>
+          <h2 className="font-serif text-lg tracking-tight text-fg">Gut vs vein</h2>
           <p className="text-xs text-muted">
-            Gut CYP3A4 and hepatic 2B6/3A4 only see what you swallow. IV and smoked skip the trap.
+            What you swallow meets gut and liver enzymes before it reaches the rest of the body. IV,
+            smoked, and nose routes mostly skip that first trap — not a dose, just the path.
           </p>
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <PathCard
-          title="Oral / edible"
+          title="Swallowed / edible"
           hot={oral}
-          steps={["Mouth", "Gut 3A4", "Portal", "Liver 2B6/3A4", "Systemic"]}
+          steps={["Mouth", "Gut enzymes", "Portal vein", "Liver", "Body"]}
           note={
             showKetamine && ketamineRoute === "oral"
-              ? "Oral ketamine is a 3A4 victim. Clarithromycin and grapefruit light this path up."
+              ? "Swallowed ketamine is slowed by gut CYP3A4. Clarithromycin or grapefruit can make this path busier."
               : showCannabis && cannabisRoute === "oral"
-                ? "Edible THC becomes 11-OH-THC here. Smoked THC barely does."
-                : "Swallowing puts the whole cytochrome gauntlet between dose and brain."
+                ? "Edible THC is converted toward 11-OH-THC on this path. Smoked THC barely takes the same detour."
+                : "Swallowing puts the gut-and-liver gauntlet between the dose and the rest of the body."
           }
         />
         <PathCard
-          title="IV / smoked / IN"
+          title="Vein / smoked / nose"
           hot={skip && !oral}
-          steps={["Vein / lung / nose", "Systemic"]}
-          note="Hepatic 3A4 still clears on the way out, but intestinal first-pass is gone."
+          steps={["Vein / lung / nose", "Body"]}
+          note="The liver still clears medicine on the way out, but the gut first-pass trap is mostly gone."
         />
       </div>
+      <p className="mt-3 text-[11px] leading-relaxed text-subtle">
+        Teaching map only — educational, not FDA-cleared, and not a milligram. Flip the route control
+        above to see which path lights up.
+      </p>
     </section>
   );
 }
@@ -70,13 +75,13 @@ function PathCard({
         hot ? "bg-danger-soft text-danger" : "bg-bg-sunken text-fg",
       )}
     >
-      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">{title}</div>
+      <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted">{title}</div>
       <ol className="mt-3 flex flex-wrap items-center gap-1.5">
         {steps.map((s, i) => (
           <li key={s} className="flex items-center gap-1.5">
             <span
               className={cn(
-                "inline-flex h-8 items-center rounded-sm px-2 font-mono text-[11px]",
+                "inline-flex h-8 items-center rounded-sm px-2 text-[11px] font-medium",
                 hot ? "bg-surface text-danger" : "bg-surface text-fg",
               )}
             >
