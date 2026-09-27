@@ -62,3 +62,27 @@ test("alfentanil + ritonavir sample pair is back and points at 3A4-mapped rows",
   assert.deepEqual(s.drugIds, ["alfentanil", "ritonavir"]);
   assert.ok(row("alfentanil").enzymes.some((r) => r.enzyme === "CYP3A4" && r.kind === "substrate"));
 });
+
+test("CGRP monoclonal antibodies are not serotonergic triptans and keep their library family", () => {
+  const targets: Record<string, RegExp> = {
+    erenumab: /CGRP receptor/,
+    fremanezumab: /CGRP ligand/,
+    galcanezumab: /CGRP ligand/,
+    eptinezumab: /CGRP ligand/,
+  };
+  for (const [id, target] of Object.entries(targets)) {
+    const m = row(id);
+    assert.equal(m.cls, "CGRP monoclonal antibody", `${id} class`);
+    assert.doesNotMatch(m.cls, /triptan/i);
+    assert.ok(!m.pd.includes("serotonergic"), `${id} should not carry the serotonergic flag`);
+    assert.equal(m.enzymes.length, 0, `${id} is not CYP-metabolized`);
+    const hint = m.toxicityHint ?? "";
+    assert.match(hint, target, `${id} note names its target`);
+    assert.match(hint, /not CYP-metabolized/);
+    assert.doesNotMatch(hint, /vasoconstriction \(triptans\)|serotonin stack/i);
+    assert.doesNotMatch(hint, /\bdoses?\b|\bmg\b|\bmcg\b/i);
+    assert.equal(familyOf(m), "other", `${id} family unchanged`);
+    assert.equal(searchDrugs(m.brands[0])[0]?.id, id, `${id} brand search`);
+  }
+  assert.ok(!searchDrugs("serotonin syndrome").some((d) => d.id in targets));
+});
