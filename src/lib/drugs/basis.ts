@@ -5,6 +5,7 @@ import { dailymedSearchUrl } from "@/lib/regulatory";
 import { DRUG_BY_ID, DRUGS } from "./catalog";
 import { FDA_DDI_SOURCE, FDA_DDI_TABLE, type FdaDdiEntry } from "./reference/fda-ddi-table";
 import { buildCatalogMatcher } from "./reference/validate-fda";
+import { LABEL_GOLD_SET, type GoldPair } from "./reference/label-gold-set";
 import type { Finding } from "./types";
 
 export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "fda-ddi" | "cpic" | "pubmed" | "scale" | "desk";
@@ -160,6 +161,32 @@ function fdaDdiBasis(finding: Finding): FindingBasis | null {
   return { kind: "fda-ddi", label: "FDA interaction table", detail, href: FDA_DDI_SOURCE.url };
 }
 
+/** Unordered pair key -> label-verified gold pairs (verbatim DailyMed quotes). */
+const GOLD_BY_PAIR = new Map<string, GoldPair[]>();
+for (const g of LABEL_GOLD_SET) {
+  const k = [g.drugA, g.drugB].sort().join("|");
+  GOLD_BY_PAIR.set(k, [...(GOLD_BY_PAIR.get(k) ?? []), g]);
+}
+
+/** Verbatim label quote for a pair finding, only when the finding's mechanism matches the label's. */
+function labelQuoteBasis(finding: Finding): FindingBasis | null {
+  if (finding.drugIds.length !== 2) return null;
+  const k = [...finding.drugIds].sort().join("|");
+  const isPk = finding.kind === "pk";
+  const g = (GOLD_BY_PAIR.get(k) ?? []).find((x) =>
+    x.mechanism === "PK+PD" ? true : x.mechanism === "PK" ? isPk : !isPk,
+  );
+  if (!g) return null;
+  const name = DRUG_BY_ID[g.labelDrug]?.name ?? g.labelDrug;
+  const verdict = g.labelClass === "contraindicated" ? "calls this combination contraindicated" : "says to avoid this combination";
+  return {
+    kind: "fda-pi",
+    label: `${name} label, ${g.labelSection}`,
+    detail: `The ${name} label ${verdict}: "${g.quote}"${g.paraphrased ? " (paraphrased)" : ""} Retrieved from DailyMed ${g.retrieved}.`,
+    href: g.url,
+  };
+}
+
 function suffixOf(id: string) {
   const parts = id.split("__");
   return parts[parts.length - 1] ?? id;
@@ -168,6 +195,8 @@ function suffixOf(id: string) {
 export function basisFor(finding: Finding): FindingBasis[] {
   const suffix = suffixOf(finding.id);
   const out: FindingBasis[] = [];
+  const quoted = labelQuoteBasis(finding);
+  if (quoted) out.push(quoted);
   const boxed = BOXED[suffix];
   if (boxed) {
     out.push({
