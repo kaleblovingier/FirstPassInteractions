@@ -57,7 +57,7 @@ export function LabelPage() {
               <Badge tone="warn">Not FDA-cleared</Badge>
             </div>
             <p className="mt-1 font-mono text-xs text-muted">
-              {SOFTWARE.udi} · v{SOFTWARE.version} · {SOFTWARE.released}
+              {SOFTWARE.buildId} · v{SOFTWARE.version} · {SOFTWARE.released}
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
               Instructions for use in plain language. The boxed strings below are the same regulatory
@@ -238,7 +238,7 @@ export function LabelPage() {
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Manufacturer</p>
         <h2 className="mt-1 font-serif text-lg tracking-tight text-fg">Maker / complaints</h2>
         <p className="mt-2 text-sm leading-relaxed text-fg">
-          {SOFTWARE.manufacturer}. Software version {SOFTWARE.version} ({SOFTWARE.udi}). Report a labeling
+          {SOFTWARE.manufacturer}. Software version {SOFTWARE.version} ({SOFTWARE.buildId}). Report a labeling
           disagreement, a missed collision, or an adverse event associated with use of this desk to{" "}
           <a className="text-accent underline" href={`mailto:${OPERATOR.email}`}>
             {OPERATOR.email}

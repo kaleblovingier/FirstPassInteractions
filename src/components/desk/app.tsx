@@ -1299,7 +1299,7 @@ function exportDesk(
   license: string | null,
 ) {
   const body = {
-    software: { name: SOFTWARE.name, version: SOFTWARE.version, udi: SOFTWARE.udi, notFdaCleared: true },
+    software: { name: SOFTWARE.name, version: SOFTWARE.version, buildId: SOFTWARE.buildId, notFdaCleared: true },
     intendedUse: "See IFU. Not a dose. Independent review of the Prescribing Information required.",
     howToRead: EXPORT_FILE_NOTE,
     license,

@@ -8,7 +8,8 @@ export const SOFTWARE = {
   manufacturer: "Kaleb Lovingier",
   email: "kaleblovingier@gmail.com",
   phone: "360-707-8923",
-  udi: "FP-SW-1.14.0",
+  /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
+  buildId: "FP-SW-1.14.0",
 } as const;
 
 /** 21 CFR / FDA CDS Guidance (Sept 28, 2022) posture — not a clearance. */
