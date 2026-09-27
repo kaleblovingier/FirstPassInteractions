@@ -8,18 +8,16 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ENZYME_PLATE } from "@/lib/drugs/visuals";
 import { Plate } from "./plate";
-
-const BLURBS: Record<Enzyme, string> = {
-  CYP1A2: "Smoking turns this pathway up. Drugs that depend on it (tizanidine, theophylline, clozapine, caffeine) can drop when someone lights up every day.",
-  CYP2B6: "Home to bupropion and methadone clearance. Strong inducers like efavirenz or rifampin can steal the effect.",
-  CYP2C8: "Gemfibrozil is the classic strong blocker here; repaglinide is the sensitive victim used in teaching maps.",
-  CYP2C9: "Clears S-warfarin, phenytoin, and many NSAIDs or sulfonylureas. Fluconazole and amiodarone slow it. A poor metabolizer looks like a strong inhibitor already on board.",
-  CYP2C19: "Activates clopidogrel and clears many PPIs and citalopram. Fluvoxamine and fluconazole are strong blockers.",
-  CYP2D6: "Usually not inducible. Needed to activate codeine or tamoxifen; blocked by paroxetine, fluoxetine, or bupropion.",
-  CYP2E1: "Alcohol can induce it. A minor path that turns acetaminophen into the reactive NAPQI metabolite.",
-  CYP3A4: "Clears about half of medicines. Strong blockers (azoles, ritonavir, clarithromycin) and inducers (rifampin, carbamazepine) drive most collision maps.",
-  "P-gp": "An efflux pump (ABCB1) that pushes drugs back out — digoxin, dabigatran, colchicine, many DOACs. Often moves with CYP3A4.",
-};
+import {
+  ATLAS_COACH,
+  ATLAS_COLUMN,
+  ATLAS_COLUMN_EMPTY,
+  ATLAS_ENZYME_PLAIN,
+  ATLAS_FDA_INDEX,
+  ATLAS_FOOTER,
+  ATLAS_TITLE,
+  type AtlasRole,
+} from "@/lib/drugs/atlas-plain";
 
 export function EnzymeAtlas() {
   const add = useDesk((s) => s.add);
@@ -54,12 +52,19 @@ export function EnzymeAtlas() {
             className="h-44 w-full lg:h-full min-h-44"
           />
           <div className="px-5 py-5 sm:px-6">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Enzyme atlas</p>
-            <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{enzyme}</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg">{BLURBS[enzyme]}</p>
-            <p className="mt-3 text-xs leading-relaxed text-muted">
-              Nine clearance pathways. Pick one, then tap a medicine to put it on the desk — victims, blockers, and speeders are listed separately. This is a teaching map, not a charting tool.
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              {ATLAS_TITLE.plainTitle}
+              <span className="text-subtle"> · {ATLAS_TITLE.scientific}</span>
             </p>
+            <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{ATLAS_ENZYME_PLAIN[enzyme].nickname}</h2>
+            <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-muted">{enzyme}</p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg">{ATLAS_ENZYME_PLAIN[enzyme].blurb}</p>
+            <div className="mt-3 max-w-2xl rounded-xl border border-accent/15 bg-accent-soft/30 p-3">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{ATLAS_COACH.kicker}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-fg">{ATLAS_COACH.body}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted">{ATLAS_FDA_INDEX.gloss}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted">{ATLAS_COACH.estimate}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -69,6 +74,7 @@ export function EnzymeAtlas() {
             key={e}
             type="button"
             onClick={() => setAtlasEnzyme(e)}
+            title={ATLAS_ENZYME_PLAIN[e].nickname}
             className={cn(
               "h-10 rounded-full px-3.5 font-mono text-xs font-medium",
               enzyme === e ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
@@ -78,7 +84,6 @@ export function EnzymeAtlas() {
           </button>
         ))}
       </div>
-      <p className="sr-only">{BLURBS[enzyme]}</p>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -144,67 +149,57 @@ export function EnzymeAtlas() {
       ) : (
         <div className="grid gap-3 lg:grid-cols-3">
           <AtlasColumn
-            title="Cleared here"
-            hint="Medicines this pathway clears or activates · FDA index tagged"
+            role="substrate"
             drugs={bucket.substrates}
             selected={selected}
             onAdd={add}
-            kind="S"
             enzyme={enzyme}
-            role="substrate"
           />
           <AtlasColumn
-            title="Blockers"
-            hint="Can make those medicines build up · FDA index tagged"
+            role="inhibitor"
             drugs={bucket.inhibitors}
             selected={selected}
             onAdd={add}
-            kind="I"
             enzyme={enzyme}
-            role="inhibitor"
           />
           <AtlasColumn
-            title="Speeders"
-            hint="Can make those medicines wear off faster · stopping can rebound"
+            role="inducer"
             drugs={bucket.inducers}
             selected={selected}
             onAdd={add}
-            kind="D"
             enzyme={enzyme}
-            role="inducer"
           />
         </div>
       )}
+      <p className="text-[11px] leading-relaxed text-subtle">{ATLAS_FOOTER}</p>
     </div>
   );
 }
 
 function AtlasColumn({
-  title,
-  hint,
   drugs,
   selected,
   onAdd,
-  kind,
   enzyme,
   role,
 }: {
-  title: string;
-  hint: string;
   drugs: { id: string; name: string; cls: string; brands: string[] }[];
   selected: string[];
   onAdd: (id: string) => void;
-  kind: string;
   enzyme: Enzyme;
-  role: "substrate" | "inhibitor" | "inducer";
+  role: AtlasRole;
 }) {
+  const copy = ATLAS_COLUMN[role];
   return (
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
       <div className="mb-3 flex items-baseline justify-between gap-2">
-        <h3 className="font-serif text-lg tracking-tight text-fg">{title}</h3>
+        <div className="min-w-0">
+          <h3 className="font-serif text-lg tracking-tight text-fg">{copy.title}</h3>
+          <p className="font-mono text-[10px] uppercase tracking-wide text-muted">{copy.scientific}</p>
+        </div>
         <Badge tone="default">{drugs.length}</Badge>
       </div>
-      <p className="mb-3 text-xs text-muted">{hint}</p>
+      <p className="mb-3 text-xs text-muted">{copy.hint}</p>
       <ul className="space-y-1">
         {drugs.map((d) => {
           const on = selected.includes(d.id);
@@ -221,15 +216,17 @@ function AtlasColumn({
                   <span className="block text-sm text-fg">{d.name}</span>
                   <span className="block text-[11px] text-muted">
                     {d.cls}
-                    {index ? " · FDA index" : ""}
+                    {index ? ` · ${ATLAS_FDA_INDEX.tag}` : ""}
                   </span>
                 </span>
-                <span className="font-mono text-[10px] text-subtle">{index ? "IDX" : kind}</span>
+                <span className="font-mono text-[10px] text-subtle">{copy.tag}</span>
               </button>
             </li>
           );
         })}
-        {drugs.length === 0 ? <li className="px-2 py-3 text-sm text-muted">Nothing mapped in this column yet.</li> : null}
+        {drugs.length === 0 ? (
+          <li className="px-2 py-3 text-sm leading-relaxed text-muted">{ATLAS_COLUMN_EMPTY}</li>
+        ) : null}
       </ul>
     </section>
   );

@@ -40,7 +40,7 @@ export function cannabisRouteBlurb(route: CannabisRoute): string {
 export function phenotypeBlurb(metabolizer: Metabolizer): string | null {
   switch (metabolizer) {
     case "PM":
-      return "This pathway runs slow — similar teaching to a strong inhibitor on that enzyme.";
+      return "This pathway runs slow — similar to having a medicine on board that blocks the same enzyme hard.";
     case "IM":
       return "This pathway runs a bit slow.";
     case "UM":
