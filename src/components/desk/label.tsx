@@ -34,7 +34,7 @@ const LEAD_BULLETS = [
   },
   {
     title: "Educational desk",
-    body: "Built for licensed clinicians and trainees to review mapped collisions — not a prescription writer or patient self-dosing app.",
+    body: "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. Not a prescription writer or patient self-dosing app.",
   },
   {
     title: "Empty ≠ safe",
