@@ -1,4 +1,4 @@
-import { COMMERCE, OPERATOR, payClose } from "./commerce";
+import { COMMERCE, OPERATOR, WHO_FOR, payClose } from "./commerce";
 
 export type Prey = "clinic" | "mat" | "school" | "harm" | "assoc";
 export type Range = "whatcom" | "puget" | "eastwa" | "pnw" | "us";
@@ -55,7 +55,7 @@ export const DIRECTORY: Target[] = [
     city: "Bellingham",
     who: "Nate Stephens, DO",
     site: "https://www.salishketamine.com/",
-    hook: "Your IV ketamine panel in Fairhaven — oral vs IV first-pass and benzo airway stacks are the map the infusion nurse already wants.",
+    hook: "Your IV ketamine panel in Fairhaven. Oral vs IV first-pass and benzo airway stacks, as teaching maps.",
   },
   {
     id: "cascade-medical-advantage",
@@ -75,7 +75,7 @@ export const DIRECTORY: Target[] = [
     city: "Bellingham",
     who: "MAT program (Suboxone, Vivitrol)",
     site: "https://www.seamar.org/whatcom-bh-mat-bellingham.html",
-    hook: "Naltrexone × leftover opioid, loperamide, and street-benzo stacks — the collisions MAT staff get asked about after hours.",
+    hook: "Naltrexone × leftover opioid, loperamide, and street-benzo stacks, as teaching maps for MAT education.",
   },
   {
     id: "ideal-option-bellingham",
@@ -85,7 +85,7 @@ export const DIRECTORY: Target[] = [
     city: "Bellingham",
     who: "Medication-assisted treatment clinic",
     site: "https://www.idealoption.com/clinics/bellingham",
-    hook: "High-throughput MAT. A five-drug free desk is how staff try it; founding adds host factors and export for teaching.",
+    hook: "High-throughput MAT. The five-drug free desk is an easy way to try it; founding adds host factors and export for teaching.",
   },
   {
     id: "ccs-recovery",
@@ -275,7 +275,7 @@ export const DIRECTORY: Target[] = [
     city: "Spokane",
     who: "Kelsey Martell, DO",
     site: "https://mountainpsych.com/",
-    hook: "East-side psych + ketamine. Fewer tools out there — a $79 teaching desk for staff huddles, not a substitute for a pharmacist.",
+    hook: "East-side psych + ketamine. Fewer tools out there. A $79 teaching desk for education, not a substitute for a pharmacist.",
   },
   {
     id: "illume-wellbeing",
@@ -530,6 +530,7 @@ export function filterDirectory(prey: Prey | "all", range: Range | "all") {
 export function targetDm(t: Pick<Target, "name" | "city" | "hook">, price = COMMERCE.founding) {
   return [
     `I built FirstPass, an educational CYP450 teaching desk. ${t.hook}`,
+    WHO_FOR,
     "",
     `Looked you up because of ${t.name} in ${t.city}.`,
     "",

@@ -59,12 +59,14 @@ test("plans FAQ answers subscription, card, lost key, and medical advice", () =>
   assert.doesNotMatch(faq, /diagnos|treat|cure/i);
 });
 
-test("who-it's-for line names the three buyer groups", () => {
+test("who-it's-for line uses the approved audience wording", () => {
   const m = src.match(/WHO_FOR = "([^"]+)"/);
   assert.ok(m);
-  assert.match(m[1], /ketamine clinics/i);
-  assert.match(m[1], /MAT and harm-reduction/i);
-  assert.match(m[1], /pharmacy students/i);
+  assert.equal(
+    m[1],
+    "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.",
+  );
+  assert.doesNotMatch(src, /trained safety staff|harm-reduction teams|street-supply desks/i);
 });
 
 test("pitch no longer repeats a second free-tier line", () => {

@@ -77,7 +77,7 @@ export const TRY_THREE = [
 ] as const;
 
 /** Plain "who it's for" line — Plans hero and pitch. */
-export const WHO_FOR = "Built for ketamine clinics, MAT and harm-reduction teams, and pharmacy students.";
+export const WHO_FOR = "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.";
 
 /** Short Plans FAQ. Contact answers reuse OPERATOR lines only — no new handles. */
 export const PLANS_FAQ = [
@@ -113,7 +113,7 @@ export const BUYERS = [
     hook: "oral vs IV ketamine, benzo airway stacks, and 2B6 phenotype",
   },
   {
-    who: "MAT and street-supply desks",
+    who: "MAT programs",
     why: "Teaching maps for xylazine, nitazenes, designer benzos, loperamide, and naltrexone, including why naloxone does not reverse xylazine's α2 effect.",
     hook: "xylazine, nitazenes, designer benzos, and the naltrexone / loperamide traps",
   },
@@ -123,7 +123,7 @@ export const BUYERS = [
     hook: "a teaching desk they will actually open, with JSON/CSV for the lab book",
   },
   {
-    who: "Harm-reduction and psych NPs",
+    who: "Psych and addiction-medicine NPs",
     why: "MDMA × SSRI, DXM × 2D6 PM, grapefruit × oral ketamine, lithium × mushrooms.",
     hook: "MDMA × SSRI, DXM in 2D6 PMs, grapefruit × oral ketamine",
   },
@@ -135,7 +135,8 @@ export function payClose(price = COMMERCE.founding) {
 
 export function salesDm(price = COMMERCE.founding) {
   return [
-    "I built FirstPass — a learning desk that maps how medicines interact for ketamine clinics, MAT, street adulterants (xylazine, nitazenes), and common psych stacks — including grapefruit, smoking, and metabolizer status.",
+    "I built FirstPass, a learning desk that maps how medicines interact across ketamine, MAT, street adulterants (xylazine, nitazenes), and common psych stacks, including grapefruit, smoking, and metabolizer status.",
+    WHO_FOR,
     "",
     "Free: check up to five medicines for mapped interactions.",
     `Founding license: $${price} once. Host-factor teaching cards, metabolite maps, enzyme atlas, and export — yours on this desk.`,
@@ -153,7 +154,8 @@ export function buyerDm(who: (typeof BUYERS)[number]["who"], price = COMMERCE.fo
   const buyer = BUYERS.find((b) => b.who === who);
   const hook = buyer?.hook ?? "CYP450 and drug-interaction teaching maps";
   return [
-    `I built FirstPass — a medicine-interaction learning desk for ${hook}.`,
+    `I built FirstPass, a medicine-interaction learning desk for ${hook}.`,
+    WHO_FOR,
     "",
     "Checking up to five medicines stays free so you can kick the tires.",
     `Founding license is $${price} once: host-factor teaching cards, metabolite maps, enzyme atlas, and JSON/CSV export.`,
@@ -169,7 +171,7 @@ export function buyerDm(who: (typeof BUYERS)[number]["who"], price = COMMERCE.fo
 
 export function launchTweet(price = COMMERCE.founding) {
   return [
-    "FirstPass is a CYP450 desk for ketamine clinics, MAT, and pharmacy students.",
+    "FirstPass is an educational CYP450 desk for licensed healthcare professionals and supervised students.",
     "",
     "Free up to five drugs on the desk.",
     `Founding license $${price} once — host factors, enzyme atlas, export.`,
@@ -200,7 +202,7 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
       compose: "https://x.com/compose/post",
       text: [
         "1/",
-        "FirstPass is a CYP450 desk for ketamine clinics, MAT, and pharmacy students.",
+        "FirstPass is an educational CYP450 desk for licensed healthcare professionals and supervised students.",
         "",
         "Free up to five drugs on the desk. Founding license $" + price + " once.",
         "",
@@ -281,7 +283,8 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
       where: "Your LinkedIn composer",
       compose: "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(url),
       text: [
-        "I built FirstPass, an educational CYP450 desk for ketamine clinics, MAT programs, and pharmacy students.",
+        "I built FirstPass, an educational CYP450 desk for ketamine, MAT, and psych teaching.",
+        WHO_FOR,
         "",
         "Up to five-drug collision checks stay free so a preceptor can use it for teaching. Founding license is $" +
           price +
