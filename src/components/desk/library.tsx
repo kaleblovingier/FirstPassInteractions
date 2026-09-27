@@ -106,7 +106,7 @@ export function Formulary() {
             )}
           >
             {f.label}
-            <span className="ml-1.5 font-mono tabular-nums opacity-70">{counts[f.id] ?? 0}</span>
+            <span className="ml-1.5 font-mono tabular-nums">{counts[f.id] ?? 0}</span>
           </button>
         ))}
       </div>

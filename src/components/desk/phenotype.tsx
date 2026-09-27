@@ -194,7 +194,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                     )}
                   >
                     <span>{METABOLIZER_PLAIN[m]}</span>
-                    <span className="font-mono text-[9px] opacity-70">{m}</span>
+                    <span className="font-mono text-[9px]">{m}</span>
                   </button>
                 );
               })}
