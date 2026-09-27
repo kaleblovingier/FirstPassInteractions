@@ -31,7 +31,7 @@ export function plainWordsReport(
       `FirstPass · ${names || "empty desk"}`,
       "No mapped findings on this tray.",
       "An empty result is not proof a combination is safe.",
-      "Educational model — not clinical decision support.",
+      "Educational interaction reference. Not a substitute for clinical judgment.",
     ].join("\n");
   }
   return [
@@ -40,6 +40,6 @@ export function plainWordsReport(
     "",
     ...findings.map((f) => `• ${f.severity} — ${f.headline}. ${f.plain}`),
     "",
-    "Educational model. Not a substitute for clinical decision support. An empty or partial map is not clearance.",
+    "Educational interaction reference. Not a substitute for clinical judgment. An empty or partial map is not clearance.",
   ].join("\n");
 }
