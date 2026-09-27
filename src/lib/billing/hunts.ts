@@ -15,6 +15,12 @@ export interface Target {
   hook: string;
 }
 
+/** A target kept on file but out of active outreach. Never shown in DIRECTORY / weekTargets. */
+export interface ParkedTarget extends Target {
+  parked: true;
+  reason: string;
+}
+
 export interface PipeRow extends Target {
   status: PipeStatus;
   note: string;
@@ -25,7 +31,7 @@ export const PREY_LABEL: Record<Prey, string> = {
   clinic: "Ketamine clinic",
   mat: "MAT / OTP",
   school: "Pharmacy school",
-  harm: "Harm reduction",
+  harm: "Harm reduction (parked)",
   assoc: "Association",
 };
 
@@ -45,7 +51,11 @@ export const STATUS_LABEL: Record<PipeStatus, string> = {
   skip: "Skip",
 };
 
-/** Public orgs only — websites, not personal inboxes. Bundle is public. */
+/**
+ * Active outreach targets. Public orgs only (websites, not personal inboxes); bundle is public.
+ * Every target must be a clinical organization, a health-professions school, or a professional
+ * association, matching WHO_FOR. Anything outside that audience goes in PARKED below.
+ */
 export const DIRECTORY: Target[] = [
   {
     id: "salish-ketamine",
@@ -338,26 +348,6 @@ export const DIRECTORY: Target[] = [
     hook: "OSU PharmD. Same pitch: a desk students open during psych and pain modules.",
   },
   {
-    id: "phra",
-    name: "People's Harm Reduction Alliance",
-    prey: "harm",
-    range: "puget",
-    city: "Seattle",
-    who: "Peer-run SSP + naloxone mail",
-    site: "https://phra.org/",
-    hook: "Teaching maps for xylazine, nitazenes, and designer benzos, including why naloxone does not reverse xylazine's α2 effect.",
-  },
-  {
-    id: "kc-needle-exchange",
-    name: "King County Needle Exchange",
-    prey: "harm",
-    range: "puget",
-    city: "Seattle",
-    who: "Public Health — Seattle & King County",
-    site: "https://doh.wa.gov/you-and-your-family/drug-user-health/syringe-service-programs/syringe-service-program-directory",
-    hook: "County SSP. Street-supply combinations as teaching maps. Educational desk, not a charting system.",
-  },
-  {
     id: "askp3",
     name: "ASKP3",
     prey: "assoc",
@@ -386,6 +376,38 @@ export const DIRECTORY: Target[] = [
     who: "WSPA members / CE",
     site: "https://www.wsparx.org/",
     hook: "State association. Ketamine, MAT, and street adulterants on one CYP teaching map for member education. Not accredited CE.",
+  },
+];
+
+/**
+ * Parked: kept for the record, excluded from active outreach (DIRECTORY, weekTargets,
+ * filterDirectory). FirstPass is intended for licensed healthcare professionals and supervised
+ * students, so peer-run or public-facing programs are outside the intended users.
+ */
+export const PARKED: ParkedTarget[] = [
+  {
+    id: "phra",
+    name: "People's Harm Reduction Alliance",
+    prey: "harm",
+    range: "puget",
+    city: "Seattle",
+    who: "Peer-run SSP + naloxone mail",
+    site: "https://phra.org/",
+    parked: true,
+    reason: "not a clinical organization; outside intended users",
+    hook: "Teaching maps for xylazine, nitazenes, and designer benzos, including why naloxone does not reverse xylazine's α2 effect.",
+  },
+  {
+    id: "kc-needle-exchange",
+    name: "King County Needle Exchange",
+    prey: "harm",
+    range: "puget",
+    city: "Seattle",
+    who: "Public Health — Seattle & King County",
+    site: "https://doh.wa.gov/you-and-your-family/drug-user-health/syringe-service-programs/syringe-service-program-directory",
+    parked: true,
+    reason: "public-facing syringe service program, not a clinical organization; outside intended users",
+    hook: "County SSP. Street-supply combinations as teaching maps. Educational desk, not a charting system.",
   },
 ];
 
@@ -451,16 +473,6 @@ export const RECIPES = [
     linkedin: "professor pharmacy psychopharmacology Washington OR Oregon",
   },
   {
-    id: "harm-puget",
-    prey: "harm" as Prey,
-    range: "puget" as Range,
-    label: "Harm reduction — Puget Sound",
-    google: "syringe service OR \"harm reduction\" (Seattle OR Whatcom OR Tacoma) xylazine",
-    maps: "needle exchange Seattle WA",
-    x: "(xylazine OR nitazene OR \"harm reduction\") (Seattle OR Bellingham)",
-    linkedin: "harm reduction program manager Seattle",
-  },
-  {
     id: "assoc-us",
     prey: "assoc" as Prey,
     range: "us" as Range,
@@ -469,6 +481,21 @@ export const RECIPES = [
     maps: "pharmacy association Olympia WA",
     x: "ASKP OR \"psychiatric pharmacist\" ketamine CYP",
     linkedin: "ASKP ketamine physician OR psychiatric pharmacist faculty",
+  },
+] as const;
+
+/** Search recipes for parked audiences. Not rendered with RECIPES. */
+export const PARKED_RECIPES = [
+  {
+    id: "harm-puget",
+    reason: "not a clinical organization; outside intended users",
+    prey: "harm" as Prey,
+    range: "puget" as Range,
+    label: "Harm reduction — Puget Sound",
+    google: "syringe service OR \"harm reduction\" (Seattle OR Whatcom OR Tacoma) xylazine",
+    maps: "needle exchange Seattle WA",
+    x: "(xylazine OR nitazene OR \"harm reduction\") (Seattle OR Bellingham)",
+    linkedin: "harm reduction program manager Seattle",
   },
 ] as const;
 
@@ -523,6 +550,7 @@ export function weekTargets(count = 5): Target[] {
   return [...here, ...more].slice(0, count);
 }
 
+/** Active outreach only: parked targets are never in DIRECTORY, so they never show here. */
 export function filterDirectory(prey: Prey | "all", range: Range | "all") {
   return DIRECTORY.filter((t) => (prey === "all" || t.prey === prey) && (range === "all" || t.range === range));
 }

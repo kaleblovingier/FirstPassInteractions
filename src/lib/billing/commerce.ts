@@ -221,7 +221,8 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
       id: "reddit-pharmacy",
       channel: "Reddit",
       title: "r/pharmacy",
-      where: "Teaching post, not a cold pitch",
+      // Professional sub. Check sub rules before posting.
+      where: "Teaching post, not a cold pitch. Check sub rules before posting.",
       compose: "https://www.reddit.com/r/pharmacy/submit",
       text: [
         "Title: FirstPass — a CYP450 teaching desk (oral vs IV ketamine, 2D6 PM accumulation, grapefruit first-pass)",
@@ -233,6 +234,8 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
         "Three cases worth opening:",
         tryLines,
         "",
+        WHO_FOR,
+        "",
         "Not a clinical system of record. Not medical advice. Founding license is $" +
           price +
           " once if you want host phenotype, the enzyme atlas, and export.",
@@ -241,22 +244,32 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
         SITE.repo,
       ].join("\n"),
     },
+    // Retargeted from r/ketamine (a public / patient community) to a student venue.
+    // r/PharmacySchool confirmed to exist (Sep 2026); r/CRNA also exists and fits the
+    // oral vs IV ketamine case. Check sub rules before posting in either.
     {
-      id: "reddit-ketamine",
+      id: "reddit-pharmacyschool",
       channel: "Reddit",
-      title: "r/ketamine",
-      where: "Oral vs IV first-pass, not dosing advice",
-      compose: "https://www.reddit.com/r/ketamine/submit",
+      title: "r/PharmacySchool",
+      where: "Student PK teaching post. Check sub rules before posting.",
+      compose: "https://www.reddit.com/r/PharmacySchool/submit",
       text: [
-        "Title: Oral vs IV ketamine first-pass — a CYP3A4 / 2B6 map (educational)",
+        "Title: Oral vs IV first-pass as a PK teaching case (free CYP450 study desk)",
         "",
-        "Oral ketamine is a first-pass problem. IV is not. Grapefruit inhibits gut 3A4, so oral F can rise while t½ changes little; an IV overlay on the same milligram scale stays flat. Strong hepatic 3A4 inhibitors are a different shape.",
+        "I built FirstPass, an educational CYP450 desk, and the case I keep coming back to for pharmacokinetics is oral vs IV ketamine. Grapefruit inhibits gut CYP3A4, so oral bioavailability can rise while half-life barely moves. An IV overlay on the same milligram scale stays flat, because IV skips the gut step. A strong hepatic 3A4 inhibitor draws a different shape, which makes a good contrast when you are studying AUC ratio vs half-life.",
         "",
-        "I put that on a desk with 2B6 phenotype, benzo airway stacks, and the usual psych list. Up to five-drug collision checks are free.",
+        "Other cases on the desk: DXM accumulation in a 2D6 poor metabolizer with every-8-hour dosing, tacrolimus with grapefruit, and 2B6 phenotype.",
         "",
-        "Educational model — not medical advice, not a clinic chart.",
+        WHO_FOR,
+        "",
+        "Checking up to five drugs is free, no card. A founding license is $" +
+          price +
+          " once if you want host factors, the enzyme atlas, and JSON/CSV export for a lab notebook.",
+        "",
+        "Educational model, not medical advice, not dosing guidance, and not FDA-cleared. The Prescribing Information governs.",
         "",
         url,
+        SITE.repo,
       ].join("\n"),
     },
     {
@@ -269,7 +282,9 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
         "Title: Show HN: FirstPass – educational CYP450 collision desk",
         "URL: " + url,
         "",
-        "FirstPass maps CYP450 / PD collisions for ketamine (oral vs IV), MAT and street adulterants, and the usual psych stack. Up to five-drug collision checks are free. A one-compartment sketch shows AUCR, q8h accumulation, and an oral/IV overlay. Host phenotype, the enzyme atlas, and export are a $" +
+        "FirstPass is an educational CYP450 desk for licensed healthcare professionals and supervised students.",
+        "",
+        "It maps CYP450 / PD collisions for ketamine (oral vs IV), MAT and street adulterants, and the usual psych stack. Up to five-drug collision checks are free. A one-compartment sketch shows AUCR, q8h accumulation, and an oral/IV overlay. Host phenotype, the enzyme atlas, and export are a $" +
           price +
           " founding license.",
         "",
@@ -356,5 +371,5 @@ export function invoiceText(opts: {
 export function tweetFor(regimen: string, highest: string, headline: string) {
   const line = `${regimen} — ${highest}`;
   const extra = headline && headline !== regimen ? `\n${headline}` : "";
-  return `${line}${extra}\nMapped on FirstPass. Educational CYP desk.\n${SITE.url}`.trim();
+  return `${line}${extra}\nMapped on FirstPass, an educational CYP desk for licensed healthcare professionals and supervised students.\n${SITE.url}`.trim();
 }
