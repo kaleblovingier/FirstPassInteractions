@@ -7,13 +7,17 @@ import {
   KNOWN_UNDERCALLS,
   LABEL_GOLD_SET,
   NOT_IN_CATALOG,
+  WAVE_1_COUNT,
+  WAVE_2_COUNT,
 } from "./label-gold-set";
 import { evaluatePair } from "./label-gold-set-eval";
 
 const byId = new Map(LABEL_GOLD_SET.map((p) => [p.id, p]));
 
 test("gold set: shape, unique ids, catalog ids exist", () => {
-  assert.ok(LABEL_GOLD_SET.length >= 35 && LABEL_GOLD_SET.length <= 50, `size ${LABEL_GOLD_SET.length}`);
+  assert.ok(WAVE_1_COUNT >= 35 && WAVE_1_COUNT <= 50, `wave 1 size ${WAVE_1_COUNT}`);
+  assert.ok(WAVE_2_COUNT >= 20 && WAVE_2_COUNT <= 35, `wave 2 size ${WAVE_2_COUNT}`);
+  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT);
   assert.equal(byId.size, LABEL_GOLD_SET.length, "pair ids are unique");
   const unordered = new Set(LABEL_GOLD_SET.map((p) => [p.drugA, p.drugB].sort().join("+")));
   assert.equal(unordered.size, LABEL_GOLD_SET.length, "no pair listed twice in either order");
@@ -24,8 +28,16 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
     assert.equal(p.retrieved, "2026-09-27");
     assert.match(p.url, /^https:\/\/(dailymed\.nlm\.nih\.gov|www\.accessdata\.fda\.gov)\//);
     assert.ok(p.labelSection.trim().length > 0);
-    assert.equal(p.expectedFloor, "major");
     assert.equal(p.expectContraindicated, p.labelClass === "contraindicated");
+    if (p.wave === 1) {
+      assert.equal(p.expectedFloor, "major");
+      assert.ok(p.labelClass === "contraindicated" || p.labelClass === "avoid", `${p.id}: wave 1 class`);
+    } else {
+      assert.equal(p.wave, 2);
+      // contraindicated / avoid / boxed-warning always need at least "Serious concern"
+      if (p.labelClass !== "warning") assert.equal(p.expectedFloor, "major", `${p.id}: floor`);
+      else assert.ok(p.expectedFloor === "major" || p.expectedFloor === "moderate", `${p.id}: floor`);
+    }
   }
 });
 
