@@ -301,6 +301,19 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "gold-set",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1a52bedc-8e2c-4116-a296-a87770676b4a",
   },
+  {
+    id: "alosetron+fluvoxamine",
+    labelDrugId: "alosetron",
+    otherId: "fluvoxamine",
+    enzyme: "CYP1A2",
+    kind: "inhibitor",
+    labelDrug: "Lotronex (alosetron)",
+    labelSection: "4.3 Concomitant Use of Fluvoxamine",
+    quote: "Concomitant administration of LOTRONEX with fluvoxamine is contraindicated.",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=35cbb9d5-639b-207a-e054-00144ff88e88",
+  },
   // ── Restored after #58: were contraindicated on main via the enzyme rule, the
   // label contraindicates them, and #58's FDA-aligned grades dropped them to major.
   {

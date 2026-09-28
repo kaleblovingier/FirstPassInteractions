@@ -67,6 +67,9 @@ const EXPECTED_PINS = [
   "tizanidine+ciprofloxacin",
   "tizanidine+fluvoxamine",
   "triazolam+ketoconazole",
+  // Gold-set pair that reaches contraindicated only through the enzyme rule after #58
+  // (alosetron gained its FDA-listed 1A2 sensitive substrate role).
+  "alosetron+fluvoxamine",
   // Restored: label-contraindicated pairs that #58's grade changes dropped to major.
   "ranolazine+phenobarbital",
   "ranolazine+primidone",
@@ -76,7 +79,7 @@ const EXPECTED_PINS = [
 
 test("pin list is exactly the reviewed set", () => {
   assert.deepEqual(LABEL_CONTRAINDICATIONS.map((r) => r.id).sort(), [...EXPECTED_PINS].sort());
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 18);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 19);
 });
 
 for (const r of LABEL_CONTRAINDICATIONS) {
