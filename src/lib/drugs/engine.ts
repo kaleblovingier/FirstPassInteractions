@@ -6,6 +6,11 @@ import { udsFindings } from "./uds";
 import { protocolFindings } from "./cyp-protocol";
 import { doseFindings } from "./dosing";
 import {
+  LABEL_CONTRAINDICATED_TAG,
+  labelContraindicationFor,
+  labelPinSentence,
+} from "./label-contraindications";
+import {
   ACEI,
   ARNI,
   FLUOROPYRIMIDINE,
@@ -242,6 +247,53 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
       }
     }
   }
+  return out;
+}
+
+/**
+ * Label-sourced contraindication pins (see label-contraindications.ts). For a
+ * short list of named pairs whose FDA label lists the combination under
+ * Contraindications, the matching enzyme finding is held at contraindicated.
+ * Nothing else about pkSeverity or its thresholds changes.
+ */
+function applyLabelPins(a: Drug, b: Drug, findings: Finding[]): Finding[] {
+  const pin = labelContraindicationFor(a.id, b.id);
+  if (!pin) return findings;
+  let pinned = false;
+  const out = findings.map((f) => {
+    if (
+      f.kind !== "pk" ||
+      f.drugIds[0] !== pin.otherId ||
+      f.drugIds[1] !== pin.labelDrugId ||
+      !f.enzymes.includes(pin.enzyme) ||
+      !f.tags.includes(pin.kind)
+    ) {
+      return f;
+    }
+    pinned = true;
+    return {
+      ...f,
+      severity: "contraindicated" as Severity,
+      clinical: `${f.clinical} ${labelPinSentence(pin)}`,
+      tags: [...f.tags, LABEL_CONTRAINDICATED_TAG],
+    };
+  });
+  if (pinned) return out;
+  // The enzyme finding is missing (catalog roles changed). Keep the label verdict visible anyway.
+  const perp = pin.otherId === a.id ? a : b;
+  const victim = perp === a ? b : a;
+  out.push({
+    id: pairId(a.id, b.id, `label-ci-${pin.enzyme}-${pin.kind}-${perp.id}`),
+    severity: "contraindicated",
+    kind: "pk",
+    drugIds: [perp.id, victim.id],
+    headline: `${perp.name} × ${victim.name}`,
+    enzymes: [pin.enzyme],
+    effect: pin.kind === "inhibitor" ? "higher exposure" : "lower exposure",
+    mechanism: `labeled contraindication (${pin.enzyme})`,
+    clinical: labelPinSentence(pin),
+    tags: [pin.enzyme, pin.kind, LABEL_CONTRAINDICATED_TAG],
+  });
   return out;
 }
 
@@ -2256,7 +2308,7 @@ export function analyze(
       const skipApapChronic =
         (a.id === "__etoh-chronic" && b.id === "acetaminophen") ||
         (b.id === "__etoh-chronic" && a.id === "acetaminophen");
-      if (!skipApapChronic) findings.push(...pkFindings(a, b));
+      if (!skipApapChronic) findings.push(...applyLabelPins(a, b, pkFindings(a, b)));
       findings.push(...pdFindings(a, b));
     }
   }
