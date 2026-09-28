@@ -286,7 +286,16 @@ export function basisFor(finding: Finding): FindingBasis[] {
       href: finding.drugIds[0] ? dailymedSearchUrl(DRUG_BY_ID[finding.drugIds[0]]?.name ?? "") : undefined,
     });
   }
-  return out;
+  // Two rules can cite the same label page (e.g. a pinned label rule and the gold-set quote).
+  // Keep the first, so the two visible slots show two different sources.
+  const seen = new Set<string>();
+  return out.filter((b) => {
+    if (!b.href) return true;
+    const k = `${b.kind}|${b.href}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 export function scaleBasis(id: keyof typeof SCALE): FindingBasis {
