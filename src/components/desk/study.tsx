@@ -461,7 +461,7 @@ export function StudyPage() {
               )}
             >
               {PILE_PLAIN[s.id]}{" "}
-              <span className="font-mono tabular-nums opacity-70">{n}</span>
+              <span className="font-mono tabular-nums">{n}</span>
             </button>
           );
         })}
