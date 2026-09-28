@@ -3,6 +3,11 @@
 import { citesFor, pubmedUrl } from "./pubmed";
 import { dailymedSearchUrl } from "@/lib/regulatory";
 import { DRUG_BY_ID } from "./catalog";
+import {
+  LABEL_CONTRAINDICATED_TAG,
+  LABEL_CONTRAINDICATIONS_RETRIEVED,
+  labelContraindicationFor,
+} from "./label-contraindications";
 import type { Finding } from "./types";
 
 export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "cpic" | "pubmed" | "scale" | "desk";
@@ -117,6 +122,24 @@ const SCALE: Record<string, string> = {
   mme: "CDC Clinical Practice Guideline for Prescribing Opioids, 2022. Factors, not a ceiling.",
 };
 
+/** Verbatim label sentence for a finding held at contraindicated by a label pin. */
+function labelPinBasis(finding: Finding): FindingBasis | null {
+  if (!finding.tags.includes(LABEL_CONTRAINDICATED_TAG) || finding.drugIds.length !== 2) return null;
+  const pin = labelContraindicationFor(finding.drugIds[0], finding.drugIds[1]);
+  if (!pin) return null;
+  const parts = [`The ${pin.labelDrug} label lists this combination under Contraindications.`];
+  if (pin.contraindicationsSentence) parts.push(`Contraindications: "${pin.contraindicationsSentence}"`);
+  parts.push(`${pin.labelSection}: "${pin.quote}"`);
+  if (pin.labelExample) parts.push(`Named in the label: "${pin.labelExample}"`);
+  parts.push(`Retrieved from DailyMed ${LABEL_CONTRAINDICATIONS_RETRIEVED}.`);
+  return {
+    kind: "fda-pi",
+    label: `${pin.labelDrug} label, Contraindications`,
+    detail: parts.join(" "),
+    href: pin.url,
+  };
+}
+
 function suffixOf(id: string) {
   const parts = id.split("__");
   return parts[parts.length - 1] ?? id;
@@ -125,6 +148,8 @@ function suffixOf(id: string) {
 export function basisFor(finding: Finding): FindingBasis[] {
   const suffix = suffixOf(finding.id);
   const out: FindingBasis[] = [];
+  const pinned = labelPinBasis(finding);
+  if (pinned) out.push(pinned);
   const boxed = BOXED[suffix];
   if (boxed) {
     out.push({
