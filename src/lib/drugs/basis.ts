@@ -11,6 +11,7 @@ import {
   LABEL_CONTRAINDICATIONS_RETRIEVED,
   labelContraindicationFor,
 } from "./label-contraindications";
+import { PERPETRATOR_LABELS } from "./reference/label-perpetrators";
 import type { Finding } from "./types";
 
 export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "fda-ddi" | "cpic" | "pubmed" | "scale" | "desk";
@@ -225,6 +226,32 @@ function labelPinBasis(finding: Finding): FindingBasis | null {
     href: pin.url,
   };
 }
+/** Perpetrator's own label, for PK rows FDA Table 1 cannot cite. */
+function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
+  if (finding.kind !== "pk") return null;
+  const [perpId, victimId] = finding.drugIds;
+  const role = finding.tags.find((t) => t === "inhibitor" || t === "inducer");
+  const L = PERPETRATOR_LABELS.find(
+    (x) => x.perpIds.includes(perpId ?? "") && x.enzyme === finding.enzymes[0] && x.role === role,
+  );
+  if (!L || !victimId) return null;
+  const ci = L.contraindicatedWith?.victimIds.includes(victimId) ? L.contraindicatedWith : undefined;
+  if (ci) {
+    return {
+      kind: "fda-pi",
+      label: `${L.brand} label, ${ci.section}`,
+      detail: `The ${L.brand} label calls this combination contraindicated: "${ci.quote}" Retrieved from DailyMed ${L.retrieved}.`,
+      href: L.url,
+    };
+  }
+  return {
+    kind: "fda-pi",
+    label: `${L.brand} label, ${L.section}`,
+    detail: `The ${L.brand} label states the ${L.role === "inducer" ? "induction" : "inhibition"}: "${L.roleQuote}" It does not name this pair as contraindicated; the severity tier on this row is the desk's rule. Retrieved from DailyMed ${L.retrieved}.`,
+    href: L.url,
+  };
+}
+
 function suffixOf(id: string) {
   const parts = id.split("__");
   return parts[parts.length - 1] ?? id;
@@ -234,7 +261,6 @@ export function basisFor(finding: Finding): FindingBasis[] {
   const suffix = suffixOf(finding.id);
   const out: FindingBasis[] = [];
   // #58 label pins lead. Gold-set quotes (#68) still attach for pairs the pin does not already cite.
-  // Open PR #72 also edits this file; it should rebase onto this pin-first order.
   const pinned = labelPinBasis(finding);
   if (pinned) out.push(pinned);
   const quoted = labelQuoteBasis(finding);
@@ -260,6 +286,8 @@ export function basisFor(finding: Finding): FindingBasis[] {
   }
   const fda = fdaDdiBasis(finding);
   if (fda) out.push(fda);
+  const perpLabel = fda ? null : perpetratorLabelBasis(finding);
+  if (perpLabel) out.push(perpLabel);
   const cites = citesFor(finding.drugIds).slice(0, 1);
   if (cites[0]) {
     out.push({
