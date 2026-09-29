@@ -39,7 +39,7 @@ export const EXPORT_EMPTY =
   "No possible concerns are mapped for this tray. A short or empty report is not a green light — this desk only knows a teaching list, and the label and prescriber still govern.";
 
 /** Existing educational disclaimer line (kept verbatim from the prior report). */
-export const EXPORT_DISCLAIMER = "Educational model. Not a substitute for clinical decision support.";
+export const EXPORT_DISCLAIMER = "Educational interaction reference. Not a substitute for clinical judgment.";
 
 /** Footer under the findings. */
 export const EXPORT_FOOTER =

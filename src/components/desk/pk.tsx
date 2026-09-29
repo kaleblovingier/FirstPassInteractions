@@ -156,7 +156,7 @@ export function PkExplorer({ drugs, host }: { drugs: Drug[]; host: HostContext }
         <Stat k="Cmax" v={fold(model.cmaxFold)} hot={model.cmaxFold >= 2} />
         <Stat
           k="Half-life"
-          v={`${fmtH(model.tHalfBase)} → ${fmtH(model.tHalfDesk)}`}
+          v={`${fmtH(model.tHalfBase)} to ${fmtH(model.tHalfDesk)}`}
           hot={model.tHalfDesk / model.tHalfBase >= 1.6}
         />
         {tau > 0 ? (
@@ -283,7 +283,7 @@ export function PkExplorer({ drugs, host }: { drugs: Drug[]; host: HostContext }
       <p className="mt-3 text-sm leading-relaxed text-fg">{model.note}</p>
       {tau > 0 ? (
         <p className="mt-1 text-xs leading-relaxed text-muted">
-          Build-up {fold(model.racBase)} → {fold(model.rac)} at every {tau}h. A simple stack of doses — not a trough
+          Build-up {fold(model.racBase)} to {fold(model.rac)} at every {tau}h. A simple stack of doses — not a trough
           level and not therapeutic drug monitoring.
         </p>
       ) : null}

@@ -240,7 +240,7 @@ export const STAHL: Record<string, StahlCard> = {
     "Rash / SJS, insomnia. Estrogen is an inducer of its UGT — the pill can steal the dose.",
   ),
   carbamazepine: st(
-    "Mood stabilizer — Nav plus pan-CYP induction",
+    "Mood stabilizer — Nav plus broad CYP induction",
     [
       { r: "Nav", n: 4 },
     ],
@@ -553,7 +553,7 @@ export const STAHL: Record<string, StahlCard> = {
     "Insomnia, appetite, tics, pressor with MAOIs.",
   ),
   methamphetamine: st(
-    "Stimulant — hotter DAT/NET/VMAT2 releaser",
+    "Stimulant — stronger DAT/NET/VMAT2 releaser",
     [
       { r: "DAT", n: 4 },
       { r: "NET", n: 4 },
@@ -631,7 +631,7 @@ export const STAHL: Record<string, StahlCard> = {
       { r: "CB1", n: 4 },
       { r: "CB2", n: 3 },
     ],
-    "Edible first-pass to 11-OH-THC is the 2C9/3A4 trap; smoked mostly skips it. 2C9 PMs make edibles hotter. Fat meals raise oral AUC.",
+    "Edible first-pass to 11-OH-THC is the 2C9/3A4 trap; smoked mostly skips it. 2C9 PMs get more exposure from edibles. Fat meals raise oral AUC.",
     "Anxiety, tachycardia, delayed edible peak. Route is the PK.",
   ),
   cannabidiol: st(
@@ -776,7 +776,7 @@ export const STAHL: Record<string, StahlCard> = {
     [
       { r: "μ", n: 4 },
     ],
-    "Much hotter than mitragynine. Street 7-OH is an opioid map. 3A4. Buprenorphine is precipitated withdrawal / blocked high, not stacked milligrams.",
+    "Much more potent than mitragynine. Street 7-OH is an opioid map. 3A4. Buprenorphine is precipitated withdrawal / blocked high, not stacked milligrams.",
     "Respiratory depression, benzo airway, occupancy conflict with Suboxone.",
   ),
   tianeptine: st(
@@ -897,7 +897,7 @@ export const STAHL: Record<string, StahlCard> = {
       { r: "MT2", n: 3 },
     ],
     "1A2 substrate — fluvoxamine and ciprofloxacin raise it. Not a GABA hypnotic. Formulation-dependent dose is a mess.",
-    "Vivid dreams, next-day fog at high dose. 1A2 inhibitors make it hotter.",
+    "Vivid dreams, next-day fog at high dose. 1A2 inhibitors raise its exposure.",
   ),
   acamprosate: st(
     "NMDA / GABA modulator — alcohol MAT, renal, quiet CYP",

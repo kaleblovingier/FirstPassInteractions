@@ -533,7 +533,7 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
   {
     id: "pheno-ocp",
     title: "Phenobarbital + OCP",
-    blurb: "Pan-CYP induction — contraceptive failure",
+    blurb: "Broad CYP induction — contraceptive failure",
     drugIds: ["phenobarbital", "ethinyl-estradiol"],
     lane: "clinic",
   },

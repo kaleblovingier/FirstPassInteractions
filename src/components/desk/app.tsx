@@ -1202,7 +1202,7 @@ function HowCard() {
         <li>
           <span className="text-fg">Phenotype.</span> Flip CYP2D6 / 2C19 / 2C9 / 2B6 to poor or
           ultrarapid — a poor metabolizer scores like a strong inhibitor of that enzyme. Poor 2C9
-          metabolizers make warfarin and edible THC hotter. Pick a status you already know; the rows
+          metabolizers get more exposure from warfarin and edible THC. Pick a status you already know; the rows
           are a teaching summary of CPIC guidance, not a genetic test result.
         </li>
         <li>
@@ -1283,8 +1283,9 @@ function Disclaimer() {
       <p className="text-[11px] font-medium uppercase tracking-wide text-muted">About this desk</p>
       <p className="mt-1.5 text-[11px] leading-relaxed text-subtle">
         Built for learning and clinical review — not a personal treatment guide.{" "}
-        {SOFTWARE.name} {SOFTWARE.version} is an educational clinical decision-support aid,
-        for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. {NOT_CLEARED} It can miss risks; an empty result is not
+        {SOFTWARE.name} {SOFTWARE.version} is an educational interaction reference,
+        for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. It is not a substitute for clinical judgment.{" "}
+        {NOT_CLEARED} It can miss risks; an empty result is not
         proof that a combination is safe. It does not identify product contents, diagnose, or tell
         anyone what to start, stop, or change. For care decisions, consult a qualified clinician and
         current FDA-approved labeling. Street-supply entries are teaching examples, not product
