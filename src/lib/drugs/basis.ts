@@ -59,6 +59,16 @@ const BOXED: Record<string, { detail: string; href?: string }> = {
     detail:
       "ACEI and ARB labels, ONTARGET, VA NEPHRON-D, Tekturna boxed warning: dual RAAS blockade — hyperkalemia, hypotension, AKI without outcome gain in the labeled populations. Aliskiren plus ACEI/ARB contraindicated in diabetes.",
   },
+  "pd-ghb-cns": {
+    detail:
+      "Sodium oxybate labels (Xyrem, Xywav, Lumryz) carry a boxed warning for CNS and respiratory depression, including with other CNS depressants, and contraindicate use with sedative hypnotics or alcohol. Street GHB and non-hypnotic depressants are the desk extending that label; open the PI.",
+    href: dailymedSearchUrl("sodium oxybate"),
+  },
+  "pd-maoi-stim": {
+    detail:
+      "Amphetamine and methylphenidate labels contraindicate use during or within 14 days after an MAOI (hypertensive crisis). Cocaine, MDMA, and other unlabeled stimulants are the desk extending that label; open the PI.",
+    href: dailymedSearchUrl("amphetamine"),
+  },
   "pd-ppi-acid": {
     detail:
       "Reyataz / Edurant / Nizoral / Harvoni / Epclusa labels: PPIs raise gastric pH and dump acid-dependent absorption. Rilpivirine PPIs are contraindicated.",
