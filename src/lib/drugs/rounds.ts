@@ -585,7 +585,7 @@ export const ROUNDS: Round[] = [
     setting: "mat",
     stem: "Stable methadone 90 mg. Cipro for a UTI. Two days later they nod at the window, the QTc is longer, and nobody added a street fold.",
     ask: "Is Cipro a 3A4 story, a QT story, or both?",
-    teach: "Both. Ciprofloxacin is a strong 1A2 inhibitor and a weak 3A4 inhibitor plus a QT drug. Herrlin 2000 is the methadone case. Put methadone + ciprofloxacin on the desk — you want PK plus QT. Separate cations from the tablet; that is a different row. Not a free UTI pill on a known-QT opioid.",
+    teach: "Both. Ciprofloxacin is a moderate 1A2 inhibitor and a moderate 3A4 inhibitor plus a QT drug. Herrlin 2000 is the methadone case. Put methadone + ciprofloxacin on the desk — you want PK plus QT. Separate cations from the tablet; that is a different row. Not a free UTI pill on a known-QT opioid.",
     drugIds: ["methadone", "ciprofloxacin"],
     lane: "mat",
     blurb: "Cipro on the OTP",

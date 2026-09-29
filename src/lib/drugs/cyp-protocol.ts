@@ -143,18 +143,18 @@ const INDEX: FdaIndexHit[] = [
   i("ritonavir", "CYP3A4", "inhibitor", "strong · TDI"),
   i("paxlovid", "CYP3A4", "inhibitor", "strong · TDI"),
   i("cobicistat", "CYP3A4", "inhibitor", "strong"),
-  i("grapefruit", "CYP3A4", "inhibitor", "strong intestinal · TDI"),
+  i("grapefruit", "CYP3A4", "inhibitor", "moderate intestinal · TDI"),
   // 3A moderate inhibitors
   i("erythromycin", "CYP3A4", "inhibitor", "moderate · TDI"),
   i("fluconazole", "CYP3A4", "inhibitor", "moderate"),
   i("diltiazem", "CYP3A4", "inhibitor", "moderate · TDI"),
   i("verapamil", "CYP3A4", "inhibitor", "moderate · TDI"),
-  i("ciprofloxacin", "CYP3A4", "inhibitor", "weak–moderate"),
+  i("ciprofloxacin", "CYP3A4", "inhibitor", "moderate"),
   // 3A inducers
   i("rifampin", "CYP3A4", "inducer", "strong index"),
   i("carbamazepine", "CYP3A4", "inducer", "strong"),
   i("phenytoin", "CYP3A4", "inducer", "strong"),
-  i("phenobarbital", "CYP3A4", "inducer", "strong"),
+  i("phenobarbital", "CYP3A4", "inducer", "moderate"),
   i("st-johns-wort", "CYP3A4", "inducer", "strong"),
   i("efavirenz", "CYP3A4", "inducer", "moderate"),
   // 2D6
@@ -183,7 +183,7 @@ const INDEX: FdaIndexHit[] = [
   i("celecoxib", "CYP2C9", "substrate", "sensitive"),
   i("fluconazole", "CYP2C9", "inhibitor", "moderate–strong"),
   i("amiodarone", "CYP2C9", "inhibitor", "moderate · linger"),
-  i("rifampin", "CYP2C9", "inducer", "strong"),
+  i("rifampin", "CYP2C9", "inducer", "moderate"),
   // 2C8
   i("pioglitazone", "CYP2C8", "substrate", "sensitive"),
   i("gemfibrozil", "CYP2C8", "inhibitor", "strong · TDI"),
@@ -194,13 +194,13 @@ const INDEX: FdaIndexHit[] = [
   i("olanzapine", "CYP1A2", "substrate", "major"),
   i("caffeine", "CYP1A2", "substrate", "index probe"),
   i("fluvoxamine", "CYP1A2", "inhibitor", "strong index"),
-  i("ciprofloxacin", "CYP1A2", "inhibitor", "strong"),
+  i("ciprofloxacin", "CYP1A2", "inhibitor", "moderate"),
   i("rifampin", "CYP1A2", "inducer", "moderate"),
   // 2B6
   i("bupropion", "CYP2B6", "substrate", "sensitive index"),
   i("efavirenz", "CYP2B6", "substrate", "sensitive"),
   i("methadone", "CYP2B6", "substrate", "major"),
-  i("rifampin", "CYP2B6", "inducer", "strong"),
+  i("rifampin", "CYP2B6", "inducer", "moderate"),
   i("efavirenz", "CYP2B6", "inducer", "moderate (auto)"),
   // P-gp
   i("digoxin", "P-gp", "substrate", "index"),
