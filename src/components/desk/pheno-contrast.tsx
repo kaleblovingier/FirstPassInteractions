@@ -43,7 +43,7 @@ function SideCard({
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="font-serif text-xl tracking-tight text-fg">{clinicalPhenoLabel(clinical)}</span>
         <Badge tone={hot ? "warn" : "info"}>
-          lab says {genotypeLabel(genotype)}
+          known status: {genotypeLabel(genotype)}
         </Badge>
       </div>
       {names.length ? (
@@ -125,16 +125,17 @@ export function PhenoContrastBoard({
   return (
     <div className="space-y-5">
       <p className="text-sm leading-relaxed text-muted">
-        Same tray, blocker or inducer off, then on. The lab result does not change. How the enzyme
-        behaves on this tray does. Not a dose, not CPIC, not a test order.
+        Same tray, blocker or inducer off, then on. The metabolizer status you already know does not
+        change. How the enzyme behaves on this tray does. Not a dose, not a test order, and not a genetic
+        test result.
       </p>
       {contrasts.map((c) => (
         <ContrastRow key={c.enzyme} contrast={c} />
       ))}
       <p className="text-[11px] leading-relaxed text-subtle">
-        Shah &amp; Smith: phenoconversion is the Achilles heel of a genotype report. CPIC still lists
-        the lab. This desk scores the enzyme the patient actually has. Teaching only — the Prescribing
-        Information still wins.
+        Shah &amp; Smith: phenoconversion is the Achilles heel of a genotype report. CPIC guidance is
+        written for the known status; this desk scores how the enzyme behaves on this tray. A teaching
+        summary of CPIC guidance, not a gene report reading. The Prescribing Information still wins.
       </p>
     </div>
   );

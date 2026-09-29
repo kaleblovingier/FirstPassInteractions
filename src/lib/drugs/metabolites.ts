@@ -252,7 +252,7 @@ export const METABOLITE_TREES: Record<string, MetaboliteTree> = {
   },
   oxycodone: {
     id: "oxycodone",
-    blurb: "3A4 is the main shunt. 2D6 makes oxymorphone — the hotter μ-agonist. Percocet adds APAP on a separate 2E1 map.",
+    blurb: "3A4 is the main shunt. 2D6 makes oxymorphone — the more potent μ-agonist. Percocet adds APAP on a separate 2E1 map.",
     nodes: [
       { name: "Noroxycodone", via: "CYP3A4", note: "Weakly active shunt" },
       { name: "Oxymorphone", via: "CYP2D6", note: "Hotter μ-agonist", active: true },
@@ -275,9 +275,9 @@ export const METABOLITE_TREES: Record<string, MetaboliteTree> = {
   },
   kratom: {
     id: "kratom",
-    blurb: "CYP3A4 turns mitragynine into 7-hydroxymitragynine — the hotter μ-agonist. Street 7-OH skips that step.",
+    blurb: "CYP3A4 turns mitragynine into 7-hydroxymitragynine — the more potent μ-agonist. Street 7-OH skips that step.",
     nodes: [
-      { name: "7-Hydroxymitragynine", via: "CYP3A4", note: "Much hotter μ-agonist than parent", active: true, toxic: true },
+      { name: "7-Hydroxymitragynine", via: "CYP3A4", note: "Much more potent μ-agonist than parent", active: true, toxic: true },
     ],
   },
   "seven-oh": {
@@ -289,7 +289,7 @@ export const METABOLITE_TREES: Record<string, MetaboliteTree> = {
   },
   primidone: {
     id: "primidone",
-    blurb: "Activated to phenobarbital. After 1–2 weeks you have a pan-CYP inducer on board.",
+    blurb: "Activated to phenobarbital. After 1–2 weeks you have a broad CYP inducer on board.",
     nodes: [
       { name: "Phenobarbital", via: "CYP2C19 · oxidation", note: "The inducing barbiturate", active: true },
       { name: "PEMA", via: "oxidation", note: "Active anticonvulsant metabolite", active: true },

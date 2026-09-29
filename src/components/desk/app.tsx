@@ -294,7 +294,7 @@ export function DeskApp() {
         <div className="border-b border-border bg-warn-soft">
           <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <p className="max-w-3xl text-sm leading-relaxed text-fg">
-              <span className="font-medium">For clinicians and supervised learning.</span> Not for
+              <span className="font-medium">For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.</span> Not for
               personal treatment, dose changes, or deciding whether to combine substances. This
               educational checker can miss risks and cannot test what is in a product. If someone is
               seriously unwell or may be overdosing, contact local emergency services or a poison
@@ -634,7 +634,7 @@ function EmptyState({
         <p className="max-w-xl text-sm leading-relaxed text-muted">
           {lane === "mat"
             ? "Explore educational examples involving opioid-treatment medicines and other substances. These notes are not a treatment plan; a qualified clinician and current product labeling must guide care."
-            : "Add two or more medicines, supplements, foods, or other substances to see possible concerns in everyday language, with clinical details and sources for review. This is a learning aid for clinicians and supervised education—not personal medical advice. It can miss interactions; no result does not mean a combination is safe."}
+            : "Add two or more medicines, supplements, foods, or other substances to see possible concerns in everyday language, with clinical details and sources for review. This is a learning aid, for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. It is not personal medical advice. It can miss interactions; no result does not mean a combination is safe."}
         </p>
         {undo || recent.length > 0 ? (
           <div className="mt-4 flex flex-col gap-3 rounded-lg bg-bg px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1202,7 +1202,8 @@ function HowCard() {
         <li>
           <span className="text-fg">Phenotype.</span> Flip CYP2D6 / 2C19 / 2C9 / 2B6 to poor or
           ultrarapid — a poor metabolizer scores like a strong inhibitor of that enzyme. Poor 2C9
-          metabolizers make warfarin and edible THC hotter.
+          metabolizers get more exposure from warfarin and edible THC. Pick a status you already know; the rows
+          are a teaching summary of CPIC guidance, not a genetic test result.
         </li>
         <li>
           <span className="text-fg">Host.</span> Daily smoke induces CYP1A2. Chronic alcohol induces
@@ -1246,7 +1247,8 @@ function HowCard() {
           grades (Huang 2007 / 2020 guidance), not vibes. Mechanism-based inhibitors (clarithromycin,
           grapefruit, ritonavir, paroxetine, fluoxetine) destroy the enzyme — stopping yesterday
           does not restore it. Inducers take a week to land and two weeks to leave; the stop is
-          rebound toxicity. Open the CYP tab. Plan the stop on the start day. Not a milligram.
+          rebound toxicity. Open the CYP tab. The stop matters as much as the start. A study aid for how
+          timing changes the picture, not a real-time alert. Not a milligram.
         </li>
         <li>
           <span className="text-fg">Clinic.</span> Allopurinol × azathioprine is xanthine oxidase,
@@ -1281,8 +1283,9 @@ function Disclaimer() {
       <p className="text-[11px] font-medium uppercase tracking-wide text-muted">About this desk</p>
       <p className="mt-1.5 text-[11px] leading-relaxed text-subtle">
         Built for learning and clinical review — not a personal treatment guide.{" "}
-        {SOFTWARE.name} {SOFTWARE.version} is an educational clinical decision-support aid for
-        clinicians and supervised learning. {NOT_CLEARED} It can miss risks; an empty result is not
+        {SOFTWARE.name} {SOFTWARE.version} is an educational interaction reference,
+        for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. It is not a substitute for clinical judgment.{" "}
+        {NOT_CLEARED} It can miss risks; an empty result is not
         proof that a combination is safe. It does not identify product contents, diagnose, or tell
         anyone what to start, stop, or change. For care decisions, consult a qualified clinician and
         current FDA-approved labeling. Street-supply entries are teaching examples, not product

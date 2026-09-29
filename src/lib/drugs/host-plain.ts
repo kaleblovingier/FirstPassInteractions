@@ -25,19 +25,23 @@ export interface PlainTitle {
 export const HOST_COACH = {
   kicker: "How this works",
   title: { plain: "About this person", scientific: "Host factors" } satisfies PlainTitle,
-  body: "The same drugs can act differently in different people. Pick what you know about this person (their built-in enzyme speed, smoking, drinking, age, kidneys, pregnancy) and the desk re-reads every pair with that in mind.",
+  body: "The same drugs can act differently in different people. Pick only what you already know about this person (a metabolizer status from their chart, smoking, drinking, age, kidneys, pregnancy) and the desk re-reads every pair with that in mind.",
   how: "A slow built-in enzyme acts a lot like a drug that blocks that enzyme. Smoking speeds up the 1A2 enzyme. Heavy long-term drinking speeds up the 2E1 enzyme. Older age, weaker kidneys, and pregnancy open extra teaching cards (Beers list, kidney, and pregnancy notes).",
   empty:
     "Everything is set to typical. A typical person, or a quiet result, is not a green light: real people vary, and genetics are rarely known at the desk. Product labeling and the clinician govern.",
   footer:
-    "Teaching only. Not a genetic test, not a CPIC table, and not a reason to change any medicine.",
+    "Teaching only. The enzyme speed rows are a plain summary of CPIC guidance for a status you already know. They are not a genetic test result, not a gene report reading, and not a reason to change any medicine.",
 } as const;
 
 /** Section heading over the four enzyme rows. */
 export const ENZYME_SPEED_TITLE: PlainTitle = {
   plain: "Built-in enzyme speed",
-  scientific: "Metabolizer phenotype (genetics)",
+  scientific: "Metabolizer phenotype · CPIC paraphrase",
 };
+
+/** Helper line under the enzyme speed title: a known status in, a teaching summary out. */
+export const ENZYME_SPEED_HELPER =
+  "Pick a metabolizer status you already know. This is a teaching summary of CPIC guidance, not a genetic test result.";
 
 /** Plain button words for each metabolizer type. The code (PM, IM, NM, UM) stays muted. */
 export const METABOLIZER_PLAIN: Record<Metabolizer, string> = {
@@ -112,6 +116,7 @@ export function allHostPlainCopy(): string[] {
     HOST_COACH.empty,
     HOST_COACH.footer,
     ENZYME_SPEED_TITLE.plain,
+    ENZYME_SPEED_HELPER,
     ...Object.values(METABOLIZER_PLAIN),
     howCommonLine("~7% EUR"),
     ...Object.values(HOST_SECTION_TITLES).map((t) => t.plain),

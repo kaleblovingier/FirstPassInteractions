@@ -1,6 +1,6 @@
 # FirstPass
 
-An educational desk for learning how medicines interact: CYP450 and body-effect (PD) collisions, FDA-label excerpts, and published scales (COWS, CIWA-Ar, Hunter, MME). It is a study tool for clinicians and students, not a decision-support system.
+An educational desk for learning how medicines interact: CYP450 and body-effect (PD) collisions, FDA-label excerpts, and published scales (COWS, CIWA-Ar, Hunter, MME). It is a study tool, for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. It is not a decision-support system.
 
 The core checker stays free for up to five drugs, including CYP / PD collision cards, the curated formulary, and common-name / brand / alias search. Host factors (phenotype, smoke, alcohol, route), the enzyme atlas, metabolites, and export are licensed. Founding license is **$79 once**.
 

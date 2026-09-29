@@ -7,6 +7,7 @@ import {
   EXPORT_FILE_NOTE,
   EXPORT_FOOTER,
   EXPORT_HIGHEST_LABEL,
+  EXPORT_PERSON_NOTE,
   EXPORT_SECTIONS,
   EXPORT_TITLE,
   arrowsToWords,
@@ -22,6 +23,7 @@ const COPY = [
   EXPORT_COACH.use,
   ...Object.values(EXPORT_SECTIONS).flatMap((s) => [s.plainTitle, s.scientific]),
   EXPORT_HIGHEST_LABEL,
+  EXPORT_PERSON_NOTE,
   EXPORT_EMPTY,
   EXPORT_DISCLAIMER,
   EXPORT_FOOTER,
@@ -95,4 +97,12 @@ test("report keeps disclaimer, not-cleared notice and PI footer (with and withou
   assert.match(withFindings, /How it happens: CYP3A4 inhibition leads to higher ketamine\./);
   assert.match(withFindings, /In plain words: Ketamine may build up\./);
   assert.doesNotMatch(withFindings, /[→↑↓]/);
+});
+
+test("person note frames metabolizer status as a CPIC teaching summary, not a test result", () => {
+  assert.match(EXPORT_PERSON_NOTE, /already knew/);
+  assert.match(EXPORT_PERSON_NOTE, /teaching summary of CPIC guidance/);
+  assert.match(EXPORT_PERSON_NOTE, /not a genetic test result/);
+  const out = buildExportReport({ names: "Codeine", person, highestLabel: "Not mapped", findings: [] });
+  assert.ok(out.includes(EXPORT_PERSON_NOTE));
 });
