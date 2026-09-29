@@ -24,6 +24,22 @@ import {
   phenotypeBlurb,
   smokingBlurb,
 } from "@/lib/drugs/host-blurbs";
+import {
+  AGE_PLAIN,
+  ALCOHOL_PLAIN,
+  CANNABIS_ROUTE_PLAIN,
+  ENZYME_SPEED_TITLE,
+  HOST_COACH,
+  HOST_SECTION_TITLES,
+  KETAMINE_ROUTE_NOTE,
+  KETAMINE_ROUTE_PLAIN,
+  KIDNEY_PLAIN,
+  METABOLIZER_PLAIN,
+  PREG_PLAIN,
+  SMOKING_PLAIN,
+  howCommonLine,
+  type PlainTitle,
+} from "@/lib/drugs/host-plain";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 
@@ -42,14 +58,29 @@ const HINT: Record<PhenotypeEnzyme, string> = {
   CYP2B6: "Ketamine, bupropion, methadone",
 };
 
+/** Plain section title with the scientific term muted beside it. */
+function SectionTitle({ title }: { title: PlainTitle }) {
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-2">
+      <span className="text-xs font-medium text-fg">{title.plain}</span>
+      <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">{title.scientific}</span>
+    </div>
+  );
+}
+
 export function KetamineRouteCard() {
   const ketamineRoute = useDesk((s) => s.ketamineRoute);
   const setKetamineRoute = useDesk((s) => s.setKetamineRoute);
   return (
     <div className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
-      <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Ketamine route</h2>
+      <h2 className="flex flex-wrap items-baseline gap-x-2">
+        <span className="text-xs font-medium text-fg">{HOST_SECTION_TITLES.ketamine.plain}</span>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+          {HOST_SECTION_TITLES.ketamine.scientific}
+        </span>
+      </h2>
       <p className="mt-1 text-[11px] leading-relaxed text-muted">
-        Free teaching control — oral × grapefruit is the first-pass demo. Other host factors stay Pro.
+        {KETAMINE_ROUTE_NOTE} The other host factors stay Pro.
       </p>
       <div className="mt-3 grid grid-cols-3 gap-1">
         {ROUTES.map((r) => {
@@ -59,13 +90,14 @@ export function KetamineRouteCard() {
               key={r}
               type="button"
               aria-pressed={on}
+              title={KETAMINE_ROUTE_LABEL[r]}
               onClick={() => setKetamineRoute(r)}
               className={cn(
                 "h-10 rounded-sm text-[11px] font-medium",
                 on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
               )}
             >
-              {KETAMINE_ROUTE_LABEL[r]}
+              {KETAMINE_ROUTE_PLAIN[r]}
             </button>
           );
         })}
@@ -106,7 +138,12 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
   return (
     <div className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Host factors</h2>
+        <h2 className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-xs font-medium text-fg">{HOST_COACH.title.plain}</span>
+          <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+            {HOST_COACH.title.scientific}
+          </span>
+        </h2>
         {dirty ? (
           <button
             type="button"
@@ -117,11 +154,21 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
           </button>
         ) : null}
       </div>
-      <p className="mt-1 text-[11px] leading-relaxed text-muted">
-        A poor metabolizer acts like a strong inhibitor of that enzyme. Smoke induces 1A2. Chronic
-        alcohol induces 2E1. Older age, CKD, and pregnancy score Beers / renal / teratogen cards.
-      </p>
-      <ul className="mt-3 space-y-3">
+      <div
+        className="mt-2 rounded-lg border border-accent/15 bg-accent-soft/30 p-3"
+        aria-label="Host factors coach"
+      >
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{HOST_COACH.kicker}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-fg">{HOST_COACH.body}</p>
+        <p className="mt-1.5 text-[11px] leading-relaxed text-muted">{HOST_COACH.how}</p>
+      </div>
+      {!dirty ? (
+        <p className="mt-2 text-[11px] leading-relaxed text-muted">{HOST_COACH.empty}</p>
+      ) : null}
+      <div className="mt-3">
+        <SectionTitle title={ENZYME_SPEED_TITLE} />
+      </div>
+      <ul className="mt-2 space-y-3">
         {PHENOTYPE_ENZYMES.map((enzyme) => {
           const gloss = phenotypeBlurb(phenotypes[enzyme]);
           return (
@@ -146,14 +193,16 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                       on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                     )}
                   >
-                    <span>{METABOLIZER_LABEL[m]}</span>
-                    <span className="font-mono text-[9px] opacity-70">{m}</span>
+                    <span>{METABOLIZER_PLAIN[m]}</span>
+                    <span className="font-mono text-[9px]">{m}</span>
                   </button>
                 );
               })}
             </div>
             {phenotypes[enzyme] !== "NM" && PHENO_FREQ[enzyme][phenotypes[enzyme]] ? (
-              <p className="mt-1 text-[10px] text-subtle">{PHENO_FREQ[enzyme][phenotypes[enzyme]]}</p>
+              <p className="mt-1 text-[10px] text-subtle">
+                {howCommonLine(PHENO_FREQ[enzyme][phenotypes[enzyme]]!)}
+              </p>
             ) : null}
             {gloss ? <p className="mt-1 text-xs leading-relaxed text-muted">{gloss}</p> : null}
           </li>
@@ -162,7 +211,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </ul>
 
       <div className="mt-4 border-t border-border pt-3">
-        <div className="text-xs font-medium text-fg">Tobacco smoke</div>
+        <SectionTitle title={HOST_SECTION_TITLES.smoking} />
         <div className="mt-1.5 grid grid-cols-2 gap-1">
           <button
             type="button"
@@ -173,7 +222,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
               !smoking ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
             )}
           >
-            Off
+            {SMOKING_PLAIN.off}
           </button>
           <button
             type="button"
@@ -184,14 +233,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
               smoking ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
             )}
           >
-            Daily · 1A2
+            {SMOKING_PLAIN.on}
           </button>
         </div>
         <p className="mt-1.5 text-xs leading-relaxed text-muted">{smokingBlurb(smoking)}</p>
       </div>
 
       <div className="mt-3">
-        <div className="text-xs font-medium text-fg">Alcohol pattern</div>
+        <SectionTitle title={HOST_SECTION_TITLES.alcohol} />
         <div className="mt-1.5 grid grid-cols-3 gap-1">
           {ALCOHOL.map((a) => {
             const on = alcohol === a;
@@ -200,13 +249,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 key={a}
                 type="button"
                 aria-pressed={on}
+                title={ALCOHOL_LABEL[a]}
                 onClick={() => setAlcohol(a)}
                 className={cn(
                   "h-10 rounded-sm text-[11px] font-medium",
                   on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
-                {ALCOHOL_LABEL[a]}
+                {ALCOHOL_PLAIN[a]}
               </button>
             );
           })}
@@ -216,8 +266,8 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
 
       {!hideKetamineRoute ? (
       <div className="mt-3">
-        <div className="text-xs font-medium text-fg">Ketamine route</div>
-        <p className="mt-0.5 text-[10px] text-subtle">Free on this desk — oral × grapefruit is the teaching demo.</p>
+        <SectionTitle title={HOST_SECTION_TITLES.ketamine} />
+        <p className="mt-0.5 text-[10px] text-subtle">{KETAMINE_ROUTE_NOTE}</p>
         <div className="mt-1.5 grid grid-cols-3 gap-1">
           {ROUTES.map((r) => {
             const on = ketamineRoute === r;
@@ -226,13 +276,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 key={r}
                 type="button"
                 aria-pressed={on}
+                title={KETAMINE_ROUTE_LABEL[r]}
                 onClick={() => setKetamineRoute(r)}
                 className={cn(
                   "h-10 rounded-sm text-[11px] font-medium",
                   on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
-                {KETAMINE_ROUTE_LABEL[r]}
+                {KETAMINE_ROUTE_PLAIN[r]}
               </button>
             );
           })}
@@ -242,7 +293,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       ) : null}
 
       <div className="mt-3">
-        <div className="text-xs font-medium text-fg">Cannabis route</div>
+        <SectionTitle title={HOST_SECTION_TITLES.cannabis} />
         <div className="mt-1.5 grid grid-cols-2 gap-1">
           {CANNABIS.map((r) => {
             const on = cannabisRoute === r;
@@ -251,13 +302,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 key={r}
                 type="button"
                 aria-pressed={on}
+                title={CANNABIS_ROUTE_LABEL[r]}
                 onClick={() => setCannabisRoute(r)}
                 className={cn(
                   "h-10 rounded-sm text-[11px] font-medium",
                   on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
-                {CANNABIS_ROUTE_LABEL[r]}
+                {CANNABIS_ROUTE_PLAIN[r]}
               </button>
             );
           })}
@@ -266,7 +318,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </div>
 
       <div className="mt-3">
-        <div className="text-xs font-medium text-fg">Age</div>
+        <SectionTitle title={HOST_SECTION_TITLES.age} />
         <div className="mt-1.5 grid grid-cols-2 gap-1">
           {AGES.map((a) => {
             const on = age === a;
@@ -275,13 +327,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 key={a}
                 type="button"
                 aria-pressed={on}
+                title={AGE_LABEL[a]}
                 onClick={() => setAge(a)}
                 className={cn(
                   "h-10 rounded-sm text-[11px] font-medium",
                   on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
-                {AGE_LABEL[a]}
+                {AGE_PLAIN[a]}
               </button>
             );
           })}
@@ -289,7 +342,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </div>
 
       <div className="mt-3">
-        <div className="text-xs font-medium text-fg">Kidney</div>
+        <SectionTitle title={HOST_SECTION_TITLES.kidney} />
         <div className="mt-1.5 grid grid-cols-2 gap-1">
           {KIDNEYS.map((k) => {
             const on = kidney === k;
@@ -298,13 +351,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 key={k}
                 type="button"
                 aria-pressed={on}
+                title={KIDNEY_LABEL[k]}
                 onClick={() => setKidney(k)}
                 className={cn(
                   "h-10 rounded-sm text-[11px] font-medium",
                   on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
-                {KIDNEY_LABEL[k]}
+                {KIDNEY_PLAIN[k]}
               </button>
             );
           })}
@@ -312,7 +366,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </div>
 
       <div className="mt-3">
-        <div className="text-xs font-medium text-fg">Pregnancy / lactation</div>
+        <SectionTitle title={HOST_SECTION_TITLES.preg} />
         <div className="mt-1.5 grid grid-cols-3 gap-1">
           {PREGS.map((p) => {
             const on = preg === p;
@@ -321,18 +375,23 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 key={p}
                 type="button"
                 aria-pressed={on}
+                title={PREG_LABEL[p]}
                 onClick={() => setPreg(p)}
                 className={cn(
                   "h-10 rounded-sm text-[11px] font-medium",
                   on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
-                {PREG_LABEL[p]}
+                {PREG_PLAIN[p]}
               </button>
             );
           })}
         </div>
       </div>
+
+      <p className="mt-4 border-t border-border pt-3 text-[10px] leading-relaxed text-subtle">
+        {HOST_COACH.footer}
+      </p>
     </div>
   );
 }
