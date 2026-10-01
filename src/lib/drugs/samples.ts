@@ -1834,6 +1834,13 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     lane: "clinic",
   },
   {
+    id: "alfentanil-ritonavir",
+    title: "Alfentanil + ritonavir",
+    blurb: "Sensitive 3A4 opioid × strong booster — classic anesthesia teaching pair",
+    drugIds: ["alfentanil", "ritonavir"],
+    lane: "clinic",
+  },
+  {
     id: "acrylfent-bromazolam",
     title: "Acrylfentanyl + bromazolam",
     blurb: "Illicit fentanyl analog × designer benzo — naloxone is μ-only",

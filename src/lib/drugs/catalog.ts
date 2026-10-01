@@ -3117,7 +3117,7 @@ export function familyOf(drug: Drug): Exclude<FamilyId, "all"> {
   )
     return "psych";
   if (
-    /Macrolide|Azole|Fluoroquinolone|HIV|Rifamycin|NNRTI|NRTI|INSTI|antiviral|CMV |capsid inhibitor|JAK |TYK2 |PDE4 |H2 blocker|PK booster|Oxazolidinone|Sulfonamide|Antimycobacterial|HCV|DAA|Allylamine|Beta-lactam|Tetracycline|Cephalosporin|Carbapenem|Aminoglycoside|Glycopeptide|Penicillin|Antimalarial|Echinocandin|Nitroimidazole|Lincosamide|Polymyxin|Monobactam|Protease inhibitor|Anthelmintic|Nitrofuran|Lipopeptide|Pleuromutilin/i.test(
+    /Macrolide|Azole|Fluoroquinolone|HIV|Rifamycin|NNRTI|NRTI|INSTI|antiviral|CMV |capsid inhibitor|JAK |TYK2 |PDE4 |H2 blocker|PK booster|Oxazolidinone|Sulfonamide|Antimycobacterial|HCV|DAA|Allylamine|Beta-lactam|Tetracycline|Cephalosporin|Carbapenem|Aminoglycoside|Glycopeptide|Penicillin|Antimalarial|Echinocandin|Nitroimidazole|Lincosamide|Polymyxin|Monobactam|Protease inhibitor|Anthelmintic|Nitrofuran|Lipopeptide|Pleuromutilin|Triterpenoid antifungal/i.test(
       drug.cls,
     )
   )
