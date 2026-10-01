@@ -12,12 +12,16 @@ export const SOFTWARE = {
   buildId: "FP-SW-1.14.0",
 } as const;
 
-/** 21 CFR / FDA CDS Guidance (Sept 28, 2022) posture — not a clearance. */
+/** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
+/** Single source of truth for who the desk is for. Copy elsewhere must match. */
+export const INTENDED_USERS =
+  "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.";
+
 export const RECREATIONAL_SAFETY_CONTEXT =
-  "This desk may be used in educational harm-reduction and recreational-safety review for licensed healthcare professionals and trained safety staff, including analysis of stimulant, sedative, dissociative, and street-supply combinations. Where local drug-checking services are available, purity and content testing services are complementary harm-reduction tools; they are not urine testing, not patient-directed dosing guidance, and not a substitute for the relevant FDA-approved Prescribing Information or local protocols. It is not intended for patient self-treatment, recreational dosing, or direct medical decision-making without independent review of the relevant FDA-approved Prescribing Information and local protocols.";
+  "This desk may be used in educational harm-reduction and recreational-safety review for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision, including analysis of stimulant, sedative, dissociative, and street-supply combinations. Where local drug-checking services are available, purity and content testing services are complementary harm-reduction tools; they are not urine testing, not patient-directed dosing guidance, and not a substitute for the relevant FDA-approved Prescribing Information or local protocols. It is not intended for patient self-treatment, recreational dosing, or direct medical decision-making without independent review of the relevant FDA-approved Prescribing Information and local protocols.";
 
 export const INTENDED_USE =
-  `FirstPass is clinical decision support software intended for use by licensed healthcare professionals to display mapped cytochrome P450 and pharmacodynamic interaction information, FDA-label excerpts (OpenFDA / DailyMed), published scale scores, labeled dose ranges and dose-caps, and cited literature so the healthcare professional can independently review the basis of any recommendation before acting. ${RECREATIONAL_SAFETY_CONTEXT} It is not intended to diagnose, treat, mitigate, or prevent disease, to generate a prescription, or to replace the FDA-approved Prescribing Information. Displayed dose ranges paraphrase FDA-approved labeling; a user-entered milligram is checked against those rails. The desk does not pick a milligram.`;
+  `FirstPass is educational interaction reference software intended for use by licensed healthcare professionals, and by students in accredited health-professions programs using it for education under faculty or preceptor supervision, to display mapped cytochrome P450 and pharmacodynamic interaction information, FDA-label excerpts (OpenFDA / DailyMed), published scale scores, labeled dose ranges and dose-caps, and cited literature so the healthcare professional can independently review the basis of any recommendation before acting. ${RECREATIONAL_SAFETY_CONTEXT} It is not intended to diagnose, treat, mitigate, or prevent disease, to generate a prescription, or to replace the FDA-approved Prescribing Information. Displayed dose ranges paraphrase FDA-approved labeling; a user-entered milligram is checked against those rails. The desk does not pick a milligram.`;
 
 export const INDICATIONS = [
   "Displaying CYP450 substrate / inhibitor / inducer maps, FDA DDI fold-change grades, start/stop timing study aids (reversible vs time-dependent inactivation vs induction lag), and pharmacodynamic collision scores for drugs and foods on a user-selected regimen.",
@@ -62,7 +66,7 @@ export const WARNINGS = [
   "COWS, CIWA-Ar, Hunter, MME, QTc, and CYP start/stop clocks are published formulas and FDA-grade paraphrases displayed for independent scoring — not a diagnosis, not a hold, not a documented vital, and not a real-time alert.",
 ] as const;
 
-/** FDA CDS Guidance 2022 — four criteria for non-device CDS. */
+/** FDA Clinical Decision Support Software guidance (issued Jan 6, 2026; revised Jan 29, 2026) — four statutory criteria for non-device CDS. */
 export const CDS_CRITERIA: { id: string; title: string; how: string }[] = [
   {
     id: "1",
@@ -77,7 +81,7 @@ export const CDS_CRITERIA: { id: string; title: string; how: string }[] = [
   {
     id: "3",
     title: "Recommendations to a healthcare professional",
-    how: "Watch / counsel / consider language is directed at licensed HCPs. It is not a patient-facing treatment app.",
+    how: "Watch / counsel / consider language is directed at licensed HCPs, and at health-professions students only for supervised education. It is not a patient-facing or general-public app.",
   },
   {
     id: "4",
