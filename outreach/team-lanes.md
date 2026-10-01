@@ -4,12 +4,13 @@
 - Free core: up to **five** drugs on the desk
 - Founding license: **$79 once** (lifetime)
 - Educational interaction checker — **not FDA-cleared**; empty ≠ safe; PI / clinician govern
+- Intended users: licensed healthcare professionals and supervised students (see `WHO_FOR`). No public or patient venues.
 
 ## Audiences
 1. Ketamine / psych clinics (first-pass oral, 3A4)
 2. MAT / OTP windows (methadone, buprenorphine extras)
 3. PharmD / teaching (rounds, packs, phenotype-as-perpetrator)
-4. Harm-reduction educators (xylazine, street analogs — careful tone)
+4. ~~Harm-reduction educators~~ parked: peer-run / public-facing programs are outside intended users (see `PARKED` in `src/lib/billing/hunts.ts`)
 
 ## Who owns what
 | Lane | Owner | Ships |
