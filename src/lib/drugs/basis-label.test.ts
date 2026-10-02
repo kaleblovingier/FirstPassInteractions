@@ -24,3 +24,12 @@ test('every gold pair the desk flags carries its label quote on at least one fin
   }
   assert.deepEqual(missing, []);
 });
+
+test('no finding lists the same source link twice under the same kind', () => {
+  for (const g of LABEL_GOLD_SET) {
+    for (const f of analyze([g.drugA, g.drugB]).findings) {
+      const keys = basisFor(f).filter((b) => b.href).map((b) => `${b.kind}|${b.href}`);
+      assert.equal(new Set(keys).size, keys.length, f.id);
+    }
+  }
+});
