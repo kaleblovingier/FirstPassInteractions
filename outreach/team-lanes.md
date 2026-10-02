@@ -10,7 +10,7 @@
 1. Ketamine / psych clinics (first-pass oral, 3A4)
 2. MAT / OTP windows (methadone, buprenorphine extras)
 3. PharmD / teaching (rounds, packs, phenotype-as-perpetrator)
-4. ~~Harm-reduction educators~~ parked: peer-run / public-facing programs are outside intended users (see `PARKED` in `src/lib/billing/hunts.ts`)
+4. Harm-reduction educators (xylazine, street analogs — careful tone). PHRA / King County Needle Exchange are on the send list again (operator: even ghetto harm reduction is harm reduction).
 
 ## Who owns what
 | Lane | Owner | Ships |

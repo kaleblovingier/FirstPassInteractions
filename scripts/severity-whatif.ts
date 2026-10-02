@@ -44,12 +44,11 @@ export const PR66_REPORTED = { pkContraFindings: 1334, pkContraPairs: 1325, ghbO
  * loss is visible to Kaleb in review. Filled from the generated doc.
  */
 export const EXPECTED_GOLD_LABEL_CI_DROPS: readonly string[] = [
-  // Empty after #58. Those 18 label-contraindicated gold pairs (Inspra, Corlanor,
-  // lovastatin, Latuda, pimozide, Rozerem, Ranexa, Zocor, thioridazine, Zanaflex,
-  // triazolam) used to reach contraindicated only through pkSeverity, so a blanket
-  // cap would have shown them as major. label-contraindications.ts now cites the
-  // label on the enzyme finding, basisFor leads with that pin, and the what-if
-  // keeps them. Add an id back here if a pin is removed and the cap would drop it.
+  // Empty. #58 label pins (including the 49 wave-3 pins) cite the label on the
+  // enzyme finding, and basisFor leads with that pin, so the what-if keeps them.
+  // Gold-set quotes still attach as fda-pi on matching PK findings the pin does
+  // not already cite, so the cap does not drop those either. The test fails if
+  // a future engine change makes one drop without this list being updated.
 ];
 
 /** Audience (MAT / ketamine clinic) drug families; every catalog id with these prefixes. */
