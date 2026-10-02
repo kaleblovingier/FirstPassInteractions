@@ -1060,7 +1060,7 @@ const raw: Drug[] = [
     "Longer NMDA load than ketamine; mania, seizure, airway risk with GABA drugs",
     {
       aliases: ["3-meo-pcp", "3meopcp"],
-      note: "Longer and hotter than ketamine. Same NMDA × benzo/alcohol airway map, plus a mania/seizure signal at high exposure.",
+      note: "Longer-acting and more potent than ketamine. Same NMDA × benzo/alcohol airway map, plus a mania/seizure signal at high exposure.",
     }),
   d("four-aco-dmt", "4-AcO-DMT", [], "Tryptamine psychedelic (psilocin prodrug)",
     [],
@@ -1154,7 +1154,7 @@ const raw: Drug[] = [
     "Loss of victim-drug efficacy (OCPs, DOACs, ketamine); stacked sedation",
     {
       aliases: ["phenobarbitone"],
-      note: "Broad CYP inducer after 1–2 weeks, like carbamazepine. Barbiturate PD with alcohol/opioids is additive apnea.",
+      note: "Broad CYP inducer after 1–2 weeks (strong 2C9, moderate 3A4 on this desk), like carbamazepine. Barbiturate PD with alcohol/opioids is additive apnea.",
     }),
   d("efavirenz", "Efavirenz", ["Sustiva", "Atripla"], "NNRTI antiretroviral",
     [sub("CYP2B6", "sensitive"), ind("CYP3A4", "moderate"), ind("CYP2B6", "moderate"), ind("CYP2C19", "moderate")],
@@ -1472,7 +1472,7 @@ const raw: Drug[] = [
     "Respiratory depression; 3A4 victim; benzo/alcohol/xylazine airway stack",
     {
       aliases: ["7-oh", "7oh", "7-hydroxymitragynine", "7-oh-mitragynine"],
-      note: "Much hotter μ-agonist than mitragynine. Street 7-OH tablets are an opioid map, not a tea map. 3A4 inhibitors raise exposure.",
+      note: "Much more potent μ-agonist than mitragynine. Street 7-OH tablets are an opioid map, not a tea map. 3A4 inhibitors raise exposure.",
     }),
   d("nalbuphine", "Nalbuphine", ["Nubain"], "Mixed opioid agonist–antagonist",
     [],
@@ -1496,7 +1496,7 @@ const raw: Drug[] = [
     "Loss of victim-drug efficacy (OCPs, DOACs, ketamine); stacked sedation",
     {
       aliases: ["mysoline"],
-      note: "Activated to phenobarbital. Pan-CYP induction after days to weeks. Same OCP-failure map as carbamazepine.",
+      note: "Activated to phenobarbital. Broad CYP induction after days to weeks (strong 2C9, moderate 3A4 on this desk). Same OCP-failure map as carbamazepine.",
     }),
   d("etonitazene", "Etonitazene", [], "Benzimidazole opioid (nitazene)",
     [sub("CYP3A4", "major")],
@@ -1986,7 +1986,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["omega-3", "omega 3", "epa", "dha", "lovaza", "icosapent", "krill oil"],
-      note: "High-dose EPA/DHA impair platelet aggregation. A gram with dinner is quieter than a 4 g lipid dose next to warfarin or apixaban.",
+      note: "High-dose EPA/DHA impair platelet aggregation. Dietary amounts are quieter than prescription-strength lipid therapy next to warfarin or apixaban.",
     }),
   d("garlic", "Garlic extract", [], "Allium supplement",
     [],

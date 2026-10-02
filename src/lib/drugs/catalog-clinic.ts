@@ -95,7 +95,7 @@ const ROWS: Row[] = [
   ["zidovudine", "Zidovudine", ["Retrovir"], "NRTI", "", [], "Anemia, myopathy", ["retrovir", "azt", "zdv"]],
   ["dolutegravir", "Dolutegravir", ["Tivicay"], "INSTI", "", [], "UGT/OCT2. Metformin climbs. Not 3A4.", ["tivicay", "dtg"]],
   ["bictegravir", "Bictegravir", ["Biktarvy"], "INSTI", "s:CYP3A4:major", [], "3A4/UGT victim in Biktarvy", ["biktarvy", "bic"]],
-  ["raltegravir", "Raltegravir", ["Isentress"], "INSTI", "", [], "UGT1A1. Rifampin needs the 800 mg bid dose.", ["isentress", "ral"]],
+  ["raltegravir", "Raltegravir", ["Isentress"], "INSTI", "", [], "UGT1A1. Rifampin induction lowers it — the label adjusts the regimen.", ["isentress", "ral"]],
   ["elvitegravir", "Elvitegravir", ["Vitekta"], "INSTI", "s:CYP3A4:major", [], "Needs cobicistat. 3A4 victim.", ["vitekta", "evg"]],
   ["cabotegravir", "Cabotegravir", ["Vocabria", "Apretude", "Cabenuva"], "INSTI", "", [], "UGT. Long-acting IM with rilpivirine.", ["vocabria", "apretude", "cabenuva"]],
   ["darunavir", "Darunavir", ["Prezista"], "HIV protease inhibitor", "s:CYP3A4:major;i:CYP3A4:strong", [], "Always taken with ritonavir or cobicistat; the strong 3A4 inhibitor grade here stands for that boosted regimen. The FDA interaction table lists darunavir itself only as a 3A victim.", ["prezista", "drv"]],
