@@ -15,25 +15,31 @@ function block(src: string, start: string, end: string) {
 }
 
 const directory = block(hunts, "export const DIRECTORY: Target[] = [", "\n];");
-const parked = block(hunts, "export const PARKED: ParkedTarget[] = [", "\n];");
+// PARKED may be `= [];` on one line (empty) or a multi-line array.
+const parkedStart = hunts.indexOf("export const PARKED: ParkedTarget[] = [");
+assert.ok(parkedStart >= 0, "missing PARKED");
+const parkedEnd = hunts.indexOf("];", parkedStart);
+assert.ok(parkedEnd > parkedStart, "missing PARKED end");
+const parked = hunts.slice(parkedStart, parkedEnd);
 const recipes = block(hunts, "export const RECIPES = [", "] as const;");
 
-test("parked targets are excluded from the active Hunt directory", () => {
-  const parkedIds = [...parked.matchAll(/id: "([^"]+)"/g)].map((m) => m[1]);
-  assert.ok(parkedIds.includes("phra"), "phra should be parked, not deleted");
-  for (const id of parkedIds) {
-    assert.doesNotMatch(directory, new RegExp(`id: "${id}"`), `${id} is parked but still active`);
+test("harm-reduction targets are active on the Hunt directory (operator un-park)", () => {
+  for (const id of ["phra", "kc-needle-exchange"]) {
+    assert.match(directory, new RegExp(`id: "${id}"`), `${id} should be active`);
+    assert.doesNotMatch(parked, new RegExp(`id: "${id}"`), `${id} should not be parked`);
   }
-  // Every parked row carries the flag and a reason.
+  assert.match(directory, /prey: "harm"/);
+  assert.match(recipes, /id: "harm-puget"/);
+  assert.match(recipes, /prey: "harm"/);
+  assert.doesNotMatch(directory, /parked: true/);
+  // PARKED may be empty; any remaining parked rows still carry the flag + reason.
+  const parkedIds = [...parked.matchAll(/id: "([^"]+)"/g)].map((m) => m[1]);
   const rows = parked.split(/\n  \{\n/).slice(1);
   assert.equal(rows.length, parkedIds.length);
   for (const row of rows) {
     assert.match(row, /parked: true/);
-    assert.match(row, /reason: "[^"]*outside intended users/);
+    assert.match(row, /reason: "[^"]+/);
   }
-  assert.doesNotMatch(directory, /parked: true/);
-  assert.doesNotMatch(directory, /prey: "harm"/);
-  assert.doesNotMatch(recipes, /prey: "harm"/);
 });
 
 test("active outreach helpers only read DIRECTORY", () => {
