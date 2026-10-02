@@ -15,44 +15,44 @@
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,770 / 1,565,565 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,334 (1,294 CYP, 40 P-gp) on 1,327 pairs (1,325 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 0 |
-| **Findings that move contraindicated → major** | **1,334** on **1,327** pairs |
-| **Pairs whose overall severity changes** | **1,327** |
+| Catalog entries / unordered pairs scanned | 1,771 / 1,567,335 |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,337 (1,297 CYP, 40 P-gp) on 1,330 pairs (1,328 by display name, as #66 counts) |
+| … of which carry a label citation (kept at contraindicated) | 44 |
+| **Findings that move contraindicated → major** | **1,293** on **1,286** pairs |
+| **Pairs whose overall severity changes** | **1,286** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
-| Gold-set pairs (label contraindicated) that would drop below contraindicated | **18** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 28 / 41 → **10 / 41** |
+| Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 52 / 138 → **52 / 138** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,334 findings on 1,325 pairs keyed by display name**: **match**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,337 findings on 1,328 pairs keyed by display name**: **differs**.
 
-One nuance: #66 keys pairs by display name (`"A + B"`). Some catalog entries share a display name, so keyed by catalog id the same findings sit on **1,327** distinct pairs. The findings count is identical; only the pair count differs by 2. This doc counts pairs by id from here on. The colliding pairs:
+One nuance: #66 keys pairs by display name (`"A + B"`). Some catalog entries share a display name, so keyed by catalog id the same findings sit on **1,330** distinct pairs. The findings count is identical; only the pair count differs by 2. This doc counts pairs by id from here on. The colliding pairs:
 
 - Pioglitazone + Tucatinib (`pioglitazone+tucatinib-her2`)
 - Pioglitazone + Tucatinib (`pioglitazone+tucatinib`)
 - Repaglinide + Tucatinib (`repaglinide+tucatinib-her2`)
 - Repaglinide + Tucatinib (`repaglinide+tucatinib`)
 
-None of them carries a label citation, so all 1,334 are in scope for the cap, consistent with #66.
+44 carry a label citation and are kept at contraindicated, so 1,293 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 715 | 715 |
-| strong inducer × sensitive substrate | 444 | 444 |
-| strong inhibitor × sensitive + NTI substrate | 119 | 119 |
+| strong inhibitor × sensitive substrate | 683 | 683 |
+| strong inducer × sensitive substrate | 442 | 442 |
+| strong inhibitor × sensitive + NTI substrate | 112 | 112 |
 | strong inducer × sensitive + NTI substrate | 56 | 56 |
 
 | Enzyme | Findings |
 |---|---:|
-| CYP3A4 | 1,160 |
-| CYP2D6 | 80 |
+| CYP3A4 | 1,122 |
+| CYP2D6 | 78 |
 | P-gp | 40 |
-| CYP1A2 | 21 |
+| CYP1A2 | 20 |
 | CYP2C19 | 14 |
 | CYP2C9 | 12 |
 | CYP2C8 | 6 |
@@ -64,36 +64,36 @@ A finding counts once for each of its two drugs.
 
 | # | Drug | Findings | As perpetrator | As substrate |
 |---:|---|---:|---:|---:|
-| 1 | Rifampin | 49 | 49 | 0 |
+| 1 | Rifampin | 47 | 47 | 0 |
 | 2 | Cobicistat | 44 | 44 | 0 |
 | 3 | Fosphenytoin | 44 | 40 | 4 |
-| 4 | Itraconazole | 44 | 44 | 0 |
-| 5 | Ketoconazole | 44 | 44 | 0 |
-| 6 | Paxlovid (nirmatrelvir/ritonavir) | 44 | 44 | 0 |
-| 7 | Phenytoin | 44 | 40 | 4 |
-| 8 | Ritonavir | 44 | 44 | 0 |
-| 9 | St. John's wort | 44 | 44 | 0 |
-| 10 | Phenobarbital | 43 | 43 | 0 |
-| 11 | Primidone | 43 | 43 | 0 |
-| 12 | Apalutamide | 41 | 41 | 0 |
-| 13 | Adagrasib | 40 | 40 | 0 |
-| 14 | Atazanavir | 40 | 40 | 0 |
-| 15 | Carbamazepine | 40 | 40 | 0 |
-| 16 | Clarithromycin | 40 | 40 | 0 |
-| 17 | Conivaptan | 40 | 40 | 0 |
-| 18 | Darunavir | 40 | 40 | 0 |
-| 19 | Enzalutamide | 40 | 40 | 0 |
-| 20 | Grapefruit juice | 40 | 40 | 0 |
-| 21 | Idelalisib | 40 | 40 | 0 |
-| 22 | Lopinavir/ritonavir | 40 | 40 | 0 |
-| 23 | Lumacaftor–ivacaftor | 40 | 40 | 0 |
-| 24 | Mifepristone | 40 | 40 | 0 |
-| 25 | Mitotane | 40 | 40 | 0 |
-| 26 | Nefazodone | 40 | 40 | 0 |
-| 27 | Posaconazole | 40 | 40 | 0 |
-| 28 | Rifapentine | 40 | 40 | 0 |
-| 29 | Voriconazole | 40 | 40 | 0 |
-| 30 | Colchicine | 39 | 0 | 39 |
+| 4 | Paxlovid (nirmatrelvir/ritonavir) | 44 | 44 | 0 |
+| 5 | Phenytoin | 44 | 40 | 4 |
+| 6 | St. John's wort | 44 | 44 | 0 |
+| 7 | Phenobarbital | 43 | 43 | 0 |
+| 8 | Primidone | 43 | 43 | 0 |
+| 9 | Ritonavir | 43 | 43 | 0 |
+| 10 | Itraconazole | 42 | 42 | 0 |
+| 11 | Apalutamide | 41 | 41 | 0 |
+| 12 | Adagrasib | 40 | 40 | 0 |
+| 13 | Carbamazepine | 40 | 40 | 0 |
+| 14 | Conivaptan | 40 | 40 | 0 |
+| 15 | Enzalutamide | 40 | 40 | 0 |
+| 16 | Grapefruit juice | 40 | 40 | 0 |
+| 17 | Idelalisib | 40 | 40 | 0 |
+| 18 | Lopinavir/ritonavir | 40 | 40 | 0 |
+| 19 | Lumacaftor–ivacaftor | 40 | 40 | 0 |
+| 20 | Mitotane | 40 | 40 | 0 |
+| 21 | Nefazodone | 40 | 40 | 0 |
+| 22 | Posaconazole | 40 | 40 | 0 |
+| 23 | Rifapentine | 40 | 40 | 0 |
+| 24 | Voriconazole | 40 | 40 | 0 |
+| 25 | Colchicine | 39 | 0 | 39 |
+| 26 | Ketoconazole | 38 | 38 | 0 |
+| 27 | Clarithromycin | 36 | 36 | 0 |
+| 28 | Atazanavir | 34 | 34 | 0 |
+| 29 | Mifepristone | 33 | 33 | 0 |
+| 30 | Darunavir | 30 | 30 | 0 |
 
 ## Pairs that stay contraindicated via another finding
 
@@ -101,39 +101,15 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 75 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 172 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 
-**These are losses the decision would cause.** Each label says contraindicated, and today the engine gets there only through the CYP/P-gp rule, because `basis.ts` has no label key for PK findings. A blanket cap would take gold-set exact matches from 28/41 to 10/41. Keeping "contraindicated where a label says so" would need a label allowlist for PK pairs; these 18 pairs would be a starting point. They are pinned in `EXPECTED_GOLD_LABEL_CI_DROPS` so the test documents them rather than hiding them.
-
-| Pair | Label | Section | Today | What-if |
-|---|---|---|---|---|
-| eplerenone + ketoconazole | [Inspra (eplerenone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1a52bedc-8e2c-4116-a296-a87770676b4a) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| ivabradine + clarithromycin | [Corlanor (ivabradine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=92018a65-38f6-45f7-91d4-a34921b81d0d) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| lovastatin + clarithromycin | [Lovastatin tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9438d8a0-ca5b-4676-aab9-d0241ccff6c9) | CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| lurasidone + ketoconazole | [Latuda (lurasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=afad3051-9df2-4c54-9684-e8262a133af8) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| lurasidone + rifampin | [Latuda (lurasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=afad3051-9df2-4c54-9684-e8262a133af8) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| pimozide + clarithromycin | [Pimozide tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=70b079e2-a1f7-4a93-8685-d60a4d7c1280) | CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| pimozide + ketoconazole | [Pimozide tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=70b079e2-a1f7-4a93-8685-d60a4d7c1280) | CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| ramelteon + fluvoxamine | [Rozerem (ramelteon)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9de82310-70e8-47b9-b1fc-6c6848b99455) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| ranolazine + ketoconazole | [Ranexa (ranolazine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e038f963-d78f-460e-a11f-46f224061505) | 7.1 (see 4 CONTRAINDICATIONS) | contraindicated (Avoid together) | major (Serious concern) |
-| ranolazine + rifampin | [Ranexa (ranolazine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e038f963-d78f-460e-a11f-46f224061505) | 7.1 (see 4 CONTRAINDICATIONS) | contraindicated (Avoid together) | major (Serious concern) |
-| simvastatin + clarithromycin | [Zocor (simvastatin)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8f55d5de-5a4f-4a39-8c84-c53976dd6af9) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| simvastatin + itraconazole | [Zocor (simvastatin)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8f55d5de-5a4f-4a39-8c84-c53976dd6af9) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| simvastatin + ritonavir | [Zocor (simvastatin)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8f55d5de-5a4f-4a39-8c84-c53976dd6af9) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| thioridazine + fluoxetine | [Thioridazine HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1fd16a99-e856-4a37-9dae-c443714fac14) | CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| thioridazine + paroxetine | [Thioridazine HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1fd16a99-e856-4a37-9dae-c443714fac14) | CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
-| tizanidine + ciprofloxacin | [Zanaflex (tizanidine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=60c27d35-7349-4fc6-86ad-70fffdbe3e08) | 7.1 Strong CYP1A2 Inhibitors (see 4 CONTRAINDICATIONS) | contraindicated (Avoid together) | major (Serious concern) |
-| tizanidine + fluvoxamine | [Zanaflex (tizanidine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=60c27d35-7349-4fc6-86ad-70fffdbe3e08) | 7.1 Strong CYP1A2 Inhibitors (see 4 CONTRAINDICATIONS) | contraindicated (Avoid together) | major (Serious concern) |
-| triazolam + ketoconazole | [Triazolam tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5add318e-11b9-42f8-b052-0d8cebb32fcf) | 4 CONTRAINDICATIONS | contraindicated (Avoid together) | major (Serious concern) |
+None. No gold-set pair whose label says contraindicated loses its contraindicated verdict under the what-if.
 
 ### Other gold-set pairs whose severity would change
 
-| Pair | Label class | Floor | Today | What-if | Still at floor? |
-|---|---|---|---|---|---|
-| suvorexant + ketoconazole | avoid | major | contraindicated (Avoid together) | major (Serious concern) | yes |
-| lemborexant + itraconazole | avoid | major | contraindicated (Avoid together) | major (Serious concern) | yes |
+None.
 
 ### Already below the label: `KNOWN_CONTRAINDICATION_GAPS` (these need to go UP)
 
@@ -150,8 +126,31 @@ The label says contraindicated and the engine already says major. The what-if do
 | naltrexone + buprenorphine | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 | naltrexone + oxycodone | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 | naltrexone + hydrocodone | Vivitrol (naltrexone ER injectable suspension), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| mifepristone + dihydroergotamine | Korlym (mifepristone), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| mifepristone + ergotamine | Korlym (mifepristone), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| mifepristone + quinidine | Korlym (mifepristone), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + dronedarone | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + dihydroergotamine | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + ergotamine | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + methylergonovine | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + rifampin | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + sildenafil-pah | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| darunavir + st-johns-wort | Prezista (darunavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| atazanavir + apalutamide | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + carbamazepine | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + dihydroergotamine | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + encorafenib | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + ergotamine | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + glecaprevir-pibrentasvir | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + ivosidenib | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + methylergonovine | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + nevirapine | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + phenobarbital | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + phenytoin | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + sildenafil-pah | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
+| atazanavir + st-johns-wort | Reyataz (atazanavir), 4 CONTRAINDICATIONS (Table 6) | major (Serious concern) | major (Serious concern) |
 
-Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (pimozide+fluoxetine, pimozide+paroxetine, thioridazine+fluvoxamine, alosetron+fluvoxamine), which sit below major today.
+Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (pimozide+fluoxetine, pimozide+paroxetine, thioridazine+fluvoxamine, darunavir+grazoprevir-elbasvir, atazanavir+irinotecan, atazanavir+grazoprevir-elbasvir, darunavir-cobicistat+alfuzosin, darunavir-cobicistat+carbamazepine, darunavir-cobicistat+phenobarbital, darunavir-cobicistat+phenytoin, darunavir-cobicistat+rifampin, darunavir-cobicistat+lurasidone, darunavir-cobicistat+pimozide, darunavir-cobicistat+dronedarone, darunavir-cobicistat+ivabradine, darunavir-cobicistat+ranolazine, darunavir-cobicistat+dihydroergotamine, darunavir-cobicistat+ergotamine, darunavir-cobicistat+methylergonovine, darunavir-cobicistat+st-johns-wort, darunavir-cobicistat+grazoprevir-elbasvir, darunavir-cobicistat+lovastatin, darunavir-cobicistat+simvastatin, darunavir-cobicistat+naloxegol, darunavir-cobicistat+sildenafil-pah, darunavir-cobicistat+midazolam, darunavir-cobicistat+triazolam, atazanavir-cobicistat+alfuzosin, atazanavir-cobicistat+ranolazine, atazanavir-cobicistat+dronedarone, atazanavir-cobicistat+carbamazepine, atazanavir-cobicistat+phenobarbital, atazanavir-cobicistat+phenytoin, atazanavir-cobicistat+rifampin, atazanavir-cobicistat+apalutamide, atazanavir-cobicistat+encorafenib, atazanavir-cobicistat+irinotecan, atazanavir-cobicistat+ivosidenib, atazanavir-cobicistat+lurasidone, atazanavir-cobicistat+pimozide, atazanavir-cobicistat+dihydroergotamine, atazanavir-cobicistat+ergotamine, atazanavir-cobicistat+methylergonovine, atazanavir-cobicistat+grazoprevir-elbasvir, atazanavir-cobicistat+glecaprevir-pibrentasvir, atazanavir-cobicistat+st-johns-wort, atazanavir-cobicistat+drospirenone, atazanavir-cobicistat+ethinyl-estradiol, atazanavir-cobicistat+lovastatin, atazanavir-cobicistat+simvastatin, atazanavir-cobicistat+nevirapine, atazanavir-cobicistat+sildenafil-pah, atazanavir-cobicistat+triazolam, atazanavir-cobicistat+midazolam), which sit below major today.
 
 ## MAT / ketamine clinic: pairs that move
 
@@ -161,7 +160,7 @@ None. No finding involving these drugs is a CYP/P-gp contraindicated finding on 
 
 ## Informational: sodium oxybate × non-hypnotic CNS depressants (not part of this what-if)
 
-Rule `pd-ghb-cns` marks sodium oxybate with any CNS depressant as contraindicated: 714 pairs on main. Using #66's heuristic split, 117 have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner (the label's contraindication) and **597** have some other CNS depressant partner (#66 reported about 597). That is a separate question; this preview does not simulate it.
+Rule `pd-ghb-cns` marks sodium oxybate with any CNS depressant as contraindicated: 717 pairs on main. Using #66's heuristic split, 120 have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner (the label's contraindication) and **597** have some other CNS depressant partner (#66 reported about 597). That is a separate question; this preview does not simulate it.
 
 ## Method and limits
 
