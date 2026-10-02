@@ -81,7 +81,7 @@ HMAC-signed keys (`FP-LIFE-…`). The five-drug core checker stays free. Foundin
 
 The desk (`firstpass-desk` on Vercel) deploys from source on every push to `main`. Vercel runs `npm run build` (pinned in `vercel.json`); the Nitro `vercel` preset in `vite.config.ts` writes `.vercel/output` (Build Output API) during that build, then `npm run db:migrate` runs (skips without `DATABASE_URL`).
 
-Never commit `.vercel/output` — it is gitignored. A committed copy is what kept the live desk frozen on an old build: Vercel served it as-is and no source change after it went live. If a deploy looks stale, check the Vercel build log for the `vite build` / `[nitro]` lines and compare `/assets/routes-*.js` on the live site with a fresh local `npm run build`.
+Never commit `.vercel/output` — it is gitignored. **Do not `git add -f` / force-add it.** A committed copy makes Vercel log `Using prebuilt build artifacts from .vercel/output` and serve that folder instead of building from source, which freezes the live desk on a stale bundle. If a deploy looks stale, check the Vercel build log for the `vite build` / `[nitro]` lines (not the prebuilt line) and compare `/assets/routes-*.js` on the live site with a fresh local `npm run build`. `scripts/no-vercel-output.test.mjs` fails if any `.vercel/output` path is tracked again.
 
 ---
 
