@@ -156,7 +156,7 @@ export function PlansPage() {
 
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-5">
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">How founding unlocks</p>
-        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay → get key → Redeem</h2>
+        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay, get your key, Redeem</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {MANUAL_UNLOCK_STEPS.map((step) => (

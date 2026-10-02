@@ -1,6 +1,6 @@
 # FirstPass
 
-An educational desk for learning how medicines interact: CYP450 and body-effect (PD) collisions, FDA-label excerpts, and published scales (COWS, CIWA-Ar, Hunter, MME). It is a study tool for clinicians and students, not a decision-support system.
+An educational desk for learning how medicines interact: CYP450 and body-effect (PD) collisions, FDA-label excerpts, and published scales (COWS, CIWA-Ar, Hunter, MME). It is a study tool, for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. It is not a decision-support system.
 
 The core checker stays free for up to five drugs, including CYP / PD collision cards, the curated formulary, and common-name / brand / alias search. Host factors (phenotype, smoke, alcohol, route), the enzyme atlas, metabolites, and export are licensed. Founding license is **$79 once**.
 
@@ -76,6 +76,12 @@ Pay $79 with card on the desk (Stripe), or Venmo / Cash App / PayPal. A signed k
 ## License
 
 HMAC-signed keys (`FP-LIFE-…`). The five-drug core checker stays free. Founding lifetime is $79.
+
+## Deploy
+
+The desk (`firstpass-desk` on Vercel) deploys from source on every push to `main`. Vercel runs `npm run build` (pinned in `vercel.json`); the Nitro `vercel` preset in `vite.config.ts` writes `.vercel/output` (Build Output API) during that build, then `npm run db:migrate` runs (skips without `DATABASE_URL`).
+
+Never commit `.vercel/output` — it is gitignored. A committed copy is what kept the live desk frozen on an old build: Vercel served it as-is and no source change after it went live. If a deploy looks stale, check the Vercel build log for the `vite build` / `[nitro]` lines and compare `/assets/routes-*.js` on the live site with a fresh local `npm run build`.
 
 ---
 

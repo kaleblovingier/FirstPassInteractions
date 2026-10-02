@@ -45,6 +45,10 @@ export function HostDelta({
         We re-ran this list for a typical adult (normal metabolizer, no smoking, no alcohol, IV ketamine, smoked
         THC) and compared it with the person you set up.
       </p>
+      <p className="mt-1 text-[11px] leading-relaxed text-muted">
+        Any metabolizer status here is one you picked from what you already know. The desk reads it as a
+        teaching summary of CPIC guidance, not a genetic test result.
+      </p>
 
       <p className="mt-3 text-[11px] font-medium text-muted">What you changed</p>
       <ul className="mt-1 flex flex-wrap gap-1.5">

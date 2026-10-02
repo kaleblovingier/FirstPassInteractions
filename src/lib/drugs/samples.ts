@@ -533,7 +533,7 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
   {
     id: "pheno-ocp",
     title: "Phenobarbital + OCP",
-    blurb: "Pan-CYP induction — contraceptive failure",
+    blurb: "Broad CYP induction — contraceptive failure",
     drugIds: ["phenobarbital", "ethinyl-estradiol"],
     lane: "clinic",
   },
@@ -1831,6 +1831,13 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     title: "Rimegepant + ritonavir",
     blurb: "Nurtec × strong 3A4 booster — gepant victim teaching",
     drugIds: ["rimegepant", "ritonavir"],
+    lane: "clinic",
+  },
+  {
+    id: "alfentanil-ritonavir",
+    title: "Alfentanil + ritonavir",
+    blurb: "Sensitive 3A4 opioid × strong booster — classic anesthesia teaching pair",
+    drugIds: ["alfentanil", "ritonavir"],
     lane: "clinic",
   },
   {

@@ -27,6 +27,10 @@ export const EXPORT_SECTIONS = {
   findings: { plainTitle: "What to talk through", scientific: "Findings · severity · mechanism" },
 } as const;
 
+/** Note under the person section: metabolizer rows are a known status, read as a CPIC teaching summary. */
+export const EXPORT_PERSON_NOTE =
+  "Metabolizer status is what the team already knew, picked by hand. The desk reads it as a teaching summary of CPIC guidance, not a genetic test result.";
+
 /** Label for the overall ceiling line. */
 export const EXPORT_HIGHEST_LABEL = "Biggest concern on this tray";
 
@@ -35,7 +39,7 @@ export const EXPORT_EMPTY =
   "No possible concerns are mapped for this tray. A short or empty report is not a green light — this desk only knows a teaching list, and the label and prescriber still govern.";
 
 /** Existing educational disclaimer line (kept verbatim from the prior report). */
-export const EXPORT_DISCLAIMER = "Educational model. Not a substitute for clinical decision support.";
+export const EXPORT_DISCLAIMER = "Educational interaction reference. Not a substitute for clinical judgment.";
 
 /** Footer under the findings. */
 export const EXPORT_FOOTER =
@@ -83,6 +87,7 @@ export function buildExportReport(input: ExportReportInput): string {
     "",
     heading(EXPORT_SECTIONS.person),
     ...input.person.map((p) => `- ${p.label}: ${p.value}`),
+    EXPORT_PERSON_NOTE,
     "",
     heading(EXPORT_SECTIONS.findings),
   ];

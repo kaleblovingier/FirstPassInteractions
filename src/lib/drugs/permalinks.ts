@@ -228,6 +228,21 @@ export function buildCaseUrl(
   return url.toString();
 }
 
+export function buildCompareUrl(leftId: string, rightId: string, opts?: { base?: string }): string {
+  const url = new URL(opts?.base ?? deskBase());
+  url.searchParams.set("compareA", leftId);
+  url.searchParams.set("compareB", rightId);
+  return url.toString();
+}
+
+export function parseComparePair(search: string | URLSearchParams): { leftId: string | null; rightId: string | null } {
+  const params = typeof search === "string" ? new URLSearchParams(search.startsWith("?") ? search.slice(1) : search) : search;
+  const leftId = params.get("compareA");
+  const rightId = params.get("compareB");
+  if (!leftId && !rightId) return { leftId: null, rightId: null };
+  return { leftId, rightId };
+}
+
 export function buildPackUrl(packId: PackId, opts?: { caseId?: string; flip?: boolean; base?: string }): string {
   const pack = PACKS[packId];
   const caseId = opts?.caseId && pack.caseIds.includes(opts.caseId) ? opts.caseId : pack.caseIds[0];

@@ -1,5 +1,5 @@
 /**
- * CYP450 safety clocks — FDA DDI grades, start vs stop, TDI linger, induction lag.
+ * CYP450 start/stop timing study aids — FDA DDI grades, start vs stop, TDI linger, induction lag.
  * Teaching. Not a dose, not a hold, not an order. The Prescribing Information is the authority.
  *
  * Grades paraphrase FDA Clinical Drug Interaction Studies (Jan 2020) / Huang CPT 2007.
@@ -143,18 +143,18 @@ const INDEX: FdaIndexHit[] = [
   i("ritonavir", "CYP3A4", "inhibitor", "strong · TDI"),
   i("paxlovid", "CYP3A4", "inhibitor", "strong · TDI"),
   i("cobicistat", "CYP3A4", "inhibitor", "strong"),
-  i("grapefruit", "CYP3A4", "inhibitor", "strong intestinal · TDI"),
+  i("grapefruit", "CYP3A4", "inhibitor", "moderate intestinal · TDI"),
   // 3A moderate inhibitors
   i("erythromycin", "CYP3A4", "inhibitor", "moderate · TDI"),
   i("fluconazole", "CYP3A4", "inhibitor", "moderate"),
   i("diltiazem", "CYP3A4", "inhibitor", "moderate · TDI"),
   i("verapamil", "CYP3A4", "inhibitor", "moderate · TDI"),
-  i("ciprofloxacin", "CYP3A4", "inhibitor", "weak–moderate"),
+  i("ciprofloxacin", "CYP3A4", "inhibitor", "moderate"),
   // 3A inducers
   i("rifampin", "CYP3A4", "inducer", "strong index"),
   i("carbamazepine", "CYP3A4", "inducer", "strong"),
   i("phenytoin", "CYP3A4", "inducer", "strong"),
-  i("phenobarbital", "CYP3A4", "inducer", "strong"),
+  i("phenobarbital", "CYP3A4", "inducer", "moderate"),
   i("st-johns-wort", "CYP3A4", "inducer", "strong"),
   i("efavirenz", "CYP3A4", "inducer", "moderate"),
   // 2D6
@@ -183,7 +183,7 @@ const INDEX: FdaIndexHit[] = [
   i("celecoxib", "CYP2C9", "substrate", "sensitive"),
   i("fluconazole", "CYP2C9", "inhibitor", "moderate–strong"),
   i("amiodarone", "CYP2C9", "inhibitor", "moderate · linger"),
-  i("rifampin", "CYP2C9", "inducer", "strong"),
+  i("rifampin", "CYP2C9", "inducer", "moderate"),
   // 2C8
   i("pioglitazone", "CYP2C8", "substrate", "sensitive"),
   i("gemfibrozil", "CYP2C8", "inhibitor", "strong · TDI"),
@@ -194,13 +194,13 @@ const INDEX: FdaIndexHit[] = [
   i("olanzapine", "CYP1A2", "substrate", "major"),
   i("caffeine", "CYP1A2", "substrate", "index probe"),
   i("fluvoxamine", "CYP1A2", "inhibitor", "strong index"),
-  i("ciprofloxacin", "CYP1A2", "inhibitor", "strong"),
+  i("ciprofloxacin", "CYP1A2", "inhibitor", "moderate"),
   i("rifampin", "CYP1A2", "inducer", "moderate"),
   // 2B6
   i("bupropion", "CYP2B6", "substrate", "sensitive index"),
   i("efavirenz", "CYP2B6", "substrate", "sensitive"),
   i("methadone", "CYP2B6", "substrate", "major"),
-  i("rifampin", "CYP2B6", "inducer", "strong"),
+  i("rifampin", "CYP2B6", "inducer", "moderate"),
   i("efavirenz", "CYP2B6", "inducer", "moderate (auto)"),
   // P-gp
   i("digoxin", "P-gp", "substrate", "index"),
@@ -384,7 +384,7 @@ function startClock(
     days: "1–3 days (inhibitor steady-state)",
     body: `${name} occupies the isoform. ${who} ${many ? "rise" : "rises"} while the inhibitor is on. Competitive, so stopping is faster than TDI.`,
     watch: nti.length
-      ? `NTI on this desk: ${nti.join(", ")}. Open the PI before the first overlapping day.`
+      ? `NTI on this desk: ${nti.join(", ")}. The PI covers the overlap days.`
       : "Watch victim toxicity. This desk does not pick a milligram.",
   };
 }
@@ -407,7 +407,7 @@ function stopClock(
       body: `${INDUCTION.washOut} ${who} ${many ? "climb" : "climbs"} back — sometimes past baseline if a dose was raised while induced. Niemi 2003: remember the stop.`,
       watch: nti.length
         ? `NTI rebound: ${nti.join(", ")}. Toxicity after a 'completed' rifampin course is still this clock.`
-        : "The forgotten half. A stable milligram on rifampin is an overdose two weeks after it stops.",
+        : "The forgotten half. Levels that were steady on rifampin can climb well past that in the two weeks after it stops.",
     };
   }
   if (clock === "tdi") {
@@ -417,7 +417,7 @@ function stopClock(
       body: `Stopping ${name} does not restore CYP. New protein has to be made. ${who} ${many ? "stay" : "stays"} high until then. ${tdi?.pearl ?? ""}`.trim(),
       watch: nti.length
         ? `NTI still hot: ${nti.join(", ")}. Yesterday’s last tablet is not a clear.`
-        : "Do not treat the last day of a Z-Pak / azole / booster as a free victim day.",
+        : "The last day of a Z-Pak, azole, or booster is not the last day of its effect on the victim.",
     };
   }
   return {
@@ -471,7 +471,7 @@ function stepsFor(card: Omit<ProtocolCard, "steps">): ProtocolCard["steps"] {
     {
       id: "pi",
       title: "Open the Prescribing Information",
-      body: "This desk paraphrases FDA grades and published clocks. Independently review each victim’s PI before you hold, split, or overlap. FirstPass does not pick a milligram.",
+      body: "This desk paraphrases FDA grades and published clocks. Each victim’s PI is the authority on holding, splitting, or overlapping. A study aid for how timing changes the picture, not a real-time alert. FirstPass does not pick a milligram.",
     },
   ];
 }
@@ -557,7 +557,7 @@ export function protocolFindings(ids: string[]): Finding[] {
       enzymes: enz,
       effect: card.clock === "induction" ? "start ↓ / stop rebound" : card.clock === "tdi" ? "TDI linger" : "start ↑ / stop ↓",
       mechanism: `${card.grade} · ${card.clock}`,
-      clinical: `${card.start.body} ${card.stop.body} Teaching clock — not a dose. Open the PI.`,
+      clinical: `${card.start.body} ${card.stop.body} Teaching clock: a study aid, not a real-time alert and not a dose. Open the PI.`,
       tags: ["cyp-protocol", card.kind, card.clock, ...enz],
     });
     if (card.dualHit) {
@@ -602,7 +602,7 @@ export const SAFETY_CHECKS: { id: string; title: string; body: string }[] = [
   },
   {
     id: "stop",
-    title: "Plan the stop on the start day",
+    title: "The stop matters as much as the start",
     body: "Stopping an inducer is rebound toxicity. Stopping a TDI is lingering victim. Stopping a reversible inhibitor is falling levels.",
   },
   {

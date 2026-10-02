@@ -16,7 +16,7 @@ export const FREE_DESK_LINE = "Free desk: up to five drugs, no card needed.";
 export const FOUNDING_PRICE_LINE = `Founding is $${FOUNDING_PRICE} once.`;
 
 /** Short three-step buyer path — same wording as Plans / commerce. */
-export const FOUNDING_PATH_SHORT = "Pay → get key → Redeem";
+export const FOUNDING_PATH_SHORT = "Pay, get your key, Redeem";
 
 /** Compact step titles aligned with MANUAL_UNLOCK_STEPS. */
 export const FOUNDING_PATH_STEPS = [
@@ -69,7 +69,7 @@ export function foundingGateCopy(kind: FoundingGateKind): FoundingGateCopy {
       return {
         title: "Metabolite maps need founding",
         blurb:
-          "Parent → product teaching maps (norketamine, 11-OH-THC, morphine, and kin) open with founding.",
+          "Parent-to-product teaching maps (norketamine, 11-OH-THC, morphine, and kin) open with founding.",
         reason: `Metabolite maps are a founding surface. ${FREE_FOUNDING}`,
       };
     case "stacks":

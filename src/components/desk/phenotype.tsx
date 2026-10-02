@@ -28,6 +28,7 @@ import {
   AGE_PLAIN,
   ALCOHOL_PLAIN,
   CANNABIS_ROUTE_PLAIN,
+  ENZYME_SPEED_HELPER,
   ENZYME_SPEED_TITLE,
   HOST_COACH,
   HOST_SECTION_TITLES,
@@ -167,6 +168,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       ) : null}
       <div className="mt-3">
         <SectionTitle title={ENZYME_SPEED_TITLE} />
+        <p className="mt-1 text-[11px] leading-relaxed text-muted">{ENZYME_SPEED_HELPER}</p>
       </div>
       <ul className="mt-2 space-y-3">
         {PHENOTYPE_ENZYMES.map((enzyme) => {
@@ -194,7 +196,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                     )}
                   >
                     <span>{METABOLIZER_PLAIN[m]}</span>
-                    <span className="font-mono text-[9px] opacity-70">{m}</span>
+                    <span className="font-mono text-[9px]">{m}</span>
                   </button>
                 );
               })}

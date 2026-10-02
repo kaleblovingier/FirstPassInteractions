@@ -141,7 +141,7 @@ export function plainWashoutLead(w: WashoutLike): string {
   if (set.has("bupropion")) {
     return `About ${days} days — this medicine can keep blocking CYP2D6 for about a week after the last dose (${ease}).`;
   }
-  return `About ${days} days — wait for this leftover effect to ease (${ease}).`;
+  return `About ${days} days — roughly how long this leftover effect takes to ease (${ease}).`;
 }
 
 /** Quiet / empty washout card copy. */
