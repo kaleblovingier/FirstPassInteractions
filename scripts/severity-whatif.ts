@@ -44,27 +44,12 @@ export const PR66_REPORTED = { pkContraFindings: 1334, pkContraPairs: 1325, ghbO
  * loss is visible to Kaleb in review. Filled from the generated doc.
  */
 export const EXPECTED_GOLD_LABEL_CI_DROPS: readonly string[] = [
-  // Label says contraindicated; engine reaches "contraindicated" today ONLY via the
-  // CYP/P-gp rule (basis.ts has no label key for these PK findings). A blanket cap
-  // would show them as major. Listed for Kaleb's decision; not a pass.
-  "eplerenone+ketoconazole", // Inspra 4
-  "ivabradine+clarithromycin", // Corlanor 4
-  "lovastatin+clarithromycin", // lovastatin CONTRAINDICATIONS
-  "lurasidone+ketoconazole", // Latuda 4
-  "lurasidone+rifampin", // Latuda 4
-  "pimozide+clarithromycin", // pimozide CONTRAINDICATIONS
-  "pimozide+ketoconazole", // pimozide CONTRAINDICATIONS
-  "ramelteon+fluvoxamine", // Rozerem 4
-  "ranolazine+ketoconazole", // Ranexa 4 / 7.1
-  "ranolazine+rifampin", // Ranexa 4 / 7.1
-  "simvastatin+clarithromycin", // Zocor 4
-  "simvastatin+itraconazole", // Zocor 4
-  "simvastatin+ritonavir", // Zocor 4
-  "thioridazine+fluoxetine", // thioridazine CONTRAINDICATIONS
-  "thioridazine+paroxetine", // thioridazine CONTRAINDICATIONS
-  "tizanidine+ciprofloxacin", // Zanaflex 4 / 7.1
-  "tizanidine+fluvoxamine", // Zanaflex 4 / 7.1
-  "triazolam+ketoconazole", // triazolam 4
+  // None. basis.ts now attaches the gold-set quote as fda-pi on the matching
+  // PK finding, so the cap (PK-only, no label citation) does not move any
+  // label-contraindicated gold pair. Wave 3 included: the pairs that reach
+  // contraindicated on main are cited from Korlym / Prezista / Reyataz, so the
+  // cap does not drop them either. The test fails if a future engine change
+  // makes one drop without this list being updated.
 ];
 
 /** Audience (MAT / ketamine clinic) drug families; every catalog id with these prefixes. */

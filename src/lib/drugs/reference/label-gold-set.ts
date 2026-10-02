@@ -18,6 +18,14 @@
  *   warning naming overdose / death          -> major
  *   warning with monitor / dose-change text  -> moderate ("Use care")
  *
+ * Wave 3 is label-stated contraindications only, for drugs behind leftover
+ * rule-only CYP findings: Korlym (mifepristone), Prezista (darunavir),
+ * Prezcobix (darunavir/cobicistat), Reyataz (atazanavir), and Evotaz
+ * (atazanavir/cobicistat). Each named drug in section 4 that the catalog
+ * carries is a pair, including combo rows. Renal/hepatic-only lines, and
+ * Reyataz lines qualified "with ritonavir", are skipped. Floor is major
+ * ("Serious concern"); the label class is contraindicated.
+ *
  * Quotes are verbatim substrings of the SPL text retrieved on `retrieved`; a
  * "…" marks an elided span. `labelExample` (also verbatim) is used when the
  * governing sentence names a class and a nearby sentence names the drug.
@@ -42,7 +50,9 @@ export type GoldDomain =
   | "maoi-opioid"
   | "antimicrobial"
   | "mat"
-  | "ketamine-clinic";
+  | "ketamine-clinic"
+  | "endocrine"
+  | "hiv";
 
 export interface GoldPair {
   /** Stable id, `drugA+drugB`. */
@@ -59,7 +69,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27";
+  retrieved: "2026-09-27" | "2026-10-02";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -68,8 +78,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave. */
-  wave: 1 | 2;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = label contraindications (Korlym / HIV PIs). */
+  wave: 1 | 2 | 3;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -113,6 +123,12 @@ export const LABEL_SETIDS = {
   vivitrol: "cd11c435-b0f0-4bb9-ae78-60f101f3703f",
   ketalar: "14e8f864-8b8a-4e7e-8439-e510d3107063",
   spravato: "d81a6a79-a74a-44b7-822c-0dfa3036eaed",
+  // wave 3 (Korlym / HIV protease inhibitors), DailyMed v2 SPL retrieved 2026-10-02
+  korlym: "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9",
+  prezista: "814301f9-c990-46a5-b481-2879a521a16f",
+  prezcobix: "9c38fdb6-d0ba-4f16-a0e3-85d9ec334d9f",
+  reyataz: "165cff62-b284-4a27-a65d-9ec8a5bfcdd8",
+  evotaz: "83db29d7-5d85-49d6-8cb6-740473365cf8",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -675,9 +691,794 @@ const WAVE_2: GoldPair[] = [
   }),
 ];
 
+
+/** Wave 3 row: label says contraindicated. Floor stays major; exact match is separate. */
+function row3(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-02",
+    expectedFloor: "major",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 3,
+  };
+}
+
+const KORLYM_4 =
+  "KORLYM is contraindicated in: … Patients taking drugs metabolized by CYP3A such as simvastatin, lovastatin";
+const KORLYM_NTI =
+  "such as cyclosporine, dihydroergotamine, ergotamine, fentanyl, pimozide, quinidine, sirolimus, and tacrolimus";
+const PREZISTA_4 =
+  "Examples of these drugs and other contraindicated drugs (which may lead to reduced efficacy of darunavir) are listed below";
+const PREZCOBIX_4 =
+  "Examples of drugs that are contraindicated for co-administration with PREZCOBIX";
+const REYATAZ_4 =
+  "Coadministration is contraindicated with, but not limited to, the following drugs";
+const EVOTAZ_4 =
+  "The concomitant use of EVOTAZ and the following drugs in Table 1, are contraindicated";
+const SJW_CURLY = "St. John\u2019s wort";
+
+const WAVE_3: GoldPair[] = [
+  // ── Korlym (mifepristone): 4 CONTRAINDICATIONS, named CYP3A victims ──
+  row3({
+    drugA: "mifepristone", drugB: "simvastatin", queries: ["korlym", "simvastatin"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "lovastatin", queries: ["korlym", "lovastatin"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "cyclosporine", queries: ["korlym", "cyclosporine"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "dihydroergotamine", queries: ["korlym", "dihydroergotamine"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "ergotamine", queries: ["korlym", "ergotamine"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "fentanyl", queries: ["korlym", "fentanyl"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "pimozide", queries: ["korlym", "pimozide"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "quinidine", queries: ["korlym", "quinidine"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "sirolimus", queries: ["korlym", "sirolimus"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  row3({
+    drugA: "mifepristone", drugB: "tacrolimus", queries: ["korlym", "tacrolimus"],
+    labelDrug: "Korlym (mifepristone)", label: "korlym", labelSection: "4 CONTRAINDICATIONS",
+    quote: KORLYM_4,
+    labelExample: KORLYM_NTI,
+    labelClass: "contraindicated", mechanism: "PK", domain: "endocrine",
+  }),
+  // ── Prezista (darunavir): 4 CONTRAINDICATIONS. Colchicine is renal/hepatic only (skipped). ──
+  row3({
+    drugA: "darunavir", drugB: "alfuzosin", queries: ["prezista", "alfuzosin"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Alpha 1-adrenoreceptor antagonist: alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "rifampin", queries: ["prezista", "rifampin"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Antimycobacterial: rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "lurasidone", queries: ["prezista", "lurasidone"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "pimozide", queries: ["prezista", "pimozide"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "dronedarone", queries: ["prezista", "dronedarone"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Cardiac Disorders: dronedarone, ivabradine, ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "ivabradine", queries: ["prezista", "ivabradine"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Cardiac Disorders: dronedarone, ivabradine, ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "ranolazine", queries: ["prezista", "ranolazine"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Cardiac Disorders: dronedarone, ivabradine, ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "dihydroergotamine", queries: ["prezista", "dihydroergotamine"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Ergot derivatives, e.g. dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "ergotamine", queries: ["prezista", "ergotamine"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Ergot derivatives, e.g. dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "methylergonovine", queries: ["prezista", "methylergonovine"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Ergot derivatives, e.g. dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "st-johns-wort", queries: ["prezista", "st johns wort"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "St. John's wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "grazoprevir-elbasvir", queries: ["prezista", "zepatier"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Hepatitis C direct acting antiviral: elbasvir/grazoprevir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "lovastatin", queries: ["prezista", "lovastatin"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Lipid modifying agents: lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "simvastatin", queries: ["prezista", "simvastatin"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Lipid modifying agents: lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "naloxegol", queries: ["prezista", "naloxegol"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "Opioid Antagonist: naloxegol",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "sildenafil-pah", queries: ["prezista", "sildenafil pah"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "sildenafil when used for treatment of pulmonary arterial hypertension",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone. Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "midazolam", queries: ["prezista", "midazolam"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "orally administered midazolam, triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone. Contraindication is for orally administered midazolam. Parenteral use is a different statement. The catalog row is not split by route.",
+  }),
+  row3({
+    drugA: "darunavir", drugB: "triazolam", queries: ["prezista", "triazolam"],
+    labelDrug: "Prezista (darunavir)", label: "prezista", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZISTA_4,
+    labelExample: "orally administered midazolam, triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Stated for PREZISTA co-administered with ritonavir. The catalog row is darunavir alone.",
+  }),
+  // ── Prezcobix (darunavir/cobicistat combo row) ──
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "alfuzosin", queries: ["prezcobix", "alfuzosin"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Alpha 1-adrenoreceptor antagonist: alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "carbamazepine", queries: ["prezcobix", "carbamazepine"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Anticonvulsants: carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "phenobarbital", queries: ["prezcobix", "phenobarbital"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Anticonvulsants: carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "phenytoin", queries: ["prezcobix", "phenytoin"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Anticonvulsants: carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "rifampin", queries: ["prezcobix", "rifampin"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Antimycobacterial: rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "lurasidone", queries: ["prezcobix", "lurasidone"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "pimozide", queries: ["prezcobix", "pimozide"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "dronedarone", queries: ["prezcobix", "dronedarone"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Cardiac Disorders: dronedarone, ivabradine, ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "ivabradine", queries: ["prezcobix", "ivabradine"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Cardiac Disorders: dronedarone, ivabradine, ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "ranolazine", queries: ["prezcobix", "ranolazine"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Cardiac Disorders: dronedarone, ivabradine, ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "dihydroergotamine", queries: ["prezcobix", "dihydroergotamine"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Ergot derivatives, e.g. dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "ergotamine", queries: ["prezcobix", "ergotamine"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Ergot derivatives, e.g. dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "methylergonovine", queries: ["prezcobix", "methylergonovine"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Ergot derivatives, e.g. dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "st-johns-wort", queries: ["prezcobix", "st johns wort"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "St. John's wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "grazoprevir-elbasvir", queries: ["prezcobix", "zepatier"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Hepatitis C direct acting antiviral: elbasvir/grazoprevir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "lovastatin", queries: ["prezcobix", "lovastatin"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Lipid modifying agents: lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "simvastatin", queries: ["prezcobix", "simvastatin"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Lipid modifying agents: lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "naloxegol", queries: ["prezcobix", "naloxegol"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "Opioid Antagonist: naloxegol",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "sildenafil-pah", queries: ["prezcobix", "sildenafil pah"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "sildenafil when used for treatment of pulmonary arterial hypertension",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire. Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "midazolam", queries: ["prezcobix", "midazolam"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "orally administered midazolam, triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire. Contraindication is for orally administered midazolam. Parenteral use is a different statement. The catalog row is not split by route.",
+  }),
+  row3({
+    drugA: "darunavir-cobicistat", drugB: "triazolam", queries: ["prezcobix", "triazolam"],
+    labelDrug: "Prezcobix (darunavir/cobicistat)", label: "prezcobix", labelSection: "4 CONTRAINDICATIONS",
+    quote: PREZCOBIX_4,
+    labelExample: "orally administered midazolam, triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Prezcobix catalog row has no enzyme roles, so CYP rules on darunavir or cobicistat do not fire.",
+  }),
+  // ── Reyataz (atazanavir). rifampin+atazanavir is already wave 1. Ritonavir-qualified lines skipped. ──
+  row3({
+    drugA: "atazanavir", drugB: "alfuzosin", queries: ["reyataz", "alfuzosin"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Alpha 1-adrenoreceptor antagonist Alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "carbamazepine", queries: ["reyataz", "carbamazepine"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Anticonvulsants Carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "phenobarbital", queries: ["reyataz", "phenobarbital"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Anticonvulsants Carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "phenytoin", queries: ["reyataz", "phenytoin"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Anticonvulsants Carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "apalutamide", queries: ["reyataz", "apalutamide"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Antineoplastics Apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "encorafenib", queries: ["reyataz", "encorafenib"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Antineoplastics Apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "irinotecan", queries: ["reyataz", "irinotecan"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Antineoplastics Apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "ivosidenib", queries: ["reyataz", "ivosidenib"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Antineoplastics Apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "pimozide", queries: ["reyataz", "pimozide"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Antipsychotics Lurasidone (with ritonavir), pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Pimozide is listed without a ritonavir qualifier. Lurasidone on the same line is only with ritonavir and is not its own pair.",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "midazolam", queries: ["reyataz", "midazolam"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Benzodiazepines Orally administered midazolam a , triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Contraindication is for orally administered midazolam. Parenteral use is a different statement. The catalog row is not split by route.",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "triazolam", queries: ["reyataz", "triazolam"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Benzodiazepines Orally administered midazolam a , triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "dihydroergotamine", queries: ["reyataz", "dihydroergotamine"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Ergot Derivatives Dihydroergotamine, ergonovine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "ergotamine", queries: ["reyataz", "ergotamine"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Ergot Derivatives Dihydroergotamine, ergonovine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "methylergonovine", queries: ["reyataz", "methylergonovine"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Ergot Derivatives Dihydroergotamine, ergonovine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "grazoprevir-elbasvir", queries: ["reyataz", "zepatier"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Hepatitis C Direct-Acting Antivirals Elbasvir/grazoprevir; glecaprevir/pibrentasvir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "glecaprevir-pibrentasvir", queries: ["reyataz", "mavyret"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Hepatitis C Direct-Acting Antivirals Elbasvir/grazoprevir; glecaprevir/pibrentasvir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "st-johns-wort", queries: ["reyataz", "st johns wort"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: SJW_CURLY,
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "lovastatin", queries: ["reyataz", "lovastatin"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Lipid-Modifying Agents: Lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "simvastatin", queries: ["reyataz", "simvastatin"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Lipid-Modifying Agents: Lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "sildenafil-pah", queries: ["reyataz", "sildenafil pah"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Sildenafil b when dosed as REVATIO ® for the treatment of pulmonary arterial hypertension",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row3({
+    drugA: "atazanavir", drugB: "nevirapine", queries: ["reyataz", "nevirapine"],
+    labelDrug: "Reyataz (atazanavir)", label: "reyataz", labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: REYATAZ_4,
+    labelExample: "Non-nucleoside Reverse Transcriptase Inhibitors Nevirapine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  // ── Evotaz (atazanavir/cobicistat combo row). Colchicine is hepatic/renal only (skipped). ──
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "alfuzosin", queries: ["evotaz", "alfuzosin"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Alpha 1-adrenoreceptor antagonist alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "ranolazine", queries: ["evotaz", "ranolazine"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antianginal ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "dronedarone", queries: ["evotaz", "dronedarone"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antiarrhythmics dronedarone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "carbamazepine", queries: ["evotaz", "carbamazepine"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Anticonvulsants carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "phenobarbital", queries: ["evotaz", "phenobarbital"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Anticonvulsants carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "phenytoin", queries: ["evotaz", "phenytoin"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Anticonvulsants carbamazepine, phenobarbital, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "rifampin", queries: ["evotaz", "rifampin"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antimycobacterials rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "apalutamide", queries: ["evotaz", "apalutamide"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antineoplastics apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "encorafenib", queries: ["evotaz", "encorafenib"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antineoplastics apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "irinotecan", queries: ["evotaz", "irinotecan"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antineoplastics apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "ivosidenib", queries: ["evotaz", "ivosidenib"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antineoplastics apalutamide, encorafenib, irinotecan, ivosidenib",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "lurasidone", queries: ["evotaz", "lurasidone"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antipsychotics lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "pimozide", queries: ["evotaz", "pimozide"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Antipsychotics lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "dihydroergotamine", queries: ["evotaz", "dihydroergotamine"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Ergot Derivatives dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "ergotamine", queries: ["evotaz", "ergotamine"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Ergot Derivatives dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "methylergonovine", queries: ["evotaz", "methylergonovine"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Ergot Derivatives dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "grazoprevir-elbasvir", queries: ["evotaz", "zepatier"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Hepatitis C Direct-Acting Antivirals elbasvir/grazoprevir; glecaprevir/pibrentasvir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "glecaprevir-pibrentasvir", queries: ["evotaz", "mavyret"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Hepatitis C Direct-Acting Antivirals elbasvir/grazoprevir; glecaprevir/pibrentasvir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "st-johns-wort", queries: ["evotaz", "st johns wort"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: SJW_CURLY,
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "drospirenone", queries: ["evotaz", "drospirenone"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "drospirenone/ethinyl estradiol",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire. Table 1 names drospirenone/ethinyl estradiol. Drug Interactions ties the contraindication to drospirenone-associated hyperkalemia.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "ethinyl-estradiol", queries: ["evotaz", "ethinyl estradiol"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "drospirenone/ethinyl estradiol",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire. Table 1 names drospirenone/ethinyl estradiol. No combo row; Yaz resolves to this ethinyl estradiol row.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "lovastatin", queries: ["evotaz", "lovastatin"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Lipid-modifying Agents lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "simvastatin", queries: ["evotaz", "simvastatin"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Lipid-modifying Agents lomitapide, lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "nevirapine", queries: ["evotaz", "nevirapine"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Non-nucleoside Reverse Transcriptase Inhibitor nevirapine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "sildenafil-pah", queries: ["evotaz", "sildenafil pah"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "sildenafil a when administered for the treatment of pulmonary arterial hypertension",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire. Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "triazolam", queries: ["evotaz", "triazolam"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Sedative/hypnotics triazolam, orally administered midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire.",
+  }),
+  row3({
+    drugA: "atazanavir-cobicistat", drugB: "midazolam", queries: ["evotaz", "midazolam"],
+    labelDrug: "Evotaz (atazanavir/cobicistat)", label: "evotaz", labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: EVOTAZ_4,
+    labelExample: "Sedative/hypnotics triazolam, orally administered midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Evotaz catalog row has no enzyme roles, so CYP rules on atazanavir or cobicistat do not fire. Contraindication is for orally administered midazolam. Parenteral use is a different statement. The catalog row is not split by route.",
+  }),
+];
+
 export const WAVE_1_COUNT = WAVE_1.length;
 export const WAVE_2_COUNT = WAVE_2.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2];
+export const WAVE_3_COUNT = WAVE_3.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -690,11 +1491,65 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
   "pimozide+fluoxetine", // label: contraindicated (Prozac 4.2) · engine: moderate
   "pimozide+paroxetine", // label: contraindicated (pimozide) · engine: none at pair level
   "thioridazine+fluvoxamine", // label: contraindicated (thioridazine; fluvoxamine 4) · engine: moderate
-  "alosetron+fluvoxamine", // label: contraindicated (Lotronex 4.3) · engine: none
   // wave 2 (MAT / ketamine clinic), for formulary owner (Grok Bot 5) review
   "methadone+zidovudine", // label: warning, floor moderate (methadone 7: "could result in toxic effects") · engine: none at pair level
   "buprenorphine+phenelzine", // label: avoid, floor major (Suboxone 7: "not recommended" with MAOIs) · engine: moderate
   "esketamine+methylphenidate", // label: warning, floor moderate (Spravato 7.2: may increase blood pressure) · engine: none at pair level
+
+  // wave 3: label contraindicated, engine below major ("Serious concern")
+  "darunavir+grazoprevir-elbasvir", // Prezista 4 (elbasvir/grazoprevir) · engine: none
+  "atazanavir+irinotecan", // Reyataz Table 6 · engine: none
+  "atazanavir+grazoprevir-elbasvir", // Reyataz Table 6 · engine: none
+  // wave 3 Prezcobix combo row: label contraindicated, engine below major
+  "darunavir-cobicistat+alfuzosin", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+carbamazepine", // Prezcobix 4 · engine: moderate
+  "darunavir-cobicistat+phenobarbital", // Prezcobix 4 · engine: moderate
+  "darunavir-cobicistat+phenytoin", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+rifampin", // Prezcobix 4 · engine: moderate
+  "darunavir-cobicistat+lurasidone", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+pimozide", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+dronedarone", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+ivabradine", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+ranolazine", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+dihydroergotamine", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+ergotamine", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+methylergonovine", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+st-johns-wort", // Prezcobix 4 · engine: moderate
+  "darunavir-cobicistat+grazoprevir-elbasvir", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+lovastatin", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+simvastatin", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+naloxegol", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+sildenafil-pah", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+midazolam", // Prezcobix 4 · engine: none
+  "darunavir-cobicistat+triazolam", // Prezcobix 4 · engine: none
+  // wave 3 Evotaz combo row: label contraindicated, engine below major
+  "atazanavir-cobicistat+alfuzosin", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+ranolazine", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+dronedarone", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+carbamazepine", // Evotaz Table 1 · engine: moderate
+  "atazanavir-cobicistat+phenobarbital", // Evotaz Table 1 · engine: moderate
+  "atazanavir-cobicistat+phenytoin", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+rifampin", // Evotaz Table 1 · engine: moderate
+  "atazanavir-cobicistat+apalutamide", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+encorafenib", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+irinotecan", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+ivosidenib", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+lurasidone", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+pimozide", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+dihydroergotamine", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+ergotamine", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+methylergonovine", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+grazoprevir-elbasvir", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+glecaprevir-pibrentasvir", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+st-johns-wort", // Evotaz Table 1 · engine: moderate
+  "atazanavir-cobicistat+drospirenone", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+ethinyl-estradiol", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+lovastatin", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+simvastatin", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+nevirapine", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+sildenafil-pah", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+triazolam", // Evotaz Table 1 · engine: none
+  "atazanavir-cobicistat+midazolam", // Evotaz Table 1 · engine: none
 ];
 
 /**
@@ -714,6 +1569,30 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   "naltrexone+buprenorphine", // naltrexone tablets CONTRAINDICATIONS (partial agonists, e.g., buprenorphine)
   "naltrexone+oxycodone", // naltrexone tablets CONTRAINDICATIONS (opioid analgesics)
   "naltrexone+hydrocodone", // Vivitrol 4 CONTRAINDICATIONS (opioid analgesics)
+  // wave 3: label contraindicated, engine major ("Serious concern"), not contraindicated
+  "mifepristone+dihydroergotamine", // Korlym 4 · engine: major
+  "mifepristone+ergotamine", // Korlym 4 · engine: major
+  "mifepristone+quinidine", // Korlym 4 · engine: major
+  "darunavir+dronedarone", // Prezista 4 · engine: major
+  "darunavir+dihydroergotamine", // Prezista 4 · engine: major
+  "darunavir+ergotamine", // Prezista 4 · engine: major
+  "darunavir+methylergonovine", // Prezista 4 · engine: major
+  "darunavir+rifampin", // Prezista 4 · engine: major
+  "darunavir+sildenafil-pah", // Prezista 4 (PAH only) · engine: major
+  "darunavir+st-johns-wort", // Prezista 4 · engine: major
+  "atazanavir+apalutamide", // Reyataz Table 6 · engine: major
+  "atazanavir+carbamazepine", // Reyataz Table 6 · engine: major
+  "atazanavir+dihydroergotamine", // Reyataz Table 6 · engine: major
+  "atazanavir+encorafenib", // Reyataz Table 6 · engine: major
+  "atazanavir+ergotamine", // Reyataz Table 6 · engine: major
+  "atazanavir+glecaprevir-pibrentasvir", // Reyataz Table 6 · engine: major
+  "atazanavir+ivosidenib", // Reyataz Table 6 · engine: major
+  "atazanavir+methylergonovine", // Reyataz Table 6 · engine: major
+  "atazanavir+nevirapine", // Reyataz Table 6 · engine: major
+  "atazanavir+phenobarbital", // Reyataz Table 6 · engine: major
+  "atazanavir+phenytoin", // Reyataz Table 6 · engine: major
+  "atazanavir+sildenafil-pah", // Reyataz Table 6 (Revatio / PAH) · engine: major
+  "atazanavir+st-johns-wort", // Reyataz Table 6 · engine: major
 ];
 
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
@@ -726,6 +1605,8 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
     reason:
       "No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.",
   },
+  { drug: "lomitapide", reason: "Named on the Prezista, Prezcobix, Reyataz, and Evotaz contraindication lists. Not in the catalog." },
+  { drug: "indinavir", reason: "Named on Reyataz Table 6 and Evotaz Table 1. Not in the catalog." },
 ];
 
 /** Candidate pairs considered and dropped, with the reason. */
@@ -760,10 +1641,44 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "darunavir + rifampin / St. John's wort",
     reason:
-      "Verified on Prezista 4, but darunavir is only labeled with a booster (ritonavir/cobicistat); a two-drug regimen is ambiguous. rifampin+atazanavir kept instead.",
+      "Wave 1 left these off because darunavir is labeled with a booster. Wave 3 adds them from the current Prezista and Prezcobix contraindication lists, including the combo rows.",
   },
   {
     pair: "extra verified duplicates (e.g. lovastatin+itraconazole, triazolam+ritonavir, dronedarone+clarithromycin, eplerenone+clarithromycin, lemborexant+rifampin, ticagrelor+rifampin, rivaroxaban+rifampin, tranylcypromine+dextromethorphan)",
     reason: "Label statement verified but trimmed to keep the set near 45 without repeating the same mechanism.",
+  },
+  {
+    pair: "colchicine + Prezista / Prezcobix / Evotaz",
+    reason:
+      "Contraindicated only in renal and/or hepatic impairment. Not expressible on the default host. Reyataz section 4 does not name colchicine.",
+  },
+  {
+    pair: "Reyataz + amiodarone / quinidine / lurasidone",
+    reason:
+      "Table 6 qualifies these as contraindicated only with ritonavir. Unboosted atazanavir on a two-drug regimen is not that statement. Evotaz lists lurasidone without that qualifier and is included.",
+  },
+  {
+    pair: "rifampin + atazanavir (Reyataz Table 6)",
+    reason:
+      "Already in wave 1 from the Rifadin label (rifampin+atazanavir). Not duplicated. Evotaz + rifampin uses atazanavir-cobicistat and is included.",
+  },
+  {
+    pair: "ergonovine + atazanavir",
+    reason:
+      "Named on Reyataz ergot derivatives. No ergonovine catalog row. Methylergonovine is a different drug and is paired on its own. Not listed under NOT_IN_CATALOG because that check treats a name substring as a hit.",
+  },
+  {
+    pair: "cisapride + Reyataz",
+    reason: "Named on Reyataz Table 6. Already recorded as not in the catalog.",
+  },
+  {
+    pair: "Symtuza (darunavir/cobicistat/FTC/TAF) pairs",
+    reason:
+      "A combo row exists, but wave 3 anchors only the named labels: Prezista, Prezcobix, Reyataz, and Evotaz.",
+  },
+  {
+    pair: "glecaprevir, pibrentasvir, or elbasvir as single ingredients",
+    reason:
+      "Labels name the fixed combinations. Paired to grazoprevir-elbasvir and glecaprevir-pibrentasvir, not the single-ingredient rows.",
   },
 ];
