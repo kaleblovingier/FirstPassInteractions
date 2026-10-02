@@ -6,6 +6,7 @@ import { crclOf, phenytoinCorrected, qtcOf, type Sex } from "@/lib/drugs/bedside
 import { LIVERTOX_CAT_TONE, livertoxOnDesk, livertoxUrl } from "@/lib/drugs/livertox";
 import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
 import { hasPhenoConvert, phenoConvertOnDesk } from "@/lib/drugs/pheno-convert";
+import { PhenoContrastBoard } from "./pheno-contrast";
 import { qtReport } from "@/lib/drugs/qt";
 import { reversalOnDesk } from "@/lib/drugs/reversal";
 import { ancBand, ancWanted } from "@/lib/drugs/anc";
@@ -180,7 +181,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "qt" && qt ? <QtPanel report={qt} /> : null}
         {live === "levels" && levels.length ? <LevelsPanel rows={levels} host={host} /> : null}
         {live === "liver" && liver.length ? <LiverPanel rows={liver} /> : null}
-        {live === "pheno" ? <PhenoPanel rows={pheno} /> : null}
+        {live === "pheno" ? <PhenoContrastBoard ids={ids} host={host} /> : null}
         {live === "reversal" && reversal.length ? <ReversalPanel rows={reversal} /> : null}
         {live === "mme" && mme.length ? <MmePanel rows={mme} /> : null}
         {live === "hunter" ? <HunterPanel ids={ids} /> : null}
@@ -212,7 +213,8 @@ function CypPanel({ ids }: { ids: string[] }) {
       <p className="text-sm leading-relaxed text-muted">
         FDA DDI grades, start vs stop clocks. TDI linger means {glossWithTerm("tdi")}; induction lag
         means {glossWithTerm("induction")}. Huang 2007 / FDA 2020 teaching — not a milligram and not a
-        hold. The Prescribing Information is the authority.
+        hold. A study aid for how timing changes the picture, not a real-time alert. The Prescribing
+        Information is the authority.
       </p>
 
       <div className="flex flex-wrap gap-1">
@@ -306,8 +308,8 @@ function CypPanel({ ids }: { ids: string[] }) {
 
       {cards[0] ? (
         <article className="rounded-md bg-bg-sunken px-3 py-3">
-          <h3 className="font-serif text-lg tracking-tight text-fg">Safety steps</h3>
-          <p className="mt-1 text-xs text-muted">Teaching checklist for the hottest perpetrator on this desk. Nothing is stored.</p>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Study steps</h3>
+          <p className="mt-1 text-xs text-muted">Teaching checklist for the biggest blocker or booster on this desk. A study aid, not a real-time alert. Nothing is stored.</p>
           <ul className="mt-3 space-y-1">
             {cards[0].steps.map((s) => (
               <li key={s.id}>
@@ -333,7 +335,7 @@ function CypPanel({ ids }: { ids: string[] }) {
         </article>
       ) : (
         <article className="rounded-md bg-bg-sunken px-3 py-3">
-          <h3 className="font-serif text-lg tracking-tight text-fg">Safety steps</h3>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Study steps</h3>
           <ul className="mt-3 space-y-2">
             {SAFETY_CHECKS.map((s) => (
               <li key={s.id}>
@@ -533,51 +535,6 @@ function LiverPanel({ rows }: { rows: ReturnType<typeof livertoxOnDesk> }) {
       <p className="text-[11px] leading-relaxed text-subtle">
         Categories paraphrase NIDDK LiverTox (A = well-known cause). Open the chapter for the case
         series. Not a fibrosis score.
-      </p>
-    </div>
-  );
-}
-
-function PhenoPanel({ rows }: { rows: ReturnType<typeof phenoConvertOnDesk> }) {
-  if (!rows.length) {
-    return (
-      <p className="text-sm leading-relaxed text-muted">
-        Add a 2D6 / 2C19 perpetrator next to a victim — paroxetine × codeine is the teaching pair. A
-        strong inhibitor rewrites the genotype on this desk. Search <span className="font-mono">phenoconversion</span>.
-      </p>
-    );
-  }
-  return (
-    <div className="space-y-4">
-      {rows.map((row) => (
-        <article key={row.enzyme} className={cn("rounded-md px-3 py-3", row.shifted ? "bg-accent-soft" : "bg-bg-sunken")}>
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-mono text-sm text-fg">{row.enzyme}</h3>
-            <Badge tone={row.shifted ? "warn" : "info"}>
-              {row.genotype} → {row.clinical}
-            </Badge>
-          </div>
-          <p className="mt-2 text-sm leading-relaxed text-fg">{row.pearl}</p>
-          {row.inhibitors.length ? (
-            <p className="mt-2 text-xs text-muted">
-              Inhibitors: {row.inhibitors.map((p) => `${p.name} (${p.strength})`).join(", ")}
-            </p>
-          ) : null}
-          {row.inducers.length ? (
-            <p className="mt-1 text-xs text-muted">
-              Inducers: {row.inducers.map((p) => `${p.name} (${p.strength})`).join(", ")}
-            </p>
-          ) : null}
-          {row.victims.length ? (
-            <p className="mt-1 text-xs text-muted">
-              Victims: {row.victims.map((v) => `${v.name}${v.pathway === "activation" ? " (prodrug)" : ""}`).join(", ")}
-            </p>
-          ) : null}
-        </article>
-      ))}
-      <p className="text-[11px] leading-relaxed text-subtle">
-        Shah & Smith: phenoconversion is the Achilles heel of a genotype report. CPIC still lists the
-        lab. This desk scores the enzyme the patient actually has.
       </p>
     </div>
   );

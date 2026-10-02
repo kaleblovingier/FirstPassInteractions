@@ -299,7 +299,7 @@ export const DRUGBANK: Record<string, BankCard> = {
   charcoal: b("DB09278", ["adsorbent"]),
   "milk-thistle": b("DB09087", ["silibinin"], "Nutraceutical"),
   coq10: b("DB09270", ["complex I–III shuttle"], "Nutraceutical"),
-  "five-htp": b("DB02959", ["AADC → 5-HT"], "Nutraceutical"),
+  "five-htp": b("DB02959", ["AADC to 5-HT"], "Nutraceutical"),
   citrulline: b("DB00155", ["NOS via arginine"], "Nutraceutical"),
   potassium: b("DB00761", ["K⁺"]),
   "fish-oil": b("DB00159", ["PPARα / platelet COX"]),

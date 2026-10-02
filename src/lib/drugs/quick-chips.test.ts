@@ -23,6 +23,6 @@ test("plain words report includes disclaimer and findings", () => {
     },
   ], "Avoid together");
   assert.match(text, /Highest concern/);
-  assert.match(text, /Educational model/);
+  assert.match(text, /Educational interaction reference/);
   assert.match(text, /plain English/);
 });

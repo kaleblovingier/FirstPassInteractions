@@ -50,7 +50,7 @@ const TDM: Record<string, TdmCard> = {
     trough: "15–40",
     toxic: ">40 sedation; >60 often toxic",
     draw: "Trough; t½ is days — do not chase yesterday",
-    pearl: "Pan-CYP inducer. Primidone is the prodrug. OCP failure is the quiet row.",
+    pearl: "Broad CYP inducer. Primidone is the prodrug. OCP failure is the quiet row.",
   },
   lamotrigine: {
     analyte: "Lamotrigine",

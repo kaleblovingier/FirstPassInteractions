@@ -523,7 +523,7 @@ export const PGX: Record<string, PgxCard[]> = {
       rows: [
         { pheno: "*15:02 positive", action: "Avoid unless already tolerant >3 months. SJS/TEN." },
         { pheno: "*31:01 positive", action: "Avoid if other options; HSS / SJS risk." },
-        { pheno: "both negative", action: "Usual titration; still a pan-CYP inducer." },
+        { pheno: "both negative", action: "Usual titration; still a broad CYP inducer." },
       ],
       pearl:
         "The gene is a rash gene. The desk still scores carbamazepine as a strong 3A4/2C9/2C19 inducer — OCP failure, stolen methadone, lost ketamine.",

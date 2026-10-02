@@ -10,13 +10,13 @@
 const FOUNDING_PRICE = 79;
 
 /** Free desk framing for soft founding-feature coaches. */
-export const FREE_DESK_LINE = "Free desk: up to five drugs for mapped collisions.";
+export const FREE_DESK_LINE = "Free desk: up to five drugs, no card needed.";
 
 /** Founding price line — $79 once. */
 export const FOUNDING_PRICE_LINE = `Founding is $${FOUNDING_PRICE} once.`;
 
 /** Short three-step buyer path — same wording as Plans / commerce. */
-export const FOUNDING_PATH_SHORT = "Pay → get key → Redeem";
+export const FOUNDING_PATH_SHORT = "Pay, get your key, Redeem";
 
 /** Compact step titles aligned with MANUAL_UNLOCK_STEPS. */
 export const FOUNDING_PATH_STEPS = [
@@ -69,7 +69,7 @@ export function foundingGateCopy(kind: FoundingGateKind): FoundingGateCopy {
       return {
         title: "Metabolite maps need founding",
         blurb:
-          "Parent → product teaching maps (norketamine, 11-OH-THC, morphine, and kin) open with founding.",
+          "Parent-to-product teaching maps (norketamine, 11-OH-THC, morphine, and kin) open with founding.",
         reason: `Metabolite maps are a founding surface. ${FREE_FOUNDING}`,
       };
     case "stacks":
@@ -82,7 +82,7 @@ export function foundingGateCopy(kind: FoundingGateKind): FoundingGateCopy {
       return {
         title: "Export needs founding",
         blurb:
-          "JSON and CSV export for the lab book ships with founding / lab — paste a redeemed key to unlock.",
+          "JSON and CSV export for the lab book ships with founding — paste a redeemed key to unlock.",
         reason: `JSON/CSV export is a founding surface. ${FREE_FOUNDING}`,
       };
     case "report":

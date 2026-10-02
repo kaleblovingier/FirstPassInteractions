@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { Check, CreditCard, Loader2, X } from "lucide-react";
+import { Check, CreditCard, KeyRound, Loader2, X } from "lucide-react";
 import {
-  BUYERS,
   COMMERCE,
   FOUNDING_UNLOCKS,
   MANUAL_UNLOCK_STEPS,
   OPERATOR,
   PAY_RAILS,
+  PLANS_FAQ,
   requestLicense,
 } from "@/lib/billing/commerce";
 import { redeemLicense } from "@/lib/billing/license";
 import { startStripeCheckout, stripeStatus } from "@/lib/billing/stripe";
-import { PLANS, priceFor, type Interval } from "@/lib/billing/plans";
+import { PLAN_BY_ID, PLAN_TIERS, priceFor } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,90 +19,79 @@ import { Input } from "@/components/ui/input";
 import { Plate } from "./plate";
 import { OperatorCard } from "./operator";
 
+const REDEEM_REASON = "Paste the signed key you were sent. Nothing unlocks until Redeem succeeds.";
+const FOUNDING_REASON = `Founding is $${COMMERCE.founding} once — host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export.`;
+
 export function PlansPage() {
   const current = usePlan();
   const license = useDesk((s) => s.license);
   const lifetime = useDesk((s) => s.lifetime);
   const previewUntil = useDesk((s) => s.previewUntil);
-  const interval = useDesk((s) => s.checkout.interval);
-  const setInterval = useDesk((s) => s.setCheckoutInterval);
+  const checkoutOpen = useDesk((s) => s.checkout.open);
   const openCheckout = useDesk((s) => s.openCheckout);
   const startPreview = useDesk((s) => s.startPreview);
   const downgrade = useDesk((s) => s.downgrade);
   const previewing = Boolean(previewUntil && Date.now() < previewUntil && current === "pro");
+  const founding = lifetime || (current === "lab" && !previewing);
+
+  const unlock = () => openCheckout("lab", FOUNDING_REASON, "life");
+  const redeem = () => {
+    openCheckout("lab", REDEEM_REASON, "life");
+    // Jump straight to the key field — on phones it sits below the pay rails.
+    window.setTimeout(() => {
+      const field = document.getElementById("license-key");
+      field?.scrollIntoView({ block: "center" });
+      field?.focus();
+    }, 60);
+  };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8 pb-24 sm:pb-0">
       <section className="overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-border)]">
         <div className="grid lg:grid-cols-[240px_minmax(0,1fr)]">
-          <Plate src="/plates/heme.jpg" alt="" className="h-40 w-full lg:h-full min-h-40" />
+          <Plate src="/plates/heme.jpg" alt="" className="h-32 w-full min-h-32 sm:h-40 lg:h-full" />
           <div className="px-5 py-6 sm:px-8">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Free vs founding</p>
             <h1 className="mt-3 font-serif text-3xl tracking-tight text-fg sm:text-4xl">
-              Five-drug checks stay free. Founding is ${COMMERCE.founding} once.
+              Five drugs free. Founding is ${COMMERCE.founding} once.
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{COMMERCE.pitch}</p>
-            <ul className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-2">
-              <li className="rounded-md bg-bg-sunken px-3 py-2">
-                <span className="font-medium text-fg">Free desk</span>
-                <span className="mt-0.5 block text-xs leading-relaxed">
-                  Up to five medicines, interaction cards, concentration sketch, and heatmap — no card
-                  required.
-                </span>
-              </li>
-              <li className="rounded-md bg-bg-sunken px-3 py-2">
-                <span className="font-medium text-fg">Founding · ${COMMERCE.founding} lifetime</span>
-                <span className="mt-0.5 block text-xs leading-relaxed">
-                  Host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export —
-                  yours for life on this desk.
-                </span>
-              </li>
-            </ul>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Button
-                onClick={() =>
-                  openCheckout(
-                    "lab",
-                    "Founding lifetime ($79 once) — Pro tools plus export, yours forever on this desk.",
-                    "life",
-                  )
-                }
-              >
-                Unlock founding · ${COMMERCE.founding}
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+              {founding ? (
+                <Button variant="secondary" disabled className="w-full sm:w-auto">
+                  <Check className="size-4" />
+                  Founding is live on this desk
+                </Button>
+              ) : (
+                <Button onClick={unlock} className="w-full sm:w-auto">
+                  Unlock founding · ${COMMERCE.founding} once
+                </Button>
+              )}
+              <Button variant="secondary" onClick={redeem} className="w-full sm:w-auto">
+                <KeyRound className="size-4" />
+                Have a key? Redeem it
               </Button>
               {current === "free" ? (
-                <Button variant="secondary" onClick={startPreview}>
-                  Try 7 days free
-                </Button>
+                <button
+                  type="button"
+                  onClick={startPreview}
+                  className="h-10 text-sm text-muted underline-offset-4 hover:text-fg hover:underline sm:px-2"
+                >
+                  Or try 7 days free
+                </button>
               ) : null}
             </div>
           </div>
         </div>
       </section>
 
-      <div className="flex flex-wrap items-center gap-2">
-        {(["life", "year", "month"] as Interval[]).map((i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setInterval(i)}
-            className={cn(
-              "h-10 rounded-full px-4 text-sm font-medium",
-              interval === i ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
-            )}
-          >
-            {i === "life" ? "Lifetime" : i === "year" ? "Yearly" : "Monthly"}
-          </button>
-        ))}
-      </div>
-
       {current !== "free" ? (
         <p className="rounded-lg bg-ok-soft px-4 py-3 text-sm text-ok">
           {previewing
-            ? "Pro preview is active — host factors and atlas are open while it lasts."
-            : lifetime
-              ? "Founding lifetime is live — host factors, atlas, and export are yours."
-              : `${current === "lab" ? "Lab" : "Pro"} is live on this desk.`}
+            ? "Your 7-day preview is on — host factors and the enzyme atlas are open while it lasts."
+            : founding
+              ? "Founding is live — host factors, enzyme atlas, metabolite maps, full report, and export are yours."
+              : "Your Pro key is live on this desk."}
           {license ? ` Key ${license}.` : ""}{" "}
           <button type="button" className="underline" onClick={downgrade}>
             Return to free desk
@@ -110,34 +99,24 @@ export function PlansPage() {
         </p>
       ) : null}
 
-      <ul className="grid gap-4 lg:grid-cols-3">
-        {PLANS.map((p) => {
-          const price = priceFor(p.id, p.id === "free" ? "month" : interval);
-          const on = current === p.id || (p.id === "pro" && previewing);
-          const cta =
-            p.id === "free"
-              ? current === "free"
-                ? "You're on the free desk"
-                : "Switch to free desk"
-              : interval === "life"
-                ? `Founding · $${priceFor(p.id === "pro" ? "pro" : "lab", "life")} lifetime`
-                : `Unlock ${p.name}`;
+      <ul className="grid gap-4 md:grid-cols-2">
+        {PLAN_TIERS.map((id) => {
+          const p = PLAN_BY_ID[id];
+          const isFree = id === "free";
           return (
             <li
-              key={p.id}
+              key={id}
               className={cn(
                 "flex flex-col rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]",
                 p.highlighted && "ring-1 ring-accent",
               )}
             >
               <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">{p.name}</p>
-              <p className="mt-2 font-serif text-2xl tracking-tight text-fg">{p.tagline}</p>
-              <p className="mt-4 font-mono text-3xl tabular-nums text-fg">
-                {p.id === "free" ? "—" : `$${price}`}
-                <span className="ml-1 text-sm text-muted">
-                  {p.id === "free" ? "free" : interval === "life" ? " once" : interval === "year" ? "/yr" : "/mo"}
-                </span>
+              <p className="mt-2 font-mono text-3xl tabular-nums text-fg">
+                {isFree ? "$0" : `$${COMMERCE.founding}`}
+                <span className="ml-1 text-sm text-muted">{isFree ? "forever" : "once · lifetime"}</span>
               </p>
+              <p className="mt-2 text-sm leading-relaxed text-fg">{p.tagline}</p>
               <ul className="mt-5 flex-1 space-y-2">
                 {p.features.map((f) => (
                   <li key={f} className="flex gap-2 text-sm text-muted">
@@ -147,29 +126,27 @@ export function PlansPage() {
                 ))}
               </ul>
               <div className="mt-6">
-                {p.id === "free" ? (
+                {isFree ? (
                   <Button variant="secondary" className="w-full" disabled={current === "free"} onClick={downgrade}>
-                    {cta}
+                    {current === "free" ? "You're on the free desk" : "Switch to free desk"}
                   </Button>
-                ) : on && !previewing && !(interval === "life" && !lifetime) ? (
+                ) : founding ? (
                   <Button variant="secondary" className="w-full" disabled>
-                    Current license
+                    Your current license
                   </Button>
                 ) : (
-                  <Button
-                    className="w-full"
-                    onClick={() =>
-                      openCheckout(
-                        interval === "life" ? "lab" : p.id,
-                        interval === "life"
-                          ? "Founding lifetime ($79 once) — host factors, atlas, and export."
-                          : p.name,
-                        interval,
-                      )
-                    }
-                  >
-                    {cta}
-                  </Button>
+                  <div className="space-y-2">
+                    <Button className="w-full" onClick={unlock}>
+                      Unlock founding · ${COMMERCE.founding} once
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={redeem}
+                      className="h-10 w-full text-sm font-medium text-accent hover:underline"
+                    >
+                      Already paid? Redeem your key
+                    </button>
+                  </div>
                 )}
               </div>
             </li>
@@ -177,21 +154,9 @@ export function PlansPage() {
         })}
       </ul>
 
-      <section>
-        <h2 className="font-serif text-xl tracking-tight text-fg">Who this is for</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {BUYERS.map((b) => (
-            <li key={b.who} className="rounded-xl bg-surface px-4 py-4 shadow-[var(--shadow-border)]">
-              <p className="text-sm font-medium text-fg">{b.who}</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted">{b.why}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-5">
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">How founding unlocks</p>
-        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay → get key → Redeem</h2>
+        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay, get your key, Redeem</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {MANUAL_UNLOCK_STEPS.map((step) => (
@@ -205,21 +170,43 @@ export function PlansPage() {
         </ol>
       </section>
 
+      <section>
+        <h2 className="font-serif text-xl tracking-tight text-fg">Questions</h2>
+        <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+          {PLANS_FAQ.map((item) => (
+            <div key={item.q} className="rounded-xl bg-surface px-4 py-4 shadow-[var(--shadow-border)]">
+              <dt className="text-sm font-medium text-fg">{item.q}</dt>
+              <dd className="mt-1 text-sm leading-relaxed text-muted">{item.a}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <OperatorCard />
 
       <p className="text-center text-sm text-muted">
         Already paid, or have a key from email or text?{" "}
-        <button
-          type="button"
-          className="font-medium text-accent hover:underline"
-          onClick={() =>
-            openCheckout("lab", "Paste the signed key you were sent. Nothing unlocks until Redeem succeeds.")
-          }
-        >
+        <button type="button" className="font-medium text-accent hover:underline" onClick={redeem}>
           Paste and redeem it here
         </button>
         .
       </p>
+
+      {!checkoutOpen ? (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
+          <div className="mx-auto flex max-w-md gap-2">
+            {founding ? null : (
+              <Button className="flex-1" onClick={unlock}>
+                Founding · ${COMMERCE.founding} once
+              </Button>
+            )}
+            <Button variant="secondary" className={founding ? "flex-1" : "shrink-0"} onClick={redeem}>
+              <KeyRound className="size-4" />
+              Redeem key
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -229,7 +216,6 @@ export function CheckoutDrawer() {
   const close = useDesk((s) => s.closeCheckout);
   const activate = useDesk((s) => s.activateLicense);
   const startPreview = useDesk((s) => s.startPreview);
-  const setInterval = useDesk((s) => s.setCheckoutInterval);
   const [busy, setBusy] = useState(false);
   const [cardBusy, setCardBusy] = useState(false);
   const [key, setKey] = useState("");
@@ -254,7 +240,7 @@ export function CheckoutDrawer() {
   if (!checkout.open) return null;
   const life = checkout.interval === "life" || checkout.plan === "lab";
   const amount = priceFor(checkout.plan === "free" ? "pro" : checkout.plan, checkout.interval);
-  const name = checkout.interval === "life" ? "Founding" : checkout.plan === "lab" ? "Lab" : "Pro";
+  const name = checkout.interval === "life" || checkout.plan === "lab" ? "Founding" : "Pro";
   const cardLive = stripeMode === "live" || stripeMode === "test";
 
   async function redeem() {
@@ -368,26 +354,6 @@ export function CheckoutDrawer() {
             : "Card checkout is not live on this desk yet. Pay with Venmo, Cash App, or PayPal below. After payment clears, you get a signed key by email or text — paste it under Redeem. Nothing unlocks until that key verifies."}
         </p>
 
-        <div className="mt-4 grid grid-cols-3 gap-1">
-          {(["life", "year", "month"] as Interval[]).map((i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setInterval(i)}
-              className={cn(
-                "h-11 rounded-sm text-xs font-medium sm:text-sm",
-                checkout.interval === i ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
-              )}
-            >
-              {i === "life"
-                ? `$${priceFor("lab", "life")} once`
-                : i === "year"
-                  ? `$${priceFor(checkout.plan === "lab" ? "lab" : "pro", "year")}/yr`
-                  : `$${priceFor(checkout.plan === "lab" ? "lab" : "pro", "month")}/mo`}
-            </button>
-          ))}
-        </div>
-
         {cardLive ? (
           <>
             <Button className="mt-5 w-full" onClick={() => void payCard()} disabled={cardBusy}>
@@ -489,7 +455,7 @@ export function CheckoutDrawer() {
 
         {checkout.plan !== "lab" || checkout.interval === "life" ? (
           <button type="button" className="mt-3 h-10 w-full text-sm text-muted hover:text-fg" onClick={startPreview}>
-            Prefer to look first? Start a 7-day Pro preview
+            Prefer to look first? Start a 7-day preview
           </button>
         ) : null}
       </div>

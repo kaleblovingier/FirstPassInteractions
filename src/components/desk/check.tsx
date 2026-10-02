@@ -98,7 +98,7 @@ function regimenGroups(findings: Finding[]) {
 
 function unmappedPairs(ids: string[], hit: Set<string>) {
   const real = ids.filter((id) => DRUG_BY_ID[id]);
-  const out: { key: string; title: string }[] = [];
+  const out: { key: string; title: string; reason: string }[] = [];
   for (let i = 0; i < real.length; i++) {
     for (let j = i + 1; j < real.length; j++) {
       const key = [real[i], real[j]].sort().join("|");
@@ -106,10 +106,47 @@ function unmappedPairs(ids: string[], hit: Set<string>) {
       const title = [DRUG_BY_ID[real[i]].name, DRUG_BY_ID[real[j]].name]
         .sort((a, b) => a.localeCompare(b))
         .join(" · ");
-      out.push({ key, title });
+      out.push({ key, title, reason: blankReason(real[i], real[j]) });
     }
   }
   return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+
+function blankReason(aId: string, bId: string) {
+  const a = DRUG_BY_ID[aId];
+  const b = DRUG_BY_ID[bId];
+  if (!a || !b) return "Not a clearance.";
+  const substrates = (id: string) => DRUG_BY_ID[id]?.enzymes.filter((e) => e.kind === "substrate") ?? [];
+  const perps = (id: string) => DRUG_BY_ID[id]?.enzymes.filter((e) => e.kind !== "substrate") ?? [];
+  const shared = [...new Set(substrates(aId).map((e) => e.enzyme))].filter((enzyme) =>
+    substrates(bId).some((e) => e.enzyme === enzyme),
+  );
+  const near = (perpId: string, otherId: string) =>
+    perps(perpId).find((role) => !substrates(otherId).some((e) => e.enzyme === role.enzyme));
+  const fromA = near(aId, bId);
+  const fromB = near(bId, aId);
+  const miss = fromA ? { name: a.name, role: fromA, other: b.name } : fromB ? { name: b.name, role: fromB, other: a.name } : null;
+  const verb = miss?.role.kind === "inducer" ? "speeds" : "slows";
+  if (shared.length && miss) {
+    return `No perpetrator on shared ${shared[0]}. ${miss.name} ${verb} ${miss.role.enzyme}, and ${miss.other} is not on it.`;
+  }
+  if (shared.length) {
+    return `Both are ${shared.slice(0, 2).join(" and ")} substrates. No perpetrator was mapped.`;
+  }
+  if (miss) {
+    return `${miss.name} ${verb} ${miss.role.enzyme}. ${miss.other} is not a ${miss.role.enzyme} substrate on this map.`;
+  }
+  return "No shared enzyme and no stacked-effect row on this map.";
+}
+
+function directionLine(f: Finding) {
+  const a = actors(f);
+  if (!a.verb || a.verb === "with") {
+    const effect = f.effect?.split("·")[0]?.trim();
+    return effect ? effect.charAt(0).toUpperCase() + effect.slice(1) : a.left;
+  }
+  const short = a.verb.replace(/ of$/, "");
+  return short.charAt(0).toUpperCase() + short.slice(1);
 }
 
 function actors(f: Finding): { left: string; verb: string; right: string } {
@@ -168,12 +205,10 @@ export function CheckBoard({
   const [showAll, setShowAll] = useState(false);
   const [tier, setTier] = useState<Severity | "all">("all");
   const [showFood, setShowFood] = useState(false);
-  const [showQuiet, setShowQuiet] = useState(false);
   if (scope !== pairKey) {
     setScope(pairKey);
     setShowAll(false);
     setShowFood(false);
-    setShowQuiet(false);
     setTier("all");
     setOpenId(rows[0]?.id ?? food[0]?.id ?? null);
   }
@@ -276,6 +311,24 @@ export function CheckBoard({
         </>
       ) : null}
 
+      {regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) ? (
+        <PairGrid
+          hits={regimenGroups(rows).pairs.map((g) => ({
+            key: g.key,
+            title: g.title,
+            line: directionLine(g.rows[0]),
+            severity: g.rows[0].severity,
+            findingId: g.rows[0].id,
+          }))}
+          blanks={quietPairs}
+          onOpen={(id) => {
+            setTier("all");
+            setShowAll(true);
+            setOpenId(id);
+          }}
+        />
+      ) : null}
+
       {!regimen ? <RoleGrid ids={ids} rows={rows} /> : null}
 
       {rows.length === 0 && quietEnzymes ? (
@@ -352,38 +405,6 @@ export function CheckBoard({
       ) : null}
 
       {rows.length > 0 && quietEnzymes ? <p className="text-xs leading-relaxed text-muted">{quietEnzymes}</p> : null}
-
-      {quietPairs.length > 0 ? (
-        <div className="space-y-2">
-          <button
-            type="button"
-            onClick={() => setShowQuiet((v) => !v)}
-            aria-expanded={showQuiet}
-            className="flex h-11 w-full items-center justify-between gap-3 text-left"
-          >
-            <span className="text-sm text-fg">
-              {quietPairs.length === 1
-                ? "1 pair with no mapped collision"
-                : `${quietPairs.length} pairs with no mapped collision`}
-            </span>
-            <span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
-              {showQuiet ? "Hide" : "Show"} · not a clearance
-            </span>
-          </button>
-          {showQuiet ? (
-            <ul className="space-y-1">
-              {quietPairs.map((p) => (
-                <li key={p.key} className="rounded-md bg-bg-sunken px-3 py-2">
-                  <p className="text-sm text-fg">{p.title}</p>
-                  <p className="text-xs leading-relaxed text-muted">
-                    No mapped collision on this pair. A blank here is not a clearance, and a note under Across the desk can still name both.
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      ) : null}
 
       {regimen ? <RoleGrid ids={ids} rows={rows} /> : null}
 
@@ -465,6 +486,54 @@ export function CheckBoard({
   );
 }
 
+function PairGrid({
+  hits,
+  blanks,
+  onOpen,
+}: {
+  hits: { key: string; title: string; line: string; severity: Severity; findingId: string }[];
+  blanks: { key: string; title: string; reason: string }[];
+  onOpen: (id: string) => void;
+}) {
+  if (hits.length + blanks.length < 2) return null;
+  return (
+    <div className="space-y-2">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Every pair</p>
+        <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+          {hits.length} mapped · {blanks.length} blank
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-1.5">
+        {hits.map((cell) => (
+          <button
+            key={cell.key}
+            type="button"
+            onClick={() => onOpen(cell.findingId)}
+            className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2 text-left"
+          >
+            <span className={cn("inline-flex rounded-sm px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide", severitySurface(cell.severity))}>
+              {SEVERITY_LABEL[cell.severity]}
+            </span>
+            <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
+            <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
+          </button>
+        ))}
+        {blanks.map((cell) => (
+          <div key={cell.key} className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2">
+            <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">No mapped collision</span>
+            <span className="mt-1 block text-xs leading-snug text-muted">{cell.title}</span>
+            <span className="mt-0.5 block text-[11px] leading-snug text-subtle">{cell.reason}</span>
+          </div>
+        ))}
+      </div>
+      {blanks.length > 0 ? (
+        <p className="text-[11px] leading-relaxed text-subtle">A blank cell says why this map stayed quiet. It is not a clearance.</p>
+      ) : null}
+    </div>
+  );
+}
+
 function LeadRail({ finding }: { finding: Finding }) {
   const card = clockForFinding(finding);
   const watch = card && finding.kind !== "pd" ? card.start.watch : watchLine(finding);
@@ -492,7 +561,8 @@ function LeadRail({ finding }: { finding: Finding }) {
         <p className="mt-1 text-sm leading-relaxed text-fg">{watch}</p>
       </div>
       <p className="sm:col-span-2 text-[11px] leading-relaxed text-subtle">
-        This pair only. Not a milligram. If the label disagrees, the label wins.
+        This pair only. A study aid for how timing changes the picture, not a real-time alert. Not a
+        milligram. If the label disagrees, the label wins.
       </p>
     </div>
   );
@@ -539,17 +609,27 @@ function verdictTitle(f: Finding) {
 }
 
 function quietLine(ids: string[], findings: Finding[]) {
-  const seen = new Set<string>();
+  const roles = new Map<string, { sub: boolean; perp: boolean }>();
   for (const id of ids) {
-    for (const e of DRUG_BY_ID[id]?.enzymes ?? []) seen.add(e.enzyme);
+    for (const e of DRUG_BY_ID[id]?.enzymes ?? []) {
+      const row = roles.get(e.enzyme) ?? { sub: false, perp: false };
+      if (e.kind === "substrate") row.sub = true;
+      else row.perp = true;
+      roles.set(e.enzyme, row);
+    }
   }
   const hit = new Set<string>(findings.flatMap((f) => f.enzymes));
-  const quiet = [...seen].filter((e) => !hit.has(e));
-  if (seen.size === 0) {
+  const quiet = [...roles.entries()].filter(([enzyme]) => !hit.has(enzyme));
+  if (roles.size === 0) {
     return "No enzyme role was on the map for this list. Effect-stacking flags were still compared.";
   }
   if (quiet.length === 0) return "";
-  return `Also checked, no collision on: ${quiet.join(", ")}.`;
+  const parts = quiet.map(([enzyme, role]) => {
+    if (role.sub && !role.perp) return `${enzyme}, no perpetrator mapped`;
+    if (role.perp && !role.sub) return `${enzyme}, no victim mapped`;
+    return `${enzyme}, no pair written`;
+  });
+  return `Compared, not a clearance: ${parts.join("; ")}.`;
 }
 
 function CheckRow({

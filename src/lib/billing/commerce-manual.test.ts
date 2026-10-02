@@ -27,15 +27,50 @@ test("founding unlock note stays soft and non-clinical", () => {
 });
 
 test("payClose names rails, redeem, and three-step path", () => {
-  assert.match(src, /pay → get key → redeem/i);
+  assert.match(src, /pay, get your key, redeem/i);
   assert.match(src, /Venmo/);
   assert.match(src, /Cash App/);
   assert.match(src, /PayPal/);
-  assert.match(src, /Plans → Redeem/);
+  assert.match(src, /Redeem on the Plans page/);
+  assert.doesNotMatch(src, /→/);
 });
 
 test("PAY_RAILS still lists three written rails", () => {
   assert.match(src, /id: "venmo"/);
   assert.match(src, /id: "cashapp"/);
   assert.match(src, /id: "paypal"/);
+});
+
+test("plans FAQ answers subscription, card, lost key, and medical advice", () => {
+  const start = src.indexOf("PLANS_FAQ");
+  assert.ok(start >= 0);
+  const faq = src.slice(start, src.indexOf("] as const;", start));
+  assert.match(faq, /Is it a subscription\?/);
+  assert.match(faq, /No\. Founding is \$79 once/);
+  assert.match(faq, /need a card/i);
+  assert.match(faq, /lost my key/i);
+  // Lost-key answer reuses existing operator contact — no new handles.
+  assert.match(faq, /\$\{OPERATOR\.email\}/);
+  assert.match(faq, /\$\{OPERATOR\.phone\}/);
+  assert.match(faq, /medical advice/i);
+  assert.match(faq, /not FDA-cleared/i);
+  assert.match(faq, /Prescribing Information governs/);
+  assert.match(faq, /not proof a combination is safe/i);
+  assert.doesNotMatch(faq, /diagnos|treat|cure/i);
+});
+
+test("who-it's-for line uses the approved audience wording", () => {
+  const m = src.match(/WHO_FOR = "([^"]+)"/);
+  assert.ok(m);
+  assert.equal(
+    m[1],
+    "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.",
+  );
+  assert.doesNotMatch(src, /trained safety staff|harm-reduction teams|street-supply desks/i);
+});
+
+test("pitch no longer repeats a second free-tier line", () => {
+  const start = src.indexOf("pitch:");
+  const line = src.slice(start, src.indexOf("\n", start));
+  assert.doesNotMatch(line, /free|five/i);
 });

@@ -3,23 +3,28 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.12.0",
-  released: "2026-09-25",
+  version: "1.14.0",
+  released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "kaleblovingier@gmail.com",
   phone: "360-707-8923",
-  udi: "FP-SW-1.12.0",
+  /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
+  buildId: "FP-SW-1.14.0",
 } as const;
 
-/** 21 CFR / FDA CDS Guidance (Sept 28, 2022) posture — not a clearance. */
+/** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
+/** Single source of truth for who the desk is for. Copy elsewhere must match. */
+export const INTENDED_USERS =
+  "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.";
+
 export const RECREATIONAL_SAFETY_CONTEXT =
-  "This desk may be used in educational harm-reduction and recreational-safety review for licensed healthcare professionals and trained safety staff, including analysis of stimulant, sedative, dissociative, and street-supply combinations. Where local drug-checking services are available, purity and content testing services are complementary harm-reduction tools; they are not urine testing, not patient-directed dosing guidance, and not a substitute for the relevant FDA-approved Prescribing Information or local protocols. It is not intended for patient self-treatment, recreational dosing, or direct medical decision-making without independent review of the relevant FDA-approved Prescribing Information and local protocols.";
+  "This desk may be used in educational harm-reduction and recreational-safety review for licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision, including analysis of stimulant, sedative, dissociative, and street-supply combinations. Where local drug-checking services are available, purity and content testing services are complementary harm-reduction tools; they are not urine testing, not patient-directed dosing guidance, and not a substitute for the relevant FDA-approved Prescribing Information or local protocols. It is not intended for patient self-treatment, recreational dosing, or direct medical decision-making without independent review of the relevant FDA-approved Prescribing Information and local protocols.";
 
 export const INTENDED_USE =
-  `FirstPass is clinical decision support software intended for use by licensed healthcare professionals to display mapped cytochrome P450 and pharmacodynamic interaction information, FDA-label excerpts (OpenFDA / DailyMed), published scale scores, labeled dose ranges and dose-caps, and cited literature so the healthcare professional can independently review the basis of any recommendation before acting. ${RECREATIONAL_SAFETY_CONTEXT} It is not intended to diagnose, treat, mitigate, or prevent disease, to generate a prescription, or to replace the FDA-approved Prescribing Information. Displayed dose ranges paraphrase FDA-approved labeling; a user-entered milligram is checked against those rails. The desk does not pick a milligram.`;
+  `FirstPass is educational interaction reference software intended for use by licensed healthcare professionals, and by students in accredited health-professions programs using it for education under faculty or preceptor supervision, to display mapped cytochrome P450 and pharmacodynamic interaction information, FDA-label excerpts (OpenFDA / DailyMed), published scale scores, labeled dose ranges and dose-caps, and cited literature so the healthcare professional can independently review the basis of any recommendation before acting. ${RECREATIONAL_SAFETY_CONTEXT} It is not intended to diagnose, treat, mitigate, or prevent disease, to generate a prescription, or to replace the FDA-approved Prescribing Information. Displayed dose ranges paraphrase FDA-approved labeling; a user-entered milligram is checked against those rails. The desk does not pick a milligram.`;
 
 export const INDICATIONS = [
-  "Displaying CYP450 substrate / inhibitor / inducer maps, FDA DDI fold-change grades, start/stop safety clocks (reversible vs time-dependent inactivation vs induction lag), and pharmacodynamic collision scores for drugs and foods on a user-selected regimen.",
+  "Displaying CYP450 substrate / inhibitor / inducer maps, FDA DDI fold-change grades, start/stop timing study aids (reversible vs time-dependent inactivation vs induction lag), and pharmacodynamic collision scores for drugs and foods on a user-selected regimen.",
   "Surfacing excerpts of FDA-approved labeling (boxed warnings, contraindications, drug interactions, pregnancy) retrieved from OpenFDA and DailyMed.",
   "Displaying published clinical scales (COWS, CIWA-Ar, Hunter criteria, CDC 2022 oral MME factors, Bazett / Fridericia, Cockcroft–Gault) with the published source named.",
   "Displaying labeled usual dose ranges, labeled maxima, and interaction dose-caps paraphrased from FDA-approved labeling, and checking a user-entered milligram against those rails.",
@@ -29,10 +34,16 @@ export const INDICATIONS = [
   "Showing food, drink, and alcohol rows for the names already on the desk, and pregnancy, CKD, older-adult, and daily-smoke rows labeled as a different host. Those rows are the same map. They are not a clearance and not a milligram.",
   "Ranking a regimen into pairs by the sharpest collision, and leading with a plain-language sentence of that row. The sentence does not pick a milligram or a next step.",
   "Listing the pairs on a regimen that had no mapped collision, labeled as not a clearance. A blank pair is not a statement that the combination is safe.",
+  "Showing every pair on a regimen in one grid. Each cell is a severity or no mapped collision. A blank cell is not a clearance.",
+  "On a mapped cell, naming the direction of the sharpest row. On a blank cell, saying whether the pair shares an enzyme with no perpetrator, or a perpetrator that does not land. A blank reason is not a clearance.",
+  "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "On request, three separate readers (pair, gap, trainee) restate the check already on screen. A reader cannot add a finding, a milligram, or a clearance.",
-  "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock does not pick a milligram.",
+  "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
+  "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",
   "Displaying study cards (rounds, named labeled pairs, formulary CYP roles, FDA fold-change grades, and mechanism cards from the selected pair) so a healthcare trainee can rehearse the basis, mark misses, and review them. Not an exam key and not a milligram.",
+  "Watching user-selected names for OpenFDA shortage and enforcement/recall excerpts so the healthcare professional can independently review the basis. The excerpts are shortened for teaching. They are recent label, shortage, and recall notes to read, not safety alerts, not a shortage alert service, and not a milligram.",
   "Linking CPIC / ClinPGx tables, PubMed PMIDs, DrugBank accessions, NIH RxClass, LactMed paraphrases, and ClinicalTrials.gov records for independent review.",
+  "Reading a metabolizer status the healthcare professional already knows and picks by hand. Metabolizer rows are teaching paraphrases of CPIC guidance, not a genetic test result and not an interpretation of one. The desk takes no raw genotype or genetic test data as input.",
 ] as const;
 
 export const NOT_FOR = [
@@ -52,10 +63,10 @@ export const WARNINGS = [
   "Live OpenFDA / DailyMed excerpts are truncated. Open the full SPL before acting.",
   "Street-supply rows (xylazine, nitazenes, designer benzos) are teaching maps, not labeled products.",
   "Harm-reduction copy paraphrases DanceSafe, PsychonautWiki, TripSit, SAMHSA, and CDC. Live wiki extracts are sanitized of milligrams and route how-to; a wiki is still not a Prescribing Information. Independently review.",
-  "COWS, CIWA-Ar, Hunter, MME, QTc, and CYP start/stop clocks are published formulas and FDA-grade paraphrases displayed for independent scoring — not a diagnosis, not a hold, and not a documented vital.",
+  "COWS, CIWA-Ar, Hunter, MME, QTc, and CYP start/stop clocks are published formulas and FDA-grade paraphrases displayed for independent scoring — not a diagnosis, not a hold, not a documented vital, and not a real-time alert.",
 ] as const;
 
-/** FDA CDS Guidance 2022 — four criteria for non-device CDS. */
+/** FDA Clinical Decision Support Software guidance (issued Jan 6, 2026; revised Jan 29, 2026) — four statutory criteria for non-device CDS. */
 export const CDS_CRITERIA: { id: string; title: string; how: string }[] = [
   {
     id: "1",
@@ -70,7 +81,7 @@ export const CDS_CRITERIA: { id: string; title: string; how: string }[] = [
   {
     id: "3",
     title: "Recommendations to a healthcare professional",
-    how: "Watch / counsel / consider language is directed at licensed HCPs. It is not a patient-facing treatment app.",
+    how: "Watch / counsel / consider language is directed at licensed HCPs, and at health-professions students only for supervised education. It is not a patient-facing or general-public app.",
   },
   {
     id: "4",

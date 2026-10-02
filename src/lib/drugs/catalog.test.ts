@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   DRUG_BY_ID,
+  DRUGS,
   normalizeSearchText,
   searchDrugs,
   stripSaltFormTokens,
@@ -47,4 +48,15 @@ test("every catalog entry has a searchable identity", () => {
   for (const drug of Object.values(DRUG_BY_ID)) {
     assert.ok(normalizeSearchText(`${drug.id} ${drug.name}`));
   }
+});
+
+test("merged catalog has no duplicate ids", () => {
+  const seen = new Set<string>();
+  const dupes: string[] = [];
+  for (const drug of DRUGS) {
+    if (seen.has(drug.id)) dupes.push(drug.id);
+    seen.add(drug.id);
+  }
+  assert.deepEqual(dupes, []);
+  assert.equal(Object.keys(DRUG_BY_ID).length, DRUGS.length);
 });

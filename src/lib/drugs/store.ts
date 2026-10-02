@@ -29,7 +29,8 @@ type View =
   | "cites"
   | "label"
   | "study"
-  | "compare";
+  | "compare"
+  | "watch";
 
 export interface LoadExtras {
   phenotypes?: Partial<PhenotypeMap>;

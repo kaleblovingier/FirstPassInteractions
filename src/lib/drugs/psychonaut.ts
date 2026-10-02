@@ -599,7 +599,7 @@ const TEACH: Record<string, { teach: string; watch: string }> = {
     watch: "Naloxone for the μ. Extra Narcan will not reverse the α2. Test strips are a tool, not a certificate.",
   },
   heroin: {
-    teach: "Diacetylmorphine → morphine. Same μ apnea. Speedball with cocaine: the stimulant masks until it wears off. Do not use alone.",
+    teach: "Diacetylmorphine becomes morphine. Same μ apnea. Speedball with cocaine: the stimulant masks until it wears off. Do not use alone.",
     watch: "Naloxone, recovery position, stay. HCV from shared equipment is the chronic story.",
   },
   xylazine: {
@@ -778,7 +778,7 @@ export const PW_STATIC_RESOURCES: { name: string; href: string; why: string }[] 
   {
     name: "PsychonautWiki · Recovery position",
     href: "https://psychonautwiki.org/wiki/Recovery_position",
-    why: "Unconscious and breathing → on their side so vomit does not kill them.",
+    why: "Unconscious and breathing: put them on their side so vomit does not kill them.",
   },
   {
     name: "PsychonautWiki · Reagent testing kits",
