@@ -217,7 +217,7 @@ function labelPinBasis(finding: Finding): FindingBasis | null {
   if (pin.contraindicationsSentence) parts.push(`Contraindications: "${pin.contraindicationsSentence}"`);
   parts.push(`${pin.labelSection}: "${pin.quote}"`);
   if (pin.labelExample) parts.push(`Named in the label: "${pin.labelExample}"`);
-  parts.push(`Retrieved from DailyMed ${LABEL_CONTRAINDICATIONS_RETRIEVED}.`);
+  parts.push(`Retrieved from DailyMed ${pin.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED}.`);
   return {
     kind: "fda-pi",
     label: `${pin.labelDrug} label, Contraindications`,

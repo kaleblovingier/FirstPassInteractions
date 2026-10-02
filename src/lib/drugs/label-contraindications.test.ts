@@ -75,11 +75,62 @@ const EXPECTED_PINS = [
   "ranolazine+primidone",
   "thioridazine+abiraterone",
   "thioridazine+cinacalcet",
+  // PR #75 wave 3: label contraindicated, engine was major. Not the seven with no finding.
+  "mifepristone+dihydroergotamine",
+  "mifepristone+ergotamine",
+  "mifepristone+quinidine",
+  "darunavir+rifampin",
+  "darunavir+dronedarone",
+  "darunavir+dihydroergotamine",
+  "darunavir+ergotamine",
+  "darunavir+methylergonovine",
+  "darunavir+st-johns-wort",
+  "darunavir+sildenafil-pah",
+  "darunavir-cobicistat+carbamazepine",
+  "darunavir-cobicistat+phenobarbital",
+  "darunavir-cobicistat+phenytoin",
+  "darunavir-cobicistat+rifampin",
+  "darunavir-cobicistat+dronedarone",
+  "darunavir-cobicistat+dihydroergotamine",
+  "darunavir-cobicistat+ergotamine",
+  "darunavir-cobicistat+methylergonovine",
+  "darunavir-cobicistat+st-johns-wort",
+  "darunavir-cobicistat+sildenafil-pah",
+  "atazanavir+carbamazepine",
+  "atazanavir+phenobarbital",
+  "atazanavir+phenytoin",
+  "atazanavir+apalutamide",
+  "atazanavir+encorafenib",
+  "atazanavir+ivosidenib",
+  "atazanavir+dihydroergotamine",
+  "atazanavir+ergotamine",
+  "atazanavir+methylergonovine",
+  "atazanavir+glecaprevir-pibrentasvir",
+  "atazanavir+st-johns-wort",
+  "atazanavir+sildenafil-pah",
+  "atazanavir+nevirapine",
+  "atazanavir-cobicistat+dronedarone",
+  "atazanavir-cobicistat+carbamazepine",
+  "atazanavir-cobicistat+phenobarbital",
+  "atazanavir-cobicistat+phenytoin",
+  "atazanavir-cobicistat+rifampin",
+  "atazanavir-cobicistat+apalutamide",
+  "atazanavir-cobicistat+encorafenib",
+  "atazanavir-cobicistat+ivosidenib",
+  "atazanavir-cobicistat+dihydroergotamine",
+  "atazanavir-cobicistat+ergotamine",
+  "atazanavir-cobicistat+methylergonovine",
+  "atazanavir-cobicistat+glecaprevir-pibrentasvir",
+  "atazanavir-cobicistat+st-johns-wort",
+  "atazanavir-cobicistat+ethinyl-estradiol",
+  "atazanavir-cobicistat+nevirapine",
+  "atazanavir-cobicistat+sildenafil-pah",
 ];
 
 test("pin list is exactly the reviewed set", () => {
   assert.deepEqual(LABEL_CONTRAINDICATIONS.map((r) => r.id).sort(), [...EXPECTED_PINS].sort());
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 19);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
 });
 
 for (const r of LABEL_CONTRAINDICATIONS) {
@@ -123,4 +174,13 @@ test("pins are narrow: no class expansion, enzyme rule unchanged", () => {
   assert.equal(pairSeverity("ramelteon", "ciprofloxacin"), "major");
   // Primidone/phenobarbital with lurasidone: Latuda names strong CYP3A4 inducers only.
   assert.equal(labelContraindicationFor("lurasidone", "phenobarbital"), undefined);
+  // PAH sildenafil (Revatio row) is pinned. Ordinary sildenafil (Viagra) is not.
+  assert.equal(labelContraindicationFor("darunavir", "sildenafil-pah")?.id, "darunavir+sildenafil-pah");
+  assert.equal(labelContraindicationFor("darunavir", "sildenafil"), undefined);
+  assert.equal(labelContraindicationFor("atazanavir", "sildenafil"), undefined);
+  assert.equal(labelContraindicationFor("atazanavir-cobicistat", "sildenafil"), undefined);
+  // In the catalog, but no enzyme path, so not pinned.
+  assert.equal(labelContraindicationFor("atazanavir", "irinotecan"), undefined);
+  assert.equal(labelContraindicationFor("darunavir", "grazoprevir-elbasvir"), undefined);
+  assert.equal(labelContraindicationFor("atazanavir-cobicistat", "drospirenone"), undefined);
 });

@@ -16,8 +16,8 @@
 | Measure | Count |
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,770 / 1,565,565 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,417 (1,377 CYP, 40 P-gp) on 1,410 pairs (1,410 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 25 |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,466 (1,426 CYP, 40 P-gp) on 1,459 pairs (1,459 by display name, as #66 counts) |
+| … of which carry a label citation (kept at contraindicated) | 74 |
 | **Findings that move contraindicated → major** | **1,392** on **1,385** pairs |
 | **Pairs whose overall severity changes** | **1,385** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
@@ -27,9 +27,9 @@
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,417 findings on 1,410 pairs keyed by display name**: **differs**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,466 findings on 1,459 pairs keyed by display name**: **differs**.
 
-25 carry a label citation and are kept at contraindicated, so 1,392 are capped.
+74 carry a label citation and are kept at contraindicated, so 1,392 are capped.
 
 ## Moved findings by rule / enzyme
 
