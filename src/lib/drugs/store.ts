@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DRUG_BY_ID } from "./catalog";
+import { rememberTray } from "./tray-history";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
+import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import {
   DEFAULT_HOST,
   DEFAULT_PHENOTYPES,
@@ -17,7 +19,17 @@ import {
   type PregBand,
 } from "./types";
 
-type View = "desk" | "atlas" | "plans" | "library" | "foundry" | "rounds" | "cites" | "label" | "study";
+type View =
+  | "desk"
+  | "atlas"
+  | "plans"
+  | "library"
+  | "foundry"
+  | "rounds"
+  | "cites"
+  | "label"
+  | "study"
+  | "compare";
 
 export interface LoadExtras {
   phenotypes?: Partial<PhenotypeMap>;
@@ -130,7 +142,11 @@ export const useDesk = create<DeskState>()(
         delete next[id];
         set({ selected: get().selected.filter((x) => x !== id), doses: next });
       },
-      clear: () =>
+      clear: () => {
+        const s = get();
+        if (s.selected.length > 0) {
+          rememberTray(s.selected, { ketamineRoute: s.ketamineRoute });
+        }
         set({
           selected: [],
           phenotypes: { ...DEFAULT_PHENOTYPES },
@@ -142,8 +158,13 @@ export const useDesk = create<DeskState>()(
           kidney: "ok",
           preg: "off",
           doses: {},
-        }),
+        });
+      },
       load: (ids, extras) => {
+        const s0 = get();
+        if (s0.selected.length > 0) {
+          rememberTray(s0.selected, { ketamineRoute: s0.ketamineRoute });
+        }
         const cap = maxDrugs(activePlan(get()));
         const next = ids.filter((id) => DRUG_BY_ID[id] && !id.startsWith("__")).slice(0, cap);
         // Oral/IN ketamine route is free for the teaching demo (grapefruit × oral K).
@@ -193,18 +214,7 @@ export const useDesk = create<DeskState>()(
         return true;
       },
       setView: (view) => {
-        if (view === "atlas" && activePlan(get()) === "free") {
-          set({
-            view: "plans",
-            checkout: {
-              open: true,
-              plan: "pro",
-              interval: get().checkout.interval,
-              reason: "The enzyme atlas is a Pro surface.",
-            },
-          });
-          return;
-        }
+        // Free users may open atlas; DeskApp wraps EnzymeAtlas in the founding-gate Paywall coach.
         set({ view });
       },
       setAtlasEnzyme: (atlasEnzyme) => {
@@ -216,14 +226,14 @@ export const useDesk = create<DeskState>()(
       },
       setPhenotype: (enzyme, value) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "Metabolizer status is a Pro host factor.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ phenotypes: { ...get().phenotypes, [enzyme]: value } });
       },
       setSmoking: (smoking) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "Smoke induction is a Pro host factor.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ smoking });
@@ -234,35 +244,35 @@ export const useDesk = create<DeskState>()(
       },
       setCannabisRoute: (cannabisRoute) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "Edible vs smoked THC is Pro.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ cannabisRoute });
       },
       setAlcohol: (alcohol) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "Alcohol pattern (acute vs chronic 2E1) is Pro.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ alcohol });
       },
       setAge: (age) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "Geriatric / Beers host flag is Pro.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ age });
       },
       setKidney: (kidney) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "CKD host flag is Pro.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ kidney });
       },
       setPreg: (preg) => {
         if (activePlan(get()) === "free") {
-          get().openCheckout("pro", "Pregnancy / lactation host flag is Pro.");
+          get().openCheckout("lab", foundingGateCopy("host").reason, "life");
           return;
         }
         set({ preg });

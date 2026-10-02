@@ -10,15 +10,15 @@ import { ENZYME_PLATE } from "@/lib/drugs/visuals";
 import { Plate } from "./plate";
 
 const BLURBS: Record<Enzyme, string> = {
-  CYP1A2: "Induced by smoking. Classic victims: tizanidine, theophylline, clozapine, caffeine.",
-  CYP2B6: "Bupropion and methadone live here. Efavirenz and rifampin induce it.",
-  CYP2C8: "Gemfibrozil is the signature strong inhibitor; repaglinide is the sensitive substrate.",
-  CYP2C9: "S-warfarin, phenytoin, and many NSAIDs/sulfonylureas. Fluconazole and amiodarone inhibit. 2C9 PMs look like a strong inhibitor.",
-  CYP2C19: "Clopidogrel activation, PPIs, citalopram. Fluvoxamine and fluconazole inhibit strongly.",
-  CYP2D6: "Not meaningfully inducible. Codeine/tamoxifen activation; paroxetine, fluoxetine, bupropion inhibit.",
-  CYP2E1: "Ethanol-inducible; minor acetaminophen bioactivation to NAPQI.",
-  CYP3A4: "The workhorse — ~50% of drugs. Strong inhibitors (azoles, ritonavir, clarithromycin) and inducers (rifampin, carbamazepine) dominate collision maps.",
-  "P-gp": "Efflux transporter (ABCB1). Digoxin, dabigatran, colchicine, many DOACs. Often travels with CYP3A4.",
+  CYP1A2: "Smoking turns this pathway up. Drugs that depend on it (tizanidine, theophylline, clozapine, caffeine) can drop when someone lights up every day.",
+  CYP2B6: "Home to bupropion and methadone clearance. Strong inducers like efavirenz or rifampin can steal the effect.",
+  CYP2C8: "Gemfibrozil is the classic strong blocker here; repaglinide is the sensitive victim used in teaching maps.",
+  CYP2C9: "Clears S-warfarin, phenytoin, and many NSAIDs or sulfonylureas. Fluconazole and amiodarone slow it. A poor metabolizer looks like a strong inhibitor already on board.",
+  CYP2C19: "Activates clopidogrel and clears many PPIs and citalopram. Fluvoxamine and fluconazole are strong blockers.",
+  CYP2D6: "Usually not inducible. Needed to activate codeine or tamoxifen; blocked by paroxetine, fluoxetine, or bupropion.",
+  CYP2E1: "Alcohol can induce it. A minor path that turns acetaminophen into the reactive NAPQI metabolite.",
+  CYP3A4: "Clears about half of medicines. Strong blockers (azoles, ritonavir, clarithromycin) and inducers (rifampin, carbamazepine) drive most collision maps.",
+  "P-gp": "An efflux pump (ABCB1) that pushes drugs back out — digoxin, dabigatran, colchicine, many DOACs. Often moves with CYP3A4.",
 };
 
 export function EnzymeAtlas() {
@@ -57,8 +57,8 @@ export function EnzymeAtlas() {
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Enzyme atlas</p>
             <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{enzyme}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg">{BLURBS[enzyme]}</p>
-            <p className="mt-3 text-xs text-muted">
-              Nine pathways, including 2C9. Pick an isoform, then add substrates, inhibitors, or inducers to the desk.
+            <p className="mt-3 text-xs leading-relaxed text-muted">
+              Nine clearance pathways. Pick one, then tap a medicine to put it on the desk — victims, blockers, and speeders are listed separately. This is a teaching map, not a charting tool.
             </p>
           </div>
         </div>
@@ -82,31 +82,70 @@ export function EnzymeAtlas() {
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Filter the atlas by drug name…"
+        placeholder="Search this atlas — brand or generic…"
         className="h-11 w-full max-w-md rounded-md bg-surface-2 px-3 text-sm shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
       />
       {filtered ? (
-        <div className="grid gap-2 sm:grid-cols-2">
-          {filtered.map((d) => (
-            <button
-              key={d.id}
-              type="button"
-              onClick={() => add(d.id)}
-              className="rounded-md bg-surface px-3 py-2.5 text-left shadow-[var(--shadow-border)] hover:bg-surface-2"
-            >
-              <div className="text-sm font-medium text-fg">{d.name}</div>
-              <div className="text-xs text-muted">{d.cls}</div>
-            </button>
-          ))}
-          {filtered.length === 0 ? (
-            <p className="text-sm text-muted">No drugs match.</p>
-          ) : null}
-        </div>
+        filtered.length === 0 ? (
+          <div
+            role="status"
+            className="rounded-xl border border-accent/20 bg-accent-soft/40 px-5 py-6 shadow-[var(--shadow-border)]"
+          >
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Atlas coach</p>
+            <h3 className="mt-1 font-serif text-lg tracking-tight text-fg">No medicines match “{q.trim()}”</h3>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+              Try a generic or brand, clear the filter, or jump to a busy pathway like CYP3A4 or CYP2D6. Empty here only means the filter is tight — the desk is unchanged.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="h-10 rounded-full bg-ink px-3 text-xs font-medium text-bg"
+                onClick={() => setQ("")}
+              >
+                Clear filter
+              </button>
+              <button
+                type="button"
+                className="h-10 rounded-full bg-bg-sunken px-3 text-xs font-medium text-fg hover:bg-accent-soft"
+                onClick={() => {
+                  setQ("");
+                  setAtlasEnzyme("CYP3A4");
+                }}
+              >
+                Open CYP3A4
+              </button>
+              <button
+                type="button"
+                className="h-10 rounded-full bg-bg-sunken px-3 text-xs font-medium text-fg hover:bg-accent-soft"
+                onClick={() => {
+                  setQ("");
+                  setAtlasEnzyme("CYP2D6");
+                }}
+              >
+                Open CYP2D6
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {filtered.map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => add(d.id)}
+                className="rounded-md bg-surface px-3 py-2.5 text-left shadow-[var(--shadow-border)] hover:bg-surface-2"
+              >
+                <div className="text-sm font-medium text-fg">{d.name}</div>
+                <div className="text-xs text-muted">{d.cls}</div>
+              </button>
+            ))}
+          </div>
+        )
       ) : (
         <div className="grid gap-3 lg:grid-cols-3">
           <AtlasColumn
-            title="Substrates"
-            hint="Victims of inhibition / induction · FDA index tagged"
+            title="Cleared here"
+            hint="Medicines this pathway clears or activates · FDA index tagged"
             drugs={bucket.substrates}
             selected={selected}
             onAdd={add}
@@ -115,8 +154,8 @@ export function EnzymeAtlas() {
             role="substrate"
           />
           <AtlasColumn
-            title="Inhibitors"
-            hint="Raise victim exposure · FDA index tagged"
+            title="Blockers"
+            hint="Can make those medicines build up · FDA index tagged"
             drugs={bucket.inhibitors}
             selected={selected}
             onAdd={add}
@@ -125,8 +164,8 @@ export function EnzymeAtlas() {
             role="inhibitor"
           />
           <AtlasColumn
-            title="Inducers"
-            hint="Drop victim exposure · stop is rebound"
+            title="Speeders"
+            hint="Can make those medicines wear off faster · stopping can rebound"
             drugs={bucket.inducers}
             selected={selected}
             onAdd={add}
@@ -190,7 +229,7 @@ function AtlasColumn({
             </li>
           );
         })}
-        {drugs.length === 0 ? <li className="px-2 py-3 text-sm text-muted">None mapped.</li> : null}
+        {drugs.length === 0 ? <li className="px-2 py-3 text-sm text-muted">Nothing mapped in this column yet.</li> : null}
       </ul>
     </section>
   );

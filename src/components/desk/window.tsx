@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Check, ClipboardCopy } from "lucide-react";
-import { briefWindow, huddleText } from "@/lib/drugs/window";
+import { briefWindow } from "@/lib/drugs/window";
+import { huddleTextVisible, plainBrief } from "@/lib/drugs/plain-huddle";
 import type { HostContext } from "@/lib/drugs/types";
 import { SEVERITY_LABEL } from "@/lib/drugs/types";
 import { analyze } from "@/lib/drugs/engine";
@@ -21,11 +22,15 @@ export function WindowBriefing({
 }) {
   const brief = briefWindow(ids, report, host);
   const [copied, setCopied] = useState(false);
+  /** Default on for friendliness; toggle off for the existing technical brief. */
+  const [plain, setPlain] = useState(true);
   if (!brief) return null;
+
+  const view = plain ? plainBrief(brief) : brief;
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(huddleText(brief!));
+      await navigator.clipboard.writeText(huddleTextVisible(brief!, plain));
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -53,6 +58,16 @@ export function WindowBriefing({
           >
             {SEVERITY_LABEL[brief.highest]}
           </span>
+          <Button
+            variant={plain ? "default" : "secondary"}
+            size="sm"
+            className="h-10 min-w-24"
+            aria-pressed={plain}
+            title={plain ? "Showing everyday words — click for technical brief" : "Showing technical brief — click for everyday words"}
+            onClick={() => setPlain((v) => !v)}
+          >
+            Plain words
+          </Button>
           <Button variant="secondary" size="sm" className="h-10 min-w-24" onClick={() => void copy()}>
             {copied ? <Check className="size-3.5" /> : <ClipboardCopy className="size-3.5" />}
             {copied ? "Copied" : "Copy huddle"}
@@ -63,7 +78,7 @@ export function WindowBriefing({
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <HuddleCol kicker="Watch for" tone={brief.quiet ? "ok" : "danger"}>
           <ul className="space-y-2">
-            {brief.watch.map((w) => (
+            {view.watch.map((w) => (
               <li key={w} className="text-sm leading-relaxed text-fg">
                 {w}
               </li>
@@ -71,10 +86,10 @@ export function WindowBriefing({
           </ul>
         </HuddleCol>
         <HuddleCol kicker="Counsel" tone="info">
-          <p className="text-sm leading-relaxed text-fg">{brief.tell}</p>
+          <p className="text-sm leading-relaxed text-fg">{view.tell}</p>
         </HuddleCol>
         <HuddleCol kicker="Consider / call" tone="warn">
-          <p className="text-sm leading-relaxed text-fg">{brief.call}</p>
+          <p className="text-sm leading-relaxed text-fg">{view.call}</p>
         </HuddleCol>
       </div>
 

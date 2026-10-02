@@ -1,6 +1,7 @@
 import type { Drug, Enzyme, EnzymeRole, ItemKind, PdFlag, Strength, SubstrateSensitivity } from "./types";
 import { CLINIC_BEERS, CLINIC_PREG_AVOID } from "./clinic";
 import { CLINIC_FORMULARY } from "./catalog-clinic";
+import { MODERN_FORMULARY } from "./catalog-modern";
 import { hasDrugbank } from "./drugbank";
 import { hasPgx } from "./pgx";
 import { hasCite } from "./pubmed";
@@ -2421,11 +2422,17 @@ const raw: Drug[] = [
 ];
 
 const coreIds = new Set(raw.map((d) => d.id));
-export const DRUGS: Drug[] = [...raw, ...CLINIC_FORMULARY.filter((d) => !coreIds.has(d.id))];
+const clinicExtra = CLINIC_FORMULARY.filter((d) => !coreIds.has(d.id));
+const afterClinic = new Set([...coreIds, ...clinicExtra.map((d) => d.id)]);
+export const DRUGS: Drug[] = [
+  ...raw,
+  ...clinicExtra,
+  ...MODERN_FORMULARY.filter((d) => !afterClinic.has(d.id)),
+];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 
 const PSYCH_CLS =
-  /SSRI|SNRI|MAOI|antipsychotic|antidepressant|Benzodiazepine|Opioid|Gabapentinoid|Mood stabilizer|NMDA|Dissociative|Psychedelic|Entactogen|Stimulant|Cannabinoid|Alcohol|GHB|Z-hypnotic|Anxiolytic|ADHD|NRI|Nicotine|Methylxanthine|Tricyclic|NaSSA|SARI|NDRI|hypnotic|orexin|Melatonin|kratom|GABA|MAT|Wake-promoting|Pineal|Partial opioid|Opioid antagonist|Atypical opioid|aldehyde|NMDA \/ GABA|nicotinic|Anticonvulsant|Central muscle|AChE|α2-agonist|Nitazene|Designer benzodiazepine|Thienodiazepine|Cathinone|Arylcyclohexylamine|GHB prodrug|Alkyl nitrite|Antidiarrheal|Sedating antihistamine|Veterinary|Barbiturate|NNRTI|NBOMe|Salvinorin|Tropane|H2 blocker|Carbamate|oneirogen|pyrovalerone|NRI analgesic|IV anesthetic|NK1|SPAR|mixed opioid|7-OH|Diacetylmorphine|Street pressed|Local anesthetic/i;
+  /SSRI|SNRI|MAOI|antipsychotic|antidepressant|Benzodiazepine|Opioid|Gabapentinoid|Mood stabilizer|NMDA|Dissociative|Psychedelic|Entactogen|Stimulant|Cannabinoid|Alcohol|GHB|Z-hypnotic|Anxiolytic|ADHD|NRI|Nicotine|Methylxanthine|Tricyclic|NaSSA|SARI|NDRI|hypnotic|orexin|Melatonin|kratom|GABA|MAT|Wake-promoting|Pineal|Partial opioid|Opioid antagonist|Atypical opioid|aldehyde|NMDA \/ GABA|nicotinic|Anticonvulsant|Central muscle|AChE|α2-agonist|Nitazene|Designer benzodiazepine|Thienodiazepine|Cathinone|neuroactive steroid|Arylcyclohexylamine|GHB prodrug|Alkyl nitrite|Antidiarrheal|Sedating antihistamine|Veterinary|Barbiturate|NNRTI|NBOMe|Salvinorin|Tropane|H2 blocker|Carbamate|oneirogen|pyrovalerone|NRI analgesic|IV anesthetic|NK1|SPAR|mixed opioid|7-OH|Diacetylmorphine|Street pressed|Local anesthetic/i;
 
 export function isPsych(drug: Drug): boolean {
   if (PSYCH_CLS.test(drug.cls)) return true;
@@ -2909,6 +2916,10 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   if (q === "rxnav" || q === "pubchem" || q === "trials" || q === "dailymed" || q === "shortage" || q === "shortages") {
     return DRUGS.filter((d) => !excluded.has(d.id) && d.kind === "drug" && !d.id.startsWith("__")).slice(0, 16);
   }
+  const coreQuery = stripSaltFormTokens(normalizedQuery);
+  const matchQueries =
+    coreQuery !== normalizedQuery ? [normalizedQuery, coreQuery] : [normalizedQuery];
+
   const scored: { drug: Drug; score: number }[] = [];
   for (const drug of DRUGS) {
     if (excluded.has(drug.id)) continue;
@@ -2918,25 +2929,39 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
     const id = normalizeSearchText(drug.id);
     const cls = drug.cls.toLowerCase();
     const searchable = [name, id, ...brands, ...aliases];
-    const compactQuery = normalizedQuery.replace(/\s/g, "");
-    const enzymeHit = drug.enzymes.some((e) =>
-      normalizeSearchText(e.enzyme).replace(/\s/g, "").includes(compactQuery),
-    );
-    const tokenHit =
-      normalizedQuery.length >= 3 &&
-      normalizedQuery.split(" ").every((token) =>
-        searchable.some((value) => value.includes(token)),
-      );
     let score = 0;
-    if (searchable.some((value) => value === normalizedQuery)) score = 100;
-    else if (name.startsWith(normalizedQuery) || id.startsWith(normalizedQuery)) score = 80;
-    else if (brands.some((b) => b.startsWith(normalizedQuery)) || aliases.some((a) => a.startsWith(normalizedQuery))) score = 70;
-    else if (name.includes(normalizedQuery) || id.includes(normalizedQuery)) score = 60;
-    else if (brands.some((b) => b.includes(normalizedQuery)) || aliases.some((a) => a.includes(normalizedQuery))) score = 50;
-    else if (tokenHit) score = 45;
-    else if (cls.includes(q)) score = 35;
-    else if (enzymeHit) score = 25;
-    else if (eKindQuery(drug, q)) score = 20;
+    for (const mq of matchQueries) {
+      const compactQuery = mq.replace(/\s/g, "");
+      const enzymeKey = compactEnzymeQuery(mq);
+      const enzymeRoles = drug.enzymes.filter((e) => {
+        const en = normalizeSearchText(e.enzyme).replace(/\s/g, "");
+        if (enzymeKey) return en === enzymeKey || en.includes(enzymeKey.replace(/^cyp/, ""));
+        return compactQuery.length >= 3 && en.includes(compactQuery);
+      });
+      const enzymeHit = enzymeRoles.length > 0;
+      const tokenHit =
+        mq.length >= 3 &&
+        mq.split(" ").every((token) => searchable.some((value) => value.includes(token)));
+      let s = 0;
+      if (searchable.some((value) => value === mq)) s = 100;
+      else if (name.startsWith(mq) || id.startsWith(mq)) s = 80;
+      else if (brands.some((b) => b.startsWith(mq)) || aliases.some((a) => a.startsWith(mq))) s = 70;
+      else if (name.includes(mq) || id.includes(mq)) s = 60;
+      else if (brands.some((b) => b.includes(mq)) || aliases.some((a) => a.includes(mq))) s = 50;
+      else if (tokenHit) s = 45;
+      else if (cls.includes(q)) s = 35;
+      else if (enzymeHit && enzymeKey) {
+        const teach = TEACHING_ENZYME_HITS[enzymeKey] ?? [];
+        const teachIdx = teach.indexOf(drug.id);
+        if (teachIdx >= 0) s = 68 - teachIdx;
+        else if (enzymeRoles.some((e) => e.kind === "inhibitor" || e.kind === "inducer")) s = 48;
+        else s = 28;
+      } else if (enzymeHit) s = 25;
+      else if (eKindQuery(drug, q)) s = 20;
+      // Prefer the plain-generic hit when the user typed a salt/release suffix.
+      if (mq === coreQuery && mq !== normalizedQuery && s >= 60) s += 5;
+      if (s > score) score = s;
+    }
     if (score > 0) scored.push({ drug, score });
   }
 
@@ -2958,6 +2983,91 @@ export function normalizeSearchText(value: string): string {
     .trim()
     .replace(/\s+/g, " ");
 }
+
+/** Common salt / release tokens users paste after a generic (e.g. metformin hcl). */
+export const SALT_FORM_TOKENS = new Set([
+  "hcl",
+  "hbr",
+  "hydrochloride",
+  "hydrobromide",
+  "mesylate",
+  "maleate",
+  "succinate",
+  "fumarate",
+  "tartrate",
+  "citrate",
+  "phosphate",
+  "sulfate",
+  "sulphate",
+  "besylate",
+  "tosylate",
+  "acetate",
+  "hippurate",
+  "sodium",
+  "potassium",
+  "calcium",
+  "dihydrate",
+  "monohydrate",
+  "anhydrous",
+  "xr",
+  "er",
+  "sr",
+  "cr",
+  "la",
+  "odt",
+  "ir",
+  "xl",
+]);
+
+/** Drop trailing salt/release tokens so "metformin hcl" still finds metformin. */
+export function stripSaltFormTokens(normalized: string): string {
+  const parts = normalized.split(" ").filter(Boolean);
+  if (parts.length < 2) return normalized;
+  const kept = parts.filter((t) => !SALT_FORM_TOKENS.has(t));
+  return kept.length ? kept.join(" ") : normalized;
+}
+
+
+/** Compact forms users type when hunting by enzyme (CYP 3A4, 2D6, …). */
+function compactEnzymeQuery(normalized: string): string | null {
+  const compact = normalized.replace(/\s/g, "");
+  const aliases: Record<string, string> = {
+    cyp3a4: "cyp3a4",
+    "3a4": "cyp3a4",
+    cyp3a5: "cyp3a5",
+    "3a5": "cyp3a5",
+    cyp2d6: "cyp2d6",
+    "2d6": "cyp2d6",
+    cyp2c19: "cyp2c19",
+    "2c19": "cyp2c19",
+    cyp2c9: "cyp2c9",
+    "2c9": "cyp2c9",
+    cyp1a2: "cyp1a2",
+    "1a2": "cyp1a2",
+    cyp2b6: "cyp2b6",
+    "2b6": "cyp2b6",
+    cyp2e1: "cyp2e1",
+    "2e1": "cyp2e1",
+  };
+  return aliases[compact] ?? null;
+}
+
+/** Prefer well-known teaching perpetrators when someone searches an enzyme name. */
+const TEACHING_ENZYME_HITS: Record<string, string[]> = {
+  cyp3a4: [
+    "clarithromycin",
+    "itraconazole",
+    "ketoconazole",
+    "grapefruit",
+    "ritonavir",
+    "rifampin",
+    "carbamazepine",
+  ],
+  cyp2d6: ["paroxetine", "fluoxetine", "bupropion", "quinidine", "terbinafine"],
+  cyp2c19: ["omeprazole", "fluoxetine", "fluvoxamine"],
+  cyp2c9: ["amiodarone", "fluconazole", "sulfamethoxazole"],
+  cyp1a2: ["fluvoxamine", "ciprofloxacin", "smoke"],
+};
 
 function eKindQuery(drug: Drug, q: string): boolean {
   if (q.includes("inhibit")) return drug.enzymes.some((e) => e.kind === "inhibitor");
@@ -3004,7 +3114,7 @@ export function familyOf(drug: Drug): Exclude<FamilyId, "all"> {
   )
     return "psych";
   if (
-    /Macrolide|Azole|Fluoroquinolone|HIV|Rifamycin|NNRTI|NRTI|INSTI|antiviral|H2 blocker|PK booster|Oxazolidinone|Sulfonamide|Antimycobacterial|HCV|DAA|Allylamine|Beta-lactam|Tetracycline|Cephalosporin|Carbapenem|Aminoglycoside|Glycopeptide|Penicillin|Antimalarial|Echinocandin|Nitroimidazole|Lincosamide|Polymyxin|Monobactam|Protease inhibitor|Anthelmintic|Nitrofuran|Lipopeptide/i.test(
+    /Macrolide|Azole|Fluoroquinolone|HIV|Rifamycin|NNRTI|NRTI|INSTI|antiviral|CMV |capsid inhibitor|JAK |TYK2 |PDE4 |H2 blocker|PK booster|Oxazolidinone|Sulfonamide|Antimycobacterial|HCV|DAA|Allylamine|Beta-lactam|Tetracycline|Cephalosporin|Carbapenem|Aminoglycoside|Glycopeptide|Penicillin|Antimalarial|Echinocandin|Nitroimidazole|Lincosamide|Polymyxin|Monobactam|Protease inhibitor|Anthelmintic|Nitrofuran|Lipopeptide/i.test(
       drug.cls,
     )
   )

@@ -222,7 +222,7 @@ export function Foundry() {
       }
       if ("defaultPin" in res && res.defaultPin) {
         setPinWarn(
-          "FOUNDER_PIN is unset — you minted with the default PIN. Set FOUNDER_PIN (and LICENSE_PEPPER) in production; defaults fail closed when NODE_ENV=production or GROK_PROJECT_ID is set.",
+          "Operator PIN env is unset — you minted with the development default. Set the production PIN (and license pepper) before live minting; defaults fail closed in production.",
         );
       }
       const row: Issued = {
@@ -493,6 +493,7 @@ function CloseDesk({
           <h2 className="font-serif text-xl tracking-tight text-fg">Automatic licenses</h2>
         </div>
         <p className="mt-2 text-sm text-muted">
+          Operator only — buyers never see this screen. They pay, receive a key, and Redeem on Plans.
           One PIN. Collect pulls paid cards, scans Venmo / Cash App / PayPal for $79 and the other
           plan prices, and keys everyone waiting in the hunt. Collecting twice returns the same keys.
         </p>

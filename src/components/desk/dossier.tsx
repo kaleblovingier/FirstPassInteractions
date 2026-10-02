@@ -17,6 +17,20 @@ import { Button } from "@/components/ui/button";
 
 type Tab = "drugbank" | "pgx" | "stahl" | "pubmed" | "fda" | "rxnorm" | "liver" | "pubchem" | "trials" | "lactmed";
 
+/** Everyday shelf labels — tab ids/order unchanged. */
+const TAB_PLAIN: Record<Tab, string> = {
+  stahl: "Receptors",
+  pgx: "Genes",
+  drugbank: "Targets",
+  fda: "Label",
+  rxnorm: "Names",
+  pubchem: "Molecule",
+  liver: "Liver",
+  lactmed: "Nursing",
+  pubmed: "Papers",
+  trials: "Trials",
+};
+
 type LivePack = {
   ok: boolean;
   query: string;
@@ -46,16 +60,16 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
 
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
-      { id: "stahl", label: "Stahl", on: Boolean(stahl) },
-      { id: "pgx", label: "PharmGKB", on: pgx.length > 0 },
-      { id: "drugbank", label: "DrugBank", on: Boolean(bank) },
-      { id: "fda", label: "FDA", on: Boolean(drug && drug.kind === "drug") },
-      { id: "rxnorm", label: "RxNorm", on: Boolean(drug && drug.kind === "drug") },
-      { id: "pubchem", label: "PubChem", on: Boolean(drug) },
-      { id: "liver", label: "LiverTox", on: Boolean(liver) },
-      { id: "lactmed", label: "LactMed", on: Boolean(lact) || Boolean(drug) },
-      { id: "pubmed", label: "PubMed", on: true },
-      { id: "trials", label: "Trials", on: Boolean(drug && drug.kind === "drug") },
+      { id: "stahl", label: TAB_PLAIN.stahl, on: Boolean(stahl) },
+      { id: "pgx", label: TAB_PLAIN.pgx, on: pgx.length > 0 },
+      { id: "drugbank", label: TAB_PLAIN.drugbank, on: Boolean(bank) },
+      { id: "fda", label: TAB_PLAIN.fda, on: Boolean(drug && drug.kind === "drug") },
+      { id: "rxnorm", label: TAB_PLAIN.rxnorm, on: Boolean(drug && drug.kind === "drug") },
+      { id: "pubchem", label: TAB_PLAIN.pubchem, on: Boolean(drug) },
+      { id: "liver", label: TAB_PLAIN.liver, on: Boolean(liver) },
+      { id: "lactmed", label: TAB_PLAIN.lactmed, on: Boolean(lact) || Boolean(drug) },
+      { id: "pubmed", label: TAB_PLAIN.pubmed, on: true },
+      { id: "trials", label: TAB_PLAIN.trials, on: Boolean(drug && drug.kind === "drug") },
     ];
     return t;
   }, [stahl, pgx.length, bank, drug, liver, lact]);
@@ -68,21 +82,33 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
 
   return (
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="rounded-lg border border-accent/15 bg-accent-soft/30 p-3 sm:p-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Dossier coach</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-fg">
+          Pick a name on this tray, then open a shelf — receptors, genes, label language, liver notes,
+          nursing, papers, and trials. Soft chips use everyday words; the live APIs behind them are unchanged.
+        </p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">
+          A quiet or empty shelf is not a green light. This desk can miss risks; the Prescribing Information
+          and the clinician still win. Educational only — not a complete literature search, not dosing advice.
+        </p>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-lg tracking-tight text-fg">Sources</h2>
-          <p className="text-xs text-muted">
-            DrugBank, CPIC / ClinPGx, Stahl, OpenFDA, DailyMed, NDC, recalls, RxNorm, PubChem, LiverTox,
-            LactMed, PubMed, ClinicalTrials.gov.
+          <h2 className="font-serif text-lg tracking-tight text-fg">Drug dossier</h2>
+          <p className="text-xs leading-relaxed text-muted">
+            Receptors · genes · targets · label · names · molecule · liver · nursing · papers · trials
           </p>
         </div>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1" role="group" aria-label="Dossier shelves">
           {tabs.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
               disabled={!t.on}
+              title={t.on ? t.label : `${t.label} — nothing mapped for this name yet`}
               className={cn(
                 "h-10 rounded-full px-3 text-xs font-medium",
                 liveTab === t.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
@@ -119,8 +145,9 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
             <StahlPanel name={drug.name} card={stahl} />
           ) : (
             <EmptySource>
-              No Stahl-style receptor sketch for {drug.name}. Psychotropics, MAT, and NMDA drugs get
-              occupancy maps; many clinic staples are enzyme-only.
+              No receptor sketch mapped for {drug.name} yet. Mood, MAT, and ketamine-class names often
+              get one; many clinic staples are enzyme-only on this shelf. Empty here is not “safe” —
+              try Genes, Label, or Papers.
             </EmptySource>
           )
         ) : null}
@@ -130,11 +157,11 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
           ) : (
             <div className="space-y-4">
               <EmptySource>
-                No CPIC-level PGx table mapped for {drug.name}. Search{" "}
+                No gene-guide row mapped for {drug.name} on this shelf. Search{" "}
                 <Out href={`https://www.clinpgx.org/search?query=${encodeURIComponent(drug.name)}`}>
                   ClinPGx
                 </Out>{" "}
-                if a gene still belongs on the chart.
+                if a gene still belongs on the chart — empty here is not a green light.
               </EmptySource>
               <LiveCpic name={drug.name} />
             </div>
@@ -145,9 +172,10 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
             <BankPanel id={id} />
           ) : (
             <EmptySource>
-              No DrugBank accession on this shelf
-              {drug.kind !== "drug" ? " — food, herb, or host factor." : "."}{" "}
+              No target card on this shelf
+              {drug.kind !== "drug" ? " — food, herb, or host factor." : " yet."}{" "}
               <Out href={drugbankSearchUrl(drug.name)}>Search DrugBank</Out>
+              {" "}Empty targets is not the same as safe.
             </EmptySource>
           )
         ) : null}
@@ -159,8 +187,9 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
             <LiverSource id={id} />
           ) : (
             <EmptySource>
-              No LiverTox chapter mapped for {drug.name}. Search{" "}
-              <Out href={livertoxUrl(id, drug.name)}>NIDDK LiverTox</Out>.
+              No liver note mapped for {drug.name} on this shelf. Search{" "}
+              <Out href={livertoxUrl(id, drug.name)}>NIDDK LiverTox</Out>
+              {" "}— missing chapter ≠ cleared for the liver.
             </EmptySource>
           )
         ) : null}
@@ -353,9 +382,9 @@ function FdaPanel({ id }: { id: string }) {
         </div>
       ) : null}
       <p className="text-[11px] leading-relaxed text-subtle">
-        OpenFDA SPL + FAERS + DailyMed + shortage + NDC + enforcement. Boxed language is the label’s,
-        truncated. FAERS is raw reports — not incidence, not causation. Educational, not a complete
-        label.
+        Live FDA label language plus shortage, NDC, and enforcement pulls. Boxed text is the label’s,
+        truncated. FAERS counts are raw reports — not incidence, not causation. Educational — not a
+        complete label, and a quiet pull is not a green light.
       </p>
     </div>
   );
@@ -396,10 +425,11 @@ function RxnormPanel({ id }: { id: string }) {
         </>
       ) : !busy ? (
         <EmptySource>
-          RxNorm did not return an RxCUI for {drug.name}.{" "}
+          No drug-name id returned for {drug.name} yet.{" "}
           <Out href={`https://mor.nlm.nih.gov/RxNav/search?searchBy=String&searchTerm=${encodeURIComponent(drug.name)}`}>
             Search RxNav
           </Out>
+          {" "}Empty names is not the same as safe.
         </EmptySource>
       ) : null}
       <p className="text-[11px] leading-relaxed text-subtle">
@@ -447,8 +477,9 @@ function PubchemPanel({ id }: { id: string }) {
         </>
       ) : !busy ? (
         <EmptySource>
-          PubChem did not return a CID for {drug.name}.{" "}
+          No molecule card returned for {drug.name} yet.{" "}
           <Out href={`https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(drug.name)}`}>Search PubChem</Out>
+          {" "}Empty here is not a green light.
         </EmptySource>
       ) : null}
       <p className="text-[11px] leading-relaxed text-subtle">
@@ -514,7 +545,7 @@ function TrialsPanel({ ids }: { ids: string[] }) {
         </ul>
       ) : null}
       <p className="text-[11px] leading-relaxed text-subtle">
-        ClinicalTrials.gov API v2. A hit is not an indication. Educational.
+        ClinicalTrials.gov API v2. A hit is a study listing — not an indication and not a green light. Educational.
       </p>
     </div>
   );
@@ -570,8 +601,9 @@ function LactPanel({ id, ids }: { id: string; ids: string[] }) {
         </article>
       ) : (
         <EmptySource>
-          No LactMed-style card mapped for {drug.name}. Search{" "}
-          <Out href={lactmedSearchUrl(drug.name)}>NCBI LactMed</Out>.
+          No nursing note mapped for {drug.name} on this shelf. Search{" "}
+          <Out href={lactmedSearchUrl(drug.name)}>NCBI LactMed</Out>
+          {" "}— empty here is not clearance for breastfeeding.
         </EmptySource>
       )}
       {others.length ? (
@@ -594,7 +626,7 @@ function LactPanel({ id, ids }: { id: string; ids: string[] }) {
       </div>
       <p className="text-[11px] leading-relaxed text-subtle">
         Relative infant dose is a teaching range, paraphrasing NIH LactMed. Not a measurement, not a
-        pump-and-dump protocol, not a reason to stop OTP.
+        pump-and-dump protocol, and not a reason to stop addiction-care medicines on its own.
       </p>
     </div>
   );
@@ -615,9 +647,9 @@ function BankPanel({ id }: { id: string }) {
         ))}
         <Badge tone="info">{bank.group}</Badge>
       </div>
-      <p className="text-sm text-muted">
-        Primary targets as indexed on DrugBank. The CYP / PD score on this desk is FirstPass's own
-        map, not a dump of their interaction engine.
+      <p className="text-sm leading-relaxed text-muted">
+        What this medicine is known to aim at, as indexed on DrugBank. The collision map on this desk
+        is FirstPass’s own teaching chart — not a dump of DrugBank’s interaction engine.
       </p>
       <ul className="flex flex-wrap gap-1.5">
         {bank.targets.map((t) => (
@@ -676,8 +708,8 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
       ))}
       <LiveCpic name={name} />
       <p className="text-[11px] leading-relaxed text-subtle">
-        Paraphrase of published CPIC / DPWG tables. Open the guideline for the official phenotype
-        algorithm. Not a test order and not a dose.
+        Plain-language paraphrase of published gene guides (CPIC / DPWG). Open the guideline for the
+        official algorithm. Not a test order, not a dose, and not a green light if a row is quiet.
       </p>
     </div>
   );
@@ -704,9 +736,10 @@ function LiveCpic({ name }: { name: string }) {
   }
   return (
     <div className="rounded-md bg-bg-sunken px-3 py-3">
-      <p className="font-mono text-[11px] uppercase tracking-wide text-muted">Live CPIC API</p>
-      <p className="mt-1 text-sm text-muted">
-        api.cpicpgx.org for {name}. A hit is a published guideline, not a dose.
+      <p className="font-mono text-[11px] uppercase tracking-wide text-muted">Ask the gene guides</p>
+      <p className="mt-1 text-sm leading-relaxed text-muted">
+        Live lookup at api.cpicpgx.org for {name}. A hit is a published guideline to read — not a dose
+        and not a test order.
       </p>
       <div className="mt-2">
         <Button variant="secondary" size="sm" disabled={busy || !name} onClick={() => void run()}>
@@ -746,14 +779,16 @@ function StahlPanel({ name, card }: { name: string; card: StahlCard }) {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-muted">No single-receptor occupancy — the ion / enzyme is the point.</p>
+        <p className="text-sm leading-relaxed text-muted">
+          No single-receptor bars for this one — the ion channel or enzyme is the teaching point.
+        </p>
       )}
       <p className="text-sm leading-relaxed text-fg">{card.pearl}</p>
       <p className="text-sm leading-relaxed text-muted">{card.sides}</p>
       <p className="text-[11px] leading-relaxed text-subtle">
-        Educational receptor sketch in the Stahl method (spectrum first, occupancy, then side effects
-        from those receptors). Original language — not a quotation of Stahl's Essential
-        Psychopharmacology.
+        Educational receptor sketch (spectrum first, then how hard it sits on each target, then side
+        effects that follow). Original language — not a quotation of Stahl’s Essential
+        Psychopharmacology. Not a dose and not a prescription.
       </p>
     </div>
   );
@@ -819,7 +854,7 @@ function PubmedPanel({ ids, curated }: { ids: string[]; curated: Cite[] }) {
         </ul>
       ) : (
         <EmptySource>
-          No curated paper on this pair yet. Search PubMed live, or browse the Cites shelf.
+          No curated paper on this tray yet. Search Papers live, or browse the Sources shelf — empty here is not “nothing to know.”
         </EmptySource>
       )}
       <div className="flex flex-wrap items-center gap-2">
@@ -853,7 +888,7 @@ function PubmedPanel({ ids, curated }: { ids: string[]; curated: Cite[] }) {
       ) : null}
       <p className="text-[11px] leading-relaxed text-subtle">
         Curated titles come from NCBI esummary. Live hits are E-utilities, not a dump of MEDLINE.
-        Educational — not a complete literature search.
+        Educational — not a complete literature search. A quiet Papers shelf is not a green light.
       </p>
     </div>
   );

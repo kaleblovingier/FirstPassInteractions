@@ -1,4 +1,5 @@
 import type { Severity } from "@/lib/drugs/types";
+import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
 
 export function severityTone(s: Severity | "none") {
   switch (s) {
@@ -28,4 +29,12 @@ export function severitySurface(s: Severity | "none") {
     default:
       return "bg-ok-soft text-ok";
   }
+}
+
+export function severityPlain(s: Severity | "none") {
+  return SEVERITY_PLAIN[s];
+}
+
+export function severityHint(s: Severity | "none") {
+  return SEVERITY_HINT[s];
 }

@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "CYP450 desk for ketamine, entactogens, psychedelics, and psychiatric regimens — pharmacokinetic collisions and pharmacodynamic synergies.",
+          "FirstPass is a medicine-interaction learning desk: plain-language summaries first, then clinical pathway detail and sources. Free for up to five medicines.",
       },
       { name: "theme-color", content: "#efece4" },
     ],

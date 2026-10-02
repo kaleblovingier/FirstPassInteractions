@@ -77,20 +77,20 @@ export function CypHeatmap({
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-serif text-lg tracking-tight text-fg">CYP occupancy</h2>
-          <p className="text-xs text-muted">
-            Filled iron is a substrate. A bar is inhibition. Rays are induction. Ringed columns collide.
+          <h2 className="font-serif text-lg tracking-tight text-fg">Who shares which enzyme</h2>
+          <p className="text-xs leading-relaxed text-muted">
+            Dot = broken down by that enzyme. Bar = slows it. Rays = speeds it up. Red-tinted columns are where this tray collides.
           </p>
         </div>
-        <ul className="flex flex-wrap gap-3 font-mono text-[10px] uppercase tracking-wide text-muted">
+        <ul className="flex flex-wrap gap-3 text-[11px] text-muted">
           <li className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-accent" /> Substrate
+            <span className="size-2 rounded-full bg-accent" /> Broken down here
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-danger" /> Inhibitor
+            <span className="size-2 rounded-full bg-danger" /> Slows the enzyme
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-warn" /> Inducer
+            <span className="size-2 rounded-full bg-warn" /> Speeds the enzyme
           </li>
         </ul>
       </div>

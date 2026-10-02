@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { searchDrugs } from "@/lib/drugs/catalog";
+import { availableQuickChips } from "@/lib/drugs/quick-chips";
 import { isMatDesk } from "@/lib/drugs/window";
 import { plateForDrug } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -99,10 +100,10 @@ export function DrugSearch() {
           full
             ? `${cap} items added · remove one to add another`
             : selected.length === 1
-              ? "Search another item to compare"
+              ? "Add a second item — brand, generic, or salt form"
               : mat
-                ? "Search medicines or substances"
-                : "Search a medicine or substance"
+                ? "Try methadone, clonidine, or naloxone"
+                : "Try Ozempic, xylazine, or metformin HCl"
         }
         className="h-12 w-full rounded-lg bg-surface-2 pl-10 pr-10 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-60"
         autoComplete="off"
@@ -178,12 +179,28 @@ export function DrugSearch() {
         </ul>
       ) : null}
         {open && !full && q.trim() && results.length === 0 ? (
-          <p
+          <div
             role="status"
             className="absolute z-30 mt-2 w-full rounded-lg bg-surface-2 px-4 py-3 text-sm leading-relaxed text-muted shadow-[var(--shadow-border)]"
           >
-            No match for “{q.trim()}”. Try a generic name, brand, or common name, or check the spelling.
-            <span className="mt-1 block text-xs">No match does not mean an interaction is absent or a combination is safe.</span>
+            <p>No match for “{q.trim()}”. Try the generic, a brand, or drop the salt (HCl, XL, ER).</p>
+            <p className="mt-1 text-xs">No match does not mean an interaction is absent or a combination is safe.</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {["grapefruit", "clarithromycin", "xylazine", "semaglutide"].map((hint) => (
+                <button
+                  key={hint}
+                  type="button"
+                  className="rounded-full bg-bg-sunken px-2.5 py-1 text-xs font-medium text-fg hover:bg-accent-soft"
+                  onClick={() => {
+                    setQ(hint);
+                    setOpen(true);
+                    inputRef.current?.focus();
+                  }}
+                >
+                  Try {hint}
+                </button>
+              ))}
+            </div>
             <button
               type="button"
               className="mt-2 min-h-10 rounded-md px-2 text-sm font-medium text-accent underline underline-offset-2 hover:bg-accent-soft"
@@ -191,12 +208,36 @@ export function DrugSearch() {
             >
               Browse the full library
             </button>
-          </p>
+          </div>
         ) : null}
       </div>
-      {selected.length < 2 && !q ? (
+      {!q && !full ? (
+        <div className="mt-2 space-y-2 px-1">
+          {selected.length < 2 ? (
+            <p className="text-xs leading-relaxed text-muted">
+              Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.
+              Search a name, or tap a starter below — add two items to see mapped pair findings.
+            </p>
+          ) : null}
+          <div className="flex flex-wrap gap-1.5" aria-label="Quick-add teaching starters">
+            {availableQuickChips(selected).map((chip) => (
+              <button
+                key={chip.id}
+                type="button"
+                title={chip.hint}
+                onClick={() => pick(chip.id)}
+                className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-fg hover:bg-accent-soft"
+              >
+                {chip.label}
+                <span className="ml-1.5 text-[10px] font-normal text-muted">{chip.hint}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : selected.length < 2 && !q ? (
         <p className="mt-2 px-1 text-xs leading-relaxed text-muted">
-          Search by generic, brand, or common name. Add two or more items to see mapped pair findings.
+          Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.
+          Search generic, brand, salt form, or street name — then add a second item to see pair findings.
         </p>
       ) : null}
     </div>

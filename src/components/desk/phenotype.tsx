@@ -17,6 +17,13 @@ import {
   type PhenotypeEnzyme,
   type PregBand,
 } from "@/lib/drugs/types";
+import {
+  alcoholBlurb,
+  cannabisRouteBlurb,
+  ketamineRouteBlurb,
+  phenotypeBlurb,
+  smokingBlurb,
+} from "@/lib/drugs/host-blurbs";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 
@@ -63,6 +70,7 @@ export function KetamineRouteCard() {
           );
         })}
       </div>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">{ketamineRouteBlurb(ketamineRoute)}</p>
     </div>
   );
 }
@@ -110,11 +118,13 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
         ) : null}
       </div>
       <p className="mt-1 text-[11px] leading-relaxed text-muted">
-        Poor ≈ a strong inhibitor. Smoke induces 1A2. Chronic alcohol induces 2E1. Geriatric, CKD, and
-        pregnancy score Beers / renal / teratogen cards.
+        A poor metabolizer acts like a strong inhibitor of that enzyme. Smoke induces 1A2. Chronic
+        alcohol induces 2E1. Older age, CKD, and pregnancy score Beers / renal / teratogen cards.
       </p>
       <ul className="mt-3 space-y-3">
-        {PHENOTYPE_ENZYMES.map((enzyme) => (
+        {PHENOTYPE_ENZYMES.map((enzyme) => {
+          const gloss = phenotypeBlurb(phenotypes[enzyme]);
+          return (
           <li key={enzyme}>
             <div className="flex items-baseline justify-between gap-2">
               <span className="font-mono text-xs text-fg">{enzyme}</span>
@@ -129,14 +139,15 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                     key={m}
                     type="button"
                     aria-pressed={on}
-                    title={freq ? `${METABOLIZER_LABEL[m]} · ${freq}` : METABOLIZER_LABEL[m]}
+                    title={freq ? `${m} · ${METABOLIZER_LABEL[m]} · ${freq}` : `${m} · ${METABOLIZER_LABEL[m]}`}
                     onClick={() => setPhenotype(enzyme, m)}
                     className={cn(
-                      "h-10 rounded-sm font-mono text-[11px] font-medium",
+                      "flex h-11 flex-col items-center justify-center rounded-sm px-0.5 text-[10px] font-medium leading-tight",
                       on ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                     )}
                   >
-                    {m}
+                    <span>{METABOLIZER_LABEL[m]}</span>
+                    <span className="font-mono text-[9px] opacity-70">{m}</span>
                   </button>
                 );
               })}
@@ -144,8 +155,10 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             {phenotypes[enzyme] !== "NM" && PHENO_FREQ[enzyme][phenotypes[enzyme]] ? (
               <p className="mt-1 text-[10px] text-subtle">{PHENO_FREQ[enzyme][phenotypes[enzyme]]}</p>
             ) : null}
+            {gloss ? <p className="mt-1 text-xs leading-relaxed text-muted">{gloss}</p> : null}
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       <div className="mt-4 border-t border-border pt-3">
@@ -174,6 +187,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             Daily · 1A2
           </button>
         </div>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{smokingBlurb(smoking)}</p>
       </div>
 
       <div className="mt-3">
@@ -197,6 +211,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             );
           })}
         </div>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{alcoholBlurb(alcohol)}</p>
       </div>
 
       {!hideKetamineRoute ? (
@@ -222,6 +237,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             );
           })}
         </div>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{ketamineRouteBlurb(ketamineRoute)}</p>
       </div>
       ) : null}
 
@@ -246,6 +262,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             );
           })}
         </div>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{cannabisRouteBlurb(cannabisRoute)}</p>
       </div>
 
       <div className="mt-3">

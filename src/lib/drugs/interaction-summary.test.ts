@@ -26,3 +26,14 @@ test("plain-language summary handles loss of efficacy as a practical treatment i
   assert.match(result, /not work as well|less effective/i);
   assert.match(result, /plain English/i);
 });
+
+test("platelet serotonin on a bleed row is bleeding, not serotonin toxicity", () => {
+  const result = plainLanguageSummary({
+    headline: "Warfarin × sertraline",
+    effect: "additive bleeding",
+    mechanism: "hemostasis synergy",
+    clinical: "SSRIs add platelet-serotonin depletion and raise bleed risk.",
+  });
+  assert.match(result, /bleeding/i);
+  assert.doesNotMatch(result, /fever|agitation/);
+});

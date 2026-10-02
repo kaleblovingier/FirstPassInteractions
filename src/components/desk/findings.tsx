@@ -4,7 +4,7 @@ import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import type { Finding, Severity } from "@/lib/drugs/types";
-import { SEVERITY_LABEL } from "@/lib/drugs/types";
+import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { severitySurface, severityTone } from "./severity";
@@ -13,9 +13,9 @@ const SEVERITY_FILTERS: Array<Severity | "all"> = ["all", "contraindicated", "ma
 type KindFilter = "all" | "pk" | "pd" | "geno" | "clinic" | "food";
 const KIND_FILTERS: { id: KindFilter; label: string }[] = [
   { id: "all", label: "All kinds" },
-  { id: "pk", label: "PK" },
-  { id: "pd", label: "PD" },
-  { id: "geno", label: "Phenotype" },
+  { id: "pk", label: "Levels / timing" },
+  { id: "pd", label: "Same-system effects" },
+  { id: "geno", label: "Metabolizer" },
   { id: "clinic", label: "Clinic" },
   { id: "food", label: "Food" },
 ];
@@ -39,8 +39,20 @@ export function FindingList({ findings }: { findings: Finding[] }) {
 
   if (findings.length === 0) return null;
 
+  const filteredOut = findings.length > 0 && visible.length === 0;
+
   return (
     <section className="space-y-3">
+      <div className="rounded-xl border border-accent/15 bg-accent-soft/30 p-3 sm:p-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">What this means</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-fg">
+          Each card is a teaching collision on this tray — how levels might move, or how effects might stack.
+          Labels like Serious concern are this checker’s bins, not a prediction of harm for one person.
+        </p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">
+          An empty list after filters is not the same as safe. Clear filters or add another medicine if you expected a hit.
+        </p>
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-serif text-lg tracking-tight text-fg">Collisions</h2>
         <div className="flex flex-wrap gap-1">
@@ -48,19 +60,21 @@ export function FindingList({ findings }: { findings: Finding[] }) {
             <button
               key={f}
               type="button"
+              title={f === "all" ? "Show every severity" : SEVERITY_HINT[f]}
               onClick={() => setFilter(f)}
               className={cn(
                 "h-9 rounded-full px-3 text-xs font-medium",
                 filter === f ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
               )}
             >
-              {f === "all" ? "All" : SEVERITY_LABEL[f]}
+              {f === "all" ? "All" : SEVERITY_PLAIN[f]}
             </button>
           ))}
         </div>
       </div>
       <p className="text-xs leading-relaxed text-muted">
-        Possible concerns in the selected items. Severity labels describe this checker’s categories, not a personal prediction of harm.
+        Possible concerns in the selected items. Plain chips (Avoid together / Serious concern / Use care / Mild note) are this
+        checker’s categories — not a personal prediction of harm. Hover a chip for the longer hint; formal labels still appear on each card.
       </p>
       <div className="flex flex-wrap gap-1">
         {KIND_FILTERS.map((k) => (
@@ -77,10 +91,23 @@ export function FindingList({ findings }: { findings: Finding[] }) {
           </button>
         ))}
       </div>
-      {visible.length === 0 ? (
-        <p className="rounded-lg bg-surface px-4 py-6 text-sm text-muted shadow-[var(--shadow-border)]">
-          No findings at this severity.
-        </p>
+      {filteredOut ? (
+        <div className="rounded-lg border border-border bg-surface px-4 py-5 shadow-[var(--shadow-border)]">
+          <p className="text-sm font-medium text-fg">Nothing in this filter</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted">
+            Try All, or tap Levels / Effects / Genes. Empty here is not a green light — only this slice is hidden.
+          </p>
+          <button
+            type="button"
+            className="mt-3 h-9 rounded-full bg-ink px-3 text-xs font-medium text-bg"
+            onClick={() => {
+              setFilter("all");
+              setKind("all");
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
       ) : (
         <ol className="space-y-2">
           {visible.map((f) => (
@@ -108,12 +135,13 @@ function FindingCard({ finding }: { finding: Finding }) {
         aria-expanded={open}
       >
         <span
+          title={SEVERITY_HINT[finding.severity]}
           className={cn(
-            "mt-0.5 inline-flex min-w-24 shrink-0 items-center justify-center rounded-sm px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-wider",
+            "mt-0.5 inline-flex min-w-28 shrink-0 items-center justify-center rounded-sm px-2 py-1 text-[10px] font-medium tracking-wide",
             severitySurface(finding.severity),
           )}
         >
-          {SEVERITY_LABEL[finding.severity]}
+          {SEVERITY_PLAIN[finding.severity]}
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium text-fg">{finding.headline}</span>
@@ -180,12 +208,12 @@ function FindingCard({ finding }: { finding: Finding }) {
               {finding.tags.includes("food")
                 ? "Food"
                 : finding.kind === "pk"
-                  ? "Pharmacokinetic"
+                  ? "Levels"
                   : finding.kind === "geno"
-                    ? "Phenotype"
+                    ? "Genes"
                     : finding.kind === "clinic"
                       ? "Clinic"
-                      : "Pharmacodynamic"}
+                      : "Effects"}
             </Badge>
             {finding.enzymes.map((e) => (
               <Badge key={e} tone="default">

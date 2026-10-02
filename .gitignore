@@ -1,5 +1,8 @@
-node_modules/
-.project_id
-.github_repo
+
+# Local Vercel env upsert payloads (may contain secrets)
 .env
 .env.*
+.github_repo
+.project_id
+.vercel-env-upsert.json
+node_modules/

@@ -224,11 +224,11 @@ export const STACK_AXES = ["serotonin", "cns", "qt", "pressor", "nmda"] as const
 export type StackAxis = (typeof STACK_AXES)[number];
 
 export const STACK_LABEL: Record<StackAxis, string> = {
-  serotonin: "Serotonin",
-  cns: "CNS / airway",
-  qt: "QT",
-  pressor: "Pressor",
-  nmda: "NMDA",
+  serotonin: "Serotonin mood",
+  cns: "Sedation / breathing",
+  qt: "Heart rhythm (QT)",
+  pressor: "Blood pressure",
+  nmda: "NMDA / ketamine",
 };
 
 export interface StackBar {
@@ -247,9 +247,26 @@ export const SEVERITY_RANK: Record<Severity | "none", number> = {
 };
 
 export const SEVERITY_LABEL: Record<Severity | "none", string> = {
-  contraindicated: "Contraindicated",
-  major: "Major",
-  moderate: "Moderate",
-  minor: "Minor",
+  contraindicated: "Avoid together",
+  major: "Serious concern",
+  moderate: "Use care",
+  minor: "Mild note",
+  none: "Not mapped",
+};
+
+/** Shorter chips for the desk — still educational categories, not a harm prediction. */
+export const SEVERITY_PLAIN: Record<Severity | "none", string> = {
+  contraindicated: "Avoid together",
+  major: "Serious concern",
+  moderate: "Use care",
+  minor: "Mild note",
   none: "Unmapped",
+};
+
+export const SEVERITY_HINT: Record<Severity | "none", string> = {
+  contraindicated: "This checker’s strongest category — often labeled avoid or contraindicated on a PI.",
+  major: "A serious teaching collision. Read the PI; this desk does not dose or decide care.",
+  moderate: "Worth a careful look. Context and the official label still govern.",
+  minor: "A milder flag. Useful for teaching; not a green light.",
+  none: "No severity mapped for this row yet.",
 };

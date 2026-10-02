@@ -23,6 +23,29 @@ export const PAY_RAILS = [
   { id: "paypal", label: "PayPal", handle: OPERATOR.paypal, href: OPERATOR.paypalUrl },
 ] as const;
 
+/** Buyer-facing three-step path when Stripe is deferred (Venmo / Cash App / PayPal). */
+export const MANUAL_UNLOCK_STEPS = [
+  {
+    n: "1",
+    title: "Pay $79 once",
+    detail: "Venmo, Cash App, or PayPal — open a rail below and send founding.",
+  },
+  {
+    n: "2",
+    title: "Get your key",
+    detail: "After payment clears, you get a signed key by email or text (FP-LIFE-…). Nothing unlocks by itself.",
+  },
+  {
+    n: "3",
+    title: "Redeem on this desk",
+    detail: "Paste the key below and hit Redeem. Host factors, enzyme atlas, and export open on this browser.",
+  },
+] as const;
+
+/** Soft unlock note — no clinical claims; PI / Safety page still govern. */
+export const FOUNDING_UNLOCKS =
+  "Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.";
+
 /** Public URLs. Override the live desk with VITE_PUBLIC_URL when Vercel is linked. */
 const PAGES_URL = "https://kaleblovingier.github.io/FirstPassInteractions/";
 
@@ -39,17 +62,17 @@ export const TRY_THREE = [
   {
     id: "oral-k-gf",
     title: "Oral ketamine × grapefruit",
-    punch: "F rises. Half-life does not. Overlay IV — the ghost is untouched.",
+    punch: "More of the dose may reach the bloodstream by mouth. How long it lasts does not change the same way. Compare with IV — that path skips the gut step.",
   },
   {
     id: "dxm-pm",
-    title: "DXM in a 2D6 poor metabolizer, q8h",
-    punch: "Accumulation Rac ~2.7×. Dextrorphan falls. Once vs q8h is the lesson.",
+    title: "DXM in a 2D6 poor metabolizer, every 8 hours",
+    punch: "In a slow metabolizer, cough medicine can build up with repeat doses. Once versus every 8 hours is the teaching point.",
   },
   {
     id: "tac-gf",
     title: "Tacrolimus × grapefruit",
-    punch: "Kitchen collision. Bioavailability up, t½ still 12 h. Gut 3A4, not hepatic.",
+    punch: "A kitchen interaction: more of the transplant medicine may get absorbed. The gut enzyme matters here more than the liver story alone.",
   },
 ] as const;
 
@@ -58,7 +81,7 @@ export const COMMERCE = {
   payUrl: (import.meta.env.VITE_PAY_URL as string | undefined)?.trim() || OPERATOR.venmoUrl,
   operatorContact: (import.meta.env.VITE_OPERATOR_CONTACT as string | undefined)?.trim() || OPERATOR.email,
   pitch:
-    "A CYP450 desk for ketamine clinics, MAT, harm-reduction staff, and pharmacy students. Up to five-drug collision checks stay free. Host factors, the atlas, and export are licensed.",
+    "A medicine-interaction learning desk for ketamine clinics, MAT and harm-reduction teams, and pharmacy students. Free forever: check up to five medicines. Founding lifetime ($79 once) unlocks host factors, the enzyme atlas, metabolite maps, and export — yours on this desk.",
 };
 
 export const BUYERS = [
@@ -85,15 +108,15 @@ export const BUYERS = [
 ] as const;
 
 export function payClose(price = COMMERCE.founding) {
-  return `Pay $${price} via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After payment clears, the operator emails or texts a signed key from Foundry — paste it under Pro → Redeem.`;
+  return `Pay $${price} once via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After it clears you get a signed key by email or text — paste it under Plans → Redeem. Three steps: pay → get key → redeem.`;
 }
 
 export function salesDm(price = COMMERCE.founding) {
   return [
-    "I built FirstPass — a CYP450 desk that maps ketamine, MAT, street adulterants (xylazine, nitazenes), and the usual psych stack, including grapefruit, smoke, and metabolizer status.",
+    "I built FirstPass — a learning desk that maps how medicines interact for ketamine clinics, MAT, street adulterants (xylazine, nitazenes), and common psych stacks — including grapefruit, smoking, and metabolizer status.",
     "",
-    "Free: up to five-drug collision checks.",
-    `Founding license: $${price} once. Host factors, metabolites, enzyme atlas, export. Yours on this desk.`,
+    "Free: check up to five medicines for mapped interactions.",
+    `Founding license: $${price} once. Patient factors, metabolite maps, enzyme atlas, and export — yours on this desk.`,
     "",
     SITE.url,
     "",
@@ -108,10 +131,10 @@ export function buyerDm(who: (typeof BUYERS)[number]["who"], price = COMMERCE.fo
   const buyer = BUYERS.find((b) => b.who === who);
   const hook = buyer?.hook ?? "the maps you keep asking pharmacy for";
   return [
-    `I built FirstPass — a CYP450 desk for ${hook}.`,
+    `I built FirstPass — a medicine-interaction learning desk for ${hook}.`,
     "",
-    "Up to five-drug collision checks stay free so you can kick the tires.",
-    `Founding license is $${price} once: host factors, metabolites, enzyme atlas, JSON/CSV export.`,
+    "Checking up to five medicines stays free so you can kick the tires.",
+    `Founding license is $${price} once: patient factors, metabolite maps, enzyme atlas, and JSON/CSV export.`,
     "",
     SITE.url,
     "",
@@ -126,12 +149,12 @@ export function launchTweet(price = COMMERCE.founding) {
   return [
     "FirstPass is a CYP450 desk for ketamine clinics, MAT, and pharmacy students.",
     "",
-    "Up to five-drug collision checks stay free.",
+    "Free up to five drugs on the desk.",
     `Founding license $${price} once — host factors, enzyme atlas, export.`,
     SITE.url,
     "Pay with card on the desk, or Venmo / Cash App / PayPal.",
     "",
-    "Educational model. Not a charting system.",
+    "Educational model. Not FDA-cleared. Empty tray is not proof a combination is safe.",
   ].join("\n");
 }
 
@@ -157,7 +180,7 @@ export function launchPosts(price = COMMERCE.founding, url = SITE.pages): Launch
         "1/",
         "FirstPass is a CYP450 desk for ketamine clinics, MAT, and pharmacy students.",
         "",
-        "Up to five-drug collision checks stay free. Founding license $" + price + " once.",
+        "Free up to five drugs on the desk. Founding license $" + price + " once.",
         "",
         "2/",
         "Three cases the desk actually draws:",
@@ -267,7 +290,7 @@ export function fulfillKey(opts: { key: string; soldTo?: string }) {
     "",
     opts.key,
     "",
-    "Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise: Pro → paste the key → Redeem.",
+    "Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise: Plans → paste the key → Redeem (pay → key → redeem).",
     "",
     SITE.url,
     "",
@@ -298,7 +321,7 @@ export function invoiceText(opts: {
     `Write: ${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
     "After payment you receive a key like FP-LIFE-A1B2C3D4-9F3C2A1B.",
-    "Paste it under Pro → Redeem on the desk.",
+    "Paste it under Plans → Redeem on the desk (pay → key → redeem).",
     opts.keyHint ? `Key: ${opts.keyHint}` : "",
   ]
     .filter((l) => l !== "")

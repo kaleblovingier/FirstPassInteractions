@@ -38,6 +38,7 @@ import {
   protocolsOnDesk,
   SAFETY_CHECKS,
 } from "@/lib/drugs/cyp-protocol";
+import { glossWithTerm, plainClockKind, plainLine } from "@/lib/drugs/plain-huddle";
 import { ENZYMES, type Enzyme, type HostContext } from "@/lib/drugs/types";
 import { useDesk } from "@/lib/drugs/store";
 import {
@@ -79,6 +80,17 @@ import {
   type ScaleBand,
   type ScaleItem,
 } from "@/lib/drugs/withdrawal";
+import {
+  BEDSIDE_SCALES_FOOTER,
+  COWS_CONTEXT_WATCH,
+  COWS_PRECIP_WATCH,
+  HUNTER_NMS_WATCH,
+  SCALES_COACH,
+  scaleIntro,
+  scaleTitleBlurb,
+  softScaleCopy,
+  type PublishedScaleId,
+} from "@/lib/drugs/scales-plain";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -198,8 +210,9 @@ function CypPanel({ ids }: { ids: string[] }) {
   return (
     <div className="space-y-5">
       <p className="text-sm leading-relaxed text-muted">
-        FDA DDI grades, start vs stop, TDI linger, induction lag. Huang 2007 / FDA 2020 teaching —
-        not a milligram and not a hold. The Prescribing Information is the authority.
+        FDA DDI grades, start vs stop clocks. TDI linger means {glossWithTerm("tdi")}; induction lag
+        means {glossWithTerm("induction")}. Huang 2007 / FDA 2020 teaching — not a milligram and not a
+        hold. The Prescribing Information is the authority.
       </p>
 
       <div className="flex flex-wrap gap-1">
@@ -246,7 +259,9 @@ function CypPanel({ ids }: { ids: string[] }) {
                 <Badge tone={card.tone === "danger" ? "danger" : card.tone === "warn" ? "warn" : "info"}>
                   {card.grade}
                 </Badge>
-                <Badge tone="default">{card.clock === "tdi" ? "TDI" : card.clock}</Badge>
+                <Badge tone="default" title={plainClockKind(card.clock).title}>
+                  {plainClockKind(card.clock).label}
+                </Badge>
                 {card.dualHit ? <Badge tone="warn">3A4 + P-gp</Badge> : null}
               </div>
               <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-muted">
@@ -256,10 +271,10 @@ function CypPanel({ ids }: { ids: string[] }) {
                 {clock.title}
                 <span className="ml-2 font-mono text-[11px] font-normal text-muted"> · {clock.days}</span>
               </p>
-              <p className="mt-1 text-sm leading-relaxed text-fg">{clock.body}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{clock.watch}</p>
+              <p className="mt-1 text-sm leading-relaxed text-fg">{plainLine(clock.body)}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{plainLine(clock.watch)}</p>
               {card.linger && phase === "stop" ? (
-                <p className="mt-2 text-sm leading-relaxed text-fg">{card.linger}</p>
+                <p className="mt-2 text-sm leading-relaxed text-fg">{plainLine(card.linger)}</p>
               ) : null}
               {card.victims.length ? (
                 <ul className="mt-3 flex flex-wrap gap-1">
@@ -284,7 +299,8 @@ function CypPanel({ ids }: { ids: string[] }) {
       ) : (
         <p className="text-sm leading-relaxed text-muted">
           Add a strong or moderate perpetrator — clarithromycin, paroxetine, fluvoxamine, rifampin,
-          ketoconazole — then a victim. The clock is the point, not a second PK row.
+          ketoconazole — then a victim. The start/stop clock is the teaching point, not a second
+          clearance row. An empty clock is not clearance.
         </p>
       )}
 
@@ -682,8 +698,19 @@ function HunterPanel({ ids }: { ids: string[] }) {
   function toggle(key: HunterKey) {
     setOn((prev) => ({ ...prev, [key]: !prev[key] }));
   }
+  const intro = scaleIntro("hunter");
   return (
     <div className="space-y-4">
+      <div className="rounded-xl border border-accent/15 bg-accent-soft/30 p-3 sm:p-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{SCALES_COACH.kicker}</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-fg">{intro.measures}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{intro.published}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{SCALES_COACH.empty}</p>
+      </div>
+      <div>
+        <h3 className="font-serif text-lg tracking-tight text-fg">{intro.plainTitle}</h3>
+        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-muted">{intro.scientific}</p>
+      </div>
       {sero.length ? (
         <p className="text-sm leading-relaxed text-fg">
           Serotonergic on this desk: {sero.map((s) => `${s.name} (${s.why})`).join("; ")}.
@@ -720,15 +747,12 @@ function HunterPanel({ ids }: { ids: string[] }) {
         <div className="rounded-md bg-warn-soft px-3 py-3">
           <p className="font-mono text-[10px] uppercase tracking-wide text-warn">NMS contrast</p>
           <p className="mt-1 text-sm leading-relaxed text-fg">
-            Dopamine blocker on this desk ({nms.map((n) => n.name).join(", ")}). NMS is lead-pipe
-            rigidity, bradyreflexia, slower onset. Hunter is clonus and hyperreflexia. Do not give
-            dantrolene for serotonin toxicity because the intern said ‘fever.’
+            Dopamine blocker on this desk ({nms.map((n) => n.name).join(", ")}). {HUNTER_NMS_WATCH}
           </p>
         </div>
       ) : null}
       <p className="text-[11px] leading-relaxed text-subtle">
-        Dunkley 2003 Hunter criteria. Cyproheptadine is adjunct on the Reversal tab. Not a charted
-        diagnosis.
+        Cyproheptadine is adjunct on the Reversal tab. Not a charted diagnosis — PI / clinician govern.
       </p>
     </div>
   );
@@ -886,59 +910,59 @@ function BedsidePanel({ ids, host }: { ids: string[]; host: HostContext }) {
 
       {ids.includes("phenytoin") ? <PhenytoinBlock /> : null}
 
+      <div className="rounded-xl border border-accent/15 bg-accent-soft/30 p-3 sm:p-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{SCALES_COACH.kicker}</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-fg">{SCALES_COACH.body}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">{SCALES_COACH.empty}</p>
+      </div>
+
       <ScaleBlock
-        title="COWS"
-        blurb={`Wesson & Ling 2003. Eleven items, max ${cowsMax()}. Teaching — not an induction protocol.`}
+        scaleId="cows"
+        detail={`Eleven items, max ${cowsMax()}.`}
         items={COWS_ITEMS}
         bands={COWS_BANDS}
         hot={showCows}
         extra={
           precip ? (
             <p className="rounded-md bg-danger-soft px-3 py-2 text-sm leading-relaxed text-fg">
-              Fentanyl in tissue can still precipitate at a 'high enough' COWS. Occupancy, not this
-              integer. Do not chase precipitated withdrawal by stacking more film in the first stretch
-              without a protocol.
+              {COWS_PRECIP_WATCH}
             </p>
           ) : showCows ? (
-            <p className="text-sm leading-relaxed text-muted">
-              Many office maps wait for ≥8–12 before a first film. Recent fentanyl is still occupancy.
-              Lofexidine / clonidine are α2 — naloxone will not reverse them.
-            </p>
+            <p className="text-sm leading-relaxed text-muted">{COWS_CONTEXT_WATCH}</p>
           ) : null
         }
       />
 
       <ScaleBlock
-        title="CIWA-Ar"
-        blurb={`Sullivan 1989. Ten items, max ${ciwaMax()}. Symptom-triggered maps often move at 8–10.`}
+        scaleId="ciwa"
+        detail={`Ten items, max ${ciwaMax()}. Symptom-triggered maps often consider action around 8–10.`}
         items={CIWA_ITEMS}
         bands={CIWA_BANDS}
         hot={showCiwa}
       />
 
-      <p className="text-[11px] leading-relaxed text-subtle">
-        Formulas and scales only. Not an ECG machine, not CKD-EPI, not IBW, not a dose, not a COWS
-        induction, not a CIWA benzo protocol.
-      </p>
+      <p className="text-[11px] leading-relaxed text-subtle">{BEDSIDE_SCALES_FOOTER}</p>
     </div>
   );
 }
 
 function ScaleBlock({
-  title,
-  blurb,
+  scaleId,
+  detail,
   items,
   bands,
   hot,
   extra,
 }: {
-  title: string;
-  blurb: string;
+  scaleId: PublishedScaleId;
+  detail: string;
   items: ScaleItem[];
   bands: ScaleBand[];
   hot?: boolean;
   extra?: ReactNode;
 }) {
+  const intro = scaleIntro(scaleId);
+  const blurb = scaleTitleBlurb(scaleId, detail);
   const [picked, setPicked] = useState<Record<string, number>>({});
   const total = scoreOf(items, picked);
   const band = bandOf(bands, total);
@@ -946,8 +970,10 @@ function ScaleBlock({
     <article className={cn("rounded-md px-3 py-3", hot ? "bg-accent-soft" : "bg-bg-sunken")}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <h3 className="font-serif text-lg tracking-tight text-fg">{title}</h3>
+          <h3 className="font-serif text-lg tracking-tight text-fg">{intro.plainTitle}</h3>
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-muted">{intro.scientific}</p>
           <p className="mt-1 text-xs text-muted">{blurb}</p>
+          <p className="mt-1 text-xs leading-relaxed text-subtle">{intro.measures}</p>
         </div>
         <div className="text-right">
           <p className="font-mono text-lg text-fg">{total}</p>
@@ -982,7 +1008,7 @@ function ScaleBlock({
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-sm leading-relaxed text-fg">{band.note}</p>
+      <p className="mt-3 text-sm leading-relaxed text-fg">{softScaleCopy(band.note)}</p>
     </article>
   );
 }
@@ -1402,7 +1428,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
 
       <article className="rounded-md bg-bg-sunken px-3 py-3">
           <h3 className="font-serif text-lg tracking-tight text-fg">Precipitated withdrawal</h3>
-          <p className="mt-1 text-xs text-muted">Last agonist, hours since, COWS. Occupancy is not the integer.</p>
+          <p className="mt-1 text-xs text-muted">Last agonist, hours since, COWS (published opioid withdrawal score). Occupancy is not the integer — teaching only.</p>
           <div className="mt-3 flex flex-wrap gap-1">
             {LAST_AGONISTS.map((a) => (
               <button
@@ -1424,7 +1450,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
               <Input className="mt-1" inputMode="decimal" value={hours} onChange={(e) => setHours(e.target.value)} />
             </label>
             <label className="text-xs text-muted">
-              COWS
+              COWS <span className="text-subtle">(opioid withdrawal score)</span>
               <Input className="mt-1" inputMode="decimal" value={cows} onChange={(e) => setCows(e.target.value)} />
             </label>
           </div>

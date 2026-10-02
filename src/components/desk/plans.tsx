@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { Check, CreditCard, Loader2, X } from "lucide-react";
-import { BUYERS, COMMERCE, OPERATOR, PAY_RAILS, requestLicense } from "@/lib/billing/commerce";
+import {
+  BUYERS,
+  COMMERCE,
+  FOUNDING_UNLOCKS,
+  MANUAL_UNLOCK_STEPS,
+  OPERATOR,
+  PAY_RAILS,
+  requestLicense,
+} from "@/lib/billing/commerce";
 import { redeemLicense } from "@/lib/billing/license";
 import { startStripeCheckout, stripeStatus } from "@/lib/billing/stripe";
 import { PLANS, priceFor, type Interval } from "@/lib/billing/plans";
@@ -29,18 +37,42 @@ export function PlansPage() {
         <div className="grid lg:grid-cols-[240px_minmax(0,1fr)]">
           <Plate src="/plates/heme.jpg" alt="" className="h-40 w-full lg:h-full min-h-40" />
           <div className="px-5 py-6 sm:px-8">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Licenses</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Free vs founding</p>
             <h1 className="mt-3 font-serif text-3xl tracking-tight text-fg sm:text-4xl">
-              ${COMMERCE.founding} once. The desk is yours.
+              Five-drug checks stay free. Founding is ${COMMERCE.founding} once.
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{COMMERCE.pitch}</p>
+            <ul className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-2">
+              <li className="rounded-md bg-bg-sunken px-3 py-2">
+                <span className="font-medium text-fg">Free desk</span>
+                <span className="mt-0.5 block text-xs leading-relaxed">
+                  Up to five medicines, interaction cards, concentration sketch, and heatmap — no card
+                  required.
+                </span>
+              </li>
+              <li className="rounded-md bg-bg-sunken px-3 py-2">
+                <span className="font-medium text-fg">Founding · ${COMMERCE.founding} lifetime</span>
+                <span className="mt-0.5 block text-xs leading-relaxed">
+                  Host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export —
+                  yours for life on this desk.
+                </span>
+              </li>
+            </ul>
             <div className="mt-5 flex flex-wrap gap-2">
-              <Button onClick={() => openCheckout("lab", "Founding lifetime — Pro plus export.", "life")}>
-                Buy founding · ${COMMERCE.founding}
+              <Button
+                onClick={() =>
+                  openCheckout(
+                    "lab",
+                    "Founding lifetime ($79 once) — Pro tools plus export, yours forever on this desk.",
+                    "life",
+                  )
+                }
+              >
+                Unlock founding · ${COMMERCE.founding}
               </Button>
               {current === "free" ? (
                 <Button variant="secondary" onClick={startPreview}>
-                  7-day preview
+                  Try 7 days free
                 </Button>
               ) : null}
             </div>
@@ -67,13 +99,13 @@ export function PlansPage() {
       {current !== "free" ? (
         <p className="rounded-lg bg-ok-soft px-4 py-3 text-sm text-ok">
           {previewing
-            ? "Pro preview is active on this desk."
+            ? "Pro preview is active — host factors and atlas are open while it lasts."
             : lifetime
-              ? "Founding lifetime is live."
-              : `${current === "lab" ? "Lab" : "Pro"} is live.`}
-          {license ? ` ${license}.` : ""}{" "}
+              ? "Founding lifetime is live — host factors, atlas, and export are yours."
+              : `${current === "lab" ? "Lab" : "Pro"} is live on this desk.`}
+          {license ? ` Key ${license}.` : ""}{" "}
           <button type="button" className="underline" onClick={downgrade}>
-            Return to free
+            Return to free desk
           </button>
         </p>
       ) : null}
@@ -85,10 +117,10 @@ export function PlansPage() {
           const cta =
             p.id === "free"
               ? current === "free"
-                ? "Current desk"
-                : "Use free desk"
+                ? "You're on the free desk"
+                : "Switch to free desk"
               : interval === "life"
-                ? `Founding · $${priceFor(p.id === "pro" ? "pro" : "lab", "life")}`
+                ? `Founding · $${priceFor(p.id === "pro" ? "pro" : "lab", "life")} lifetime`
                 : `Unlock ${p.name}`;
           return (
             <li
@@ -127,7 +159,13 @@ export function PlansPage() {
                   <Button
                     className="w-full"
                     onClick={() =>
-                      openCheckout(interval === "life" ? "lab" : p.id, interval === "life" ? "Founding lifetime." : p.name, interval)
+                      openCheckout(
+                        interval === "life" ? "lab" : p.id,
+                        interval === "life"
+                          ? "Founding lifetime ($79 once) — host factors, atlas, and export."
+                          : p.name,
+                        interval,
+                      )
                     }
                   >
                     {cta}
@@ -151,16 +189,34 @@ export function PlansPage() {
         </ul>
       </section>
 
+      <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-5">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">How founding unlocks</p>
+        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay → get key → Redeem</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>
+        <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+          {MANUAL_UNLOCK_STEPS.map((step) => (
+            <li key={step.n} className="rounded-md bg-bg-sunken px-3 py-3">
+              <p className="font-mono text-[11px] uppercase tracking-wide text-accent">
+                Step {step.n} · {step.title}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-muted">{step.detail}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <OperatorCard />
 
       <p className="text-center text-sm text-muted">
-        Already have a key?{" "}
+        Already paid, or have a key from email or text?{" "}
         <button
           type="button"
           className="font-medium text-accent hover:underline"
-          onClick={() => openCheckout("lab", "Paste the key you were sent.")}
+          onClick={() =>
+            openCheckout("lab", "Paste the signed key you were sent. Nothing unlocks until Redeem succeeds.")
+          }
         >
-          Redeem it here
+          Paste and redeem it here
         </button>
         .
       </p>
@@ -178,6 +234,7 @@ export function CheckoutDrawer() {
   const [cardBusy, setCardBusy] = useState(false);
   const [key, setKey] = useState("");
   const [err, setErr] = useState("");
+  const [ok, setOk] = useState("");
   const [copied, setCopied] = useState(false);
   const [stripeMode, setStripeMode] = useState<"off" | "test" | "live" | null>(null);
   useEffect(() => {
@@ -201,17 +258,32 @@ export function CheckoutDrawer() {
   const cardLive = stripeMode === "live" || stripeMode === "test";
 
   async function redeem() {
+    const trimmed = key.trim();
+    if (!trimmed) {
+      setErr("Paste the key from your email or text first.");
+      setOk("");
+      return;
+    }
     setBusy(true);
     setErr("");
+    setOk("");
     try {
-      const res = await redeemLicense({ data: { key } });
+      const res = await redeemLicense({ data: { key: trimmed } });
       if (!res.ok) {
-        setErr(res.reason ?? "Key did not verify.");
+        setErr(
+          res.reason ??
+            "That key did not verify. Check for a missing character, or ask for a fresh key.",
+        );
         return;
       }
+      setOk(
+        res.lifetime
+          ? "Founding lifetime unlocked. Host factors, atlas, and export are open on this desk."
+          : "License unlocked. Host factors and atlas are open on this desk.",
+      );
       activate({ plan: res.plan, license: res.license, lifetime: res.lifetime });
     } catch {
-      setErr("Could not reach the license desk.");
+      setErr("Could not reach the license desk. Check your connection and try again.");
     } finally {
       setBusy(false);
     }
@@ -274,10 +346,26 @@ export function CheckoutDrawer() {
         </div>
         {checkout.reason ? <p className="mt-3 text-sm leading-relaxed text-muted">{checkout.reason}</p> : null}
 
+        <p className="mt-3 text-sm leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>
+
+        <ol className="mt-4 grid gap-2">
+          {MANUAL_UNLOCK_STEPS.map((step) => (
+            <li key={step.n} className="flex gap-3 rounded-md bg-bg-sunken px-3 py-2.5">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-medium text-bg">
+                {step.n}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-medium text-fg">{step.title}</span>
+                <span className="mt-0.5 block text-[11px] leading-relaxed text-muted">{step.detail}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+
         <p className="mt-4 text-sm leading-relaxed text-muted">
           {cardLive
-            ? "Pay with card on Stripe. A signed key is minted only after Stripe says paid — there is no fake checkout. Venmo, Cash App, and PayPal still work if you would rather write."
-            : "Card checkout is not live on this desk yet. Pay with Venmo, Cash App, or PayPal below. After payment clears, the operator emails or texts a signed key from Foundry — paste it under License key → Redeem. Nothing auto-appears below until you receive that key."}
+            ? "Pay with card on Stripe. A signed key is minted only after Stripe confirms payment — there is no fake checkout. Prefer Venmo, Cash App, or PayPal? Use the buttons below, then paste your key when it arrives."
+            : "Card checkout is not live on this desk yet. Pay with Venmo, Cash App, or PayPal below. After payment clears, you get a signed key by email or text — paste it under Redeem. Nothing unlocks until that key verifies."}
         </p>
 
         <div className="mt-4 grid grid-cols-3 gap-1">
@@ -336,48 +424,72 @@ export function CheckoutDrawer() {
             </Button>
           ))}
         </div>
-        <p className="mt-3 rounded-md bg-bg-sunken px-3 py-3 text-sm leading-relaxed text-muted">
-          {life
-            ? cardLive
-              ? `Founding is $${COMMERCE.founding} once. Card is the default. ${OPERATOR.payLine} if you would rather write.`
-              : `Founding is $${COMMERCE.founding} once. Pay ${OPERATOR.payLine}. After it clears, ${OPERATOR.email} or ${OPERATOR.phone} sends your key — Redeem below.`
-            : cardLive
-              ? `Pay $${amount} with card, or ${OPERATOR.payLine}.`
-              : `Pay $${amount} via ${OPERATOR.payLine}. Key is emailed/texted after it clears — Redeem below.`}{" "}
-          {OPERATOR.email} · {OPERATOR.phone}
-          <span className="mt-1 block text-xs">{OPERATOR.social.join(" · ")}</span>
-        </p>
+        <div className="mt-3 space-y-1.5 rounded-md bg-bg-sunken px-3 py-3 text-sm leading-relaxed text-muted">
+          <p>
+            {life
+              ? cardLive
+                ? `Founding is $${COMMERCE.founding} once. Card is the default; written rails still work.`
+                : `Founding is $${COMMERCE.founding} once. Pay with a rail above, then wait for your key.`
+              : cardLive
+                ? `Pay $${amount} with card, or use a written rail.`
+                : `Pay $${amount} via a rail above. Key arrives after it clears.`}
+          </p>
+          <p className="text-xs">
+            Handles: {OPERATOR.payLine}
+          </p>
+          <p className="text-xs">
+            Write: {OPERATOR.email} · {OPERATOR.phone}
+            <span className="mt-0.5 block">{OPERATOR.social.join(" · ")}</span>
+          </p>
+        </div>
 
         <Button variant="secondary" className="mt-3 w-full" onClick={() => void copyRequest()}>
           {copied ? "Request copied" : "Copy a license request"}
         </Button>
 
-        <label className="mt-5 block text-xs font-medium text-muted" htmlFor="license-key">
-          License key
-        </label>
-        <div className="mt-1.5 flex gap-2">
-          <Input
-            id="license-key"
-            value={key}
-            autoCapitalize="characters"
-            autoCorrect="off"
-            spellCheck={false}
-            placeholder="FP-LIFE-…"
-            onChange={(e) => setKey(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") void redeem();
-            }}
-          />
-          <Button onClick={() => void redeem()} disabled={busy || !key.trim()} className="shrink-0">
-            {busy ? <Loader2 className="size-4 animate-spin" /> : null}
-            Redeem
-          </Button>
+        <div className="mt-5 rounded-lg border border-border px-3 py-3">
+          <label className="block text-xs font-medium text-fg" htmlFor="license-key">
+            Step 3 · Redeem your key
+          </label>
+          <p className="mt-1 text-[11px] leading-relaxed text-muted">
+            Paste the signed key from email or text. Keys look like FP-LIFE-…. Nothing unlocks until
+            Redeem succeeds — the field stays empty until you paste one.
+          </p>
+          <div className="mt-2.5 flex gap-2">
+            <Input
+              id="license-key"
+              value={key}
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              placeholder="Paste FP-LIFE-… here"
+              aria-invalid={Boolean(err) || undefined}
+              onChange={(e) => {
+                setKey(e.target.value);
+                if (err) setErr("");
+                if (ok) setOk("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void redeem();
+              }}
+            />
+            <Button onClick={() => void redeem()} disabled={busy || !key.trim()} className="shrink-0">
+              {busy ? <Loader2 className="size-4 animate-spin" /> : null}
+              Redeem
+            </Button>
+          </div>
+          {!key.trim() && !err && !ok ? (
+            <p className="mt-2 text-[11px] text-muted">
+              Waiting for a key — if you just paid, hang tight for email or text from the operator.
+            </p>
+          ) : null}
+          {err ? <p className="mt-2 text-sm text-danger" role="alert">{err}</p> : null}
+          {ok ? <p className="mt-2 text-sm text-ok" role="status">{ok}</p> : null}
         </div>
-        {err ? <p className="mt-2 text-sm text-danger">{err}</p> : null}
 
         {checkout.plan !== "lab" || checkout.interval === "life" ? (
           <button type="button" className="mt-3 h-10 w-full text-sm text-muted hover:text-fg" onClick={startPreview}>
-            Start 7-day Pro preview instead
+            Prefer to look first? Start a 7-day Pro preview
           </button>
         ) : null}
       </div>
