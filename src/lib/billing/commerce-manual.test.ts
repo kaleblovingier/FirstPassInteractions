@@ -104,3 +104,14 @@ test("pay step names the apps instead of a rail", () => {
   assert.doesNotMatch(steps, /rail/i);
   assert.doesNotMatch(steps, /send founding/);
 });
+
+test("hunt clinic DM includes the live desk URL", async () => {
+  const hunts = await readFile(new URL("./hunts.ts", import.meta.url), "utf8");
+  const start = hunts.indexOf("export function targetDm");
+  const end = hunts.indexOf("export function mailSubject", start);
+  assert.ok(start >= 0 && end > start);
+  const fn = hunts.slice(start, end);
+  assert.match(fn, /SITE\.url/);
+  assert.match(fn, /payClose\(price\)/);
+  assert.match(fn, /\$\$\{price\} once/);
+});
