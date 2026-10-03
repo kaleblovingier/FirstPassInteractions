@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.14.0",
+  version: "1.21.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "kaleblovingier@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.14.0",
+  buildId: "FP-SW-1.21.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -36,8 +36,14 @@ export const INDICATIONS = [
   "Listing the pairs on a regimen that had no mapped collision, labeled as not a clearance. A blank pair is not a statement that the combination is safe.",
   "Showing every pair on a regimen in one grid. Each cell is a severity or no mapped collision. A blank cell is not a clearance.",
   "On a mapped cell, naming the direction of the sharpest row. On a blank cell, saying whether the pair shares an enzyme with no perpetrator, or a perpetrator that does not land. A blank reason is not a clearance.",
+  "Naming the enzyme on a mapped cell, and showing the sharpest food and drink hits beside the pair grid. Those food cells are not on the desk until added.",
+  "On a CYP cell, naming whether the victim is a sensitive substrate, a minor pathway, a prodrug, or a narrow window. When a pair has another kind of row, naming that effect. Neither line picks a milligram.",
+  "Putting the first openable source on the sharpest row, before the row is expanded. The source is for independent review. It is not a clearance and not a milligram.",
+  "On request, the three readers restate the sharpest row, its clock, its source, and the blank-pair reasons already on screen. A reader cannot add a finding, a source, a milligram, or a clearance.",
+  "Showing the sharpest pregnancy, CKD, older-adult, and daily-smoke row on the pair grid, labeled as a different host. Those cells are not the person on the desk unless that flag is on. They do not pick a milligram.",
+  "Showing the sharpest food and host rows on a two-drug check, not only on a longer regimen. A host cell that says more in this lane has other rows below. None of those cells pick a milligram.",
+  "Naming the first openable source on a mapped cell, a food cell, and a host cell. The source is for independent review. It is not a clearance and not a milligram.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
-  "On request, three separate readers (pair, gap, trainee) restate the check already on screen. A reader cannot add a finding, a milligram, or a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",
   "Displaying study cards (rounds, named labeled pairs, formulary CYP roles, FDA fold-change grades, and mechanism cards from the selected pair) so a healthcare trainee can rehearse the basis, mark misses, and review them. Not an exam key and not a milligram.",

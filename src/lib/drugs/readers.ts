@@ -5,6 +5,9 @@ export type ReaderId = "pair" | "gap" | "trainee";
 export type ReaderBrief = {
   names: string[];
   lead: string;
+  clock: string;
+  watch: string;
+  source: string;
   rows: { severity: string; line: string; why: string }[];
   quiet: string[];
   food: string[];
@@ -38,5 +41,14 @@ export function sanitizeBrief(input: unknown): ReaderBrief {
   });
   const quiet = Array.isArray(src.quiet) ? src.quiet.map((n) => clip(n, 120)).filter(Boolean).slice(0, 12) : [];
   const food = Array.isArray(src.food) ? src.food.map((n) => clip(n, 180)).filter(Boolean).slice(0, 4) : [];
-  return { names, lead: clip(src.lead, 320), rows, quiet, food };
+  return {
+    names,
+    lead: clip(src.lead, 320),
+    clock: clip(src.clock, 240),
+    watch: clip(src.watch, 240),
+    source: clip(src.source, 160),
+    rows,
+    quiet,
+    food,
+  };
 }
