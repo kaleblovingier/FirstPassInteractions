@@ -344,4 +344,65 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-07-13",
     retrieved: "2026-10-02",
   },
+  {
+    perpIds: ["fluvoxamine"],
+    brand: "Fluvoxamine",
+    enzyme: "CYP1A2",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote:
+      "Fluvoxamine inhibits several cytochrome P450 isoenzymes (CYP1A2, CYP2C9, CYP3A4, and CYP2C19)",
+    contraindicatedGroups: [
+      {
+        victimIds: ["tizanidine", "ramelteon"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of thioridazine, tizanidine, pimozide, alosetron, or ramelteon with fluvoxamine maleate extended-release capsules is contraindicated",
+      },
+    ],
+    // Pimozide is named in that sentence. This 1A2 row stays silent; the 3A4 row quotes it.
+    alsoNamed: ["pimozide"],
+    url: DM("0a6836ab-bd0e-410b-82af-07720e386532"),
+    labelEffective: "2025-11-04",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["fluvoxamine"],
+    brand: "Fluvoxamine",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote:
+      "Fluvoxamine inhibits several cytochrome P450 isoenzymes (CYP1A2, CYP2C9, CYP3A4, and CYP2C19)",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of thioridazine, tizanidine, pimozide, alosetron, or ramelteon with fluvoxamine maleate extended-release capsules is contraindicated",
+      },
+    ],
+    url: DM("0a6836ab-bd0e-410b-82af-07720e386532"),
+    labelEffective: "2025-11-04",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["fluvoxamine"],
+    brand: "Fluvoxamine",
+    enzyme: "CYP2D6",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote: "In vitro data suggest that fluvoxamine is a relatively weak inhibitor of CYP2D6.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["thioridazine"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of thioridazine, tizanidine, pimozide, alosetron, or ramelteon with fluvoxamine maleate extended-release capsules is contraindicated",
+      },
+    ],
+    url: DM("0a6836ab-bd0e-410b-82af-07720e386532"),
+    labelEffective: "2025-11-04",
+    retrieved: "2026-10-02",
+  },
 ];
