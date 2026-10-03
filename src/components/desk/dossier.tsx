@@ -106,6 +106,7 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
             <button
               key={t.id}
               type="button"
+              aria-pressed={liveTab === t.id}
               onClick={() => setTab(t.id)}
               disabled={!t.on}
               title={t.on ? t.label : `${t.label} — nothing mapped for this name yet`}
