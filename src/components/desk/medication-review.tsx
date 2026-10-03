@@ -174,7 +174,7 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
                     </span>
                     {item?.kind === "drug" && doses[id] ? (
                       <span className="mt-1 block font-mono text-[11px] text-subtle">
-                        Desk dose entry: {doses[id]} · verify with the actual product and source
+                        Desk-entered value: {doses[id]} · verify dose, units, formulation, and source
                       </span>
                     ) : null}
                   </span>

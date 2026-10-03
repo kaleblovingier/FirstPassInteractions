@@ -378,7 +378,12 @@ export function DeskApp() {
                       >
                         <span className="font-medium">{drug.name}</span>
                         {entered ? (
-                          <span className="font-mono text-[11px] text-muted">{entered}</span>
+                          <span
+                            className="font-mono text-[11px] text-muted"
+                            title="Desk-entered value only; verify the dose, units, formulation, and source."
+                          >
+                            Desk entry: {entered}
+                          </span>
                         ) : null}
                         {drug.kind !== "drug" ? (
                           <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
