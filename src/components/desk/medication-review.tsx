@@ -159,8 +159,8 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
                   className={cn(
                     "flex min-h-16 w-full items-start gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
                     isChecked
-                      ? "border-accent/30 bg-accent-soft/40"
-                      : "border-border bg-bg-sunken hover:border-accent/30",
+                      ? "border-accent bg-accent-soft/40"
+                      : "border-subtle bg-bg-sunken hover:border-accent",
                   )}
                 >
                   <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
@@ -200,8 +200,8 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
                 className={cn(
                   "flex min-h-16 w-full items-start gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
                   checked[check.id]
-                    ? "border-accent/30 bg-accent-soft/40"
-                    : "border-border bg-bg-sunken hover:border-accent/30",
+                    ? "border-accent bg-accent-soft/40"
+                    : "border-subtle bg-bg-sunken hover:border-accent",
                 )}
               >
                 <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
