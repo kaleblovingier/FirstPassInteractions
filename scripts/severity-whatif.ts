@@ -47,8 +47,10 @@ export const EXPECTED_GOLD_LABEL_CI_DROPS: readonly string[] = [
   // Empty. #58 label pins (including the 49 wave-3 pins) cite the label on the
   // enzyme finding, and basisFor leads with that pin, so the what-if keeps them.
   // Gold-set quotes still attach as fda-pi on matching PK findings the pin does
-  // not already cite, so the cap does not drop those either. The test fails if
-  // a future engine change makes one drop without this list being updated.
+  // not already cite, so the cap does not drop those either. Wave 4 adds no
+  // engine rules; none of its label-contraindicated pairs lose contraindicated
+  // under the cap. The test fails if a future engine change makes one drop
+  // without this list being updated.
 ];
 
 /** Audience (MAT / ketamine clinic) drug families; every catalog id with these prefixes. */

@@ -17,32 +17,32 @@
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,770 / 1,565,565 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,466 (1,426 CYP, 40 P-gp) on 1,459 pairs (1,459 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 402 |
-| **Findings that move contraindicated → major** | **1,064** on **1,057** pairs |
-| **Pairs whose overall severity changes** | **1,057** |
+| … of which carry a label citation (kept at contraindicated) | 476 |
+| **Findings that move contraindicated → major** | **990** on **983** pairs |
+| **Pairs whose overall severity changes** | **983** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 126 / 138 → **126 / 138** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 176 / 247 → **176 / 247** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
 
 PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,466 findings on 1,459 pairs keyed by display name**: **differs**.
 
-402 carry a label citation and are kept at contraindicated, so 1,064 are capped.
+476 carry a label citation and are kept at contraindicated, so 990 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 590 | 590 |
+| strong inhibitor × sensitive substrate | 521 | 521 |
 | strong inducer × sensitive substrate | 341 | 341 |
-| strong inhibitor × sensitive + NTI substrate | 91 | 91 |
+| strong inhibitor × sensitive + NTI substrate | 86 | 86 |
 | strong inducer × sensitive + NTI substrate | 42 | 42 |
 
 | Enzyme | Findings |
 |---|---:|
-| CYP3A4 | 928 |
+| CYP3A4 | 854 |
 | CYP2D6 | 58 |
 | P-gp | 40 |
 | CYP2C19 | 16 |
@@ -58,35 +58,35 @@ A finding counts once for each of its two drugs.
 | # | Drug | Findings | As perpetrator | As substrate |
 |---:|---|---:|---:|---:|
 | 1 | Cobicistat | 45 | 45 | 0 |
-| 2 | Paxlovid (nirmatrelvir/ritonavir) | 45 | 45 | 0 |
-| 3 | St. John's wort | 45 | 45 | 0 |
-| 4 | Rifampin | 44 | 44 | 0 |
-| 5 | Ritonavir | 44 | 44 | 0 |
-| 6 | Itraconazole | 43 | 43 | 0 |
-| 7 | Phenytoin | 43 | 41 | 2 |
-| 8 | Carbamazepine | 42 | 42 | 0 |
-| 9 | Adagrasib | 41 | 41 | 0 |
-| 10 | Apalutamide | 41 | 41 | 0 |
-| 11 | Ceritinib | 41 | 41 | 0 |
-| 12 | Enzalutamide | 41 | 41 | 0 |
-| 13 | Idelalisib | 41 | 41 | 0 |
-| 14 | Ivosidenib | 41 | 41 | 0 |
-| 15 | Lopinavir/ritonavir | 41 | 41 | 0 |
-| 16 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
-| 17 | Mitotane | 41 | 41 | 0 |
-| 18 | Nefazodone | 41 | 41 | 0 |
-| 19 | Posaconazole | 41 | 41 | 0 |
-| 20 | Tucatinib | 41 | 41 | 0 |
-| 21 | Voriconazole | 41 | 41 | 0 |
-| 22 | Ketoconazole | 39 | 39 | 0 |
-| 23 | Clarithromycin | 37 | 37 | 0 |
-| 24 | Colchicine | 33 | 0 | 33 |
-| 25 | Alfentanil | 23 | 0 | 23 |
-| 26 | Alfuzosin | 23 | 0 | 23 |
-| 27 | Alprazolam | 23 | 0 | 23 |
-| 28 | Budesonide (oral / gut) | 23 | 0 | 23 |
-| 29 | Buspirone | 23 | 0 | 23 |
-| 30 | Cyclosporine | 23 | 0 | 23 |
+| 2 | St. John's wort | 45 | 45 | 0 |
+| 3 | Rifampin | 44 | 44 | 0 |
+| 4 | Phenytoin | 43 | 41 | 2 |
+| 5 | Carbamazepine | 42 | 42 | 0 |
+| 6 | Adagrasib | 41 | 41 | 0 |
+| 7 | Apalutamide | 41 | 41 | 0 |
+| 8 | Ceritinib | 41 | 41 | 0 |
+| 9 | Enzalutamide | 41 | 41 | 0 |
+| 10 | Idelalisib | 41 | 41 | 0 |
+| 11 | Ivosidenib | 41 | 41 | 0 |
+| 12 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
+| 13 | Mitotane | 41 | 41 | 0 |
+| 14 | Nefazodone | 41 | 41 | 0 |
+| 15 | Tucatinib | 41 | 41 | 0 |
+| 16 | Voriconazole | 41 | 41 | 0 |
+| 17 | Ketoconazole | 39 | 39 | 0 |
+| 18 | Posaconazole | 37 | 37 | 0 |
+| 19 | Ritonavir | 37 | 37 | 0 |
+| 20 | Clarithromycin | 36 | 36 | 0 |
+| 21 | Colchicine | 32 | 0 | 32 |
+| 22 | Lopinavir/ritonavir | 32 | 32 | 0 |
+| 23 | Itraconazole | 30 | 30 | 0 |
+| 24 | Alfentanil | 22 | 0 | 22 |
+| 25 | Alprazolam | 22 | 0 | 22 |
+| 26 | Budesonide (oral / gut) | 22 | 0 | 22 |
+| 27 | Buspirone | 22 | 0 | 22 |
+| 28 | Cyclosporine | 22 | 0 | 22 |
+| 29 | Dirty 30 (pressed M30) | 22 | 0 | 22 |
+| 30 | Eletriptan | 22 | 0 | 22 |
 
 ## Pairs that stay contraindicated via another finding
 
@@ -94,7 +94,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 172 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 281 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 
@@ -121,8 +121,56 @@ The label says contraindicated and the engine already says major. The what-if do
 | naltrexone + buprenorphine | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 | naltrexone + oxycodone | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 | naltrexone + hydrocodone | Vivitrol (naltrexone ER injectable suspension), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| clarithromycin + ergotamine | Clarithromycin tablets, 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| clarithromycin + dihydroergotamine | Clarithromycin tablets, 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + methadone | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + disopyramide | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + dronedarone | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + quinidine | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + isavuconazole | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + dihydroergotamine | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + ergotamine | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + methylergonovine | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + avanafil | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| itraconazole + ticagrelor | Sporanox (itraconazole), CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| posaconazole + quinidine | Noxafil (posaconazole), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| posaconazole + atorvastatin | Noxafil (posaconazole), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| posaconazole + ergotamine | Noxafil (posaconazole), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| posaconazole + dihydroergotamine | Noxafil (posaconazole), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + amiodarone | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + dronedarone | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + propafenone | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + quinidine | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + dihydroergotamine | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + methylergonovine | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + suzetrigine | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + sildenafil-pah | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + apalutamide | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| ritonavir + st-johns-wort | Norvir (ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + amiodarone | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + dronedarone | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + propafenone | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + quinidine | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + dihydroergotamine | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + ergotamine | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + methylergonovine | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + suzetrigine | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + sildenafil-pah | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + apalutamide | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + enzalutamide | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + carbamazepine | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| paxlovid + lumacaftor-ivacaftor | Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + dronedarone | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + dihydroergotamine | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + ergotamine | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + methylergonovine | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + suzetrigine | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + sildenafil-pah | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + apalutamide | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + rifampin | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+| lopinavir + st-johns-wort | Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 
-Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (thioridazine+fluvoxamine), which sit below major today.
+Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (thioridazine+fluvoxamine, itraconazole+dofetilide, itraconazole+irinotecan, ritonavir+flecainide, paxlovid+flecainide, paxlovid+phenobarbital, paxlovid+primidone, paxlovid+phenytoin, paxlovid+rifampin, paxlovid+rifapentine, paxlovid+st-johns-wort, lopinavir+grazoprevir-elbasvir), which sit below major today.
 
 ## MAT / ketamine clinic: pairs that move
 
