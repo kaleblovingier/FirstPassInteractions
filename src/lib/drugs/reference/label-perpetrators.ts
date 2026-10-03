@@ -21,6 +21,14 @@ export interface PerpetratorLabel {
   roleQuote: string;
   /** Catalog ids of victims the label names as contraindicated, with the verbatim sentence. */
   contraindicatedWith?: { victimIds: readonly string[]; section: string; quote: string };
+  /** More named-contraindication quotes, each covering its own victim ids. */
+  contraindicatedGroups?: readonly { victimIds: readonly string[]; section: string; quote: string }[];
+  /**
+   * Catalog ids that appear in the contraindications section but are not quoted here
+   * (inducers, or a conditional such as colchicine only with renal or hepatic impairment).
+   * The role line stays off, so it cannot call the tier a desk rule.
+   */
+  alsoNamed?: readonly string[];
   url: string;
   labelEffective: string;
   retrieved: string;
@@ -127,6 +135,62 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     roleQuote: "Cobicistat is an inhibitor of CYP3A and CYP2D6.",
     url: DM("83db29d7-5d85-49d6-8cb6-740473365cf8"),
     labelEffective: "2025-05-12",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["paxlovid"],
+    brand: "Paxlovid",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for PAXLOVID to Affect Other Drugs",
+    roleQuote:
+      "PAXLOVID (nirmatrelvir co-packaged with ritonavir) is a strong inhibitor of CYP3A, and an inhibitor of CYP2D6, P-gp and OATP1B1.",
+    contraindicatedGroups: [
+      { victimIds: ["lovastatin", "simvastatin"], section: "4 Contraindications", quote: "HMG-CoA reductase inhibitors: lovastatin, simvastatin" },
+      { victimIds: ["triazolam", "midazolam"], section: "4 Contraindications", quote: "Sedative/hypnotics: triazolam, oral midazolam" },
+      { victimIds: ["alfuzosin"], section: "4 Contraindications", quote: "Alpha 1-adrenoreceptor antagonist: alfuzosin" },
+      { victimIds: ["ranolazine"], section: "4 Contraindications", quote: "Antianginal: ranolazine" },
+      { victimIds: ["lurasidone", "pimozide"], section: "4 Contraindications", quote: "Antipsychotics: lurasidone, pimozide" },
+      { victimIds: ["naloxegol"], section: "4 Contraindications", quote: "Opioid antagonists: naloxegol" },
+      { victimIds: ["eletriptan", "ubrogepant"], section: "4 Contraindications", quote: "Migraine medications: eletriptan, ubrogepant" },
+      { victimIds: ["sildenafil-pah"], section: "4 Contraindications", quote: "PDE5 inhibitor: sildenafil (Revatio ® ) when used for pulmonary arterial hypertension (PAH)" },
+      { victimIds: ["amiodarone", "dronedarone", "flecainide", "propafenone", "quinidine"], section: "4 Contraindications", quote: "Antiarrhythmic: amiodarone, dronedarone, flecainide, propafenone, quinidine" },
+      { victimIds: ["dihydroergotamine", "ergotamine", "methylergonovine"], section: "4 Contraindications", quote: "Ergot derivatives: dihydroergotamine, ergotamine, methylergonovine" },
+      { victimIds: ["eplerenone", "ivabradine"], section: "4 Contraindications", quote: "Cardiovascular agents: eplerenone, ivabradine" },
+      { victimIds: ["finerenone"], section: "4 Contraindications", quote: "Mineralocorticoid receptor antagonists: finerenone" },
+      { victimIds: ["tolvaptan"], section: "4 Contraindications", quote: "Vasopressin receptor antagonists: tolvaptan" },
+    ],
+    alsoNamed: [
+      "rifampin", "carbamazepine", "phenytoin", "phenobarbital", "primidone", "rifapentine",
+      "st-johns-wort", "enzalutamide", "apalutamide", "colchicine", "silodosin", "voclosporin", "suzetrigine",
+    ],
+    url: DM("8a99d6d6-fd9e-45bb-b1bf-48c7f761232a"),
+    labelEffective: "2026-02-19",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["lopinavir"],
+    brand: "Kaletra",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for KALETRA to Affect Other Drugs",
+    roleQuote:
+      "Lopinavir/ritonavir is an inhibitor of CYP3A and may increase plasma concentrations of agents that are primarily metabolized by CYP3A.",
+    contraindicatedGroups: [
+      { victimIds: ["lovastatin", "simvastatin"], section: "4 Contraindications", quote: "HMG-CoA Reductase Inhibitors: lovastatin, simvastatin" },
+      { victimIds: ["triazolam", "midazolam"], section: "4 Contraindications", quote: "Sedative/Hypnotics: triazolam, orally administered midazolam" },
+      { victimIds: ["alfuzosin"], section: "4 Contraindications", quote: "Alpha 1- Adrenoreceptor Antagonist: alfuzosin" },
+      { victimIds: ["ranolazine"], section: "4 Contraindications", quote: "Antianginal: ranolazine" },
+      { victimIds: ["lurasidone", "pimozide"], section: "4 Contraindications", quote: "Antipsychotics: lurasidone, pimozide" },
+      { victimIds: ["colchicine"], section: "4 Contraindications", quote: "Anti-gout: colchicine" },
+      { victimIds: ["dronedarone"], section: "4 Contraindications", quote: "Antiarrhythmic: dronedarone" },
+      { victimIds: ["dihydroergotamine", "ergotamine", "methylergonovine"], section: "4 Contraindications", quote: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine" },
+      { victimIds: ["sildenafil-pah"], section: "4 Contraindications", quote: "PDE5 Inhibitor: sildenafil (Revatio ® ) when used for the treatment of pulmonary arterial hypertension" },
+      { victimIds: ["grazoprevir-elbasvir"], section: "4 Contraindications", quote: "Hepatitis C direct acting antiviral: elbasvir/grazoprevir" },
+    ],
+    alsoNamed: ["rifampin", "st-johns-wort", "apalutamide", "suzetrigine"],
+    url: DM("8290add3-4449-4e58-6c97-8fe1eec972e3"),
+    labelEffective: "2026-07-23",
     retrieved: "2026-10-02",
   },
 ];
