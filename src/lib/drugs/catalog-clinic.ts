@@ -1169,7 +1169,7 @@ const ROWS: Row[] = [
   ["calcium-chloride", "Calcium chloride", [], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
   ["sodium-bicarbonate", "Sodium bicarbonate", [], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
   ["lipid-emulsion", "Lipid emulsion", ["Intralipid"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", ["ile"]],
-  ["methylene-blue", "Methylene blue", ["ProvayBlue"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
+  ["methylene-blue", "Methylene blue", ["ProvayBlue"], "Antidote / tox", "", ["maoi", "serotonergic"], "Not a milligram. The labeled reversal.", []],
   ["hydroxocobalamin-cyanide", "Hydroxocobalamin cyanide", ["Cyanokit"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
   ["digoxin-immune-fab", "Digoxin immune Fab", ["DigiFab", "Digibind"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", ["digifab", "digibind"]],
   ["crotalidae-polyvalent", "Crotalidae polyvalent", ["CroFab", "Anavip"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", ["crofab"]],
