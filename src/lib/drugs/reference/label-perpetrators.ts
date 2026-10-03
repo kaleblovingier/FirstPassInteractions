@@ -321,4 +321,27 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-07-23",
     retrieved: "2026-10-02",
   },
+
+  {
+    perpIds: ["ciprofloxacin"],
+    brand: "Ciprofloxacin",
+    enzyme: "CYP1A2",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote:
+      "Ciprofloxacin is an inhibitor of human cytochrome P450 1A2 (CYP1A2) mediated metabolism.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["tizanidine"],
+        section: "7 Drug Interactions",
+        quote:
+          "Concomitant administration of tizanidine and ciprofloxacin is contraindicated due to the potentiation of hypotensive and sedative effects of tizanidine",
+      },
+    ],
+    // Named as avoid or use-with-caution, not contraindicated.
+    alsoNamed: ["theophylline", "duloxetine", "clozapine", "caffeine"],
+    url: DM("0fe3becb-f90e-4187-a8e8-bd0de5a79ad2"),
+    labelEffective: "2026-07-13",
+    retrieved: "2026-10-02",
+  },
 ];

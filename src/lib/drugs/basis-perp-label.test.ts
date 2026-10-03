@@ -113,3 +113,12 @@ test('a conditional contraindication does not get a blanket contraindicated line
   const c = pkBasis('ritonavir', 'colchicine').map((x) => x.detail).join('\n');
   assert.doesNotMatch(c, /Norvir label calls this combination contraindicated/);
 });
+
+test('ciprofloxacin quotes the tizanidine contraindication and stays quiet on theophylline', () => {
+  const tiz = pkBasis('ciprofloxacin', 'tizanidine').map((x) => x.detail).join('\n');
+  assert.match(tiz, /The Ciprofloxacin label calls this combination contraindicated/);
+  assert.match(tiz, /potentiation of hypotensive and sedative effects of tizanidine/);
+  const theo = pkBasis('ciprofloxacin', 'theophylline').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(theo, /Ciprofloxacin label calls this combination contraindicated/);
+  assert.doesNotMatch(theo, /Ciprofloxacin label states the inhibition/);
+});
