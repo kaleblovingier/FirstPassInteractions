@@ -33,3 +33,24 @@ test('rifapentine and fosphenytoin inducer rows cite their own labels', () => {
   assert.ok(pkBasis('rifapentine', 'midazolam').some((x) => x.label.startsWith('Priftin')));
   assert.ok(pkBasis('fosphenytoin', 'midazolam').some((x) => x.label.startsWith('Cerebyx')));
 });
+
+test('alprazolam rows quote the perpetrator role and call the tier the desk rule', () => {
+  // Alprazolam is a sensitive CYP3A substrate these labels do not list as contraindicated.
+  for (const [perp, brand] of [
+    ['darunavir', 'Prezista'],
+    ['darunavir-cobicistat', 'Prezcobix'],
+    ['darunavir-cobicistat-ftc-taf', 'Symtuza'],
+    ['atazanavir', 'Reyataz'],
+    ['atazanavir-cobicistat', 'Evotaz'],
+  ] as const) {
+    const b = pkBasis(perp, 'alprazolam').find((x) => x.label.startsWith(brand));
+    assert.ok(b, perp);
+    assert.match(b.detail, /desk's rule/);
+    assert.doesNotMatch(b.detail, /does not name this pair/);
+  }
+});
+
+test('a pinned pair does not also get a role line claiming the label is silent', () => {
+  const details = pkBasis('darunavir', 'simvastatin').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(details, /does not name this pair as contraindicated/);
+});
