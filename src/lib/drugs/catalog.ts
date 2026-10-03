@@ -2033,6 +2033,51 @@ const raw: Drug[] = [
       aliases: ["flavonol", "sophora"],
       note: "A real 3A4/P-gp/2C8 inhibitor at supplement grams. Next to simvastatin, oral ketamine, or repaglinide it is a perpetrator, not a bioflavonoid.",
     }),
+  d("apigenin", "Apigenin", [], "Flavone supplement",
+    [],
+    [],
+    "No established human interaction grade",
+    {
+      kind: "herb",
+      aliases: ["chamomile flavone", "parsley flavonoid", "api-genin"],
+      note: "Found in chamomile and sold as a concentrated extract. In-vitro enzyme effects are not a human interaction grade; no CYP or PD row is assigned. An extract is not equivalent to chamomile tea.",
+    }),
+  d("luteolin", "Luteolin", [], "Flavone supplement",
+    [],
+    [],
+    "No established human interaction grade",
+    {
+      kind: "herb",
+      aliases: ["tetrahydroxyflavone", "luteolin extract"],
+      note: "A dietary flavone also sold in concentrated extracts. Preclinical enzyme findings are not enough to grade a human interaction; no CYP or PD row is assigned.",
+    }),
+  d("naringin", "Naringin", [], "Citrus flavanone supplement",
+    [],
+    [],
+    "Do not infer grapefruit interaction from isolated naringin",
+    {
+      kind: "herb",
+      aliases: ["naringenin-7-neohesperidoside", "grapefruit flavonoid", "bitter-orange flavonoid"],
+      note: "The clinically important intestinal CYP3A4 effect of grapefruit is attributed to furanocoumarins, not naringin (Bailey et al., CMAJ 2013; PMID 23297394). An isolated naringin product is not interchangeable with grapefruit juice; no CYP grade is assigned.",
+    }),
+  d("hesperidin", "Hesperidin", [], "Citrus flavanone supplement",
+    [],
+    [],
+    "No established human interaction grade",
+    {
+      kind: "herb",
+      aliases: ["hesperetin-7-rutinoside", "citrus bioflavonoid", "orange bioflavonoid"],
+      note: "A citrus flavanone sold alone or in bioflavonoid blends. Product composition varies, and no clinically established enzyme grade is assigned. A citrus label alone does not make it equivalent to grapefruit juice.",
+    }),
+  d("rutin", "Rutin", [], "Flavonol glycoside supplement",
+    [],
+    [],
+    "No established human interaction grade",
+    {
+      kind: "herb",
+      aliases: ["rutoside", "quercetin rutinoside", "rutin powder"],
+      note: "A quercetin glycoside found in foods and supplements. It is not interchangeable with quercetin aglycone for exposure or interaction grading; no CYP or PD row is assigned.",
+    }),
   d("green-tea", "Green tea extract (EGCG)", [], "Catechin supplement",
     [inh("CYP3A4", "weak"), inh("P-gp", "weak")],
     ["hepatotoxic", "antiplatelet", "oatp-block"],
@@ -2795,6 +2840,20 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       if (ordered.length >= 24) break;
     }
     return ordered.slice(0, 24);
+  }
+  if (["flavonoid", "flavonoids", "bioflavonoid", "bioflavonoids"].includes(q)) {
+    const flavonoidOrder = [
+      "quercetin",
+      "apigenin",
+      "luteolin",
+      "naringin",
+      "hesperidin",
+      "rutin",
+      "green-tea",
+    ];
+    return flavonoidOrder
+      .map((id) => DRUG_BY_ID[id])
+      .filter((d): d is Drug => Boolean(d) && !excluded.has(d.id));
   }
   if (
     q === "supplement" ||

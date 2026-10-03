@@ -1,0 +1,1237 @@
+- generic [ref=f11e1]:
+  - generic [ref=f11e2]:
+    - banner [ref=f11e3]:
+      - generic [ref=f11e4]:
+        - generic [ref=f11e5]:
+          - generic [ref=f11e6]:
+            - button "FirstPass" [ref=f11e7] [cursor=pointer]
+            - generic [ref=f11e13]:
+              - generic [ref=f11e14]: FirstPass
+              - generic [ref=f11e16]: Liver enzymes (CYP) · not FDA-cleared
+          - button "Unlock" [ref=f11e17] [cursor=pointer]
+        - navigation "Main navigation" [ref=f11e19]:
+          - button "Desk" [ref=f11e20] [cursor=pointer]
+          - button "Library" [ref=f11e21] [cursor=pointer]
+          - button "Sources" [ref=f11e22] [cursor=pointer]
+          - button "Enzyme map" [ref=f11e23] [cursor=pointer]
+          - button "Learn" [ref=f11e24] [cursor=pointer]
+          - button "Cases" [ref=f11e25] [cursor=pointer]
+          - button "Compare" [ref=f11e26] [cursor=pointer]
+          - button "Safety" [ref=f11e27] [cursor=pointer]
+          - button "Plans" [ref=f11e28] [cursor=pointer]
+    - main [ref=f11e29]:
+      - generic [ref=f11e30]:
+        - generic [ref=f11e31]:
+          - generic [ref=f11e32]:
+            - generic [ref=f11e33]:
+              - generic [ref=f11e34]: Search medicines and other substances
+              - combobox "Search medicines and other substances" [ref=f11e35]
+            - generic "Quick-add teaching starters" [ref=f11e37]:
+              - button "KetamineFirst-pass victim" [ref=f11e38] [cursor=pointer]
+              - button "GrapefruitGut 3A4" [ref=f11e39] [cursor=pointer]
+              - button "ClarithromycinStrong 3A4" [ref=f11e40] [cursor=pointer]
+              - button "ParoxetineStrong 2D6" [ref=f11e41] [cursor=pointer]
+              - button "Xylazineα2 street" [ref=f11e42] [cursor=pointer]
+              - button "FentanylOpioid" [ref=f11e43] [cursor=pointer]
+          - generic [ref=f11e44]:
+            - button "Methadone ×" [ref=f11e45] [cursor=pointer]:
+              - generic [ref=f11e46]: Methadone
+              - generic [ref=f11e47]: ×
+            - button "Alprazolam ×" [ref=f11e48] [cursor=pointer]:
+              - generic [ref=f11e49]: Alprazolam
+              - generic [ref=f11e50]: ×
+            - button "Clear" [ref=f11e51] [cursor=pointer]
+          - generic [ref=f11e52]:
+            - generic [ref=f11e54]:
+              - paragraph [ref=f11e55]: Today's extra
+              - heading "Window tray" [level=2] [ref=f11e56]
+              - paragraph [ref=f11e57]: Tap what they handed over the glass. Up to five-drug collision checks stay free.
+            - generic [ref=f11e58]:
+              - generic [ref=f11e59]:
+                - generic [ref=f11e60]:
+                  - paragraph [ref=f11e61]: Window
+                  - paragraph [ref=f11e62]: What they handed over the glass
+                - generic [ref=f11e63]:
+                  - button "Phenergan" [ref=f11e64] [cursor=pointer]
+                  - button "Vistaril" [ref=f11e65] [cursor=pointer]
+                  - button "Zofran" [ref=f11e66] [cursor=pointer]
+                  - button "Imodium" [ref=f11e67] [cursor=pointer]
+              - generic [ref=f11e68]:
+                - generic [ref=f11e69]:
+                  - paragraph [ref=f11e70]: New start
+                  - paragraph [ref=f11e71]: The covering prescription
+                - generic [ref=f11e72]:
+                  - button "Paxlovid" [ref=f11e73] [cursor=pointer]
+                  - button "Z-Pak" [ref=f11e74] [cursor=pointer]
+                  - button "Biaxin" [ref=f11e75] [cursor=pointer]
+                  - button "Luvox" [ref=f11e76] [cursor=pointer]
+                  - button "Dilantin" [ref=f11e77] [cursor=pointer]
+                  - button "Tegretol" [ref=f11e78] [cursor=pointer]
+                  - button "Rifampin" [ref=f11e79] [cursor=pointer]
+                  - button "Cipro" [ref=f11e80] [cursor=pointer]
+                  - button "Diflucan" [ref=f11e81] [cursor=pointer]
+                  - button "Tagamet" [ref=f11e82] [cursor=pointer]
+              - generic [ref=f11e83]:
+                - generic [ref=f11e84]:
+                  - paragraph [ref=f11e85]: Airway
+                  - paragraph [ref=f11e86]: The extras that still count
+                - generic [ref=f11e87]:
+                  - button "Narcan" [ref=f11e88] [cursor=pointer]
+                  - button "Klonopin" [ref=f11e89] [cursor=pointer]
+                  - button "Neurontin" [ref=f11e90] [cursor=pointer]
+                  - button "Lyrica" [ref=f11e91] [cursor=pointer]
+                  - button "Flexeril" [ref=f11e92] [cursor=pointer]
+                  - button "Seroquel" [ref=f11e93] [cursor=pointer]
+                  - button "Alcohol" [ref=f11e94] [cursor=pointer]
+              - generic [ref=f11e95]:
+                - generic [ref=f11e96]:
+                  - paragraph [ref=f11e97]: Street
+                  - paragraph [ref=f11e98]: Today's supply
+                - generic [ref=f11e99]:
+                  - button "Fentanyl" [ref=f11e100] [cursor=pointer]
+                  - button "Xylazine" [ref=f11e101] [cursor=pointer]
+                  - button "Medetomidine" [ref=f11e102] [cursor=pointer]
+                  - button "Dirty 30" [ref=f11e103] [cursor=pointer]
+                  - button "7-OH" [ref=f11e104] [cursor=pointer]
+                  - button "Bromazolam" [ref=f11e105] [cursor=pointer]
+                  - button "Narcan" [ref=f11e106] [cursor=pointer]
+              - generic [ref=f11e107]:
+                - generic [ref=f11e108]:
+                  - paragraph [ref=f11e109]: HIV / HCV
+                  - paragraph [ref=f11e110]: The infectious-disease row
+                - generic [ref=f11e111]:
+                  - button "Epclusa" [ref=f11e112] [cursor=pointer]
+                  - button "Sustiva" [ref=f11e113] [cursor=pointer]
+                  - button "Viramune" [ref=f11e114] [cursor=pointer]
+                  - button "Tybost" [ref=f11e115] [cursor=pointer]
+                  - button "Norvir" [ref=f11e116] [cursor=pointer]
+              - generic [ref=f11e117]:
+                - generic [ref=f11e118]:
+                  - paragraph [ref=f11e119]: Cup
+                  - paragraph [ref=f11e120]: What the immunoassay actually sees
+                - generic [ref=f11e121]:
+                  - button "Wellbutrin" [ref=f11e122] [cursor=pointer]
+                  - button "Zoloft" [ref=f11e123] [cursor=pointer]
+                  - button "DXM" [ref=f11e124] [cursor=pointer]
+                  - button "Rifampin" [ref=f11e125] [cursor=pointer]
+          - generic [ref=f11e126]:
+            - generic [ref=f11e127]:
+              - generic [ref=f11e128]:
+                - paragraph [ref=f11e129]: Interaction check
+                - heading "St. John's wort speeds clearance of Alprazolam" [level=2] [ref=f11e130]
+                - paragraph [ref=f11e131]: The main concern shown is a food or drink, listed below the names. This is an educational map, not a dose tool — product labeling and a clinician still guide care.
+                - paragraph [ref=f11e132]: "In plain English: St. John's wort and Alprazolam can make one medicine less effective or wear off sooner."
+              - generic [ref=f11e133]: Avoid together
+            - generic [ref=f11e134]:
+              - generic [ref=f11e135]:
+                - paragraph [ref=f11e136]: Clock · this pair
+                - generic [ref=f11e137]:
+                  - paragraph [ref=f11e138]:
+                    - text: Start — victim levels fall
+                    - generic [ref=f11e139]: day 3–5 start · full ~7–14 d
+                  - paragraph [ref=f11e140]:
+                    - text: Stop — rebound as induction dissipates
+                    - generic [ref=f11e141]: ~1–2 weeks after the last dose
+              - generic [ref=f11e142]:
+                - paragraph [ref=f11e143]: Watch · this pair
+                - paragraph [ref=f11e144]: Watch for loss of effect, not toxicity. The milligram did not change.
+              - paragraph [ref=f11e145]: This pair only. A study aid for how timing changes the picture, not a real-time alert. Not a milligram. If the label disagrees, the label wins.
+            - paragraph [ref=f11e146]: "Severity chips are teaching bins — they do not estimate one person’s risk. Row chips: Levels (how much stays), Effects (how risks stack), Genes (phenotype rewrite)."
+            - generic [ref=f11e147]:
+              - button "All 3" [ref=f11e148] [cursor=pointer]
+              - button "Avoid together 0" [ref=f11e149] [cursor=pointer]
+              - button "Serious concern 1" [ref=f11e150] [cursor=pointer]
+              - button "Use care 1" [ref=f11e151] [cursor=pointer]
+              - button "Mild note 1" [ref=f11e152] [cursor=pointer]
+            - generic [ref=f11e153]:
+              - generic [ref=f11e154]:
+                - paragraph [ref=f11e155]: Methadone
+                - paragraph [ref=f11e156]: Opioid agonist
+                - list [ref=f11e157]:
+                  - listitem [ref=f11e158]: broken down by CYP3A4 · major pathway
+              - generic [ref=f11e159]:
+                - paragraph [ref=f11e160]: Alprazolam
+                - paragraph [ref=f11e161]: Benzodiazepine
+                - list [ref=f11e162]:
+                  - listitem [ref=f11e163]: broken down by CYP3A4 · sensitive
+            - list [ref=f11e164]:
+              - listitem [ref=f11e165]:
+                - 'button "Serious concern Methadone with Alprazolam In plain English: Methadone and Alprazolam can make drowsiness, breathing problems, or low blood pressure more likely. Effects" [expanded] [ref=f11e166] [cursor=pointer]':
+                  - generic [ref=f11e167]: Serious concern
+                  - generic [ref=f11e168]:
+                    - generic [ref=f11e169]:
+                      - text: Methadone
+                      - generic [ref=f11e170]: with
+                      - text: Alprazolam
+                    - generic [ref=f11e171]: "In plain English: Methadone and Alprazolam can make drowsiness, breathing problems, or low blood pressure more likely."
+                    - generic [ref=f11e172]: Effects
+                - generic [ref=f11e176]:
+                  - paragraph [ref=f11e177]: Clinical detail
+                  - paragraph [ref=f11e178]: "FDA boxed warning: opioids plus benzodiazepines (or Z-drugs) cause profound sedation, respiratory depression, coma, and death. Methadone and buprenorphine desks see this as a street-benzo or a sleep prescription — same airway. Avoid unless no alternative exists; if combined, use the lowest doses and monitor."
+                  - paragraph [ref=f11e179]: "Mechanism: opioid × benzodiazepine / Z-drug · respiratory depression"
+                  - paragraph [ref=f11e180]: Sources to check
+                  - generic [ref=f11e181]:
+                    - link "Methadone HCl tablets label, Boxed Warning (Risks From Concomitant Use With Benzodiazepines Or Other CNS Depressants); 5.3" [ref=f11e182] [cursor=pointer]:
+                      - /url: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=540edd43-165d-4257-b989-3bccc8f54afb
+                    - link "FDA boxed / safety communication" [ref=f11e187] [cursor=pointer]:
+                      - /url: https://www.fda.gov/drugs/drug-safety-and-availability/fda-drug-safety-communication-fda-warns-about-serious-risks-and-death-when-combining-opioid-pain-or
+              - listitem [ref=f11e192]:
+                - 'button "Use care Methadone In plain English: Methadone vs the opiate cup can change how much drug is in the body and how strongly it acts. Clinic" [ref=f11e193] [cursor=pointer]':
+                  - generic [ref=f11e194]: Use care
+                  - generic [ref=f11e195]:
+                    - generic [ref=f11e196]: Methadone
+                    - generic [ref=f11e197]: "In plain English: Methadone vs the opiate cup can change how much drug is in the body and how strongly it acts."
+                    - generic [ref=f11e198]: Clinic
+              - listitem [ref=f11e202]:
+                - 'button "Mild note Methadone shares a pathway with Alprazolam In plain English: Methadone and Alprazolam can make both drugs compete for the same pathway and shift levels unexpectedly. Levels CYP3A4" [ref=f11e203] [cursor=pointer]':
+                  - generic [ref=f11e204]: Mild note
+                  - generic [ref=f11e205]:
+                    - generic [ref=f11e206]:
+                      - text: Methadone
+                      - generic [ref=f11e207]: shares a pathway with
+                      - text: Alprazolam
+                    - generic [ref=f11e208]: "In plain English: Methadone and Alprazolam can make both drugs compete for the same pathway and shift levels unexpectedly."
+                    - generic [ref=f11e209]:
+                      - generic [ref=f11e210]: Levels
+                      - generic [ref=f11e211]: CYP3A4
+            - paragraph [ref=f11e214]: "Compared, not a clearance: CYP2B6, no perpetrator mapped; CYP1A2, no perpetrator mapped."
+            - generic [ref=f11e215]:
+              - generic [ref=f11e216]:
+                - paragraph [ref=f11e217]: Food, drink, alcohol
+                - paragraph [ref=f11e218]: Not on your tray yet — same checker, run against grapefruit, alcohol, dairy, St. John’s wort, leafy greens, coffee, calcium, and tyramine foods. Add one only if you want it on the desk.
+              - list [ref=f11e219]:
+                - listitem [ref=f11e220]:
+                  - 'button "Avoid together St. John''s wort speeds clearance of Alprazolam In plain English: St. John''s wort and Alprazolam can make one medicine less effective or wear off sooner. Levels CYP3A4" [ref=f11e221] [cursor=pointer]':
+                    - generic [ref=f11e222]: Avoid together
+                    - generic [ref=f11e223]:
+                      - generic [ref=f11e224]:
+                        - text: St. John's wort
+                        - generic [ref=f11e225]: speeds clearance of
+                        - text: Alprazolam
+                      - generic [ref=f11e226]: "In plain English: St. John's wort and Alprazolam can make one medicine less effective or wear off sooner."
+                      - generic [ref=f11e227]:
+                        - generic [ref=f11e228]: Levels
+                        - generic [ref=f11e229]: CYP3A4
+                - listitem [ref=f11e232]:
+                  - 'button "Serious concern St. John''s wort with Methadone In plain English: 14-day washout can change how much drug is in the body and how strongly it acts. Effects" [ref=f11e233] [cursor=pointer]':
+                    - generic [ref=f11e234]: Serious concern
+                    - generic [ref=f11e235]:
+                      - generic [ref=f11e236]:
+                        - text: St. John's wort
+                        - generic [ref=f11e237]: with
+                        - text: Methadone
+                      - generic [ref=f11e238]: "In plain English: 14-day washout can change how much drug is in the body and how strongly it acts."
+                      - generic [ref=f11e239]: Effects
+                - listitem [ref=f11e243]:
+                  - 'button "Serious concern Alprazolam with Ethanol In plain English: Alprazolam and Ethanol can make drowsiness, breathing problems, or low blood pressure more likely. Effects" [ref=f11e244] [cursor=pointer]':
+                    - generic [ref=f11e245]: Serious concern
+                    - generic [ref=f11e246]:
+                      - generic [ref=f11e247]:
+                        - text: Alprazolam
+                        - generic [ref=f11e248]: with
+                        - text: Ethanol
+                      - generic [ref=f11e249]: "In plain English: Alprazolam and Ethanol can make drowsiness, breathing problems, or low blood pressure more likely."
+                      - generic [ref=f11e250]: Effects
+                - listitem [ref=f11e254]:
+                  - 'button "Serious concern Grapefruit juice slows clearance of Alprazolam In plain English: Grapefruit juice and Alprazolam can make one medicine build up and raise side effects or toxicity. Levels CYP3A4" [ref=f11e255] [cursor=pointer]':
+                    - generic [ref=f11e256]: Serious concern
+                    - generic [ref=f11e257]:
+                      - generic [ref=f11e258]:
+                        - text: Grapefruit juice
+                        - generic [ref=f11e259]: slows clearance of
+                        - text: Alprazolam
+                      - generic [ref=f11e260]: "In plain English: Grapefruit juice and Alprazolam can make one medicine build up and raise side effects or toxicity."
+                      - generic [ref=f11e261]:
+                        - generic [ref=f11e262]: Levels
+                        - generic [ref=f11e263]: CYP3A4
+              - button "9 more food and drink" [ref=f11e266] [cursor=pointer]
+            - generic [ref=f11e267]:
+              - generic [ref=f11e268]:
+                - paragraph [ref=f11e269]: If the person changes
+                - paragraph [ref=f11e270]: What changes if the host is different — pregnancy, reduced kidney function, older adult, or daily smoke. Not the person in front of you unless you flip that flag.
+              - generic [ref=f11e271]:
+                - paragraph [ref=f11e272]: If pregnant
+                - list [ref=f11e273]:
+                  - listitem [ref=f11e274]:
+                    - 'button "Serious concern Alprazolam In plain English: Alprazolam in pregnancy can change how much drug is in the body and how strongly it acts. Clinic" [ref=f11e275] [cursor=pointer]':
+                      - generic [ref=f11e276]: Serious concern
+                      - generic [ref=f11e277]:
+                        - generic [ref=f11e278]: Alprazolam
+                        - generic [ref=f11e279]: "In plain English: Alprazolam in pregnancy can change how much drug is in the body and how strongly it acts."
+                        - generic [ref=f11e280]: Clinic
+                  - listitem [ref=f11e284]:
+                    - 'button "Serious concern Methadone In plain English: Methadone in pregnancy can make one medicine less effective or wear off sooner. Clinic" [ref=f11e285] [cursor=pointer]':
+                      - generic [ref=f11e286]: Serious concern
+                      - generic [ref=f11e287]:
+                        - generic [ref=f11e288]: Methadone
+                        - generic [ref=f11e289]: "In plain English: Methadone in pregnancy can make one medicine less effective or wear off sooner."
+                        - generic [ref=f11e290]: Clinic
+              - generic [ref=f11e294]:
+                - paragraph [ref=f11e295]: If older adult
+                - list [ref=f11e296]:
+                  - listitem [ref=f11e297]:
+                    - 'button "Use care Alprazolam In plain English: Alprazolam · Beers can change how much drug is in the body and how strongly it acts. Clinic" [ref=f11e298] [cursor=pointer]':
+                      - generic [ref=f11e299]: Use care
+                      - generic [ref=f11e300]:
+                        - generic [ref=f11e301]: Alprazolam
+                        - generic [ref=f11e302]: "In plain English: Alprazolam · Beers can change how much drug is in the body and how strongly it acts."
+                        - generic [ref=f11e303]: Clinic
+                  - listitem [ref=f11e307]:
+                    - 'button "Use care Methadone In plain English: Methadone · Beers can make the heart rhythm less stable and raise the chance of dangerous rhythm problems. Clinic" [ref=f11e308] [cursor=pointer]':
+                      - generic [ref=f11e309]: Use care
+                      - generic [ref=f11e310]:
+                        - generic [ref=f11e311]: Methadone
+                        - generic [ref=f11e312]: "In plain English: Methadone · Beers can make the heart rhythm less stable and raise the chance of dangerous rhythm problems."
+                        - generic [ref=f11e313]: Clinic
+              - generic [ref=f11e317]:
+                - paragraph [ref=f11e318]: If daily smoke
+                - list [ref=f11e319]:
+                  - listitem [ref=f11e320]:
+                    - 'button "Serious concern CYP1A2 gene status changes how the body handles Methadone In plain English: CYP1A2 phenoconversion can change how much drug is in the body and how strongly it acts. Genes CYP1A2" [ref=f11e321] [cursor=pointer]':
+                      - generic [ref=f11e322]: Serious concern
+                      - generic [ref=f11e323]:
+                        - generic [ref=f11e324]:
+                          - text: CYP1A2 gene status
+                          - generic [ref=f11e325]: changes how the body handles
+                          - text: Methadone
+                        - generic [ref=f11e326]: "In plain English: CYP1A2 phenoconversion can change how much drug is in the body and how strongly it acts."
+                        - generic [ref=f11e327]:
+                          - generic [ref=f11e328]: Genes
+                          - generic [ref=f11e329]: CYP1A2
+                  - listitem [ref=f11e332]:
+                    - 'button "Serious concern __smoke speeds clearance of Methadone In plain English: Tobacco smoke (PAH) and Methadone can make one medicine less effective or wear off sooner. Levels CYP1A2" [ref=f11e333] [cursor=pointer]':
+                      - generic [ref=f11e334]: Serious concern
+                      - generic [ref=f11e335]:
+                        - generic [ref=f11e336]:
+                          - text: __smoke
+                          - generic [ref=f11e337]: speeds clearance of
+                          - text: Methadone
+                        - generic [ref=f11e338]: "In plain English: Tobacco smoke (PAH) and Methadone can make one medicine less effective or wear off sooner."
+                        - generic [ref=f11e339]:
+                          - generic [ref=f11e340]: Levels
+                          - generic [ref=f11e341]: CYP1A2
+            - generic [ref=f11e344]:
+              - generic [ref=f11e345]:
+                - generic [ref=f11e346]:
+                  - paragraph [ref=f11e347]: Three readers
+                  - paragraph [ref=f11e348]: Separate reads of this check. They cannot add a row, a milligram, or a clearance. Ask only when you want them.
+                - button "Ask the three readers" [ref=f11e349] [cursor=pointer]
+              - generic [ref=f11e350]:
+                - generic [ref=f11e351]:
+                  - paragraph [ref=f11e352]: Pair reader
+                  - paragraph [ref=f11e353]: Restates the sharpest row already on this check.
+                - generic [ref=f11e354]:
+                  - paragraph [ref=f11e355]: Gap reader
+                  - paragraph [ref=f11e356]: Names pairs this map did not hit. A blank is not a clearance.
+                - generic [ref=f11e357]:
+                  - paragraph [ref=f11e358]: Trainee reader
+                  - paragraph [ref=f11e359]: One question, answered only from the rows above.
+          - region [ref=f11e360]:
+            - generic [ref=f11e361]:
+              - generic [ref=f11e362]:
+                - paragraph [ref=f11e363]: Clinical workflow
+                - heading "Medication review" [level=2] [ref=f11e364]
+                - paragraph [ref=f11e365]: A verification aid, not an order set or patient record. Checkmarks are temporary and reset when the regimen or modeled context changes.
+              - generic [ref=f11e366]: 1/9 reviewed
+            - generic [ref=f11e367]:
+              - paragraph [ref=f11e368]: Modeled desk context
+              - list [ref=f11e369]:
+                - listitem [ref=f11e370]: "Age: Adult"
+                - listitem [ref=f11e371]: "Kidney: Usual GFR"
+                - listitem [ref=f11e372]: "Pregnancy/lactation: Off"
+                - listitem [ref=f11e373]: "Alcohol: Off"
+                - listitem [ref=f11e374]: "Smoking: Off"
+                - listitem [ref=f11e375]: "Cannabis route: Smoked"
+                - listitem [ref=f11e376]: "Ketamine route: IV / IM"
+                - listitem [ref=f11e377]: "CYP2D6: Normal"
+                - listitem [ref=f11e378]: "CYP2C19: Normal"
+                - listitem [ref=f11e379]: "CYP2C9: Normal"
+                - listitem [ref=f11e380]: "CYP2B6: Normal"
+              - paragraph [ref=f11e381]: These are desk settings, not verified patient data. CYP phenotype frequencies, where shown in other views, are population estimates—not an individual test result.
+            - generic [ref=f11e382]:
+              - paragraph [ref=f11e383]: Additional medication flags on this desk
+              - list [ref=f11e384]:
+                - listitem [ref=f11e385]: "ISMP high-alert: methadone"
+              - paragraph [ref=f11e386]: These flags are prompts to verify the relevant program or handling guidance; they are not interaction findings.
+            - generic [ref=f11e387]:
+              - heading "Confirm each desk item against the real regimen" [level=3] [ref=f11e388]
+              - list [ref=f11e389]:
+                - listitem [ref=f11e390]:
+                  - 'button "Methadone Medicine · Opioid agonist · Brand example: Dolophine" [ref=f11e391] [cursor=pointer]':
+                    - generic [ref=f11e394]:
+                      - generic [ref=f11e395]: Methadone
+                      - generic [ref=f11e396]: "Medicine · Opioid agonist · Brand example: Dolophine"
+                - listitem [ref=f11e397]:
+                  - 'button "Alprazolam Medicine · Benzodiazepine · Brand example: Xanax" [ref=f11e398] [cursor=pointer]':
+                    - generic [ref=f11e401]:
+                      - generic [ref=f11e402]: Alprazolam
+                      - generic [ref=f11e403]: "Medicine · Benzodiazepine · Brand example: Xanax"
+              - paragraph [ref=f11e404]: A checked item means it was reviewed in this browser only. It does not confirm adherence, dispense history, or clinical appropriateness.
+            - list [ref=f11e405]:
+              - listitem [ref=f11e406]:
+                - button "Reconcile the real regimen Confirm ingredient, strength, dose, route, schedule, last dose, and recent starts or stops—including OTC products and supplements." [ref=f11e407] [cursor=pointer]:
+                  - generic [ref=f11e410]:
+                    - generic [ref=f11e411]: Reconcile the real regimen
+                    - generic [ref=f11e412]: Confirm ingredient, strength, dose, route, schedule, last dose, and recent starts or stops—including OTC products and supplements.
+              - listitem [ref=f11e413]:
+                - button "Screen for duplicate ingredients and combination products Compare active ingredients across generic and brand names, scheduled and PRN medicines, OTC products, and combinations. Confirm intent before treating an overlap as an error." [active] [pressed] [ref=f11e414] [cursor=pointer]:
+                  - generic [ref=f11e417]:
+                    - generic [ref=f11e418]: Screen for duplicate ingredients and combination products
+                    - generic [ref=f11e419]: Compare active ingredients across generic and brand names, scheduled and PRN medicines, OTC products, and combinations. Confirm intent before treating an overlap as an error.
+              - listitem [ref=f11e420]:
+                - button "Review allergies and prior adverse drug reactions Confirm the substance, reaction, severity, and timing. Unknown or undocumented allergy status is not the same as no known allergies." [ref=f11e421] [cursor=pointer]:
+                  - generic [ref=f11e424]:
+                    - generic [ref=f11e425]: Review allergies and prior adverse drug reactions
+                    - generic [ref=f11e426]: Confirm the substance, reaction, severity, and timing. Unknown or undocumented allergy status is not the same as no known allergies.
+              - listitem [ref=f11e427]:
+                - button "Verify patient-specific context Confirm the relevant history and patient factors with the care team. This desk models only the context shown in its controls." [ref=f11e428] [cursor=pointer]:
+                  - generic [ref=f11e431]:
+                    - generic [ref=f11e432]: Verify patient-specific context
+                    - generic [ref=f11e433]: Confirm the relevant history and patient factors with the care team. This desk models only the context shown in its controls.
+              - listitem [ref=f11e434]:
+                - button "Review the strongest mapped finding Serious concern — Methadone × Alprazolam. A category from this model is not an individual risk estimate." [ref=f11e435] [cursor=pointer]:
+                  - generic [ref=f11e438]:
+                    - generic [ref=f11e439]: Review the strongest mapped finding
+                    - generic [ref=f11e440]: Serious concern — Methadone × Alprazolam. A category from this model is not an individual risk estimate.
+              - listitem [ref=f11e441]:
+                - button "Verify current primary sources Check current FDA-approved Prescribing Information and relevant primary references before drawing a clinical conclusion." [ref=f11e442] [cursor=pointer]:
+                  - generic [ref=f11e445]:
+                    - generic [ref=f11e446]: Verify current primary sources
+                    - generic [ref=f11e447]: Check current FDA-approved Prescribing Information and relevant primary references before drawing a clinical conclusion.
+              - listitem [ref=f11e448]:
+                - button "Make and document an independent clinical assessment This teaching tool does not choose a dose, treatment, monitoring schedule, or next clinical step." [ref=f11e449] [cursor=pointer]:
+                  - generic [ref=f11e452]:
+                    - generic [ref=f11e453]: Make and document an independent clinical assessment
+                    - generic [ref=f11e454]: This teaching tool does not choose a dose, treatment, monitoring schedule, or next clinical step.
+          - generic [ref=f11e455]:
+            - generic [ref=f11e456]:
+              - generic [ref=f11e457]: Serious concern
+              - generic [ref=f11e458]:
+                - generic [ref=f11e459]: 3 possible concerns across 2 items
+                - generic [ref=f11e460]: 0 avoid · 1 serious · 1 care · 1 mild
+            - generic [ref=f11e461]:
+              - button "Copy link" [ref=f11e462] [cursor=pointer]
+              - button "Share" [ref=f11e463] [cursor=pointer]
+              - button "Full report · Founding" [ref=f11e464] [cursor=pointer]
+              - button "JSON · Founding" [ref=f11e465] [cursor=pointer]
+              - button "CSV · Founding" [ref=f11e466] [cursor=pointer]
+          - generic [ref=f11e467]:
+            - generic [ref=f11e468]:
+              - generic [ref=f11e469]:
+                - paragraph [ref=f11e470]: OTP window
+                - heading "Window briefing" [level=2] [ref=f11e471]
+                - paragraph [ref=f11e472]: Considerations for independent review — not a treatment order. Confirm against the Prescribing Information. The label wins.
+              - generic [ref=f11e473]:
+                - generic [ref=f11e474]: Serious concern
+                - button "Plain words" [pressed] [ref=f11e475] [cursor=pointer]
+                - button "Copy huddle" [ref=f11e476] [cursor=pointer]
+            - generic [ref=f11e477]:
+              - generic [ref=f11e478]:
+                - paragraph [ref=f11e479]: Watch for
+                - list [ref=f11e481]:
+                  - listitem [ref=f11e482]: Boxed airway — opioid plus a benzo, Z-drug, or gabapentinoid. Pinpoint, hard to arouse, slow to blow off CO₂.
+              - generic [ref=f11e483]:
+                - paragraph [ref=f11e484]: Counsel
+                - paragraph [ref=f11e486]: Klonopin, Xanax, gabapentin, and Lyrica are not free extras on methadone or Suboxone. Same boxed warning at any age.
+              - generic [ref=f11e487]:
+                - paragraph [ref=f11e488]: Consider / call
+                - paragraph [ref=f11e490]: If they cannot stay awake through dosing, hold and get medical.
+            - generic [ref=f11e491]:
+              - generic [ref=f11e492]: On the tray
+              - generic [ref=f11e493]: airway
+              - generic [ref=f11e494]: naloxone
+              - generic [ref=f11e495]: UDS
+              - generic [ref=f11e496]: ID screen
+              - generic [ref=f11e497]: EDDP
+              - generic [ref=f11e498]: ECG
+              - generic [ref=f11e499]: K
+              - generic [ref=f11e500]: Mg
+            - paragraph [ref=f11e501]: FirstPass 1.14.0 · Not FDA-cleared · Confirm against the FDA-approved Prescribing Information · Labeled ranges are not a prescription · Independent review required.
+          - generic [ref=f11e502]:
+            - generic [ref=f11e503]:
+              - paragraph [ref=f11e504]: Label coach
+              - paragraph [ref=f11e505]: Short excerpts from the official label — boxed warnings, when not to use, and how it mixes with other medicines. Truncated on purpose; open the full DailyMed page for the real Prescribing Information.
+              - paragraph [ref=f11e506]: A quiet or missing excerpt is not a green light. Educational only — dosing lives on the PI, and the full label + clinician still win.
+            - generic [ref=f11e507]:
+              - generic [ref=f11e508]:
+                - heading "Label excerpts" [level=2] [ref=f11e509]
+                - paragraph [ref=f11e510]: Boxed warnings · do not use when · mixes with other medicines · full DailyMed label
+              - generic [ref=f11e511]: Full label wins
+            - list [ref=f11e512]:
+              - listitem [ref=f11e513]:
+                - generic [ref=f11e514]:
+                  - heading "Methadone" [level=3] [ref=f11e515]
+                  - link "Open full label" [ref=f11e516] [cursor=pointer]:
+                    - /url: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=092d78eb-6423-495c-bf0d-e6532bea7138
+                - generic [ref=f11e517]:
+                  - paragraph [ref=f11e518]: Boxed warning
+                  - paragraph [ref=f11e519]: "WARNING: SERIOUS AND LIFE-THREATENING RISKS FROM USE OF METHADONE HYDROCHLORIDE INJECTION Addiction, Abuse, and Misuse Because the use of Methadone Hydrochloride Injection exposes patients and other users to the risks of opioid addiction, abuse, and misuse, which can lead to overdose and death, assess each patient’s risk prior to prescribing and reassess all patients regularly for the development of these behaviors and conditions (see WARNINGS ). Life-Threatening Respiratory Depression Serious, life-threatening, or fatal respiratory depression may occur with use of Methadone Hydrochloride Injection, especially during initiation or following a dosage increase. To reduce the risk of respiratory depression, proper dosing and titration of Methadone Hydrochloride Injection are essential (see WARNINGS ). Neonatal Opioid Withdrawal Syndrome (NOWS) Neonatal opioid withdrawal syndrome (NOWS) is…"
+                - paragraph [ref=f11e520]: "Do not use when. CONTRAINDICATIONS Methadone Hydrochloride Injection is contraindicated in patients with: • Significant respiratory depression • Acute or severe bronchial asthma in an unmonitored setting or in the absence of resuscitative equipment • Known or suspected gastrointestinal obstruction, including paralytic ileus • Hypersensitivity to methadone hydrochloride (e.g. anaphylaxis) or any other ingredient in Methadone…"
+                - paragraph [ref=f11e521]: "Mixes with other medicines. Drug Interactions Table 1: Clinically Significant Drug Interactions with Methadone Hydrochloride Injection Inhibitors of CYP3A4, CYP2B6, CYP2C19, CYP2C9, or CYP2D6 Clinical Impact: Methadone undergoes hepatic N-demethylation by several cytochrome P450 (CYP) isoforms, including CYP3A4, CYP2B6, CYP2C19, CYP2C9, and CYP2D6. The concomitant use of Methadone Hydrochloride Injection and CYP3A4, CYP2B6, CYP2C19, CYP2C9, or CYP2D6 inhibitors can increase the plasma concentration of methadone, resulting in increased or…"
+              - listitem [ref=f11e522]:
+                - generic [ref=f11e523]:
+                  - heading "Alprazolam" [level=3] [ref=f11e524]
+                  - link "Open full label" [ref=f11e525] [cursor=pointer]:
+                    - /url: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=02840ea6-e4a0-96a0-e063-6394a90a19ae
+                - generic [ref=f11e526]:
+                  - paragraph [ref=f11e527]: Boxed warning
+                  - paragraph [ref=f11e528]: "WARNING: RISKS FROM CONCOMITANT USE WITH OPIOIDS; ABUSE, MISUSE, AND ADDICTION; and DEPENDENCE AND WITHDRAWAL REACTIONS Concomitant use of benzodiazepines and opioids may result in profound sedation, respiratory depression, coma, and death. Reserve concomitant prescribing of these drugs for patients for whom alternative treatment options are inadequate. Limit dosages and durations to the minimum required. Follow patients for signs and symptoms of respiratory depression and sedation [see Warnings and Precautions (5.1) , Drug Interactions (7.1) ] . The use of benzodiazepines, including alprazolam, exposes users to risks of abuse, misuse, and addiction, which can lead to overdose or death. Abuse and misuse of benzodiazepines commonly involve concomitant use of other medications, alcohol, and/or illicit substances, which is associated with an increased frequency of serious adverse outcomes.…"
+                - paragraph [ref=f11e529]: "Do not use when. 4 CONTRAINDICATIONS Alprazolam tablets are contraindicated in patients: with known hypersensitivity to alprazolam or other benzodiazepines. Angioedema has been reported [see Adverse Reactions (6.2) ] . taking strong cytochrome P450 3A (CYP3A) inhibitors (e.g., ketoconazole, itraconazole), except ritonavir [see Dosage and Administration (2.6) , Warnings and Precautions (5.5) , Drug Interactions (7.1) ] Known…"
+                - paragraph [ref=f11e530]: "Mixes with other medicines. 7 DRUG INTERACTIONS Use with Opioids: Increase the risk of respiratory depression. ( 7.1 ) Use with Other CNS Depressants: Produces additive CNS depressant effects. ( 7.1 ) Use with Digoxin: Increase the risk of digoxin toxicity. ( 7.1 ) Use with CYP3A Inhibitors (except ritonavir): Increase the risk of adverse reactions of alprazolam. ( 4 , 5.5 , 7.1 ) Use with CYP3A Inducers: Increase the risk of reduced efficacy of alprazolam. ( 7.1 ) 7.1 Drugs Having Clinically Important Interactions with Alprazolam Table 4…"
+            - paragraph [ref=f11e531]: This software has not been cleared or approved by the U.S. Food and Drug Administration. Display of FDA-label text does not make FirstPass an FDA-cleared device. Dosing lives on the official label, not this card.
+          - generic [ref=f11e532]:
+            - generic [ref=f11e533]:
+              - paragraph [ref=f11e534]: Clinic coach
+              - paragraph [ref=f11e535]: Teaching notes for clinic staples — pregnancy, breastfeeding, kidney, liver, older-adult (Beers) cautions, boxed label language, and labs to watch. Soft chips use everyday words; the mapped notes behind them are unchanged.
+              - paragraph [ref=f11e536]: An empty or quiet card is not a green light. Flip older adult / reduced kidney / pregnant on the person panel to highlight matches. Educational only — not a label, not a dose, and the PI + clinician still win.
+            - generic [ref=f11e537]:
+              - heading "Clinic notes" [level=2] [ref=f11e538]
+              - paragraph [ref=f11e539]: Pregnancy · breastfeeding · kidney · liver · older adults · boxed warnings · labs
+            - generic [ref=f11e540]:
+              - generic [ref=f11e541]: Labs to watch
+              - generic [ref=f11e542]: ECG
+              - generic [ref=f11e543]: K
+              - generic [ref=f11e544]: Mg
+              - generic [ref=f11e545]: airway
+              - generic [ref=f11e546]: UDS
+              - generic [ref=f11e547]: EDDP
+            - generic [ref=f11e548]:
+              - article [ref=f11e549]:
+                - heading "Methadone" [level=3] [ref=f11e550]
+                - list [ref=f11e551]:
+                  - listitem [ref=f11e552]:
+                    - generic [ref=f11e553]:
+                      - generic [ref=f11e554]: Pregnancy
+                      - generic [ref=f11e555]: Watch
+                    - paragraph [ref=f11e556]: "OTP continues methadone in pregnancy. Neonatal opioid withdrawal is expected, not a reason to stop. Jones MOTHER (2010) and Suarez 2022: buprenorphine had milder NAS in those maps — still not a switch protocol."
+                  - listitem [ref=f11e557]:
+                    - generic [ref=f11e558]:
+                      - generic [ref=f11e559]: Breastfeeding
+                      - generic [ref=f11e560]: Usually fine
+                    - paragraph [ref=f11e561]: "LactMed: usually compatible. Relative infant dose ~1–3% on a stable bottle. Watch infant sedation. Do not stop OTP to breastfeed."
+                  - listitem [ref=f11e562]:
+                    - generic [ref=f11e563]:
+                      - generic [ref=f11e564]: Liver
+                      - generic [ref=f11e565]: Watch
+                - paragraph [ref=f11e566]: Boxed warning. QTc prolongation, respiratory depression, addiction. Opioid + benzo / gabapentinoid is boxed at any age.
+                - paragraph [ref=f11e567]: Older adults (Beers). Opioid + benzo is the airway boxed warning at any age. QT drugs at the window are not free extras.
+                - list [ref=f11e568]:
+                  - listitem [ref=f11e569]:
+                    - generic [ref=f11e570]: ECG
+                  - listitem [ref=f11e571]:
+                    - generic [ref=f11e572]: K
+                  - listitem [ref=f11e573]:
+                    - generic [ref=f11e574]: Mg
+                  - listitem [ref=f11e575]:
+                    - generic [ref=f11e576]: airway
+                  - listitem [ref=f11e577]:
+                    - generic [ref=f11e578]: UDS
+                  - listitem [ref=f11e579]:
+                    - generic [ref=f11e580]: EDDP
+                - list [ref=f11e581]:
+                  - listitem [ref=f11e582]:
+                    - generic [ref=f11e583]: ISMP high-alert
+              - article [ref=f11e584]:
+                - heading "Alprazolam" [level=3] [ref=f11e585]
+                - list [ref=f11e586]:
+                  - listitem [ref=f11e587]:
+                    - generic [ref=f11e588]:
+                      - generic [ref=f11e589]: Pregnancy
+                      - generic [ref=f11e590]: Watch
+                - paragraph [ref=f11e591]: Boxed warning. Concomitant opioid use. Dependence and withdrawal.
+                - paragraph [ref=f11e592]: Older adults (Beers). Avoid short-acting benzos in older adults — falls, delirium, crash.
+            - paragraph [ref=f11e593]: Steer clear / Watch / Usually fine are teaching bins for these notes — not a personal clearance. Quiet flags still need the full label.
+          - generic [ref=f11e594]:
+            - generic [ref=f11e595]:
+              - generic [ref=f11e596]:
+                - heading "Clinical board" [level=2] [ref=f11e597]
+                - paragraph [ref=f11e598]: QT, TDM, LiverTox, phenoconversion, CYP start/stop clocks, reversal, MME, Hunter, UDS, OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, COWS / CIWA, bedside math. Teaching — not a protocol, not a QTc. The PI governs the milligram.
+              - generic [ref=f11e599]:
+                - button "OTP" [pressed] [ref=f11e600] [cursor=pointer]
+                - button "HR" [ref=f11e601] [cursor=pointer]
+                - button "Wards" [disabled] [ref=f11e602]
+                - button "Dose" [ref=f11e603] [cursor=pointer]
+                - button "CYP" [disabled] [ref=f11e604]
+                - button "QT" [ref=f11e605] [cursor=pointer]
+                - button "Levels" [disabled] [ref=f11e606]
+                - button "LiverTox" [disabled] [ref=f11e607]
+                - button "Pheno" [disabled] [ref=f11e608]
+                - button "Reversal" [ref=f11e609] [cursor=pointer]
+                - button "MME" [ref=f11e610] [cursor=pointer]
+                - button "Hunter" [ref=f11e611] [cursor=pointer]
+                - button "UDS" [ref=f11e612] [cursor=pointer]
+                - button "ANC" [disabled] [ref=f11e613]
+                - button "INR" [disabled] [ref=f11e614]
+                - button "Bedside" [ref=f11e615] [cursor=pointer]
+                - button "Alerts" [ref=f11e616] [cursor=pointer]
+            - generic [ref=f11e618]:
+              - paragraph [ref=f11e619]: Occupancy, washout, take-homes, naloxone, ECG, and ID screens. ASAM 2020 / TIP 63 / 42 CFR 8 2024 teaching — not a protocol and not a milligram.
+              - article [ref=f11e620]:
+                - heading "Precipitated withdrawal" [level=3] [ref=f11e621]
+                - paragraph [ref=f11e622]: Last agonist, hours since, COWS (published opioid withdrawal score). Occupancy is not the integer — teaching only.
+                - generic [ref=f11e623]:
+                  - button "Fentanyl / nitazene / pressed 30" [ref=f11e624] [cursor=pointer]
+                  - button "Heroin / oxycodone / hydro" [ref=f11e625] [cursor=pointer]
+                  - button "Methadone" [pressed] [ref=f11e626] [cursor=pointer]
+                  - button "Already on buprenorphine" [ref=f11e627] [cursor=pointer]
+                  - button "Unknown supply" [ref=f11e628] [cursor=pointer]
+                - generic [ref=f11e629]:
+                  - generic [ref=f11e630]:
+                    - text: Hours since last use
+                    - textbox "Hours since last use" [ref=f11e631]: "24"
+                  - generic [ref=f11e632]:
+                    - text: COWS (opioid withdrawal score)
+                    - textbox "COWS (opioid withdrawal score)" [ref=f11e633]: "12"
+                - generic [ref=f11e634]:
+                  - paragraph [ref=f11e635]: Methadone occupancy lasts days
+                  - paragraph [ref=f11e636]: Last methadone ~24 h ago, COWS 12. A standard first film on recent methadone is a classic precip map. Micro-induction / Bernese maps exist in the literature; they are specialist, not this integer.
+                  - paragraph [ref=f11e637]: Do not treat a high COWS as permission to start a film over methadone. Open the ASAM guideline. This desk does not pick milligrams.
+              - article [ref=f11e638]:
+                - heading "Naltrexone washout" [level=3] [ref=f11e639]
+                - paragraph [ref=f11e640]: Days off agonist vs oral vs Vivitrol. The PI times the shot, not this card.
+                - generic [ref=f11e641]:
+                  - button "Oral naltrexone" [ref=f11e642] [cursor=pointer]
+                  - button "XR / Vivitrol" [pressed] [ref=f11e643] [cursor=pointer]
+                - generic [ref=f11e644]:
+                  - text: Days since last full agonist
+                  - textbox "Days since last full agonist" [ref=f11e645]: "7"
+                - generic [ref=f11e646]:
+                  - paragraph [ref=f11e647]: Too soon after methadone
+                  - paragraph [ref=f11e648]: ~7 days. Methadone occupancy plus a μ-antagonist is precipitated withdrawal that lasts. Labels discuss ~10–14 days after long-acting agonists.
+                  - paragraph [ref=f11e649]: Do not give XR-naltrexone to 'save a window.' Open the PI. Independent review.
+              - article [ref=f11e650]:
+                - heading "Take-homes" [level=3] [ref=f11e651]
+                - paragraph [ref=f11e652]: 42 CFR Part 8 (2024). SAMHSA replaced the old rigid take-home schedule with clinical judgment. This checklist is not an approval, not a SAMHSA form, and not a reason to dump a bottle. Independently review 89 FR 7528 and your state OTP rules.
+                - list [ref=f11e653]:
+                  - listitem [ref=f11e654]:
+                    - button "Toxicology is explained Unexpected cups have a story, not a surprise." [ref=f11e655] [cursor=pointer]:
+                      - generic [ref=f11e659]:
+                        - generic [ref=f11e660]: Toxicology is explained
+                        - generic [ref=f11e661]: Unexpected cups have a story, not a surprise.
+                  - listitem [ref=f11e662]:
+                    - button "Safe storage Lockbox, no kids, no shared bottle." [ref=f11e663] [cursor=pointer]:
+                      - generic [ref=f11e667]:
+                        - generic [ref=f11e668]: Safe storage
+                        - generic [ref=f11e669]: Lockbox, no kids, no shared bottle.
+                  - listitem [ref=f11e670]:
+                    - button "Clinically stable No recent overdose, diversion, or chaotic window." [ref=f11e671] [cursor=pointer]:
+                      - generic [ref=f11e675]:
+                        - generic [ref=f11e676]: Clinically stable
+                        - generic [ref=f11e677]: No recent overdose, diversion, or chaotic window.
+                  - listitem [ref=f11e678]:
+                    - button "Airway extras named Benzos, alcohol, gabapentinoids are on the desk, not hidden." [ref=f11e679] [cursor=pointer]:
+                      - generic [ref=f11e683]:
+                        - generic [ref=f11e684]: Airway extras named
+                        - generic [ref=f11e685]: Benzos, alcohol, gabapentinoids are on the desk, not hidden.
+                  - listitem [ref=f11e686]:
+                    - button "A place to keep it Unstable housing is a clinical factor, not a moral one." [ref=f11e687] [cursor=pointer]:
+                      - generic [ref=f11e691]:
+                        - generic [ref=f11e692]: A place to keep it
+                        - generic [ref=f11e693]: Unstable housing is a clinical factor, not a moral one.
+                  - listitem [ref=f11e694]:
+                    - 'button "Time in treatment considered 2024 rule: time is a factor, not a lock." [ref=f11e695] [cursor=pointer]':
+                      - generic [ref=f11e699]:
+                        - generic [ref=f11e700]: Time in treatment considered
+                        - generic [ref=f11e701]: "2024 rule: time is a factor, not a lock."
+                - paragraph [ref=f11e702]: Ticked 0 of 6. A full row is still not an approval.
+              - article [ref=f11e703]:
+                - heading "Naloxone coprescribe" [level=3] [ref=f11e704]
+                - list [ref=f11e705]:
+                  - listitem [ref=f11e706]: Coprescribe naloxone. Show them the device they will actually leave with.
+                  - listitem [ref=f11e707]: Second dose if they are not breathing. Stay. Do not use alone.
+                  - listitem [ref=f11e708]: This is counseling, not a kit protocol and not a milligram.
+              - article [ref=f11e709]:
+                - heading "Methadone QT watch" [level=3] [ref=f11e710]
+                - paragraph [ref=f11e711]: "Methadone label: QT prolongation, arrhythmia. Teaching cadence is baseline, after large dose changes, and when a QT partner lands. Not a standing ECG order from FirstPass."
+                - paragraph [ref=f11e712]: Open the PI. Bedside tab has Bazett / Fridericia if you already have a strip.
+              - article [ref=f11e713]:
+                - heading "ID / vaccine screens" [level=3] [ref=f11e714]
+                - paragraph [ref=f11e715]: ASAM / CDC entry screens. Offers, not orders. Nothing here is stored.
+                - list [ref=f11e716]:
+                  - listitem [ref=f11e717]:
+                    - button "HIV Offer test. ART boosters are a methadone / bup row." [ref=f11e718] [cursor=pointer]:
+                      - generic [ref=f11e722]:
+                        - generic [ref=f11e723]: HIV
+                        - generic [ref=f11e724]: Offer test. ART boosters are a methadone / bup row.
+                  - listitem [ref=f11e725]:
+                    - button "HCV Ab ± RNA Epclusa on this desk dumps or nudges some OTP bottles." [ref=f11e726] [cursor=pointer]:
+                      - generic [ref=f11e730]:
+                        - generic [ref=f11e731]: HCV Ab ± RNA
+                        - generic [ref=f11e732]: Epclusa on this desk dumps or nudges some OTP bottles.
+                  - listitem [ref=f11e733]:
+                    - button "HBV Vaccinate if non-immune. DAA can reactivate HBV." [ref=f11e734] [cursor=pointer]:
+                      - generic [ref=f11e738]:
+                        - generic [ref=f11e739]: HBV
+                        - generic [ref=f11e740]: Vaccinate if non-immune. DAA can reactivate HBV.
+                  - listitem [ref=f11e741]:
+                    - button "Syphilis ASAM / CDC STI screen on entry and when risk changes." [ref=f11e742] [cursor=pointer]:
+                      - generic [ref=f11e746]:
+                        - generic [ref=f11e747]: Syphilis
+                        - generic [ref=f11e748]: ASAM / CDC STI screen on entry and when risk changes.
+                  - listitem [ref=f11e749]:
+                    - button "TB Symptom screen ± IGRA. Rifampin is a stolen-dose card." [ref=f11e750] [cursor=pointer]:
+                      - generic [ref=f11e754]:
+                        - generic [ref=f11e755]: TB
+                        - generic [ref=f11e756]: Symptom screen ± IGRA. Rifampin is a stolen-dose card.
+                  - listitem [ref=f11e757]:
+                    - button "Pregnancy Continue OTP. Do not detox to 'protect' the fetus." [ref=f11e758] [cursor=pointer]:
+                      - generic [ref=f11e762]:
+                        - generic [ref=f11e763]: Pregnancy
+                        - generic [ref=f11e764]: Continue OTP. Do not detox to 'protect' the fetus.
+                  - listitem [ref=f11e765]:
+                    - button "HAV vaccine Offer if not immune. Not a CYP row." [ref=f11e766] [cursor=pointer]:
+                      - generic [ref=f11e770]:
+                        - generic [ref=f11e771]: HAV vaccine
+                        - generic [ref=f11e772]: Offer if not immune. Not a CYP row.
+              - paragraph [ref=f11e773]: Not FDA-cleared. Independently review ASAM 2020, SAMHSA TIP 63, 42 CFR 8, and the Prescribing Information. FirstPass does not time a film, a shot, or a take-home.
+          - button "Study this pair Mechanism cards from this pair. Rounds, named pairs, and the enzyme map (CYP) live on Study. Not a milligram. Study" [ref=f11e774] [cursor=pointer]:
+            - generic [ref=f11e775]:
+              - text: Study this pair
+              - generic [ref=f11e776]: Mechanism cards from this pair. Rounds, named pairs, and the enzyme map (CYP) live on Study. Not a milligram.
+            - generic [ref=f11e777]: Study
+          - generic [ref=f11e778]:
+            - generic [ref=f11e779]:
+              - paragraph [ref=f11e780]: Live label coach
+              - paragraph [ref=f11e781]: Short official-label excerpts that name a partner on this tray, plus NIH drug-class tags when available. Educational only — truncated label text, not a complete interaction engine.
+              - paragraph [ref=f11e782]: Empty or quiet here is not a green light. Enzyme / effect scoring stays on this desk; the full label and a clinician still win.
+            - generic [ref=f11e783]:
+              - generic [ref=f11e784]:
+                - heading "Live label check" [level=2] [ref=f11e785]
+                - paragraph [ref=f11e786]: Official label partner scan · drug classes · truncated excerpts
+              - button "Ask live sources" [ref=f11e787] [cursor=pointer]
+            - paragraph [ref=f11e788]:
+              - text: Truncated official-label text — not a complete interaction engine. Enzyme / effect scoring stays on this desk.
+              - link "Drug-class docs" [ref=f11e789] [cursor=pointer]:
+                - /url: https://lhncbc.nlm.nih.gov/RxNav/APIs/RxClassAPIs.html
+          - generic [ref=f11e794]:
+            - generic:
+              - generic:
+                - generic:
+                  - heading "Effect stacks" [level=2]
+                  - paragraph: How effects may pile up on this tray — a teaching meter, not a dose calculator and not a vital-sign prediction.
+                - list:
+                  - listitem:
+                    - generic:
+                      - generic: Serotonin mood
+                      - generic:
+                        - text: Light
+                        - generic: 1/5
+                    - paragraph: Methadone
+                  - listitem:
+                    - generic:
+                      - generic: Sedation / breathing
+                      - generic:
+                        - text: Heavy
+                        - generic: 4/5
+                    - paragraph: Methadone · Alprazolam
+                  - listitem:
+                    - generic:
+                      - generic: Heart rhythm (QT)
+                      - generic:
+                        - text: Building
+                        - generic: 2/5
+                    - paragraph: Methadone
+                  - listitem:
+                    - generic:
+                      - generic: Blood pressure
+                      - generic:
+                        - text: Quiet
+                        - generic: 0/5
+                    - paragraph: Pressure-pushing company on the tray.
+                  - listitem:
+                    - generic:
+                      - generic: NMDA / ketamine
+                      - generic:
+                        - text: Quiet
+                        - generic: 0/5
+                    - paragraph: Ketamine-lane / NMDA company on the tray.
+                - paragraph: Quiet / Light / Building / Heavy are everyday words for this meter’s count — not a personal risk score.
+            - generic [ref=f11e795]:
+              - generic [ref=f11e798]:
+                - paragraph [ref=f11e799]: Stack load needs founding
+                - paragraph [ref=f11e800]: Meters for serotonin effects, sedation (CNS), heart-rhythm risk (QT), blood-pressure push (pressor), and glutamate blocking (NMDA) come with founding.
+                - paragraph [ref=f11e801]: "Free desk: up to five drugs, no card needed. Founding is $79 once."
+                - paragraph [ref=f11e802]:
+                  - text: Pay, get your key, Redeem
+                  - generic [ref=f11e803]: · Pay $79 once, Get your key, Redeem on this desk
+                - paragraph [ref=f11e804]: Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.
+              - generic [ref=f11e805]:
+                - button "Founding · $79 once" [ref=f11e806] [cursor=pointer]
+                - button "Plans" [ref=f11e807] [cursor=pointer]
+                - button "Try 7 days free" [ref=f11e808] [cursor=pointer]
+              - paragraph [ref=f11e809]: Pay, get your key, Redeem · Venmo @kaleblovingier · Cash App $kaleblovingier7 · PayPal kaleblovingier@gmail.com · card when Stripe is live
+          - generic [ref=f11e810]:
+            - generic [ref=f11e811]:
+              - heading "Who connects to whom" [level=2] [ref=f11e812]
+              - paragraph [ref=f11e813]: Each line is a pair that showed up in Collisions. Thicker / warmer lines mean a higher teaching severity bin — still not a personal prediction of harm.
+            - 'img "Pair constellation: medicines as nodes, collisions as lines" [ref=f11e814]':
+              - generic [ref=f11e815]: Methadone
+              - generic [ref=f11e819]: Alprazolam
+            - list [ref=f11e823]:
+              - listitem [ref=f11e824]: Serious concern / do-not-combine
+              - listitem [ref=f11e826]: Use care
+              - listitem [ref=f11e828]: Mild note
+          - generic [ref=f11e830]:
+            - generic [ref=f11e831]:
+              - paragraph [ref=f11e832]: What this means
+              - paragraph [ref=f11e833]: Each card is a teaching collision on this tray — how levels might move, or how effects might stack. Labels like Serious concern are this checker’s bins, not a prediction of harm for one person.
+              - paragraph [ref=f11e834]: An empty list after filters is not the same as safe. Clear filters or add another medicine if you expected a hit.
+            - generic [ref=f11e835]:
+              - heading "Collisions" [level=2] [ref=f11e836]
+              - generic [ref=f11e837]:
+                - button "All" [ref=f11e838] [cursor=pointer]
+                - button "Avoid together" [ref=f11e839] [cursor=pointer]
+                - button "Serious concern" [ref=f11e840] [cursor=pointer]
+                - button "Use care" [ref=f11e841] [cursor=pointer]
+                - button "Mild note" [ref=f11e842] [cursor=pointer]
+            - paragraph [ref=f11e843]: Possible concerns in the selected items. Plain chips (Avoid together / Serious concern / Use care / Mild note) are this checker’s categories — not a personal prediction of harm. Hover a chip for the longer hint; formal labels still appear on each card.
+            - generic [ref=f11e844]:
+              - button "All kinds" [ref=f11e845] [cursor=pointer]
+              - button "Levels / timing" [ref=f11e846] [cursor=pointer]
+              - button "Same-system effects" [ref=f11e847] [cursor=pointer]
+              - button "Metabolizer" [ref=f11e848] [cursor=pointer]
+              - button "Clinic" [ref=f11e849] [cursor=pointer]
+              - button "Food" [ref=f11e850] [cursor=pointer]
+            - generic [ref=f11e851]:
+              - generic [ref=f11e852]:
+                - paragraph [ref=f11e853]: Pairs, worst first
+                - list [ref=f11e854]:
+                  - listitem [ref=f11e855]:
+                    - 'button "Serious concern Methadone × Alprazolam In plain English: Methadone and Alprazolam can make drowsiness, breathing problems, or low blood pressure more likely." [expanded] [ref=f11e856] [cursor=pointer]':
+                      - generic "A serious teaching collision. Read the PI; this desk does not dose or decide care." [ref=f11e857]: Serious concern
+                      - generic [ref=f11e858]:
+                        - generic [ref=f11e859]: Methadone × Alprazolam
+                        - generic [ref=f11e860]: "In plain English: Methadone and Alprazolam can make drowsiness, breathing problems, or low blood pressure more likely."
+                    - generic [ref=f11e863]:
+                      - generic [ref=f11e864]:
+                        - generic [ref=f11e865]:
+                          - paragraph [ref=f11e866]: Everyday-language summary
+                          - paragraph [ref=f11e867]: "In plain English: Methadone and Alprazolam can make drowsiness, breathing problems, or low blood pressure more likely."
+                        - generic [ref=f11e868]:
+                          - paragraph [ref=f11e869]: Clinical detail
+                          - paragraph [ref=f11e870]: "FDA boxed warning: opioids plus benzodiazepines (or Z-drugs) cause profound sedation, respiratory depression, coma, and death. Methadone and buprenorphine desks see this as a street-benzo or a sleep prescription — same airway. Avoid unless no alternative exists; if combined, use the lowest doses and monitor."
+                          - paragraph [ref=f11e871]: opioid × benzodiazepine / Z-drug · respiratory depression
+                      - generic [ref=f11e872]:
+                        - paragraph [ref=f11e873]: Sources to check
+                        - generic [ref=f11e874]:
+                          - paragraph [ref=f11e875]: Methadone HCl tablets label, Boxed Warning (Risks From Concomitant Use With Benzodiazepines Or Other CNS Depressants); 5.3
+                          - paragraph [ref=f11e876]: "The Methadone HCl tablets label names this interaction in its Boxed Warning: \"Concomitant use of opioids with benzodiazepines or other central nervous system (CNS) depressants, including alcohol, may result in profound sedation, respiratory depression, coma, and death.\" Retrieved from DailyMed 2026-09-27."
+                          - link "Open source" [ref=f11e877] [cursor=pointer]:
+                            - /url: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=540edd43-165d-4257-b989-3bccc8f54afb
+                        - generic [ref=f11e882]:
+                          - paragraph [ref=f11e883]: FDA boxed / safety communication
+                          - paragraph [ref=f11e884]: "FDA boxed warning (2016): opioids plus benzodiazepines or other CNS depressants — profound sedation, respiratory depression, coma, and death."
+                          - link "Open source" [ref=f11e885] [cursor=pointer]:
+                            - /url: https://www.fda.gov/drugs/drug-safety-and-availability/fda-drug-safety-communication-fda-warns-about-serious-risks-and-death-when-combining-opioid-pain-or
+                        - generic [ref=f11e890]:
+                          - paragraph [ref=f11e891]: PMID 31006110
+                          - paragraph [ref=f11e892]: 2019 Clin Pharmacol Ther. 2B6 PM stacks efavirenz. Same isoform as ketamine and methadone.
+                          - link "Open source" [ref=f11e893] [cursor=pointer]:
+                            - /url: https://pubmed.ncbi.nlm.nih.gov/31006110/
+                      - generic [ref=f11e898]:
+                        - generic [ref=f11e899]: Effects
+                        - generic [ref=f11e900]: cns
+                        - generic [ref=f11e901]: respiratory
+                        - generic [ref=f11e902]: mat
+                      - list [ref=f11e903]:
+                        - listitem [ref=f11e904]: "Methadone (Dolophine) · Opioid agonist — Long t½ — q24h accumulates. 3A4/2B6 inducers (rifampin, carbamazepine, phenytoin, efavirenz, nevirapine, St. John's wort) look like a stolen dose. Inhibitors (fluconazole, fluvoxamine, erythromycin) and other QT drugs raise TdP. Paxlovid/ritonavir is the mixed arrow: methadone often falls, fentanyl rises. Boxed with benzos and gabapentinoids. Take-home plus illicit fentanyl is stacked μ."
+                        - listitem [ref=f11e905]: Alprazolam (Xanax) · Benzodiazepine
+                  - listitem [ref=f11e906]:
+                    - 'button "Mild note Methadone × Alprazolam In plain English: Methadone and Alprazolam can make both drugs compete for the same pathway and shift levels unexpectedly." [ref=f11e907] [cursor=pointer]':
+                      - generic "A milder flag. Useful for teaching; not a green light." [ref=f11e908]: Mild note
+                      - generic [ref=f11e909]:
+                        - generic [ref=f11e910]: Methadone × Alprazolam
+                        - generic [ref=f11e911]: "In plain English: Methadone and Alprazolam can make both drugs compete for the same pathway and shift levels unexpectedly."
+              - generic [ref=f11e914]:
+                - paragraph [ref=f11e915]: Whole-desk notes
+                - list [ref=f11e916]:
+                  - listitem [ref=f11e917]:
+                    - 'button "Use care Methadone vs the opiate cup In plain English: Methadone vs the opiate cup can change how much drug is in the body and how strongly it acts." [ref=f11e918] [cursor=pointer]':
+                      - generic "Worth a careful look. Context and the official label still govern." [ref=f11e919]: Use care
+                      - generic [ref=f11e920]:
+                        - generic [ref=f11e921]: Methadone vs the opiate cup
+                        - generic [ref=f11e922]: "In plain English: Methadone vs the opiate cup can change how much drug is in the body and how strongly it acts."
+          - generic [ref=f11e925]:
+            - generic [ref=f11e926]:
+              - paragraph [ref=f11e927]: Dossier coach
+              - paragraph [ref=f11e928]: Pick a name on this tray, then open a shelf — receptors, genes, label language, liver notes, nursing, papers, and trials. Soft chips use everyday words; the live APIs behind them are unchanged.
+              - paragraph [ref=f11e929]: A quiet or empty shelf is not a green light. This desk can miss risks; the Prescribing Information and the clinician still win. Educational only — not a complete literature search, not dosing advice.
+            - generic [ref=f11e930]:
+              - generic [ref=f11e931]:
+                - heading "Drug dossier" [level=2] [ref=f11e932]
+                - paragraph [ref=f11e933]: Receptors · genes · targets · label · names · molecule · liver · nursing · papers · trials
+              - group "Dossier shelves" [ref=f11e934]:
+                - button "Receptors" [pressed] [ref=f11e935] [cursor=pointer]
+                - button "Genes" [ref=f11e936] [cursor=pointer]
+                - button "Targets" [ref=f11e937] [cursor=pointer]
+                - button "Label" [ref=f11e938] [cursor=pointer]
+                - button "Names" [ref=f11e939] [cursor=pointer]
+                - button "Molecule" [ref=f11e940] [cursor=pointer]
+                - button "Liver" [disabled] [ref=f11e941]
+                - button "Nursing" [ref=f11e942] [cursor=pointer]
+                - button "Papers" [ref=f11e943] [cursor=pointer]
+                - button "Trials" [ref=f11e944] [cursor=pointer]
+            - generic [ref=f11e945]:
+              - button "Methadone" [ref=f11e946] [cursor=pointer]
+              - button "Alprazolam" [ref=f11e947] [cursor=pointer]
+            - generic [ref=f11e949]:
+              - generic [ref=f11e950]:
+                - paragraph [ref=f11e951]: Methadone
+                - paragraph [ref=f11e952]: Full μ — long occupancy, 3A4/2B6, known QT
+              - list [ref=f11e953]:
+                - listitem [ref=f11e954]:
+                  - generic [ref=f11e956]:
+                    - generic [ref=f11e957]: μ
+                    - generic [ref=f11e958]: ++++
+                - listitem [ref=f11e961]:
+                  - generic [ref=f11e963]:
+                    - generic [ref=f11e964]: NMDA
+                    - generic [ref=f11e965]: ++
+              - paragraph [ref=f11e968]: Long μ plus some NMDA. Inducers look like a stolen dose; azoles look like a nod plus TdP. Vistaril and Zofran are QT extras, not free. Partial agonist on top is precipitated withdrawal.
+              - paragraph [ref=f11e969]: TdP, delayed overdose (peak is late), airway with benzos/gabapentinoids.
+              - paragraph [ref=f11e970]: Educational receptor sketch (spectrum first, then how hard it sits on each target, then side effects that follow). Original language — not a quotation of Stahl’s Essential Psychopharmacology. Not a dose and not a prescription.
+          - generic [ref=f11e971]:
+            - generic [ref=f11e973]:
+              - heading "How levels might shift" [level=2] [ref=f11e974]
+              - paragraph [ref=f11e975]: A teaching sketch of relative exposure — not a blood level and not a dose to give. Grey is this route with a typical metabolizer and no blockers. Teal is this tray.
+            - generic [ref=f11e977]:
+              - button "Once" [pressed] [ref=f11e978] [cursor=pointer]
+              - button "q8h" [ref=f11e979] [cursor=pointer]
+              - button "q12h" [ref=f11e980] [cursor=pointer]
+              - button "q24h" [ref=f11e981] [cursor=pointer]
+            - generic [ref=f11e982]:
+              - button "Methadone" [pressed] [ref=f11e983] [cursor=pointer]
+              - button "Alprazolam" [ref=f11e984] [cursor=pointer]
+            - generic [ref=f11e985]:
+              - generic [ref=f11e986]:
+                - term [ref=f11e987]: Exposure (AUCR)
+                - definition [ref=f11e988]: 1.00×
+              - generic [ref=f11e989]:
+                - term [ref=f11e990]: Cmax
+                - definition [ref=f11e991]: 1.00×
+              - generic [ref=f11e992]:
+                - term [ref=f11e993]: Half-life
+                - definition [ref=f11e994]: 24h to 24h
+              - generic [ref=f11e995]:
+                - term [ref=f11e996]: Time to peak
+                - definition [ref=f11e997]: 4.3h
+            - img [ref=f11e1001]:
+              - generic [ref=f11e1005]:
+                - generic [ref=f11e1006]: 0d
+                - generic [ref=f11e1008]: 1.3d
+                - generic [ref=f11e1010]: 2.5d
+                - generic [ref=f11e1012]: 3.8d
+                - generic [ref=f11e1014]: 5d
+            - generic [ref=f11e1020]:
+              - generic [ref=f11e1021]: Usual baseline
+              - generic [ref=f11e1023]: This tray
+              - generic [ref=f11e1025]: hours to days
+            - paragraph [ref=f11e1026]: Inducers (efavirenz, rifampin, carbamazepine, phenytoin, nevirapine) look like a stolen take-home. Fluvoxamine and fluconazole raise parent and QT. Paxlovid/ritonavir is the mixed arrow — methadone often falls. q24h Rac is large even without a perpetrator.
+            - paragraph [ref=f11e1027]: Add a blocker, flip a metabolizer, tap a dosing interval, or overlay the other route to move the curve. This sketch teaches direction — it does not pick a milligram.
+          - generic [ref=f11e1028]:
+            - generic:
+              - generic:
+                - generic:
+                  - heading "Metabolite map" [level=2]
+                  - paragraph: Parent drug → what the body turns it into. Named enzymes are the conversion pathways — teaching only; product labeling and the clinician govern.
+                - list:
+                  - listitem:
+                    - generic:
+                      - paragraph: Starts as
+                      - paragraph: Methadone
+                      - paragraph: Starts as methadone → what the body turns it into.
+                      - paragraph: CYP2B6 and 3A4 to EDDP. Inducers drop levels (withdrawal); inhibitors raise QT risk.
+                      - list:
+                        - listitem:
+                          - generic:
+                            - paragraph: Becomes
+                            - generic:
+                              - generic: EDDP
+                              - generic: CYP2B6 · CYP3A4
+                            - generic: CYP2B6 (hepatic conversion pathway) · CYP3A4 (gut / liver conversion pathway)
+                            - generic: Inactive; used as a compliance marker
+            - generic [ref=f11e1029]:
+              - generic [ref=f11e1033]:
+                - paragraph [ref=f11e1034]: Metabolite maps need founding
+                - paragraph [ref=f11e1035]: How a medicine breaks down into the next chemical (norketamine, 11-OH-THC, morphine, and similar). Those maps open with founding.
+                - paragraph [ref=f11e1036]: "Free desk: up to five drugs, no card needed. Founding is $79 once."
+                - paragraph [ref=f11e1037]:
+                  - text: Pay, get your key, Redeem
+                  - generic [ref=f11e1038]: · Pay $79 once, Get your key, Redeem on this desk
+                - paragraph [ref=f11e1039]: Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.
+              - generic [ref=f11e1040]:
+                - button "Founding · $79 once" [ref=f11e1041] [cursor=pointer]
+                - button "Plans" [ref=f11e1042] [cursor=pointer]
+                - button "Try 7 days free" [ref=f11e1043] [cursor=pointer]
+              - paragraph [ref=f11e1044]: Pay, get your key, Redeem · Venmo @kaleblovingier · Cash App $kaleblovingier7 · PayPal kaleblovingier@gmail.com · card when Stripe is live
+          - generic [ref=f11e1045]:
+            - generic [ref=f11e1046]:
+              - generic [ref=f11e1047]:
+                - heading "Who shares which enzyme" [level=2] [ref=f11e1048]
+                - paragraph [ref=f11e1049]: Dot = broken down by that enzyme. Bar = slows it. Rays = speeds it up. Red-tinted columns are where this tray collides.
+              - list [ref=f11e1050]:
+                - listitem [ref=f11e1051]: Broken down here
+                - listitem [ref=f11e1053]: Slows the enzyme
+                - listitem [ref=f11e1055]: Speeds the enzyme
+            - table [ref=f11e1058]:
+              - rowgroup [ref=f11e1059]:
+                - row [ref=f11e1060]:
+                  - columnheader "Drug" [ref=f11e1061]
+                  - columnheader "1A2" [ref=f11e1062]
+                  - columnheader "2B6" [ref=f11e1063]
+                  - columnheader "2C8" [ref=f11e1064]
+                  - columnheader "2C9" [ref=f11e1065]
+                  - columnheader "2C19" [ref=f11e1066]
+                  - columnheader "2D6" [ref=f11e1067]
+                  - columnheader "2E1" [ref=f11e1068]
+                  - columnheader "3A4" [ref=f11e1069]
+                  - columnheader "P-gp" [ref=f11e1070]
+              - rowgroup [ref=f11e1071]:
+                - row [ref=f11e1072]:
+                  - rowheader "Methadone" [ref=f11e1073]
+                  - cell [ref=f11e1074]
+                  - cell [ref=f11e1079]
+                  - cell [ref=f11e1084]
+                  - cell [ref=f11e1089]
+                  - cell [ref=f11e1094]
+                  - cell [ref=f11e1099]
+                  - cell [ref=f11e1104]
+                  - cell [ref=f11e1109]
+                  - cell [ref=f11e1114]
+                - row [ref=f11e1119]:
+                  - rowheader "Alprazolam" [ref=f11e1120]
+                  - cell [ref=f11e1121]
+                  - cell [ref=f11e1126]
+                  - cell [ref=f11e1131]
+                  - cell [ref=f11e1136]
+                  - cell [ref=f11e1141]
+                  - cell [ref=f11e1146]
+                  - cell [ref=f11e1151]
+                  - cell [ref=f11e1156]
+                  - cell [ref=f11e1161]
+        - complementary [ref=f11e1166]:
+          - generic [ref=f11e1167]:
+            - heading "Desk" [level=2] [ref=f11e1168]
+            - generic [ref=f11e1169]:
+              - generic [ref=f11e1170]:
+                - term [ref=f11e1171]: Formulary
+                - definition [ref=f11e1172]: "1798"
+              - generic [ref=f11e1173]:
+                - term [ref=f11e1174]: On desk
+                - definition [ref=f11e1175]: 2/5
+              - generic [ref=f11e1176]:
+                - term [ref=f11e1177]: Findings
+                - definition [ref=f11e1178]: "3"
+              - generic [ref=f11e1179]:
+                - term [ref=f11e1180]: License
+                - definition [ref=f11e1181]: Free
+            - generic [ref=f11e1182]: Ceiling Serious concern · free · founding $79 lifetime unlocks host factors / atlas / export
+          - generic [ref=f11e1183]:
+            - heading "How ketamine goes in Ketamine route" [level=2] [ref=f11e1184]:
+              - generic [ref=f11e1185]: How ketamine goes in
+              - generic [ref=f11e1186]: Ketamine route
+            - paragraph [ref=f11e1187]: Free on this desk. Ketamine by mouth with grapefruit is the teaching demo for the gut first pass. The other host factors stay Pro.
+            - generic [ref=f11e1188]:
+              - button "Shot or drip" [pressed] [ref=f11e1189] [cursor=pointer]
+              - button "Nose spray" [ref=f11e1190] [cursor=pointer]
+              - button "By mouth" [ref=f11e1191] [cursor=pointer]
+            - paragraph [ref=f11e1192]: IV / IM mostly skips gut first-pass; hepatic CYP2B6 still clears it.
+          - generic [ref=f11e1193]:
+            - generic:
+              - generic:
+                - generic:
+                  - heading "About this person Host factors" [level=2]:
+                    - generic: About this person
+                    - generic: Host factors
+                - generic "Host factors coach":
+                  - paragraph: How this works
+                  - paragraph: The same drugs can act differently in different people. Pick only what you already know about this person (a metabolizer status from their chart, smoking, drinking, age, kidneys, pregnancy) and the desk re-reads every pair with that in mind.
+                  - paragraph: A slow built-in enzyme acts a lot like a drug that blocks that enzyme. Smoking speeds up the 1A2 enzyme. Heavy long-term drinking speeds up the 2E1 enzyme. Older age, weaker kidneys, and pregnancy open extra teaching cards (Beers list, kidney, and pregnancy notes).
+                - paragraph: "Everything is set to typical. A typical person, or a quiet result, is not a green light: real people vary, and genetics are rarely known at the desk. Product labeling and the clinician govern."
+                - generic:
+                  - generic:
+                    - generic: Built-in enzyme speed
+                    - generic: Metabolizer phenotype · CPIC paraphrase
+                  - paragraph: Pick a metabolizer status you already know. This is a teaching summary of CPIC guidance, not a genetic test result.
+                - list:
+                  - listitem:
+                    - generic:
+                      - generic: CYP2D6
+                      - generic: DXM, MDMA, codeine, atomoxetine
+                    - generic:
+                      - button "Slow PM":
+                        - generic: Slow
+                        - generic: PM
+                      - button "A bit slow IM":
+                        - generic: A bit slow
+                        - generic: IM
+                      - button "Typical NM" [pressed]:
+                        - generic: Typical
+                        - generic: NM
+                      - button "Fast UM":
+                        - generic: Fast
+                        - generic: UM
+                  - listitem:
+                    - generic:
+                      - generic: CYP2C19
+                      - generic: Clobazam, diazepam, citalopram
+                    - generic:
+                      - button "Slow PM":
+                        - generic: Slow
+                        - generic: PM
+                      - button "A bit slow IM":
+                        - generic: A bit slow
+                        - generic: IM
+                      - button "Typical NM" [pressed]:
+                        - generic: Typical
+                        - generic: NM
+                      - button "Fast UM":
+                        - generic: Fast
+                        - generic: UM
+                  - listitem:
+                    - generic:
+                      - generic: CYP2C9
+                      - generic: Warfarin, phenytoin, edible THC
+                    - generic:
+                      - button "Slow PM":
+                        - generic: Slow
+                        - generic: PM
+                      - button "A bit slow IM":
+                        - generic: A bit slow
+                        - generic: IM
+                      - button "Typical NM" [pressed]:
+                        - generic: Typical
+                        - generic: NM
+                      - button "Fast UM":
+                        - generic: Fast
+                        - generic: UM
+                  - listitem:
+                    - generic:
+                      - generic: CYP2B6
+                      - generic: Ketamine, bupropion, methadone
+                    - generic:
+                      - button "Slow PM":
+                        - generic: Slow
+                        - generic: PM
+                      - button "A bit slow IM":
+                        - generic: A bit slow
+                        - generic: IM
+                      - button "Typical NM" [pressed]:
+                        - generic: Typical
+                        - generic: NM
+                      - button "Fast UM":
+                        - generic: Fast
+                        - generic: UM
+                - generic:
+                  - generic:
+                    - generic: Smoking
+                    - generic: Tobacco smoke · CYP1A2 inducer
+                  - generic:
+                    - button "Doesn't smoke" [pressed]
+                    - button "Smokes daily"
+                  - paragraph: Unlocking this teaches how smoke speeds CYP1A2 clearance — the classic clozapine / olanzapine lesson.
+                - generic:
+                  - generic:
+                    - generic: Drinking
+                    - generic: Alcohol pattern · CYP2E1
+                  - generic:
+                    - button "None" [pressed]
+                    - button "Drinking today"
+                    - button "Heavy, long-term"
+                  - paragraph: Unlocking this teaches acute sedation stacking and chronic CYP2E1 induction — two different alcohol stories.
+                - generic:
+                  - generic:
+                    - generic: How cannabis is taken
+                    - generic: Cannabis route
+                  - generic:
+                    - button "Smoked" [pressed]
+                    - button "Edible"
+                  - paragraph: Smoked THC mostly skips the edible first-pass that makes 11-OH-THC.
+                - generic:
+                  - generic:
+                    - generic: Age
+                    - generic: Age band · Beers list
+                  - generic:
+                    - button "Adult" [pressed]
+                    - button "Older adult"
+                - generic:
+                  - generic:
+                    - generic: Kidneys
+                    - generic: Renal function · GFR
+                  - generic:
+                    - button "Usual" [pressed]
+                    - button "Filter slower"
+                - generic:
+                  - generic:
+                    - generic: Pregnancy or breastfeeding
+                    - generic: Pregnancy / lactation
+                  - generic:
+                    - button "No" [pressed]
+                    - button "Pregnant"
+                    - button "Breastfeeding"
+                - paragraph: Teaching only. The enzyme speed rows are a plain summary of CPIC guidance for a status you already know. They are not a genetic test result, not a gene report reading, and not a reason to change any medicine.
+            - generic [ref=f11e1194]:
+              - generic [ref=f11e1198]:
+                - paragraph [ref=f11e1199]: Host factors need founding
+                - paragraph [ref=f11e1200]: Teaching cards for metabolizer status (phenotype), smoking, alcohol pattern, cannabis route, age, kidney function, and pregnancy sit behind founding. The ketamine route stays free for the oral teaching demo.
+                - paragraph [ref=f11e1201]: "Free desk: up to five drugs, no card needed. Founding is $79 once."
+                - paragraph [ref=f11e1202]:
+                  - text: Pay, get your key, Redeem
+                  - generic [ref=f11e1203]: · Pay $79 once, Get your key, Redeem on this desk
+                - paragraph [ref=f11e1204]: Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.
+              - generic [ref=f11e1205]:
+                - button "Founding · $79 once" [ref=f11e1206] [cursor=pointer]
+                - button "Plans" [ref=f11e1207] [cursor=pointer]
+                - button "Try 7 days free" [ref=f11e1208] [cursor=pointer]
+              - paragraph [ref=f11e1209]: Pay, get your key, Redeem · Venmo @kaleblovingier · Cash App $kaleblovingier7 · PayPal kaleblovingier@gmail.com · card when Stripe is live
+          - generic [ref=f11e1210]:
+            - heading "How long it lingers" [level=2] [ref=f11e1211]
+            - paragraph [ref=f11e1212]: Washout · half-life · enzyme recovery
+            - generic [ref=f11e1213]:
+              - paragraph [ref=f11e1214]: How this works
+              - paragraph [ref=f11e1215]: A washout window is roughly how long a medicine, or its effect on a liver enzyme, keeps lingering after the last dose. Stopping yesterday does not always mean the interaction is gone today.
+              - paragraph [ref=f11e1216]: These are teaching estimates for independent review, not a restart date and not a real-time alert. A study aid for how timing changes the picture. Product labeling and the prescriber govern.
+            - paragraph [ref=f11e1217]: No lingering-effect windows are mapped for this tray. An empty list is not a green light — this desk only knows a short teaching list, and the label and prescriber still govern.
+          - generic [ref=f11e1218]:
+            - heading "Pathway load" [level=2] [ref=f11e1219]
+            - list [ref=f11e1220]:
+              - listitem [ref=f11e1221]:
+                - generic [ref=f11e1222]: CYP1A2
+                - generic [ref=f11e1223]: 1S 0I 0D
+              - listitem [ref=f11e1224]:
+                - generic [ref=f11e1225]: CYP2B6
+                - generic [ref=f11e1226]: 1S 0I 0D
+              - listitem [ref=f11e1227]:
+                - generic [ref=f11e1228]: CYP2C19
+                - generic [ref=f11e1229]: 1S 0I 0D
+              - listitem [ref=f11e1230]:
+                - generic [ref=f11e1231]: CYP3A4
+                - generic [ref=f11e1232]: 2S 0I 0D
+          - generic [ref=f11e1233]:
+            - paragraph [ref=f11e1234]: About this desk
+            - paragraph [ref=f11e1235]: Built for learning and clinical review — not a personal treatment guide. FirstPass 1.14.0 is an educational clinical decision-support aid for clinicians and supervised learning. This software has not been cleared or approved by the U.S. Food and Drug Administration. Display of FDA-label text does not make FirstPass an FDA-cleared device. It can miss risks; an empty result is not proof that a combination is safe. It does not identify product contents, diagnose, or tell anyone what to start, stop, or change. For care decisions, consult a qualified clinician and current FDA-approved labeling. Street-supply entries are teaching examples, not product identification.
+    - contentinfo [ref=f11e1236]:
+      - generic [ref=f11e1237]:
+        - generic [ref=f11e1238]:
+          - paragraph [ref=f11e1239]: Pay & write
+          - paragraph [ref=f11e1240]: Kaleb Lovingier
+          - list [ref=f11e1241]:
+            - listitem [ref=f11e1242]:
+              - link "Venmo @kaleblovingier" [ref=f11e1243] [cursor=pointer]:
+                - /url: https://venmo.com/u/kaleblovingier
+              - text: · founding $79 lifetime
+            - listitem [ref=f11e1244]:
+              - link "Cash App $kaleblovingier7" [ref=f11e1245] [cursor=pointer]:
+                - /url: https://cash.app/$kaleblovingier7
+            - listitem [ref=f11e1246]:
+              - link "PayPal kaleblovingier@gmail.com" [ref=f11e1247] [cursor=pointer]:
+                - /url: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=kaleblovingier%40gmail.com&item_name=FirstPass%20founding&amount=79&currency_code=USD
+            - listitem [ref=f11e1248]:
+              - link "kaleblovingier@gmail.com" [ref=f11e1249] [cursor=pointer]:
+                - /url: mailto:kaleblovingier@gmail.com
+            - listitem [ref=f11e1250]:
+              - link "360-707-8923" [ref=f11e1251] [cursor=pointer]:
+                - /url: tel:+13607078923
+            - listitem [ref=f11e1252]: "@badbird · @kaleblovingier"
+        - paragraph [ref=f11e1253]: FirstPass 1.14.0. FirstPass 1.14.0 · Not FDA-cleared · Confirm against the FDA-approved Prescribing Information · Labeled ranges are not a prescription · Independent review required.
+  - generic [aria-hidden] [ref=f11e1254]: 0d
