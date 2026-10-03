@@ -94,3 +94,13 @@ test("operator close copy does not pitch a card or a monthly comparison", async 
   assert.match(pay, /mint a signed key in Foundry/);
 });
 
+
+test("pay step names the apps instead of a rail", () => {
+  const start = src.indexOf("MANUAL_UNLOCK_STEPS");
+  const end = src.indexOf("FOUNDING_UNLOCKS", start);
+  const steps = src.slice(start, end);
+  assert.match(steps, /Open Venmo, Cash App, or PayPal below/);
+  assert.match(steps, /liver enzyme map/);
+  assert.doesNotMatch(steps, /rail/i);
+  assert.doesNotMatch(steps, /send founding/);
+});

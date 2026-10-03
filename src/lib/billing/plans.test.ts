@@ -32,6 +32,10 @@ test("founding card lists the canon unlocks and no leftover naming", async () =>
     assert.match(text, re);
   }
   assert.match(text, /no subscription/i);
+  const free = PLAN_BY_ID.free.features.join(" | ");
+  assert.match(free, /liver enzymes/i);
+  assert.match(free, /Drug identity cards \(DrugBank\)/);
+  assert.doesNotMatch(free, /occupancy heatmap/i);
   for (const p of Object.values(PLAN_BY_ID)) {
     assert.doesNotMatch(`${p.tagline} ${p.features.join(" ")}`, /\boften\b|founding \/ lab|Everything in Pro/i);
   }

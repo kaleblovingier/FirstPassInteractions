@@ -240,7 +240,7 @@ export function DeskApp() {
                 ) : null}
               </div>
               <div className="mt-1 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                CYP450 · not FDA-cleared
+                Liver enzymes (CYP) · not FDA-cleared
               </div>
             </div>
             </div>
@@ -257,7 +257,7 @@ export function DeskApp() {
                   ["desk", "Desk"],
                   ["library", "Library"],
                   ["cites", "Sources"],
-                  ["atlas", "CYP map"],
+                  ["atlas", "Enzyme map"],
                   ["study", "Learn"],
                   ["rounds", "Cases"],
                   ["compare", "Compare"],
@@ -465,10 +465,7 @@ export function DeskApp() {
                       {pro ? (
                         <StackMeters stacks={report.stacks} />
                       ) : report.stacks.some((s) => s.score > 0) ? (
-                        <Paywall
-                          title="Stack-load meters need founding"
-                          blurb="Serotonin, CNS, QT, pressor, and NMDA meters unlock with founding ($79 lifetime) or Pro."
-                        >
+                        <Paywall gate="stacks">
                           <StackMeters stacks={report.stacks} />
                         </Paywall>
                       ) : null}
@@ -491,10 +488,7 @@ export function DeskApp() {
                   {pro ? (
                     <MetaboliteCard ids={selected} />
                   ) : treesFor(selected).length > 0 ? (
-                    <Paywall
-                      title="Metabolite maps need founding"
-                      blurb="Norketamine, 11-OH-THC, morphine, dextrorphan — the parent is only half the story. Included in founding ($79 lifetime)."
-                    >
+                    <Paywall gate="metabolites">
                       <MetaboliteCard ids={selected} />
                     </Paywall>
                   ) : null}
@@ -515,7 +509,7 @@ export function DeskApp() {
                     <span>
                       <span className="font-serif text-lg tracking-tight text-fg">Study this pair</span>
                       <span className="mt-0.5 block text-xs text-muted">
-                        Mechanism cards from this pair. Rounds, named pairs, and the CYP map live on Study. Not a milligram.
+                        Mechanism cards from this pair. Rounds, named pairs, and the enzyme map (CYP) live on Study. Not a milligram.
                       </span>
                     </span>
                     <span className="font-mono text-[11px] uppercase tracking-wide text-muted">Study</span>
@@ -524,10 +518,7 @@ export function DeskApp() {
                   {pro ? (
                     <StackMeters stacks={report.stacks} />
                   ) : report.stacks.some((s) => s.score > 0) ? (
-                    <Paywall
-                      title="Stack-load meters need founding"
-                      blurb="Serotonin, CNS, QT, pressor, and NMDA meters unlock with founding ($79 lifetime) or Pro."
-                    >
+                    <Paywall gate="stacks">
                       <StackMeters stacks={report.stacks} />
                     </Paywall>
                   ) : null}
@@ -544,10 +535,7 @@ export function DeskApp() {
                   {pro ? (
                     <MetaboliteCard ids={selected} />
                   ) : treesFor(selected).length > 0 ? (
-                    <Paywall
-                      title="Metabolite maps need founding"
-                      blurb="Norketamine, 11-OH-THC, morphine, dextrorphan — the parent is only half the story. Included in founding ($79 lifetime)."
-                    >
+                    <Paywall gate="metabolites">
                       <MetaboliteCard ids={selected} />
                     </Paywall>
                   ) : null}
@@ -583,10 +571,7 @@ export function DeskApp() {
               ) : (
                 <>
                   <KetamineRouteCard />
-                  <Paywall
-                    title="Host factors unlock with founding"
-                    blurb="Phenotype, smoke, alcohol pattern, cannabis route, age, kidney, and pregnancy teaching cards. Ketamine route stays free for the oral demo; five-drug checks stay free."
-                  >
+                  <Paywall gate="host">
                     <PhenotypeCard hideKetamineRoute />
                   </Paywall>
                 </>
@@ -944,7 +929,7 @@ function RiskBanner({
     if (plan === "free") {
       openCheckout(
         "lab",
-        "The full collision report unlocks with founding ($79 lifetime) — host factors, atlas, and export included.",
+        foundingGateCopy("report").reason,
         "life",
       );
       return;

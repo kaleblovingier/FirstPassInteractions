@@ -354,7 +354,7 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
         {!pro ? (
           <div className="mt-4 flex flex-col gap-3 rounded-lg bg-bg-sunken p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs leading-relaxed text-muted">
-              Host-factor cases (phenotype, smoking, alcohol, or cannabis route) appear with founding access.
+              Cases that set metabolizer status (phenotype), smoking, alcohol, or cannabis route appear with founding.
             </p>
             <Button variant="secondary" size="sm" className="shrink-0" onClick={onUnlock}>
               <LockKeyhole aria-hidden="true" className="size-3.5" />

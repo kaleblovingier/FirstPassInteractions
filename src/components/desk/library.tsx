@@ -77,7 +77,7 @@ export function Formulary() {
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
               Pick a family or search, then tap a row to add it to the desk.{" "}
-              {freeCapNote} Host factors and the atlas are Pro.
+              {freeCapNote} Host factors and the liver enzyme map come with founding ($79 once).
             </p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export function Formulary() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Filter by name, brand, alias, CYP…"
+          placeholder="Filter by name, brand, alias, or enzyme (CYP)…"
           aria-label="Filter the shelf"
           className="h-12 w-full rounded-lg bg-surface-2 pl-10 pr-4 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         />

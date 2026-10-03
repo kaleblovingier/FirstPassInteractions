@@ -172,7 +172,7 @@ export function StudyPage() {
     if (needsHost && plan === "free") {
       openCheckout(
         "lab",
-        "That lab assignment uses host factors (phenotype, smoke, or similar). Founding opens them.",
+        "That lab assignment uses host factors such as metabolizer status (phenotype) or smoking. Founding opens them.",
         "life",
       );
       return;
@@ -511,7 +511,7 @@ export function StudyPage() {
             : pile === "open"
               ? "Nothing unseen here. Switch to All, or reset marks to start over."
               : lane === "desk"
-                ? "Nothing on the desk yet. Load a lab assignment, a pair, or switch to Rounds, Named pairs, or CYP map."
+                ? "Nothing on the desk yet. Load a lab assignment, a pair, or switch to Rounds, Named pairs, or Enzyme map."
                 : "No cards in this lane."}
         </p>
       ) : (
