@@ -122,3 +122,15 @@ test('ciprofloxacin quotes the tizanidine contraindication and stays quiet on th
   assert.doesNotMatch(theo, /Ciprofloxacin label calls this combination contraindicated/);
   assert.doesNotMatch(theo, /Ciprofloxacin label states the inhibition/);
 });
+
+test('fluvoxamine quotes the named contraindications and stays quiet on an unnamed pair', () => {
+  // The tablet gold quote also starts with "Fluvoxamine", so match this label's own line.
+  const line = /The Fluvoxamine label calls this combination contraindicated/;
+  for (const victim of ['tizanidine', 'ramelteon', 'pimozide', 'thioridazine']) {
+    const details = pkBasis('fluvoxamine', victim).map((x) => x.detail).join('\n');
+    assert.match(details, line, victim);
+    assert.match(details, /tizanidine, pimozide, alosetron, or ramelteon/, victim);
+  }
+  const theo = pkBasis('fluvoxamine', 'theophylline').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(theo, line);
+});
