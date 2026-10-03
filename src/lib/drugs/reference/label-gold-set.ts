@@ -2305,11 +2305,11 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
   // #58 added pimozide's FDA CYP2D6 major substrate role, so both now meet the major floor.
   // alosetron+fluvoxamine left this list: #58's CYP1A2 sensitive role plus the Lotronex pin
   // holds the pair at contraindicated.
-  "thioridazine+fluvoxamine", // label: contraindicated (thioridazine; fluvoxamine 4) · engine: moderate
-  // wave 2 (MAT / ketamine clinic), for formulary owner (Grok Bot 5) review
-  "methadone+zidovudine", // label: warning, floor moderate (methadone 7: "could result in toxic effects") · engine: none at pair level
-  "buprenorphine+phenelzine", // label: avoid, floor major (Suboxone 7: "not recommended" with MAOIs) · engine: moderate
-  "esketamine+methylphenidate", // label: warning, floor moderate (Spravato 7.2: may increase blood pressure) · engine: none at pair level
+  // thioridazine+fluvoxamine left this list: the leftover label pin holds it at contraindicated.
+  // wave 2 (MAT / ketamine clinic): methadone+zidovudine (floor moderate),
+  // buprenorphine+phenelzine (floor major), and esketamine+methylphenidate
+  // (floor moderate) now meet those floors and left this list. Their labels are
+  // warning or avoid, not contraindicated, so they are not gap entries.
 
   // wave 3: #58 holds the CYP-backed misses at contraindicated (49 label pins,
   // plus boosted cobicistat combo rows whose CYP3A4 role already reads
@@ -2317,18 +2317,12 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
   // (elbasvir/grazoprevir, irinotecan, drospirenone) as standalone
   // contraindicated findings, so they meet the floor and left this list.
 
-  // wave 4: label says contraindicated; engine is below major
-  "itraconazole+dofetilide", // engine: none
-  "itraconazole+irinotecan", // engine: none
-  "ritonavir+flecainide", // engine: moderate
-  "paxlovid+flecainide", // engine: none
-  "paxlovid+phenobarbital", // engine: moderate
-  "paxlovid+primidone", // engine: moderate
-  "paxlovid+phenytoin", // engine: none
-  "paxlovid+rifampin", // engine: moderate
-  "paxlovid+rifapentine", // engine: none
-  "paxlovid+st-johns-wort", // engine: moderate
-  "lopinavir+grazoprevir-elbasvir", // engine: none
+  // wave 4: the 11 pairs that sat below major (itraconazole+dofetilide,
+  // itraconazole+irinotecan, ritonavir+flecainide, paxlovid+flecainide,
+  // paxlovid+phenobarbital, paxlovid+primidone, paxlovid+phenytoin,
+  // paxlovid+rifampin, paxlovid+rifapentine, paxlovid+st-johns-wort,
+  // lopinavir+grazoprevir-elbasvir) left this list. The wave-4 pins hold
+  // them at contraindicated.
 ];
 
 /**
@@ -2338,13 +2332,10 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
  * Pinned by a test so the list is pruned when the engine changes.
  */
 export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
-  "pimozide+fluoxetine", // Prozac 4.2 contraindicated; #58 2D6 major substrate reaches major, not contraindicated
-  "pimozide+paroxetine", // pimozide label contraindicated; #58 2D6 major substrate reaches major, not contraindicated
-  "pimozide+fluvoxamine",
-  "dronedarone+ketoconazole",
-  "ergotamine+ritonavir",
-  "rifampin+atazanavir",
-  "voriconazole+rifampin",
+  // pimozide+fluoxetine, pimozide+paroxetine, pimozide+fluvoxamine,
+  // dronedarone+ketoconazole, ergotamine+ritonavir, rifampin+atazanavir,
+  // and voriconazole+rifampin left this list: leftover label pins hold them
+  // at contraindicated.
   // wave 2: naltrexone labels say contraindicated; engine says major ("Serious concern")
   "naltrexone+methadone", // naltrexone tablets CONTRAINDICATIONS (opiate agonists, e.g., methadone)
   "naltrexone+buprenorphine", // naltrexone tablets CONTRAINDICATIONS (partial agonists, e.g., buprenorphine)
@@ -2354,55 +2345,8 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   // hold them at contraindicated. Prezcobix and Evotaz pairs that were below
   // major are contraindicated too and left KNOWN_UNDERCALLS.
 
-  // wave 4: label says contraindicated; engine is major ("Serious concern"), not contraindicated
-  "clarithromycin+ergotamine",
-  "clarithromycin+dihydroergotamine",
-  "itraconazole+methadone",
-  "itraconazole+disopyramide",
-  "itraconazole+dronedarone",
-  "itraconazole+quinidine",
-  "itraconazole+isavuconazole",
-  "itraconazole+dihydroergotamine",
-  "itraconazole+ergotamine",
-  "itraconazole+methylergonovine",
-  "itraconazole+avanafil",
-  "itraconazole+ticagrelor",
-  "posaconazole+quinidine",
-  "posaconazole+atorvastatin",
-  "posaconazole+ergotamine",
-  "posaconazole+dihydroergotamine",
-  "ritonavir+amiodarone",
-  "ritonavir+dronedarone",
-  "ritonavir+propafenone",
-  "ritonavir+quinidine",
-  "ritonavir+dihydroergotamine",
-  "ritonavir+methylergonovine",
-  "ritonavir+suzetrigine",
-  "ritonavir+sildenafil-pah",
-  "ritonavir+apalutamide",
-  "ritonavir+st-johns-wort",
-  "paxlovid+amiodarone",
-  "paxlovid+dronedarone",
-  "paxlovid+propafenone",
-  "paxlovid+quinidine",
-  "paxlovid+dihydroergotamine",
-  "paxlovid+ergotamine",
-  "paxlovid+methylergonovine",
-  "paxlovid+suzetrigine",
-  "paxlovid+sildenafil-pah",
-  "paxlovid+apalutamide",
-  "paxlovid+enzalutamide",
-  "paxlovid+carbamazepine",
-  "paxlovid+lumacaftor-ivacaftor",
-  "lopinavir+dronedarone",
-  "lopinavir+dihydroergotamine",
-  "lopinavir+ergotamine",
-  "lopinavir+methylergonovine",
-  "lopinavir+suzetrigine",
-  "lopinavir+sildenafil-pah",
-  "lopinavir+apalutamide",
-  "lopinavir+rifampin",
-  "lopinavir+st-johns-wort",
+  // wave 4: the 48 pairs that met major but not contraindicated left this
+  // list. The wave-4 pins hold them at contraindicated.
 ];
 
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
