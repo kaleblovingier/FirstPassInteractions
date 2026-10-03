@@ -125,6 +125,66 @@ const EXPECTED_PINS = [
   "atazanavir-cobicistat+ethinyl-estradiol",
   "atazanavir-cobicistat+nevirapine",
   "atazanavir-cobicistat+sildenafil-pah",
+  // PR #86 wave 4: label contraindicated, engine was below contraindicated.
+  "clarithromycin+ergotamine",
+  "clarithromycin+dihydroergotamine",
+  "itraconazole+methadone",
+  "itraconazole+disopyramide",
+  "itraconazole+dronedarone",
+  "itraconazole+quinidine",
+  "itraconazole+isavuconazole",
+  "itraconazole+dihydroergotamine",
+  "itraconazole+ergotamine",
+  "itraconazole+methylergonovine",
+  "itraconazole+avanafil",
+  "itraconazole+ticagrelor",
+  "posaconazole+quinidine",
+  "posaconazole+atorvastatin",
+  "posaconazole+ergotamine",
+  "posaconazole+dihydroergotamine",
+  "ritonavir+amiodarone",
+  "ritonavir+dronedarone",
+  "ritonavir+flecainide",
+  "ritonavir+propafenone",
+  "ritonavir+quinidine",
+  "ritonavir+dihydroergotamine",
+  "ritonavir+methylergonovine",
+  "ritonavir+suzetrigine",
+  "ritonavir+sildenafil-pah",
+  "ritonavir+apalutamide",
+  "ritonavir+st-johns-wort",
+  "paxlovid+amiodarone",
+  "paxlovid+dronedarone",
+  "paxlovid+propafenone",
+  "paxlovid+quinidine",
+  "paxlovid+dihydroergotamine",
+  "paxlovid+ergotamine",
+  "paxlovid+methylergonovine",
+  "paxlovid+suzetrigine",
+  "paxlovid+sildenafil-pah",
+  "paxlovid+apalutamide",
+  "paxlovid+enzalutamide",
+  "paxlovid+carbamazepine",
+  "paxlovid+lumacaftor-ivacaftor",
+  "lopinavir+dronedarone",
+  "lopinavir+dihydroergotamine",
+  "lopinavir+ergotamine",
+  "lopinavir+methylergonovine",
+  "lopinavir+suzetrigine",
+  "lopinavir+sildenafil-pah",
+  "lopinavir+apalutamide",
+  "lopinavir+rifampin",
+  "lopinavir+st-johns-wort",
+  "itraconazole+dofetilide",
+  "itraconazole+irinotecan",
+  "paxlovid+flecainide",
+  "paxlovid+phenobarbital",
+  "paxlovid+primidone",
+  "paxlovid+phenytoin",
+  "paxlovid+rifampin",
+  "paxlovid+rifapentine",
+  "paxlovid+st-johns-wort",
+  "lopinavir+grazoprevir-elbasvir",
   // No CYP finding to hold. Standalone pins. Not a CYP grade.
   "darunavir+grazoprevir-elbasvir",
   "darunavir-cobicistat+grazoprevir-elbasvir",
@@ -139,7 +199,8 @@ test("pin list is exactly the reviewed set", () => {
   assert.deepEqual(LABEL_CONTRAINDICATIONS.map((r) => r.id).sort(), [...EXPECTED_PINS].sort());
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 19);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 7);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 49);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 17);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme") {
       assert.equal(r.enzyme, undefined, r.id);
@@ -172,7 +233,22 @@ for (const r of LABEL_CONTRAINDICATIONS) {
       assert.match(f.id, /label-ci-standalone/);
       assert.equal(f.tags.includes("inhibitor"), false);
       assert.equal(f.tags.includes("inducer"), false);
-      assert.equal(DRUG_BY_ID[r.otherId].enzymes.length, 0, "partner has no CYP role");
+      // #81 partners have no CYP role. Wave-4 standalone pins also cover pairs
+      // that produce no enzyme finding even when the partner has catalog roles
+      // (flecainide is CYP2D6; Paxlovid is not a 2D6 inhibitor). Do not require
+      // an empty role list for those, and do not invent a CYP grade.
+      const noCypPartner = new Set([
+        "darunavir+grazoprevir-elbasvir",
+        "darunavir-cobicistat+grazoprevir-elbasvir",
+        "atazanavir+grazoprevir-elbasvir",
+        "atazanavir-cobicistat+grazoprevir-elbasvir",
+        "atazanavir+irinotecan",
+        "atazanavir-cobicistat+irinotecan",
+        "atazanavir-cobicistat+drospirenone",
+      ]);
+      if (noCypPartner.has(r.id)) {
+        assert.equal(DRUG_BY_ID[r.otherId].enzymes.length, 0, "partner has no CYP role");
+      }
       assert.match(f.clinical, /no CYP finding/);
     }
     const basis = basisFor(f)[0];
@@ -207,6 +283,13 @@ test("pins are narrow: no class expansion, enzyme rule unchanged", () => {
   assert.equal(labelContraindicationFor("darunavir", "sildenafil"), undefined);
   assert.equal(labelContraindicationFor("atazanavir", "sildenafil"), undefined);
   assert.equal(labelContraindicationFor("atazanavir-cobicistat", "sildenafil"), undefined);
+  // Wave 4 pins the PAH sildenafil row only, same as wave 3.
+  assert.equal(labelContraindicationFor("ritonavir", "sildenafil-pah")?.id, "ritonavir+sildenafil-pah");
+  assert.equal(labelContraindicationFor("paxlovid", "sildenafil-pah")?.id, "paxlovid+sildenafil-pah");
+  assert.equal(labelContraindicationFor("lopinavir", "sildenafil-pah")?.id, "lopinavir+sildenafil-pah");
+  assert.equal(labelContraindicationFor("ritonavir", "sildenafil"), undefined);
+  assert.equal(labelContraindicationFor("paxlovid", "sildenafil"), undefined);
+  assert.equal(labelContraindicationFor("lopinavir", "sildenafil"), undefined);
   // Partners with no CYP role are pinned as standalone contraindications, not given a CYP grade.
   for (const [a, b] of [
     ["atazanavir", "irinotecan"],
