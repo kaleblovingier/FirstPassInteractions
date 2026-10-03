@@ -35,6 +35,11 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
       detail: "Confirm ingredient, strength, dose, route, schedule, last dose, and recent starts or stops—including OTC products and supplements.",
     },
     {
+      id: "allergies",
+      title: "Review allergies and prior adverse drug reactions",
+      detail: "Confirm the substance, reaction, severity, and timing. Unknown or undocumented allergy status is not the same as no known allergies.",
+    },
+    {
       id: "context",
       title: "Verify patient-specific context",
       detail: "Confirm the relevant history and patient factors with the care team. This desk models only the context shown in its controls.",
