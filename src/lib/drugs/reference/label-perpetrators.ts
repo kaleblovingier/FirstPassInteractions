@@ -193,4 +193,45 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-07-23",
     retrieved: "2026-10-02",
   },
+
+  {
+    perpIds: ["nefazodone"],
+    brand: "Nefazodone",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "Drug Interactions",
+    roleQuote: "These effects appear to be due to the inhibition of CYP3A4 by nefazodone",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide", "carbamazepine"],
+        section: "Contraindications",
+        quote: "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated",
+      },
+    ],
+    // Triazolam is "should be avoided," not listed as contraindicated.
+    alsoNamed: ["triazolam"],
+    url: DM("0bd4c34a-4f43-4c84-8b98-1d074cba97d5"),
+    labelEffective: "2025-09-04",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["rifampin"],
+    brand: "Rifampin",
+    enzyme: "CYP3A4",
+    role: "inducer",
+    section: "Drug Interactions",
+    roleQuote: "Avoid the use of rifampin, a strong CYP3A4 inducer, if possible.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["atazanavir", "atazanavir-cobicistat", "darunavir", "darunavir-cobicistat", "cabotegravir", "fostemsavir", "lenacapavir"],
+        section: "Contraindications",
+        quote: "Rifampin is contraindicated in patients who are also receiving atazanavir, darunavir, fosamprenavir, saquinavir, tipranavir, cabotegravir, fostemsavir and lenacapavir (see prescribing information for SUNLENCA ® ) due to the potential of rifampin to substantially decrease plasma concentrations of these antiviral drugs, which may result in decreased antiviral efficacy and/or development of viral resistance.",
+      },
+      { victimIds: ["lurasidone"], section: "Contraindications", quote: "Rifampin is contraindicated in patients receiving lurasidone." },
+      { victimIds: ["praziquantel"], section: "Contraindications", quote: "Rifampin is contraindicated in patients receiving praziquantel since therapeutically effective blood levels of praziquantel may not be achieved." },
+    ],
+    url: DM("8be91604-d7cd-4f2b-997d-e3364e4092e5"),
+    labelEffective: "2026-05-05",
+    retrieved: "2026-10-02",
+  },
 ];
