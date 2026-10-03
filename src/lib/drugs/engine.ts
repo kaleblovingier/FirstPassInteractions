@@ -1037,7 +1037,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
   if (
     (has(a, "beta-blocker") && has(b, "ndhp-ccb")) ||
     (has(b, "beta-blocker") && has(a, "ndhp-ccb")) ||
-    (has(a, "bradycardic") && has(b, "bradycardic") && (has(a, "ndhp-ccb") || has(b, "ndhp-ccb") || a.id === "amiodarone" || b.id === "amiodarone" || a.id === "donepezil" || b.id === "donepezil"))
+    (has(a, "bradycardic") && has(b, "bradycardic") && (has(a, "ndhp-ccb") || has(b, "ndhp-ccb") || a.id === "amiodarone" || b.id === "amiodarone" || a.id === "donepezil" || b.id === "donepezil" || a.id === "huperzine" || b.id === "huperzine"))
   ) {
     out.push(
       pdPair(a, b, {
