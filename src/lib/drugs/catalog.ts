@@ -2620,7 +2620,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["schisandra chinensis", "schisandra sphenanthera", "wu wei zi", "wuzhi", "five flavor berry"],
-      note: "Xin 2009: Schisandra sphenanthera roughly doubled midazolam AUC in volunteers — moderate 3A4, not ketoconazole. Chinensis products vary. Next to oral midazolam, tacrolimus, or a 3A4 statin it is a perpetrator. Not St. John's wort induction.",
+      note: "Can raise how much of some medicines stay in the body. A volunteer study of one species roughly doubled midazolam, a moderate effect, not as strong as ketoconazole. Products vary, and it does not clear medicines out the way St. John's wort does.",
     }),
   d("lavender", "Lavender (oral)", [], "Lavandula (herbal sedative)",
     [],

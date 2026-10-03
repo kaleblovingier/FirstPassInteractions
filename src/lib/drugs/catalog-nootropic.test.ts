@@ -66,7 +66,7 @@ test("bacopa is only a weak 2C19 grade and adrafinil keeps the modafinil map", (
 });
 
 test("new shelf notes lead with everyday words", () => {
-  for (const id of IDS) {
+  for (const id of [...IDS, "schisandra"]) {
     const note = DRUG_BY_ID[id].note ?? "";
     const first = note.split(". ")[0];
     assert.doesNotMatch(first, /CYP|SmPC|Ramasamy|LAT1|AChE|PD\b/, `${id} opens with jargon: ${first}`);
