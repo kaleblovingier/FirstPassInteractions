@@ -6,6 +6,12 @@ import { DRUG_BY_ID, DRUGS } from "./catalog";
 import { FDA_DDI_SOURCE, FDA_DDI_TABLE, type FdaDdiEntry } from "./reference/fda-ddi-table";
 import { buildCatalogMatcher } from "./reference/validate-fda";
 import { LABEL_GOLD_SET, type GoldPair } from "./reference/label-gold-set";
+import {
+  LABEL_CONTRAINDICATED_TAG,
+  LABEL_CONTRAINDICATIONS_RETRIEVED,
+  labelContraindicationFor,
+} from "./label-contraindications";
+import { PERPETRATOR_LABELS } from "./reference/label-perpetrators";
 import type { Finding } from "./types";
 
 export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "fda-ddi" | "cpic" | "pubmed" | "scale" | "desk";
@@ -203,6 +209,49 @@ function labelQuoteBasis(finding: Finding): FindingBasis | null {
   };
 }
 
+/** Verbatim label sentence for a finding held at contraindicated by a label pin. */
+function labelPinBasis(finding: Finding): FindingBasis | null {
+  if (!finding.tags.includes(LABEL_CONTRAINDICATED_TAG) || finding.drugIds.length !== 2) return null;
+  const pin = labelContraindicationFor(finding.drugIds[0], finding.drugIds[1]);
+  if (!pin) return null;
+  const parts = [`The ${pin.labelDrug} label lists this combination under Contraindications.`];
+  if (pin.contraindicationsSentence) parts.push(`Contraindications: "${pin.contraindicationsSentence}"`);
+  parts.push(`${pin.labelSection}: "${pin.quote}"`);
+  if (pin.labelExample) parts.push(`Named in the label: "${pin.labelExample}"`);
+  parts.push(`Retrieved from DailyMed ${pin.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED}.`);
+  return {
+    kind: "fda-pi",
+    label: `${pin.labelDrug} label, Contraindications`,
+    detail: parts.join(" "),
+    href: pin.url,
+  };
+}
+/** Perpetrator's own label, for PK rows FDA Table 1 cannot cite. */
+function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
+  if (finding.kind !== "pk") return null;
+  const [perpId, victimId] = finding.drugIds;
+  const role = finding.tags.find((t) => t === "inhibitor" || t === "inducer");
+  const L = PERPETRATOR_LABELS.find(
+    (x) => x.perpIds.includes(perpId ?? "") && x.enzyme === finding.enzymes[0] && x.role === role,
+  );
+  if (!L || !victimId) return null;
+  const ci = L.contraindicatedWith?.victimIds.includes(victimId) ? L.contraindicatedWith : undefined;
+  if (ci) {
+    return {
+      kind: "fda-pi",
+      label: `${L.brand} label, ${ci.section}`,
+      detail: `The ${L.brand} label calls this combination contraindicated: "${ci.quote}" Retrieved from DailyMed ${L.retrieved}.`,
+      href: L.url,
+    };
+  }
+  return {
+    kind: "fda-pi",
+    label: `${L.brand} label, ${L.section}`,
+    detail: `The ${L.brand} label states the ${L.role === "inducer" ? "induction" : "inhibition"}: "${L.roleQuote}" It does not name this pair as contraindicated; the severity tier on this row is the desk's rule. Retrieved from DailyMed ${L.retrieved}.`,
+    href: L.url,
+  };
+}
+
 function suffixOf(id: string) {
   const parts = id.split("__");
   return parts[parts.length - 1] ?? id;
@@ -211,8 +260,11 @@ function suffixOf(id: string) {
 export function basisFor(finding: Finding): FindingBasis[] {
   const suffix = suffixOf(finding.id);
   const out: FindingBasis[] = [];
+  // #58 label pins lead. Gold-set quotes (#68) still attach for pairs the pin does not already cite.
+  const pinned = labelPinBasis(finding);
+  if (pinned) out.push(pinned);
   const quoted = labelQuoteBasis(finding);
-  if (quoted) out.push(quoted);
+  if (quoted && quoted.href !== pinned?.href) out.push(quoted);
   const boxed = BOXED[suffix];
   if (boxed) {
     out.push({
@@ -234,6 +286,8 @@ export function basisFor(finding: Finding): FindingBasis[] {
   }
   const fda = fdaDdiBasis(finding);
   if (fda) out.push(fda);
+  const perpLabel = fda ? null : perpetratorLabelBasis(finding);
+  if (perpLabel) out.push(perpLabel);
   const cites = citesFor(finding.drugIds).slice(0, 1);
   if (cites[0]) {
     out.push({
@@ -260,7 +314,16 @@ export function basisFor(finding: Finding): FindingBasis[] {
       href: finding.drugIds[0] ? dailymedSearchUrl(DRUG_BY_ID[finding.drugIds[0]]?.name ?? "") : undefined,
     });
   }
-  return out;
+  // Two rules can cite the same label page (e.g. a pinned label rule and the gold-set quote).
+  // Keep the first, so the two visible slots show two different sources.
+  const seen = new Set<string>();
+  return out.filter((b) => {
+    if (!b.href) return true;
+    const k = `${b.kind}|${b.href}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
 
 export function scaleBasis(id: keyof typeof SCALE): FindingBasis {

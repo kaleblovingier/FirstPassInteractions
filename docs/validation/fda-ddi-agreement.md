@@ -14,15 +14,15 @@
 **Denominator:** only (drug, target, role) pairs that FDA's Table 1 actually lists **and** whose drug resolves to a catalog entry. Catalog drugs absent from the FDA table are never counted as disagreements.
 
 - Pairs compared: **273** (from 180 FDA drug names matched to the catalog; 33 FDA names not in catalog)
-- Exact agreement (role + FDA class/grade): **47.6% (130/273)**
-- Role agreement (same role on the target, class/grade ignored): **72.9% (199/273)**
-- FDA strong-inhibitor + strong-inducer pairs, exact: **85.3% (29/34)**; role: 94.1% (32/34) (regression gate baseline: 85.3%)
+- Exact agreement (role + FDA class/grade): **82.8% (226/273)**
+- Role agreement (same role on the target, class/grade ignored): **96.3% (263/273)**
+- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (34/34)**; role: 100% (34/34) (regression gate baseline: 85.3%)
 
 | Category | Count | In formulary review list? |
 | --- | ---: | --- |
 | direction_mismatch | 0 | yes |
-| strength_mismatch | 69 | yes |
-| missing_in_catalog | 74 | yes |
+| strength_mismatch | 37 | yes |
+| missing_in_catalog | 10 | yes |
 | not_in_fda | 50 | no (informational) |
 | drug_not_in_catalog | 33 | no (coverage) |
 
@@ -32,13 +32,13 @@ Reviewed direction-mismatch allowlist entries: 0.
 
 | Target | Pairs | Exact | Role | Strength mismatch | Direction mismatch | Missing |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CYP1A2 | 26 | 23.1% | 61.5% | 10 | 0 | 10 |
-| CYP2B6 | 12 | 8.3% | 58.3% | 6 | 0 | 5 |
-| CYP2C8 | 17 | 41.2% | 64.7% | 4 | 0 | 6 |
-| CYP2C9 | 21 | 23.8% | 57.1% | 7 | 0 | 9 |
-| CYP2C19 | 20 | 50% | 70% | 4 | 0 | 6 |
-| CYP2D6 | 34 | 58.8% | 79.4% | 7 | 0 | 7 |
-| CYP3A4 (FDA "3A") | 119 | 53.8% | 79.8% | 31 | 0 | 24 |
+| CYP1A2 | 26 | 76.9% | 100% | 6 | 0 | 0 |
+| CYP2B6 | 12 | 75% | 100% | 3 | 0 | 0 |
+| CYP2C8 | 17 | 88.2% | 100% | 2 | 0 | 0 |
+| CYP2C9 | 21 | 81% | 95.2% | 3 | 0 | 1 |
+| CYP2C19 | 20 | 90% | 95% | 1 | 0 | 1 |
+| CYP2D6 | 34 | 88.2% | 100% | 4 | 0 | 0 |
+| CYP3A4 (FDA "3A") | 119 | 84% | 99.2% | 18 | 0 | 1 |
 | P-gp | 24 | 70.8% | 70.8% | 0 | 0 | 7 |
 
 ## Formulary owner review list
@@ -48,149 +48,53 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 
 | # | Category | FDA drug | Catalog id | Target | FDA says | Catalog says | FDA footnotes |
 | ---: | --- | --- | --- | --- | --- | --- | --- |
-| 1 | strength_mismatch | abiraterone | `abiraterone` | CYP2D6 | inhibitor (FDA moderate) | inhibitor (strong) | — |
-| 2 | strength_mismatch | alprazolam | `alprazolam` | CYP3A4 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 3 | strength_mismatch | amiodarone | `amiodarone` | CYP3A4 | inhibitor (FDA weak) | substrate (major); inhibitor (moderate) | — |
-| 4 | strength_mismatch | apalutamide | `apalutamide` | CYP2C19 | inducer (FDA moderate) | inducer (strong) | — |
-| 5 | strength_mismatch | armodafinil | `armodafinil` | CYP3A4 | inducer (FDA weak) | substrate (major); inducer (moderate) | — |
-| 6 | strength_mismatch | avanafil | `avanafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 7 | strength_mismatch | bupropion | `bupropion` | CYP2B6 | substrate (FDA sensitive) | substrate (major) | fn 2 |
-| 8 | strength_mismatch | carbamazepine | `carbamazepine` | CYP2B6 | inducer (FDA strong) | inducer (moderate) | — |
-| 9 | strength_mismatch | carbamazepine | `carbamazepine` | CYP2C9 | inducer (FDA weak) | inducer (moderate) | — |
-| 10 | strength_mismatch | celecoxib | `celecoxib` | CYP2C9 | substrate (FDA sensitive) | substrate (major) | fn 3 |
-| 11 | strength_mismatch | cimetidine | `cimetidine` | CYP1A2 | inhibitor (FDA weak) | inhibitor (moderate) | — |
-| 12 | strength_mismatch | cimetidine | `cimetidine` | CYP2D6 | inhibitor (FDA weak) | inhibitor (moderate) | — |
-| 13 | strength_mismatch | cimetidine | `cimetidine` | CYP3A4 | inhibitor (FDA weak) | inhibitor (moderate) | — |
-| 14 | strength_mismatch | cinacalcet | `cinacalcet` | CYP2D6 | inhibitor (FDA moderate) | inhibitor (strong) | — |
-| 15 | strength_mismatch | ciprofloxacin | `ciprofloxacin` | CYP1A2 | inhibitor (FDA moderate) | inhibitor (strong) | fn 20 |
-| 16 | strength_mismatch | ciprofloxacin | `ciprofloxacin` | CYP3A4 | inhibitor (FDA moderate) | inhibitor (weak) | fn 20 |
-| 17 | strength_mismatch | clozapine | `clozapine` | CYP1A2 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 18 | strength_mismatch | colchicine | `colchicine` | CYP3A4 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 19 | strength_mismatch | conivaptan | `conivaptan` | CYP3A4 | inhibitor (FDA moderate) | substrate (major); inhibitor (strong) | fn 5 |
-| 20 | strength_mismatch | conivaptan | `conivaptan` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (strong) | fn 5 |
-| 21 | strength_mismatch | cyclosporine | `cyclosporine` | CYP3A4 | inhibitor (FDA weak) | substrate (sensitive); inhibitor (moderate) | — |
-| 22 | strength_mismatch | darifenacin | `darifenacin` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 23 | strength_mismatch | darunavir | `darunavir` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (strong) | fn 6 |
-| 24 | strength_mismatch | dasatinib | `dasatinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 25 | strength_mismatch | dronedarone | `dronedarone` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (moderate) | — |
-| 26 | strength_mismatch | duloxetine | `duloxetine` | CYP1A2 | substrate (FDA sensitive) | substrate (major) | — |
-| 27 | strength_mismatch | efavirenz | `efavirenz` | CYP2B6 | substrate (FDA moderate-sensitive) | substrate (sensitive); inducer (moderate) | — |
-| 28 | strength_mismatch | Entrectinib | `entrectinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 29 | strength_mismatch | etravirine | `etravirine` | CYP3A4 | inducer (FDA moderate) | substrate (major); inducer (weak) | — |
-| 30 | strength_mismatch | everolimus | `everolimus` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 31 | strength_mismatch | fezolinetant | `fezolinetant` | CYP1A2 | substrate (FDA sensitive) | substrate (major) | — |
-| 32 | strength_mismatch | fluconazole | `fluconazole` | CYP2C9 | inhibitor (FDA moderate) | inhibitor (strong) | — |
-| 33 | strength_mismatch | fluoxetine | `fluoxetine` | CYP2C19 | inhibitor (FDA strong) | inhibitor (moderate) | — |
-| 34 | strength_mismatch | fluvoxamine | `fluvoxamine` | CYP3A4 | inhibitor (FDA weak) | inhibitor (moderate) | fn 8 |
-| 35 | strength_mismatch | fosaprepitant | `fosaprepitant` | CYP3A4 | inhibitor (FDA weak) | inhibitor (moderate) | — |
-| 36 | strength_mismatch | grapefruit juice | `grapefruit` | CYP3A4 | inhibitor (FDA moderate) | inhibitor (strong) | fn 9 |
-| 37 | strength_mismatch | ibrutinib | `ibrutinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 38 | strength_mismatch | isavuconazole | `isavuconazole` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (moderate) | — |
-| 39 | strength_mismatch | modafinil | `modafinil` | CYP3A4 | inducer (FDA weak) | substrate (major); inducer (moderate) | fn 12 |
-| 40 | strength_mismatch | montelukast | `montelukast` | CYP2C8 | substrate (FDA moderate-sensitive) | substrate (minor) | — |
-| 41 | strength_mismatch | nevirapine | `nevirapine` | CYP2B6 | inducer (FDA weak) | inducer (moderate) | — |
-| 42 | strength_mismatch | nortriptyline | `nortriptyline` | CYP2D6 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 43 | strength_mismatch | omeprazole | `omeprazole` | CYP2C19 | inhibitor (FDA weak) | substrate (major); inhibitor (moderate) | — |
-| 44 | strength_mismatch | omeprazole | `omeprazole` | CYP2C19 | substrate (FDA sensitive) | substrate (major); inhibitor (moderate) | — |
-| 45 | strength_mismatch | perphenazine | `perphenazine` | CYP2D6 | substrate (FDA sensitive) | substrate (major) | — |
-| 46 | strength_mismatch | phenobarbital | `phenobarbital` | CYP3A4 | inducer (FDA moderate) | inducer (strong) | — |
-| 47 | strength_mismatch | phenytoin | `phenytoin` | CYP2C9 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 48 | strength_mismatch | pimozide | `pimozide` | CYP3A4 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 49 | strength_mismatch | pioglitazone | `pioglitazone` | CYP2C8 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 50 | strength_mismatch | pirfenidone | `pirfenidone` | CYP1A2 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 51 | strength_mismatch | primidone | `primidone` | CYP3A4 | inducer (FDA moderate) | inducer (strong) | — |
-| 52 | strength_mismatch | propafenone | `propafenone` | CYP2D6 | substrate (FDA moderate-sensitive) | substrate (sensitive); inhibitor (weak) | — |
-| 53 | strength_mismatch | Repotrectinib | `repotrectinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 54 | strength_mismatch | rifampin | `rifampin` | CYP2B6 | inducer (FDA moderate) | inducer (strong) | — |
-| 55 | strength_mismatch | rifampin | `rifampin` | CYP2C9 | inducer (FDA moderate) | inducer (strong) | — |
-| 56 | strength_mismatch | ritonavir | `ritonavir` | CYP2B6 | inducer (FDA weak) | inducer (moderate) | fn 14, fn 15, fn 16 |
-| 57 | strength_mismatch | selexipag | `selexipag` | CYP2C8 | substrate (FDA sensitive) | substrate (major) | fn 21 |
-| 58 | strength_mismatch | sildenafil | `sildenafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 59 | strength_mismatch | tasimelteon | `tasimelteon` | CYP1A2 | substrate (FDA sensitive) | substrate (major) | — |
-| 60 | strength_mismatch | teriflunomide | `teriflunomide` | CYP1A2 | inducer (FDA moderate) | inducer (weak) | — |
-| 61 | strength_mismatch | theophylline | `theophylline` | CYP1A2 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
-| 62 | strength_mismatch | ticagrelor | `ticagrelor` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (weak) | — |
-| 63 | strength_mismatch | tolterodine | `tolterodine` | CYP2D6 | substrate (FDA sensitive) | substrate (major) | — |
-| 64 | strength_mismatch | tucatinib | `tucatinib` | CYP2C8 | inhibitor (FDA weak) | substrate (major); inhibitor (strong) | — |
-| 65 | strength_mismatch | tucatinib | `tucatinib` | CYP3A4 | inhibitor (FDA strong) | inhibitor (weak) | — |
-| 66 | strength_mismatch | vardenafil | `vardenafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
-| 67 | strength_mismatch | voriconazole | `voriconazole` | CYP2C9 | inhibitor (FDA weak) | inhibitor (moderate) | — |
-| 68 | strength_mismatch | warfarin | `warfarin` | CYP2C9 | substrate (FDA moderate-sensitive) | substrate (sensitive) | fn 19 |
-| 69 | strength_mismatch | zileuton | `zileuton` | CYP1A2 | inhibitor (FDA weak) | substrate (major); inhibitor (moderate) | — |
-| 70 | missing_in_catalog | acyclovir | `acyclovir` | CYP1A2 | inhibitor (FDA weak) | — | — |
-| 71 | missing_in_catalog | allopurinol | `allopurinol` | CYP1A2 | inhibitor (FDA weak) | — | — |
-| 72 | missing_in_catalog | alosetron | `alosetron` | CYP1A2 | substrate (FDA sensitive) | — | — |
-| 73 | missing_in_catalog | apalutamide | `apalutamide` | CYP2C9 | inducer (FDA weak) | — | — |
-| 74 | missing_in_catalog | capmatinib | `capmatinib` | CYP1A2 | inhibitor (FDA moderate) | — | — |
-| 75 | missing_in_catalog | capmatinib | `capmatinib` | P-gp | inhibitor | — | — |
-| 76 | missing_in_catalog | ceritinib | `ceritinib` | CYP2C9 | inhibitor (FDA weak) | — | — |
-| 77 | missing_in_catalog | ceritinib | `ceritinib` | CYP3A4 | inhibitor (FDA strong) | substrate (major) | — |
-| 78 | missing_in_catalog | chlorzoxazone | `chlorzoxazone` | CYP3A4 | inhibitor (FDA weak) | — | — |
-| 79 | missing_in_catalog | cilostazol | `cilostazol` | CYP3A4 | inhibitor (FDA weak) | substrate (major) | — |
-| 80 | missing_in_catalog | clobazam | `clobazam` | CYP2D6 | inhibitor (FDA weak) | — | — |
-| 81 | missing_in_catalog | clopidogrel | `clopidogrel` | CYP2B6 | inhibitor (FDA weak) | — | — |
-| 82 | missing_in_catalog | clotrimazole | `clotrimazole` | CYP3A4 | inhibitor (FDA weak) | — | — |
-| 83 | missing_in_catalog | crizotinib | `crizotinib` | CYP3A4 | inhibitor (FDA moderate) | substrate (major) | — |
-| 84 | missing_in_catalog | dabrafenib | `dabrafenib` | CYP2C9 | inducer (FDA weak) | — | — |
-| 85 | missing_in_catalog | dabrafenib | `dabrafenib` | CYP3A4 | inducer (FDA moderate) | substrate (major) | — |
-| 86 | missing_in_catalog | deferasirox | `deferasirox` | CYP2C8 | inhibitor (FDA moderate) | — | — |
-| 87 | missing_in_catalog | desloratadine | `desloratadine` | CYP2C8 | substrate (FDA moderate-sensitive) | — | — |
-| 88 | missing_in_catalog | disulfiram | `disulfiram` | CYP2C9 | inhibitor (FDA weak) | — | — |
-| 89 | missing_in_catalog | efavirenz | `efavirenz` | CYP2C19 | inducer (FDA moderate) | — | — |
-| 90 | missing_in_catalog | Entrectinib | `entrectinib` | CYP3A4 | inhibitor (FDA weak) | substrate (major) | — |
-| 91 | missing_in_catalog | escitalopram | `escitalopram` | CYP2D6 | inhibitor (FDA weak) | — | — |
-| 92 | missing_in_catalog | felbamate | `felbamate` | CYP2C19 | inhibitor (FDA moderate) | — | — |
-| 93 | missing_in_catalog | fluvastatin | `fluvastatin` | CYP2C9 | inhibitor (FDA weak) | substrate (major) | — |
-| 94 | missing_in_catalog | fluvoxamine | `fluvoxamine` | CYP2C9 | inhibitor (FDA weak) | — | fn 8 |
-| 95 | missing_in_catalog | fluvoxamine | `fluvoxamine` | CYP2D6 | inhibitor (FDA weak) | substrate (minor) | fn 8 |
-| 96 | missing_in_catalog | imatinib | `imatinib` | CYP3A4 | inhibitor (FDA moderate) | substrate (major) | — |
-| 97 | missing_in_catalog | isavuconazole | `isavuconazole` | CYP2B6 | inducer (FDA weak) | — | — |
-| 98 | missing_in_catalog | istradefylline | `istradefylline` | CYP3A4 | inhibitor (FDA weak) | substrate (major) | — |
-| 99 | missing_in_catalog | ivacaftor | `ivacaftor` | CYP3A4 | inhibitor (FDA weak) | substrate (sensitive) | — |
-| 100 | missing_in_catalog | ivosidenib | `ivosidenib` | CYP3A4 | inducer (FDA strong) | substrate (major) | fn 10 |
-| 101 | missing_in_catalog | labetalol | `labetalol` | CYP2D6 | inhibitor (FDA weak) | — | — |
-| 102 | missing_in_catalog | lapatinib | `lapatinib` | P-gp | inhibitor | — | — |
-| 103 | missing_in_catalog | Larotrectinib | `larotrectinib` | CYP3A4 | inhibitor (FDA weak) | substrate (major) | — |
-| 104 | missing_in_catalog | lemborexant | `lemborexant` | CYP2B6 | inducer (FDA weak) | — | — |
-| 105 | missing_in_catalog | Loperamide | `loperamide` | CYP2C8 | substrate (FDA moderate-sensitive) | — | — |
-| 106 | missing_in_catalog | lopinavir and ritonavir | `lopinavir` | P-gp | inhibitor | — | — |
-| 107 | missing_in_catalog | lorlatinib | `lorlatinib` | CYP2B6 | inducer (FDA weak) | — | — |
-| 108 | missing_in_catalog | lorlatinib | `lorlatinib` | CYP2C9 | inducer (FDA weak) | — | — |
-| 109 | missing_in_catalog | lorlatinib | `lorlatinib` | CYP3A4 | inducer (FDA moderate) | substrate (major) | — |
-| 110 | missing_in_catalog | mexiletine | `mexiletine` | CYP1A2 | inhibitor (FDA moderate) | substrate (major) | — |
-| 111 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
-| 112 | missing_in_catalog | mobocertinib | `mobocertinib` | CYP3A4 | inducer (FDA weak) | — | — |
-| 113 | missing_in_catalog | mobocertinib | `mobocertinib` | CYP3A4 | substrate (FDA sensitive) | — | — |
-| 114 | missing_in_catalog | oral contraceptives | `ethinyl-estradiol` | CYP1A2 | inhibitor (FDA moderate) | — | — |
-| 115 | missing_in_catalog | peginterferon alpha-2a | `peginterferon-alfa-2a` | CYP1A2 | inhibitor (FDA weak) | — | — |
-| 116 | missing_in_catalog | phenytoin | `phenytoin` | CYP1A2 | inducer (FDA moderate) | — | — |
-| 117 | missing_in_catalog | pimozide | `pimozide` | CYP2D6 | substrate (FDA moderate-sensitive) | — | — |
-| 118 | missing_in_catalog | piperine | `piperine` | CYP1A2 | inhibitor (FDA weak) | — | — |
-| 119 | missing_in_catalog | piperine | `piperine` | CYP2C9 | inhibitor (FDA moderate) | — | — |
-| 120 | missing_in_catalog | Pirtobrutinib | `pirtobrutinib` | CYP2C19 | inhibitor (FDA weak) | — | — |
-| 121 | missing_in_catalog | Pirtobrutinib | `pirtobrutinib` | CYP2C8 | inhibitor (FDA moderate) | — | — |
-| 122 | missing_in_catalog | Pirtobrutinib | `pirtobrutinib` | CYP3A4 | inhibitor (FDA weak) | substrate (major) | — |
-| 123 | missing_in_catalog | Pirtobrutinib | `pirtobrutinib` | P-gp | inhibitor | — | — |
-| 124 | missing_in_catalog | propafenone | `propafenone` | P-gp | inhibitor | — | — |
-| 125 | missing_in_catalog | rabeprazole | `rabeprazole` | CYP2C19 | substrate (FDA moderate-sensitive) | — | — |
-| 126 | missing_in_catalog | ranitidine | `ranitidine` | CYP3A4 | inhibitor (FDA weak) | — | — |
-| 127 | missing_in_catalog | ranolazine | `ranolazine` | CYP3A4 | inhibitor (FDA weak) | substrate (sensitive) | — |
-| 128 | missing_in_catalog | Repotrectinib | `repotrectinib` | CYP3A4 | inducer (FDA moderate) | substrate (major) | — |
-| 129 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
-| 130 | missing_in_catalog | Selpercatinib | `selpercatinib` | CYP2C8 | inhibitor (FDA moderate) | — | — |
-| 131 | missing_in_catalog | Selpercatinib | `selpercatinib` | CYP3A4 | inhibitor (FDA weak) | substrate (major) | — |
-| 132 | missing_in_catalog | Sofosbuvir and Velpatasvir and Voxilaprevir | `sofosbuvir-velpatasvir-voxilaprevir` | P-gp | inhibitor | — | — |
-| 133 | missing_in_catalog | Tazemetostat | `tazemetostat` | CYP2C8 | inhibitor (FDA weak) | — | — |
-| 134 | missing_in_catalog | Tazemetostat | `tazemetostat` | CYP3A4 | inducer (FDA weak) | — | — |
-| 135 | missing_in_catalog | Tazemetostat | `tazemetostat` | CYP3A4 | substrate (FDA moderate-sensitive) | — | — |
-| 136 | missing_in_catalog | trimipramine | `trimipramine` | CYP2D6 | substrate (FDA moderate-sensitive) | — | — |
-| 137 | missing_in_catalog | tucatinib | `tucatinib` | P-gp | inhibitor | — | — |
-| 138 | missing_in_catalog | vemurafenib | `vemurafenib` | CYP1A2 | inhibitor (FDA moderate) | — | — |
-| 139 | missing_in_catalog | vemurafenib | `vemurafenib` | CYP2D6 | inhibitor (FDA weak) | — | — |
-| 140 | missing_in_catalog | vemurafenib | `vemurafenib` | CYP3A4 | inducer (FDA weak) | substrate (major) | — |
-| 141 | missing_in_catalog | voriconazole | `voriconazole` | CYP2B6 | inhibitor (FDA weak) | — | — |
-| 142 | missing_in_catalog | zanubrutinib | `zanubrutinib` | CYP2C19 | inducer (FDA weak) | — | — |
-| 143 | missing_in_catalog | zanubrutinib | `zanubrutinib` | CYP3A4 | inducer (FDA weak) | substrate (major) | — |
+| 1 | strength_mismatch | alprazolam | `alprazolam` | CYP3A4 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 2 | strength_mismatch | avanafil | `avanafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 3 | strength_mismatch | bupropion | `bupropion` | CYP2B6 | substrate (FDA sensitive) | substrate (major) | fn 2 |
+| 4 | strength_mismatch | celecoxib | `celecoxib` | CYP2C9 | substrate (FDA sensitive) | substrate (major) | fn 3 |
+| 5 | strength_mismatch | clozapine | `clozapine` | CYP1A2 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 6 | strength_mismatch | colchicine | `colchicine` | CYP3A4 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 7 | strength_mismatch | conivaptan | `conivaptan` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (moderate) | fn 5 |
+| 8 | strength_mismatch | darifenacin | `darifenacin` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 9 | strength_mismatch | darunavir | `darunavir` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (strong) | fn 6 |
+| 10 | strength_mismatch | dasatinib | `dasatinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 11 | strength_mismatch | dronedarone | `dronedarone` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (moderate) | — |
+| 12 | strength_mismatch | duloxetine | `duloxetine` | CYP1A2 | substrate (FDA sensitive) | substrate (major) | — |
+| 13 | strength_mismatch | efavirenz | `efavirenz` | CYP2B6 | substrate (FDA moderate-sensitive) | substrate (sensitive); inducer (moderate) | — |
+| 14 | strength_mismatch | Entrectinib | `entrectinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (weak) | — |
+| 15 | strength_mismatch | everolimus | `everolimus` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 16 | strength_mismatch | fezolinetant | `fezolinetant` | CYP1A2 | substrate (FDA sensitive) | substrate (major) | — |
+| 17 | strength_mismatch | fluvoxamine | `fluvoxamine` | CYP3A4 | inhibitor (FDA weak) | inhibitor (moderate) | fn 8 |
+| 18 | strength_mismatch | ibrutinib | `ibrutinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 19 | strength_mismatch | isavuconazole | `isavuconazole` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (moderate) | — |
+| 20 | strength_mismatch | nortriptyline | `nortriptyline` | CYP2D6 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 21 | strength_mismatch | omeprazole | `omeprazole` | CYP2C19 | substrate (FDA sensitive) | substrate (major); inhibitor (weak) | — |
+| 22 | strength_mismatch | perphenazine | `perphenazine` | CYP2D6 | substrate (FDA sensitive) | substrate (major) | — |
+| 23 | strength_mismatch | phenytoin | `phenytoin` | CYP2C9 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 24 | strength_mismatch | pimozide | `pimozide` | CYP3A4 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 25 | strength_mismatch | pioglitazone | `pioglitazone` | CYP2C8 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 26 | strength_mismatch | pirfenidone | `pirfenidone` | CYP1A2 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 27 | strength_mismatch | propafenone | `propafenone` | CYP2D6 | substrate (FDA moderate-sensitive) | substrate (sensitive); inhibitor (weak) | — |
+| 28 | strength_mismatch | Repotrectinib | `repotrectinib` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inducer (moderate) | — |
+| 29 | strength_mismatch | ritonavir | `ritonavir` | CYP2B6 | inducer (FDA weak) | inducer (moderate) | fn 14, fn 15, fn 16 |
+| 30 | strength_mismatch | selexipag | `selexipag` | CYP2C8 | substrate (FDA sensitive) | substrate (major) | fn 21 |
+| 31 | strength_mismatch | sildenafil | `sildenafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 32 | strength_mismatch | tasimelteon | `tasimelteon` | CYP1A2 | substrate (FDA sensitive) | substrate (major) | — |
+| 33 | strength_mismatch | theophylline | `theophylline` | CYP1A2 | substrate (FDA moderate-sensitive) | substrate (sensitive) | — |
+| 34 | strength_mismatch | ticagrelor | `ticagrelor` | CYP3A4 | substrate (FDA sensitive) | substrate (major); inhibitor (weak) | — |
+| 35 | strength_mismatch | tolterodine | `tolterodine` | CYP2D6 | substrate (FDA sensitive) | substrate (major) | — |
+| 36 | strength_mismatch | vardenafil | `vardenafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
+| 37 | strength_mismatch | warfarin | `warfarin` | CYP2C9 | substrate (FDA moderate-sensitive) | substrate (sensitive) | fn 19 |
+| 38 | missing_in_catalog | capmatinib | `capmatinib` | P-gp | inhibitor | — | — |
+| 39 | missing_in_catalog | clotrimazole | `clotrimazole` | CYP3A4 | inhibitor (FDA weak) | — | — |
+| 40 | missing_in_catalog | lapatinib | `lapatinib` | P-gp | inhibitor | — | — |
+| 41 | missing_in_catalog | lopinavir and ritonavir | `lopinavir` | P-gp | inhibitor | — | — |
+| 42 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
+| 43 | missing_in_catalog | Pirtobrutinib | `pirtobrutinib` | P-gp | inhibitor | — | — |
+| 44 | missing_in_catalog | propafenone | `propafenone` | P-gp | inhibitor | — | — |
+| 45 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
+| 46 | missing_in_catalog | Sofosbuvir and Velpatasvir and Voxilaprevir | `sofosbuvir-velpatasvir-voxilaprevir` | P-gp | inhibitor | — | — |
+| 47 | missing_in_catalog | tucatinib | `tucatinib` | P-gp | inhibitor | — | — |
 
 <details><summary>FDA footnotes cited above</summary>
 
@@ -199,14 +103,10 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 - **5.** The classification is based on studies conducted with intravenously administered conivaptan.
 - **6.** Usually administered to patients in combination with ritonavir, a strong CYP3A inhibitor.
 - **8.** Fluvoxamine increased the AUC of certain sensitive CYP3A substrates more than 2-fold (e.g., increased the AUC of buspirone 2.35-fold)
-- **9.** Paraphrase: the grapefruit juice effect varies widely by brand and preparation; FDA notes it can classify as a strong CYP3A inhibitor with some preparations and more commonly as a moderate one.
-- **10.** Based on PBPK simulation
-- **12.** Exposure-condition caveat (FDA footnote 12); wording not reproduced here, see the source page.
 - **14.** Ritonavir is approved for use in combination with other anti-HIV or anti-HCV drugs. Caution should be used when extrapolating the observed effect of ritonavir alone to the effect of anti-HIV or anti-HCV combination regimens on CYP3A activities.
 - **15.** Exposure-condition caveat (FDA footnote 15); wording not reproduced here, see the source page.
 - **16.** Exposure-condition caveat (FDA footnote 16); wording not reproduced here, see the source page.
 - **19.** S-warfarin
-- **20.** Ciprofloxacin is generally classified a moderate CYP 1A2 inhibitor based on totality of evidence; however, it can sometimes behave like a strong inhibitor (i.e., increase AUC more than 5-fold) when it interacts with certain CYP 1A2 substrates that are considered highly sensitive (e.g., tizanidine).
 - **21.** Selexipag is a prodrug. it is the selexipag active metabolite ACT-333679 that is a sensitive substrate of CYP2C8. Selexipag and ACT-333679 are also substrates of OATP1B transporter
 
 </details>

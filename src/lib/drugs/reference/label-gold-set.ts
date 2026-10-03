@@ -1488,68 +1488,27 @@ export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3];
  */
 export const KNOWN_UNDERCALLS: readonly string[] = [
   // for formulary owner (Grok Bot 5) review
-  "pimozide+fluoxetine", // label: contraindicated (Prozac 4.2) · engine: moderate
-  "pimozide+paroxetine", // label: contraindicated (pimozide) · engine: none at pair level
+  // pimozide+fluoxetine / pimozide+paroxetine moved to KNOWN_CONTRAINDICATION_GAPS:
+  // #58 added pimozide's FDA CYP2D6 major substrate role, so both now meet the major floor.
+  // alosetron+fluvoxamine left this list: #58's CYP1A2 sensitive role plus the Lotronex pin
+  // holds the pair at contraindicated.
   "thioridazine+fluvoxamine", // label: contraindicated (thioridazine; fluvoxamine 4) · engine: moderate
   // wave 2 (MAT / ketamine clinic), for formulary owner (Grok Bot 5) review
   "methadone+zidovudine", // label: warning, floor moderate (methadone 7: "could result in toxic effects") · engine: none at pair level
   "buprenorphine+phenelzine", // label: avoid, floor major (Suboxone 7: "not recommended" with MAOIs) · engine: moderate
   "esketamine+methylphenidate", // label: warning, floor moderate (Spravato 7.2: may increase blood pressure) · engine: none at pair level
 
-  // wave 3: label contraindicated, engine below major ("Serious concern")
+  // wave 3: still no pair finding, so not pinned. #58 holds the other wave-3
+  // misses at contraindicated (49 label pins, plus boosted cobicistat combo
+  // rows whose CYP3A4 role already reads contraindicated), so those ids left
+  // this list. The seven that stay are elbasvir/grazoprevir, irinotecan, and drospirenone.
   "darunavir+grazoprevir-elbasvir", // Prezista 4 (elbasvir/grazoprevir) · engine: none
   "atazanavir+irinotecan", // Reyataz Table 6 · engine: none
   "atazanavir+grazoprevir-elbasvir", // Reyataz Table 6 · engine: none
-  // wave 3 Prezcobix combo row: label contraindicated, engine below major
-  "darunavir-cobicistat+alfuzosin", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+carbamazepine", // Prezcobix 4 · engine: moderate
-  "darunavir-cobicistat+phenobarbital", // Prezcobix 4 · engine: moderate
-  "darunavir-cobicistat+phenytoin", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+rifampin", // Prezcobix 4 · engine: moderate
-  "darunavir-cobicistat+lurasidone", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+pimozide", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+dronedarone", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+ivabradine", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+ranolazine", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+dihydroergotamine", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+ergotamine", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+methylergonovine", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+st-johns-wort", // Prezcobix 4 · engine: moderate
   "darunavir-cobicistat+grazoprevir-elbasvir", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+lovastatin", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+simvastatin", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+naloxegol", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+sildenafil-pah", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+midazolam", // Prezcobix 4 · engine: none
-  "darunavir-cobicistat+triazolam", // Prezcobix 4 · engine: none
-  // wave 3 Evotaz combo row: label contraindicated, engine below major
-  "atazanavir-cobicistat+alfuzosin", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+ranolazine", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+dronedarone", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+carbamazepine", // Evotaz Table 1 · engine: moderate
-  "atazanavir-cobicistat+phenobarbital", // Evotaz Table 1 · engine: moderate
-  "atazanavir-cobicistat+phenytoin", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+rifampin", // Evotaz Table 1 · engine: moderate
-  "atazanavir-cobicistat+apalutamide", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+encorafenib", // Evotaz Table 1 · engine: none
   "atazanavir-cobicistat+irinotecan", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+ivosidenib", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+lurasidone", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+pimozide", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+dihydroergotamine", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+ergotamine", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+methylergonovine", // Evotaz Table 1 · engine: none
   "atazanavir-cobicistat+grazoprevir-elbasvir", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+glecaprevir-pibrentasvir", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+st-johns-wort", // Evotaz Table 1 · engine: moderate
   "atazanavir-cobicistat+drospirenone", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+ethinyl-estradiol", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+lovastatin", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+simvastatin", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+nevirapine", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+sildenafil-pah", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+triazolam", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+midazolam", // Evotaz Table 1 · engine: none
 ];
 
 /**
@@ -1559,6 +1518,8 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
  * Pinned by a test so the list is pruned when the engine changes.
  */
 export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
+  "pimozide+fluoxetine", // Prozac 4.2 contraindicated; #58 2D6 major substrate reaches major, not contraindicated
+  "pimozide+paroxetine", // pimozide label contraindicated; #58 2D6 major substrate reaches major, not contraindicated
   "pimozide+fluvoxamine",
   "dronedarone+ketoconazole",
   "ergotamine+ritonavir",
@@ -1569,30 +1530,9 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   "naltrexone+buprenorphine", // naltrexone tablets CONTRAINDICATIONS (partial agonists, e.g., buprenorphine)
   "naltrexone+oxycodone", // naltrexone tablets CONTRAINDICATIONS (opioid analgesics)
   "naltrexone+hydrocodone", // Vivitrol 4 CONTRAINDICATIONS (opioid analgesics)
-  // wave 3: label contraindicated, engine major ("Serious concern"), not contraindicated
-  "mifepristone+dihydroergotamine", // Korlym 4 · engine: major
-  "mifepristone+ergotamine", // Korlym 4 · engine: major
-  "mifepristone+quinidine", // Korlym 4 · engine: major
-  "darunavir+dronedarone", // Prezista 4 · engine: major
-  "darunavir+dihydroergotamine", // Prezista 4 · engine: major
-  "darunavir+ergotamine", // Prezista 4 · engine: major
-  "darunavir+methylergonovine", // Prezista 4 · engine: major
-  "darunavir+rifampin", // Prezista 4 · engine: major
-  "darunavir+sildenafil-pah", // Prezista 4 (PAH only) · engine: major
-  "darunavir+st-johns-wort", // Prezista 4 · engine: major
-  "atazanavir+apalutamide", // Reyataz Table 6 · engine: major
-  "atazanavir+carbamazepine", // Reyataz Table 6 · engine: major
-  "atazanavir+dihydroergotamine", // Reyataz Table 6 · engine: major
-  "atazanavir+encorafenib", // Reyataz Table 6 · engine: major
-  "atazanavir+ergotamine", // Reyataz Table 6 · engine: major
-  "atazanavir+glecaprevir-pibrentasvir", // Reyataz Table 6 · engine: major
-  "atazanavir+ivosidenib", // Reyataz Table 6 · engine: major
-  "atazanavir+methylergonovine", // Reyataz Table 6 · engine: major
-  "atazanavir+nevirapine", // Reyataz Table 6 · engine: major
-  "atazanavir+phenobarbital", // Reyataz Table 6 · engine: major
-  "atazanavir+phenytoin", // Reyataz Table 6 · engine: major
-  "atazanavir+sildenafil-pah", // Reyataz Table 6 (Revatio / PAH) · engine: major
-  "atazanavir+st-johns-wort", // Reyataz Table 6 · engine: major
+  // wave 3 Korlym / Prezista / Reyataz pairs left this list: #58 label pins
+  // hold them at contraindicated. Prezcobix and Evotaz pairs that were below
+  // major are contraindicated too and left KNOWN_UNDERCALLS.
 ];
 
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */

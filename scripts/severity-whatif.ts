@@ -44,12 +44,11 @@ export const PR66_REPORTED = { pkContraFindings: 1334, pkContraPairs: 1325, ghbO
  * loss is visible to Kaleb in review. Filled from the generated doc.
  */
 export const EXPECTED_GOLD_LABEL_CI_DROPS: readonly string[] = [
-  // None. basis.ts now attaches the gold-set quote as fda-pi on the matching
-  // PK finding, so the cap (PK-only, no label citation) does not move any
-  // label-contraindicated gold pair. Wave 3 included: the pairs that reach
-  // contraindicated on main are cited from Korlym / Prezista / Reyataz, so the
-  // cap does not drop them either. The test fails if a future engine change
-  // makes one drop without this list being updated.
+  // Empty. #58 label pins (including the 49 wave-3 pins) cite the label on the
+  // enzyme finding, and basisFor leads with that pin, so the what-if keeps them.
+  // Gold-set quotes still attach as fda-pi on matching PK findings the pin does
+  // not already cite, so the cap does not drop those either. The test fails if
+  // a future engine change makes one drop without this list being updated.
 ];
 
 /** Audience (MAT / ketamine clinic) drug families; every catalog id with these prefixes. */
