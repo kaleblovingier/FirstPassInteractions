@@ -78,3 +78,20 @@ test('Paxlovid + alprazolam is the desk rule, and a named inducer does not get t
   const rif = pkBasis('paxlovid', 'rifampin').map((x) => x.detail).join('\n');
   assert.doesNotMatch(rif, /desk's rule/);
 });
+
+test('nefazodone quotes the named contraindication and does not call triazolam one', () => {
+  const pim = pkBasis('nefazodone', 'pimozide').find((x) => x.label.startsWith('Nefazodone'));
+  assert.ok(pim);
+  assert.match(pim.detail, /pimozide, or carbamazepine/);
+  const tri = pkBasis('nefazodone', 'triazolam').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(tri, /Nefazodone label calls this combination contraindicated/);
+});
+
+test('rifampin quotes the label when it contraindicates the victim', () => {
+  const lura = pkBasis('rifampin', 'lurasidone').find((x) => x.label.startsWith('Rifampin'));
+  assert.ok(lura);
+  assert.match(lura.detail, /contraindicated in patients receiving lurasidone/);
+  const ata = pkBasis('rifampin', 'atazanavir').find((x) => x.label.startsWith('Rifampin'));
+  assert.ok(ata);
+  assert.match(ata.detail, /also receiving atazanavir, darunavir/);
+});
