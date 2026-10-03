@@ -176,7 +176,14 @@ export type PdFlag =
   | "fed-boost"
   | "empty-stomach";
 
-export type ItemKind = "drug" | "food" | "herb";
+export type ItemKind = "drug" | "food" | "herb" | "research-peptide";
+
+export const ITEM_KIND_LABEL: Record<ItemKind, string> = {
+  drug: "Medicine",
+  food: "Food",
+  herb: "Herb",
+  "research-peptide": "Research peptide",
+};
 
 export interface Drug {
   id: string;

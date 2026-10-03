@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Check, Search } from "lucide-react";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
+import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
 import { hasCite } from "@/lib/drugs/pubmed";
 import { hasPgx } from "@/lib/drugs/pgx";
 import { hasStahl } from "@/lib/drugs/stahl";
@@ -225,7 +226,7 @@ export function Formulary() {
                       ) : null}
                     </span>
                     <span className="mt-0.5 truncate text-[11px] text-muted">
-                      {d.kind !== "drug" ? `${d.kind} · ` : ""}
+                      {d.kind !== "drug" ? `${ITEM_KIND_LABEL[d.kind]} · ` : ""}
                       {d.cls}
                     </span>
                     <span className="mt-1 font-mono text-[10px] uppercase tracking-wide text-subtle">

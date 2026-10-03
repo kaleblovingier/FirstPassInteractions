@@ -2548,6 +2548,33 @@ const raw: Drug[] = [
       aliases: ["omberacetam", "n-phenylacetyl-l-prolylglycine", "gvs-111"],
       note: "A peptide, not a racetam, despite the shop-shelf name. No human interaction study. The desk stays quiet rather than inventing a 3A4 grade.",
     }),
+  d("semax", "Semax", [], "Research peptide (ACTH-fragment analogue)",
+    [],
+    [],
+    "No clinically validated interaction grade",
+    {
+      kind: "research-peptide",
+      aliases: ["semax peptide", "met-glu-his-phe-pro-gly-pro"],
+      note: "Research peptide. No CYP or pharmacodynamic interaction grade is assigned here because this library does not have sufficient clinically validated evidence to support one. No mapped finding is not evidence of safety; verify product identity, route, quality, and local regulatory status.",
+    }),
+  d("selank", "Selank", [], "Research peptide (synthetic tuftsin analogue)",
+    [],
+    [],
+    "No clinically validated interaction grade",
+    {
+      kind: "research-peptide",
+      aliases: ["selank peptide", "thr-lys-pro-arg-pro-gly-pro"],
+      note: "Research peptide. No CYP or pharmacodynamic interaction grade is assigned here because this library does not have sufficient clinically validated evidence to support one. No mapped finding is not evidence of safety; verify product identity, route, quality, and local regulatory status.",
+    }),
+  d("bpc-157", "BPC-157", [], "Research peptide (pentadecapeptide)",
+    [],
+    [],
+    "Safety and interaction evidence are insufficient for grading",
+    {
+      kind: "research-peptide",
+      aliases: ["bpc 157", "body protection compound", "pentadecapeptide", "bpc157"],
+      note: "FDA's compounding-risk review says compounded drugs containing BPC-157 may pose immunogenicity risks for certain routes, have peptide-impurity and API-characterization complexities, and have limited safety information for proposed routes. This is a regulatory risk review, not a product-specific test. No CYP or pharmacodynamic interaction grade is assigned here; no mapped finding is not evidence of safety. Source: https://www.fda.gov/drugs/human-drug-compounding/certain-bulk-drug-substances-use-compounding-may-present-significant-safety-risks",
+    }),
   d("adrafinil", "Adrafinil", [], "Modafinil prodrug",
     [sub("CYP3A4", "major"), inh("CYP2C19", "moderate"), ind("CYP3A4", "weak")],
     ["stimulant", "hepatotoxic"],
@@ -2852,6 +2879,12 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       "green-tea",
     ];
     return flavonoidOrder
+      .map((id) => DRUG_BY_ID[id])
+      .filter((d): d is Drug => Boolean(d) && !excluded.has(d.id));
+  }
+  if (["peptide", "peptides", "research peptide", "research peptides"].includes(q)) {
+    const peptideOrder = ["semax", "selank", "bpc-157"];
+    return peptideOrder
       .map((id) => DRUG_BY_ID[id])
       .filter((d): d is Drug => Boolean(d) && !excluded.has(d.id));
   }

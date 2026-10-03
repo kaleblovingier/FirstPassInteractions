@@ -26,6 +26,7 @@ import { CLASS_TILES, PLATES, plateForDrug, plateForSample } from "@/lib/drugs/v
 import {
   ALCOHOL_LABEL,
   CANNABIS_ROUTE_LABEL,
+  ITEM_KIND_LABEL,
   KETAMINE_ROUTE_LABEL,
   METABOLIZER_LABEL,
   PHENOTYPE_ENZYMES,
@@ -387,7 +388,7 @@ export function DeskApp() {
                         ) : null}
                         {drug.kind !== "drug" ? (
                           <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
-                            {drug.kind}
+                            {ITEM_KIND_LABEL[drug.kind]}
                           </span>
                         ) : null}
                         <span className="flex size-6 items-center justify-center rounded-full text-subtle group-hover:text-danger">

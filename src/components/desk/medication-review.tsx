@@ -12,6 +12,7 @@ import {
   PHENOTYPE_ENZYMES,
   PREG_LABEL,
   SEVERITY_LABEL,
+  ITEM_KIND_LABEL,
   type Finding,
   type HostContext,
 } from "@/lib/drugs/types";
@@ -173,7 +174,7 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
                     <span className="block text-xs font-medium text-fg">{item?.name ?? id}</span>
                     <span className="mt-1 block text-xs leading-relaxed text-muted">
                       {item
-                        ? `${item.kind === "drug" ? "Medicine" : item.kind === "food" ? "Food" : "Herb"} · ${item.cls}`
+                        ? `${ITEM_KIND_LABEL[item.kind]} · ${item.cls}`
                         : "Confirm identity and formulation"}
                       {item?.brands[0] ? ` · Brand example: ${item.brands[0]}` : ""}
                     </span>

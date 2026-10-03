@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { searchDrugs } from "@/lib/drugs/catalog";
 import { availableQuickChips } from "@/lib/drugs/quick-chips";
+import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
 import { isMatDesk } from "@/lib/drugs/window";
 import { plateForDrug } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -156,7 +157,7 @@ export function DrugSearch() {
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-medium text-fg">{drug.name}</span>
                   <span className="block truncate text-xs text-muted">
-                    {drug.kind !== "drug" ? `${drug.kind} · ` : ""}
+                    {drug.kind !== "drug" ? `${ITEM_KIND_LABEL[drug.kind]} · ` : ""}
                     {drug.cls}
                     {drug.brands.length ? ` · ${drug.brands.slice(0, 2).join(", ")}` : ""}
                   </span>
@@ -171,7 +172,7 @@ export function DrugSearch() {
                     .map((e) => e.enzyme)
                     .join(" ") ||
                     drug.enzymes[0]?.enzyme ||
-                    (drug.kind === "drug" ? "Medicine" : drug.kind)}
+                    ITEM_KIND_LABEL[drug.kind]}
                 </span>
               </button>
             </li>

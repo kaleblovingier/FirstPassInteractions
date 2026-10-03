@@ -10,7 +10,12 @@ import { pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
-import { PHENOTYPE_ENZYMES, type HostContext, type PhenotypeEnzyme } from "@/lib/drugs/types";
+import {
+  ITEM_KIND_LABEL,
+  PHENOTYPE_ENZYMES,
+  type HostContext,
+  type PhenotypeEnzyme,
+} from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,9 +72,17 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
       { id: "rxnorm", label: TAB_PLAIN.rxnorm, on: Boolean(drug && drug.kind === "drug") },
       { id: "pubchem", label: TAB_PLAIN.pubchem, on: Boolean(drug) },
       { id: "liver", label: TAB_PLAIN.liver, on: Boolean(liver) },
-      { id: "lactmed", label: TAB_PLAIN.lactmed, on: Boolean(lact) || Boolean(drug) },
+      {
+        id: "lactmed",
+        label: TAB_PLAIN.lactmed,
+        on: Boolean(lact) || Boolean(drug && drug.kind !== "research-peptide"),
+      },
       { id: "pubmed", label: TAB_PLAIN.pubmed, on: true },
-      { id: "trials", label: TAB_PLAIN.trials, on: Boolean(drug && drug.kind === "drug") },
+      {
+        id: "trials",
+        label: TAB_PLAIN.trials,
+        on: Boolean(drug && (drug.kind === "drug" || drug.kind === "research-peptide")),
+      },
     ];
     return t;
   }, [stahl, pgx.length, bank, drug, liver, lact]);
@@ -174,7 +187,7 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
           ) : (
             <EmptySource>
               No target card on this shelf
-              {drug.kind !== "drug" ? " — food, herb, or host factor." : " yet."}{" "}
+              {drug.kind !== "drug" ? ` — ${ITEM_KIND_LABEL[drug.kind].toLowerCase()}.` : " yet."}{" "}
               <Out href={drugbankSearchUrl(drug.name)}>Search DrugBank</Out>
               {" "}Empty targets is not the same as safe.
             </EmptySource>
