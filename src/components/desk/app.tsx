@@ -78,6 +78,7 @@ import { WindowExtras } from "./tray";
 import { ClinicalBoard } from "./clinical";
 import { StudyPage } from "./study";
 import { CaseCompare } from "./compare";
+import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
 import { LabelPage } from "./label";
 import { PrescribingStrip } from "./pi";
@@ -428,6 +429,14 @@ export function DeskApp() {
                   findings={report.findings}
                   counts={report.counts}
                   host={host}
+                />
+              ) : null}
+              {selected.length > 0 ? (
+                <MedicationReview
+                  key={`${selected.join("|")}:${JSON.stringify(host)}`}
+                  ids={selected}
+                  host={host}
+                  findings={report.findings}
                 />
               ) : null}
 
