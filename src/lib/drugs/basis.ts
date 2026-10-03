@@ -235,7 +235,14 @@ function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
     (x) => x.perpIds.includes(perpId ?? "") && x.enzyme === finding.enzymes[0] && x.role === role,
   );
   if (!L || !victimId) return null;
-  const ci = L.contraindicatedWith?.victimIds.includes(victimId) ? L.contraindicatedWith : undefined;
+  const groups = [
+    ...(L.contraindicatedWith ? [L.contraindicatedWith] : []),
+    ...(L.contraindicatedGroups ?? []),
+  ];
+  const ci = groups.find((g) => g.victimIds.includes(victimId));
+  // Named in the contraindications section, but not quoted here. Stay silent
+  // rather than call the tier a desk rule.
+  if (!ci && L.alsoNamed?.includes(victimId)) return null;
   // A label pin already quotes the contraindication. A role-only line must not
   // also claim the label does not name the pair.
   if (!ci && (labelContraindicationFor(perpId, victimId) || labelQuoteBasis(finding))) return null;
@@ -293,8 +300,10 @@ export function basisFor(finding: Finding): FindingBasis[] {
   }
   const fda = fdaDdiBasis(finding);
   if (fda) out.push(fda);
-  const perpLabel = fda ? null : perpetratorLabelBasis(finding);
-  if (perpLabel) out.push(perpLabel);
+  const perpLabel = perpetratorLabelBasis(finding);
+  // FDA Table 1 already covers the role. Still quote a named contraindication.
+  // A role-only line would only repeat that the tier is the desk's rule.
+  if (perpLabel && (!fda || perpLabel.detail.includes("calls this combination contraindicated"))) out.push(perpLabel);
   const cites = citesFor(finding.drugIds).slice(0, 1);
   if (cites[0]) {
     out.push({
