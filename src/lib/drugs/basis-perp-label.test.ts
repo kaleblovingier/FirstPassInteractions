@@ -60,14 +60,10 @@ test('a pinned pair does not also get a role line claiming the label is silent',
   assert.doesNotMatch(details, /does not name this pair as contraindicated/);
 });
 
-test('Paxlovid and Kaletra quote the contraindication when the label names the victim', () => {
-  const mid = pkBasis('paxlovid', 'midazolam').find((x) => x.label.startsWith('Paxlovid'));
-  assert.ok(mid);
-  assert.match(mid.detail, /oral midazolam/);
-  assert.match(mid.detail, /calls this combination contraindicated/);
-  const sim = pkBasis('lopinavir', 'simvastatin').find((x) => x.label.startsWith('Kaletra'));
-  assert.ok(sim);
-  assert.match(sim.detail, /lovastatin, simvastatin/);
+test('a gold-set quote on the same label page is kept, and the row still says contraindicated', () => {
+  const mid = pkBasis('paxlovid', 'midazolam').map((x) => x.detail).join('\n');
+  assert.match(mid, /calls this combination contraindicated/);
+  assert.doesNotMatch(mid, /desk's rule/);
 });
 
 test('Paxlovid + alprazolam is the desk rule, and a named inducer does not get that line', () => {
@@ -94,4 +90,26 @@ test('rifampin quotes the label when it contraindicates the victim', () => {
   const ata = pkBasis('rifampin', 'atazanavir').find((x) => x.label.startsWith('Rifampin'));
   assert.ok(ata);
   assert.match(ata.detail, /also receiving atazanavir, darunavir/);
+});
+
+test('clarithromycin, itraconazole, posaconazole, and Norvir quote named contraindications', () => {
+  const lura = pkBasis('clarithromycin', 'lurasidone').find((x) => x.label.startsWith('Clarithromycin'));
+  assert.ok(lura);
+  assert.match(lura.detail, /lurasidone is contraindicated/);
+  const tri = pkBasis('itraconazole', 'triazolam').find((x) => x.label.startsWith('Itraconazole'));
+  assert.ok(tri);
+  assert.match(tri.detail, /contraindicated with itraconazole/);
+  const sir = pkBasis('posaconazole', 'sirolimus').find((x) => x.label.startsWith('Posaconazole'));
+  assert.ok(sir);
+  assert.match(sir.detail, /contraindicated with sirolimus/);
+  const sim = pkBasis('ritonavir', 'simvastatin').find((x) => x.label.startsWith('Norvir'));
+  assert.ok(sim);
+  assert.match(sim.detail, /lovastatin, simvastatin/);
+});
+
+test('a conditional contraindication does not get a blanket contraindicated line', () => {
+  const v = pkBasis('posaconazole', 'venetoclax').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(v, /Posaconazole label calls this combination contraindicated/);
+  const c = pkBasis('ritonavir', 'colchicine').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(c, /Norvir label calls this combination contraindicated/);
 });

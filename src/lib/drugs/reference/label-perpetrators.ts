@@ -1,6 +1,7 @@
 /**
- * Perpetrator-label citations for PK rows whose perpetrator is not in FDA's
- * Table 1 (so `fda-ddi` cannot cite it). Quotes are verbatim substrings of the
+ * Perpetrator-label citations. A named contraindication still quotes the label
+ * when FDA Table 1 already grades the enzyme role. A role-only line is for
+ * perpetrators Table 1 does not cite. Quotes are verbatim substrings of the
  * current DailyMed SPL, retrieved via the openFDA label API on `retrieved`.
  * Educational tool, NOT FDA-cleared. No dosing.
  *
@@ -232,6 +233,92 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     ],
     url: DM("8be91604-d7cd-4f2b-997d-e3364e4092e5"),
     labelEffective: "2026-05-05",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["clarithromycin"],
+    brand: "Clarithromycin",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote:
+      "Co-administration of clarithromycin is known to inhibit CYP3A, and a drug primarily metabolized by CYP3A may be associated with elevations in drug concentrations that could increase or prolong both therapeutic and adverse effects of the concomitant drug.",
+    contraindicatedGroups: [
+      { victimIds: ["pimozide"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin tablets with cisapride and pimozide is contraindicated" },
+      { victimIds: ["lovastatin", "simvastatin", "simvastatin-ezetimibe"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin tablets with HMG-CoA reductase inhibitors (statins) that are extensively metabolized by CYP3A4 (lovastatin or simvastatin) is contraindicated, due to the increased risk of myopathy, including rhabdomyolysis" },
+      { victimIds: ["ergotamine", "dihydroergotamine"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated" },
+      { victimIds: ["lurasidone"], section: "4 Contraindications", quote: "and lurasidone is contraindicated since it may result in an increase in lurasidone exposure and the potential for serious adverse reactions" },
+    ],
+    alsoNamed: ["colchicine"],
+    url: DM("9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6"),
+    labelEffective: "2026-06-24",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["itraconazole"],
+    brand: "Itraconazole",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "Drug Interactions",
+    roleQuote: "Itraconazole and its major metabolite, hydroxy-itraconazole, are potent CYP3A4 inhibitors.",
+    contraindicatedGroups: [
+      {
+        victimIds: [
+          "methadone", "disopyramide", "dofetilide", "dronedarone", "quinidine", "quinidine-gluconate", "isavuconazole",
+          "dihydroergotamine", "ergotamine", "methylergonovine", "irinotecan", "lurasidone", "midazolam", "pimozide",
+          "triazolam", "felodipine", "nisoldipine", "ivabradine", "ranolazine", "eplerenone", "naloxegol",
+          "lovastatin", "simvastatin", "simvastatin-ezetimibe", "avanafil", "ticagrelor", "finerenone", "voclosporin",
+        ],
+        section: "Contraindications",
+        quote:
+          "Coadministration of a number of CYP3A4 substrates are contraindicated with itraconazole. Some examples of drugs for which plasma concentrations increase are: methadone, disopyramide, dofetilide, dronedarone, quinidine, isavuconazole, ergot alkaloids (such as dihydroergotamine, ergometrine (ergonovine), ergotamine, methylergometrine (methylergonovine)), irinotecan, lurasidone, oral midazolam, pimozide, triazolam, felodipine, nisoldipine, ivabradine, ranolazine, eplerenone, cisapride, naloxegol, lomitapide, lovastatin, simvastatin, avanafil, ticagrelor, finerenone, voclosporin.",
+      },
+    ],
+    alsoNamed: ["venetoclax", "colchicine"],
+    url: DM("6df5ff94-47ba-4881-abb4-b321e35a6955"),
+    labelEffective: "2026-08-18",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["posaconazole"],
+    brand: "Posaconazole",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.2 Effects of Posaconazole on Other Drugs",
+    roleQuote: "Posaconazole is a strong CYP3A4 inhibitor.",
+    contraindicatedGroups: [
+      { victimIds: ["sirolimus"], section: "4 Contraindications", quote: "Posaconazole delayed-release tablets are contraindicated with sirolimus." },
+      { victimIds: ["pimozide", "quinidine", "quinidine-gluconate"], section: "4 Contraindications", quote: "Concomitant administration of posaconazole delayed-release tablets with the CYP3A4 substrates, pimozide and quinidine may result in increased plasma concentrations of these drugs, leading to QTc prolongation and cases of torsades de pointes" },
+      { victimIds: ["atorvastatin", "lovastatin", "simvastatin", "simvastatin-ezetimibe"], section: "4 Contraindications", quote: "Coadministration with the HMG-CoA reductase inhibitors that are primarily metabolized through CYP3A4 (e.g., atorvastatin, lovastatin, and simvastatin) is contraindicated since increased plasma concentration of these drugs can lead to rhabdomyolysis" },
+      { victimIds: ["ergotamine", "dihydroergotamine"], section: "4 Contraindications", quote: "Posaconazole delayed-release tablets may increase the plasma concentrations of ergot alkaloids (ergotamine and dihydroergotamine) which may lead to ergotism" },
+    ],
+    alsoNamed: ["venetoclax"],
+    url: DM("f8a26673-261c-4e8e-b1e1-9e23aaf7f285"),
+    labelEffective: "2026-08-03",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["ritonavir"],
+    brand: "Norvir",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for NORVIR to Affect Other Drugs",
+    roleQuote:
+      "Ritonavir is an inhibitor of cytochrome P450 3A (CYP3A) and may increase plasma concentrations of agents that are primarily metabolized by CYP3A.",
+    contraindicatedGroups: [
+      { victimIds: ["alfuzosin"], section: "4 Contraindications", quote: "Alpha 1- Adrenoreceptor Antagonist: alfuzosin" },
+      { victimIds: ["ranolazine"], section: "4 Contraindications", quote: "Antianginal: ranolazine" },
+      { victimIds: ["amiodarone", "dronedarone", "flecainide", "propafenone", "quinidine", "quinidine-gluconate"], section: "4 Contraindications", quote: "Antiarrhythmics: amiodarone, dronedarone, flecainide, propafenone, quinidine" },
+      { victimIds: ["lurasidone", "pimozide"], section: "4 Contraindications", quote: "Antipsychotics: lurasidone, pimozide" },
+      { victimIds: ["dihydroergotamine", "ergotamine", "methylergonovine"], section: "4 Contraindications", quote: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine" },
+      { victimIds: ["lovastatin", "simvastatin", "simvastatin-ezetimibe"], section: "4 Contraindications", quote: "HMG-CoA Reductase Inhibitors: lovastatin, simvastatin" },
+      { victimIds: ["suzetrigine"], section: "4 Contraindications", quote: "Non-opioid Analgesic (selective blocker of Na v 1.8 sodium channels): suzetrigine" },
+      { victimIds: ["sildenafil-pah"], section: "4 Contraindications", quote: "PDE5 Inhibitor: sildenafil (Revatio ® ) when used for the treatment of pulmonary arterial hypertension" },
+      { victimIds: ["triazolam", "midazolam"], section: "4 Contraindications", quote: "Sedative/Hypnotics: triazolam, orally administered midazolam" },
+    ],
+    alsoNamed: ["colchicine", "voriconazole", "apalutamide", "st-johns-wort"],
+    url: DM("2849298e-de6e-47bb-8194-56e075b33fc3"),
+    labelEffective: "2026-07-23",
     retrieved: "2026-10-02",
   },
 ];
