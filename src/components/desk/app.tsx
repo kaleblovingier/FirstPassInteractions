@@ -835,7 +835,7 @@ function SingleDrug({ id }: { id: string }) {
       <div className="grid sm:grid-cols-[220px_minmax(0,1fr)]">
         <Plate src={plateForDrug(drug)} alt="" className="h-40 w-full sm:h-full min-h-40" />
         <div className="px-5 py-6">
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Monograph</p>
+      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">About this</p>
       <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{drug.name}</h2>
       <p className="mt-1 text-sm text-muted">
         {drug.cls}
@@ -845,9 +845,9 @@ function SingleDrug({ id }: { id: string }) {
       </p>
       {drug.note ? <p className="mt-3 text-sm leading-relaxed text-fg">{drug.note}</p> : null}
       <div className="mt-5 grid gap-4 sm:grid-cols-3">
-        <RoleList title="Substrate of" rows={subs} empty="No mapped CYP substrate" />
-        <RoleList title="Inhibits" rows={inhs} empty="Not a mapped inhibitor" />
-        <RoleList title="Induces" rows={inds} empty="Not a mapped inducer" />
+        <RoleList title="Broken down by" hint="Substrate" rows={subs} empty="Nothing listed" />
+        <RoleList title="Slows these" hint="Inhibitor" rows={inhs} empty="Nothing listed" />
+        <RoleList title="Speeds these up" hint="Inducer" rows={inds} empty="Nothing listed" />
       </div>
       {drug.pd.length > 0 ? (
         <div className="mt-5 flex flex-wrap gap-1.5">
@@ -866,16 +866,21 @@ function SingleDrug({ id }: { id: string }) {
 
 function RoleList({
   title,
+  hint,
   rows,
   empty,
 }: {
   title: string;
+  hint?: string;
   rows: { enzyme: string; kind: string; strength?: string; sensitivity?: string; pathway?: string; nti?: boolean }[];
   empty: string;
 }) {
   return (
     <div>
-      <h3 className="text-xs font-medium uppercase tracking-wide text-muted">{title}</h3>
+      <h3 className="text-xs font-medium uppercase tracking-wide text-muted">
+        {title}
+        {hint ? <span className="ml-1.5 font-mono text-[10px] normal-case tracking-normal text-subtle">{hint}</span> : null}
+      </h3>
       {rows.length === 0 ? (
         <p className="mt-2 text-sm text-subtle">{empty}</p>
       ) : (

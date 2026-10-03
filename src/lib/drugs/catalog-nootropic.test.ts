@@ -64,3 +64,12 @@ test("bacopa is only a weak 2C19 grade and adrafinil keeps the modafinil map", (
   assert.ok(adra.enzymes.some((e) => e.enzyme === "CYP2C19" && e.kind === "inhibitor" && e.strength === "moderate"));
   assert.ok(adra.enzymes.some((e) => e.enzyme === "CYP3A4" && e.kind === "inducer" && e.strength === "weak"));
 });
+
+test("new shelf notes lead with everyday words", () => {
+  for (const id of IDS) {
+    const note = DRUG_BY_ID[id].note ?? "";
+    const first = note.split(". ")[0];
+    assert.doesNotMatch(first, /CYP|SmPC|Ramasamy|LAT1|AChE|PD\b/, `${id} opens with jargon: ${first}`);
+    assert.ok(first.length > 20, id);
+  }
+});

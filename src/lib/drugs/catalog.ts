@@ -2429,7 +2429,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["theanine", "l theanine", "suntheanine"],
-      note: "The calm half of a caffeine stack. Not a CYP perpetrator and not a benzo. The desk stays quiet rather than calling a cup of tea a sedative.",
+      note: "Often taken with coffee for a calmer feeling. The desk does not treat it as a sedative, and it does not change how medicines are broken down.",
     }),
   d("lions-mane", "Lion's mane", [], "Hericium mushroom",
     [],
@@ -2438,7 +2438,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["lions mane", "lion's mane", "hericium", "hericium erinaceus", "yamabushitake"],
-      note: "Cognitive mushroom with no human CYP map worth grading. Rare skin reactions are not a scored interaction. Not a cholinergic drug.",
+      note: "A mushroom sold for memory. Nothing here is scored as a drug interaction. A rare rash is not treated as one.",
     }),
   d("bacopa", "Bacopa", [], "Brahmi (memory herb)",
     [inh("CYP2C19", "weak")],
@@ -2447,7 +2447,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["bacopa monnieri", "brahmi", "bacognize", "keenmind", "bacoside"],
-      note: "Ramasamy 2014: the extract, not the bacosides, inhibits 2C19, 2C9, 1A2, and 3A4 in vitro, strongest at 2C19. Only 2C19 is graded, and only weak — there is no human PK study. Gut 3A4 is the theoretical statin worry and stays ungraded. Sedation is the PD.",
+      note: "Can make some people sleepy, and a lab study says the extract may slightly slow one breakdown path. Only that path is marked, and only as weak, because there is no human study. Sleepiness is the effect a person would notice.",
     }),
   d("huperzine", "Huperzine A", [], "Herbal AChE inhibitor",
     [],
@@ -2456,7 +2456,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["huperzine a", "huperzia", "huperzia serrata", "chinese club moss"],
-      note: "A reversible acetylcholinesterase inhibitor, the same enzyme as donepezil. Not a CYP grade. Next to Aricept, Exelon, or a beta blocker it is stacked nodal slowing, not a memory vitamin. One trial reported ECG changes. Not a dosing protocol.",
+      note: "A real memory drug in herb form, in the same family as donepezil (Aricept). With that drug, or with a blood-pressure pill that already slows the heart, the heart can beat too slowly. It is not a vitamin, and this is not a dose guide.",
     }),
   d("citicoline", "Citicoline", [], "CDP-choline donor",
     [],
@@ -2465,7 +2465,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["cdp-choline", "cdp choline", "cytidine diphosphate choline", "cognizin"],
-      note: "A choline donor. The desk stays quiet. Stacked acetylcholine next to huperzine is theoretical and not scored — there is no cholinergic flag.",
+      note: "A choline supplement sold for focus. Nothing here is scored as an interaction.",
     }),
   d("alpha-gpc", "Alpha-GPC", [], "Choline donor",
     [],
@@ -2474,7 +2474,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["alpha gpc", "l-alpha glycerylphosphorylcholine", "glycerylphosphorylcholine", "choline alfoscerate"],
-      note: "Another choline donor, same quiet shelf as citicoline. Not a stimulant and not an AChE inhibitor.",
+      note: "Another choline supplement, with the same quiet result as citicoline. It is not a stimulant.",
     }),
   d("piracetam", "Piracetam", [], "Racetam nootropic",
     [],
@@ -2483,7 +2483,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["nootropil", "nootropyl", "piracetam powder"],
-      note: "Nootropil SmPC: platelet aggregation falls and bleeding time rises, so anticoagulants and low-dose aspirin are a caution. It did not change the acenocoumarol dose needed for a target INR. Cleared by the kidney, not CYP. Thyroid hormone plus piracetam is a labeled irritability footnote, not a scored pair.",
+      note: "Can make bleeding more likely with warfarin or low-dose aspirin. It does not change the blood-test number those drugs are adjusted to, and the kidneys clear it. Thyroid medicine plus piracetam is a labeled irritability note, not a scored pair.",
     }),
   d("phenylpiracetam", "Phenylpiracetam", [], "Stimulant racetam",
     [],
@@ -2492,7 +2492,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["fonturacetam", "phenotropil", "carphedon"],
-      note: "A phenylated racetam sold as a stimulant. No human CYP map worth grading, so it does not inherit piracetam's bleed row or modafinil's enzymes. Next to amphetamine or yohimbine it is PD.",
+      note: "Sold as a stimulant, unlike plain piracetam. Next to amphetamine or yohimbine it adds stimulation. It does not get piracetam's bleeding flag.",
     }),
   d("noopept", "Noopept", [], "Peptide nootropic",
     [],
@@ -2501,7 +2501,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["omberacetam", "n-phenylacetyl-l-prolylglycine", "gvs-111"],
-      note: "A peptide, not a racetam, despite the shop-shelf name. No human interaction study. The desk stays quiet rather than inventing a 3A4 grade.",
+      note: "A small peptide sold for memory, not the same thing as piracetam. No human interaction study, so the desk stays quiet.",
     }),
   d("adrafinil", "Adrafinil", [], "Modafinil prodrug",
     [sub("CYP3A4", "major"), inh("CYP2C19", "moderate"), ind("CYP3A4", "weak")],
@@ -2510,7 +2510,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["olmifon", "crl-40028"],
-      note: "A prodrug of modafinil. The enzyme map is modafinil's, not a separate human DDI study: weak 3A4 induction can still fail an oral contraceptive, and 2C19 inhibition raises those victims. The liver signal is why it left the pharmacy shelf. Not a dosing protocol.",
+      note: "The body turns this into modafinil, and it can strain the liver, which is why pharmacies stopped selling it. Like modafinil, it can make birth-control pills fail and can raise some other drugs. This is not a dose guide.",
     }),
   d("vinpocetine", "Vinpocetine", [], "Vinca alkaloid (cerebral blood flow)",
     [],
@@ -2519,7 +2519,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["ethyl apovincaminate", "cavinton", "vincamine derivative"],
-      note: "A synthetic vinca derivative sold as a nootropic. Platelet effects are the scored row. CYP inhibition in vitro is not graded. Pregnancy exposure is a separate warning, not an interaction.",
+      note: "Sold for brain blood flow. It can add to bleeding risk with a blood thinner. Pregnancy is a separate warning, not an interaction on this desk.",
     }),
   d("kanna", "Kanna", [], "Sceletium (serotonin reuptake)",
     [],
@@ -2528,7 +2528,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["sceletium", "sceletium tortuosum", "kougoed", "zembrin", "mesembrine"],
-      note: "Mesembrine inhibits the serotonin transporter. No published human herb-drug case, so this is mechanism, same shelf as rhodiola rather than phenelzine. Next to an SSRI or an MAOI it is serotonergic. Not a PDE5 drug.",
+      note: "Can raise serotonin, the same kind of concern as mixing antidepressants. No published case in a person, so it sits with rhodiola rather than a prescription antidepressant of the MAOI type. Next to an SSRI the desk still flags it.",
     }),
   d("saffron", "Saffron", [], "Crocus (mood extract)",
     [],
@@ -2537,7 +2537,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["crocus sativus", "crocin", "safranal", "affron"],
-      note: "Milligram stigma extracts are studied as a mild antidepressant. The kitchen pinch is not this row. Serotonergic, thinner than an SSRI, same honesty as rhodiola. Not a CYP perpetrator.",
+      note: "The extract capsule is studied as a mild mood lift. A pinch of the spice in food is not this row. It can add to serotonin effects, more mildly than an antidepressant.",
     }),
   d("lemon-balm", "Lemon balm", [], "Melissa (herbal sedative)",
     [],
@@ -2546,7 +2546,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["melissa", "melissa officinalis", "lemonbalm"],
-      note: "Sleep-tea GABA-A herb. Same CNS stack as passionflower, not a CYP perpetrator. Thyroid-hormone interference is reported and stays a note, not a scored pair.",
+      note: "A sleep tea that can add drowsiness on top of alcohol, valerian, or a benzo. It does not change how medicines are broken down. A thyroid concern is noted and not scored.",
     }),
   d("gotu-kola", "Gotu kola", [], "Centella (memory herb)",
     [],
@@ -2555,7 +2555,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["centella", "centella asiatica", "indian pennywort"],
-      note: "Memory herb with a real, uncommon hepatitis signal. Next to kava, ashwagandha, or green-tea extract it is stacked liver. Sedation is the other row. Not a CYP grade.",
+      note: "A memory herb that can add drowsiness, with a real but uncommon liver-injury signal. Next to kava or ashwagandha that liver concern stacks.",
     }),
   d("black-seed", "Black seed oil", [], "Nigella (glucose herb)",
     [],
@@ -2564,7 +2564,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["nigella", "nigella sativa", "black cumin", "kalonji", "thymoquinone"],
-      note: "The oil, not a sprinkle of seed. Glucose drop is the scored row. In-vitro CYP inhibition is not graded. Not St. John's wort.",
+      note: "The oil, not a sprinkle of seed, can lower blood sugar further next to insulin or a diabetes pill that already does that. It is not St. John's wort.",
     }),
   d("phosphatidylserine", "Phosphatidylserine", [], "Phospholipid nootropic",
     [],
@@ -2573,7 +2573,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["pserine", "ps lipid", "soy phosphatidylserine"],
-      note: "A membrane phospholipid sold for memory. The desk stays quiet. Not an anticoagulant and not a choline donor.",
+      note: "A supplement sold for memory. Nothing here is scored as an interaction, and it is not a blood thinner.",
     }),
   d("nmn", "NMN", [], "Nicotinamide mononucleotide",
     [],
@@ -2582,7 +2582,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["nicotinamide mononucleotide", "beta-nmn", "nicotinamide riboside", "nr"],
-      note: "An NAD precursor. Flush niacin at lipid grams is a different bottle, already on this shelf. The desk stays quiet rather than copying niacin's liver and statin map.",
+      note: "Sold for healthy aging. It is not the flushing niacin that worries the liver next to a statin, so the desk stays quiet.",
     }),
   d("l-tyrosine", "L-tyrosine", [], "Catecholamine amino acid",
     [],
@@ -2591,7 +2591,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["tyrosine", "l tyrosine", "n-acetyl tyrosine"],
-      note: "A precursor, not aged cheese. It is not graded as a pressor next to an MAOI. Leucine, phenylalanine, and tyrosine compete with levodopa at LAT1 — that story already lives on the protein-meal row, not as a new CYP pair.",
+      note: "An amino acid, not aged cheese, so it is not treated as a blood-pressure spike next to an MAOI antidepressant. The levodopa concern already lives on the protein-meal row.",
     }),
 
   // —— Supplement / nootropic wave 2 (stacked on the #93 shelf) ———
