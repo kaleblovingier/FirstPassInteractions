@@ -21,6 +21,10 @@ import { renderInstallPage } from "./grok-pwa-plugin.mjs";
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+// These are template tests: run them from an empty folder so this app's own
+// src/lib/og/site.json (title "FirstPass", custom card) does not leak in.
+process.chdir(mkdtempSync(join(tmpdir(), "grok-pwa-test-")));
+
 test("injects before </head>", () => {
   const out = injectGrokPwaHead("<html><head><title>x</title></head><body></body></html>");
   assert.match(out, /rel="manifest"/);
