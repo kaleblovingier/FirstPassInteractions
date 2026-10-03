@@ -158,6 +158,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
             <button
               key={t.id}
               type="button"
+              aria-pressed={live === t.id}
               disabled={!t.on}
               onClick={() => setTab(t.id)}
               className={cn(
@@ -222,6 +223,7 @@ function CypPanel({ ids }: { ids: string[] }) {
           <button
             key={p}
             type="button"
+            aria-pressed={phase === p}
             onClick={() => setPhase(p)}
             className={cn(
               "h-10 rounded-full px-3 text-xs font-medium",
@@ -315,6 +317,7 @@ function CypPanel({ ids }: { ids: string[] }) {
               <li key={s.id}>
                 <button
                   type="button"
+                  aria-pressed={Boolean(checks[s.id])}
                   onClick={() => setChecks((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
                   className={cn(
                     "flex h-auto min-h-10 w-full items-start gap-2 rounded-md px-3 py-2 text-left",
@@ -361,6 +364,7 @@ function CypPanel({ ids }: { ids: string[] }) {
             <button
               key={e}
               type="button"
+              aria-pressed={enzyme === e}
               onClick={() => setEnzyme(e)}
               className={cn(
                 "h-10 rounded-full px-3 font-mono text-xs font-medium",
@@ -388,6 +392,7 @@ function CypPanel({ ids }: { ids: string[] }) {
                     <button
                       key={`${r.role}-${r.id}-${r.grade}`}
                       type="button"
+                      aria-pressed={on}
                       disabled={on}
                       onClick={() => add(r.id)}
                       className={cn(
@@ -682,6 +687,7 @@ function HunterPanel({ ids }: { ids: string[] }) {
           <li key={f.key}>
             <button
               type="button"
+              aria-pressed={Boolean(on[f.key])}
               onClick={() => toggle(f.key)}
               className={cn(
                 "flex h-auto min-h-10 w-full items-start gap-2 rounded-md px-3 py-2 text-left",
@@ -834,6 +840,7 @@ function BedsidePanel({ ids, host }: { ids: string[]; host: HostContext }) {
                 <button
                   key={s}
                   type="button"
+                  aria-pressed={sex === s}
                   onClick={() => setSex(s)}
                   className={cn(
                     "h-10 flex-1 rounded-full text-xs font-medium",
@@ -950,6 +957,7 @@ function ScaleBlock({
                   <button
                     key={`${item.id}-${opt.score}-${opt.label}`}
                     type="button"
+                    aria-pressed={on}
                     onClick={() => setPicked((prev) => ({ ...prev, [item.id]: opt.score }))}
                     className={cn(
                       "h-10 min-w-10 rounded-full px-3 text-xs font-medium",
@@ -1177,6 +1185,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
               <li key={item.id}>
                 <button
                   type="button"
+                  aria-pressed={on}
                   onClick={() => setChecked((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
                   className="flex w-full items-start gap-2 text-left"
                 >
@@ -1391,6 +1400,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
               <button
                 key={a.id}
                 type="button"
+                aria-pressed={last === a.id}
                 onClick={() => setLast(a.id)}
                 className={cn(
                   "h-10 rounded-full px-3 text-xs font-medium",
@@ -1426,6 +1436,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
               <button
                 key={p}
                 type="button"
+                aria-pressed={product === p}
                 onClick={() => setProduct(p)}
                 className={cn(
                   "h-10 rounded-full px-3 text-xs font-medium",
@@ -1455,6 +1466,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
             <li key={d.id}>
               <button
                 type="button"
+                aria-pressed={Boolean(domains[d.id])}
                 onClick={() => setDomains((prev) => ({ ...prev, [d.id]: !prev[d.id] }))}
                 className={cn(
                   "flex h-auto min-h-10 w-full items-start gap-2 rounded-md px-3 py-2 text-left",
@@ -1507,6 +1519,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
             <li key={s.id}>
               <button
                 type="button"
+                aria-pressed={Boolean(screens[s.id])}
                 onClick={() => setScreens((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
                 className={cn(
                   "flex h-auto min-h-10 w-full items-start gap-2 rounded-md px-3 py-2 text-left",
@@ -1552,6 +1565,7 @@ function AncPanel() {
           BEN
           <button
             type="button"
+            aria-pressed={ben}
             onClick={() => setBen((v) => !v)}
             className={cn(
               "mt-1 flex h-10 w-full items-center justify-center rounded-full text-xs font-medium",
@@ -1639,6 +1653,7 @@ function PhenytoinBlock() {
           CrCl
           <button
             type="button"
+            aria-pressed={crclLow}
             onClick={() => setCrclLow((v) => !v)}
             className={cn(
               "mt-1 flex h-10 w-full items-center justify-center rounded-full text-xs font-medium",

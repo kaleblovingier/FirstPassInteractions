@@ -21,3 +21,10 @@ test("tab bar wraps below the md breakpoint", () => {
   assert.equal(nav.includes("sm:flex-nowrap"), false);
   assert.equal(nav.includes("md:flex-nowrap"), true);
 });
+
+test("clinical board buttons expose pressed state", () => {
+  const clinical = readFileSync(new URL("../../components/desk/clinical.tsx", import.meta.url), "utf8");
+  const buttons = clinical.match(/<button/g) ?? [];
+  const pressed = clinical.match(/aria-pressed=/g) ?? [];
+  assert.equal(pressed.length, buttons.length);
+});
