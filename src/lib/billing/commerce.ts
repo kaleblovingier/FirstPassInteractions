@@ -130,7 +130,7 @@ export const BUYERS = [
 ] as const;
 
 export function payClose(price = COMMERCE.founding) {
-  return `Pay $${price} once via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email} (card on the desk when Stripe is live). After it clears you get a signed key by email or text — paste it under Redeem on the Plans page. Three steps: pay, get your key, redeem.`;
+  return `Pay $${price} once via Venmo @${OPERATOR.venmo}, Cash App $${OPERATOR.cashApp}, or PayPal ${OPERATOR.email}. After it clears you get a signed key by email or text — paste it under Redeem on the Plans page. Three steps: pay, get your key, redeem.`;
 }
 
 export function salesDm(price = COMMERCE.founding) {
@@ -176,7 +176,7 @@ export function launchTweet(price = COMMERCE.founding) {
     "Free up to five drugs on the desk.",
     `Founding license $${price} once — host factors, enzyme atlas, export.`,
     SITE.url,
-    "Pay with card on the desk, or Venmo / Cash App / PayPal.",
+    `Pay $${price} once via Venmo, Cash App, or PayPal.`,
     "",
     "Educational model. Not FDA-cleared. Empty tray is not proof a combination is safe.",
   ].join("\n");
@@ -330,7 +330,7 @@ export function fulfillKey(opts: { key: string; soldTo?: string }) {
     "",
     opts.key,
     "",
-    "Open the desk. If you paid by card you are already licensed on the browser that returned from Stripe — keep this key for another machine. Otherwise open Plans, paste the key, and tap Redeem.",
+    "Open the desk, open Plans, paste the key, and tap Redeem.",
     "",
     SITE.url,
     "",
