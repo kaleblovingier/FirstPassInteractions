@@ -223,7 +223,7 @@ export function DeskApp() {
     <div className="min-h-dvh bg-bg text-fg">
       <StripeReturn ready={hydrated} />
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
             <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
@@ -249,8 +249,8 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center gap-2">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1 rounded-xl bg-bg-sunken p-1 md:w-auto md:flex-none md:flex-nowrap md:justify-start md:rounded-full">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 xl:w-auto">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:flex-nowrap xl:justify-start xl:rounded-full">
               {(
                 [
                   ["desk", "Desk"],

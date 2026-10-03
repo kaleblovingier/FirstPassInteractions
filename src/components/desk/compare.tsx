@@ -9,6 +9,7 @@ import {
   DEFAULT_HOST,
   KETAMINE_ROUTE_LABEL,
   SEVERITY_LABEL,
+  SEVERITY_RANK,
   type Finding,
   type HostContext,
   type Severity,
@@ -51,7 +52,17 @@ function findingsFor(sample: SampleRegimen) {
   return analyze(sample.drugIds, hostFor(sample), parseDoses(sample.doses)).findings;
 }
 
-function FindingRow({ finding, shared }: { finding: Finding; shared: boolean }) {
+function FindingRow({
+  finding,
+  shared,
+  otherSeverity,
+}: {
+  finding: Finding;
+  shared: boolean;
+  otherSeverity?: Severity;
+}) {
+  const severityChanged = shared && otherSeverity !== undefined && finding.severity !== otherSeverity;
+
   return (
     <li className="rounded-lg border border-border bg-surface-2 p-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -61,6 +72,11 @@ function FindingRow({ finding, shared }: { finding: Finding; shared: boolean }) 
         <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
           {shared ? "In both cases" : "Only in this case"}
         </span>
+        {severityChanged ? (
+          <span className="rounded-full bg-warn-soft px-2 py-0.5 font-mono text-[10px] text-warn">
+            Other case: {SEVERITY_LABEL[otherSeverity]}
+          </span>
+        ) : null}
       </div>
       <p className="mt-2 text-sm font-medium leading-snug text-fg">{finding.headline}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{finding.effect}</p>
@@ -71,9 +87,11 @@ function FindingRow({ finding, shared }: { finding: Finding; shared: boolean }) 
 function FindingList({
   findings,
   sharedIds,
+  otherSeverities,
 }: {
   findings: Finding[];
   sharedIds: Set<string>;
+  otherSeverities: Map<string, Severity>;
 }) {
   if (findings.length === 0) {
     return (
@@ -89,7 +107,12 @@ function FindingList({
     <div className="space-y-2">
       <ul className="space-y-2">
         {visible.map((finding) => (
-          <FindingRow key={finding.id} finding={finding} shared={sharedIds.has(finding.id)} />
+          <FindingRow
+            key={finding.id}
+            finding={finding}
+            shared={sharedIds.has(finding.id)}
+            otherSeverity={otherSeverities.get(finding.id)}
+          />
         ))}
       </ul>
       {remaining.length > 0 ? (
@@ -99,7 +122,12 @@ function FindingList({
           </summary>
           <ul className="mt-2 space-y-2">
             {remaining.map((finding) => (
-              <FindingRow key={finding.id} finding={finding} shared={sharedIds.has(finding.id)} />
+              <FindingRow
+                key={finding.id}
+                finding={finding}
+                shared={sharedIds.has(finding.id)}
+                otherSeverity={otherSeverities.get(finding.id)}
+              />
             ))}
           </ul>
         </details>
@@ -112,12 +140,14 @@ function CasePanel({
   sample,
   findings,
   sharedIds,
+  comparisonFindings,
   side,
   onOpenCase,
 }: {
   sample: SampleRegimen;
   findings: Finding[];
   sharedIds: Set<string>;
+  comparisonFindings: Finding[];
   side: "A" | "B";
   onOpenCase: (sample: SampleRegimen) => void;
 }) {
@@ -128,6 +158,7 @@ function CasePanel({
   }));
   const highest = findings[0]?.severity ?? "none";
   const drugs = sample.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id);
+  const otherSeverities = new Map(comparisonFindings.map((finding) => [finding.id, finding.severity]));
 
   return (
     <section className="min-w-0 rounded-xl border border-border bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
@@ -163,7 +194,7 @@ function CasePanel({
         <h3 className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
           Mapped finding detail
         </h3>
-        <FindingList findings={findings} sharedIds={sharedIds} />
+        <FindingList findings={findings} sharedIds={sharedIds} otherSeverities={otherSeverities} />
       </div>
       <Button className="mt-4 w-full" variant="secondary" onClick={() => onOpenCase(sample)}>
         Review case in desk
@@ -205,6 +236,16 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
     choices.find((sample) => sample.id !== left?.id) ??
     left;
 
+  useEffect(() => {
+    if (!left || !right) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("compareA", left.id);
+    url.searchParams.set("compareB", right.id);
+    url.searchParams.delete("case");
+    url.searchParams.delete("sample");
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  }, [left, right]);
+
   if (!left || !right) {
     return (
       <div className="rounded-xl border border-border bg-surface p-6">
@@ -219,8 +260,16 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
   const leftIds = new Set(leftFindings.map((finding) => finding.id));
   const rightIds = new Set(rightFindings.map((finding) => finding.id));
   const sharedIds = new Set([...leftIds].filter((id) => rightIds.has(id)));
+  const rightById = new Map(rightFindings.map((finding) => [finding.id, finding]));
+  const severityShifts = leftFindings.filter((finding) => {
+    const comparison = rightById.get(finding.id);
+    return comparison !== undefined && comparison.severity !== finding.severity;
+  }).length;
   const leftOnly = leftFindings.filter((finding) => !sharedIds.has(finding.id)).length;
   const rightOnly = rightFindings.filter((finding) => !sharedIds.has(finding.id)).length;
+  const highestA = leftFindings[0]?.severity ?? "none";
+  const highestB = rightFindings[0]?.severity ?? "none";
+  const highestDelta = SEVERITY_RANK[highestA] - SEVERITY_RANK[highestB];
 
   function selectCase(side: "A" | "B", id: string) {
     if (side === "A") {
@@ -231,24 +280,6 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
       if (id === left.id) setLeftId(right.id);
     }
   }
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const currentCaseId = url.searchParams.get("case") ?? url.searchParams.get("sample");
-    const shouldKeepCase = currentCaseId && availableIds.includes(currentCaseId);
-    if (shouldKeepCase) {
-      url.searchParams.set("compareA", left.id);
-      url.searchParams.set("compareB", right.id);
-      url.searchParams.delete("case");
-      url.searchParams.delete("sample");
-    } else {
-      url.searchParams.set("compareA", left.id);
-      url.searchParams.set("compareB", right.id);
-      url.searchParams.delete("case");
-      url.searchParams.delete("sample");
-    }
-    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-  }, [availableIds, left.id, right.id]);
 
   async function copyCompareLink() {
     const url = buildCompareUrl(left.id, right.id);
@@ -333,17 +364,28 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
         ) : null}
       </header>
 
-      <div className="grid gap-3 rounded-xl border border-border bg-bg-sunken p-3 sm:grid-cols-3 sm:gap-2">
+      <div className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-bg-sunken p-3 sm:grid-cols-4 sm:gap-2">
         <SummaryMetric label="Mapped in both" value={sharedIds.size} />
+        <SummaryMetric label="Shared severity shifts" value={severityShifts} />
         <SummaryMetric label="Only in case A" value={leftOnly} />
         <SummaryMetric label="Only in case B" value={rightOnly} />
       </div>
+      {highestDelta !== 0 ? (
+        <p className="rounded-lg border border-border bg-surface px-4 py-3 text-xs leading-relaxed text-muted">
+          The highest mapped category differs: Case {highestDelta > 0 ? "A" : "B"} is{" "}
+          {SEVERITY_LABEL[highestDelta > 0 ? highestA : highestB]}, while Case{" "}
+          {highestDelta > 0 ? "B" : "A"} is{" "}
+          {SEVERITY_LABEL[highestDelta > 0 ? highestB : highestA]}. This compares model labels only,
+          not patient risk.
+        </p>
+      ) : null}
 
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <CasePanel
           sample={left}
           findings={leftFindings}
           sharedIds={sharedIds}
+          comparisonFindings={rightFindings}
           side="A"
           onOpenCase={onOpenCase}
         />
@@ -351,6 +393,7 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
           sample={right}
           findings={rightFindings}
           sharedIds={sharedIds}
+          comparisonFindings={leftFindings}
           side="B"
           onOpenCase={onOpenCase}
         />
