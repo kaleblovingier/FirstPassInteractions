@@ -35,6 +35,11 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
       detail: "Confirm ingredient, strength, dose, route, schedule, last dose, and recent starts or stops—including OTC products and supplements.",
     },
     {
+      id: "duplicates",
+      title: "Screen for duplicate ingredients and combination products",
+      detail: "Compare active ingredients across generic and brand names, scheduled and PRN medicines, OTC products, and combinations. Confirm intent before treating an overlap as an error.",
+    },
+    {
       id: "allergies",
       title: "Review allergies and prior adverse drug reactions",
       detail: "Confirm the substance, reaction, severity, and timing. Unknown or undocumented allergy status is not the same as no known allergies.",
