@@ -1498,17 +1498,11 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
   "buprenorphine+phenelzine", // label: avoid, floor major (Suboxone 7: "not recommended" with MAOIs) · engine: moderate
   "esketamine+methylphenidate", // label: warning, floor moderate (Spravato 7.2: may increase blood pressure) · engine: none at pair level
 
-  // wave 3: still no pair finding, so not pinned. #58 holds the other wave-3
-  // misses at contraindicated (49 label pins, plus boosted cobicistat combo
-  // rows whose CYP3A4 role already reads contraindicated), so those ids left
-  // this list. The seven that stay are elbasvir/grazoprevir, irinotecan, and drospirenone.
-  "darunavir+grazoprevir-elbasvir", // Prezista 4 (elbasvir/grazoprevir) · engine: none
-  "atazanavir+irinotecan", // Reyataz Table 6 · engine: none
-  "atazanavir+grazoprevir-elbasvir", // Reyataz Table 6 · engine: none
-  "darunavir-cobicistat+grazoprevir-elbasvir", // Prezcobix 4 · engine: none
-  "atazanavir-cobicistat+irinotecan", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+grazoprevir-elbasvir", // Evotaz Table 1 · engine: none
-  "atazanavir-cobicistat+drospirenone", // Evotaz Table 1 · engine: none
+  // wave 3: #58 holds the CYP-backed misses at contraindicated (49 label pins,
+  // plus boosted cobicistat combo rows whose CYP3A4 role already reads
+  // contraindicated). #81 pins the seven with no CYP finding
+  // (elbasvir/grazoprevir, irinotecan, drospirenone) as standalone
+  // contraindicated findings, so they meet the floor and left this list.
 ];
 
 /**

@@ -17,32 +17,32 @@
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,770 / 1,565,565 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,466 (1,426 CYP, 40 P-gp) on 1,459 pairs (1,459 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 231 |
-| **Findings that move contraindicated → major** | **1,235** on **1,228** pairs |
-| **Pairs whose overall severity changes** | **1,228** |
+| … of which carry a label citation (kept at contraindicated) | 402 |
+| **Findings that move contraindicated → major** | **1,064** on **1,057** pairs |
+| **Pairs whose overall severity changes** | **1,057** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 119 / 138 → **119 / 138** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 126 / 138 → **126 / 138** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
 
 PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,466 findings on 1,459 pairs keyed by display name**: **differs**.
 
-231 carry a label citation and are kept at contraindicated, so 1,235 are capped.
+402 carry a label citation and are kept at contraindicated, so 1,064 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 741 | 741 |
+| strong inhibitor × sensitive substrate | 590 | 590 |
 | strong inducer × sensitive substrate | 341 | 341 |
-| strong inhibitor × sensitive + NTI substrate | 111 | 111 |
+| strong inhibitor × sensitive + NTI substrate | 91 | 91 |
 | strong inducer × sensitive + NTI substrate | 42 | 42 |
 
 | Enzyme | Findings |
 |---|---:|
-| CYP3A4 | 1,099 |
+| CYP3A4 | 928 |
 | CYP2D6 | 58 |
 | P-gp | 40 |
 | CYP2C19 | 16 |
@@ -68,25 +68,25 @@ A finding counts once for each of its two drugs.
 | 9 | Adagrasib | 41 | 41 | 0 |
 | 10 | Apalutamide | 41 | 41 | 0 |
 | 11 | Ceritinib | 41 | 41 | 0 |
-| 12 | Darunavir–cobicistat–FTC–TAF | 41 | 41 | 0 |
-| 13 | Enzalutamide | 41 | 41 | 0 |
-| 14 | Idelalisib | 41 | 41 | 0 |
-| 15 | Ivosidenib | 41 | 41 | 0 |
-| 16 | Lopinavir/ritonavir | 41 | 41 | 0 |
-| 17 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
-| 18 | Mitotane | 41 | 41 | 0 |
-| 19 | Nefazodone | 41 | 41 | 0 |
-| 20 | Posaconazole | 41 | 41 | 0 |
-| 21 | Tucatinib | 41 | 41 | 0 |
-| 22 | Voriconazole | 41 | 41 | 0 |
-| 23 | Ketoconazole | 39 | 39 | 0 |
-| 24 | Colchicine | 38 | 0 | 38 |
-| 25 | Clarithromycin | 37 | 37 | 0 |
-| 26 | Atazanavir | 35 | 35 | 0 |
-| 27 | Atazanavir–cobicistat | 33 | 33 | 0 |
-| 28 | Darunavir | 31 | 31 | 0 |
-| 29 | Darunavir–cobicistat | 31 | 31 | 0 |
-| 30 | Alfentanil | 28 | 0 | 28 |
+| 12 | Enzalutamide | 41 | 41 | 0 |
+| 13 | Idelalisib | 41 | 41 | 0 |
+| 14 | Ivosidenib | 41 | 41 | 0 |
+| 15 | Lopinavir/ritonavir | 41 | 41 | 0 |
+| 16 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
+| 17 | Mitotane | 41 | 41 | 0 |
+| 18 | Nefazodone | 41 | 41 | 0 |
+| 19 | Posaconazole | 41 | 41 | 0 |
+| 20 | Tucatinib | 41 | 41 | 0 |
+| 21 | Voriconazole | 41 | 41 | 0 |
+| 22 | Ketoconazole | 39 | 39 | 0 |
+| 23 | Clarithromycin | 37 | 37 | 0 |
+| 24 | Colchicine | 33 | 0 | 33 |
+| 25 | Alfentanil | 23 | 0 | 23 |
+| 26 | Alfuzosin | 23 | 0 | 23 |
+| 27 | Alprazolam | 23 | 0 | 23 |
+| 28 | Budesonide (oral / gut) | 23 | 0 | 23 |
+| 29 | Buspirone | 23 | 0 | 23 |
+| 30 | Cyclosporine | 23 | 0 | 23 |
 
 ## Pairs that stay contraindicated via another finding
 
@@ -122,7 +122,7 @@ The label says contraindicated and the engine already says major. The what-if do
 | naltrexone + oxycodone | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 | naltrexone + hydrocodone | Vivitrol (naltrexone ER injectable suspension), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
 
-Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (thioridazine+fluvoxamine, darunavir+grazoprevir-elbasvir, atazanavir+irinotecan, atazanavir+grazoprevir-elbasvir, darunavir-cobicistat+grazoprevir-elbasvir, atazanavir-cobicistat+irinotecan, atazanavir-cobicistat+grazoprevir-elbasvir, atazanavir-cobicistat+drospirenone), which sit below major today.
+Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (thioridazine+fluvoxamine), which sit below major today.
 
 ## MAT / ketamine clinic: pairs that move
 
