@@ -26,6 +26,14 @@
  * Reyataz lines qualified "with ritonavir", are skipped. Floor is major
  * ("Serious concern"); the label class is contraindicated.
  *
+ * Wave 4 is label-stated contraindications only, from the current DailyMed v2
+ * SPL for clarithromycin tablets, Sporanox, Noxafil, Norvir, Paxlovid, and
+ * Kaletra. Each unconditional named drug the catalog carries is a pair.
+ * Colchicine, venetoclax, and voriconazole stay out where the line is
+ * conditional (renal or hepatic impairment, or a dose-dependent line). Oral
+ * ketoconazole is not a source. Pairs already in waves 1–3 are not repeated.
+ * Floor is major ("Serious concern"); the label class is contraindicated.
+ *
  * Quotes are verbatim substrings of the SPL text retrieved on `retrieved`; a
  * "…" marks an elided span. `labelExample` (also verbatim) is used when the
  * governing sentence names a class and a nearby sentence names the drug.
@@ -78,8 +86,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = label contraindications (Korlym / HIV PIs). */
-  wave: 1 | 2 | 3;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra. */
+  wave: 1 | 2 | 3 | 4;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -129,6 +137,13 @@ export const LABEL_SETIDS = {
   prezcobix: "9c38fdb6-d0ba-4f16-a0e3-85d9ec334d9f",
   reyataz: "165cff62-b284-4a27-a65d-9ec8a5bfcdd8",
   evotaz: "83db29d7-5d85-49d6-8cb6-740473365cf8",
+  // wave 4, DailyMed v2 SPL retrieved 2026-10-02.
+  // clarithromycin tablets (effective 2026-06-24). Not the 2012 Biaxin brand SPL.
+  clarithromycin: "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
+  sporanox: "a4d555fa-787c-40fb-bb7d-b0d4f7318fd0",
+  noxafil: "b073b082-7b57-4423-8c06-4fd4263d6f84",
+  paxlovid: "8a99d6d6-fd9e-45bb-b1bf-48c7f761232a",
+  kaletra: "8290add3-4449-4e58-6c97-8fe1eec972e3",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -1475,10 +1490,808 @@ const WAVE_3: GoldPair[] = [
   }),
 ];
 
+/** Wave 4 row: label says contraindicated. Floor stays major; exact match is separate. */
+function row4(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-02",
+    expectedFloor: "major",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 4,
+  };
+}
+
+const WAVE_4: GoldPair[] = [
+  // ── Clarithromycin tablets: 4 CONTRAINDICATIONS ──
+  row4({
+    drugA: "clarithromycin", drugB: "ergotamine", queries: ["biaxin", "ergotamine"],
+    labelDrug: "Clarithromycin tablets", label: "clarithromycin", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Quotes are from the current clarithromycin tablets SPL (effective 2026-06-24). The Biaxin brand SPL on DailyMed is effective 2012-02-22 and is not this text.",
+  }),
+  row4({
+    drugA: "clarithromycin", drugB: "dihydroergotamine", queries: ["biaxin", "dihydroergotamine"],
+    labelDrug: "Clarithromycin tablets", label: "clarithromycin", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Quotes are from the current clarithromycin tablets SPL (effective 2026-06-24). The Biaxin brand SPL on DailyMed is effective 2012-02-22 and is not this text.",
+  }),
+  row4({
+    drugA: "clarithromycin", drugB: "lurasidone", queries: ["biaxin", "lurasidone"],
+    labelDrug: "Clarithromycin tablets", label: "clarithromycin", labelSection: "4 CONTRAINDICATIONS",
+    quote: "and lurasidone is contraindicated since it may result in an increase in lurasidone exposure",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Quotes are from the current clarithromycin tablets SPL (effective 2026-06-24). The Biaxin brand SPL on DailyMed is effective 2012-02-22 and is not this text.",
+  }),
+  // ── Sporanox (itraconazole): CONTRAINDICATIONS ──
+  row4({
+    drugA: "itraconazole", drugB: "methadone", queries: ["sporanox", "methadone"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "disopyramide", queries: ["sporanox", "disopyramide"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "disopyramide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "dofetilide", queries: ["sporanox", "dofetilide"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "dronedarone", queries: ["sporanox", "dronedarone"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "dronedarone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "quinidine", queries: ["sporanox", "quinidine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "isavuconazole", queries: ["sporanox", "isavuconazole"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "isavuconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Label says isavuconazole. The catalog row is isavuconazonium.",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "dihydroergotamine", queries: ["sporanox", "dihydroergotamine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "dihydroergotamine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "ergotamine", queries: ["sporanox", "ergotamine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "ergotamine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "methylergonovine", queries: ["sporanox", "methylergonovine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "irinotecan", queries: ["sporanox", "irinotecan"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "irinotecan",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "lurasidone", queries: ["sporanox", "lurasidone"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "lurasidone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "midazolam", queries: ["sporanox", "midazolam"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "oral midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Label says oral midazolam. The catalog row is not split by route.",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "pimozide", queries: ["sporanox", "pimozide"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "triazolam", queries: ["sporanox", "triazolam"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "triazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "felodipine", queries: ["sporanox", "felodipine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "felodipine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "nisoldipine", queries: ["sporanox", "nisoldipine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "nisoldipine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "ivabradine", queries: ["sporanox", "ivabradine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "ivabradine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "ranolazine", queries: ["sporanox", "ranolazine"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "eplerenone", queries: ["sporanox", "eplerenone"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "eplerenone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "naloxegol", queries: ["sporanox", "naloxegol"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "naloxegol",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "lovastatin", queries: ["sporanox", "lovastatin"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "lovastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "avanafil", queries: ["sporanox", "avanafil"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "avanafil",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "ticagrelor", queries: ["sporanox", "ticagrelor"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "ticagrelor",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "finerenone", queries: ["sporanox", "finerenone"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "finerenone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "itraconazole", drugB: "voclosporin", queries: ["sporanox", "voclosporin"],
+    labelDrug: "Sporanox (itraconazole)", label: "sporanox", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of a number of CYP3A4 substrates are contraindicated with SPORANOX®.",
+    labelExample: "voclosporin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  // ── Noxafil (posaconazole): 4 CONTRAINDICATIONS ──
+  row4({
+    drugA: "posaconazole", drugB: "sirolimus", queries: ["noxafil", "sirolimus"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Noxafil is contraindicated with sirolimus.",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "pimozide", queries: ["noxafil", "pimozide"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Noxafil is contraindicated with CYP3A4 substrates that prolong the QT interval.",
+    labelExample: "pimozide and quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "quinidine", queries: ["noxafil", "quinidine"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Noxafil is contraindicated with CYP3A4 substrates that prolong the QT interval.",
+    labelExample: "pimozide and quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "atorvastatin", queries: ["noxafil", "atorvastatin"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Coadministration with the HMG-CoA reductase inhibitors that are primarily metabolized through CYP3A4 (e.g., atorvastatin, lovastatin, and simvastatin) is contraindicated",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "lovastatin", queries: ["noxafil", "lovastatin"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Coadministration with the HMG-CoA reductase inhibitors that are primarily metabolized through CYP3A4 (e.g., atorvastatin, lovastatin, and simvastatin) is contraindicated",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "simvastatin", queries: ["noxafil", "simvastatin"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Coadministration with the HMG-CoA reductase inhibitors that are primarily metabolized through CYP3A4 (e.g., atorvastatin, lovastatin, and simvastatin) is contraindicated",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "ergotamine", queries: ["noxafil", "ergotamine"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Coadministration of Noxafil with the following drugs is contraindicated",
+    labelExample: "ergot alkaloids (ergotamine and dihydroergotamine)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Highlights list ergot alkaloids among coadministration contraindications. Section 4.5 names ergotamine and dihydroergotamine.",
+  }),
+  row4({
+    drugA: "posaconazole", drugB: "dihydroergotamine", queries: ["noxafil", "dihydroergotamine"],
+    labelDrug: "Noxafil (posaconazole)", label: "noxafil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Coadministration of Noxafil with the following drugs is contraindicated",
+    labelExample: "ergot alkaloids (ergotamine and dihydroergotamine)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Highlights list ergot alkaloids among coadministration contraindications. Section 4.5 names ergotamine and dihydroergotamine.",
+  }),
+  // ── Norvir (ritonavir): 4 CONTRAINDICATIONS ──
+  row4({
+    drugA: "ritonavir", drugB: "alfuzosin", queries: ["norvir", "alfuzosin"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Alpha 1- Adrenoreceptor Antagonist: alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "ranolazine", queries: ["norvir", "ranolazine"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antianginal: ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "amiodarone", queries: ["norvir", "amiodarone"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antiarrhythmics: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "dronedarone", queries: ["norvir", "dronedarone"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antiarrhythmics: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "flecainide", queries: ["norvir", "flecainide"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antiarrhythmics: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "propafenone", queries: ["norvir", "propafenone"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antiarrhythmics: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "quinidine", queries: ["norvir", "quinidine"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antiarrhythmics: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "lurasidone", queries: ["norvir", "lurasidone"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "pimozide", queries: ["norvir", "pimozide"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "dihydroergotamine", queries: ["norvir", "dihydroergotamine"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "methylergonovine", queries: ["norvir", "methylergonovine"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "lovastatin", queries: ["norvir", "lovastatin"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "HMG-CoA Reductase Inhibitors: lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "suzetrigine", queries: ["norvir", "suzetrigine"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Non-opioid Analgesic (selective blocker of Nav1.8 sodium channels): suzetrigine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "sildenafil-pah", queries: ["norvir", "sildenafil pah"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "PDE5 Inhibitor: sildenafil (Revatio®) when used for the treatment of pulmonary arterial hypertension",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "triazolam", queries: ["norvir", "triazolam"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Sedative/Hypnotics: triazolam, orally administered midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "midazolam", queries: ["norvir", "midazolam"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Sedative/Hypnotics: triazolam, orally administered midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Label says orally administered midazolam. The catalog row is not split by route.",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "apalutamide", queries: ["norvir", "apalutamide"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are potent CYP3A inducers",
+    labelExample: "Anticancer Agents: apalutamide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "ritonavir", drugB: "st-johns-wort", queries: ["norvir", "st johns wort"],
+    labelDrug: "Norvir (ritonavir)", label: "norvir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "NORVIR is contraindicated with drugs that are potent CYP3A inducers",
+    labelExample: "St. John's Wort (hypericum perforatum)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  // ── Paxlovid (nirmatrelvir/ritonavir): 4 CONTRAINDICATIONS ──
+  row4({
+    drugA: "paxlovid", drugB: "alfuzosin", queries: ["paxlovid", "alfuzosin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Alpha 1-adrenoreceptor antagonist: alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "ranolazine", queries: ["paxlovid", "ranolazine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antianginal: ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "amiodarone", queries: ["paxlovid", "amiodarone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antiarrhythmic: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "dronedarone", queries: ["paxlovid", "dronedarone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antiarrhythmic: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "flecainide", queries: ["paxlovid", "flecainide"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antiarrhythmic: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "propafenone", queries: ["paxlovid", "propafenone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antiarrhythmic: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "quinidine", queries: ["paxlovid", "quinidine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antiarrhythmic: amiodarone, dronedarone, flecainide, propafenone, quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "lurasidone", queries: ["paxlovid", "lurasidone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "pimozide", queries: ["paxlovid", "pimozide"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "silodosin", queries: ["paxlovid", "silodosin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Benign prostatic hyperplasia agents: silodosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "eplerenone", queries: ["paxlovid", "eplerenone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Cardiovascular agents: eplerenone, ivabradine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "ivabradine", queries: ["paxlovid", "ivabradine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Cardiovascular agents: eplerenone, ivabradine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "dihydroergotamine", queries: ["paxlovid", "dihydroergotamine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Ergot derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "ergotamine", queries: ["paxlovid", "ergotamine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Ergot derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "methylergonovine", queries: ["paxlovid", "methylergonovine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Ergot derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "lovastatin", queries: ["paxlovid", "lovastatin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "HMG-CoA reductase inhibitors: lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Section 4 lists these as contraindicated and says they can be paused so PAXLOVID can be used.",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "simvastatin", queries: ["paxlovid", "simvastatin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "HMG-CoA reductase inhibitors: lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Section 4 lists these as contraindicated and says they can be paused so PAXLOVID can be used.",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "voclosporin", queries: ["paxlovid", "voclosporin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Immunosuppressants: voclosporin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "eletriptan", queries: ["paxlovid", "eletriptan"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Migraine medications: eletriptan, ubrogepant",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "ubrogepant", queries: ["paxlovid", "ubrogepant"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Migraine medications: eletriptan, ubrogepant",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "finerenone", queries: ["paxlovid", "finerenone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Mineralocorticoid receptor antagonists: finerenone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "suzetrigine", queries: ["paxlovid", "suzetrigine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Non-opioid analgesic (selective blocker of Nav1.8 sodium channels): suzetrigine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "naloxegol", queries: ["paxlovid", "naloxegol"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Opioid antagonists: naloxegol",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "sildenafil-pah", queries: ["paxlovid", "sildenafil pah"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "PDE5 inhibitor: sildenafil (Revatio®) when used for pulmonary arterial hypertension (PAH)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "triazolam", queries: ["paxlovid", "triazolam"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Sedative/hypnotics: triazolam, oral midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "midazolam", queries: ["paxlovid", "midazolam"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Sedative/hypnotics: triazolam, oral midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Label says oral midazolam. The catalog row is not split by route.",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "tolvaptan", queries: ["paxlovid", "tolvaptan"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A",
+    labelExample: "Vasopressin receptor antagonists: tolvaptan",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "apalutamide", queries: ["paxlovid", "apalutamide"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Anticancer drugs: apalutamide, enzalutamide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "enzalutamide", queries: ["paxlovid", "enzalutamide"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Anticancer drugs: apalutamide, enzalutamide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "carbamazepine", queries: ["paxlovid", "carbamazepine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Anticonvulsant: carbamazepine, phenobarbital, primidone, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "phenobarbital", queries: ["paxlovid", "phenobarbital"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Anticonvulsant: carbamazepine, phenobarbital, primidone, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "primidone", queries: ["paxlovid", "primidone"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Anticonvulsant: carbamazepine, phenobarbital, primidone, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "phenytoin", queries: ["paxlovid", "phenytoin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Anticonvulsant: carbamazepine, phenobarbital, primidone, phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "rifampin", queries: ["paxlovid", "rifampin"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Antimycobacterials: rifampin, rifapentine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "rifapentine", queries: ["paxlovid", "rifapentine"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Antimycobacterials: rifampin, rifapentine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "lumacaftor-ivacaftor", queries: ["paxlovid", "lumacaftor"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Cystic fibrosis transmembrane conductance regulator potentiators: lumacaftor/ivacaftor",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+    note: "Label names lumacaftor/ivacaftor. Paired to the combo row, not ivacaftor alone.",
+  }),
+  row4({
+    drugA: "paxlovid", drugB: "st-johns-wort", queries: ["paxlovid", "st johns wort"],
+    labelDrug: "Paxlovid (nirmatrelvir/ritonavir)", label: "paxlovid", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A … and drugs that are strong CYP3A inducers",
+    labelExample: "Herbal products: St. John's Wort (hypericum perforatum)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  // ── Kaletra (lopinavir/ritonavir): 4 CONTRAINDICATIONS ──
+  row4({
+    drugA: "lopinavir", drugB: "alfuzosin", queries: ["kaletra", "alfuzosin"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Alpha 1- Adrenoreceptor Antagonist: alfuzosin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "ranolazine", queries: ["kaletra", "ranolazine"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antianginal: ranolazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "dronedarone", queries: ["kaletra", "dronedarone"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antiarrhythmic: dronedarone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "lurasidone", queries: ["kaletra", "lurasidone"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "pimozide", queries: ["kaletra", "pimozide"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Antipsychotics: lurasidone, pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "dihydroergotamine", queries: ["kaletra", "dihydroergotamine"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "ergotamine", queries: ["kaletra", "ergotamine"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "methylergonovine", queries: ["kaletra", "methylergonovine"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Ergot Derivatives: dihydroergotamine, ergotamine, methylergonovine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "grazoprevir-elbasvir", queries: ["kaletra", "elbasvir"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Hepatitis C direct acting antiviral: elbasvir/grazoprevir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Label names elbasvir/grazoprevir. Paired to the combo row.",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "lovastatin", queries: ["kaletra", "lovastatin"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "HMG-CoA Reductase Inhibitors: lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "simvastatin", queries: ["kaletra", "simvastatin"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "HMG-CoA Reductase Inhibitors: lovastatin, simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "suzetrigine", queries: ["kaletra", "suzetrigine"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Non-opioid Analgesic (selective blocker of Nav1.8 sodium channels): suzetrigine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "sildenafil-pah", queries: ["kaletra", "sildenafil pah"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "PDE5 Inhibitor: sildenafil (Revatio®) when used for the treatment of pulmonary arterial hypertension",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Contraindication is for pulmonary arterial hypertension, not erectile dysfunction. Paired to the PAH catalog row.",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "triazolam", queries: ["kaletra", "triazolam"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Sedative/Hypnotics: triazolam, orally administered midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "midazolam", queries: ["kaletra", "midazolam"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are highly dependent on CYP3A for clearance",
+    labelExample: "Sedative/Hypnotics: triazolam, orally administered midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+    note: "Label says orally administered midazolam. The catalog row is not split by route.",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "apalutamide", queries: ["kaletra", "apalutamide"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are potent CYP3A inducers",
+    labelExample: "Anticancer Agents: apalutamide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "rifampin", queries: ["kaletra", "rifampin"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are potent CYP3A inducers",
+    labelExample: "Antimycobacterial: rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row4({
+    drugA: "lopinavir", drugB: "st-johns-wort", queries: ["kaletra", "st johns wort"],
+    labelDrug: "Kaletra (lopinavir/ritonavir)", label: "kaletra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "KALETRA is contraindicated with drugs that are potent CYP3A inducers",
+    labelExample: "Herbal Products: St. John's Wort (hypericum perforatum)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+];
+
 export const WAVE_1_COUNT = WAVE_1.length;
 export const WAVE_2_COUNT = WAVE_2.length;
 export const WAVE_3_COUNT = WAVE_3.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3];
+export const WAVE_4_COUNT = WAVE_4.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -1503,6 +2316,19 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
   // contraindicated). #81 pins the seven with no CYP finding
   // (elbasvir/grazoprevir, irinotecan, drospirenone) as standalone
   // contraindicated findings, so they meet the floor and left this list.
+
+  // wave 4: label says contraindicated; engine is below major
+  "itraconazole+dofetilide", // engine: none
+  "itraconazole+irinotecan", // engine: none
+  "ritonavir+flecainide", // engine: moderate
+  "paxlovid+flecainide", // engine: none
+  "paxlovid+phenobarbital", // engine: moderate
+  "paxlovid+primidone", // engine: moderate
+  "paxlovid+phenytoin", // engine: none
+  "paxlovid+rifampin", // engine: moderate
+  "paxlovid+rifapentine", // engine: none
+  "paxlovid+st-johns-wort", // engine: moderate
+  "lopinavir+grazoprevir-elbasvir", // engine: none
 ];
 
 /**
@@ -1527,19 +2353,72 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   // wave 3 Korlym / Prezista / Reyataz pairs left this list: #58 label pins
   // hold them at contraindicated. Prezcobix and Evotaz pairs that were below
   // major are contraindicated too and left KNOWN_UNDERCALLS.
+
+  // wave 4: label says contraindicated; engine is major ("Serious concern"), not contraindicated
+  "clarithromycin+ergotamine",
+  "clarithromycin+dihydroergotamine",
+  "itraconazole+methadone",
+  "itraconazole+disopyramide",
+  "itraconazole+dronedarone",
+  "itraconazole+quinidine",
+  "itraconazole+isavuconazole",
+  "itraconazole+dihydroergotamine",
+  "itraconazole+ergotamine",
+  "itraconazole+methylergonovine",
+  "itraconazole+avanafil",
+  "itraconazole+ticagrelor",
+  "posaconazole+quinidine",
+  "posaconazole+atorvastatin",
+  "posaconazole+ergotamine",
+  "posaconazole+dihydroergotamine",
+  "ritonavir+amiodarone",
+  "ritonavir+dronedarone",
+  "ritonavir+propafenone",
+  "ritonavir+quinidine",
+  "ritonavir+dihydroergotamine",
+  "ritonavir+methylergonovine",
+  "ritonavir+suzetrigine",
+  "ritonavir+sildenafil-pah",
+  "ritonavir+apalutamide",
+  "ritonavir+st-johns-wort",
+  "paxlovid+amiodarone",
+  "paxlovid+dronedarone",
+  "paxlovid+propafenone",
+  "paxlovid+quinidine",
+  "paxlovid+dihydroergotamine",
+  "paxlovid+ergotamine",
+  "paxlovid+methylergonovine",
+  "paxlovid+suzetrigine",
+  "paxlovid+sildenafil-pah",
+  "paxlovid+apalutamide",
+  "paxlovid+enzalutamide",
+  "paxlovid+carbamazepine",
+  "paxlovid+lumacaftor-ivacaftor",
+  "lopinavir+dronedarone",
+  "lopinavir+dihydroergotamine",
+  "lopinavir+ergotamine",
+  "lopinavir+methylergonovine",
+  "lopinavir+suzetrigine",
+  "lopinavir+sildenafil-pah",
+  "lopinavir+apalutamide",
+  "lopinavir+rifampin",
+  "lopinavir+st-johns-wort",
 ];
 
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
 export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
-  { drug: "flibanserin", reason: "Not in catalog (searchDrugs returns nothing); label has CYP3A4-inhibitor contraindications but was not curated." },
-  { drug: "cisapride", reason: "Not in catalog; named in the Norvir contraindication list but not curated." },
+  { drug: "flibanserin", reason: "Not in catalog. Paxlovid section 4 names it. Not curated." },
+  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups." },
+  { drug: "astemizole", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
+  { drug: "terfenadine", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
+  { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists." },
   { drug: "aminophylline", reason: "Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead." },
   {
     drug: "buprenorphine/naloxone",
     reason:
       "No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.",
   },
-  { drug: "lomitapide", reason: "Named on the Prezista, Prezcobix, Reyataz, and Evotaz contraindication lists. Not in the catalog." },
+  { drug: "lomitapide", reason: "Named on the Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox, Norvir, Paxlovid, and Kaletra contraindication lists. Not in the catalog." },
   { drug: "indinavir", reason: "Named on Reyataz Table 6 and Evotaz Table 1. Not in the catalog." },
 ];
 
@@ -1614,5 +2493,87 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
     pair: "glecaprevir, pibrentasvir, or elbasvir as single ingredients",
     reason:
       "Labels name the fixed combinations. Paired to grazoprevir-elbasvir and glecaprevir-pibrentasvir, not the single-ingredient rows.",
+  },
+  {
+    pair: "Biaxin brand SPL as the wave-4 clarithromycin source",
+    reason:
+      "DailyMed v2 effective time is 2012-02-22. Wave 4 quotes the current clarithromycin tablets SPL instead (effective 2026-06-24).",
+  },
+  {
+    pair: "clarithromycin + astemizole / terfenadine",
+    reason:
+      "Named on the 2012 Biaxin contraindications list. Not on the current clarithromycin tablets contraindications section, and not in the catalog.",
+  },
+  {
+    pair: "clarithromycin + pimozide / lovastatin / simvastatin",
+    reason:
+      "Already in wave 1. Not repeated from the current clarithromycin tablets label.",
+  },
+  {
+    pair: "clarithromycin + colchicine",
+    reason: "Current clarithromycin tablets: contraindicated only in renal or hepatic impairment.",
+  },
+  {
+    pair: "itraconazole + simvastatin",
+    reason: "Already in wave 1 from the Zocor label. Not repeated from Sporanox.",
+  },
+  {
+    pair: "Sporanox + colchicine / fesoterodine / solifenacin",
+    reason: "Contraindicated only in renal or hepatic impairment.",
+  },
+  {
+    pair: "Sporanox + eliglustat",
+    reason:
+      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Not in the catalog.",
+  },
+  {
+    pair: "Sporanox + venetoclax",
+    reason: "Contraindicated only in CLL/SLL during initiation and ramp-up.",
+  },
+  {
+    pair: "Sporanox + ergonovine",
+    reason:
+      "The label names ergometrine (ergonovine). No ergonovine catalog row. Methylergonovine is a different drug and is paired on its own. Not listed under NOT_IN_CATALOG because that check treats a name substring as a hit.",
+  },
+  {
+    pair: "Noxafil + venetoclax",
+    reason: "Contraindicated only at initiation and during the ramp-up phase in CLL or SLL.",
+  },
+  {
+    pair: "Norvir + voriconazole",
+    reason:
+      "Section 7 makes the contraindication depend on the ritonavir dose. Not an unconditional pair.",
+  },
+  {
+    pair: "Norvir + colchicine",
+    reason:
+      "Section 4 lists colchicine, and the patient information limits that warning to kidney or liver problems. Section 7 is a dose change, not an unconditional contraindication.",
+  },
+  {
+    pair: "Norvir + ergotamine / simvastatin",
+    reason: "Already in wave 1. Not repeated.",
+  },
+  {
+    pair: "oral ketoconazole as a label source",
+    reason:
+      "Not used. Open DailyMed ketoconazole labels are topical, and these six labels do not name ketoconazole as an unconditional contraindicated partner.",
+  },
+  {
+    pair: "Paxlovid + colchicine",
+    reason: "Contraindicated only in renal and/or hepatic impairment.",
+  },
+  {
+    pair: "Paxlovid paired to nirmatrelvir alone, or ivacaftor alone",
+    reason:
+      "The label is the nirmatrelvir/ritonavir kit, and it names lumacaftor/ivacaftor. Pairs use the paxlovid and lumacaftor-ivacaftor rows.",
+  },
+  {
+    pair: "Kaletra + colchicine",
+    reason:
+      "Section 4 lists colchicine, and the patient information limits that warning to kidney or liver problems. Section 7 is a dose change, not an unconditional contraindication.",
+  },
+  {
+    pair: "Kaletra + venetoclax",
+    reason: "Drug Interactions says avoid. It is not a section 4 contraindication.",
   },
 ];

@@ -10,6 +10,7 @@ import {
   WAVE_1_COUNT,
   WAVE_2_COUNT,
   WAVE_3_COUNT,
+  WAVE_4_COUNT,
 } from "./label-gold-set";
 import { evaluatePair } from "./label-gold-set-eval";
 
@@ -19,7 +20,8 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
   assert.ok(WAVE_1_COUNT >= 35 && WAVE_1_COUNT <= 50, `wave 1 size ${WAVE_1_COUNT}`);
   assert.ok(WAVE_2_COUNT >= 20 && WAVE_2_COUNT <= 35, `wave 2 size ${WAVE_2_COUNT}`);
   assert.ok(WAVE_3_COUNT >= 90 && WAVE_3_COUNT <= 110, `wave 3 size ${WAVE_3_COUNT}`);
-  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT);
+  assert.ok(WAVE_4_COUNT >= 100 && WAVE_4_COUNT <= 120, `wave 4 size ${WAVE_4_COUNT}`);
+  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT + WAVE_4_COUNT);
   assert.equal(byId.size, LABEL_GOLD_SET.length, "pair ids are unique");
   const unordered = new Set(LABEL_GOLD_SET.map((p) => [p.drugA, p.drugB].sort().join("+")));
   assert.equal(unordered.size, LABEL_GOLD_SET.length, "no pair listed twice in either order");
@@ -27,16 +29,16 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
     assert.ok(DRUG_BY_ID[p.drugA], `${p.drugA} in catalog`);
     assert.ok(DRUG_BY_ID[p.drugB], `${p.drugB} in catalog`);
     assert.notEqual(p.drugA, p.drugB);
-    assert.equal(p.retrieved, p.wave === 3 ? "2026-10-02" : "2026-09-27");
+    assert.equal(p.retrieved, p.wave >= 3 ? "2026-10-02" : "2026-09-27");
     assert.match(p.url, /^https:\/\/(dailymed\.nlm\.nih\.gov|www\.accessdata\.fda\.gov)\//);
     assert.ok(p.labelSection.trim().length > 0);
     assert.equal(p.expectContraindicated, p.labelClass === "contraindicated");
     if (p.wave === 1) {
       assert.equal(p.expectedFloor, "major");
       assert.ok(p.labelClass === "contraindicated" || p.labelClass === "avoid", `${p.id}: wave 1 class`);
-    } else if (p.wave === 3) {
+    } else if (p.wave === 3 || p.wave === 4) {
       assert.equal(p.expectedFloor, "major", `${p.id}: floor`);
-      assert.equal(p.labelClass, "contraindicated", `${p.id}: wave 3 class`);
+      assert.equal(p.labelClass, "contraindicated", `${p.id}: wave ${p.wave} class`);
     } else {
       assert.equal(p.wave, 2);
       // contraindicated / avoid / boxed-warning always need at least "Serious concern"
