@@ -16,7 +16,7 @@
 - Pairs compared: **273** (from 180 FDA drug names matched to the catalog; 33 FDA names not in catalog)
 - Exact agreement (role + FDA class/grade): **82.8% (226/273)**
 - Role agreement (same role on the target, class/grade ignored): **96.3% (263/273)**
-- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (34/34)**; role: 100% (34/34) (regression gate baseline: 85.3%)
+- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (34/34)**; role: 100% (34/34) (regression gate baseline: 100%)
 
 | Category | Count | In formulary review list? |
 | --- | ---: | --- |

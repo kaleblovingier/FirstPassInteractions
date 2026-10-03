@@ -17,9 +17,9 @@
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,770 / 1,565,565 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,466 (1,426 CYP, 40 P-gp) on 1,459 pairs (1,459 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 115 |
-| **Findings that move contraindicated → major** | **1,351** on **1,344** pairs |
-| **Pairs whose overall severity changes** | **1,344** |
+| … of which carry a label citation (kept at contraindicated) | 231 |
+| **Findings that move contraindicated → major** | **1,235** on **1,228** pairs |
+| **Pairs whose overall severity changes** | **1,228** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
 | Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 119 / 138 → **119 / 138** |
@@ -29,20 +29,20 @@
 
 PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,466 findings on 1,459 pairs keyed by display name**: **differs**.
 
-115 carry a label citation and are kept at contraindicated, so 1,351 are capped.
+231 carry a label citation and are kept at contraindicated, so 1,235 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 774 | 774 |
-| strong inducer × sensitive substrate | 415 | 415 |
-| strong inhibitor × sensitive + NTI substrate | 112 | 112 |
-| strong inducer × sensitive + NTI substrate | 50 | 50 |
+| strong inhibitor × sensitive substrate | 741 | 741 |
+| strong inducer × sensitive substrate | 341 | 341 |
+| strong inhibitor × sensitive + NTI substrate | 111 | 111 |
+| strong inducer × sensitive + NTI substrate | 42 | 42 |
 
 | Enzyme | Findings |
 |---|---:|
-| CYP3A4 | 1,215 |
+| CYP3A4 | 1,099 |
 | CYP2D6 | 58 |
 | P-gp | 40 |
 | CYP2C19 | 16 |
@@ -62,31 +62,31 @@ A finding counts once for each of its two drugs.
 | 3 | St. John's wort | 45 | 45 | 0 |
 | 4 | Rifampin | 44 | 44 | 0 |
 | 5 | Ritonavir | 44 | 44 | 0 |
-| 6 | Fosphenytoin | 43 | 41 | 2 |
-| 7 | Itraconazole | 43 | 43 | 0 |
-| 8 | Phenytoin | 43 | 41 | 2 |
-| 9 | Carbamazepine | 42 | 42 | 0 |
-| 10 | Adagrasib | 41 | 41 | 0 |
-| 11 | Apalutamide | 41 | 41 | 0 |
-| 12 | Ceritinib | 41 | 41 | 0 |
-| 13 | Colchicine | 41 | 0 | 41 |
-| 14 | Darunavir–cobicistat–FTC–TAF | 41 | 41 | 0 |
-| 15 | Enzalutamide | 41 | 41 | 0 |
-| 16 | Idelalisib | 41 | 41 | 0 |
-| 17 | Ivosidenib | 41 | 41 | 0 |
-| 18 | Lopinavir/ritonavir | 41 | 41 | 0 |
-| 19 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
-| 20 | Mitotane | 41 | 41 | 0 |
-| 21 | Nefazodone | 41 | 41 | 0 |
-| 22 | Posaconazole | 41 | 41 | 0 |
-| 23 | Rifapentine | 41 | 41 | 0 |
-| 24 | Tucatinib | 41 | 41 | 0 |
-| 25 | Voriconazole | 41 | 41 | 0 |
-| 26 | Ketoconazole | 39 | 39 | 0 |
-| 27 | Clarithromycin | 37 | 37 | 0 |
-| 28 | Atazanavir | 35 | 35 | 0 |
-| 29 | Mifepristone | 34 | 34 | 0 |
-| 30 | Atazanavir–cobicistat | 33 | 33 | 0 |
+| 6 | Itraconazole | 43 | 43 | 0 |
+| 7 | Phenytoin | 43 | 41 | 2 |
+| 8 | Carbamazepine | 42 | 42 | 0 |
+| 9 | Adagrasib | 41 | 41 | 0 |
+| 10 | Apalutamide | 41 | 41 | 0 |
+| 11 | Ceritinib | 41 | 41 | 0 |
+| 12 | Darunavir–cobicistat–FTC–TAF | 41 | 41 | 0 |
+| 13 | Enzalutamide | 41 | 41 | 0 |
+| 14 | Idelalisib | 41 | 41 | 0 |
+| 15 | Ivosidenib | 41 | 41 | 0 |
+| 16 | Lopinavir/ritonavir | 41 | 41 | 0 |
+| 17 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
+| 18 | Mitotane | 41 | 41 | 0 |
+| 19 | Nefazodone | 41 | 41 | 0 |
+| 20 | Posaconazole | 41 | 41 | 0 |
+| 21 | Tucatinib | 41 | 41 | 0 |
+| 22 | Voriconazole | 41 | 41 | 0 |
+| 23 | Ketoconazole | 39 | 39 | 0 |
+| 24 | Colchicine | 38 | 0 | 38 |
+| 25 | Clarithromycin | 37 | 37 | 0 |
+| 26 | Atazanavir | 35 | 35 | 0 |
+| 27 | Atazanavir–cobicistat | 33 | 33 | 0 |
+| 28 | Darunavir | 31 | 31 | 0 |
+| 29 | Darunavir–cobicistat | 31 | 31 | 0 |
+| 30 | Alfentanil | 28 | 0 | 28 |
 
 ## Pairs that stay contraindicated via another finding
 

@@ -6,11 +6,12 @@
 /**
  * Exact agreement (role + FDA class) on FDA strong-inhibitor and
  * strong-inducer pairs whose drug is in our catalog, as measured on
- * 2026-09-26 against FDA Table 1 (content current as of 2026-05-29):
- * 29 / 34 = 85.3%. Raise this when the formulary owner fixes rows; never lower
- * it to make a failing change pass.
+ * 2026-10-02 against FDA Table 1 (content current as of 2026-05-29)
+ * on main after #58: 34 / 34 = 100%. Same run, all compared pairs:
+ * exact 82.8% (226/273), role 96.3% (263/273). Raise this when the
+ * formulary owner fixes rows; never lower it to make a failing change pass.
  */
-export const FDA_STRONG_PERPETRATOR_BASELINE_PCT = 85.3;
+export const FDA_STRONG_PERPETRATOR_BASELINE_PCT = 100;
 
 /**
  * Reviewed direction mismatches ("FDA drug|target"), e.g. FDA says inducer
