@@ -1,4 +1,4 @@
-import { COMMERCE, OPERATOR, WHO_FOR, payClose } from "./commerce";
+import { COMMERCE, OPERATOR, SITE, WHO_FOR, payClose } from "./commerce";
 
 export type Prey = "clinic" | "mat" | "school" | "harm" | "assoc";
 export type Range = "whatcom" | "puget" | "eastwa" | "pnw" | "us";
@@ -557,6 +557,9 @@ export function targetDm(t: Pick<Target, "name" | "city" | "hook">, price = COMM
     "",
     "Up to five-drug collision checks stay free so you can kick the tires.",
     `Founding license is $${price} once: host factors, metabolites, enzyme atlas, JSON/CSV export.`,
+    "",
+    SITE.url,
+    "",
     payClose(price),
     `${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
