@@ -36,7 +36,7 @@ export interface StudyCard {
 export const STUDY_LANES: { id: StudyLane; label: string }[] = [
   { id: "drill", label: "Rounds" },
   { id: "boards", label: "Named pairs" },
-  { id: "cyp", label: "CYP map" },
+  { id: "cyp", label: "Enzyme map" },
   { id: "desk", label: "This desk" },
 ];
 

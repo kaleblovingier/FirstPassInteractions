@@ -55,42 +55,43 @@ export function foundingGateCopy(kind: FoundingGateKind): FoundingGateCopy {
       return {
         title: "Host factors need founding",
         blurb:
-          "Phenotype, smoke, alcohol pattern, cannabis route, age, kidney, and pregnancy teaching cards sit behind founding. Ketamine route stays free for the oral teaching demo.",
+          "Teaching cards for metabolizer status (phenotype), smoking, alcohol pattern, cannabis route, age, kidney function, and pregnancy sit behind founding. The ketamine route stays free for the oral teaching demo.",
         reason: `Host factors are a founding surface. ${FREE_FOUNDING}`,
       };
     case "atlas":
       return {
         title: "Enzyme atlas needs founding",
         blurb:
-          "Nine pathways with substrates, inhibitors, and inducers for teaching — founding unlocks the full CYP map.",
-        reason: `The enzyme atlas is a founding surface. ${FREE_FOUNDING}`,
+          "Which medicines each liver enzyme clears, which block that enzyme, and which speed it up (substrates, inhibitors, and inducers). Founding unlocks the full enzyme map (CYP).",
+        reason: `The liver enzyme map is a founding surface. ${FREE_FOUNDING}`,
       };
     case "metabolites":
       return {
         title: "Metabolite maps need founding",
         blurb:
-          "Parent-to-product teaching maps (norketamine, 11-OH-THC, morphine, and kin) open with founding.",
+          "How a medicine breaks down into the next chemical (norketamine, 11-OH-THC, morphine, and similar). Those maps open with founding.",
         reason: `Metabolite maps are a founding surface. ${FREE_FOUNDING}`,
       };
     case "stacks":
       return {
         title: "Stack load needs founding",
-        blurb: "Serotonin, CNS, QT, pressor, and NMDA meters come with the founding host license.",
+        blurb:
+          "Meters for serotonin effects, sedation (CNS), heart-rhythm risk (QT), blood-pressure push (pressor), and glutamate blocking (NMDA) come with founding.",
         reason: `Stack-load meters are a founding surface. ${FREE_FOUNDING}`,
       };
     case "export":
       return {
         title: "Export needs founding",
         blurb:
-          "JSON and CSV export for the lab book ships with founding — paste a redeemed key to unlock.",
+          "A spreadsheet or data file (JSON and CSV) for the lab book ships with founding — paste a redeemed key to unlock.",
         reason: `JSON/CSV export is a founding surface. ${FREE_FOUNDING}`,
       };
     case "report":
       return {
         title: "Full report needs founding",
         blurb:
-          "The copyable collision report with host context is a licensed surface. Free desk still shows cards on the tray.",
-        reason: `The full collision report is a founding surface. ${FREE_FOUNDING}`,
+          "The copyable interaction report, including smoking and metabolizer status, is a licensed surface. The free desk still shows the cards on the tray.",
+        reason: `The full interaction report is a founding surface. ${FREE_FOUNDING}`,
       };
   }
 }

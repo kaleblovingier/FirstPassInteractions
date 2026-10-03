@@ -28,7 +28,7 @@ export const MANUAL_UNLOCK_STEPS = [
   {
     n: "1",
     title: "Pay $79 once",
-    detail: "Venmo, Cash App, or PayPal — open a rail below and send founding.",
+    detail: "Open Venmo, Cash App, or PayPal below and send the $79 founding payment.",
   },
   {
     n: "2",
@@ -38,7 +38,7 @@ export const MANUAL_UNLOCK_STEPS = [
   {
     n: "3",
     title: "Redeem on this desk",
-    detail: "Paste the key below and hit Redeem. Host factors, enzyme atlas, and export open on this browser.",
+    detail: "Paste the key below and hit Redeem. Host factors, the liver enzyme map, and export open on this browser.",
   },
 ] as const;
 

@@ -372,7 +372,7 @@ export function CheckoutDrawer() {
           <p className="mt-5 rounded-md bg-bg-sunken px-3 py-2 text-xs text-muted">
             {stripeMode === null
               ? "Checking card checkout…"
-              : "Card button hidden until Stripe is configured. Use a pay rail below."}
+              : "Card button hidden until Stripe is configured. Use Venmo, Cash App, or PayPal below."}
           </p>
         )}
 
@@ -394,11 +394,11 @@ export function CheckoutDrawer() {
           <p>
             {life
               ? cardLive
-                ? `Founding is $${COMMERCE.founding} once. Card is the default; written rails still work.`
-                : `Founding is $${COMMERCE.founding} once. Pay with a rail above, then wait for your key.`
+                ? `Founding is $${COMMERCE.founding} once. Card is the default; Venmo, Cash App, and PayPal still work.`
+                : `Founding is $${COMMERCE.founding} once. Pay with Venmo, Cash App, or PayPal above, then wait for your key.`
               : cardLive
-                ? `Pay $${amount} with card, or use a written rail.`
-                : `Pay $${amount} via a rail above. Key arrives after it clears.`}
+                ? `Pay $${amount} with card, or use Venmo, Cash App, or PayPal.`
+                : `Pay $${amount} with Venmo, Cash App, or PayPal above. Key arrives after it clears.`}
           </p>
           <p className="text-xs">
             Handles: {OPERATOR.payLine}

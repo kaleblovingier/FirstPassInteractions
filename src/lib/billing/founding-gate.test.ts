@@ -61,3 +61,31 @@ test("step titles stay aligned with commerce MANUAL_UNLOCK_STEPS", async () => {
   assert.match(src, /pay, get your key, redeem/i);
   assert.match(src, /not FDA-cleared/i);
 });
+
+test("locked-feature blurbs lead in plain language", () => {
+  const atlas = foundingGateCopy("atlas");
+  assert.match(atlas.blurb, /liver enzyme/i);
+  assert.match(atlas.blurb, /block/i);
+  assert.match(atlas.blurb, /speed it up/i);
+  assert.match(atlas.blurb, /\(substrates, inhibitors, and inducers\)/);
+  assert.match(atlas.reason, /liver enzyme map/i);
+  assert.doesNotMatch(atlas.blurb, /collision/i);
+
+  const host = foundingGateCopy("host").blurb;
+  assert.match(host, /metabolizer status \(phenotype\)/);
+  assert.match(host, /smoking/i);
+
+  const stacks = foundingGateCopy("stacks").blurb;
+  assert.match(stacks, /sedation \(CNS\)/);
+  assert.match(stacks, /heart-rhythm risk \(QT\)/);
+  assert.match(stacks, /blood-pressure push \(pressor\)/);
+  assert.doesNotMatch(stacks, /or Pro|host license/i);
+
+  const report = foundingGateCopy("report");
+  assert.match(report.blurb, /interaction report/i);
+  assert.match(report.reason, /interaction report/i);
+  assert.doesNotMatch(`${report.blurb} ${report.reason}`, /collision/i);
+
+  const metabolites = foundingGateCopy("metabolites").blurb;
+  assert.match(metabolites, /breaks down into the next chemical/i);
+});
