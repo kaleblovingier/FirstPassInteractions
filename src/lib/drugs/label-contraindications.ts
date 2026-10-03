@@ -20,7 +20,12 @@
  * - Rows with origin "wave3" copy the same fields byte-for-byte from PR #75
  *   (`feat/label-gold-wave3`, commit f41256d). Those quotes were retrieved
  *   2026-10-02. They pin pairs that already produce a CYP3A4 finding below
- *   contraindicated. Pairs with no engine finding are not pinned.
+ *   contraindicated.
+ * - Rows with origin "no-enzyme" copy the same fields from that gold set for
+ *   the seven pairs whose partner has no CYP role the engine uses (elbasvir/
+ *   grazoprevir, irinotecan, drospirenone). They omit `enzyme` and `kind` so
+ *   the desk emits a standalone contraindicated finding and does not invent a
+ *   CYP grade. Irinotecan is UGT1A1, not a CYP.
  * - Rows with origin "restored-after-58" are not in the gold set. Their quotes
  *   reuse gold-set strings where the same label sentence applies, or are the
  *   verbatim DailyMed Contraindications text (Ranexa section 4).
@@ -39,10 +44,14 @@ export interface LabelContraindication {
   labelDrugId: string;
   /** Catalog id of the other drug (the CYP perpetrator). */
   otherId: string;
-  /** Enzyme the pinned finding is on. */
-  enzyme: Enzyme;
-  /** Direction of the perpetrator on that enzyme. */
-  kind: "inhibitor" | "inducer";
+  /**
+   * Enzyme the pinned finding is on. Omitted when the partner has no CYP role
+   * the engine uses: the pin then emits a standalone contraindicated finding
+   * and does not assign a CYP grade.
+   */
+  enzyme?: Enzyme;
+  /** Direction of the perpetrator on that enzyme. Omitted together with `enzyme`. */
+  kind?: "inhibitor" | "inducer";
   labelDrug: string;
   labelSection: string;
   quote: string;
@@ -56,8 +65,8 @@ export interface LabelContraindication {
    * does not name it.
    */
   basis: "named" | "class";
-  /** Why the pin was added: gold-set pair from PR #65, restored after PR #58 grade changes, or a #75 wave-3 pair that still read below contraindicated. */
-  origin: "gold-set" | "restored-after-58" | "wave3";
+  /** Why the pin was added: gold-set pair from PR #65, restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, or a pair with no CYP finding to hold. */
+  origin: "gold-set" | "restored-after-58" | "wave3" | "no-enzyme";
   /**
    * DailyMed retrieval date for this quote when it is not
    * `LABEL_CONTRAINDICATIONS_RETRIEVED` (wave 3 is 2026-10-02).
@@ -383,8 +392,6 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
   // `kind` selects the finding: inducer when the partner lowers the labeled
   // product, inhibitor when the labeled product raises the partner. Sildenafil
   // pins use the PAH row (sildenafil-pah / Revatio), not sildenafil (Viagra).
-  // No pin for elbasvir/grazoprevir, irinotecan, or drospirenone: those catalog
-  // rows have no enzyme path, so the engine has no finding to hold.
   {
     id: "mifepristone+dihydroergotamine",
     labelDrugId: "mifepristone",
@@ -1120,6 +1127,104 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     retrieved: "2026-10-02",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=83db29d7-5d85-49d6-8cb6-740473365cf8",
   },
+
+  // ── No CYP finding to hold. The partner catalog row has no enzyme role the
+  // engine uses, so there is nothing to raise. These pins omit enzyme and kind
+  // and emit a standalone contraindicated finding. Quotes, section, and
+  // DailyMed links are copied from the wave-3 gold set (retrieved 2026-10-02).
+  // Irinotecan is UGT1A1, not a CYP. Elbasvir/grazoprevir and drospirenone are
+  // not given a CYP grade here.
+  {
+    id: "darunavir+grazoprevir-elbasvir",
+    labelDrugId: "darunavir",
+    otherId: "grazoprevir-elbasvir",
+    labelDrug: "Prezista (darunavir)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Examples of these drugs and other contraindicated drugs (which may lead to reduced efficacy of darunavir) are listed below",
+    labelExample: "Hepatitis C direct acting antiviral: elbasvir/grazoprevir",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=814301f9-c990-46a5-b481-2879a521a16f",
+  },
+  {
+    id: "darunavir-cobicistat+grazoprevir-elbasvir",
+    labelDrugId: "darunavir-cobicistat",
+    otherId: "grazoprevir-elbasvir",
+    labelDrug: "Prezcobix (darunavir/cobicistat)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Examples of drugs that are contraindicated for co-administration with PREZCOBIX",
+    labelExample: "Hepatitis C direct acting antiviral: elbasvir/grazoprevir",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9c38fdb6-d0ba-4f16-a0e3-85d9ec334d9f",
+  },
+  {
+    id: "atazanavir+grazoprevir-elbasvir",
+    labelDrugId: "atazanavir",
+    otherId: "grazoprevir-elbasvir",
+    labelDrug: "Reyataz (atazanavir)",
+    labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: "Coadministration is contraindicated with, but not limited to, the following drugs",
+    labelExample: "Hepatitis C Direct-Acting Antivirals Elbasvir/grazoprevir; glecaprevir/pibrentasvir",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=165cff62-b284-4a27-a65d-9ec8a5bfcdd8",
+  },
+  {
+    id: "atazanavir-cobicistat+grazoprevir-elbasvir",
+    labelDrugId: "atazanavir-cobicistat",
+    otherId: "grazoprevir-elbasvir",
+    labelDrug: "Evotaz (atazanavir/cobicistat)",
+    labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: "The concomitant use of EVOTAZ and the following drugs in Table 1, are contraindicated",
+    labelExample: "Hepatitis C Direct-Acting Antivirals elbasvir/grazoprevir; glecaprevir/pibrentasvir",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=83db29d7-5d85-49d6-8cb6-740473365cf8",
+  },
+  {
+    id: "atazanavir+irinotecan",
+    labelDrugId: "atazanavir",
+    otherId: "irinotecan",
+    labelDrug: "Reyataz (atazanavir)",
+    labelSection: "4 CONTRAINDICATIONS (Table 6)",
+    quote: "Coadministration is contraindicated with, but not limited to, the following drugs",
+    labelExample: "Antineoplastics Apalutamide, encorafenib, irinotecan, ivosidenib",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=165cff62-b284-4a27-a65d-9ec8a5bfcdd8",
+  },
+  {
+    id: "atazanavir-cobicistat+irinotecan",
+    labelDrugId: "atazanavir-cobicistat",
+    otherId: "irinotecan",
+    labelDrug: "Evotaz (atazanavir/cobicistat)",
+    labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: "The concomitant use of EVOTAZ and the following drugs in Table 1, are contraindicated",
+    labelExample: "Antineoplastics apalutamide, encorafenib, irinotecan, ivosidenib",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=83db29d7-5d85-49d6-8cb6-740473365cf8",
+  },
+  {
+    id: "atazanavir-cobicistat+drospirenone",
+    labelDrugId: "atazanavir-cobicistat",
+    otherId: "drospirenone",
+    labelDrug: "Evotaz (atazanavir/cobicistat)",
+    labelSection: "4 CONTRAINDICATIONS (Table 1)",
+    quote: "The concomitant use of EVOTAZ and the following drugs in Table 1, are contraindicated",
+    labelExample: "drospirenone/ethinyl estradiol",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-02",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=83db29d7-5d85-49d6-8cb6-740473365cf8",
+  },
 ];
 
 export const LABEL_CONTRAINDICATED_TAG = "label-contraindicated";
@@ -1140,5 +1245,8 @@ export function labelContraindicationById(id: string): LabelContraindication | u
 
 /** Plain sentence appended to the pinned finding's clinical text. */
 export function labelPinSentence(r: LabelContraindication): string {
+  if (!r.enzyme) {
+    return `The ${r.labelDrug} label lists this combination under Contraindications, so this desk shows it as Avoid together. This pair has no CYP finding; the label is the reason.`;
+  }
   return `The ${r.labelDrug} label lists this combination under Contraindications, so this desk shows it as Avoid together even where the enzyme grades alone would read lower.`;
 }

@@ -75,7 +75,7 @@ const EXPECTED_PINS = [
   "ranolazine+primidone",
   "thioridazine+abiraterone",
   "thioridazine+cinacalcet",
-  // PR #75 wave 3: label contraindicated, engine was major. Not the seven with no finding.
+  // PR #75 wave 3: label contraindicated, engine was major.
   "mifepristone+dihydroergotamine",
   "mifepristone+ergotamine",
   "mifepristone+quinidine",
@@ -125,12 +125,30 @@ const EXPECTED_PINS = [
   "atazanavir-cobicistat+ethinyl-estradiol",
   "atazanavir-cobicistat+nevirapine",
   "atazanavir-cobicistat+sildenafil-pah",
+  // No CYP finding to hold. Standalone pins. Not a CYP grade.
+  "darunavir+grazoprevir-elbasvir",
+  "darunavir-cobicistat+grazoprevir-elbasvir",
+  "atazanavir+grazoprevir-elbasvir",
+  "atazanavir-cobicistat+grazoprevir-elbasvir",
+  "atazanavir+irinotecan",
+  "atazanavir-cobicistat+irinotecan",
+  "atazanavir-cobicistat+drospirenone",
 ];
 
 test("pin list is exactly the reviewed set", () => {
   assert.deepEqual(LABEL_CONTRAINDICATIONS.map((r) => r.id).sort(), [...EXPECTED_PINS].sort());
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 19);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 7);
+  for (const r of LABEL_CONTRAINDICATIONS) {
+    if (r.origin === "no-enzyme") {
+      assert.equal(r.enzyme, undefined, r.id);
+      assert.equal(r.kind, undefined, r.id);
+    } else {
+      assert.ok(r.enzyme, r.id);
+      assert.ok(r.kind, r.id);
+    }
+  }
 });
 
 for (const r of LABEL_CONTRAINDICATIONS) {
@@ -144,9 +162,19 @@ for (const r of LABEL_CONTRAINDICATIONS) {
     assert.equal(pinned.length, 1, "exactly one pinned finding");
     const f = pinned[0];
     assert.equal(f.kind, "pk");
-    assert.ok(f.enzymes.includes(r.enzyme));
-    // The pin rides on the enzyme finding; it is not a standalone fallback.
-    assert.doesNotMatch(f.id, /label-ci-/);
+    if (r.enzyme && r.kind) {
+      assert.ok(f.enzymes.includes(r.enzyme));
+      // The pin rides on the enzyme finding; it is not a standalone fallback.
+      assert.doesNotMatch(f.id, /label-ci-/);
+    } else {
+      // No CYP role to hold. The finding stands alone and names no enzyme grade.
+      assert.deepEqual(f.enzymes, []);
+      assert.match(f.id, /label-ci-standalone/);
+      assert.equal(f.tags.includes("inhibitor"), false);
+      assert.equal(f.tags.includes("inducer"), false);
+      assert.equal(DRUG_BY_ID[r.otherId].enzymes.length, 0, "partner has no CYP role");
+      assert.match(f.clinical, /no CYP finding/);
+    }
     const basis = basisFor(f)[0];
     assert.equal(basis.kind, "fda-pi");
     assert.equal(basis.href, r.url);
@@ -179,8 +207,28 @@ test("pins are narrow: no class expansion, enzyme rule unchanged", () => {
   assert.equal(labelContraindicationFor("darunavir", "sildenafil"), undefined);
   assert.equal(labelContraindicationFor("atazanavir", "sildenafil"), undefined);
   assert.equal(labelContraindicationFor("atazanavir-cobicistat", "sildenafil"), undefined);
-  // In the catalog, but no enzyme path, so not pinned.
-  assert.equal(labelContraindicationFor("atazanavir", "irinotecan"), undefined);
-  assert.equal(labelContraindicationFor("darunavir", "grazoprevir-elbasvir"), undefined);
-  assert.equal(labelContraindicationFor("atazanavir-cobicistat", "drospirenone"), undefined);
+  // Partners with no CYP role are pinned as standalone contraindications, not given a CYP grade.
+  for (const [a, b] of [
+    ["atazanavir", "irinotecan"],
+    ["atazanavir-cobicistat", "irinotecan"],
+    ["darunavir", "grazoprevir-elbasvir"],
+    ["darunavir-cobicistat", "grazoprevir-elbasvir"],
+    ["atazanavir", "grazoprevir-elbasvir"],
+    ["atazanavir-cobicistat", "grazoprevir-elbasvir"],
+    ["atazanavir-cobicistat", "drospirenone"],
+  ] as const) {
+    const pin = labelContraindicationFor(a, b);
+    assert.equal(pin?.origin, "no-enzyme");
+    assert.equal(pin?.enzyme, undefined);
+    assert.equal(DRUG_BY_ID[b].enzymes.length, 0);
+    assert.equal(pairSeverity(a, b), "contraindicated");
+    const f = pairFindings(a, b).find((x) => x.tags.includes(LABEL_CONTRAINDICATED_TAG));
+    assert.ok(f);
+    assert.deepEqual(f.enzymes, []);
+    const basis = basisFor(f)[0];
+    assert.equal(basis.kind, "fda-pi");
+    assert.equal(basis.href, pin?.url);
+    assert.ok(basis.detail.includes(pin!.quote));
+    assert.ok(basis.detail.includes(pin!.labelSection));
+  }
 });

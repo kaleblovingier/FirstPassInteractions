@@ -254,9 +254,12 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
  * Label-sourced contraindication pins (see label-contraindications.ts). For a
  * short list of named pairs whose FDA label lists the combination under
  * Contraindications, the matching enzyme finding is held at contraindicated.
+ * A pin with no enzyme (the partner has no CYP role the engine uses) emits a
+ * standalone contraindicated finding instead, and does not assign a CYP grade.
  * Nothing else about pkSeverity or its thresholds changes.
  */
 function holdsLabelPin(f: Finding, pin: NonNullable<ReturnType<typeof labelContraindicationFor>>, allowLabelAsPerp: boolean): boolean {
+  if (!pin.enzyme || !pin.kind) return false;
   if (f.kind !== "pk" || !f.enzymes.includes(pin.enzyme) || !f.tags.includes(pin.kind)) return false;
   // Historical pins: otherId is the perpetrator and labelDrugId is the victim.
   if (f.drugIds[0] === pin.otherId && f.drugIds[1] === pin.labelDrugId) return true;
@@ -267,6 +270,25 @@ function holdsLabelPin(f: Finding, pin: NonNullable<ReturnType<typeof labelContr
 function applyLabelPins(a: Drug, b: Drug, findings: Finding[]): Finding[] {
   const pin = labelContraindicationFor(a.id, b.id);
   if (!pin) return findings;
+  if (!pin.enzyme || !pin.kind) {
+    const labelDrug = pin.labelDrugId === a.id ? a : b;
+    const other = labelDrug === a ? b : a;
+    return [
+      ...findings,
+      {
+        id: pairId(a.id, b.id, "label-ci-standalone"),
+        severity: "contraindicated",
+        kind: "pk",
+        drugIds: [labelDrug.id, other.id],
+        headline: `${labelDrug.name} × ${other.name}`,
+        enzymes: [],
+        effect: "labeled contraindication",
+        mechanism: "labeled contraindication",
+        clinical: labelPinSentence(pin),
+        tags: [LABEL_CONTRAINDICATED_TAG],
+      },
+    ];
+  }
   const lift = (f: Finding): Finding => ({
     ...f,
     severity: "contraindicated" as Severity,
