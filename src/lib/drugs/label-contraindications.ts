@@ -41,6 +41,10 @@
  * - `contraindicationsSentence` is added only where the gold-set quote comes
  *   from a section other than Contraindications (Zanaflex 7.1, Ranexa 7.1). It
  *   is the verbatim section 4 sentence from the same DailyMed label.
+ * - Leftover wave-1 gold pairs (still below contraindicated after the wave-4
+ *   pins) copy `quote`, `labelSection`, and the DailyMed link byte-for-byte
+ *   from label-gold-set.ts as of a79b09b. Each pin names the enzyme finding
+ *   the pair already produces. Naltrexone with an opioid is not in this list.
  *
  * Educational reference, not FDA-cleared. No doses.
  */
@@ -74,7 +78,7 @@ export interface LabelContraindication {
    * does not name it.
    */
   basis: "named" | "class";
-  /** Why the pin was added: gold-set pair from PR #65, restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, a #86 wave-4 pair whose existing enzyme finding is held at contraindicated, or a pair with no enzyme finding to hold. */
+  /** Why the pin was added: gold-set pair from PR #65 (including leftover wave-1 pairs pinned later), restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, a #86 wave-4 pair whose existing enzyme finding is held at contraindicated, or a pair with no enzyme finding to hold. */
   origin: "gold-set" | "restored-after-58" | "wave3" | "wave4" | "no-enzyme";
   /**
    * DailyMed retrieval date for this quote when it is not
@@ -2110,6 +2114,118 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "no-enzyme",
     retrieved: "2026-10-02",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8290add3-4449-4e58-6c97-8fe1eec972e3",
+  },
+
+  // Leftover wave-1 gold pairs that still read below contraindicated.
+  // Quotes, sections, and DailyMed links are copied from label-gold-set.ts
+  // at a79b09b. Each enzyme is a finding the pair already produces.
+  // Naltrexone with any opioid is intentionally absent.
+
+  {
+    id: "thioridazine+fluvoxamine",
+    labelDrugId: "thioridazine",
+    otherId: "fluvoxamine",
+    enzyme: "CYP2D6",
+    kind: "inhibitor",
+    labelDrug: "Thioridazine HCl tablets",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "certain other drugs (e.g., fluvoxamine, propranolol, and pindolol) appear to appreciably inhibit the metabolism of thioridazine … thioridazine is contraindicated with these drugs",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1fd16a99-e856-4a37-9dae-c443714fac14",
+  },
+  {
+    id: "pimozide+fluvoxamine",
+    labelDrugId: "fluvoxamine",
+    otherId: "pimozide",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Fluvoxamine maleate tablets",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Coadministration of tizanidine, thioridazine, alosetron, or pimozide with Fluvoxamine Maleate Tablets is contraindicated",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6eeb14df-6fcf-a737-5359-5744eb4accea",
+  },
+  {
+    id: "pimozide+fluoxetine",
+    labelDrugId: "fluoxetine",
+    otherId: "pimozide",
+    enzyme: "CYP2D6",
+    kind: "inhibitor",
+    labelDrug: "Prozac (fluoxetine)",
+    labelSection: "4.2 Other Contraindications",
+    quote: "The use of PROZAC is contraindicated with the following: Pimozide",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
+  },
+  {
+    id: "pimozide+paroxetine",
+    labelDrugId: "pimozide",
+    otherId: "paroxetine",
+    enzyme: "CYP2D6",
+    kind: "inhibitor",
+    labelDrug: "Pimozide tablets",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Concomitant use of pimozide with paroxetine and other strong CYP 2D6 inhibitors is contraindicated",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=70b079e2-a1f7-4a93-8685-d60a4d7c1280",
+  },
+  {
+    id: "dronedarone+ketoconazole",
+    labelDrugId: "dronedarone",
+    otherId: "ketoconazole",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Multaq (dronedarone)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant use of strong CYP3A inhibitors, such as ketoconazole, itraconazole, voriconazole, cyclosporine, telithromycin, clarithromycin, nefazodone, and ritonavir",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3bd4006a-8bad-4909-ac6d-b6d84390155c",
+  },
+  {
+    id: "ergotamine+ritonavir",
+    labelDrugId: "ergotamine",
+    otherId: "ritonavir",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Cafergot (ergotamine/caffeine)",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4db7eece-2eef-bc1b-e063-6394a90a98cb",
+  },
+  {
+    id: "rifampin+atazanavir",
+    labelDrugId: "rifampin",
+    otherId: "atazanavir",
+    enzyme: "CYP3A4",
+    kind: "inducer",
+    labelDrug: "Rifadin (rifampin)",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Rifampin is contraindicated in patients who are also receiving atazanavir, darunavir, fosamprenavir, saquinavir, tipranavir",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1b074c23-dd35-43c9-820c-0e603481fdd3",
+  },
+  {
+    id: "voriconazole+rifampin",
+    labelDrugId: "voriconazole",
+    otherId: "rifampin",
+    // CYP2C19 is the finding this pin holds. A CYP3A4 inducer finding also
+    // exists and stays at the enzyme grade. The quote names both.
+    enzyme: "CYP2C19",
+    kind: "inducer",
+    labelDrug: "Vfend (voriconazole)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 … Rifampin",
+    basis: "named",
+    origin: "gold-set",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=08d08721-1f4c-478a-8abf-d9c402d50553",
   },
 ];
 

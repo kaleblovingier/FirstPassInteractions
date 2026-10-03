@@ -193,11 +193,20 @@ const EXPECTED_PINS = [
   "atazanavir+irinotecan",
   "atazanavir-cobicistat+irinotecan",
   "atazanavir-cobicistat+drospirenone",
+  // Leftover wave-1 gold pairs. Enzyme finding held at contraindicated.
+  "thioridazine+fluvoxamine",
+  "pimozide+fluvoxamine",
+  "pimozide+fluoxetine",
+  "pimozide+paroxetine",
+  "dronedarone+ketoconazole",
+  "ergotamine+ritonavir",
+  "rifampin+atazanavir",
+  "voriconazole+rifampin",
 ];
 
 test("pin list is exactly the reviewed set", () => {
   assert.deepEqual(LABEL_CONTRAINDICATIONS.map((r) => r.id).sort(), [...EXPECTED_PINS].sort());
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 19);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 49);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 17);
@@ -315,3 +324,28 @@ test("pins are narrow: no class expansion, enzyme rule unchanged", () => {
     assert.ok(basis.detail.includes(pin!.labelSection));
   }
 });
+
+test("label floors below contraindicated stay at the gold-set level", () => {
+  // Suboxone: MAOI use is not recommended. Floor is major, not contraindicated.
+  assert.equal(labelContraindicationFor("buprenorphine", "phenelzine"), undefined);
+  assert.equal(pairSeverity("buprenorphine", "phenelzine"), "major");
+  // Methadone label: zidovudine toxicity warning. Floor is moderate. No CYP grade.
+  assert.equal(labelContraindicationFor("methadone", "zidovudine"), undefined);
+  assert.equal(pairSeverity("methadone", "zidovudine"), "moderate");
+  const zid = pairFindings("methadone", "zidovudine").find((f) => f.id.includes("pk-methadone-zidovudine"));
+  assert.ok(zid);
+  assert.deepEqual(zid.enzymes, []);
+  assert.equal(zid.tags.includes("inhibitor"), false);
+  assert.equal(zid.tags.includes("inducer"), false);
+  // Spravato: blood pressure warning with psychostimulants. Floor is moderate.
+  assert.equal(labelContraindicationFor("esketamine", "methylphenidate"), undefined);
+  assert.equal(pairSeverity("esketamine", "methylphenidate"), "moderate");
+});
+
+test("naltrexone with an opioid is not pinned", () => {
+  for (const opioid of ["methadone", "buprenorphine", "oxycodone", "hydrocodone", "fentanyl", "tramadol", "morphine"]) {
+    assert.equal(labelContraindicationFor("naltrexone", opioid), undefined, opioid);
+    assert.equal(pairSeverity("naltrexone", opioid), "major", opioid);
+  }
+});
+

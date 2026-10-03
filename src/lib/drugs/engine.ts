@@ -354,6 +354,61 @@ function pdPair(
   };
 }
 
+/**
+ * Named pairs whose label floor is major or moderate, not contraindicated.
+ * Exact catalog ids only. Not a class flag and not a CYP grade.
+ * Quotes are the gold-set strings (label-gold-set.ts at a79b09b).
+ */
+function labelFloorFindings(a: Drug, b: Drug): Finding[] {
+  const ids = new Set([a.id, b.id]);
+  if (ids.has("buprenorphine") && ids.has("phenelzine")) {
+    return [
+      pdPair(a, b, {
+        suffix: "pd-buprenorphine-maoi",
+        severity: "major",
+        effect: "MAOI use not recommended",
+        mechanism: "buprenorphine × phenelzine (MAOI)",
+        clinical:
+          'Suboxone label, 7 DRUG INTERACTIONS (Monoamine Oxidase Inhibitors): "The use of SUBOXONE sublingual film is not recommended for patients taking MAOIs or within 14 days of stopping such treatment." The label says not recommended, so this desk shows Serious concern for this pair. It does not call the pair contraindicated.',
+        tags: ["maoi", "mat"],
+      }),
+    ];
+  }
+  if (ids.has("methadone") && ids.has("zidovudine")) {
+    const label = a.id === "methadone" ? a : b;
+    const other = label === a ? b : a;
+    return [
+      {
+        id: pairId(a.id, b.id, "pk-methadone-zidovudine"),
+        severity: "moderate",
+        kind: "pk",
+        drugIds: [label.id, other.id],
+        headline: `${label.name} × ${other.name}`,
+        enzymes: [],
+        effect: "higher zidovudine exposure",
+        mechanism: "methadone raises zidovudine exposure",
+        clinical:
+          'Methadone HCl tablets, 7 DRUG INTERACTIONS (Effects of Methadone on Antiretroviral Agents): "Experimental evidence demonstrated that methadone increased the AUC of zidovudine, which could result in toxic effects." The label warns about toxicity, so this desk shows Use care. It does not call the pair contraindicated, and it does not assign a CYP grade.',
+        tags: ["auc", "mat"],
+      },
+    ];
+  }
+  if (ids.has("esketamine") && ids.has("methylphenidate")) {
+    return [
+      pdPair(a, b, {
+        suffix: "pd-esketamine-stim",
+        severity: "moderate",
+        effect: "blood pressure may rise",
+        mechanism: "esketamine × methylphenidate",
+        clinical:
+          'Spravato label, 7.2 Psychostimulants: "Concomitant use with psychostimulants (e.g., amphetamines, methylphenidate, modafinil, armodafinil) may increase blood pressure … Closely monitor blood pressure with concomitant use of SPRAVATO with psychostimulants." The label says to monitor blood pressure, so this desk shows Use care for this pair. It does not call the pair contraindicated.',
+        tags: ["pressor"],
+      }),
+    ];
+  }
+  return [];
+}
+
 function pdFindings(a: Drug, b: Drug): Finding[] {
   const out: Finding[] = [];
 
@@ -2336,6 +2391,7 @@ export function analyze(
         (b.id === "__etoh-chronic" && a.id === "acetaminophen");
       if (!skipApapChronic) findings.push(...applyLabelPins(a, b, pkFindings(a, b)));
       findings.push(...pdFindings(a, b));
+      findings.push(...labelFloorFindings(a, b));
     }
   }
   findings.push(...multiDrugFindings(real));
