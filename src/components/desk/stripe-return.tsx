@@ -25,7 +25,7 @@ export function StripeReturn({ ready }: { ready: boolean }) {
     if (cancel) {
       openCheckout(
         "lab",
-        "Card checkout was cancelled. You can still unlock founding the written way: pay $79 once via Venmo / Cash App / PayPal → get your key → Redeem below.",
+        "Card checkout was cancelled. You can still unlock founding the written way: pay $79 once via Venmo, Cash App, or PayPal, get your key, then Redeem below.",
       );
       clean();
       return;

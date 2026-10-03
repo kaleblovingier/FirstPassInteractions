@@ -131,7 +131,7 @@ export const MODERN_WAVE2_FORMULARY: Drug[] = [
   d("acrylfentanyl", "Acrylfentanyl", [], "Street synthetic opioid (fentanyl analog)",
     [sub("CYP3A4", "major")],
     ["opioid", "cns-depressant"],
-    "Potent μ agonist; naloxone may need repeat doses; benzo airway stack",
+    "High-potency fentanyl analog; overdose reversal may need more than one naloxone administration and ongoing monitoring; benzo airway stack",
     {
       aliases: ["acryloylfentanyl", "acrylic fentanyl"],
       note: "Illicit fentanyl analog. Same teaching map as fentanyl: 3A4 victims, xylazine/benzo stacks, naloxone is μ-only.",

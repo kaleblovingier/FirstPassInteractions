@@ -27,11 +27,12 @@ test("founding unlock note stays soft and non-clinical", () => {
 });
 
 test("payClose names rails, redeem, and three-step path", () => {
-  assert.match(src, /pay → get key → redeem/i);
+  assert.match(src, /pay, get your key, redeem/i);
   assert.match(src, /Venmo/);
   assert.match(src, /Cash App/);
   assert.match(src, /PayPal/);
-  assert.match(src, /Plans → Redeem/);
+  assert.match(src, /Redeem on the Plans page/);
+  assert.doesNotMatch(src, /→/);
 });
 
 test("PAY_RAILS still lists three written rails", () => {
@@ -58,12 +59,14 @@ test("plans FAQ answers subscription, card, lost key, and medical advice", () =>
   assert.doesNotMatch(faq, /diagnos|treat|cure/i);
 });
 
-test("who-it's-for line names the three buyer groups", () => {
+test("who-it's-for line uses the approved audience wording", () => {
   const m = src.match(/WHO_FOR = "([^"]+)"/);
   assert.ok(m);
-  assert.match(m[1], /ketamine clinics/i);
-  assert.match(m[1], /MAT and harm-reduction/i);
-  assert.match(m[1], /pharmacy students/i);
+  assert.equal(
+    m[1],
+    "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.",
+  );
+  assert.doesNotMatch(src, /trained safety staff|harm-reduction teams|street-supply desks/i);
 });
 
 test("pitch no longer repeats a second free-tier line", () => {
@@ -71,3 +74,23 @@ test("pitch no longer repeats a second free-tier line", () => {
   const line = src.slice(start, src.indexOf("\n", start));
   assert.doesNotMatch(line, /free|five/i);
 });
+
+test("operator close copy does not pitch a card or a monthly comparison", async () => {
+  assert.doesNotMatch(src, /card on the desk/i);
+  assert.doesNotMatch(src, /\$12\/mo/);
+  assert.doesNotMatch(src, /returned from Stripe/);
+  const foundry = await readFile(new URL("../../components/desk/foundry.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(foundry, /card on the desk/i);
+  assert.doesNotMatch(foundry, /\$12\/mo/);
+  assert.doesNotMatch(foundry, /Stripe/);
+  assert.match(foundry, /\$79 once/);
+  assert.match(foundry, /Venmo, Cash App, or PayPal/);
+  assert.match(foundry, /mint in Foundry/);
+  const readme = await readFile(new URL("../../../README.md", import.meta.url), "utf8");
+  const pay = readme.slice(readme.indexOf("## Pay / write"), readme.indexOf("## Who it's for"));
+  assert.doesNotMatch(pay, /card on the desk/i);
+  assert.doesNotMatch(pay, /Stripe/);
+  assert.match(pay, /\$79 once/);
+  assert.match(pay, /mint a signed key in Foundry/);
+});
+

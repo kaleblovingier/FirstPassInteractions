@@ -1,4 +1,4 @@
-import { COMMERCE, OPERATOR, payClose } from "./commerce";
+import { COMMERCE, OPERATOR, WHO_FOR, payClose } from "./commerce";
 
 export type Prey = "clinic" | "mat" | "school" | "harm" | "assoc";
 export type Range = "whatcom" | "puget" | "eastwa" | "pnw" | "us";
@@ -13,6 +13,12 @@ export interface Target {
   who: string;
   site: string;
   hook: string;
+}
+
+/** A target kept on file but out of active outreach. Never shown in DIRECTORY / weekTargets. */
+export interface ParkedTarget extends Target {
+  parked: true;
+  reason: string;
 }
 
 export interface PipeRow extends Target {
@@ -45,7 +51,12 @@ export const STATUS_LABEL: Record<PipeStatus, string> = {
   skip: "Skip",
 };
 
-/** Public orgs only — websites, not personal inboxes. Bundle is public. */
+/**
+ * Active outreach targets. Public orgs only (websites, not personal inboxes); bundle is public.
+ * Core audience matches WHO_FOR (licensed HCPs + supervised students). Harm-reduction programs
+ * (SSPs) are on the send list by operator choice — "even ghetto harm reduction is harm reduction."
+ * Use PARKED below for rows that should stay off weekTargets / filterDirectory.
+ */
 export const DIRECTORY: Target[] = [
   {
     id: "salish-ketamine",
@@ -55,7 +66,7 @@ export const DIRECTORY: Target[] = [
     city: "Bellingham",
     who: "Nate Stephens, DO",
     site: "https://www.salishketamine.com/",
-    hook: "Your IV ketamine panel in Fairhaven — oral vs IV first-pass and benzo airway stacks are the map the infusion nurse already wants.",
+    hook: "Your IV ketamine panel in Fairhaven. Oral vs IV first-pass and benzo airway stacks, as teaching maps.",
   },
   {
     id: "cascade-medical-advantage",
@@ -75,7 +86,7 @@ export const DIRECTORY: Target[] = [
     city: "Bellingham",
     who: "MAT program (Suboxone, Vivitrol)",
     site: "https://www.seamar.org/whatcom-bh-mat-bellingham.html",
-    hook: "Naltrexone × leftover opioid, loperamide, and street-benzo stacks — the collisions MAT staff get asked about after hours.",
+    hook: "Naltrexone × leftover opioid, loperamide, and street-benzo stacks, as teaching maps for MAT education.",
   },
   {
     id: "ideal-option-bellingham",
@@ -85,7 +96,7 @@ export const DIRECTORY: Target[] = [
     city: "Bellingham",
     who: "Medication-assisted treatment clinic",
     site: "https://www.idealoption.com/clinics/bellingham",
-    hook: "High-throughput MAT. A five-drug free desk is how staff try it; founding is the formulary they keep.",
+    hook: "High-throughput MAT. The five-drug free desk is an easy way to try it; founding adds host factors and export for teaching.",
   },
   {
     id: "ccs-recovery",
@@ -155,7 +166,7 @@ export const DIRECTORY: Target[] = [
     city: "Seattle / Bellevue / Tacoma",
     who: "Allyn Wilcock, CRNA — 50k+ infusions",
     site: "https://nwketamineclinics.com/",
-    hook: "Highest-volume IV ketamine shop in the PNW. First-pass vs IV and 2B6 phenotype are the questions their referring pharmacies already ask.",
+    hook: "Multi-site IV ketamine practice. First-pass vs IV and 2B6 phenotype are the questions their referring pharmacies already ask.",
   },
   {
     id: "ketamine-seattle",
@@ -205,7 +216,7 @@ export const DIRECTORY: Target[] = [
     city: "Seattle",
     who: "Integrative oncology + KAP",
     site: "https://www.aimsinstitute.net/",
-    hook: "Ketamine lozenges — those are first-pass victims. Grapefruit and 3A4 inhibitors change the dose.",
+    hook: "Ketamine lozenges are a first-pass teaching case: grapefruit and 3A4 inhibitors can change how much reaches the bloodstream.",
   },
   {
     id: "acute-pain-bellevue",
@@ -275,7 +286,7 @@ export const DIRECTORY: Target[] = [
     city: "Spokane",
     who: "Kelsey Martell, DO",
     site: "https://mountainpsych.com/",
-    hook: "East-side psych + ketamine. Fewer tools out there — a $79 teaching desk for staff huddles, not a substitute for a pharmacist.",
+    hook: "East-side psych + ketamine. Fewer tools out there. A $79 teaching desk for education, not a substitute for a pharmacist.",
   },
   {
     id: "illume-wellbeing",
@@ -295,7 +306,7 @@ export const DIRECTORY: Target[] = [
     city: "Kennewick",
     who: "Tyler Thornock, CRNA",
     site: "https://tricitieswellness.com/",
-    hook: "Highest-reviewed infusion shop in WA. Volume clinic that still asks pharmacy the CYP question.",
+    hook: "Kennewick infusion clinic that still asks pharmacy the CYP question.",
   },
   {
     id: "uw-sop",
@@ -325,7 +336,7 @@ export const DIRECTORY: Target[] = [
     city: "Hillsboro, OR",
     who: "PharmD faculty",
     site: "https://www.pacificu.edu/pharmacy-pharmd",
-    hook: "Oregon PharmD. A CYP teaching desk with street + clinic maps, not another Lexicomp screenshot.",
+    hook: "Oregon PharmD. A CYP teaching desk with street + clinic maps for coursework.",
   },
   {
     id: "osu-pharmacy",
@@ -345,7 +356,7 @@ export const DIRECTORY: Target[] = [
     city: "Seattle",
     who: "Peer-run SSP + naloxone mail",
     site: "https://phra.org/",
-    hook: "Xylazine, nitazenes, designer benzos. Naloxone will not reverse an α2. That sentence is the sale.",
+    hook: "Teaching maps for xylazine, nitazenes, and designer benzos, including why naloxone does not reverse xylazine's α2 effect.",
   },
   {
     id: "kc-needle-exchange",
@@ -355,7 +366,7 @@ export const DIRECTORY: Target[] = [
     city: "Seattle",
     who: "Public Health — Seattle & King County",
     site: "https://doh.wa.gov/you-and-your-family/drug-user-health/syringe-service-programs/syringe-service-program-directory",
-    hook: "County SSP. Street-supply collisions are the daily board. Educational desk, not a charting system.",
+    hook: "County SSP. Street-supply combinations as teaching maps. Educational desk, not a charting system.",
   },
   {
     id: "askp3",
@@ -365,7 +376,7 @@ export const DIRECTORY: Target[] = [
     city: "National",
     who: "American Society of Ketamine Physicians, Psychotherapists & Practitioners",
     site: "https://askp.org/",
-    hook: "The ketamine-clinic membership. One post in their channels is worth twenty cold DMs.",
+    hook: "Ketamine-clinic membership. Oral vs IV first-pass and 2B6 phenotype as teaching maps for member education.",
   },
   {
     id: "aapp",
@@ -385,9 +396,15 @@ export const DIRECTORY: Target[] = [
     city: "Washington",
     who: "WSPA members / CE",
     site: "https://www.wsparx.org/",
-    hook: "State association. CE angle: ketamine, MAT, and street adulterants on one CYP map.",
+    hook: "State association. Ketamine, MAT, and street adulterants on one CYP teaching map for member education. Not accredited CE.",
   },
 ];
+
+/**
+ * Parked: kept for the record, excluded from active outreach (DIRECTORY, weekTargets,
+ * filterDirectory). Empty after operator un-parked PHRA / King County Needle Exchange.
+ */
+export const PARKED: ParkedTarget[] = [];
 
 export const RECIPES = [
   {
@@ -472,6 +489,9 @@ export const RECIPES = [
   },
 ] as const;
 
+/** Search recipes for parked audiences. Not rendered with RECIPES. Currently empty. */
+export const PARKED_RECIPES = [] as const;
+
 export function googleUrl(q: string) {
   return `https://www.google.com/search?q=${encodeURIComponent(q)}`;
 }
@@ -523,13 +543,15 @@ export function weekTargets(count = 5): Target[] {
   return [...here, ...more].slice(0, count);
 }
 
+/** Active outreach only: parked targets are never in DIRECTORY, so they never show here. */
 export function filterDirectory(prey: Prey | "all", range: Range | "all") {
   return DIRECTORY.filter((t) => (prey === "all" || t.prey === prey) && (range === "all" || t.range === range));
 }
 
 export function targetDm(t: Pick<Target, "name" | "city" | "hook">, price = COMMERCE.founding) {
   return [
-    `I built FirstPass — a CYP450 desk. ${t.hook}`,
+    `I built FirstPass, an educational CYP450 teaching desk. ${t.hook}`,
+    WHO_FOR,
     "",
     `Looked you up because of ${t.name} in ${t.city}.`,
     "",
@@ -538,7 +560,7 @@ export function targetDm(t: Pick<Target, "name" | "city" | "hook">, price = COMM
     payClose(price),
     `${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
-    "Educational model — not a clinical system of record.",
+    "Educational model — not FDA-cleared, not a clinical system of record. The Prescribing Information governs.",
   ].join("\n");
 }
 

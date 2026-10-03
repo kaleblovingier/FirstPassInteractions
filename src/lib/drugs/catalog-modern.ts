@@ -271,7 +271,7 @@ export const MODERN_FORMULARY: Drug[] = [
     "Extremely high-potency μ-agonist; respiratory arrest; 3A4 victim",
     {
       aliases: ["npe", "protonitazepyne", "pyrrolidino-etonitazene", "nitazene"],
-      note: "Among the hotter nitazene analogues reported in toxicology. Teaching card only — potency estimates vary; PI/forensic sources govern.",
+      note: "Among the more potent nitazene analogues reported in toxicology. Teaching card only — potency estimates vary; PI/forensic sources govern.",
     }),
   d("butonitazene", "Butonitazene", [], "Benzimidazole opioid (nitazene)",
     [sub("CYP3A4", "major")],
@@ -354,7 +354,7 @@ export const MODERN_FORMULARY: Drug[] = [
     "Severe sympathomimetic and serotonergic toxicity; MAOI crisis",
     {
       aliases: ["ephylone", "bk-ebdp", "nep"],
-      note: "Sold as MDMA in some seizures. Hotter stimulant signal than MDMA — still a MAOI contraindication on this desk.",
+      note: "Sold as MDMA in some seizures. More potent stimulant than MDMA — still a MAOI contraindication on this desk.",
     }),
   d("mdphp", "MDPHP", [], "Cathinone stimulant (pyrovalerone)",
     [sub("CYP2D6", "minor")],

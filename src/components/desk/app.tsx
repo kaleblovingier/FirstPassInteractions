@@ -4,7 +4,6 @@ import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { plainWordsReport } from "@/lib/drugs/quick-chips";
-import { buildExportReport, EXPORT_FILE_NOTE } from "@/lib/drugs/export-plain";
 import { parseDoses } from "@/lib/drugs/dosing";
 import { applyHost, FIRST_PASS_NMDA } from "@/lib/drugs/host";
 import { treesFor } from "@/lib/drugs/metabolites";
@@ -18,13 +17,11 @@ import {
 import {
   PACKS,
   applyPermalink,
-  buildBriefUrl,
   buildCaseUrl,
   buildPackUrl,
   parsePermalink,
   type PackId,
 } from "@/lib/drugs/permalinks";
-import { buildRegimenBrief } from "@/lib/drugs/brief";
 import { CLASS_TILES, PLATES, plateForDrug, plateForSample } from "@/lib/drugs/visuals";
 import {
   ALCOHOL_LABEL,
@@ -80,7 +77,8 @@ import { WindowBriefing } from "./window";
 import { WindowExtras } from "./tray";
 import { ClinicalBoard } from "./clinical";
 import { StudyPage } from "./study";
-import { WatchPage } from "./watch";
+import { CaseCompare } from "./compare";
+import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
 import { LabelPage } from "./label";
 import { PrescribingStrip } from "./pi";
@@ -133,7 +131,7 @@ export function DeskApp() {
     if (resolved.kind === "lab") {
       useDesk.getState().setView("study");
     }
-    // brief (and case/pack) stay on desk. Keep query string so shared links stay copyable.
+    // Keep query string so shared ?case= / ?pack= / ?lab= links stay copyable.
   }, [hydrated, load]);
 
   // Rounds (and other surfaces) may set ?pack= / ?case= after boot — resync strip state.
@@ -226,8 +224,8 @@ export function DeskApp() {
     <div className="min-h-dvh bg-bg text-fg">
       <StripeReturn ready={hydrated} />
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="flex items-center justify-between gap-3">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
             <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
               <HemeMark className="size-8" />
@@ -252,17 +250,17 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 items-center gap-2">
-            <nav aria-label="Main navigation" className="flex w-full flex-wrap items-center justify-center gap-1 rounded-xl bg-bg-sunken p-1 sm:w-auto sm:flex-nowrap sm:justify-start sm:rounded-full">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 xl:w-auto">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:flex-nowrap xl:justify-start xl:rounded-full">
               {(
                 [
                   ["desk", "Desk"],
                   ["library", "Library"],
-                  ["watch", "Watch"],
                   ["cites", "Sources"],
                   ["atlas", "CYP map"],
                   ["study", "Learn"],
                   ["rounds", "Cases"],
+                  ["compare", "Compare"],
                   ["label", "Safety"],
                   ["plans", "Plans"],
                 ] as const
@@ -340,8 +338,12 @@ export function DeskApp() {
           <RoundsPage />
         ) : view === "study" ? (
           <StudyPage />
-        ) : view === "watch" ? (
-          <WatchPage />
+        ) : view === "compare" ? (
+          <CaseCompare
+            pro={pro}
+            onUnlock={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}
+            onOpenCase={(sample) => loadSample(sample.id, null)}
+          />
         ) : view === "cites" ? (
           <CitesPage />
         ) : view === "label" ? (
@@ -429,6 +431,14 @@ export function DeskApp() {
                   host={host}
                 />
               ) : null}
+              {selected.length > 0 ? (
+                <MedicationReview
+                  key={`${selected.join("|")}:${JSON.stringify(host)}`}
+                  ids={selected}
+                  host={host}
+                  findings={report.findings}
+                />
+              ) : null}
 
               {selected.length === 0 ? (
                 <EmptyState
@@ -461,7 +471,7 @@ export function DeskApp() {
                           <StackMeters stacks={report.stacks} />
                         </Paywall>
                       ) : null}
-                      <FindingList findings={report.findings} trayIds={selected} />
+                      <FindingList findings={report.findings} />
                     </>
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
@@ -476,7 +486,6 @@ export function DeskApp() {
                     showCannabis={selected.some((id) =>
                       ["dronabinol", "cannabidiol"].includes(id),
                     )}
-                    trayIds={selected}
                   />
                   {pro ? (
                     <MetaboliteCard ids={selected} />
@@ -524,7 +533,7 @@ export function DeskApp() {
                   {report.findings.length > 0 ? (
                     <>
                       <CollisionMap selected={selected} findings={report.findings} />
-                      <FindingList findings={report.findings} trayIds={selected} />
+                      <FindingList findings={report.findings} />
                     </>
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
@@ -550,7 +559,6 @@ export function DeskApp() {
                     showCannabis={selected.some((id) =>
                       ["dronabinol", "cannabidiol"].includes(id),
                     )}
-                    trayIds={selected}
                   />
                   <CypHeatmap drugs={hostDrugs} colliding={colliding} />
                 </>
@@ -912,13 +920,16 @@ function RiskBanner({
   caseId: string | null;
   packId: PackId | null;
 }) {
-  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | "brief" | null>(null);
+  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
   const openCheckout = useDesk((s) => s.openCheckout);
   const license = useDesk((s) => s.license);
   const highest = report.highest;
+  const phenoLine = PHENOTYPE_ENZYMES.map(
+    (e) => `${e} ${host.phenotypes[e]} (${METABOLIZER_LABEL[host.phenotypes[e]]})`,
+  ).join(", ");
   const names = selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean).join(" + ");
 
-  async function write(kind: "full" | "share" | "plain" | "link" | "brief", text: string) {
+  async function write(kind: "full" | "share" | "plain" | "link", text: string) {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(kind);
@@ -937,28 +948,23 @@ function RiskBanner({
       );
       return;
     }
-    const text = buildExportReport({
-      names,
-      person: [
-        ...PHENOTYPE_ENZYMES.map((e) => ({
-          label: `${e} metabolizer`,
-          value: `${METABOLIZER_LABEL[host.phenotypes[e]]} (${host.phenotypes[e]})`,
-        })),
-        { label: "Tobacco smoke", value: host.smoking ? "daily (speeds up CYP1A2 — induction)" : "off" },
-        { label: "Alcohol pattern", value: ALCOHOL_LABEL[host.alcohol] },
-        { label: "Ketamine route", value: KETAMINE_ROUTE_LABEL[host.ketamineRoute] },
-        { label: "Cannabis route", value: CANNABIS_ROUTE_LABEL[host.cannabisRoute] },
-      ],
-      highestLabel: SEVERITY_LABEL[highest],
-      findings: report.findings.map((f) => ({
-        severity: SEVERITY_LABEL[f.severity],
-        headline: f.headline,
-        plain: plainLanguageSummary(f),
-        mechanism: f.mechanism,
-        clinical: f.clinical,
-      })),
-    });
-    await write("full", text);
+    const lines = [
+      `FirstPass regimen: ${names}`,
+      `Metabolizer status: ${phenoLine}`,
+      `Tobacco smoke: ${host.smoking ? "daily (CYP1A2 induction)" : "off"}`,
+      `Alcohol pattern: ${ALCOHOL_LABEL[host.alcohol]}`,
+      `Ketamine route: ${KETAMINE_ROUTE_LABEL[host.ketamineRoute]}`,
+      `Cannabis route: ${CANNABIS_ROUTE_LABEL[host.cannabisRoute]}`,
+      `Highest severity: ${SEVERITY_LABEL[highest]}`,
+      "",
+      ...report.findings.map(
+        (f) =>
+          `• ${SEVERITY_LABEL[f.severity]} — ${f.headline}: ${plainLanguageSummary(f)} ${f.mechanism}. ${f.clinical}`,
+      ),
+      "",
+      "Educational model. Not a substitute for clinical decision support.",
+    ];
+    await write("full", lines.join("\n"));
   }
 
   async function shareLine() {
@@ -988,19 +994,6 @@ function RiskBanner({
         SEVERITY_LABEL[highest],
       ),
     );
-  }
-
-  async function copyBrief() {
-    const url =
-      typeof window !== "undefined" ? buildBriefUrl(selected) : buildBriefUrl(selected, { base: "https://firstpass-desk.vercel.app" });
-    const text = buildRegimenBrief({
-      names,
-      findings: report.findings,
-      highest,
-      trayIds: selected,
-      url,
-    });
-    await write("brief", text);
   }
 
   return (
@@ -1042,10 +1035,6 @@ function RiskBanner({
           {copied === "link" ? "Copied" : "Copy link"}
         </Button>
       ) : null}
-      <Button variant="secondary" size="sm" onClick={() => void copyBrief()} className="h-10 min-w-24 shrink-0">
-        {copied === "brief" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-        {copied === "brief" ? "Copied" : "Copy brief"}
-      </Button>
       <Button variant="secondary" size="sm" onClick={() => void shareLine()} className="h-10 min-w-24 shrink-0">
         {copied === "share" ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
         {copied === "share" ? "Copied" : "Share"}
@@ -1299,9 +1288,8 @@ function exportDesk(
   license: string | null,
 ) {
   const body = {
-    software: { name: SOFTWARE.name, version: SOFTWARE.version, udi: SOFTWARE.udi, notFdaCleared: true },
+    software: { name: SOFTWARE.name, version: SOFTWARE.version, buildId: SOFTWARE.buildId, notFdaCleared: true },
     intendedUse: "See IFU. Not a dose. Independent review of the Prescribing Information required.",
-    howToRead: EXPORT_FILE_NOTE,
     license,
     generated: new Date().toISOString(),
     regimen: selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean),
@@ -1336,7 +1324,7 @@ function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
     ),
   ];
   const blob = new Blob(
-    [`# FirstPass ${SOFTWARE.version} ${selected.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")}\n# ${PI_FOOTER}\n# ${EXPORT_FILE_NOTE}\n${rows.join("\n")}`],
+    [`# FirstPass ${SOFTWARE.version} ${selected.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")}\n# ${PI_FOOTER}\n${rows.join("\n")}`],
     { type: "text/csv" },
   );
   const url = URL.createObjectURL(blob);

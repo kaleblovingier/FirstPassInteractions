@@ -125,12 +125,12 @@ export function WatchPage() {
     <div className="space-y-5">
       <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Watch coach</p>
-        <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">Keep an eye on shortages and recalls</h2>
+        <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">Recent shortage and recall notes to read</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
           Pin the medicines on your tray. When you open this page, we ask OpenFDA for shortage rows and
           the top recall or enforcement note for each pin. The excerpts are shortened for teaching, the
-          same as the dossier. This is not a shortage alert service, not a push notification, and not
-          dosing advice. The Prescribing Information and the{" "}
+          same as the dossier. These are recent label, shortage, and recall notes to read, not safety
+          alerts. Nothing here is a push notification, a real-time alert, or dosing advice. The Prescribing Information and the{" "}
           <a
             href="https://www.fda.gov/drugs/drug-safety-and-availability/drug-shortages"
             target="_blank"
@@ -139,7 +139,7 @@ export function WatchPage() {
           >
             FDA shortage page
           </a>{" "}
-          still win. Open the full label before acting. No patient data: pins stay in this browser
+          still win. Open the full label to read the whole entry. No patient data: pins stay in this browser
           only.
         </p>
         <p className="mt-2 font-mono text-[11px] text-muted">

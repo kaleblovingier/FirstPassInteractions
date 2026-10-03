@@ -134,16 +134,27 @@
       .preview-badge { padding: 5px 8px; border-radius: 5px; background: var(--accent-soft); color: var(--accent-dark); font: 500 .61rem var(--mono); }
       .preview h2 { margin: 18px 0 5px; font: 500 1.72rem/1.08 var(--serif); letter-spacing: -.02em; }
       .preview-intro { margin: 0 0 18px; color: var(--muted); font-size: .8rem; }
+      .route-controls { display: flex; align-items: center; gap: 7px; margin: 0 0 10px; }
+      .route-controls-label { margin-right: 3px; color: var(--muted); font-size: .72rem; }
+      .route-toggle { min-height: 40px; padding: 0 13px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font: 500 .76rem var(--sans); cursor: pointer; }
+      .route-toggle:hover { background: #f3f0e9; color: var(--ink); }
+      .route-toggle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
       .route-compare { display: grid; gap: 9px; }
-      .route-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: #f3f0e9; }
+      .route-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: #f3f0e9; transition: border-color .16s ease, background .16s ease, opacity .16s ease; }
+      .route-row[data-active="true"] { border-color: var(--accent); background: #edf2ef; }
+      .route-compare[data-mode="oral"] .route-row[data-route="iv"], .route-compare[data-mode="iv"] .route-row[data-route="oral"] { opacity: .55; }
       .route-tag { color: var(--accent-dark); font: 500 .62rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
       .route-path { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
       .route-node { padding: 5px 8px; border: 1px solid rgba(28, 25, 21, .1); border-radius: 6px; background: var(--surface); font-size: .7rem; font-weight: 500; }
       .route-node.gut { border-color: #c8d8d3; background: var(--accent-soft); color: var(--accent-dark); }
       .route-arrow { color: var(--subtle); font-size: .8rem; }
       .route-caption { display: block; margin-top: 5px; color: var(--muted); font-size: .66rem; }
+      .route-explanation { min-height: 3.1em; margin: 10px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.5; }
+      .route-explanation strong { color: var(--ink); }
       .preview-note { margin: 13px 0 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: .74rem; line-height: 1.5; }
       .preview-note strong { color: var(--ink); }
+      .preview-action { display: inline-flex; min-height: 42px; align-items: center; gap: 7px; margin-top: 14px; padding: 0 13px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .78rem; font-weight: 600; text-decoration: none; }
+      .preview-action:hover { background: var(--accent-dark); }
 
       .section { padding-block: 68px; border-top: 1px solid rgba(28, 25, 21, .12); }
       .section-heading { max-width: 680px; margin-bottom: 27px; }
@@ -283,7 +294,7 @@
     <main id="top">
       <section class="hero shell" aria-labelledby="hero-title">
         <div>
-          <p class="eyebrow">For clinician review &amp; supervised learning</p>
+          <p class="eyebrow">For licensed healthcare professionals &amp; supervised students</p>
           <h1 id="hero-title">See how medicines may interact — starting in plain English.</h1>
           <p class="hero-copy">
             FirstPass is a learning desk for medicine, supplement, and food combinations.
@@ -304,13 +315,18 @@
         </div>
         <aside class="preview" aria-label="Illustrative interaction result preview">
           <div class="preview-top">
-            <span class="preview-label">Pathway example</span>
-            <span class="preview-badge">ROUTE MATTERS</span>
+            <span class="preview-label">Interactive pathway example</span>
+            <span class="preview-badge">COMPARE ROUTES</span>
           </div>
           <h2>Grapefruit + ketamine</h2>
-          <p class="preview-intro">A teaching example: with oral dosing, food can change how much reaches the bloodstream.</p>
-          <div class="route-compare" role="img" aria-label="Oral medicines pass the gut wall before reaching circulation; IV administration bypasses the intestinal first-pass step.">
-            <div class="route-row">
+          <p class="preview-intro">Select a route to focus the pathway comparison.</p>
+          <div class="route-controls" role="group" aria-label="Select route to highlight">
+            <span class="route-controls-label">Highlight:</span>
+            <button class="route-toggle" type="button" data-route-toggle="oral" aria-pressed="true">Oral</button>
+            <button class="route-toggle" type="button" data-route-toggle="iv" aria-pressed="false">IV</button>
+          </div>
+          <div class="route-compare" data-mode="oral" aria-label="Illustrative oral and IV route comparison">
+            <div class="route-row" data-route="oral" data-active="true">
               <span class="route-tag">Oral</span>
               <div>
                 <div class="route-path">
@@ -321,7 +337,7 @@
                 <span class="route-caption">Goes through the gut wall first (where enzymes can change the dose)</span>
               </div>
             </div>
-            <div class="route-row">
+            <div class="route-row" data-route="iv" data-active="false">
               <span class="route-tag">IV</span>
               <div>
                 <div class="route-path">
@@ -332,7 +348,9 @@
               </div>
             </div>
           </div>
-          <p class="preview-note"><strong>What to notice:</strong> how you take a medicine (by mouth vs IV) can change which interactions matter. This diagram is a teaching sketch, not a prediction for any one person.</p>
+          <p class="route-explanation" id="route-explanation" aria-live="polite"><strong>Oral:</strong> the illustrative pathway passes through intestinal CYP3A4 before systemic circulation.</p>
+          <p class="preview-note"><strong>What to notice:</strong> route changes which pathway is encountered. This comparison explains a mechanism, not a patient-specific exposure or outcome.</p>
+          <a class="preview-action" href="https://firstpass-desk.vercel.app/?sample=gf-oral-ketamine">Open the oral example <span aria-hidden="true">→</span></a>
         </aside>
       </section>
 
@@ -605,13 +623,37 @@
       <div class="shell footer-row">
         <div>
           <strong>FirstPass</strong>
-          <p class="fine-print">Educational interaction map for clinician review and supervised learning. Not medical advice, not a dose tool, and not a substitute for the Prescribing Information.</p>
+          <p class="fine-print">Educational interaction map. For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. Not medical advice, not a dose tool, and not a substitute for the Prescribing Information.</p>
         </div>
         <div><a href="https://github.com/kaleblovingier/FirstPassInteractions">View the project source</a></div>
       </div>
     </footer>
     <script>
       (() => {
+        const routeCompare = document.querySelector(".route-compare");
+        const routeExplanation = document.querySelector("#route-explanation");
+        const routeToggles = [...document.querySelectorAll("[data-route-toggle]")];
+        if (routeCompare && routeExplanation instanceof HTMLElement && routeToggles.length > 0) {
+          const routeCopy = {
+            oral: "Oral: the illustrative pathway passes through intestinal CYP3A4 before systemic circulation.",
+            iv: "IV: administration enters systemic circulation without the intestinal first-pass step shown for oral dosing.",
+          };
+          for (const toggle of routeToggles) {
+            toggle.addEventListener("click", () => {
+              const mode = toggle.dataset.routeToggle;
+              if (mode !== "oral" && mode !== "iv") return;
+              routeCompare.dataset.mode = mode;
+              routeExplanation.textContent = routeCopy[mode];
+              for (const button of routeToggles) {
+                button.setAttribute("aria-pressed", String(button === toggle));
+              }
+              for (const row of routeCompare.querySelectorAll("[data-route]")) {
+                row.setAttribute("data-active", String(row.getAttribute("data-route") === mode));
+              }
+            });
+          }
+        }
+
         const search = document.querySelector("#example-search");
         const grid = document.querySelector("#example-grid");
         const count = document.querySelector("#example-count");

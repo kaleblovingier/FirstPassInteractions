@@ -34,7 +34,7 @@ const LEAD_BULLETS = [
   },
   {
     title: "Educational desk",
-    body: "Built for licensed clinicians and trainees to review mapped collisions — not a prescription writer or patient self-dosing app.",
+    body: "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. Not a prescription writer or patient self-dosing app.",
   },
   {
     title: "Empty ≠ safe",
@@ -57,7 +57,7 @@ export function LabelPage() {
               <Badge tone="warn">Not FDA-cleared</Badge>
             </div>
             <p className="mt-1 font-mono text-xs text-muted">
-              {SOFTWARE.udi} · v{SOFTWARE.version} · {SOFTWARE.released}
+              {SOFTWARE.buildId} · v{SOFTWARE.version} · {SOFTWARE.released}
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
               Instructions for use in plain language. The boxed strings below are the same regulatory
@@ -168,7 +168,7 @@ export function LabelPage() {
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">CDS posture</p>
         <h2 className="mt-1 font-serif text-lg tracking-tight text-fg">Non-device CDS criteria</h2>
         <p className="mt-1 text-xs text-muted">
-          FDA Clinical Decision Support Software guidance, September 28, 2022. Meeting these criteria is a
+          FDA Clinical Decision Support Software guidance, January 2026 (supersedes the 2022 version). Meeting these criteria is a
           posture, not a clearance.
         </p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -238,7 +238,7 @@ export function LabelPage() {
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Manufacturer</p>
         <h2 className="mt-1 font-serif text-lg tracking-tight text-fg">Maker / complaints</h2>
         <p className="mt-2 text-sm leading-relaxed text-fg">
-          {SOFTWARE.manufacturer}. Software version {SOFTWARE.version} ({SOFTWARE.udi}). Report a labeling
+          {SOFTWARE.manufacturer}. Software version {SOFTWARE.version} ({SOFTWARE.buildId}). Report a labeling
           disagreement, a missed collision, or an adverse event associated with use of this desk to{" "}
           <a className="text-accent underline" href={`mailto:${OPERATOR.email}`}>
             {OPERATOR.email}

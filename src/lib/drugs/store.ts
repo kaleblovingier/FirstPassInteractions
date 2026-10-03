@@ -19,7 +19,18 @@ import {
   type PregBand,
 } from "./types";
 
-type View = "desk" | "atlas" | "plans" | "library" | "foundry" | "rounds" | "cites" | "label" | "study" | "watch";
+type View =
+  | "desk"
+  | "atlas"
+  | "plans"
+  | "library"
+  | "foundry"
+  | "rounds"
+  | "cites"
+  | "label"
+  | "study"
+  | "compare"
+  | "watch";
 
 export interface LoadExtras {
   phenotypes?: Partial<PhenotypeMap>;

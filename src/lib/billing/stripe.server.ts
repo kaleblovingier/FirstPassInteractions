@@ -204,7 +204,7 @@ export async function createCheckout(planRaw: string, intervalRaw: string) {
             unit_amount: dollars * 100,
             product_data: {
               name: productName(issued, interval),
-              description: "Educational CYP450 desk license. Not medical advice. Not a charting system. Key is issued automatically after payment.",
+              description: "Educational CYP450 desk license. Not FDA-cleared. Not medical advice. Not a charting system. Key is issued automatically after payment.",
             },
           },
         },

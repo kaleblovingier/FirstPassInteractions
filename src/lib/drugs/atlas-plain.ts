@@ -41,7 +41,7 @@ export const ATLAS_ENZYME_PLAIN: Record<Enzyme, { nickname: string; blurb: strin
   CYP2C9: {
     nickname: "The warfarin enzyme",
     blurb:
-      "Clears S-warfarin, phenytoin, and many anti-inflammatory pain pills (NSAIDs) and sulfonylurea diabetes pills. Fluconazole and amiodarone slow it. Someone whose genes make this pathway run slow (poor metabolizer) looks like they already have a hard blocker on board.",
+      "Clears S-warfarin, phenytoin, and many anti-inflammatory pain pills (NSAIDs) and sulfonylurea diabetes pills. Fluconazole and amiodarone slow it. Someone already known to be a poor metabolizer on this pathway looks like they already have a hard blocker on board. That is a teaching summary of CPIC guidance, not a genetic test result.",
   },
   CYP2C19: {
     nickname: "The clopidogrel enzyme",

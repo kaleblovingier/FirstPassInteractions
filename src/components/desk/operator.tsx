@@ -7,7 +7,7 @@ export function OperatorCard() {
       <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Pay & write</p>
       <p className="mt-2 font-serif text-xl tracking-tight text-fg">{OPERATOR.name}</p>
       <p className="mt-2 text-xs leading-relaxed text-muted">
-        Founding is $79 once: pay on a rail below → get a signed key by email or text → Redeem on
+        Founding is $79 once: pay on a rail below, get a signed key by email or text, then Redeem on
         Plans. Host factors, atlas, and export unlock — educational model, not FDA-cleared.
       </p>
       <OperatorLines className="mt-3 space-y-2 text-sm" />
