@@ -33,6 +33,13 @@ Checked in Chrome, by script, against a local build of current source. Not a scr
 
 Still needs a person: a screen reader pass, text spacing, and whether the dimmed toggles in `dossier.tsx` and `clinical.tsx` are real options or disabled controls.
 
+
+## Control boundaries
+
+Text fields were drawn with a 6% shadow, about 1.2:1 against the page, under the 3:1 minimum for a control boundary. They now have a 1px solid line in the subtle text color, which is at least 4.5:1 on the page backgrounds. Checked on a local build: the search box and the other text fields pick up that line.
+
+The dimmed shelf buttons in the dossier and the clinical board are `disabled`, so the contrast exemption for inactive controls applies. They were left dimmed on purpose.
+
 ## Still needs a manual check
 
 Automated tools catch roughly a third to a half of WCAG issues. These criteria need a person to test them before we claim conformance:
@@ -42,10 +49,10 @@ Automated tools catch roughly a third to a half of WCAG issues. These criteria n
 | Keyboard use | 2.1.1, 2.1.2, 2.4.7 | Script tabbed three views with no trap and a visible ring on every stop. A person still needs to add a drug, open a finding, and export with only the keyboard. |
 | Screen reader | 1.3.1, 4.1.2, 4.1.3 | Run through a case with NVDA or VoiceOver. Findings, severity and status changes must be announced. |
 | Zoom and reflow | 1.4.4, 1.4.10 | Script found no sideways scroll at 320px or at 640px on the views above. A person should still confirm nothing is cut off. |
-| Text spacing | 1.4.12 | Apply the WCAG text-spacing bookmarklet and confirm nothing overlaps. |
-| Non-text contrast | 1.4.11 | The focus outline is covered. Borders of inputs and toggles are not. |
+| Text spacing | 1.4.12 | With the WCAG spacing applied, the start screen no longer scrolls sideways at 320px. A person should still look for overlapping text. |
+| Non-text contrast | 1.4.11 | Focus outline and text-field boundaries are covered. Other controls, such as checkboxes, are not. |
 | Color alone | 1.4.1 | Severity is never shown by color alone (the label text must always be present). |
-| Dimmed toggles | 1.4.3 | The inactive toggles drawn at 40% opacity in `dossier.tsx` and `clinical.tsx`. If they are selectable options rather than disabled controls, they need full contrast. |
+| Dimmed toggles | 1.4.3 | Resolved. Those buttons are disabled when nothing is mapped, so the inactive-control exemption applies. |
 
 The locked tray state in `tray.tsx` is a disabled control and is exempt from the contrast rule.
 
