@@ -23,7 +23,7 @@ export interface PerpetratorLabel {
   contraindicatedWith?: { victimIds: readonly string[]; section: string; quote: string };
   url: string;
   labelEffective: string;
-  retrieved: "2026-09-27";
+  retrieved: string;
 }
 
 export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
@@ -73,5 +73,60 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     url: DM("d4c36fad-0ba2-4cd4-9c5e-dcf843f38a5a"),
     labelEffective: "2025-08-28",
     retrieved: "2026-09-27",
+  },
+  {
+    perpIds: ["darunavir"],
+    brand: "Prezista",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for PREZISTA/ritonavir to Affect Other Drugs",
+    roleQuote: "PREZISTA co-administered with ritonavir is an inhibitor of CYP3A, CYP2D6, and P-gp.",
+    url: DM("814301f9-c990-46a5-b481-2879a521a16f"),
+    labelEffective: "2025-08-29",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["darunavir-cobicistat"],
+    brand: "Prezcobix",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for PREZCOBIX to Affect Other Drugs",
+    roleQuote: "Darunavir co-administered with cobicistat is an inhibitor of CYP3A and CYP2D6.",
+    url: DM("16ca460a-3c89-4697-8f45-972615a2a518"),
+    labelEffective: "2024-01-02",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["darunavir-cobicistat-ftc-taf"],
+    brand: "Symtuza",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.2 Potential for SYMTUZA to Affect Other Drugs",
+    roleQuote: "Darunavir co-administered with cobicistat is an inhibitor of CYP3A and CYP2D6.",
+    url: DM("85a17d00-6b7c-41ea-a6b3-5ad924820dab"),
+    labelEffective: "2026-04-17",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["atazanavir"],
+    brand: "Reyataz",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for REYATAZ to Affect Other Drugs",
+    roleQuote: "Atazanavir is an inhibitor of CYP3A and UGT1A1.",
+    url: DM("165cff62-b284-4a27-a65d-9ec8a5bfcdd8"),
+    labelEffective: "2024-12-05",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["atazanavir-cobicistat"],
+    brand: "Evotaz",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for EVOTAZ to Affect Other Drugs",
+    roleQuote: "Cobicistat is an inhibitor of CYP3A and CYP2D6.",
+    url: DM("83db29d7-5d85-49d6-8cb6-740473365cf8"),
+    labelEffective: "2025-05-12",
+    retrieved: "2026-10-02",
   },
 ];

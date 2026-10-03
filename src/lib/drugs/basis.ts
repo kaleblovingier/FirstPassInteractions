@@ -236,6 +236,9 @@ function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
   );
   if (!L || !victimId) return null;
   const ci = L.contraindicatedWith?.victimIds.includes(victimId) ? L.contraindicatedWith : undefined;
+  // A label pin already quotes the contraindication. A role-only line must not
+  // also claim the label does not name the pair.
+  if (!ci && (labelContraindicationFor(perpId, victimId) || labelQuoteBasis(finding))) return null;
   if (ci) {
     return {
       kind: "fda-pi",
@@ -247,7 +250,11 @@ function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
   return {
     kind: "fda-pi",
     label: `${L.brand} label, ${L.section}`,
-    detail: `The ${L.brand} label states the ${L.role === "inducer" ? "induction" : "inhibition"}: "${L.roleQuote}" It does not name this pair as contraindicated; the severity tier on this row is the desk's rule. Retrieved from DailyMed ${L.retrieved}.`,
+    detail: `The ${L.brand} label states the ${L.role === "inducer" ? "induction" : "inhibition"}: "${L.roleQuote}" ${
+      L.contraindicatedWith
+        ? "It does not name this pair as contraindicated; the severity tier on this row is the desk's rule."
+        : "The severity tier on this row is the desk's rule."
+    } Retrieved from DailyMed ${L.retrieved}.`,
     href: L.url,
   };
 }
