@@ -12,6 +12,10 @@ test("flavonoid supplements are available from the dedicated search collection",
     FLAVONOIDS,
   );
   assert.deepEqual(
+    searchDrugs("flavonoid").map((drug) => drug.id),
+    FLAVONOIDS,
+  );
+  assert.deepEqual(
     searchDrugs("bioflavonoids").map((drug) => drug.id),
     FLAVONOIDS,
   );

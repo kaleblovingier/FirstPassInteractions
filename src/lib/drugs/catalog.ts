@@ -2030,7 +2030,7 @@ const raw: Drug[] = [
     "Raised oral 3A4/P-gp and 2C8 victim levels",
     {
       kind: "herb",
-      aliases: ["flavonol", "sophora"],
+      aliases: ["flavonol", "sophora", "flavonoid", "bioflavonoid"],
       note: "A real 3A4/P-gp/2C8 inhibitor at supplement grams. Next to simvastatin, oral ketamine, or repaglinide it is a perpetrator, not a bioflavonoid.",
     }),
   d("apigenin", "Apigenin", [], "Flavone supplement",
@@ -2039,7 +2039,7 @@ const raw: Drug[] = [
     "No established human interaction grade",
     {
       kind: "herb",
-      aliases: ["chamomile flavone", "parsley flavonoid", "api-genin"],
+      aliases: ["chamomile flavone", "parsley flavonoid", "api-genin", "flavonoid", "bioflavonoid"],
       note: "Found in chamomile and sold as a concentrated extract. In-vitro enzyme effects are not a human interaction grade; no CYP or PD row is assigned. An extract is not equivalent to chamomile tea.",
     }),
   d("luteolin", "Luteolin", [], "Flavone supplement",
@@ -2048,7 +2048,7 @@ const raw: Drug[] = [
     "No established human interaction grade",
     {
       kind: "herb",
-      aliases: ["tetrahydroxyflavone", "luteolin extract"],
+      aliases: ["tetrahydroxyflavone", "luteolin extract", "flavonoid", "bioflavonoid"],
       note: "A dietary flavone also sold in concentrated extracts. Preclinical enzyme findings are not enough to grade a human interaction; no CYP or PD row is assigned.",
     }),
   d("naringin", "Naringin", [], "Citrus flavanone supplement",
@@ -2057,7 +2057,7 @@ const raw: Drug[] = [
     "Do not infer grapefruit interaction from isolated naringin",
     {
       kind: "herb",
-      aliases: ["naringenin-7-neohesperidoside", "grapefruit flavonoid", "bitter-orange flavonoid"],
+      aliases: ["naringenin-7-neohesperidoside", "grapefruit flavonoid", "bitter-orange flavonoid", "flavonoid", "bioflavonoid"],
       note: "The clinically important intestinal CYP3A4 effect of grapefruit is attributed to furanocoumarins, not naringin (Bailey et al., CMAJ 2013; PMID 23297394). An isolated naringin product is not interchangeable with grapefruit juice; no CYP grade is assigned.",
     }),
   d("hesperidin", "Hesperidin", [], "Citrus flavanone supplement",
@@ -2066,7 +2066,7 @@ const raw: Drug[] = [
     "No established human interaction grade",
     {
       kind: "herb",
-      aliases: ["hesperetin-7-rutinoside", "citrus bioflavonoid", "orange bioflavonoid"],
+      aliases: ["hesperetin-7-rutinoside", "citrus bioflavonoid", "orange bioflavonoid", "flavonoid"],
       note: "A citrus flavanone sold alone or in bioflavonoid blends. Product composition varies, and no clinically established enzyme grade is assigned. A citrus label alone does not make it equivalent to grapefruit juice.",
     }),
   d("rutin", "Rutin", [], "Flavonol glycoside supplement",
@@ -2075,7 +2075,7 @@ const raw: Drug[] = [
     "No established human interaction grade",
     {
       kind: "herb",
-      aliases: ["rutoside", "quercetin rutinoside", "rutin powder"],
+      aliases: ["rutoside", "quercetin rutinoside", "rutin powder", "flavonoid", "bioflavonoid"],
       note: "A quercetin glycoside found in foods and supplements. It is not interchangeable with quercetin aglycone for exposure or interaction grading; no CYP or PD row is assigned.",
     }),
   d("green-tea", "Green tea extract (EGCG)", [], "Catechin supplement",
@@ -2084,7 +2084,7 @@ const raw: Drug[] = [
     "Hepatotoxicity of concentrated extract; bleed; OATP/P-gp victims can fall",
     {
       kind: "herb",
-      aliases: ["egcg", "camellia sinensis", "matcha extract", "green tea"],
+      aliases: ["egcg", "camellia sinensis", "matcha extract", "green tea", "flavonoid", "bioflavonoid"],
       note: "A cup of tea is not this row — coffee/black tea on this shelf is the tannin-Synthroid map. Concentrated EGCG has a liver signal. Also an OATP bully: nadolol and atenolol fall (Misaka). Next to Corgard it is loss of beta blockade, not a CYP rise.",
     }),
   d("calcium", "Calcium supplement", [], "Divalent cation",
