@@ -42,3 +42,11 @@ for (const fg of TEXT) {
 test("--color-accent-fg reaches 4.5:1 on --color-accent", () => {
   assert.ok(contrast(token("accent-fg"), token("accent")) >= 4.5);
 });
+
+test("text-field boundary uses subtle, which clears 3:1", () => {
+  assert.match(css, /box-shadow:\s*0 0 0 1px var\(--color-subtle\)/);
+  for (const bg of ["bg", "bg-sunken", "surface", "surface-2"]) {
+    const ratio = contrast(token("subtle"), token(bg));
+    assert.ok(ratio >= 3, `subtle on ${bg} is ${ratio.toFixed(2)}:1`);
+  }
+});

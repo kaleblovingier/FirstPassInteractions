@@ -224,7 +224,7 @@ export function DeskApp() {
       <StripeReturn ready={hydrated} />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
             <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
               <HemeMark className="size-8" />
