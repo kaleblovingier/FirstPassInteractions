@@ -16,7 +16,6 @@ import { collectLicenses, draftCollected } from "@/lib/billing/collect";
 import { loadPipe, savePipe } from "@/lib/billing/hunts";
 import { mintLicenseKey } from "@/lib/billing/license";
 import { priceFor } from "@/lib/billing/plans";
-import { stripeStatus } from "@/lib/billing/stripe";
 import { useDesk } from "@/lib/drugs/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -156,9 +155,7 @@ export function Foundry() {
       } else if (res.mail === "pending" || res.mail === "off") {
         setPendingMail(false);
         setMailNote(
-          res.stripeLive
-            ? "Mail scan needs this desk opened from Grok. Card sales still collected."
-            : "Mail scan needs this desk opened from Grok. Stripe is not live here — hunt waiting and pasted names still key.",
+          "Mail scan needs this desk opened from Grok. Hunt names you pasted still key. Otherwise mint one after Venmo, Cash App, or PayPal clears.",
         );
       } else if (res.mail === "login") {
         setPendingMail(false);
@@ -275,10 +272,10 @@ export function Foundry() {
           <Plate src="/plates/hero.jpg" alt="" className="h-36 w-full sm:h-full min-h-36" />
           <div className="px-5 py-5 sm:px-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Operator desk</p>
-            <h1 className="mt-2 font-serif text-3xl tracking-tight text-fg">Find buyers. Post. Licenses mint themselves.</h1>
+            <h1 className="mt-2 font-serif text-3xl tracking-tight text-fg">Find buyers. Post. Mint the key.</h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-              One PIN, one collect. Card sales are already signed. Venmo, Cash App, and PayPal receipts
-              in mail mint the same key twice — no per-sale click.
+              Founding is $79 once via Venmo, Cash App, or PayPal. After it clears, mint the signed key
+              here and send it. Buyers paste it under Redeem on Plans.
             </p>
             <div className="mt-4 flex flex-wrap gap-1">
               {(
@@ -456,14 +453,17 @@ function CloseDesk({
 
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <h2 className="font-serif text-xl tracking-tight text-fg">How a sale closes</h2>
-        <StripeLiveCard />
+        <p className="mt-3 text-sm leading-relaxed text-muted">
+          Close founding at $79 once on Venmo, Cash App, or PayPal, then mint the signed key here and
+          send it. There is no monthly plan.
+        </p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {[
-            ["1. Pitch", "Send the buyer DM. Founding is $79 once — cheaper to say yes than $12/mo."],
-            ["2. Collect", `Card on the desk, or ${OPERATOR.payLine}.`],
+            ["1. Pitch", "Send the buyer DM. Founding is $79 once via Venmo, Cash App, or PayPal."],
+            ["2. Collect", `They pay ${OPERATOR.payLine}.`],
             [
               "3. Fulfill",
-              "PIN, then Collect. Stripe, mail receipts at a license price, and hunt waiting all key in one pass.",
+              "After payment clears, mint in Foundry and send the key. They Redeem on Plans.",
             ],
           ].map(([t, d]) => (
             <li key={t} className="rounded-md bg-bg-sunken px-3 py-3">
@@ -490,12 +490,13 @@ function CloseDesk({
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <div className="flex items-center gap-2">
           <KeyRound className="size-4 text-accent" />
-          <h2 className="font-serif text-xl tracking-tight text-fg">Automatic licenses</h2>
+          <h2 className="font-serif text-xl tracking-tight text-fg">Mint licenses</h2>
         </div>
         <p className="mt-2 text-sm text-muted">
-          Operator only — buyers never see this screen. They pay, receive a key, and Redeem on Plans.
-          One PIN. Collect pulls paid cards, scans Venmo / Cash App / PayPal for $79 and the other
-          plan prices, and keys everyone waiting in the hunt. Collecting twice returns the same keys.
+          Operator only — buyers never see this screen. They pay $79 once on Venmo, Cash App, or PayPal.
+          You mint the key here and send it. They Redeem on Plans. One PIN. Collect scans those written
+          receipts for $79 and the other plan prices, and keys everyone waiting in the hunt. Mint one
+          covers a payment with no receipt in mail. Collecting twice returns the same keys.
         </p>
 
         <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -657,40 +658,5 @@ function CloseDesk({
         </section>
       ) : null}
     </>
-  );
-}
-
-function StripeLiveCard() {
-  const [mode, setMode] = useState<"off" | "test" | "live" | null>(null);
-  useEffect(() => {
-    let live = true;
-    void stripeStatus()
-      .then((s) => {
-        if (live) setMode(s.mode);
-      })
-      .catch(() => {
-        if (live) setMode("off");
-      });
-    return () => {
-      live = false;
-    };
-  }, []);
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  return (
-    <p className="mt-3 text-sm leading-relaxed text-muted">
-      {mode === "live"
-        ? "Stripe card checkout is live. Paid sessions mint a signed key, stamp the receipt, and license the returning browser. No mint click."
-        : mode === "test"
-          ? "Stripe is in test mode. Use a test card — no live charge. Fulfillment still auto-mints."
-          : mode === "off"
-            ? "Stripe is not live. Set STRIPE_SECRET_KEY on the deploy (and STRIPE_WEBHOOK_SECRET for the webhook). Venmo still closes a sale — Collect scans mail and keys the hunt."
-            : "Checking Stripe…"}
-      {origin ? (
-        <>
-          {" "}
-          Webhook: <span className="font-mono text-xs text-fg">{origin}/api/stripe/webhook</span>
-        </>
-      ) : null}
-    </p>
   );
 }
