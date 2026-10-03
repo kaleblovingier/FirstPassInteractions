@@ -226,7 +226,7 @@ function labelPinBasis(finding: Finding): FindingBasis | null {
     href: pin.url,
   };
 }
-/** Perpetrator's own label, for PK rows FDA Table 1 cannot cite. */
+/** Perpetrator's own label. Named contraindications still attach when FDA Table 1 cites the role. */
 function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
   if (finding.kind !== "pk") return null;
   const [perpId, victimId] = finding.drugIds;
