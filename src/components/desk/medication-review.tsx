@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CheckSquare, Square } from "lucide-react";
+import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
 import {
   AGE_LABEL,
@@ -20,9 +21,10 @@ interface MedicationReviewProps {
   ids: string[];
   host: HostContext;
   findings: Finding[];
+  doses: Record<string, string>;
 }
 
-export function MedicationReview({ ids, host, findings }: MedicationReviewProps) {
+export function MedicationReview({ ids, host, findings, doses }: MedicationReviewProps) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const highAlertItems = alertsOnDesk(ids);
   const highest = findings[0];
@@ -63,7 +65,10 @@ export function MedicationReview({ ids, host, findings }: MedicationReviewProps)
       detail: "This teaching tool does not choose a dose, treatment, monitoring schedule, or next clinical step.",
     },
   ];
-  const completed = checks.filter((check) => checked[check.id]).length;
+  const completedChecks = checks.filter((check) => checked[check.id]).length;
+  const completedItems = ids.filter((id) => checked[`item:${id}`]).length;
+  const completed = completedChecks + completedItems;
+  const totalChecks = checks.length + ids.length;
   const alertCount = highAlertItems.reduce((count, row) => count + row.flags.length, 0);
   const modeledContext = [
     `Age: ${AGE_LABEL[host.age ?? "adult"]}`,
@@ -95,7 +100,7 @@ export function MedicationReview({ ids, host, findings }: MedicationReviewProps)
           </p>
         </div>
         <span className="rounded-full bg-bg-sunken px-2.5 py-1 font-mono text-[10px] text-muted" aria-live="polite">
-          {completed}/{checks.length} reviewed
+          {completed}/{totalChecks} reviewed
         </span>
       </div>
 
@@ -130,6 +135,53 @@ export function MedicationReview({ ids, host, findings }: MedicationReviewProps)
           </p>
         </div>
       ) : null}
+
+      <div className="mt-4">
+        <h3 className="font-mono text-[10px] uppercase tracking-wide text-muted">
+          Confirm each desk item against the real regimen
+        </h3>
+        <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+          {ids.map((id) => {
+            const item = DRUG_BY_ID[id];
+            const isChecked = Boolean(checked[`item:${id}`]);
+            const Icon = isChecked ? CheckSquare : Square;
+            return (
+              <li key={id}>
+                <button
+                  type="button"
+                  aria-pressed={isChecked}
+                  onClick={() => toggle(`item:${id}`)}
+                  className={cn(
+                    "flex min-h-16 w-full items-start gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
+                    isChecked
+                      ? "border-accent/30 bg-accent-soft/40"
+                      : "border-border bg-bg-sunken hover:border-accent/30",
+                  )}
+                >
+                  <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
+                  <span className="min-w-0">
+                    <span className="block text-xs font-medium text-fg">{item?.name ?? id}</span>
+                    <span className="mt-1 block text-xs leading-relaxed text-muted">
+                      {item
+                        ? `${item.kind === "drug" ? "Medicine" : item.kind === "food" ? "Food" : "Herb"} · ${item.cls}`
+                        : "Confirm identity and formulation"}
+                      {item?.brands[0] ? ` · Brand example: ${item.brands[0]}` : ""}
+                    </span>
+                    {item?.kind === "drug" && doses[id] ? (
+                      <span className="mt-1 block font-mono text-[11px] text-subtle">
+                        Desk dose entry: {doses[id]} · verify with the actual product and source
+                      </span>
+                    ) : null}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <p className="mt-2 text-[11px] leading-relaxed text-muted">
+          A checked item means it was reviewed in this browser only. It does not confirm adherence, dispense history, or clinical appropriateness.
+        </p>
+      </div>
 
       <ul className="mt-4 grid gap-2 sm:grid-cols-2">
         {checks.map((check) => {

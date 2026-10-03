@@ -433,10 +433,11 @@ export function DeskApp() {
               ) : null}
               {selected.length > 0 ? (
                 <MedicationReview
-                  key={`${selected.join("|")}:${JSON.stringify(host)}`}
+                  key={`${selected.join("|")}:${JSON.stringify(host)}:${JSON.stringify(doses)}`}
                   ids={selected}
                   host={host}
                   findings={report.findings}
+                  doses={doses}
                 />
               ) : null}
 
