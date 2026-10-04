@@ -484,6 +484,7 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-05-28",
     retrieved: "2026-10-03",
   },
+  {
     perpIds: ["erythromycin"],
     brand: "Erythromycin",
     enzyme: "CYP3A4",
