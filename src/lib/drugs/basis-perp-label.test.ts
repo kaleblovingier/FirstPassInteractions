@@ -188,3 +188,19 @@ test('erythromycin quotes the named contraindications and not an unnamed CYP3A s
   const mid = pkBasis('erythromycin', 'midazolam').map((x) => x.detail).join('\n');
   assert.doesNotMatch(mid, line);
 });
+
+test('XOCOVA quotes the named CYP3A contraindications and not an unnamed substrate', () => {
+  const line = /The XOCOVA label calls this combination contraindicated/;
+  const pim = pkBasis('ensitrelvir', 'pimozide').map((x) => x.detail).join('\n');
+  assert.match(pim, line);
+  assert.match(pim, /lurasidone, pimozide/);
+  const sim = pkBasis('ensitrelvir', 'simvastatin').map((x) => x.detail).join('\n');
+  assert.match(sim, line);
+  assert.match(sim, /Discontinue use of simvastatin/);
+  const tri = pkBasis('ensitrelvir', 'triazolam').map((x) => x.detail).join('\n');
+  assert.match(tri, line);
+  const mid = pkBasis('ensitrelvir', 'midazolam').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(mid, line);
+  const col = pkBasis('ensitrelvir', 'colchicine').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(col, line);
+});
