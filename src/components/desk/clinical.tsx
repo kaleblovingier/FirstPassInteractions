@@ -530,7 +530,7 @@ function LiverPanel({ rows }: { rows: ReturnType<typeof livertoxOnDesk> }) {
               href={livertoxUrl(id, name)}
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-flex h-10 items-center text-sm text-accent hover:underline"
+              className="mt-2 inline-flex h-10 items-center text-sm text-accent underline underline-offset-2"
             >
               Open LiverTox
             </a>
@@ -1077,7 +1077,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
                     href={w.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-mono text-[11px] text-accent hover:underline"
+                    className="font-mono text-[11px] text-accent underline underline-offset-2"
                   >
                     Open {w.wikiTitle}
                   </a>
@@ -1114,7 +1114,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
                     href={p.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-mono text-[11px] text-accent hover:underline"
+                    className="font-mono text-[11px] text-accent underline underline-offset-2"
                   >
                     Open wiki
                   </a>

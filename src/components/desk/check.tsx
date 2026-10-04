@@ -611,7 +611,7 @@ function MappedCell({
           href={cell.source.href}
           target="_blank"
           rel="noreferrer"
-          className="mt-1 inline-flex font-mono text-[10px] text-accent hover:underline"
+          className="mt-1 inline-flex font-mono text-[10px] text-accent underline underline-offset-2"
         >
           {cell.source.label}
         </a>
