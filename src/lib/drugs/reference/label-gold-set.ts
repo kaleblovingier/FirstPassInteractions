@@ -99,6 +99,8 @@ export const LABEL_SETIDS = {
   pimozide: "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
   fluvoxamine: "6eeb14df-6fcf-a737-5359-5744eb4accea",
   prozac: "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
+  // ProvayBlue (methylene blue) injection. DailyMed v2 SPL version 28, published 2025-06-12.
+  provayblue: "4f6848e5-35ed-4046-b13c-3032b5ba3232",
   thioridazine: "1fd16a99-e856-4a37-9dae-c443714fac14",
   latuda: "afad3051-9df2-4c54-9684-e8262a133af8",
   rozerem: "9de82310-70e8-47b9-b1fc-6c6848b99455",
@@ -452,6 +454,14 @@ const WAVE_1: GoldPair[] = [
     labelDrug: "Prozac (fluoxetine)", label: "prozac", labelSection: "4.1 Monoamine Oxidase Inhibitors (MAOIs)",
     quote: "Starting PROZAC in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated",
     labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row({
+    drugA: "fluoxetine", drugB: "methylene-blue", queries: ["fluoxetine", "methylene blue"],
+    labelDrug: "ProvayBlue (methylene blue injection)", label: "provayblue",
+    labelSection: "Boxed Warning (Serotonin Syndrome with Concomitant Use of Serotonergic Drugs and Opioids)",
+    quote: "Avoid concomitant use of PROVAYBLUE with selective serotonin reuptake inhibitors (SSRIs), serotonin norepinephrine reuptake inhibitors (SNRIs), monoamine oxidase inhibitors (MAOIs) and opioids.",
+    labelClass: "avoid", mechanism: "PD", domain: "psychiatry",
+    note: "Boxed warning names SSRIs as a class and says avoid. Section 4 does not list serotonergic drugs. Fluoxetine is the catalog SSRI.",
   }),
   row({
     drugA: "phenelzine", drugB: "fluoxetine", queries: ["phenelzine", "fluoxetine"],
