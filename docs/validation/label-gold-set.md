@@ -7,17 +7,18 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 282 |
+| Pairs (each tied to a verified FDA label statement) | 307 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
 | Wave 4 (label contraindications: clarithromycin, Sporanox, Noxafil, Norvir, Paxlovid, Kaletra) | 109 |
-| Label says contraindicated | 247 |
+| Wave 5 (label contraindications: Geodon) | 25 |
+| Label says contraindicated | 272 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 282 / 282 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 247 / 247 |
+| Engine at or above label-supported floor | 307 / 307 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 272 / 272 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -53,6 +54,15 @@
 | Label contraindicated and engine contraindicated ("Avoid together") | 109 / 109 |
 | Engine major, not contraindicated | 0 |
 | Under-calls (engine below major) | 0 |
+
+### Wave 5: Geodon contraindications
+
+| Measure | Count |
+|---|---|
+| Pairs | 25 |
+| Engine at or above contraindicated ("Avoid together") | 25 / 25 |
+| Label contraindicated and engine contraindicated ("Avoid together") | 25 / 25 |
+| Under-calls | 0 |
 
 ## Under-calls (for formulary owner, Grok Bot 5)
 
@@ -352,18 +362,44 @@ None.
 | 280 | 4 | lopinavir | apalutamide | [Kaletra (lopinavir/ritonavir)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8290add3-4449-4e58-6c97-8fe1eec972e3) | 4 CONTRAINDICATIONS | contraindicated | major | contraindicated (Avoid together) | pass (exact) | "KALETRA is contraindicated with drugs that are potent CYP3A inducers" · e.g. "Anticancer Agents: apalutamide" |
 | 281 | 4 | lopinavir | rifampin | [Kaletra (lopinavir/ritonavir)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8290add3-4449-4e58-6c97-8fe1eec972e3) | 4 CONTRAINDICATIONS | contraindicated | major | contraindicated (Avoid together) | pass (exact) | "KALETRA is contraindicated with drugs that are potent CYP3A inducers" · e.g. "Antimycobacterial: rifampin" |
 | 282 | 4 | lopinavir | st-johns-wort | [Kaletra (lopinavir/ritonavir)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8290add3-4449-4e58-6c97-8fe1eec972e3) | 4 CONTRAINDICATIONS | contraindicated | major | contraindicated (Avoid together) | pass (exact) | "KALETRA is contraindicated with drugs that are potent CYP3A inducers" · e.g. "Herbal Products: St. John's Wort (hypericum perforatum)" |
+| 283 | 5 | ziprasidone | dofetilide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "dofetilide" |
+| 284 | 5 | ziprasidone | sotalol | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "sotalol" |
+| 285 | 5 | ziprasidone | quinidine | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "quinidine" |
+| 286 | 5 | ziprasidone | thioridazine | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "thioridazine" |
+| 287 | 5 | ziprasidone | chlorpromazine | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "chlorpromazine" |
+| 288 | 5 | ziprasidone | droperidol | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "droperidol" |
+| 289 | 5 | ziprasidone | pimozide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "pimozide" |
+| 290 | 5 | ziprasidone | gatifloxacin | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "gatifloxacin" |
+| 291 | 5 | ziprasidone | moxifloxacin | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "moxifloxacin" |
+| 292 | 5 | ziprasidone | mefloquine | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "mefloquine" |
+| 293 | 5 | ziprasidone | dolasetron | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "dolasetron mesylate" |
+| 294 | 5 | ziprasidone | arsenic-trioxide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "arsenic trioxide" |
+| 295 | 5 | ziprasidone | amiodarone | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "other Class Ia and III anti-arrhythmics" |
+| 296 | 5 | ziprasidone | dronedarone | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "other Class Ia and III anti-arrhythmics" |
+| 297 | 5 | ziprasidone | ibutilide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "other Class Ia and III anti-arrhythmics" |
+| 298 | 5 | ziprasidone | procainamide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.1 QT Prolongation | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:" · e.g. "other Class Ia and III anti-arrhythmics" |
+| 299 | 5 | ziprasidone | linezolid | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" · e.g. "linezolid" |
+| 300 | 5 | ziprasidone | methylene-blue | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" · e.g. "intravenous methylene blue" |
+| 301 | 5 | ziprasidone | phenelzine | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 302 | 5 | ziprasidone | tranylcypromine | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 303 | 5 | ziprasidone | isocarboxazid | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 304 | 5 | ziprasidone | moclobemide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 305 | 5 | ziprasidone | selegiline | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 306 | 5 | ziprasidone | safinamide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 307 | 5 | ziprasidone | rasagiline | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
 
 ## Method
 
-1. Candidate pairs were drawn from the desk's teaching domains (psychiatry, MAOI/opioid, sleep, statins, antiarrhythmics/cardiology, antithrombotics, antimicrobials); wave 2 adds the MAT / ketamine-clinic drugs (methadone, buprenorphine and buprenorphine/naloxone, naltrexone, ketamine, esketamine). Wave 3 adds label-stated contraindications for Korlym (mifepristone) and the HIV protease inhibitors Prezista (darunavir), Prezcobix (darunavir/cobicistat), Reyataz (atazanavir), and Evotaz (atazanavir/cobicistat). Wave 4 adds label-stated contraindications for clarithromycin tablets, Sporanox (itraconazole), Noxafil (posaconazole), Norvir (ritonavir), Paxlovid (nirmatrelvir/ritonavir), and Kaletra (lopinavir/ritonavir).
-2. Each statement was checked on the current DailyMed SPL for the named label (waves 1–2 retrieved 2026-09-27; waves 3–4 retrieved 2026-10-02 from the DailyMed v2 SPL). Quotes are verbatim substrings of that SPL text ("…" marks an elided span), no longer than 25 words, and carry no dose amounts.
+1. Candidate pairs were drawn from the desk's teaching domains (psychiatry, MAOI/opioid, sleep, statins, antiarrhythmics/cardiology, antithrombotics, antimicrobials); wave 2 adds the MAT / ketamine-clinic drugs (methadone, buprenorphine and buprenorphine/naloxone, naltrexone, ketamine, esketamine). Wave 3 adds label-stated contraindications for Korlym (mifepristone) and the HIV protease inhibitors Prezista (darunavir), Prezcobix (darunavir/cobicistat), Reyataz (atazanavir), and Evotaz (atazanavir/cobicistat). Wave 4 adds label-stated contraindications for clarithromycin tablets, Sporanox (itraconazole), Noxafil (posaconazole), Norvir (ritonavir), Paxlovid (nirmatrelvir/ritonavir), and Kaletra (lopinavir/ritonavir). Wave 5 adds label-stated contraindications from the current Geodon (ziprasidone) label.
+2. Each statement was checked on the current DailyMed SPL for the named label (waves 1–2 retrieved 2026-09-27; waves 3–4 retrieved 2026-10-02 from the DailyMed v2 SPL; wave 5 retrieved 2026-10-03 from the current Geodon SPL). Quotes are verbatim substrings of that SPL text ("…" marks an elided span), no longer than 25 words, and carry no dose amounts.
 3. Inclusion, wave 1: the label must say contraindicated, or explicitly avoid / not recommended / should not be used. Monitoring-only language does not qualify.
    Inclusion, wave 2 (MAT / ketamine clinic): the label (Boxed Warning, Contraindications, Warnings and Precautions, or Drug Interactions) must carry an explicit interaction statement naming the drug or its class. Only drugs the desk's catalog carries are used.
    Inclusion, wave 3: section 4 must say contraindicated and name the drug (or a fixed combination the catalog carries). Combo catalog rows for Prezcobix and Evotaz are included. Renal/hepatic-only lines, and Reyataz lines qualified only with ritonavir, are skipped. Pairs already in waves 1–2 are not repeated.
    Inclusion, wave 4: the contraindications section must name the drug unconditionally. Colchicine, venetoclax, and voriconazole are skipped where the line is conditional (renal or hepatic impairment, or dose-dependent). Oral ketoconazole is not a source. Pairs already in waves 1–3 are not repeated. Only catalog drugs are paired.
+   Inclusion, wave 5: Geodon section 4 must contraindicate the pair. Named drugs are preferred. Class Ia and III anti-arrhythmics and MAOIs are included only when the catalog row clearly belongs. Renal, hepatic, dose, and metabolizer conditions are not used. Pairs already in waves 1–4 are not repeated. The wave stops at 25 pairs.
 4. Each pair's drugs are resolved to catalog ids with the desk's own search (`searchDrugs`), and a test asserts the typed query resolves to that id.
 5. The two-drug regimen is run through `analyze(ids, DEFAULT_HOST)` as the desk does (no doses entered). The pair's severity is the highest finding that involves **both** drugs; findings on one drug alone are excluded.
-6. Floor: wave 1 requires at least `major` ("Serious concern") for both label classes. Wave 2 sets the floor to the minimum severity the label text supports: the naltrexone + labeled-opioid contraindicated labels -> `contraindicated` ("Avoid together"); avoid and Boxed Warning statements -> `major`; a Warnings / Drug Interactions statement that names overdose or death -> `major`; monitor / dose-change language -> `moderate` ("Use care"). For contraindicated labels the stricter expectation is `contraindicated` ("Avoid together"), reported separately as exact matches.
+6. Floor: wave 1 requires at least `major` ("Serious concern") for both label classes. Wave 2 sets the floor to the minimum severity the label text supports: the naltrexone + labeled-opioid contraindicated labels -> `contraindicated` ("Avoid together"); avoid and Boxed Warning statements -> `major`; a Warnings / Drug Interactions statement that names overdose or death -> `major`; monitor / dose-change language -> `moderate` ("Use care"). For contraindicated labels the stricter expectation is `contraindicated` ("Avoid together"), reported separately as exact matches. Wave 5 sets the floor to `contraindicated` because a label pin holds the engine there. The pin lifts an existing pharmacodynamic card, or stands alone when there is no finding. It does not assign a CYP grade.
 
 ## Dropped candidates
 
@@ -400,6 +436,11 @@ None.
 - **Paxlovid paired to nirmatrelvir alone, or ivacaftor alone**: The label is the nirmatrelvir/ritonavir kit, and it names lumacaftor/ivacaftor. Pairs use the paxlovid and lumacaftor-ivacaftor rows.
 - **Kaletra + colchicine**: Section 4 lists colchicine, and the patient information limits that warning to kidney or liver problems. Section 7 is a dose change, not an unconditional contraindication.
 - **Kaletra + venetoclax**: Drug Interactions says avoid. It is not a section 4 contraindication.
+- **Geodon + tacrolimus**: Named on section 4.1. The only pair card is a CYP3A4 substrate competition, not the QT contraindication. A no-enzyme card would say there is no CYP finding, which is false. Not pinned.
+- **Geodon + quinidine gluconate / sotalol AF**: The same named drugs as the quinidine and sotalol rows. Those rows carry the pair.
+- **Geodon + disopyramide**: Class Ia, so the section 4.1 class covers it. Trimmed at the 25-pair cap. Procainamide carries the class.
+- **Geodon + other QT drugs described as a boxed or bolded warning**: Section 4.1 states that broader class after the named list. It is not a clean class of catalog drugs. Not expanded.
+- **Geodon + harmaline / ozanimod / tedizolid**: Section 4.3 says MAOIs and names linezolid and intravenous methylene blue. Harmaline is a plant beta-carboline, ozanimod is an S1P modulator, and tedizolid is not the named oxazolidinone. Not included.
 
 ## Not in catalog
 
@@ -412,6 +453,12 @@ None.
 - **buprenorphine/naloxone**: No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.
 - **lomitapide**: Named on the Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox, Norvir, Paxlovid, and Kaletra contraindication lists. Not in the catalog.
 - **indinavir**: Named on Reyataz Table 6 and Evotaz Table 1. Not in the catalog.
+- **mesoridazine**: Named on Geodon section 4.1. Not in the catalog.
+- **sparfloxacin**: Named on Geodon section 4.1. Not in the catalog.
+- **halofantrine**: Named on Geodon section 4.1. Not in the catalog.
+- **pentamidine**: Named on Geodon section 4.1. Not in the catalog.
+- **probucol**: Named on Geodon section 4.1. Not in the catalog.
+- **levomethadyl acetate**: Named on Geodon section 4.1. Not in the catalog.
 
 ## Limitations
 
@@ -419,7 +466,8 @@ None.
 - Wave 2 floors for `warning` pairs are a reading of the label wording (fatal-outcome language vs monitor / dose-change language), not a clinical ranking.
 - Wave 3 combo rows (Prezcobix, Evotaz) carry no enzyme roles, so the engine often has no pair-level finding. That is recorded as an under-call. No engine or catalog data was changed.
 - Wave 4 does not add engine rules. A label contraindication the desk does not call contraindicated stays in the known lists.
+- Wave 5 holds Geodon pairs at contraindicated with a label pin. Where two pharmacodynamic cards exist, only the higher one is held.
 - Default host only (adult, normal kidney/liver, default phenotypes). Conditional label statements (e.g. renal impairment) are not tested.
 - Several labels name a class ("strong CYP3A4 inhibitors", "sedative hypnotics") with examples; the pair uses a named example where the label gives one.
-- Labels change. Wave 1–2 quotes reflect the SPL version retrieved on 2026-09-27; waves 3–4 quotes reflect the DailyMed v2 SPL retrieved on 2026-10-02. The clarithromycin quotes use the current tablets SPL, not the 2012 Biaxin brand SPL. Some links point to a repackager's SPL of the same labeling.
+- Labels change. Wave 1–2 quotes reflect the SPL version retrieved on 2026-09-27; waves 3–4 quotes reflect the DailyMed v2 SPL retrieved on 2026-10-02. Wave 5 quotes reflect the Geodon SPL retrieved on 2026-10-03 (setid 8326928a-2cb6-4f7f-9712-03a425a14c37). The clarithromycin quotes use the current tablets SPL, not the 2012 Biaxin brand SPL. Some links point to a repackager's SPL of the same labeling.
 - Educational tool, not FDA-cleared. It does not dose, and it does not decide care.
