@@ -1401,6 +1401,11 @@ const ROWS: Row[] = [
   ["brincidofovir", "Brincidofovir", ["Tembexa"], "Antiviral", "", ["hepatotoxic"], "Lipid conjugate of cidofovir. Liver enzyme rise and diarrhea/GI effects lead; far less nephrotoxic than cidofovir.", ["tembexa"]],
   ["maribavir", "Maribavir", ["Livtencity"], "Antiviral", "", [], "Renal (acyclovir family); 3A4 for letermovir/maraviroc already mapped", []],
   ["nirmatrelvir", "Nirmatrelvir", ["Paxlovid nirmatrelvir"], "Antiviral", "", [], "Renal (acyclovir family); 3A4 for letermovir/maraviroc already mapped", []],
+  ["relacorilant", "Relacorilant", ["Lifyorli"], "Glucocorticoid receptor antagonist", "i:CYP3A4:strong;d:CYP2C8:weak", [], "Strong CYP3A inhibitor. Weak CYP2C8 inducer.", ["lifyorli"]],
+  ["lonafarnib", "Lonafarnib", ["Zokinvy"], "Farnesyltransferase inhibitor", "i:CYP3A4:strong;i:CYP2C19:moderate;i:P-gp:weak", [], "Strong CYP3A inhibitor. Moderate CYP2C19 inhibitor. Weak P-gp inhibitor.", ["zokinvy"]],
+  ["omaveloxolone", "Omaveloxolone", ["Skyclarys"], "Nrf2 activator", "d:CYP3A4:weak;d:CYP2C8:weak", [], "Weak CYP3A4 inducer. Weak CYP2C8 inducer.", ["skyclarys"]],
+  ["sparsentan", "Sparsentan", ["Filspari"], "Endothelin / angiotensin antagonist", "d:CYP2B6:weak;d:CYP2C9:weak;d:CYP2C19:moderate;i:P-gp:weak", [], "Weak CYP2B6 inducer. Weak CYP2C9 inducer. Moderate CYP2C19 inducer. Weak P-gp inhibitor.", ["filspari"]],
+  ["nitisinone", "Nitisinone", ["Orfadin", "Nityr", "Harliku"], "HPPD inhibitor", "i:CYP2C9:moderate;d:CYP2E1:weak", [], "Moderate CYP2C9 inhibitor. Weak CYP2E1 inducer.", ["orfadin", "nityr", "harliku"]],
 ];
 
 export const CLINIC_FORMULARY: Drug[] = ROWS.map(row);
