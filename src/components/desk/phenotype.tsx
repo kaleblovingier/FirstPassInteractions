@@ -149,7 +149,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
           <button
             type="button"
             onClick={resetPhenotypes}
-            className="text-[11px] font-medium text-accent hover:underline"
+            className="text-[11px] font-medium text-accent underline underline-offset-2"
           >
             Reset
           </button>

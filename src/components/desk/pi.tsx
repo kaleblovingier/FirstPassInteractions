@@ -88,7 +88,7 @@ export function PrescribingStrip({ ids }: { ids: string[] }) {
               <li key={row.id} className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-sm font-medium text-fg">{row.name}</span>
                 <a
-                  className="inline-flex h-10 items-center font-mono text-[11px] text-accent hover:underline"
+                  className="inline-flex h-10 items-center font-mono text-[11px] text-accent underline underline-offset-2"
                   href={dailymedSearchUrl(row.name)}
                   target="_blank"
                   rel="noreferrer"
@@ -106,7 +106,7 @@ export function PrescribingStrip({ ids }: { ids: string[] }) {
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="font-serif text-base tracking-tight text-fg">{row.name}</h3>
                 <a
-                  className="inline-flex h-10 items-center font-mono text-[11px] text-accent hover:underline"
+                  className="inline-flex h-10 items-center font-mono text-[11px] text-accent underline underline-offset-2"
                   href={row.label?.setId ? dailymedSetUrl(row.label.setId) : dailymedSearchUrl(row.name)}
                   target="_blank"
                   rel="noreferrer"
