@@ -11,7 +11,7 @@ export interface LabAssignment {
   sampleId: string;
   /** What the student should explain in ~3 sentences. */
   prompt: string;
-  /** Free desks can open this assignment without host Pro extras. */
+  /** Free desks can open this assignment without founding host extras. */
   freeOk: boolean;
 }
 
@@ -24,7 +24,7 @@ export type LabBookState = Record<string, LabAnswer>;
 
 export const LAB_STORAGE_KEY = "firstpass.lab.v1";
 
-/** Seed set: mix free cases with Pro-host cases so export / host teach founding value. */
+/** Seed set: mix free cases with founding-host cases so export / host teach founding value. */
 export const LAB_ASSIGNMENTS: LabAssignment[] = [
   {
     id: "gf-oral-ketamine",
@@ -39,7 +39,7 @@ export const LAB_ASSIGNMENTS: LabAssignment[] = [
     title: "DXM in a 2D6 poor metabolizer",
     sampleId: "dxm-2d6pm",
     prompt:
-      "In three sentences: explain how a 2D6 PM stacks parent DXM without a perpetrator drug, what falls (dextrorphan), and why q8h matters for accumulation. Host phenotype is Pro.",
+      "In three sentences: explain how a 2D6 PM stacks parent DXM without a perpetrator drug, what falls (dextrorphan), and why q8h matters for accumulation. Host phenotype comes with founding.",
     freeOk: false,
   },
   {
@@ -79,7 +79,7 @@ export const LAB_ASSIGNMENTS: LabAssignment[] = [
     title: "Clozapine × daily smoke",
     sampleId: "smoke-clozapine",
     prompt:
-      "In three sentences: name the PAH → 1A2 induction, what happens to clozapine levels on smoke, and the rebound risk on quit. Smoke host is Pro.",
+      "In three sentences: name the PAH → 1A2 induction, what happens to clozapine levels on smoke, and the rebound risk on quit. The smoke host factor comes with founding.",
     freeOk: false,
   },
   {
@@ -106,7 +106,7 @@ export function sampleForLab(assignment: LabAssignment): SampleRegimen | null {
   return SAMPLE_REGIMENS.find((s) => s.id === assignment.sampleId) ?? null;
 }
 
-/** True when the assignment (or its sample) needs Pro/lab host factors. */
+/** True when the assignment (or its sample) needs founding host factors. */
 export function labNeedsPro(assignment: LabAssignment): boolean {
   if (!assignment.freeOk) return true;
   const sample = sampleForLab(assignment);

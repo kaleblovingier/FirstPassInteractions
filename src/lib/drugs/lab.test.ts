@@ -33,6 +33,14 @@ test("Pro-host assignments flag labNeedsPro", () => {
   assert.equal(labNeedsPro(LAB_BY_ID["smoke-clozapine"]), true);
 });
 
+test("host-factor lab prompts say founding, not Pro", () => {
+  for (const id of ["dxm-2d6pm", "smoke-clozapine"]) {
+    const prompt = LAB_BY_ID[id].prompt;
+    assert.match(prompt, /comes with founding|come with founding/i);
+    assert.doesNotMatch(prompt, /\bPro\b/);
+  }
+});
+
 test("labReceiptCsv includes disclaimer header and fields", () => {
   const receipt: LabReceipt = {
     assignmentId: "gf-oral-ketamine",

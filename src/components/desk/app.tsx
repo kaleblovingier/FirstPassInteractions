@@ -808,7 +808,7 @@ function EmptyState({
                   <span className="flex items-center gap-2 text-sm font-medium text-fg">
                     {s.title}
                     {plan === "free" && sampleNeedsPro(s) ? (
-                      <span className="font-mono text-[10px] uppercase tracking-wide text-accent">Pro</span>
+                      <span className="font-mono text-[10px] uppercase tracking-wide text-accent">Founding</span>
                     ) : null}
                   </span>
                   <span className="mt-1 text-xs text-muted">{s.blurb}</span>
