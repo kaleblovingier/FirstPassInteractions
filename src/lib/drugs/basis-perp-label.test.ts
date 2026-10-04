@@ -134,3 +134,24 @@ test('fluvoxamine quotes the named contraindications and stays quiet on an unnam
   const theo = pkBasis('fluvoxamine', 'theophylline').map((x) => x.detail).join('\n');
   assert.doesNotMatch(theo, line);
 });
+
+test('Prevymis quotes pimozide and the ergots, and not simvastatin alone', () => {
+  const pim = pkBasis('letermovir', 'pimozide').map((x) => x.detail).join('\n');
+  assert.match(pim, /The Prevymis label calls this combination contraindicated/);
+  assert.match(pim, /torsades de pointes/);
+  const erg = pkBasis('letermovir', 'ergotamine').map((x) => x.detail).join('\n');
+  assert.match(erg, /ergotamine and dihydroergotamine/);
+  const sim = pkBasis('letermovir', 'simvastatin').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(sim, /Prevymis label calls this combination contraindicated/);
+});
+
+test('fluconazole quotes the QT contraindication and not an unnamed CYP3A substrate', () => {
+  const line = /The Fluconazole label calls this combination contraindicated/;
+  for (const victim of ['pimozide', 'quinidine', 'erythromycin']) {
+    const details = pkBasis('fluconazole', victim).map((x) => x.detail).join('\n');
+    assert.match(details, line, victim);
+    assert.match(details, /erythromycin, pimozide, and quinidine/, victim);
+  }
+  const mid = pkBasis('fluconazole', 'midazolam').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(mid, line);
+});

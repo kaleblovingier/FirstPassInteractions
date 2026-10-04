@@ -14,7 +14,8 @@
  * esketamine) also admits an explicit interaction statement in the Boxed Warning
  * (`boxed-warning`) or in Warnings/Drug Interactions (`warning`), with a per-pair
  * `expectedFloor` set to the minimum severity the label text supports:
- *   contraindicated / avoid / boxed-warning  -> major ("Serious concern")
+ *   avoid / boxed-warning                    -> major ("Serious concern")
+ *   contraindicated (naltrexone + a labeled opioid) -> contraindicated ("Avoid together")
  *   warning naming overdose / death          -> major
  *   warning with monitor / dose-change text  -> moderate ("Use care")
  *
@@ -99,6 +100,8 @@ export const LABEL_SETIDS = {
   pimozide: "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
   fluvoxamine: "6eeb14df-6fcf-a737-5359-5744eb4accea",
   prozac: "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
+  // ProvayBlue (methylene blue) injection. DailyMed v2 SPL version 28, published 2025-06-12.
+  provayblue: "4f6848e5-35ed-4046-b13c-3032b5ba3232",
   thioridazine: "1fd16a99-e856-4a37-9dae-c443714fac14",
   latuda: "afad3051-9df2-4c54-9684-e8262a133af8",
   rozerem: "9de82310-70e8-47b9-b1fc-6c6848b99455",
@@ -169,7 +172,7 @@ function row(r: Row): GoldPair {
 
 type Row2 = Row & {
   /** Minimum severity the quoted label text supports (see header). */
-  expectedFloor: Extract<Severity, "major" | "moderate">;
+  expectedFloor: Extract<Severity, "contraindicated" | "major" | "moderate">;
 };
 
 /** Wave 2 row: explicit, label-supported floor instead of the blanket "major". */
@@ -454,6 +457,14 @@ const WAVE_1: GoldPair[] = [
     labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
   }),
   row({
+    drugA: "fluoxetine", drugB: "methylene-blue", queries: ["fluoxetine", "methylene blue"],
+    labelDrug: "ProvayBlue (methylene blue injection)", label: "provayblue",
+    labelSection: "Boxed Warning (Serotonin Syndrome with Concomitant Use of Serotonergic Drugs and Opioids)",
+    quote: "Avoid concomitant use of PROVAYBLUE with selective serotonin reuptake inhibitors (SSRIs), serotonin norepinephrine reuptake inhibitors (SNRIs), monoamine oxidase inhibitors (MAOIs) and opioids.",
+    labelClass: "avoid", mechanism: "PD", domain: "psychiatry",
+    note: "Boxed warning names SSRIs as a class and says avoid. Section 4 does not list serotonergic drugs. Fluoxetine is the catalog SSRI.",
+  }),
+  row({
     drugA: "phenelzine", drugB: "fluoxetine", queries: ["phenelzine", "fluoxetine"],
     labelDrug: "Prozac (fluoxetine)", label: "prozac", labelSection: "4.1 Monoamine Oxidase Inhibitors (MAOIs)",
     quote: "The use of MAOIs intended to treat psychiatric disorders with PROZAC or within 5 weeks of stopping treatment with PROZAC is contraindicated",
@@ -628,26 +639,26 @@ const WAVE_2: GoldPair[] = [
     drugA: "naltrexone", drugB: "methadone", queries: ["naltrexone", "methadone"],
     labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
     quote: `${NALTREXONE_4} … Patients currently dependent on opioids, including those currently maintained on opiate agonists (e.g., methadone)`,
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
   }),
   row2({
     drugA: "naltrexone", drugB: "buprenorphine", queries: ["naltrexone", "buprenorphine"],
     labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
     quote: `${NALTREXONE_4} … Patients currently dependent on opioids, including those currently maintained on … partial agonists (e.g., buprenorphine).`,
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
   }),
   row2({
     drugA: "naltrexone", drugB: "oxycodone", queries: ["naltrexone", "oxycodone"],
     labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
     quote: `${NALTREXONE_4} … Patients receiving opioid analgesics.`,
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
     note: "Label names the class (opioid analgesics).",
   }),
   row2({
     drugA: "naltrexone", drugB: "hydrocodone", queries: ["vivitrol", "hydrocodone"],
     labelDrug: "Vivitrol (naltrexone ER injectable suspension)", label: "vivitrol", labelSection: "4 CONTRAINDICATIONS",
     quote: "VIVITROL is contraindicated in: … Patients receiving opioid analgesics",
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
     note: "Label names the class (opioid analgesics).",
   }),
   // ── Ketamine (Ketalar SPL) ────────────────────────────────────────────
@@ -2336,11 +2347,10 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   // dronedarone+ketoconazole, ergotamine+ritonavir, rifampin+atazanavir,
   // and voriconazole+rifampin left this list: leftover label pins hold them
   // at contraindicated.
-  // wave 2: naltrexone labels say contraindicated; engine says major ("Serious concern")
-  "naltrexone+methadone", // naltrexone tablets CONTRAINDICATIONS (opiate agonists, e.g., methadone)
-  "naltrexone+buprenorphine", // naltrexone tablets CONTRAINDICATIONS (partial agonists, e.g., buprenorphine)
-  "naltrexone+oxycodone", // naltrexone tablets CONTRAINDICATIONS (opioid analgesics)
-  "naltrexone+hydrocodone", // Vivitrol 4 CONTRAINDICATIONS (opioid analgesics)
+  // wave 2: naltrexone+methadone, naltrexone+buprenorphine, naltrexone+oxycodone,
+  // and naltrexone+hydrocodone left this list. A pharmacodynamic label pin holds
+  // each existing finding at contraindicated. Other naltrexone + opioid pairs
+  // are not pinned.
   // wave 3 Korlym / Prezista / Reyataz pairs left this list: #58 label pins
   // hold them at contraindicated. Prezcobix and Evotaz pairs that were below
   // major are contraindicated too and left KNOWN_UNDERCALLS.

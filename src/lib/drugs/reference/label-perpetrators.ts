@@ -405,4 +405,50 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2025-11-04",
     retrieved: "2026-10-02",
   },
+  {
+    perpIds: ["letermovir"],
+    brand: "Prevymis",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote: "letermovir is a moderate inhibitor of CYP3A",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide"],
+        section: "4 Contraindications",
+        quote:
+          "Concomitant administration of PREVYMIS in patients receiving pimozide may result in increased concentrations of pimozide due to inhibition of cytochrome P450 3A (CYP3A) by letermovir, which may lead to QT prolongation and torsades de pointes",
+      },
+      {
+        victimIds: ["ergotamine", "dihydroergotamine"],
+        section: "4 Contraindications",
+        quote:
+          "Concomitant administration of PREVYMIS in patients receiving ergot alkaloids may result in increased concentrations of ergot alkaloids (ergotamine and dihydroergotamine) due to inhibition of CYP3A by letermovir, which may lead to ergotism",
+      },
+    ],
+    // Contraindicated only when cyclosporine is also on board.
+    alsoNamed: ["simvastatin", "pitavastatin"],
+    url: DM("1b49df80-be4f-47e0-a0b7-123f3e69395b"),
+    labelEffective: "2026-01-14",
+    retrieved: "2026-10-02",
+  },
+  {
+    perpIds: ["fluconazole"],
+    brand: "Fluconazole",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote: "Fluconazole is a moderate CYP2C9 and CYP3A4 inhibitor.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["erythromycin", "pimozide", "quinidine", "quinidine-gluconate"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of other drugs known to prolong the QT interval and which are metabolized via the enzyme CYP3A4 such as erythromycin, pimozide, and quinidine are contraindicated in patients receiving fluconazole.",
+      },
+    ],
+    url: DM("01df20c4-7b94-044e-e063-6394a90a406a"),
+    labelEffective: "2025-11-17",
+    retrieved: "2026-10-03",
+  },
 ];

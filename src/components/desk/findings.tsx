@@ -3,7 +3,7 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
 import { findingsOnTray, partitionFindings } from "@/lib/drugs/brief";
-import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
+import { clinicianScan, plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import type { Finding, Severity } from "@/lib/drugs/types";
 import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
@@ -155,6 +155,7 @@ function FindingCard({ finding }: { finding: Finding }) {
   );
   const drugs = finding.drugIds.map((id) => DRUG_BY_ID[id]).filter(Boolean);
   const plainSummary = plainLanguageSummary(finding);
+  const scan = clinicianScan(finding);
 
   return (
     <li className="rounded-lg bg-surface shadow-[var(--shadow-border)]">
@@ -176,6 +177,9 @@ function FindingCard({ finding }: { finding: Finding }) {
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium text-fg">{finding.headline}</span>
           <span className="mt-0.5 block text-xs leading-relaxed text-muted">{plainSummary}</span>
+          {scan ? (
+            <span className="mt-1 block font-mono text-[11px] leading-relaxed text-fg">{scan}</span>
+          ) : null}
         </span>
         <ChevronDown
           className={cn(
@@ -186,21 +190,13 @@ function FindingCard({ finding }: { finding: Finding }) {
       </button>
       {open ? (
         <div className="space-y-3 border-t border-border px-4 py-3">
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-md bg-bg-sunken px-3 py-2.5">
-              <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Everyday-language summary</p>
-              <p className="mt-2 text-sm leading-relaxed text-fg">{plainSummary}</p>
-            </div>
-            <div className="rounded-md bg-bg-sunken px-3 py-2.5">
-              <p className="font-mono text-[10px] uppercase tracking-wide text-muted">
-                Clinical detail
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-fg">{finding.clinical}</p>
-              <p className="mt-2 text-xs leading-relaxed text-muted">
-                {finding.mechanism}
-                {finding.effect ? ` · ${finding.effect}` : ""}
-              </p>
-            </div>
+          <div className="rounded-md bg-bg-sunken px-3 py-2.5">
+            <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Clinical detail</p>
+            {scan ? <p className="mt-2 font-mono text-xs text-fg">{scan}</p> : null}
+            <p className="mt-2 text-sm leading-relaxed text-fg">{finding.clinical}</p>
+            {finding.mechanism ? (
+              <p className="mt-2 text-xs leading-relaxed text-muted">{finding.mechanism}</p>
+            ) : null}
           </div>
           <div className="space-y-2 rounded-md bg-bg-sunken px-3 py-2.5">
             <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Sources to check</p>

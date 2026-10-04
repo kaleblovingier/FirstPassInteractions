@@ -41,8 +41,10 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
       assert.equal(p.labelClass, "contraindicated", `${p.id}: wave ${p.wave} class`);
     } else {
       assert.equal(p.wave, 2);
-      // contraindicated / avoid / boxed-warning always need at least "Serious concern"
-      if (p.labelClass !== "warning") assert.equal(p.expectedFloor, "major", `${p.id}: floor`);
+      // avoid / boxed-warning stay at major. The naltrexone opioid labels
+      // are held at contraindicated. Warning floors are major or moderate.
+      if (p.labelClass === "contraindicated") assert.equal(p.expectedFloor, "contraindicated", `${p.id}: floor`);
+      else if (p.labelClass !== "warning") assert.equal(p.expectedFloor, "major", `${p.id}: floor`);
       else assert.ok(p.expectedFloor === "major" || p.expectedFloor === "moderate", `${p.id}: floor`);
     }
   }

@@ -5,9 +5,9 @@ import { READER_TITLES, type ReaderBrief, type ReaderNote } from "@/lib/drugs/re
 const ORDER = ["pair", "gap", "trainee"] as const;
 
 const BLURB: Record<(typeof ORDER)[number], string> = {
-  pair: "Restates the sharpest row already on this check.",
-  gap: "Names pairs this map did not hit. A blank is not a clearance.",
-  trainee: "One question, answered only from the rows above.",
+  pair: "Restates the sharpest row, its clock, and the source already on this check.",
+  gap: "Names blank pairs and the reason they stayed quiet. A blank is not a clearance.",
+  trainee: "One question from the clock, the victim type, or the source.",
 };
 
 function keyOf(brief: ReaderBrief) {

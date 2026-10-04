@@ -50,8 +50,8 @@ Automated tools catch roughly a third to a half of WCAG issues. These criteria n
 | Screen reader | 1.3.1, 4.1.2, 4.1.3 | The clinical board and dossier shelves now expose which control is pressed. A person still needs to run a case in NVDA or VoiceOver. |
 | Zoom and reflow | 1.4.4, 1.4.10 | Script found no sideways scroll at 320px or at 640px on the views above. A person should still confirm nothing is cut off. |
 | Text spacing | 1.4.12 | With the WCAG spacing applied, the start screen no longer scrolls sideways at 320px. A person should still look for overlapping text. |
-| Non-text contrast | 1.4.11 | Focus outline, text fields, and the medication-review toggles are covered. Decorative card borders are not required to hit 3:1. |
-| Color alone | 1.4.1 | Severity is never shown by color alone (the label text must always be present). |
+| Non-text contrast | 1.4.11 | Focus outline, text fields, and the medication-review toggles are covered. Decorative card borders are not required to hit 3:1. Enzyme-map empty cells no longer use the faint border dot. |
+| Color alone | 1.4.1 | Severity is never shown by color alone (the label text must always be present). Accent against body text is 2.35:1 and against muted text is 1.08:1, under the 3:1 used when color is the only link cue. Source links and the host Reset control that had no icon now stay underlined. Links that already show an external-link icon were left alone. |
 | Dimmed toggles | 1.4.3 | Resolved. Those buttons are disabled when nothing is mapped, so the inactive-control exemption applies. |
 
 The locked tray state in `tray.tsx` is a disabled control and is exempt from the contrast rule.

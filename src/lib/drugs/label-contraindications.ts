@@ -44,7 +44,13 @@
  * - Leftover wave-1 gold pairs (still below contraindicated after the wave-4
  *   pins) copy `quote`, `labelSection`, and the DailyMed link byte-for-byte
  *   from label-gold-set.ts as of a79b09b. Each pin names the enzyme finding
- *   the pair already produces. Naltrexone with an opioid is not in this list.
+ *   the pair already produces.
+ * - Rows with origin "pd" copy quote, labelDrug, labelSection, and the
+ *   DailyMed link from the wave-2 gold rows (retrieved 2026-09-27). They omit
+ *   enzyme and kind. The desk holds the existing pharmacodynamic finding at
+ *   contraindicated. It does not add a CYP grade and it does not add a second
+ *   card. Only naltrexone with methadone, buprenorphine, oxycodone, or
+ *   hydrocodone. Other naltrexone + opioid pairs are not pinned.
  *
  * Educational reference, not FDA-cleared. No doses.
  */
@@ -59,8 +65,9 @@ export interface LabelContraindication {
   otherId: string;
   /**
    * Enzyme the pinned finding is on. Omitted when there is no enzyme finding
-   * to hold: the pin then emits a standalone contraindicated finding and does
-   * not assign a CYP grade.
+   * to hold. Origin "no-enzyme" then emits a standalone contraindicated
+   * finding. Origin "pd" holds the existing pharmacodynamic finding instead.
+   * Neither assigns a CYP grade.
    */
   enzyme?: Enzyme;
   /** Direction of the perpetrator on that enzyme. Omitted together with `enzyme`. */
@@ -78,8 +85,8 @@ export interface LabelContraindication {
    * does not name it.
    */
   basis: "named" | "class";
-  /** Why the pin was added: gold-set pair from PR #65 (including leftover wave-1 pairs pinned later), restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, a #86 wave-4 pair whose existing enzyme finding is held at contraindicated, or a pair with no enzyme finding to hold. */
-  origin: "gold-set" | "restored-after-58" | "wave3" | "wave4" | "no-enzyme";
+  /** Why the pin was added: gold-set pair from PR #65 (including leftover wave-1 pairs pinned later), restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, a #86 wave-4 pair whose existing enzyme finding is held at contraindicated, a pair with no enzyme finding to hold, or a pharmacodynamic finding held at contraindicated (naltrexone with a labeled opioid). */
+  origin: "gold-set" | "restored-after-58" | "wave3" | "wave4" | "no-enzyme" | "pd";
   /**
    * DailyMed retrieval date for this quote when it is not
    * `LABEL_CONTRAINDICATIONS_RETRIEVED` (wave 3 is 2026-10-02).
@@ -2119,7 +2126,7 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
   // Leftover wave-1 gold pairs that still read below contraindicated.
   // Quotes, sections, and DailyMed links are copied from label-gold-set.ts
   // at a79b09b. Each enzyme is a finding the pair already produces.
-  // Naltrexone with any opioid is intentionally absent.
+
 
   {
     id: "thioridazine+fluvoxamine",
@@ -2227,6 +2234,57 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "gold-set",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=08d08721-1f4c-478a-8abf-d9c402d50553",
   },
+
+  // Naltrexone with four labeled opioids. Quotes, labelDrug, labelSection,
+  // and DailyMed links are copied from the wave-2 gold rows (retrieved
+  // 2026-09-27). Vivitrol is the hydrocodone label source; the catalog id is
+  // naltrexone. Enzyme and kind are omitted: this holds the existing
+  // pharmacodynamic finding. It is not a CYP grade. Other opioids are not
+  // pinned.
+  {
+    id: "naltrexone+methadone",
+    labelDrugId: "naltrexone",
+    otherId: "methadone",
+    labelDrug: "Naltrexone HCl tablets",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Naltrexone hydrochloride is contraindicated in: … Patients currently dependent on opioids, including those currently maintained on opiate agonists (e.g., methadone)",
+    basis: "named",
+    origin: "pd",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
+  },
+  {
+    id: "naltrexone+buprenorphine",
+    labelDrugId: "naltrexone",
+    otherId: "buprenorphine",
+    labelDrug: "Naltrexone HCl tablets",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Naltrexone hydrochloride is contraindicated in: … Patients currently dependent on opioids, including those currently maintained on … partial agonists (e.g., buprenorphine).",
+    basis: "named",
+    origin: "pd",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
+  },
+  {
+    id: "naltrexone+oxycodone",
+    labelDrugId: "naltrexone",
+    otherId: "oxycodone",
+    labelDrug: "Naltrexone HCl tablets",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Naltrexone hydrochloride is contraindicated in: … Patients receiving opioid analgesics.",
+    basis: "class",
+    origin: "pd",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
+  },
+  {
+    id: "naltrexone+hydrocodone",
+    labelDrugId: "naltrexone",
+    otherId: "hydrocodone",
+    labelDrug: "Vivitrol (naltrexone ER injectable suspension)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "VIVITROL is contraindicated in: … Patients receiving opioid analgesics",
+    basis: "class",
+    origin: "pd",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=cd11c435-b0f0-4bb9-ae78-60f101f3703f",
+  },
 ];
 
 export const LABEL_CONTRAINDICATED_TAG = "label-contraindicated";
@@ -2247,6 +2305,9 @@ export function labelContraindicationById(id: string): LabelContraindication | u
 
 /** Plain sentence appended to the pinned finding's clinical text. */
 export function labelPinSentence(r: LabelContraindication): string {
+  if (r.origin === "pd") {
+    return `The ${r.labelDrug} label lists this combination under Contraindications, so this desk shows it as Avoid together. The pharmacodynamic finding is held at that level. This is not a CYP grade.`;
+  }
   if (!r.enzyme) {
     return `The ${r.labelDrug} label lists this combination under Contraindications, so this desk shows it as Avoid together. This pair has no CYP finding; the label is the reason.`;
   }

@@ -15,14 +15,14 @@
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,770 / 1,565,565 |
+| Catalog entries / unordered pairs scanned | 1,806 / 1,629,915 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,523 (1,483 CYP, 40 P-gp) on 1,516 pairs (1,516 by display name, as #66 counts) |
 | … of which carry a label citation (kept at contraindicated) | 535 |
 | **Findings that move contraindicated → major** | **988** on **981** pairs |
 | **Pairs whose overall severity changes** | **981** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 243 / 247 → **243 / 247** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 247 / 247 → **247 / 247** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
@@ -94,7 +94,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 281 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 282 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 
@@ -106,14 +106,7 @@ None.
 
 ### Already below the label: `KNOWN_CONTRAINDICATION_GAPS` (these need to go UP)
 
-The label says contraindicated and the engine already says major. The what-if does not touch them (they are not CYP/P-gp contraindicated findings), but they point the other way: a label-driven rule would raise them to contraindicated.
-
-| Pair | Label | Today | What-if |
-|---|---|---|---|
-| naltrexone + methadone | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
-| naltrexone + buprenorphine | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
-| naltrexone + oxycodone | Naltrexone HCl tablets, CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
-| naltrexone + hydrocodone | Vivitrol (naltrexone ER injectable suspension), 4 CONTRAINDICATIONS | major (Serious concern) | major (Serious concern) |
+None. No gold-set pair still reads major ("Serious concern") when the label says contraindicated.
 
 Also below the label and also unaffected: the label-contraindicated entries in `KNOWN_UNDERCALLS` (), which sit below major today.
 
@@ -121,11 +114,11 @@ Also below the label and also unaffected: the label-contraindicated entries in `
 
 Audience catalog ids: `buprenorphine`, `buprenorphine-implant`, `buprenorphine-patch`, `buprenorphine-weekly`, `esketamine`, `ketamine`, `ketamine-iv`, `methadone`, `methadone-soluble`, `naltrexone`, `naltrexone-bupropion`.
 
-None. No finding involving these drugs is a CYP/P-gp contraindicated finding on main, so the what-if does not move any of them. (39 pairs with an audience drug are contraindicated today; all of them come from class/PD rules such as MAOI or oxybate stacks, which this what-if leaves alone.)
+None. No finding involving these drugs is a CYP/P-gp contraindicated finding on main, so the what-if does not move any of them. (44 pairs with an audience drug are contraindicated today; all of them come from class/PD rules such as MAOI or oxybate stacks, which this what-if leaves alone.)
 
 ## Informational: sodium oxybate × non-hypnotic CNS depressants (not part of this what-if)
 
-Rule `pd-ghb-cns` marks sodium oxybate with any CNS depressant as contraindicated: 717 pairs on main. Using #66's heuristic split, 120 have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner (the label's contraindication) and **597** have some other CNS depressant partner (#66 reported about 597). That is a separate question; this preview does not simulate it.
+Rule `pd-ghb-cns` marks sodium oxybate with any CNS depressant as contraindicated: 735 pairs on main. Using #66's heuristic split, 120 have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner (the label's contraindication) and **615** have some other CNS depressant partner (#66 reported about 597). That is a separate question; this preview does not simulate it.
 
 ## Method and limits
 

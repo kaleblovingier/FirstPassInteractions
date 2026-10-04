@@ -139,14 +139,59 @@ function blankReason(aId: string, bId: string) {
   return "No shared enzyme and no stacked-effect row on this map.";
 }
 
-function directionLine(f: Finding) {
+function victimMark(f: Finding) {
+  if (f.kind !== "pk" || f.drugIds.length < 2) return "";
+  const victim = DRUG_BY_ID[f.drugIds[1]];
+  const enzyme = f.enzymes[0];
+  if (!victim || !enzyme) return "";
+  const role = victim.enzymes.find((e) => e.kind === "substrate" && e.enzyme === enzyme);
+  if (!role || role.kind !== "substrate") return "";
+  if (role.pathway === "activation") return "prodrug";
+  if (role.nti) return "narrow window";
+  if (role.sensitivity === "sensitive") return "sensitive substrate";
+  if (role.sensitivity === "minor") return "minor pathway";
+  return "";
+}
+
+function extraNote(rows: Finding[]) {
+  const lead = rows[0];
+  if (!lead || rows.length < 2) return "";
+  const leadEffect = (lead.effect || "").split("·")[0]?.trim().toLowerCase() ?? "";
+  const next = rows.slice(1).find((f) => {
+    const effect = (f.effect || "").split("·")[0]?.trim().toLowerCase() ?? "";
+    return effect && effect !== leadEffect;
+  });
+  if (!next) return `+${rows.length - 1} more`;
+  const named = (next.effect.split("·")[0]?.trim() ?? "").toLowerCase();
+  const rest = rows.length - 2;
+  return rest > 0 ? `also ${named} · +${rest}` : `also ${named}`;
+}
+
+function sourceOf(f: Finding) {
+  const basis = basisFor(f).find((item) => item.href && item.label);
+  if (!basis?.href) return undefined;
+  return { label: basis.label, href: basis.href };
+}
+
+function directionLine(rows: Finding[]) {
+  const f = rows[0];
+  if (!f) return "";
   const a = actors(f);
+  let base: string;
   if (!a.verb || a.verb === "with") {
     const effect = f.effect?.split("·")[0]?.trim();
-    return effect ? effect.charAt(0).toUpperCase() + effect.slice(1) : a.left;
+    base = effect ? effect.charAt(0).toUpperCase() + effect.slice(1) : a.left;
+  } else {
+    const short = a.verb.replace(/ of$/, "");
+    base = short.charAt(0).toUpperCase() + short.slice(1);
   }
-  const short = a.verb.replace(/ of$/, "");
-  return short.charAt(0).toUpperCase() + short.slice(1);
+  const enzyme = f.enzymes.find((e) => !base.includes(e));
+  if (enzyme) base = `${base} · ${enzyme}`;
+  const mark = victimMark(f);
+  if (mark) base = `${base} · ${mark}`;
+  const more = extraNote(rows);
+  if (more) base = `${base} · ${more}`;
+  return base;
 }
 
 function actors(f: Finding): { left: string; verb: string; right: string } {
@@ -229,16 +274,33 @@ export function CheckBoard({
   const quietEnzymes = quietLine(ids, [...rows, ...food]);
   const plain = lead ? plainLanguageSummary(lead) : "";
   const quietPairs = ids.length >= 3 ? unmappedPairs(ids, new Set(regimenGroups(rows).pairs.map((p) => p.key))) : [];
+  const foodPairs = [...regimenGroups(food).pairs].sort((a, b) => rank(b.rows[0]) - rank(a.rows[0]));
+  const leadCard = lead ? clockForFinding(lead) : null;
+  const leadWatch = lead ? (leadCard && lead.kind !== "pd" ? leadCard.start.watch : watchLine(lead)) : "";
+  const leadSource = lead
+    ? basisFor(lead)
+        .map((b) => b.label)
+        .filter(Boolean)
+        .slice(0, 2)
+        .join(", ")
+    : "";
   const readerBrief: ReaderBrief = {
     names: ids.map((id) => DRUG_BY_ID[id]?.name).filter((name): name is string => Boolean(name)),
     lead: lead ? `${SEVERITY_LABEL[lead.severity]}: ${verdictTitle(lead)}. ${plain}` : "",
-    rows: rows.slice(0, 6).map((f) => ({
-      severity: f.severity,
-      line: f.headline,
-      why: `${f.effect}. ${f.mechanism}`,
+    clock: leadCard
+      ? `${leadCard.start.title} (${leadCard.start.days}). ${leadCard.stop.title} (${leadCard.stop.days}).`
+      : lead
+        ? "No clock on this map for this pair."
+        : "",
+    watch: leadWatch,
+    source: leadSource,
+    rows: regimenGroups(rows).pairs.slice(0, 6).map((g) => ({
+      severity: SEVERITY_LABEL[g.rows[0].severity],
+      line: `${g.title}. ${directionLine(g.rows)}`,
+      why: `${g.rows[0].effect}. ${g.rows[0].mechanism}`,
     })),
-    quiet: quietPairs.map((p) => p.title),
-    food: food.slice(0, 4).map((f) => `${SEVERITY_LABEL[f.severity]}: ${f.headline}`),
+    quiet: quietPairs.map((p) => `${p.title}: ${p.reason}`),
+    food: foodPairs.slice(0, 4).map((g) => `${g.title}: ${directionLine(g.rows)}`),
   };
 
   return (
@@ -273,6 +335,7 @@ export function CheckBoard({
       </div>
 
       {lead ? <LeadRail finding={lead} /> : null}
+      {lead ? <LeadSources finding={lead} /> : null}
 
       {shelf ? (
         <p className="rounded-md bg-bg-sunken px-3 py-2 text-sm leading-relaxed text-fg">
@@ -311,16 +374,45 @@ export function CheckBoard({
         </>
       ) : null}
 
-      {regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) ? (
+      {regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) || foodPairs.length > 0 || lanes.length > 0 ? (
         <PairGrid
-          hits={regimenGroups(rows).pairs.map((g) => ({
+          hits={
+            regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0)
+              ? regimenGroups(rows).pairs.map((g) => ({
+                  key: g.key,
+                  title: g.title,
+                  line: directionLine(g.rows),
+                  severity: g.rows[0].severity,
+                  findingId: g.rows[0].id,
+                  source: sourceOf(g.rows[0]),
+                }))
+              : []
+          }
+          blanks={regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) ? quietPairs : []}
+          beside={foodPairs.slice(0, 4).map((g) => ({
             key: g.key,
             title: g.title,
-            line: directionLine(g.rows[0]),
+            line: directionLine(g.rows),
             severity: g.rows[0].severity,
             findingId: g.rows[0].id,
+            source: sourceOf(g.rows[0]),
           }))}
-          blanks={quietPairs}
+          besideHidden={Math.max(0, foodPairs.length - 4)}
+          hosts={lanes
+            .map((lane) => {
+              const top = [...lane.findings].sort((a, b) => rank(b) - rank(a))[0];
+              if (!top) return null;
+              return {
+                key: lane.id,
+                title: lane.label,
+                line: `${groupTitle(top)}. ${directionLine([top])}${lane.findings.length > 1 ? ` · +${lane.findings.length - 1} in this lane` : ""}`,
+                severity: top.severity,
+                findingId: `${lane.id}-${top.id}`,
+                source: sourceOf(top),
+              };
+            })
+            .filter((cell): cell is NonNullable<typeof cell> => Boolean(cell))
+            .slice(0, 4)}
           onOpen={(id) => {
             setTier("all");
             setShowAll(true);
@@ -486,49 +578,117 @@ export function CheckBoard({
   );
 }
 
+type GridCell = {
+  key: string;
+  title: string;
+  line: string;
+  severity: Severity;
+  findingId: string;
+  source?: { label: string; href: string };
+};
+
+function MappedCell({
+  cell,
+  tag,
+  onOpen,
+}: {
+  cell: GridCell;
+  tag?: string;
+  onOpen: (id: string) => void;
+}) {
+  return (
+    <div className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2">
+      <button type="button" onClick={() => onOpen(cell.findingId)} className="w-full text-left">
+        <span className={cn("inline-flex rounded-sm px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide", severitySurface(cell.severity))}>
+          {SEVERITY_LABEL[cell.severity]}
+        </span>
+        {tag ? <span className="ml-1 font-mono text-[10px] uppercase tracking-wide text-subtle">{tag}</span> : null}
+        <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
+        <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
+      </button>
+      {cell.source ? (
+        <a
+          href={cell.source.href}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-1 inline-flex font-mono text-[10px] text-accent underline underline-offset-2"
+        >
+          {cell.source.label}
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
 function PairGrid({
   hits,
   blanks,
+  beside = [],
+  besideHidden = 0,
+  hosts = [],
   onOpen,
 }: {
-  hits: { key: string; title: string; line: string; severity: Severity; findingId: string }[];
+  hits: GridCell[];
   blanks: { key: string; title: string; reason: string }[];
+  beside?: GridCell[];
+  besideHidden?: number;
+  hosts?: GridCell[];
   onOpen: (id: string) => void;
 }) {
-  if (hits.length + blanks.length < 2) return null;
+  if (hits.length + blanks.length < 2 && beside.length === 0 && hosts.length === 0) return null;
+  const pairs = hits.length + blanks.length >= 2;
   return (
     <div className="space-y-2">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Every pair</p>
-        <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">
-          {hits.length} mapped · {blanks.length} blank
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-1.5">
-        {hits.map((cell) => (
-          <button
-            key={cell.key}
-            type="button"
-            onClick={() => onOpen(cell.findingId)}
-            className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2 text-left"
-          >
-            <span className={cn("inline-flex rounded-sm px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide", severitySurface(cell.severity))}>
-              {SEVERITY_LABEL[cell.severity]}
-            </span>
-            <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
-            <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
-          </button>
-        ))}
-        {blanks.map((cell) => (
-          <div key={cell.key} className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2">
-            <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">No mapped collision</span>
-            <span className="mt-1 block text-xs leading-snug text-muted">{cell.title}</span>
-            <span className="mt-0.5 block text-[11px] leading-snug text-subtle">{cell.reason}</span>
+      {pairs ? (
+        <>
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Every pair</p>
+            <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+              {hits.length} mapped · {blanks.length} blank
+            </p>
           </div>
-        ))}
-      </div>
-      {blanks.length > 0 ? (
-        <p className="text-[11px] leading-relaxed text-subtle">A blank cell says why this map stayed quiet. It is not a clearance.</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {hits.map((cell) => (
+              <MappedCell key={cell.key} cell={cell} onOpen={onOpen} />
+            ))}
+            {blanks.map((cell) => (
+              <div key={cell.key} className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2">
+                <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">No mapped collision</span>
+                <span className="mt-1 block text-xs leading-snug text-muted">{cell.title}</span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-subtle">{cell.reason}</span>
+              </div>
+            ))}
+          </div>
+          {blanks.length > 0 ? (
+            <p className="text-[11px] leading-relaxed text-subtle">A blank cell says why this map stayed quiet. It is not a clearance.</p>
+          ) : null}
+        </>
+      ) : null}
+      {beside.length > 0 ? (
+        <div className="space-y-1.5 pt-1">
+          <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">Food and drink, not on the desk</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {beside.map((cell) => (
+              <MappedCell key={cell.key} cell={cell} tag="Food" onOpen={onOpen} />
+            ))}
+          </div>
+          {besideHidden > 0 ? (
+            <p className="text-[11px] leading-relaxed text-subtle">{besideHidden} more food and drink rows sit below.</p>
+          ) : null}
+        </div>
+      ) : null}
+      {hosts.length > 0 ? (
+        <div className="space-y-1.5 pt-1">
+          <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">Different host, not this person</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {hosts.map((cell) => (
+              <MappedCell key={cell.key} cell={cell} tag="Host" onOpen={onOpen} />
+            ))}
+          </div>
+          <p className="text-[11px] leading-relaxed text-subtle">
+            Pregnancy, kidney, age, or smoke. Not this person unless that flag is on. Not a milligram.
+          </p>
+        </div>
       ) : null}
     </div>
   );
@@ -564,6 +724,28 @@ function LeadRail({ finding }: { finding: Finding }) {
         This pair only. A study aid for how timing changes the picture, not a real-time alert. Not a
         milligram. If the label disagrees, the label wins.
       </p>
+    </div>
+  );
+}
+
+function LeadSources({ finding }: { finding: Finding }) {
+  const sources = basisFor(finding).filter((b) => b.href).slice(0, 2);
+  if (!sources.length) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">Open first</span>
+      {sources.map((b) => (
+        <a
+          key={`${b.kind}-${b.label}`}
+          href={b.href}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-10 items-center gap-1 rounded-full bg-bg-sunken px-3 text-xs font-medium text-accent hover:underline"
+        >
+          {b.label}
+          <ExternalLink className="size-3" />
+        </a>
+      ))}
     </div>
   );
 }

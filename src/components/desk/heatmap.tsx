@@ -10,6 +10,15 @@ function cellRoles(drug: Drug, enzyme: Enzyme) {
   };
 }
 
+function occupancyText(sub: boolean, inh: boolean, ind: boolean) {
+  const parts = [
+    sub ? "Broken down here" : "",
+    inh ? "Slows the enzyme" : "",
+    ind ? "Speeds the enzyme" : "",
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(", ") : "None";
+}
+
 function Occupancy({
   sub,
   inh,
@@ -23,53 +32,50 @@ function Occupancy({
 }) {
   const occupied = sub || inh || ind;
   return (
-    <svg viewBox="0 0 32 32" className="mx-auto size-8" aria-hidden>
-      <rect
-        x="1"
-        y="1"
-        width="30"
-        height="30"
-        rx="7"
-        className={hit ? "fill-danger-soft" : occupied ? "fill-bg-sunken" : "fill-transparent"}
-      />
-      <circle
-        cx="16"
-        cy="16"
-        r="9"
-        fill="none"
-        className={hit ? "stroke-danger" : occupied ? "stroke-fg" : "stroke-border"}
-        strokeWidth="1.6"
-      />
-      <circle
-        cx="16"
-        cy="16"
-        r="3.2"
-        className={
-          inh ? "fill-danger" : ind ? "fill-warn" : sub ? "fill-accent" : "fill-border"
-        }
-      />
-      {ind ? (
-        <>
-          <path d="M16 4v4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
-          <path d="M16 24v4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
-          <path d="M4 16h4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
-          <path d="M24 16h4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
-        </>
-      ) : null}
-      {inh ? (
-        <path d="M8 16h16" className="stroke-danger" strokeWidth="1.6" strokeLinecap="square" />
-      ) : null}
-    </svg>
+    <>
+      <svg viewBox="0 0 32 32" className="mx-auto size-8" aria-hidden>
+        <rect
+          x="1"
+          y="1"
+          width="30"
+          height="30"
+          rx="7"
+          className={hit ? "fill-danger-soft" : occupied ? "fill-bg-sunken" : "fill-transparent"}
+        />
+        <circle
+          cx="16"
+          cy="16"
+          r="9"
+          fill="none"
+          className={hit ? "stroke-danger" : occupied ? "stroke-fg" : "stroke-subtle"}
+          strokeWidth="1.6"
+        />
+        {occupied ? (
+          <circle
+            cx="16"
+            cy="16"
+            r="3.2"
+            className={inh ? "fill-danger" : ind ? "fill-warn" : "fill-accent"}
+          />
+        ) : null}
+        {ind ? (
+          <>
+            <path d="M16 4v4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
+            <path d="M16 24v4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
+            <path d="M4 16h4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
+            <path d="M24 16h4" className="stroke-warn" strokeWidth="1.4" strokeLinecap="square" />
+          </>
+        ) : null}
+        {inh ? (
+          <path d="M8 16h16" className="stroke-danger" strokeWidth="1.6" strokeLinecap="square" />
+        ) : null}
+      </svg>
+      <span className="sr-only">{occupancyText(sub, inh, ind)}</span>
+    </>
   );
 }
 
-export function CypHeatmap({
-  drugs,
-  colliding,
-}: {
-  drugs: Drug[];
-  colliding: Set<Enzyme>;
-}) {
+export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set<Enzyme> }) {
   const mapped = drugs.filter((d) => d.enzymes.length > 0);
   if (mapped.length === 0) return null;
 
@@ -79,7 +85,8 @@ export function CypHeatmap({
         <div>
           <h2 className="font-serif text-lg tracking-tight text-fg">Who shares which enzyme</h2>
           <p className="text-xs leading-relaxed text-muted">
-            Dot = broken down by that enzyme. Bar = slows it. Rays = speeds it up. Red-tinted columns are where this tray collides.
+            Dot = broken down by that enzyme. Bar = slows it. Rays = speeds it up. Red-tinted
+            columns are where this tray collides.
           </p>
         </div>
         <ul className="flex flex-wrap gap-3 text-[11px] text-muted">
@@ -98,7 +105,9 @@ export function CypHeatmap({
         <table className="min-w-full border-separate border-spacing-0 text-left">
           <thead>
             <tr>
-              <th className="sticky left-0 z-10 bg-surface px-2 py-2 text-xs font-medium text-muted">Drug</th>
+              <th className="sticky left-0 z-10 bg-surface px-2 py-2 text-xs font-medium text-muted">
+                Drug
+              </th>
               {ENZYMES.map((e) => (
                 <th
                   key={e}
@@ -120,7 +129,8 @@ export function CypHeatmap({
                 </th>
                 {ENZYMES.map((enzyme) => {
                   const { sub, inh, ind } = cellRoles(drug, enzyme);
-                  const hit = colliding.has(enzyme) && (Boolean(sub) || Boolean(inh) || Boolean(ind));
+                  const hit =
+                    colliding.has(enzyme) && (Boolean(sub) || Boolean(inh) || Boolean(ind));
                   return (
                     <td key={enzyme} className="px-1 py-1.5 text-center">
                       <Occupancy
