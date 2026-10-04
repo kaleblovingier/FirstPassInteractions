@@ -2993,6 +2993,18 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   if (q === "abx" || q === "antibiotic" || q === "antibiotics") {
     return DRUGS.filter((d) => !excluded.has(d.id) && familyOf(d) === "id").slice(0, 24);
   }
+  if (["uti", "cystitis", "uti antibiotics", "cystitis antibiotics"].includes(q)) {
+    const utiOrder = [
+      "nitrofurantoin",
+      "fosfomycin",
+      "pivmecillinam",
+      "gepotidacin",
+      "tmp-smx",
+    ];
+    return utiOrder
+      .map((id) => DRUG_BY_ID[id])
+      .filter((d): d is Drug => Boolean(d) && !excluded.has(d.id));
+  }
   if (q === "hiv" || q === "art" || q === "arv") {
     return DRUGS.filter(
       (d) =>

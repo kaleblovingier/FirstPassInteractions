@@ -27,7 +27,13 @@ interface MedicationReviewProps {
 
 export function MedicationReview({ ids, host, findings, doses }: MedicationReviewProps) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [showRemainingOnly, setShowRemainingOnly] = useState(false);
   const highAlertItems = alertsOnDesk(ids);
+  const alertCount = highAlertItems.reduce((count, row) => count + row.flags.length, 0);
+  const researchPeptides = ids
+    .map((id) => DRUG_BY_ID[id])
+    .filter((item) => item?.kind === "research-peptide");
+  const hasBpc157 = researchPeptides.some((item) => item.id === "bpc-157");
   const highest = findings[0];
   const checks = [
     {
@@ -50,6 +56,29 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
       title: "Verify patient-specific context",
       detail: "Confirm the relevant history and patient factors with the care team. This desk models only the context shown in its controls.",
     },
+    ...(alertCount > 0
+      ? [
+          {
+            id: "safety-programs",
+            title: "Verify medication safety-program flags",
+            detail: `Check the current handling or program guidance for ${highAlertItems
+              .map((row) => {
+                const itemName = DRUG_BY_ID[row.id]?.name ?? row.id;
+                return `${itemName} (${row.flags.map((flag) => flag.label).join(", ")})`;
+              })
+              .join("; ")}. This desk's flag list is incomplete and is not an interaction finding.`,
+          },
+        ]
+      : []),
+    ...(researchPeptides.length
+      ? [
+          {
+            id: "research-peptide-evidence",
+            title: "Review research-peptide uncertainty",
+            detail: `${researchPeptides.map((item) => item.name).join(", ")} have no validated interaction grade in this tool. Verify exact identity, formulation, route, source and quality, available human evidence, and applicable regulatory status. An empty map is not evidence of safety.`,
+          },
+        ]
+      : []),
     ...(highest
       ? [
           {
@@ -80,7 +109,13 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
   const completedItems = ids.filter((id) => checked[`item:${id}`]).length;
   const completed = completedChecks + completedItems;
   const totalChecks = checks.length + ids.length;
-  const alertCount = highAlertItems.reduce((count, row) => count + row.flags.length, 0);
+  const remaining = totalChecks - completed;
+  const visibleIds = showRemainingOnly
+    ? ids.filter((id) => !checked[`item:${id}`])
+    : ids;
+  const visibleChecks = showRemainingOnly
+    ? checks.filter((check) => !checked[check.id])
+    : checks;
   const modeledContext = [
     `Age: ${AGE_LABEL[host.age ?? "adult"]}`,
     `Kidney: ${KIDNEY_LABEL[host.kidney ?? "ok"]}`,
@@ -98,6 +133,10 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
     setChecked((current) => ({ ...current, [id]: !current[id] }));
   }
 
+  function resetChecks() {
+    setChecked({});
+  }
+
   return (
     <section aria-labelledby="medication-review-title" className="rounded-xl border border-border bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -110,9 +149,45 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
             A verification aid, not an order set or patient record. Checkmarks are temporary and reset when the regimen or modeled context changes.
           </p>
         </div>
-        <span className="rounded-full bg-bg-sunken px-2.5 py-1 font-mono text-[10px] text-muted" aria-live="polite">
-          {completed}/{totalChecks} reviewed
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-bg-sunken px-2.5 py-1 font-mono text-[10px] text-muted" aria-live="polite">
+            {completed}/{totalChecks} reviewed
+          </span>
+          {completed > 0 ? (
+            <>
+              <button
+                type="button"
+                aria-pressed={showRemainingOnly}
+                onClick={() => setShowRemainingOnly((current) => !current)}
+                className="min-h-8 rounded-full px-2.5 text-[11px] font-medium text-muted hover:bg-bg-sunken hover:text-fg"
+              >
+                {showRemainingOnly ? "Show all items" : `Show remaining (${remaining})`}
+              </button>
+              <button
+                type="button"
+                onClick={resetChecks}
+                className="min-h-8 rounded-full px-2.5 text-[11px] font-medium text-muted hover:bg-bg-sunken hover:text-fg"
+              >
+                Reset review
+              </button>
+            </>
+          ) : null}
+        </div>
+      </div>
+
+      <div
+        role="progressbar"
+        aria-label="Medication review progress"
+        aria-valuemin={0}
+        aria-valuemax={totalChecks}
+        aria-valuenow={completed}
+        aria-valuetext={`${completed} of ${totalChecks} review items complete`}
+        className="mt-3 h-1.5 overflow-hidden rounded-full bg-bg-sunken"
+      >
+        <div
+          className="h-full rounded-full bg-accent transition-[width] duration-200 motion-reduce:transition-none"
+          style={{ width: `${(completed / totalChecks) * 100}%` }}
+        />
       </div>
 
       <div className="mt-3 rounded-lg bg-bg-sunken px-3 py-2.5">
@@ -128,6 +203,23 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
           These are desk settings, not verified patient data. CYP phenotype frequencies, where shown in other views, are population estimates—not an individual test result.
         </p>
       </div>
+
+      {hasBpc157 ? (
+        <aside className="mt-4 rounded-lg border border-warn/30 bg-warn-soft/40 px-3 py-2.5">
+          <p className="text-xs font-medium text-fg">BPC-157: FDA compounding-risk context</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-muted">
+            FDA identifies potential immunogenicity risks for certain routes, peptide impurity and API-characterization complexities, and limited safety information for proposed routes. This review concerns proposed compounding bulk substance; it is not a product-specific analysis or an interaction assessment.
+          </p>
+          <a
+            className="mt-2 inline-flex min-h-8 items-center text-xs font-medium text-accent underline underline-offset-2"
+            href="https://www.fda.gov/drugs/human-drug-compounding/certain-bulk-drug-substances-use-compounding-may-present-significant-safety-risks"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Read FDA’s review
+          </a>
+        </aside>
+      ) : null}
 
       {alertCount > 0 ? (
         <div className="mt-4 rounded-lg border border-warn/20 bg-warn-soft/40 px-3 py-2.5">
@@ -152,8 +244,9 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
           Confirm each desk item against the real regimen
         </h3>
         <ul className="mt-2 grid gap-2 sm:grid-cols-2">
-          {ids.map((id) => {
+          {visibleIds.map((id) => {
             const item = DRUG_BY_ID[id];
+            const enteredDose = doses[id]?.trim();
             const isChecked = Boolean(checked[`item:${id}`]);
             const Icon = isChecked ? CheckSquare : Square;
             return (
@@ -178,9 +271,11 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
                         : "Confirm identity and formulation"}
                       {item?.brands[0] ? ` · Brand example: ${item.brands[0]}` : ""}
                     </span>
-                    {item?.kind === "drug" && doses[id] ? (
+                    {item?.kind === "drug" ? (
                       <span className="mt-1 block font-mono text-[11px] text-subtle">
-                        Desk-entered value: {doses[id]} · verify dose, units, formulation, and source
+                        {enteredDose
+                          ? `Desk-entered value: ${enteredDose} · verify dose, units, formulation, and source`
+                          : "No dose entered on this desk · confirm whether applicable and verify dose, units, formulation, route, schedule, and source"}
                       </span>
                     ) : null}
                   </span>
@@ -194,8 +289,14 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
         </p>
       </div>
 
+      {showRemainingOnly && remaining === 0 ? (
+        <p className="mt-4 rounded-lg bg-bg-sunken px-3 py-2.5 text-xs leading-relaxed text-muted" role="status">
+          All listed items are marked reviewed. Marks are temporary and do not confirm clinical appropriateness.
+        </p>
+      ) : null}
+
       <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-        {checks.map((check) => {
+        {visibleChecks.map((check) => {
           const Icon = checked[check.id] ? CheckSquare : Square;
           return (
             <li key={check.id}>

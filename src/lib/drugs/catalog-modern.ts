@@ -49,6 +49,42 @@ function d(
 
 /** Extra formulary rows merged after the teaching core + clinic pack. */
 export const MODERN_FORMULARY: Drug[] = [
+  // —— Newer urinary antibiotics ———————————————————————
+  d("gepotidacin", "Gepotidacin", ["Blujepa"], "Triazaacenaphthylene antibiotic",
+    [sub("CYP3A4", "major")],
+    ["qt-known"],
+    "QTc prolongation; strong CYP3A4 inhibitors raise exposure and strong inducers lower it",
+    {
+      aliases: ["blujepa"],
+      note: "FDA-approved oral antibiotic for uncomplicated UTI. The label reports about 1.5-fold higher AUC with itraconazole and 52% lower AUC with rifampin. QTc prolongation is concentration-dependent. P-gp and midazolam effects were evaluated at BLUJEPA doses above the approved dosage and are not graded here. Check the current label for concomitant-drug restrictions. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=80b57cfe-7819-4d95-a57d-014af42f118d",
+    }),
+  d("pivmecillinam", "Pivmecillinam", ["Pivya"], "Oral beta-lactam antibiotic",
+    [],
+    [],
+    "Newborn-screening interference; carnitine depletion reported with prolonged use",
+    {
+      aliases: ["pivya", "mecillinam prodrug"],
+      note: "FDA-approved oral antibiotic for uncomplicated UTI. The label warns that exposure before delivery may cause a false-positive newborn screen for isovaleric acidemia; prolonged treatment has been associated with carnitine depletion in pediatric patients. No CYP or PD interaction grade is assigned here. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=440a5f17-ab11-0fc8-e063-6394a90a58e9",
+    }),
+
+  // —— Pulmonary medicine ————————————————————————————
+  d("ensifentrine", "Ensifentrine", ["Ohtuvayre"], "Inhaled PDE3/PDE4 inhibitor for COPD",
+    [],
+    [],
+    "Not rescue therapy; paradoxical bronchospasm and psychiatric events are labeled warnings",
+    {
+      aliases: ["ohtuvayre"],
+      note: "For maintenance treatment of COPD; not rescue therapy for acute bronchospasm. The label warns about paradoxical bronchospasm and psychiatric events, including suicidality. In vitro, metabolism is predominantly by CYP2C9 and to a lesser extent CYP2D6; at therapeutic concentrations it does not inhibit the listed CYP enzymes or P-gp/BCRP. These findings do not establish clinical interaction risk, so no enzyme or PD grade is assigned. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e6433c98-41a0-4f99-8f7f-d0e9db6e3f40",
+    }),
+  d("sotatercept", "Sotatercept", ["Winrevair"], "Activin signaling inhibitor for pulmonary arterial hypertension",
+    [],
+    [],
+    "Erythrocytosis, thrombocytopenia, serious bleeding, and embryo-fetal toxicity",
+    {
+      aliases: ["winrevair", "sotatercept-csrk"],
+      note: "The label directs hemoglobin and platelet monitoring before each of the first 5 doses and periodically thereafter. Thrombocytopenia occurred more often with prostacyclin infusion; patients with serious bleeding were more likely to be receiving prostacyclin and/or antithrombotic agents or to have low platelets. Embryo-fetal toxicity: effective contraception during treatment and for at least 4 months after the last dose. These are label precautions, not a graded drug-interaction map. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=21693ee2-cd23-4137-ac67-066bb3a4a9b7",
+    }),
+
   // —— Metabolic / endocrine (GLP-1 family fill-ins) ——————————
   d("dulaglutide", "Dulaglutide", ["Trulicity"], "GLP-1 agonist",
     [],

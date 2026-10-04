@@ -452,6 +452,38 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     retrieved: "2026-10-03",
   },
   {
+    perpIds: ["voriconazole"],
+    brand: "Voriconazole",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote: "Voriconazole is a strong inhibitor of CYP3A4, and also inhibits CYP2C19 and CYP2C9.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide", "quinidine", "quinidine-gluconate"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of pimozide, quinidine or ivabradine with voriconazole tablets is contraindicated because increased plasma concentrations of these drugs can lead to QT prolongation and rare occurrences of torsade de pointes",
+      },
+      {
+        victimIds: ["sirolimus"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of voriconazole tablets with sirolimus is contraindicated because voriconazole tablets significantly increase sirolimus concentrations",
+      },
+      {
+        victimIds: ["lurasidone"],
+        section: "4 Contraindications",
+        quote:
+          "Coadministration of voriconazole tablets with lurasidone is contraindicated since it may result in significant increases in lurasidone exposure and the potential for serious adverse reactions",
+      },
+    ],
+    // Dose-conditional, or the contraindication is the other drug lowering voriconazole.
+    alsoNamed: ["efavirenz", "ritonavir"],
+    url: DM("23f25c6b-f075-42dc-ae05-63b5bf410929"),
+    labelEffective: "2026-05-28",
+    retrieved: "2026-10-03",
+  },
     perpIds: ["erythromycin"],
     brand: "Erythromycin",
     enzyme: "CYP3A4",
