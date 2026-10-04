@@ -484,4 +484,28 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-05-28",
     retrieved: "2026-10-03",
   },
+    perpIds: ["erythromycin"],
+    brand: "Erythromycin",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "Precautions – Drug Interactions",
+    roleQuote: "Erythromycin is considered a moderate inhibitor of CYP3A4.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide"],
+        section: "Contraindications",
+        quote:
+          "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine.",
+      },
+      {
+        victimIds: ["lovastatin", "simvastatin"],
+        section: "Contraindications",
+        quote:
+          "Do not use erythromycin concomitantly with HMG CoA reductase inhibitors (statins) that are extensively metabolized by CYP 3A4 (lovastatin or simvastatin), due to the increased risk of myopathy, including rhabdomyolysis.",
+      },
+    ],
+    url: DM("0c05e1f7-a3d4-8e69-e063-6394a90aecc3"),
+    labelEffective: "2026-04-21",
+    retrieved: "2026-10-03",
+  },
 ];
