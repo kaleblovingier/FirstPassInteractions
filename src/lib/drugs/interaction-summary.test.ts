@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { plainLanguageSummary } from "./interaction-summary.ts";
+import { clinicianScan, plainLanguageSummary } from "./interaction-summary.ts";
 
 test("plain-language summary explains buildup and side effects without medical jargon", () => {
   const result = plainLanguageSummary({
@@ -36,4 +36,17 @@ test("platelet serotonin on a bleed row is bleeding, not serotonin toxicity", ()
   });
   assert.match(result, /bleeding/i);
   assert.doesNotMatch(result, /fever|agitation/);
+});
+
+test("clinician scan is the enzyme and the direction, not a second essay", () => {
+  const result = clinicianScan({
+    enzymes: ["CYP3A4"],
+    effect: "↑ exposure",
+  });
+  assert.equal(result, "CYP3A4 · ↑ exposure");
+  assert.ok(result.length < 80);
+});
+
+test("clinician scan stays empty when the finding has neither", () => {
+  assert.equal(clinicianScan({}), "");
 });
