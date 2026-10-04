@@ -56,13 +56,13 @@ export const MODERN_WAVE2_FORMULARY: Drug[] = [
       aliases: ["veozah"],
       note: "Menopause vasomotor. Strong 1A2 inhibitors are labeled avoid. LFTs on the PI — not a CYP dose card here.",
     }),
-  d("elinzanetant", "Elinzanetant", [], "NK1/NK3 antagonist (investigational / emerging)",
+  d("elinzanetant", "Elinzanetant", ["Lynkuet"], "NK1/NK3 receptor antagonist",
     [sub("CYP3A4", "major")],
     [],
-    "3A4 victim as the class map evolves — check current PI/label",
+    "CYP3A4 interaction precautions; pregnancy contraindication; baseline hepatic testing",
     {
-      aliases: ["elinzanetant"],
-      note: "Emerging NK antagonist for VMS. Treat as a 3A4 teaching row until the final label settles. Not FDA-status advice.",
+      aliases: ["lynkuet"],
+      note: "LYNKUET is labeled for moderate to severe vasomotor symptoms due to menopause. Elinzanetant is primarily metabolized by CYP3A4 to active metabolites. The current label says avoid strong CYP3A4 inhibitors, grapefruit, and moderate/strong CYP3A4 inducers; dosage modification is specified with moderate inhibitors. Pregnancy is contraindicated. Check baseline hepatic tests; the label says not to start if ALT or AST is at least 2 times ULN or total bilirubin is at least 2 times ULN. This note is a safety prompt, not dosing advice. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f42884ff-7dff-419c-8a0c-affe2ed73818",
     }),
 
   // —— Cardio modern ——————————————————————————————————

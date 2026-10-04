@@ -107,6 +107,7 @@ test("wave2 rows share no id, name, brand, or alias with any other row", () => {
 test("wave2 brand aliases resolve", () => {
   assert.equal(searchDrugs("Camzyos")[0]?.id, "mavacamten");
   assert.equal(searchDrugs("Veozah")[0]?.id, "fezolinetant");
+  assert.equal(searchDrugs("Lynkuet")[0]?.id, "elinzanetant");
   assert.equal(searchDrugs("Journavx")[0]?.id, "suzetrigine");
   assert.equal(searchDrugs("Xenleta")[0]?.id, "lefamulin");
   assert.equal(searchDrugs("Tryvio")[0]?.id, "aprocitentan");
@@ -114,6 +115,17 @@ test("wave2 brand aliases resolve", () => {
   assert.equal(searchDrugs("a-pvp")[0]?.id, "a-pvp"); // core shelf already has α-PVP
   assert.equal(searchDrugs("Nurtec")[0]?.id, "rimegepant"); // clinic row wins
   assert.equal(searchDrugs("3-mmc")[0]?.id, "three-mmc"); // core row wins
+});
+
+test("elinzanetant reflects current Lynkuet label status and safety precautions", () => {
+  const row = DRUG_BY_ID.elinzanetant;
+  assert.deepEqual(row.brands, ["Lynkuet"]);
+  assert.match(row.cls, /NK1\/NK3 receptor antagonist/);
+  assert.ok(row.enzymes.some((role) => role.kind === "substrate" && role.enzyme === "CYP3A4"));
+  assert.match(row.toxicityHint, /pregnancy contraindication/i);
+  assert.match(row.note ?? "", /avoid strong CYP3A4 inhibitors, grapefruit/i);
+  assert.match(row.note ?? "", /baseline hepatic tests/i);
+  assert.match(row.note ?? "", /dailymed\.nlm\.nih\.gov/i);
 });
 
 test("every sample regimen references drugs on the shelf", () => {

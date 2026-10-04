@@ -32,8 +32,12 @@ function Occupancy({
 }) {
   const occupied = sub || inh || ind;
   return (
-    <>
-      <svg viewBox="0 0 32 32" className="mx-auto size-8" aria-hidden>
+      <svg
+        viewBox="0 0 32 32"
+        className="mx-auto size-8"
+        role="img"
+        aria-label={occupancyText(sub, inh, ind)}
+      >
         <rect
           x="1"
           y="1"
@@ -70,8 +74,6 @@ function Occupancy({
           <path d="M8 16h16" className="stroke-danger" strokeWidth="1.6" strokeLinecap="square" />
         ) : null}
       </svg>
-      <span className="sr-only">{occupancyText(sub, inh, ind)}</span>
-    </>
   );
 }
 
@@ -101,6 +103,9 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
           </li>
         </ul>
       </div>
+      <p className="mb-2 text-[11px] leading-relaxed text-muted">
+        On narrow screens, scroll the map horizontally to see every enzyme. Drug names stay pinned.
+      </p>
       <div className="-mx-1 overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0 text-left">
           <thead>

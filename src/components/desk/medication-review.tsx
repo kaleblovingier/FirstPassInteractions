@@ -224,11 +224,16 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
       {alertCount > 0 ? (
         <div className="mt-4 rounded-lg border border-warn/20 bg-warn-soft/40 px-3 py-2.5">
           <p className="text-xs font-medium text-fg">Additional medication flags on this desk</p>
-          <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+          <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {highAlertItems.flatMap(({ id, flags }) =>
               flags.map((flag) => (
-                <li key={`${id}-${flag.kind}`} className="text-xs text-muted">
-                  {flag.label}: {id}
+                <li key={`${id}-${flag.kind}`} className="rounded-md bg-surface/70 px-2.5 py-2">
+                  <span className="block text-xs font-medium text-fg">
+                    {flag.label}: {DRUG_BY_ID[id]?.name ?? id}
+                  </span>
+                  <span className="mt-1 block text-[11px] leading-relaxed text-muted">
+                    {flag.note}
+                  </span>
                 </li>
               )),
             )}
