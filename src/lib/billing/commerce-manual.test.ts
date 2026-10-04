@@ -116,6 +116,20 @@ test("hunt clinic DM includes the live desk URL", async () => {
   assert.match(fn, /\$\$\{price\} once/);
 });
 
+test("foundry teaching packs use SITE.url pack links", async () => {
+  const foundry = await readFile(new URL("../../components/desk/foundry.tsx", import.meta.url), "utf8");
+  const permalinks = await readFile(new URL("../drugs/permalinks.ts", import.meta.url), "utf8");
+  assert.match(src, /https:\/\/firstpass-desk\.vercel\.app/);
+  assert.match(foundry, /Teaching packs/);
+  assert.match(foundry, /teachingPackLinks\(SITE\.url\)/);
+  assert.match(foundry, /Free try links/);
+  assert.doesNotMatch(foundry, /\$12\/mo/);
+  assert.doesNotMatch(foundry, /card on the desk/i);
+  assert.match(permalinks, /export function teachingPackUrl/);
+  assert.match(permalinks, /searchParams\.set\("pack", packId\)/);
+  assert.match(permalinks, /return PACK_IDS\.map/);
+});
+
 test("public contact email is FirstPassInteractions, not the old gmail", () => {
   const start = src.indexOf("export const OPERATOR");
   const end = src.indexOf("export const PAY_RAILS", start);

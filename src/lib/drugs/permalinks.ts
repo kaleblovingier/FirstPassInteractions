@@ -39,6 +39,35 @@ export const PACKS: Record<PackId, PackMeta> = {
 
 export const PACK_IDS = Object.keys(PACKS) as PackId[];
 
+export interface TeachingPackLink {
+  id: PackId;
+  title: string;
+  blurb: string;
+  url: string;
+}
+
+/**
+ * Absolute free teaching-pack link: `siteUrl` + `?pack=<id>` only.
+ * Operators paste these before founding pay. Pass SITE.url from commerce.
+ */
+export function teachingPackUrl(packId: PackId, siteUrl: string): string {
+  const url = new URL(siteUrl);
+  url.hash = "";
+  url.search = "";
+  url.searchParams.set("pack", packId);
+  return url.toString();
+}
+
+/** One share row per pack, reusing PACKS titles and blurbs. */
+export function teachingPackLinks(siteUrl: string): TeachingPackLink[] {
+  return PACK_IDS.map((id) => ({
+    id,
+    title: PACKS[id].title,
+    blurb: PACKS[id].blurb,
+    url: teachingPackUrl(id, siteUrl),
+  }));
+}
+
 export interface PermalinkResolved {
   kind: "case" | "pack" | "lab" | "brief" | "none";
   caseId: string | null;

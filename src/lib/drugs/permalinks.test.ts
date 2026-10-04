@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   PACKS,
   applyPermalink,
@@ -8,6 +9,8 @@ import {
   buildLabPermalink,
   buildPackUrl,
   flipKetamineRoute,
+  teachingPackLinks,
+  teachingPackUrl,
   parseBriefIds,
   parsePermalink,
 } from "./permalinks.ts";
@@ -162,5 +165,33 @@ test("pharmd pack cases stay free-friendly", () => {
     const sample = parsePermalink(`?case=${id}`).sample;
     assert.ok(sample, id);
     assert.equal(sampleNeedsPro(sample!), false, `${id} should not require Pro host extras`);
+  }
+});
+
+test("teaching pack share URLs are absolute SITE desk links with ?pack=", async () => {
+  const commerce = await readFile(new URL("../billing/commerce.ts", import.meta.url), "utf8");
+  const foundry = await readFile(new URL("../../components/desk/foundry.tsx", import.meta.url), "utf8");
+  const siteLine = commerce.match(
+    /url:\s*\(import\.meta\.env\.VITE_PUBLIC_URL[\s\S]*?\|\|\s*"(https:\/\/[^"]+)"/,
+  );
+  assert.ok(siteLine, "SITE.url fallback");
+  const base = siteLine[1];
+  assert.match(foundry, /teachingPackLinks\(SITE\.url\)/);
+  for (const id of ["clinic-onboard", "mat-cup", "pharmd"] as const) {
+    const url = teachingPackUrl(id, base);
+    assert.equal(url, `${base}/?pack=${id}`);
+    assert.match(url, new RegExp(`\\?pack=${id}$`));
+    assert.ok(url.startsWith(base));
+  }
+  const links = teachingPackLinks(base);
+  assert.deepEqual(
+    links.map((link) => link.id),
+    ["clinic-onboard", "mat-cup", "pharmd"],
+  );
+  for (const link of links) {
+    assert.equal(link.title, PACKS[link.id].title);
+    assert.equal(link.blurb, PACKS[link.id].blurb);
+    assert.match(link.url, new RegExp(`\\?pack=${link.id}`));
+    assert.doesNotMatch(link.url, /[?&]case=/);
   }
 });
