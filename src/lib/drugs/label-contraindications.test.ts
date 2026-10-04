@@ -207,6 +207,32 @@ const EXPECTED_PINS = [
   "naltrexone+buprenorphine",
   "naltrexone+oxycodone",
   "naltrexone+hydrocodone",
+  // Geodon section 4. Pharmacodynamic cards held, or a standalone when none exists.
+  "ziprasidone+dofetilide",
+  "ziprasidone+sotalol",
+  "ziprasidone+quinidine",
+  "ziprasidone+thioridazine",
+  "ziprasidone+chlorpromazine",
+  "ziprasidone+droperidol",
+  "ziprasidone+pimozide",
+  "ziprasidone+gatifloxacin",
+  "ziprasidone+moxifloxacin",
+  "ziprasidone+mefloquine",
+  "ziprasidone+dolasetron",
+  "ziprasidone+arsenic-trioxide",
+  "ziprasidone+amiodarone",
+  "ziprasidone+dronedarone",
+  "ziprasidone+ibutilide",
+  "ziprasidone+procainamide",
+  "ziprasidone+linezolid",
+  "ziprasidone+methylene-blue",
+  "ziprasidone+phenelzine",
+  "ziprasidone+tranylcypromine",
+  "ziprasidone+isocarboxazid",
+  "ziprasidone+moclobemide",
+  "ziprasidone+selegiline",
+  "ziprasidone+safinamide",
+  "ziprasidone+rasagiline",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -214,8 +240,8 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 49);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 17);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 4);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 23);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 23);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
@@ -390,3 +416,27 @@ test("naltrexone is contraindicated only with the four labeled opioids", () => {
   }
 });
 
+
+test("Geodon holds one pharmacodynamic card and does not assign a CYP grade", () => {
+  const qt = pairFindings("ziprasidone", "thioridazine");
+  const pinned = qt.filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.equal(pinned.length, 1);
+  assert.equal(pinned[0].kind, "pd");
+  assert.equal(pinned[0].tags.includes("qt"), true);
+  const cns = qt.find((f) => f.tags.includes("cns"));
+  assert.equal(cns?.severity, "moderate");
+  assert.equal(cns?.tags.includes(LABEL_CONTRAINDICATED_TAG), false);
+  const amio = pairFindings("ziprasidone", "amiodarone");
+  const amioPinned = amio.filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.equal(amioPinned.length, 1);
+  assert.equal(amioPinned[0].tags.includes("qt"), true);
+  const wash = amio.find((f) => f.tags.includes("washout"));
+  assert.equal(wash?.severity, "moderate");
+  const alone = pairFindings("ziprasidone", "linezolid");
+  const stand = alone.find((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.ok(stand);
+  assert.deepEqual(stand.enzymes, []);
+  assert.match(stand.id, /label-ci-standalone/);
+  assert.equal(stand.tags.includes("inhibitor"), false);
+  assert.equal(stand.tags.includes("inducer"), false);
+});

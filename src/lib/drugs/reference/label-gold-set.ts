@@ -35,6 +35,13 @@
  * ketoconazole is not a source. Pairs already in waves 1–3 are not repeated.
  * Floor is major ("Serious concern"); the label class is contraindicated.
  *
+ * Wave 5 is label-stated contraindications from the current Geodon
+ * (ziprasidone) SPL. Section 4.1 names drugs ziprasidone should not be given
+ * with, under the contraindication. Section 4.3 contraindicates MAOIs,
+ * including linezolid and intravenous methylene blue. Pairs already in waves
+ * 1–4 are not repeated. The floor is contraindicated ("Avoid together")
+ * because a label pin holds the engine there. No new CYP grade.
+ *
  * Quotes are verbatim substrings of the SPL text retrieved on `retrieved`; a
  * "…" marks an elided span. `labelExample` (also verbatim) is used when the
  * governing sentence names a class and a nearby sentence names the drug.
@@ -78,7 +85,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27" | "2026-10-02";
+  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -87,8 +94,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra. */
-  wave: 1 | 2 | 3 | 4;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon. */
+  wave: 1 | 2 | 3 | 4 | 5;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -147,6 +154,9 @@ export const LABEL_SETIDS = {
   noxafil: "b073b082-7b57-4423-8c06-4fd4263d6f84",
   paxlovid: "8a99d6d6-fd9e-45bb-b1bf-48c7f761232a",
   kaletra: "8290add3-4449-4e58-6c97-8fe1eec972e3",
+  // wave 5, DailyMed v2 SPL retrieved 2026-10-03.
+  // Geodon capsules and injection. Effective time 2025-01-13. Published 2026-09-18.
+  geodon: "8326928a-2cb6-4f7f-9712-03a425a14c37",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -2301,8 +2311,200 @@ const WAVE_4: GoldPair[] = [
 export const WAVE_1_COUNT = WAVE_1.length;
 export const WAVE_2_COUNT = WAVE_2.length;
 export const WAVE_3_COUNT = WAVE_3.length;
+/** Wave 5 row: the label says contraindicated and the pin holds the engine there. */
+function row5(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-03",
+    expectedFloor: "contraindicated",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 5,
+  };
+}
+
+const GEODON_QT =
+  "ziprasidone is contraindicated: … Therefore, ziprasidone should not be given with:";
+const GEODON_QT_CLASS = "other Class Ia and III anti-arrhythmics";
+const GEODON_MAOI =
+  "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)";
+
+const WAVE_5: GoldPair[] = [
+  // ── Geodon 4.1: named drugs ziprasidone should not be given with ──
+  row5({
+    drugA: "ziprasidone", drugB: "dofetilide", queries: ["geodon", "dofetilide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+    note: "Current Geodon SPL, effective 2025-01-13. Section 4.1 lists the drugs after stating that ziprasidone is contraindicated.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "sotalol", queries: ["geodon", "sotalol"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "sotalol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "quinidine", queries: ["geodon", "quinidine"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "quinidine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "thioridazine", queries: ["geodon", "thioridazine"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "thioridazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "chlorpromazine", queries: ["geodon", "chlorpromazine"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "chlorpromazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "droperidol", queries: ["geodon", "droperidol"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "droperidol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "pimozide", queries: ["geodon", "pimozide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "pimozide",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "gatifloxacin", queries: ["geodon", "gatifloxacin"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "gatifloxacin",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "moxifloxacin", queries: ["geodon", "moxifloxacin"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "moxifloxacin",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "mefloquine", queries: ["geodon", "mefloquine"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "mefloquine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "dolasetron", queries: ["geodon", "dolasetron"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "dolasetron mesylate",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "arsenic-trioxide", queries: ["geodon", "arsenic trioxide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: "arsenic trioxide",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+    note: "No pair finding before the pin. The pin is a standalone card and does not assign a CYP grade.",
+  }),
+  // ── Geodon 4.1: Class Ia and III anti-arrhythmics not already named above ──
+  row5({
+    drugA: "ziprasidone", drugB: "amiodarone", queries: ["geodon", "amiodarone"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: GEODON_QT_CLASS,
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+    note: "Class III antiarrhythmic. The list names dofetilide, sotalol, and quinidine, then this class.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "dronedarone", queries: ["geodon", "dronedarone"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: GEODON_QT_CLASS,
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+    note: "Class III antiarrhythmic. The list names dofetilide, sotalol, and quinidine, then this class.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "ibutilide", queries: ["geodon", "ibutilide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: GEODON_QT_CLASS,
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+    note: "Class III antiarrhythmic. The list names dofetilide, sotalol, and quinidine, then this class.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "procainamide", queries: ["geodon", "procainamide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.1 QT Prolongation",
+    quote: GEODON_QT, labelExample: GEODON_QT_CLASS,
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+    note: "Class Ia antiarrhythmic. Quinidine is named on its own. This row is the rest of that class.",
+  }),
+  // ── Geodon 4.3: MAOIs ──
+  row5({
+    drugA: "ziprasidone", drugB: "linezolid", queries: ["geodon", "linezolid"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI, labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "methylene-blue", queries: ["geodon", "methylene blue"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI, labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "The catalog row is ProvayBlue, the intravenous product the sentence names.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "phenelzine", queries: ["geodon", "phenelzine"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Irreversible MAOI. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "tranylcypromine", queries: ["geodon", "tranylcypromine"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Irreversible MAOI. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "isocarboxazid", queries: ["geodon", "isocarboxazid"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Irreversible MAOI. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "moclobemide", queries: ["geodon", "moclobemide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Reversible MAOI. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "selegiline", queries: ["geodon", "selegiline"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "MAO-B inhibitor. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "safinamide", queries: ["geodon", "safinamide"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "MAO-B inhibitor. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+  row5({
+    drugA: "ziprasidone", drugB: "rasagiline", queries: ["geodon", "rasagiline"],
+    labelDrug: "Geodon (ziprasidone)", label: "geodon", labelSection: "4.3 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: GEODON_MAOI,
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "MAO-B inhibitor. The sentence names the class and gives linezolid and intravenous methylene blue as examples.",
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4];
+export const WAVE_5_COUNT = WAVE_5.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -2374,6 +2576,12 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
   },
   { drug: "lomitapide", reason: "Named on the Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox, Norvir, Paxlovid, and Kaletra contraindication lists. Not in the catalog." },
   { drug: "indinavir", reason: "Named on Reyataz Table 6 and Evotaz Table 1. Not in the catalog." },
+  { drug: "mesoridazine", reason: "Named on Geodon section 4.1. Not in the catalog." },
+  { drug: "sparfloxacin", reason: "Named on Geodon section 4.1. Not in the catalog." },
+  { drug: "halofantrine", reason: "Named on Geodon section 4.1. Not in the catalog." },
+  { drug: "pentamidine", reason: "Named on Geodon section 4.1. Not in the catalog." },
+  { drug: "probucol", reason: "Named on Geodon section 4.1. Not in the catalog." },
+  { drug: "levomethadyl acetate", reason: "Named on Geodon section 4.1. Not in the catalog." },
 ];
 
 /** Candidate pairs considered and dropped, with the reason. */
@@ -2529,5 +2737,29 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "Kaletra + venetoclax",
     reason: "Drug Interactions says avoid. It is not a section 4 contraindication.",
+  },
+  {
+    pair: "Geodon + tacrolimus",
+    reason:
+      "Named on section 4.1. The only pair card is a CYP3A4 substrate competition, not the QT contraindication. A no-enzyme card would say there is no CYP finding, which is false. Not pinned.",
+  },
+  {
+    pair: "Geodon + quinidine gluconate / sotalol AF",
+    reason: "The same named drugs as the quinidine and sotalol rows. Those rows carry the pair.",
+  },
+  {
+    pair: "Geodon + disopyramide",
+    reason:
+      "Class Ia, so the section 4.1 class covers it. Trimmed at the 25-pair cap. Procainamide carries the class.",
+  },
+  {
+    pair: "Geodon + other QT drugs described as a boxed or bolded warning",
+    reason:
+      "Section 4.1 states that broader class after the named list. It is not a clean class of catalog drugs. Not expanded.",
+  },
+  {
+    pair: "Geodon + harmaline / ozanimod / tedizolid",
+    reason:
+      "Section 4.3 says MAOIs and names linezolid and intravenous methylene blue. Harmaline is a plant beta-carboline, ozanimod is an S1P modulator, and tedizolid is not the named oxazolidinone. Not included.",
   },
 ];

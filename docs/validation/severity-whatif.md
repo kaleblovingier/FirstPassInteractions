@@ -15,14 +15,14 @@
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,806 / 1,629,915 |
+| Catalog entries / unordered pairs scanned | 1,813 / 1,642,578 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,523 (1,483 CYP, 40 P-gp) on 1,516 pairs (1,516 by display name, as #66 counts) |
 | … of which carry a label citation (kept at contraindicated) | 535 |
 | **Findings that move contraindicated → major** | **988** on **981** pairs |
 | **Pairs whose overall severity changes** | **981** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 247 / 247 → **247 / 247** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 272 / 272 → **272 / 272** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
@@ -94,7 +94,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 282 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 307 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 

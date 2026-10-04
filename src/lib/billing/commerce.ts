@@ -3,18 +3,18 @@
 export const OPERATOR = {
   name: "Kaleb Lovingier",
   venmo: "kaleblovingier",
-  email: "kaleblovingier@gmail.com",
+  email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   phoneHref: "tel:+13607078923",
   social: ["@badbird", "@kaleblovingier"] as const,
   venmoUrl: "https://venmo.com/u/kaleblovingier",
   cashApp: "kaleblovingier7",
   cashAppUrl: "https://cash.app/$kaleblovingier7",
-  paypal: "kaleblovingier@gmail.com",
+  paypal: "FirstPassInteractions@gmail.com",
   paypalUrl:
-    "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=kaleblovingier%40gmail.com&item_name=FirstPass%20founding&amount=79&currency_code=USD",
+    "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=FirstPassInteractions%40gmail.com&item_name=FirstPass%20founding&amount=79&currency_code=USD",
   payLine:
-    "Venmo @kaleblovingier · Cash App $kaleblovingier7 · PayPal kaleblovingier@gmail.com",
+    "Venmo @kaleblovingier · Cash App $kaleblovingier7 · PayPal FirstPassInteractions@gmail.com",
 };
 
 export const PAY_RAILS = [

@@ -129,3 +129,17 @@ test("foundry teaching packs use SITE.url pack links", async () => {
   assert.match(permalinks, /searchParams\.set\("pack", packId\)/);
   assert.match(permalinks, /return PACK_IDS\.map/);
 });
+
+test("public contact email is FirstPassInteractions, not the old gmail", () => {
+  const start = src.indexOf("export const OPERATOR");
+  const end = src.indexOf("export const PAY_RAILS", start);
+  assert.ok(start >= 0 && end > start);
+  const op = src.slice(start, end);
+  assert.match(op, /email: "FirstPassInteractions@gmail\.com"/);
+  assert.match(op, /paypal: "FirstPassInteractions@gmail\.com"/);
+  assert.match(op, /business=FirstPassInteractions%40gmail\.com/);
+  assert.match(op, /PayPal FirstPassInteractions@gmail\.com/);
+  assert.doesNotMatch(op, /kaleblovingier@gmail\.com/);
+  assert.match(op, /venmo: "kaleblovingier"/);
+  assert.match(op, /cashApp: "kaleblovingier7"/);
+});

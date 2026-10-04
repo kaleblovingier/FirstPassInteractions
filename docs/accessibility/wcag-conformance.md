@@ -27,6 +27,7 @@ After this branch, every scanned view reports zero violations.
 Checked in Chrome, by script, against a local build of current source. Not a screen reader.
 
 - Tabbed the start screen (84 stops), a worked case (170), and the MAT pack (218). Focus never got stuck, and every stop had a visible indicator.
+- The desk shell has a Skip to content link as its first focusable control: it stays visually hidden until focused, then moves focus to the main region; this is a draft note, not a conformance claim.
 - The Unlock button had no visible focus ring. Its outline was turned off, and the shadow on the button replaced the faint accent ring, so keyboard users could not see where they were. Focus is now a 2px solid accent outline. Accent against the page backgrounds is at least 5.6:1, above the 3:1 minimum for a focus indicator.
 - At 320px wide, and at 640px wide (what a 1280px window looks like at 200% zoom), the start screen, the worked case, the MAT pack, and all nine tabs fit without sideways scrolling.
 - The sideways scroll at 640px came from the header. It switched to a single non-wrapping row at 640px, which is exactly the 200% width. The row now waits until 768px, and the tab bar wraps until then.

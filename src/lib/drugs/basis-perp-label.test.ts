@@ -174,3 +174,17 @@ test('voriconazole quotes the named contraindications and not an unnamed CYP3A s
   const efa = pkBasis('voriconazole', 'efavirenz').map((x) => x.detail).join('\n');
   assert.doesNotMatch(efa, line);
 });
+
+test('erythromycin quotes the named contraindications and not an unnamed CYP3A substrate', () => {
+  const line = /The Erythromycin label calls this combination contraindicated/;
+  const pim = pkBasis('erythromycin', 'pimozide').map((x) => x.detail).join('\n');
+  assert.match(pim, line);
+  assert.match(pim, /terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine/);
+  for (const victim of ['lovastatin', 'simvastatin']) {
+    const details = pkBasis('erythromycin', victim).map((x) => x.detail).join('\n');
+    assert.match(details, line, victim);
+    assert.match(details, /lovastatin or simvastatin/, victim);
+  }
+  const mid = pkBasis('erythromycin', 'midazolam').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(mid, line);
+});
