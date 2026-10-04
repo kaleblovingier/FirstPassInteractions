@@ -11,11 +11,13 @@ import {
   invoiceText,
   launchTweet,
   salesDm,
+  SITE,
 } from "@/lib/billing/commerce";
 import { collectLicenses, draftCollected } from "@/lib/billing/collect";
 import { loadPipe, savePipe } from "@/lib/billing/hunts";
 import { mintLicenseKey } from "@/lib/billing/license";
 import { priceFor } from "@/lib/billing/plans";
+import { teachingPackLinks } from "@/lib/drugs/permalinks";
 import { useDesk } from "@/lib/drugs/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -450,6 +452,29 @@ function CloseDesk({
           <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted">{tweet}</pre>
         </section>
       </div>
+
+      <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
+        <h2 className="font-serif text-xl tracking-tight text-fg">Teaching packs</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          Free try links. Send one of these before you ask for founding pay. No card and no key — the
+          five-drug desk still applies. Educational maps, not a charting system.
+        </p>
+        <ul className="mt-4 space-y-3">
+          {teachingPackLinks(SITE.url).map((pack) => (
+            <li key={pack.id} className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-fg">{pack.title}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted">{pack.blurb}</p>
+                <p className="mt-1 truncate font-mono text-[11px] text-accent">{pack.url}</p>
+              </div>
+              <Button size="sm" variant="secondary" onClick={() => void copy(`pack:${pack.id}`, pack.url)}>
+                {copied === `pack:${pack.id}` ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                {copied === `pack:${pack.id}` ? "Copied" : "Copy"}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <h2 className="font-serif text-xl tracking-tight text-fg">How a sale closes</h2>
