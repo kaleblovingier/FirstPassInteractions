@@ -223,6 +223,18 @@ export function DeskApp() {
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
+      <a
+        href="#main"
+        className="skip-link"
+        onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+          const target = document.getElementById("main");
+          if (!(target instanceof HTMLElement)) return;
+          event.preventDefault();
+          target.focus();
+        }}
+      >
+        Skip to content
+      </a>
       <StripeReturn ready={hydrated} />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
@@ -330,7 +342,7 @@ export function DeskApp() {
         </div>
       ) : null}
 
-      <main className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
+      <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
         {view === "plans" ? (
           <PlansPage />
         ) : view === "foundry" ? (
