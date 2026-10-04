@@ -143,3 +143,18 @@ test("public contact email is FirstPassInteractions, not the old gmail", () => {
   assert.match(op, /venmo: "kaleblovingier"/);
   assert.match(op, /cashApp: "kaleblovingier7"/);
 });
+
+test("Pages pitch lists founding pay rails, contact email, and live teaching packs", async () => {
+  const pages = await readFile(new URL("../../../docs/index.html", import.meta.url), "utf8");
+  assert.match(pages, /Venmo @kaleblovingier/);
+  assert.match(pages, /https:\/\/venmo.com\/u\/kaleblovingier/);
+  assert.match(pages, /Cash App \$kaleblovingier7/);
+  assert.match(pages, /https:\/\/cash.app\/\$kaleblovingier7/);
+  assert.match(pages, /FirstPassInteractions@gmail\.com/);
+  assert.match(pages, /business=FirstPassInteractions%40gmail\.com/);
+  assert.match(pages, /\?pack=clinic-onboard/);
+  assert.match(pages, /\?pack=mat-cup/);
+  assert.match(pages, /\?pack=pharmd/);
+  assert.doesNotMatch(pages, /kaleblovingier@gmail\.com/);
+  assert.match(pages, /grid\.querySelectorAll\("\.example-card"\)/);
+});
