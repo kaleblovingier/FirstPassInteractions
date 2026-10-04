@@ -8,7 +8,7 @@
  * strong-inducer pairs whose drug is in our catalog, as measured on
  * 2026-10-03 against FDA Table 1 (content current as of 2026-05-29)
  * on main: 34 / 34 = 100%. Same run, all compared pairs:
- * exact 85.3% (233/273), role 98.9% (270/273). Raise this when the
+ * exact 85.2% (236/277), role 98.6% (273/277). Raise this when the
  * formulary owner fixes rows; never lower it to make a failing change pass.
  */
 export const FDA_STRONG_PERPETRATOR_BASELINE_PCT = 100;
