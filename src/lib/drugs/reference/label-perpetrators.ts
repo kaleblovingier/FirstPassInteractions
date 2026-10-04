@@ -484,6 +484,7 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-05-28",
     retrieved: "2026-10-03",
   },
+  {
     perpIds: ["erythromycin"],
     brand: "Erythromycin",
     enzyme: "CYP3A4",
@@ -507,5 +508,69 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     url: DM("0c05e1f7-a3d4-8e69-e063-6394a90aecc3"),
     labelEffective: "2026-04-21",
     retrieved: "2026-10-03",
+  },
+  {
+    perpIds: ["ensitrelvir"],
+    brand: "XOCOVA",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "7.1 Potential for XOCOVA to Affect Other Drugs",
+    roleQuote: "Ensitrelvir is a strong inhibitor of CYP3A and an inhibitor of P-gp and BCRP.",
+    contraindicatedGroups: [
+      {
+        victimIds: ["quinidine", "quinidine-gluconate"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Antiarrhythmics quinidine ↑ antiarrhythmic Co-administration is contraindicated due to potential for cardiac arrhythmias.",
+      },
+      {
+        victimIds: ["lurasidone", "pimozide"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Antipsychotics lurasidone, pimozide ↑ lurasidone, pimozide Co-administration is contraindicated due to serious and/or life-threatening reactions, such as cardiac arrhythmias.",
+      },
+      {
+        victimIds: ["eplerenone", "ivabradine"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Cardiovascular drugs eplerenone, ivabradine ↑ eplerenone, ivabradine Co-administration is contraindicated.",
+      },
+      {
+        victimIds: ["dihydroergotamine", "ergotamine", "methylergonovine"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Ergot derivatives dihydroergotamine, ergotamine, methylergonovine ↑ dihydroergotamine, ergotamine, methylergonovine Co-administration is contraindicated due to potential for acute ergot toxicity characterized by vasospasm and ischemia of the extremities and other tissues, including the central nervous system.",
+      },
+      {
+        victimIds: ["simvastatin"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "HMG-CoA reductase inhibitors (statins) simvastatin ↑ simvastatin Co-administration is contraindicated. Discontinue use of simvastatin at least 12 hours prior to initiation of XOCOVA.",
+      },
+      {
+        victimIds: ["voclosporin"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Immunosuppressants voclosporin ↑ voclosporin Co-administration is contraindicated due to potential for acute and/or chronic nephrotoxicity.",
+      },
+      {
+        victimIds: ["finerenone"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Mineralocorticoid receptor antagonists finerenone ↑ finerenone Co-administration is contraindicated due to potential for serious adverse reactions, including hyperkalemia, hypotension, and hyponatremia.",
+      },
+      {
+        victimIds: ["triazolam"],
+        section: "7.3 Established and Other Potentially Significant Drug Interactions",
+        quote:
+          "Sedatives triazolam ↑ triazolam Co-administration is contraindicated.",
+      },
+    ],
+    // Colchicine is only contraindicated with renal or hepatic impairment.
+    // The others lower ensitrelvir; they are not victims of its inhibition.
+    alsoNamed: ["colchicine", "apalutamide", "enzalutamide", "carbamazepine"],
+    url: DM("526acf60-abc3-2cc2-e063-6294a90affa6"),
+    labelEffective: "2026-06-03",
+    retrieved: "2026-10-04",
   },
 ];
