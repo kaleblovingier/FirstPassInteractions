@@ -55,8 +55,8 @@ Shareable desk links: `?case=gf-oral-ketamine` loads a sample; `?pack=clinic-onb
 - Kaleb Lovingier
 - Venmo [@kaleblovingier](https://venmo.com/u/kaleblovingier)
 - Cash App [$kaleblovingier7](https://cash.app/$kaleblovingier7)
-- PayPal kaleblovingier@gmail.com
-- kaleblovingier@gmail.com · 360-707-8923
+- PayPal FirstPassInteractions@gmail.com
+- FirstPassInteractions@gmail.com · 360-707-8923
 - @badbird · @kaleblovingier
 
 Pay $79 once via Venmo, Cash App, or PayPal. After it clears, mint a signed key in Foundry and send it. Buyers paste it under Redeem on Plans. There is no monthly plan.

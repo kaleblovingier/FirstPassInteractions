@@ -115,3 +115,17 @@ test("hunt clinic DM includes the live desk URL", async () => {
   assert.match(fn, /payClose\(price\)/);
   assert.match(fn, /\$\$\{price\} once/);
 });
+
+test("public contact email is FirstPassInteractions, not the old gmail", () => {
+  const start = src.indexOf("export const OPERATOR");
+  const end = src.indexOf("export const PAY_RAILS", start);
+  assert.ok(start >= 0 && end > start);
+  const op = src.slice(start, end);
+  assert.match(op, /email: "FirstPassInteractions@gmail\.com"/);
+  assert.match(op, /paypal: "FirstPassInteractions@gmail\.com"/);
+  assert.match(op, /business=FirstPassInteractions%40gmail\.com/);
+  assert.match(op, /PayPal FirstPassInteractions@gmail\.com/);
+  assert.doesNotMatch(op, /kaleblovingier@gmail\.com/);
+  assert.match(op, /venmo: "kaleblovingier"/);
+  assert.match(op, /cashApp: "kaleblovingier7"/);
+});
