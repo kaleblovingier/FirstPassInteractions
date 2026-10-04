@@ -17,8 +17,8 @@
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
 | Engine at or above label-supported floor | 282 / 282 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 243 / 247 |
-| Contraindicated on label, engine major (meets floor, not exact) | 4 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 247 / 247 |
+| Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
 ### Wave 2: MAT / ketamine clinic
@@ -26,10 +26,10 @@
 | Measure | Count |
 |---|---|
 | Pairs | 30 |
-| Floor major / floor moderate | 17 / 13 |
+| Floor contraindicated / major / moderate | 4 / 13 / 13 |
 | Engine at or above label-supported floor | 30 / 30 |
 | Engine at least major ("Serious concern") | 25 / 30 |
-| Label contraindicated and engine contraindicated ("Avoid together") | 0 / 4 |
+| Label contraindicated and engine contraindicated ("Avoid together") | 4 / 4 |
 | Under-calls | 0 |
 
 ### Wave 3: Korlym and HIV protease-inhibitor contraindications
@@ -62,12 +62,9 @@ These are listed in `KNOWN_UNDERCALLS` (0) so the suite stays green; a test fail
 
 ## Contraindicated on the label, engine says major
 
-These meet the floor. Listed in `KNOWN_CONTRAINDICATION_GAPS` (4) for review; a test pins them either way.
+These meet the floor. Listed in `KNOWN_CONTRAINDICATION_GAPS` (0) for review; a test pins them either way.
 
-- naltrexone + methadone: engine major (Serious concern); Naltrexone HCl tablets CONTRAINDICATIONS
-- naltrexone + buprenorphine: engine major (Serious concern); Naltrexone HCl tablets CONTRAINDICATIONS
-- naltrexone + oxycodone: engine major (Serious concern); Naltrexone HCl tablets CONTRAINDICATIONS
-- naltrexone + hydrocodone: engine major (Serious concern); Vivitrol (naltrexone ER injectable suspension) 4 CONTRAINDICATIONS
+None.
 
 ## Every pair
 
@@ -137,10 +134,10 @@ These meet the floor. Listed in `KNOWN_CONTRAINDICATION_GAPS` (4) for review; a 
 | 62 | 2 | buprenorphine | rifampin | [Suboxone (buprenorphine/naloxone) film](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8a5edcf9-828c-4f97-b671-268ab13a8ecd) | 7 DRUG INTERACTIONS (CYP3A4 Inducers) | warning | moderate | major (Serious concern) | pass | "The concomitant use of buprenorphine and CYP3A4 inducers can decrease the plasma concentration of buprenorphine" · e.g. "Rifampin, carbamazepine, phenytoin" |
 | 63 | 2 | buprenorphine | atazanavir | [Suboxone (buprenorphine/naloxone) film](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8a5edcf9-828c-4f97-b671-268ab13a8ecd) | 7 DRUG INTERACTIONS (Antiretrovirals: Protease inhibitors) | warning | moderate | major (Serious concern) | pass | "Symptoms of opioid excess have been found in post-marketing reports of patients receiving buprenorphine and atazanavir with and without ritonavir concomitantly." |
 | 64 | 2 | buprenorphine | phenelzine | [Suboxone (buprenorphine/naloxone) film](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8a5edcf9-828c-4f97-b671-268ab13a8ecd) | 7 DRUG INTERACTIONS (Monoamine Oxidase Inhibitors) | avoid | major | major (Serious concern) | pass | "The use of SUBOXONE sublingual film is not recommended for patients taking MAOIs or within 14 days of stopping such treatment." · e.g. "phenelzine, tranylcypromine, linezolid" |
-| 65 | 2 | naltrexone | methadone | [Naltrexone HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65) | CONTRAINDICATIONS | contraindicated | major | major (Serious concern) | pass | "Naltrexone hydrochloride is contraindicated in: … Patients currently dependent on opioids, including those currently maintained on opiate agonists (e.g., methadone)" |
-| 66 | 2 | naltrexone | buprenorphine | [Naltrexone HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65) | CONTRAINDICATIONS | contraindicated | major | major (Serious concern) | pass | "Naltrexone hydrochloride is contraindicated in: … Patients currently dependent on opioids, including those currently maintained on … partial agonists (e.g., buprenorphine)." |
-| 67 | 2 | naltrexone | oxycodone | [Naltrexone HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65) | CONTRAINDICATIONS | contraindicated | major | major (Serious concern) | pass | "Naltrexone hydrochloride is contraindicated in: … Patients receiving opioid analgesics." |
-| 68 | 2 | naltrexone | hydrocodone | [Vivitrol (naltrexone ER injectable suspension)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=cd11c435-b0f0-4bb9-ae78-60f101f3703f) | 4 CONTRAINDICATIONS | contraindicated | major | major (Serious concern) | pass | "VIVITROL is contraindicated in: … Patients receiving opioid analgesics" |
+| 65 | 2 | naltrexone | methadone | [Naltrexone HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Naltrexone hydrochloride is contraindicated in: … Patients currently dependent on opioids, including those currently maintained on opiate agonists (e.g., methadone)" |
+| 66 | 2 | naltrexone | buprenorphine | [Naltrexone HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Naltrexone hydrochloride is contraindicated in: … Patients currently dependent on opioids, including those currently maintained on … partial agonists (e.g., buprenorphine)." |
+| 67 | 2 | naltrexone | oxycodone | [Naltrexone HCl tablets](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=06ff2d5a-e62b-4fa4-bbdb-01938535bc65) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Naltrexone hydrochloride is contraindicated in: … Patients receiving opioid analgesics." |
+| 68 | 2 | naltrexone | hydrocodone | [Vivitrol (naltrexone ER injectable suspension)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=cd11c435-b0f0-4bb9-ae78-60f101f3703f) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "VIVITROL is contraindicated in: … Patients receiving opioid analgesics" |
 | 69 | 2 | ketamine | theophylline | [Ketalar (ketamine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=14e8f864-8b8a-4e7e-8439-e510d3107063) | 7.1 Theophylline or Aminophylline | warning | moderate | moderate (Use care) | pass | "Concomitant administration of KETALAR and theophylline or aminophylline may lower the seizure threshold. Consider using an alternative to KETALAR in patients receiving theophylline or aminophylline." |
 | 70 | 2 | ketamine | lorazepam | [Ketalar (ketamine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=14e8f864-8b8a-4e7e-8439-e510d3107063) | 7.3 Benzodiazepines, Opioid Analgesics, Or Other CNS Depressants; 5.9 | warning | major | major (Serious concern) | pass | "Concomitant use of ketamine with opioid analgesics, benzodiazepines, or other central nervous system (CNS) depressants … may result in profound sedation, respiratory depression, coma, and death" |
 | 71 | 2 | ketamine | ethanol | [Ketalar (ketamine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=14e8f864-8b8a-4e7e-8439-e510d3107063) | 7.3 Benzodiazepines, Opioid Analgesics, Or Other CNS Depressants; 5.9 | warning | major | major (Serious concern) | pass | "Concomitant use of ketamine with … other central nervous system (CNS) depressants, including alcohol, may result in profound sedation, respiratory depression, coma, and death" |
@@ -366,7 +363,7 @@ These meet the floor. Listed in `KNOWN_CONTRAINDICATION_GAPS` (4) for review; a 
    Inclusion, wave 4: the contraindications section must name the drug unconditionally. Colchicine, venetoclax, and voriconazole are skipped where the line is conditional (renal or hepatic impairment, or dose-dependent). Oral ketoconazole is not a source. Pairs already in waves 1–3 are not repeated. Only catalog drugs are paired.
 4. Each pair's drugs are resolved to catalog ids with the desk's own search (`searchDrugs`), and a test asserts the typed query resolves to that id.
 5. The two-drug regimen is run through `analyze(ids, DEFAULT_HOST)` as the desk does (no doses entered). The pair's severity is the highest finding that involves **both** drugs; findings on one drug alone are excluded.
-6. Floor: wave 1 requires at least `major` ("Serious concern") for both label classes. Wave 2 sets the floor to the minimum severity the label text supports: contraindicated, avoid, and Boxed Warning statements -> `major`; a Warnings / Drug Interactions statement that names overdose or death -> `major`; monitor / dose-change language -> `moderate` ("Use care"). For contraindicated labels the stricter expectation is `contraindicated` ("Avoid together"), reported separately as exact matches.
+6. Floor: wave 1 requires at least `major` ("Serious concern") for both label classes. Wave 2 sets the floor to the minimum severity the label text supports: the naltrexone + labeled-opioid contraindicated labels -> `contraindicated` ("Avoid together"); avoid and Boxed Warning statements -> `major`; a Warnings / Drug Interactions statement that names overdose or death -> `major`; monitor / dose-change language -> `moderate` ("Use care"). For contraindicated labels the stricter expectation is `contraindicated` ("Avoid together"), reported separately as exact matches.
 
 ## Dropped candidates
 
