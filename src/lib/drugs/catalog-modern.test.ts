@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import { DRUG_BY_ID, searchDrugs } from "./catalog.ts";
 
 const NEW_IDS = [
+  "gepotidacin",
+  "pivmecillinam",
+  "ensifentrine",
+  "sotatercept",
   "dulaglutide",
   "liraglutide",
   "daridorexant",
@@ -52,6 +56,10 @@ test("modern formulary ids are present and searchable", () => {
 });
 
 test("modern brand aliases resolve", () => {
+  assert.equal(searchDrugs("Blujepa")[0]?.id, "gepotidacin");
+  assert.equal(searchDrugs("Pivya")[0]?.id, "pivmecillinam");
+  assert.equal(searchDrugs("Ohtuvayre")[0]?.id, "ensifentrine");
+  assert.equal(searchDrugs("Winrevair")[0]?.id, "sotatercept");
   assert.equal(searchDrugs("Quviviq")[0]?.id, "daridorexant");
   assert.equal(searchDrugs("Vraylar")[0]?.id, "cariprazine");
   assert.equal(searchDrugs("Zurzuvae")[0]?.id, "zuranolone");
