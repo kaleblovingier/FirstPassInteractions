@@ -226,6 +226,12 @@
       .plan-card p { color: var(--muted); font-size: .9rem; }
       .plan-card ul { display: grid; gap: 8px; margin: 17px 0 0; padding-left: 20px; color: var(--ink); font-size: .87rem; }
       .plan-note { margin-top: 15px; color: var(--subtle); font-size: .77rem; }
+      .header-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 12px 18px; }
+      .pay-rails { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+      .pay-rails a { display: inline-flex; min-height: 40px; align-items: center; padding: 0 12px; border-radius: 999px; background: var(--accent); color: #fff; font-size: .78rem; font-weight: 600; text-decoration: none; }
+      .pay-rails a:hover { background: var(--accent-dark); }
+      .footer-links { display: grid; gap: 8px; justify-items: end; }
+      @media (max-width: 520px) { .footer-links { justify-items: start; } }
       .faq-list { display: grid; max-width: 850px; gap: 9px; }
       .faq-list details { border: 1px solid var(--line); border-radius: 10px; background: rgba(248, 246, 240, .72); }
       .faq-list summary { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 17px; cursor: pointer; font-size: .92rem; font-weight: 600; list-style: none; }
@@ -288,7 +294,10 @@
         </svg>
         <span><span class="brand-name">FirstPass</span><span class="brand-note">Medicine interaction learning desk</span></span>
       </a>
-      <a class="header-link" href="https://firstpass-desk.vercel.app/">Open the checker <span aria-hidden="true">↗</span></a>
+      <nav class="header-nav" aria-label="Page">
+        <a class="header-link" href="#plans">Founding $79</a>
+        <a class="header-link" href="https://firstpass-desk.vercel.app/">Open the checker <span aria-hidden="true">↗</span></a>
+      </nav>
     </header>
 
     <main id="top">
@@ -530,12 +539,43 @@
         </div>
       </section>
 
+
+      <section class="section" id="packs" aria-labelledby="packs-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="eyebrow">Free teaching packs</p>
+            <h2 class="section-title" id="packs-title">Send a clinic a link that already opens.</h2>
+            <p class="section-lede">These three sets load on the live desk today. They stay inside the free five-drug cap. They are teaching maps, not a treatment plan and not a chart note.</p>
+          </div>
+          <div class="example-grid">
+            <a class="example-card" href="https://firstpass-desk.vercel.app/?pack=clinic-onboard">
+              <span class="example-number">PACK · KETAMINE CLINIC</span>
+              <h3>Clinic onboard</h3>
+              <p>Oral first-pass, a benzo airway stack, and induction loss. Three free maps for an infusion or KAP desk.</p>
+              <span class="example-link">Open clinic pack <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+            <a class="example-card" href="https://firstpass-desk.vercel.app/?pack=mat-cup">
+              <span class="example-number">PACK · MAT / OTP</span>
+              <h3>MAT / street cup</h3>
+              <p>Xylazine, naltrexone with a leftover opioid, loperamide, and a designer benzo. Still within five items.</p>
+              <span class="example-link">Open MAT pack <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+            <a class="example-card" href="https://firstpass-desk.vercel.app/?pack=pharmd">
+              <span class="example-number">PACK · STUDENTS</span>
+              <h3>PharmD lab</h3>
+              <p>Swallowed ketamine, a benzo stack, transplant food, and a street sedative. A class set, not an exam key.</p>
+              <span class="example-link">Open student pack <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <section class="section" id="plans" aria-labelledby="plans-title">
         <div class="shell">
           <div class="section-heading">
             <p class="eyebrow">Start free · expand when useful</p>
             <h2 class="section-title" id="plans-title">Five-drug checks stay free. Founding is $79 once.</h2>
-            <p class="section-lede">Try the main workflow at no cost. Founding lifetime unlocks host factors, the enzyme atlas, metabolite maps, and export — yours for life on the desk. Live price and redeem are inside the checker.</p>
+            <p class="section-lede">Try the main workflow at no cost. Founding lifetime unlocks host factors, the enzyme atlas, metabolite maps, and export — yours for life on the desk. Pay on this page; paste the key under Redeem inside the checker.</p>
           </div>
           <div class="plan-grid">
             <article class="plan-card">
@@ -557,7 +597,13 @@
                 <li>Enzyme atlas and metabolite teaching views</li>
                 <li>Full report plus JSON/CSV export</li>
               </ul>
-              <p class="plan-note">Open Plans in the checker to buy, try a 7-day preview, or paste a key under Redeem.</p>
+              <p class="plan-note">Pay $79 once. After it clears, you get a signed key by email or text. Paste it under Redeem on Plans. Nothing unlocks by itself. You can still start a 7-day preview inside the checker.</p>
+              <ul class="pay-rails">
+                <li><a href="https://venmo.com/u/kaleblovingier">Venmo @kaleblovingier</a></li>
+                <li><a href="https://cash.app/$kaleblovingier7">Cash App $kaleblovingier7</a></li>
+                <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&amp;business=FirstPassInteractions%40gmail.com&amp;item_name=FirstPass%20founding&amp;amount=79&amp;currency_code=USD">PayPal $79</a></li>
+              </ul>
+              <p class="plan-note">Questions or a missing key: <a href="mailto:FirstPassInteractions@gmail.com">FirstPassInteractions@gmail.com</a></p>
             </article>
           </div>
         </div>
@@ -570,6 +616,10 @@
             <h2 class="section-title" id="questions-title">A few important questions.</h2>
           </div>
           <div class="faq-list">
+            <details>
+              <summary>How do I pay for the $79 founding license?</summary>
+              <p>Send $79 once on Venmo @kaleblovingier, Cash App $kaleblovingier7, or PayPal to FirstPassInteractions@gmail.com. After it clears, a signed key arrives by email or text. Paste that key under Redeem on Plans in the checker. The free five-drug desk does not need a payment. Write FirstPassInteractions@gmail.com if the key does not show up.</p>
+            </details>
             <details>
               <summary>Does “no mapped interaction” mean a combination is safe?</summary>
               <p>No. The checker can miss interactions and its map is not exhaustive. Review current prescribing information and use qualified clinical judgment.</p>
@@ -625,7 +675,10 @@
           <strong>FirstPass</strong>
           <p class="fine-print">Educational interaction map. For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision. Not medical advice, not a dose tool, and not a substitute for the Prescribing Information.</p>
         </div>
-        <div><a href="https://github.com/kaleblovingier/FirstPassInteractions">View the project source</a></div>
+        <div class="footer-links">
+          <a href="mailto:FirstPassInteractions@gmail.com">FirstPassInteractions@gmail.com</a>
+          <a href="https://github.com/kaleblovingier/FirstPassInteractions">View the project source</a>
+        </div>
       </div>
     </footer>
     <script>
@@ -658,7 +711,7 @@
         const grid = document.querySelector("#example-grid");
         const count = document.querySelector("#example-count");
         const filters = [...document.querySelectorAll("[data-filter]")];
-        const cards = [...document.querySelectorAll(".example-card")];
+        const cards = [...grid.querySelectorAll(".example-card")];
         if (!(search instanceof HTMLInputElement) || !grid || !count || cards.length === 0) return;
 
         let activeFilter = "all";
