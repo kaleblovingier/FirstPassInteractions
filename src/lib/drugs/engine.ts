@@ -257,8 +257,10 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
  * A pin with no enzyme and no existing pharmacodynamic finding (the partner
  * has no CYP role the engine uses) emits a standalone contraindicated finding
  * instead, and does not assign a CYP grade. A pin with no enzyme that already
- * has a pharmacodynamic finding (naltrexone with a labeled opioid) lifts that
- * finding. It does not add a second card and does not assign a CYP grade.
+ * has a pharmacodynamic finding (naltrexone with a labeled opioid, or a
+ * Geodon pair that already has a QT or washout card) lifts the highest
+ * pharmacodynamic card. It does not add a second card and does not assign a
+ * CYP grade.
  * Nothing else about pkSeverity or its thresholds changes.
  */
 function holdsLabelPin(f: Finding, pin: NonNullable<ReturnType<typeof labelContraindicationFor>>, allowLabelAsPerp: boolean): boolean {
@@ -283,7 +285,19 @@ function applyLabelPins(a: Drug, b: Drug, findings: Finding[]): Finding[] {
     // The pair already has a pharmacodynamic finding. Hold that finding.
     // Do not append a second kind:"pk" card.
     if (findings.some((f) => f.kind === "pd")) {
-      return findings.map((f) => (f.kind === "pd" ? lift(f) : f));
+      // One card. A lower CNS or washout card stays at its own grade.
+      // Naltrexone has a single pharmacodynamic card, so the result matches main.
+      let best = -1;
+      let bestRank = -1;
+      findings.forEach((f, i) => {
+        if (f.kind !== "pd") return;
+        const rank = SEVERITY_RANK[f.severity];
+        if (rank > bestRank) {
+          best = i;
+          bestRank = rank;
+        }
+      });
+      return findings.map((f, i) => (i === best ? lift(f) : f));
     }
     const labelDrug = pin.labelDrugId === a.id ? a : b;
     const other = labelDrug === a ? b : a;
@@ -2344,6 +2358,38 @@ function lingerFindings(drugs: Drug[]): Finding[] {
   ];
 }
 
+
+function holdWashoutLabelPins(findings: Finding[]) {
+  for (const f of findings) {
+    if (f.kind !== "pd" || !f.tags.includes("washout") || f.drugIds.length !== 2) continue;
+    const pin = labelContraindicationFor(f.drugIds[0], f.drugIds[1]);
+    // Only pins that asked to hold a pharmacodynamic card. A no-enzyme pin
+    // keeps its standalone even if a washout clock is also on the regimen.
+    if (!pin || pin.origin !== "pd" || pin.enzyme || pin.kind) continue;
+    const key = [...f.drugIds].sort().join("|");
+    const already = findings.some(
+      (x) =>
+        x !== f &&
+        x.kind === "pd" &&
+        x.tags.includes(LABEL_CONTRAINDICATED_TAG) &&
+        [...x.drugIds].sort().join("|") === key,
+    );
+    if (already) continue;
+    f.severity = "contraindicated";
+    f.clinical = `${f.clinical} ${labelPinSentence(pin)}`;
+    if (!f.tags.includes(LABEL_CONTRAINDICATED_TAG)) f.tags = [...f.tags, LABEL_CONTRAINDICATED_TAG];
+    for (let i = findings.length - 1; i >= 0; i--) {
+      const x = findings[i];
+      if (
+        x.id.includes("label-ci-standalone") &&
+        [...x.drugIds].sort().join("|") === key
+      ) {
+        findings.splice(i, 1);
+      }
+    }
+  }
+}
+
 function stackLoad(drugs: Drug[]): StackBar[] {
   const real = drugs.filter((d) => d.id !== "__smoke" && d.id !== "__etoh-chronic");
   const add = (map: Map<string, string[]>, key: string, name: string, n = 1) => {
@@ -2410,6 +2456,10 @@ export function analyze(
   if (ctx) findings.push(...phenotypeFindings(real, ctx.phenotypes));
   if (ctx) findings.push(...phenoconversionFindings(drugs, ctx));
   findings.push(...washoutFindings(drugs));
+  // A washout clock is added after pair pins. If that clock is the only
+  // pharmacodynamic card for a label pin, hold it and drop the standalone
+  // the pair pass added when it had not seen the clock yet.
+  holdWashoutLabelPins(findings);
   findings.push(...lingerFindings(drugs));
   if (ctx) findings.push(...alcoholHostFindings(real, ctx.alcohol));
   if (ctx) findings.push(...hostClinicFindings(real, ctx));
