@@ -155,3 +155,22 @@ test('fluconazole quotes the QT contraindication and not an unnamed CYP3A substr
   const mid = pkBasis('fluconazole', 'midazolam').map((x) => x.detail).join('\n');
   assert.doesNotMatch(mid, line);
 });
+
+test('voriconazole quotes the named contraindications and not an unnamed CYP3A substrate', () => {
+  const line = /The Voriconazole label calls this combination contraindicated/;
+  for (const victim of ['pimozide', 'quinidine']) {
+    const details = pkBasis('voriconazole', victim).map((x) => x.detail).join('\n');
+    assert.match(details, line, victim);
+    assert.match(details, /pimozide, quinidine or ivabradine/, victim);
+  }
+  const sir = pkBasis('voriconazole', 'sirolimus').map((x) => x.detail).join('\n');
+  assert.match(sir, line);
+  assert.match(sir, /significantly increase sirolimus concentrations/);
+  const lur = pkBasis('voriconazole', 'lurasidone').map((x) => x.detail).join('\n');
+  assert.match(lur, line);
+  assert.match(lur, /increases in lurasidone exposure/);
+  const mid = pkBasis('voriconazole', 'midazolam').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(mid, line);
+  const efa = pkBasis('voriconazole', 'efavirenz').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(efa, line);
+});
