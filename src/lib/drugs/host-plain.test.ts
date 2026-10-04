@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   AGE_PLAIN,
   ALCOHOL_PLAIN,
@@ -9,6 +10,8 @@ import {
   HOST_SECTION_TITLES,
   KETAMINE_ROUTE_NOTE,
   KETAMINE_ROUTE_PLAIN,
+  OTHER_HOST_FACTORS_LINE,
+  ROUNDS_HOST_LINE,
   KIDNEY_PLAIN,
   METABOLIZER_PLAIN,
   PREG_PLAIN,
@@ -76,4 +79,20 @@ test("enzyme speed helper: a status you already know, a CPIC teaching summary, n
   assert.match(ENZYME_SPEED_TITLE.scientific, /CPIC paraphrase/);
   assert.match(HOST_COACH.footer, /not a genetic test result/);
   assert.ok(allHostPlainCopy().includes(ENZYME_SPEED_HELPER));
+});
+
+test("paid host factors say founding, not a Pro tier", async () => {
+  assert.equal(OTHER_HOST_FACTORS_LINE, "The other host factors come with founding.");
+  assert.equal(
+    ROUNDS_HOST_LINE,
+    "Pathway speed, smoke, alcohol, and cannabis route come with founding.",
+  );
+  assert.doesNotMatch(`${OTHER_HOST_FACTORS_LINE} ${ROUNDS_HOST_LINE}`, /\bPro\b/);
+  assert.ok(allHostPlainCopy().includes(OTHER_HOST_FACTORS_LINE));
+  assert.ok(allHostPlainCopy().includes(ROUNDS_HOST_LINE));
+
+  for (const name of ["phenotype.tsx", "rounds.tsx", "app.tsx", "plans.tsx"]) {
+    const src = await readFile(new URL(`../../components/desk/${name}`, import.meta.url), "utf8");
+    assert.doesNotMatch(src, /\bPro\b/, name);
+  }
 });

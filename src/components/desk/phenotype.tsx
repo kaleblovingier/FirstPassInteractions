@@ -33,6 +33,7 @@ import {
   HOST_COACH,
   HOST_SECTION_TITLES,
   KETAMINE_ROUTE_NOTE,
+  OTHER_HOST_FACTORS_LINE,
   KETAMINE_ROUTE_PLAIN,
   KIDNEY_PLAIN,
   METABOLIZER_PLAIN,
@@ -81,7 +82,7 @@ export function KetamineRouteCard() {
         </span>
       </h2>
       <p className="mt-1 text-[11px] leading-relaxed text-muted">
-        {KETAMINE_ROUTE_NOTE} The other host factors stay Pro.
+        {KETAMINE_ROUTE_NOTE} {OTHER_HOST_FACTORS_LINE}
       </p>
       <div className="mt-3 grid grid-cols-3 gap-1">
         {ROUTES.map((r) => {

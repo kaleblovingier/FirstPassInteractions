@@ -20,6 +20,9 @@ test("plans page sells exactly Free and Founding", async () => {
   assert.deepEqual([...PLAN_TIERS], ["free", "lab"]);
   assert.equal(PLAN_BY_ID.free.name, "Free");
   assert.equal(PLAN_BY_ID.lab.name, "Founding");
+  assert.equal(PLAN_BY_ID.pro.name, "Unlocked");
+  assert.doesNotMatch(PLAN_BY_ID.pro.name, /\bPro\b/);
+  assert.doesNotMatch(PLAN_BY_ID.pro.tagline, /\bPro\b/);
   assert.match(PLAN_BY_ID.free.tagline, /five drugs/i);
   assert.match(PLAN_BY_ID.free.tagline, /no card/i);
   assert.match(PLAN_BY_ID.lab.tagline, /\$79 once/);

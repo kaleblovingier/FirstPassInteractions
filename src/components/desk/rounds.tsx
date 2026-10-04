@@ -1,6 +1,7 @@
 import { useMemo, useState, type MouseEvent } from "react";
 import { Copy, Check } from "lucide-react";
 import { ROUND_SETTINGS, ROUNDS, roundNeedsPro, type Round, type RoundSetting } from "@/lib/drugs/rounds";
+import { ROUNDS_HOST_LINE } from "@/lib/drugs/host-plain";
 import { SAMPLE_REGIMENS } from "@/lib/drugs/samples";
 import { LANE_PLATE, plateForSample } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -80,8 +81,7 @@ export function RoundsPage() {
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
               Short clinic stories for pharmacy and medical trainees: first-pass by mouth, when a gene pathway
               acts like a second drug, sedation naloxone will not reverse, food and herb traps, and addiction-care
-              stacks. Up to five-drug cases and oral ketamine route stay free. Pathway speed, smoke, alcohol, and
-              cannabis route stay Pro.
+              stacks. Up to five-drug cases and oral ketamine route stay free. {ROUNDS_HOST_LINE}
             </p>
             <p className="mt-3 max-w-xl text-xs leading-relaxed text-subtle">
               Educational only — not an exam key, not dosing advice, not a prescription. The Prescribing
@@ -282,7 +282,7 @@ function RoundCard({
           ) : null}
           <div className="mt-4 flex flex-wrap gap-2">
             <Button size="sm" onClick={onLoad}>
-              {gated ? "Put on desk · Pro" : "Put on desk"}
+              {gated ? "Put on desk · Founding" : "Put on desk"}
             </Button>
             <Button size="sm" variant="secondary" onClick={onReveal}>
               {revealed ? "Hide teach" : "Reveal teach"}

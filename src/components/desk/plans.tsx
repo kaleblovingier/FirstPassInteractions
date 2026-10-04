@@ -91,7 +91,7 @@ export function PlansPage() {
             ? "Your 7-day preview is on — host factors and the enzyme atlas are open while it lasts."
             : founding
               ? "Founding is live — host factors, enzyme atlas, metabolite maps, full report, and export are yours."
-              : "Your Pro key is live on this desk."}
+              : "Your key is live — host factors and the enzyme atlas are open on this desk."}
           {license ? ` Key ${license}.` : ""}{" "}
           <button type="button" className="underline" onClick={downgrade}>
             Return to free desk
@@ -240,7 +240,7 @@ export function CheckoutDrawer() {
   if (!checkout.open) return null;
   const life = checkout.interval === "life" || checkout.plan === "lab";
   const amount = priceFor(checkout.plan === "free" ? "pro" : checkout.plan, checkout.interval);
-  const name = checkout.interval === "life" || checkout.plan === "lab" ? "Founding" : "Pro";
+  const name = "Founding";
   const cardLive = stripeMode === "live" || stripeMode === "test";
 
   async function redeem() {

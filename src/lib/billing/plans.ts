@@ -14,7 +14,7 @@ export interface Plan {
 
 /**
  * Buyer-facing plans. Plans page shows two: Free and Founding ($79 once).
- * "pro" stays in the list for the 7-day preview and older Pro keys (app labels,
+ * "pro" stays in the list for the 7-day preview and older keys (app labels,
  * Stripe pricing) — it is not sold as a separate tier on the Plans page.
  */
 export const PLANS: Plan[] = [
@@ -37,8 +37,8 @@ export const PLANS: Plan[] = [
   },
   {
     id: "pro",
-    name: "Pro",
-    tagline: "7-day preview and older Pro keys — founding tools without export.",
+    name: "Unlocked",
+    tagline: "7-day preview and older keys — founding tools without export.",
     monthly: 12,
     yearly: 99,
     lifetime: 79,

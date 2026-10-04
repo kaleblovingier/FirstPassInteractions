@@ -106,6 +106,13 @@ export const PREG_PLAIN: Record<PregBand, string> = {
 export const KETAMINE_ROUTE_NOTE =
   "Free on this desk. Ketamine by mouth with grapefruit is the teaching demo for the gut first pass.";
 
+/** Paid host factors besides the free ketamine route. */
+export const OTHER_HOST_FACTORS_LINE = "The other host factors come with founding.";
+
+/** Rounds coach: which host factors sit behind founding. */
+export const ROUNDS_HOST_LINE =
+  "Pathway speed, smoke, alcohol, and cannabis route come with founding.";
+
 /** Every prose string in this lib, for guard tests. */
 export function allHostPlainCopy(): string[] {
   return [
@@ -128,5 +135,7 @@ export function allHostPlainCopy(): string[] {
     ...Object.values(KIDNEY_PLAIN),
     ...Object.values(PREG_PLAIN),
     KETAMINE_ROUTE_NOTE,
+    OTHER_HOST_FACTORS_LINE,
+    ROUNDS_HOST_LINE,
   ];
 }
