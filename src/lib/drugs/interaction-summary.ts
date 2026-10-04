@@ -45,3 +45,10 @@ export function plainLanguageSummary(finding: InteractionSummaryLike): string {
 
   return `In plain English: ${headline} can ${outcome}.`;
 }
+
+/** One scan line for a clinician: enzyme, then the direction already on the finding. */
+export function clinicianScan(finding: { enzymes?: readonly string[]; effect?: string }): string {
+  const enzymes = (finding.enzymes ?? []).map((e) => e.trim()).filter(Boolean);
+  const effect = (finding.effect ?? "").replace(/\s+/g, " ").trim();
+  return [enzymes.join(", "), effect].filter(Boolean).join(" · ");
+}
