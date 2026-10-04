@@ -254,8 +254,11 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
  * Label-sourced contraindication pins (see label-contraindications.ts). For a
  * short list of named pairs whose FDA label lists the combination under
  * Contraindications, the matching enzyme finding is held at contraindicated.
- * A pin with no enzyme (the partner has no CYP role the engine uses) emits a
- * standalone contraindicated finding instead, and does not assign a CYP grade.
+ * A pin with no enzyme and no existing pharmacodynamic finding (the partner
+ * has no CYP role the engine uses) emits a standalone contraindicated finding
+ * instead, and does not assign a CYP grade. A pin with no enzyme that already
+ * has a pharmacodynamic finding (naltrexone with a labeled opioid) lifts that
+ * finding. It does not add a second card and does not assign a CYP grade.
  * Nothing else about pkSeverity or its thresholds changes.
  */
 function holdsLabelPin(f: Finding, pin: NonNullable<ReturnType<typeof labelContraindicationFor>>, allowLabelAsPerp: boolean): boolean {
@@ -270,7 +273,18 @@ function holdsLabelPin(f: Finding, pin: NonNullable<ReturnType<typeof labelContr
 function applyLabelPins(a: Drug, b: Drug, findings: Finding[]): Finding[] {
   const pin = labelContraindicationFor(a.id, b.id);
   if (!pin) return findings;
+  const lift = (f: Finding): Finding => ({
+    ...f,
+    severity: "contraindicated" as Severity,
+    clinical: `${f.clinical} ${labelPinSentence(pin)}`,
+    tags: [...f.tags, LABEL_CONTRAINDICATED_TAG],
+  });
   if (!pin.enzyme || !pin.kind) {
+    // The pair already has a pharmacodynamic finding. Hold that finding.
+    // Do not append a second kind:"pk" card.
+    if (findings.some((f) => f.kind === "pd")) {
+      return findings.map((f) => (f.kind === "pd" ? lift(f) : f));
+    }
     const labelDrug = pin.labelDrugId === a.id ? a : b;
     const other = labelDrug === a ? b : a;
     return [
@@ -289,12 +303,6 @@ function applyLabelPins(a: Drug, b: Drug, findings: Finding[]): Finding[] {
       },
     ];
   }
-  const lift = (f: Finding): Finding => ({
-    ...f,
-    severity: "contraindicated" as Severity,
-    clinical: `${f.clinical} ${labelPinSentence(pin)}`,
-    tags: [...f.tags, LABEL_CONTRAINDICATED_TAG],
-  });
   // Prefer the historical orientation so an existing pin is not also applied to
   // a reverse finding of the same kind. Wave-3 pins whose label drug is the
   // perpetrator match only on the second pass.
@@ -2389,8 +2397,12 @@ export function analyze(
       const skipApapChronic =
         (a.id === "__etoh-chronic" && b.id === "acetaminophen") ||
         (b.id === "__etoh-chronic" && a.id === "acetaminophen");
-      if (!skipApapChronic) findings.push(...applyLabelPins(a, b, pkFindings(a, b)));
-      findings.push(...pdFindings(a, b));
+      const pk = skipApapChronic ? [] : pkFindings(a, b);
+      const pd = pdFindings(a, b);
+      // Pharmacodynamic findings go in with the pin so a no-enzyme pin can
+      // lift an existing pd row instead of appending a second card.
+      if (skipApapChronic) findings.push(...pd);
+      else findings.push(...applyLabelPins(a, b, [...pk, ...pd]));
       findings.push(...labelFloorFindings(a, b));
     }
   }

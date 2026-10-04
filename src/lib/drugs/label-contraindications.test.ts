@@ -202,6 +202,11 @@ const EXPECTED_PINS = [
   "ergotamine+ritonavir",
   "rifampin+atazanavir",
   "voriconazole+rifampin",
+  // Pharmacodynamic findings held at contraindicated. Not a CYP grade.
+  "naltrexone+methadone",
+  "naltrexone+buprenorphine",
+  "naltrexone+oxycodone",
+  "naltrexone+hydrocodone",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -210,8 +215,9 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 49);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 17);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 4);
   for (const r of LABEL_CONTRAINDICATIONS) {
-    if (r.origin === "no-enzyme") {
+    if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
       assert.equal(r.kind, undefined, r.id);
     } else {
@@ -231,12 +237,27 @@ for (const r of LABEL_CONTRAINDICATIONS) {
     const pinned = pairFindings(r.labelDrugId, r.otherId).filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
     assert.equal(pinned.length, 1, "exactly one pinned finding");
     const f = pinned[0];
-    assert.equal(f.kind, "pk");
-    if (r.enzyme && r.kind) {
+    if (r.origin === "pd") {
+      // Hold the existing pharmacodynamic finding. Do not add a second card.
+      assert.equal(f.kind, "pd");
+      assert.equal(f.severity, "contraindicated");
+      assert.doesNotMatch(f.id, /label-ci/);
+      assert.deepEqual(f.enzymes, []);
+      assert.equal(f.tags.includes("inhibitor"), false);
+      assert.equal(f.tags.includes("inducer"), false);
+      assert.match(f.clinical, /Avoid together/);
+      assert.doesNotMatch(f.clinical, /no CYP finding/);
+      assert.equal(
+        pairFindings(r.labelDrugId, r.otherId).some((x) => x.id.includes("label-ci-standalone")),
+        false,
+      );
+    } else if (r.enzyme && r.kind) {
+      assert.equal(f.kind, "pk");
       assert.ok(f.enzymes.includes(r.enzyme));
       // The pin rides on the enzyme finding; it is not a standalone fallback.
       assert.doesNotMatch(f.id, /label-ci-/);
     } else {
+      assert.equal(f.kind, "pk");
       // No CYP role to hold. The finding stands alone and names no enzyme grade.
       assert.deepEqual(f.enzymes, []);
       assert.match(f.id, /label-ci-standalone/);
@@ -342,8 +363,28 @@ test("label floors below contraindicated stay at the gold-set level", () => {
   assert.equal(pairSeverity("esketamine", "methylphenidate"), "moderate");
 });
 
-test("naltrexone with an opioid is not pinned", () => {
-  for (const opioid of ["methadone", "buprenorphine", "oxycodone", "hydrocodone", "fentanyl", "tramadol", "morphine"]) {
+test("naltrexone is contraindicated only with the four labeled opioids", () => {
+  const named = ["methadone", "buprenorphine"];
+  const klass = ["oxycodone", "hydrocodone"];
+  for (const opioid of [...named, ...klass]) {
+    const pin = labelContraindicationFor("naltrexone", opioid);
+    assert.equal(pin?.id, `naltrexone+${opioid}`, opioid);
+    assert.equal(pin?.labelDrugId, "naltrexone", opioid);
+    assert.equal(pin?.otherId, opioid, opioid);
+    assert.equal(pin?.origin, "pd", opioid);
+    assert.equal(pin?.enzyme, undefined, opioid);
+    assert.equal(pin?.kind, undefined, opioid);
+    assert.equal(pin?.basis, named.includes(opioid) ? "named" : "class", opioid);
+    assert.equal(pairSeverity("naltrexone", opioid), "contraindicated", opioid);
+    const findings = pairFindings("naltrexone", opioid);
+    const pinned = findings.filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+    assert.equal(pinned.length, 1, opioid);
+    assert.equal(pinned[0].kind, "pd", opioid);
+    assert.equal(pinned[0].severity, "contraindicated", opioid);
+    assert.equal(findings.filter((f) => f.severity === "contraindicated").length, 1, opioid);
+    assert.equal(findings.some((f) => f.id.includes("label-ci-standalone")), false, opioid);
+  }
+  for (const opioid of ["fentanyl", "tramadol", "morphine"]) {
     assert.equal(labelContraindicationFor("naltrexone", opioid), undefined, opioid);
     assert.equal(pairSeverity("naltrexone", opioid), "major", opioid);
   }

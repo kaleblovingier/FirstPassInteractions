@@ -14,7 +14,8 @@
  * esketamine) also admits an explicit interaction statement in the Boxed Warning
  * (`boxed-warning`) or in Warnings/Drug Interactions (`warning`), with a per-pair
  * `expectedFloor` set to the minimum severity the label text supports:
- *   contraindicated / avoid / boxed-warning  -> major ("Serious concern")
+ *   avoid / boxed-warning                    -> major ("Serious concern")
+ *   contraindicated (naltrexone + a labeled opioid) -> contraindicated ("Avoid together")
  *   warning naming overdose / death          -> major
  *   warning with monitor / dose-change text  -> moderate ("Use care")
  *
@@ -171,7 +172,7 @@ function row(r: Row): GoldPair {
 
 type Row2 = Row & {
   /** Minimum severity the quoted label text supports (see header). */
-  expectedFloor: Extract<Severity, "major" | "moderate">;
+  expectedFloor: Extract<Severity, "contraindicated" | "major" | "moderate">;
 };
 
 /** Wave 2 row: explicit, label-supported floor instead of the blanket "major". */
@@ -638,26 +639,26 @@ const WAVE_2: GoldPair[] = [
     drugA: "naltrexone", drugB: "methadone", queries: ["naltrexone", "methadone"],
     labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
     quote: `${NALTREXONE_4} … Patients currently dependent on opioids, including those currently maintained on opiate agonists (e.g., methadone)`,
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
   }),
   row2({
     drugA: "naltrexone", drugB: "buprenorphine", queries: ["naltrexone", "buprenorphine"],
     labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
     quote: `${NALTREXONE_4} … Patients currently dependent on opioids, including those currently maintained on … partial agonists (e.g., buprenorphine).`,
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
   }),
   row2({
     drugA: "naltrexone", drugB: "oxycodone", queries: ["naltrexone", "oxycodone"],
     labelDrug: "Naltrexone HCl tablets", label: "naltrexone", labelSection: "CONTRAINDICATIONS",
     quote: `${NALTREXONE_4} … Patients receiving opioid analgesics.`,
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
     note: "Label names the class (opioid analgesics).",
   }),
   row2({
     drugA: "naltrexone", drugB: "hydrocodone", queries: ["vivitrol", "hydrocodone"],
     labelDrug: "Vivitrol (naltrexone ER injectable suspension)", label: "vivitrol", labelSection: "4 CONTRAINDICATIONS",
     quote: "VIVITROL is contraindicated in: … Patients receiving opioid analgesics",
-    labelClass: "contraindicated", expectedFloor: "major", mechanism: "PD", domain: "mat",
+    labelClass: "contraindicated", expectedFloor: "contraindicated", mechanism: "PD", domain: "mat",
     note: "Label names the class (opioid analgesics).",
   }),
   // ── Ketamine (Ketalar SPL) ────────────────────────────────────────────
@@ -2346,11 +2347,10 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
   // dronedarone+ketoconazole, ergotamine+ritonavir, rifampin+atazanavir,
   // and voriconazole+rifampin left this list: leftover label pins hold them
   // at contraindicated.
-  // wave 2: naltrexone labels say contraindicated; engine says major ("Serious concern")
-  "naltrexone+methadone", // naltrexone tablets CONTRAINDICATIONS (opiate agonists, e.g., methadone)
-  "naltrexone+buprenorphine", // naltrexone tablets CONTRAINDICATIONS (partial agonists, e.g., buprenorphine)
-  "naltrexone+oxycodone", // naltrexone tablets CONTRAINDICATIONS (opioid analgesics)
-  "naltrexone+hydrocodone", // Vivitrol 4 CONTRAINDICATIONS (opioid analgesics)
+  // wave 2: naltrexone+methadone, naltrexone+buprenorphine, naltrexone+oxycodone,
+  // and naltrexone+hydrocodone left this list. A pharmacodynamic label pin holds
+  // each existing finding at contraindicated. Other naltrexone + opioid pairs
+  // are not pinned.
   // wave 3 Korlym / Prezista / Reyataz pairs left this list: #58 label pins
   // hold them at contraindicated. Prezcobix and Evotaz pairs that were below
   // major are contraindicated too and left KNOWN_UNDERCALLS.

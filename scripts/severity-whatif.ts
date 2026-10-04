@@ -386,13 +386,17 @@ export function render(data: WhatIfData = collect(), gold: GoldWhatIf[] = goldWh
   L.push("");
   L.push("### Already below the label: `KNOWN_CONTRAINDICATION_GAPS` (these need to go UP)");
   L.push("");
-  L.push("The label says contraindicated and the engine already says major. The what-if does not touch them (they are not CYP/P-gp contraindicated findings), but they point the other way: a label-driven rule would raise them to contraindicated.");
-  L.push("");
-  L.push("| Pair | Label | Today | What-if |");
-  L.push("|---|---|---|---|");
-  for (const id of KNOWN_CONTRAINDICATION_GAPS) {
-    const r = gold.find((g) => g.pair.id === id)!;
-    L.push(`| ${r.pair.drugA} + ${r.pair.drugB} | ${esc(r.pair.labelDrug)}, ${esc(r.pair.labelSection)} | ${sev(r.before)} | ${sev(r.after)} |`);
+  if (!KNOWN_CONTRAINDICATION_GAPS.length) {
+    L.push("None. No gold-set pair still reads major (\"Serious concern\") when the label says contraindicated.");
+  } else {
+    L.push("The label says contraindicated and the engine already says major. The what-if does not touch them (they are not CYP/P-gp contraindicated findings), but they point the other way: a label-driven rule would raise them to contraindicated.");
+    L.push("");
+    L.push("| Pair | Label | Today | What-if |");
+    L.push("|---|---|---|---|");
+    for (const id of KNOWN_CONTRAINDICATION_GAPS) {
+      const r = gold.find((g) => g.pair.id === id)!;
+      L.push(`| ${r.pair.drugA} + ${r.pair.drugB} | ${esc(r.pair.labelDrug)}, ${esc(r.pair.labelSection)} | ${sev(r.before)} | ${sev(r.after)} |`);
+    }
   }
   L.push("");
   const underCi = KNOWN_UNDERCALLS.filter((id) => gold.find((g) => g.pair.id === id)?.pair.expectContraindicated);
