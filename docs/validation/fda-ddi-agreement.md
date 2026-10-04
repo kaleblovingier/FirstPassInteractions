@@ -14,15 +14,15 @@
 **Denominator:** only (drug, target, role) pairs that FDA's Table 1 actually lists **and** whose drug resolves to a catalog entry. Catalog drugs absent from the FDA table are never counted as disagreements.
 
 - Pairs compared: **273** (from 180 FDA drug names matched to the catalog; 33 FDA names not in catalog)
-- Exact agreement (role + FDA class/grade): **82.8% (226/273)**
-- Role agreement (same role on the target, class/grade ignored): **96.3% (263/273)**
+- Exact agreement (role + FDA class/grade): **85.3% (233/273)**
+- Role agreement (same role on the target, class/grade ignored): **98.9% (270/273)**
 - FDA strong-inhibitor + strong-inducer pairs, exact: **100% (34/34)**; role: 100% (34/34) (regression gate baseline: 100%)
 
 | Category | Count | In formulary review list? |
 | --- | ---: | --- |
 | direction_mismatch | 0 | yes |
 | strength_mismatch | 37 | yes |
-| missing_in_catalog | 10 | yes |
+| missing_in_catalog | 3 | yes |
 | not_in_fda | 50 | no (informational) |
 | drug_not_in_catalog | 33 | no (coverage) |
 
@@ -39,7 +39,7 @@ Reviewed direction-mismatch allowlist entries: 0.
 | CYP2C19 | 20 | 90% | 95% | 1 | 0 | 1 |
 | CYP2D6 | 34 | 88.2% | 100% | 4 | 0 | 0 |
 | CYP3A4 (FDA "3A") | 119 | 84% | 99.2% | 18 | 0 | 1 |
-| P-gp | 24 | 70.8% | 70.8% | 0 | 0 | 7 |
+| P-gp | 24 | 100% | 100% | 0 | 0 | 0 |
 
 ## Formulary owner review list
 
@@ -85,16 +85,9 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 | 35 | strength_mismatch | tolterodine | `tolterodine` | CYP2D6 | substrate (FDA sensitive) | substrate (major) | — |
 | 36 | strength_mismatch | vardenafil | `vardenafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
 | 37 | strength_mismatch | warfarin | `warfarin` | CYP2C9 | substrate (FDA moderate-sensitive) | substrate (sensitive) | fn 19 |
-| 38 | missing_in_catalog | capmatinib | `capmatinib` | P-gp | inhibitor | — | — |
-| 39 | missing_in_catalog | clotrimazole | `clotrimazole` | CYP3A4 | inhibitor (FDA weak) | — | — |
-| 40 | missing_in_catalog | lapatinib | `lapatinib` | P-gp | inhibitor | — | — |
-| 41 | missing_in_catalog | lopinavir and ritonavir | `lopinavir` | P-gp | inhibitor | — | — |
-| 42 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
-| 43 | missing_in_catalog | Pirtobrutinib | `pirtobrutinib` | P-gp | inhibitor | — | — |
-| 44 | missing_in_catalog | propafenone | `propafenone` | P-gp | inhibitor | — | — |
-| 45 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
-| 46 | missing_in_catalog | Sofosbuvir and Velpatasvir and Voxilaprevir | `sofosbuvir-velpatasvir-voxilaprevir` | P-gp | inhibitor | — | — |
-| 47 | missing_in_catalog | tucatinib | `tucatinib` | P-gp | inhibitor | — | — |
+| 38 | missing_in_catalog | clotrimazole | `clotrimazole` | CYP3A4 | inhibitor (FDA weak) | — | — |
+| 39 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
+| 40 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
 
 <details><summary>FDA footnotes cited above</summary>
 
