@@ -1406,6 +1406,9 @@ const ROWS: Row[] = [
   ["omaveloxolone", "Omaveloxolone", ["Skyclarys"], "Nrf2 activator", "d:CYP3A4:weak;d:CYP2C8:weak", [], "Weak CYP3A4 inducer. Weak CYP2C8 inducer.", ["skyclarys"]],
   ["sparsentan", "Sparsentan", ["Filspari"], "Endothelin / angiotensin antagonist", "d:CYP2B6:weak;d:CYP2C9:weak;d:CYP2C19:moderate;i:P-gp:weak", [], "Weak CYP2B6 inducer. Weak CYP2C9 inducer. Moderate CYP2C19 inducer. Weak P-gp inhibitor.", ["filspari"]],
   ["nitisinone", "Nitisinone", ["Orfadin", "Nityr", "Harliku"], "HPPD inhibitor", "i:CYP2C9:moderate;d:CYP2E1:weak", [], "Moderate CYP2C9 inhibitor. Weak CYP2E1 inducer.", ["orfadin", "nityr", "harliku"]],
+  ["vonoprazan", "Vonoprazan", ["Voquezna"], "Potassium-competitive acid blocker", "i:CYP3A4:weak", [], "Weak CYP3A inhibitor.", ["voquezna"]],
+  ["levoketoconazole", "Levoketoconazole", ["Recorlev"], "Cortisol synthesis inhibitor", "i:CYP3A4:strong", ["hepatotoxic"], "Strong CYP3A4 inhibitor. Liver injury and QT warnings on the label.", ["recorlev"]],
+  ["trofinetide", "Trofinetide", ["Daybue"], "IGF-1 tripeptide analog", "i:CYP3A4:weak", [], "Weak CYP3A inhibitor. Diarrhea is common.", ["daybue"]],
 ];
 
 export const CLINIC_FORMULARY: Drug[] = ROWS.map(row);
