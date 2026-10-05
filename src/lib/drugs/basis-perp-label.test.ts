@@ -204,3 +204,15 @@ test('XOCOVA quotes the named CYP3A contraindications and not an unnamed substra
   const col = pkBasis('ensitrelvir', 'colchicine').map((x) => x.detail).join('\n');
   assert.doesNotMatch(col, line);
 });
+
+test('gemfibrozil quotes repaglinide and selexipag, and not an unnamed CYP2C8 substrate', () => {
+  const line = /The Gemfibrozil label calls this combination contraindicated/;
+  const rep = pkBasis('gemfibrozil', 'repaglinide').map((x) => x.detail).join('\n');
+  assert.match(rep, line);
+  assert.match(rep, /with repaglinide/);
+  const sel = pkBasis('gemfibrozil', 'selexipag').map((x) => x.detail).join('\n');
+  assert.match(sel, line);
+  assert.match(sel, /with selexipag is contraindicated/);
+  const mon = pkBasis('gemfibrozil', 'montelukast').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(mon, line);
+});
