@@ -1409,6 +1409,10 @@ const ROWS: Row[] = [
   ["vonoprazan", "Vonoprazan", ["Voquezna"], "Potassium-competitive acid blocker", "i:CYP3A4:weak", [], "Weak CYP3A inhibitor.", ["voquezna"]],
   ["levoketoconazole", "Levoketoconazole", ["Recorlev"], "Cortisol synthesis inhibitor", "i:CYP3A4:strong", ["hepatotoxic"], "Strong CYP3A4 inhibitor. Liver injury and QT warnings on the label.", ["recorlev"]],
   ["trofinetide", "Trofinetide", ["Daybue"], "IGF-1 tripeptide analog", "i:CYP3A4:weak", [], "Weak CYP3A inhibitor. Diarrhea is common.", ["daybue"]],
+  ["elagolix", "Elagolix", ["Orilissa"], "GnRH receptor antagonist", "i:CYP2C19:weak", [], "Weak CYP2C19 inhibitor.", ["orilissa"]],
+  ["camizestrant", "Camizestrant", ["Etcamah"], "Estrogen receptor antagonist", "i:CYP2C9:strong;i:CYP2C19:strong", ["qt-possible"], "Strong CYP2C9 and CYP2C19 inhibitor. QT with CDK4/6 partners.", ["etcamah"]],
+  ["tipranavir", "Tipranavir", ["Aptivus"], "HIV protease inhibitor", "i:P-gp:weak", ["hepatotoxic"], "Weak P-gp inhibitor. Liver injury warning on the label.", ["aptivus"]],
+  ["telithromycin", "Telithromycin", ["Ketek"], "Ketolide antibiotic", "i:CYP3A4:strong", ["hepatotoxic"], "Strong CYP3A4 inhibitor.", ["ketek"]],
 ];
 
 export const CLINIC_FORMULARY: Drug[] = ROWS.map(row);

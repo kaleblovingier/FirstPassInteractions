@@ -15,11 +15,11 @@
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,827 / 1,668,051 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,687 (1,647 CYP, 40 P-gp) on 1,680 pairs (1,680 by display name, as #66 counts) |
+| Catalog entries / unordered pairs scanned | 1,831 / 1,675,365 |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,734 (1,694 CYP, 40 P-gp) on 1,727 pairs (1,727 by display name, as #66 counts) |
 | … of which carry a label citation (kept at contraindicated) | 579 |
-| **Findings that move contraindicated → major** | **1,108** on **1,101** pairs |
-| **Pairs whose overall severity changes** | **1,101** |
+| **Findings that move contraindicated → major** | **1,155** on **1,148** pairs |
+| **Pairs whose overall severity changes** | **1,148** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
 | Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 272 / 272 → **272 / 272** |
@@ -27,27 +27,27 @@
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,687 findings on 1,680 pairs keyed by display name**: **differs**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,734 findings on 1,727 pairs keyed by display name**: **differs**.
 
-579 carry a label citation and are kept at contraindicated, so 1,108 are capped.
+579 carry a label citation and are kept at contraindicated, so 1,155 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 628 | 628 |
+| strong inhibitor × sensitive substrate | 669 | 669 |
 | strong inducer × sensitive substrate | 340 | 340 |
-| strong inhibitor × sensitive + NTI substrate | 98 | 98 |
+| strong inhibitor × sensitive + NTI substrate | 104 | 104 |
 | strong inducer × sensitive + NTI substrate | 42 | 42 |
 
 | Enzyme | Findings |
 |---|---:|
-| CYP3A4 | 973 |
+| CYP3A4 | 1,014 |
 | CYP2D6 | 58 |
 | P-gp | 40 |
-| CYP2C19 | 16 |
+| CYP2C19 | 19 |
 | CYP1A2 | 13 |
-| CYP2C9 | 6 |
+| CYP2C9 | 9 |
 | CYP2B6 | 1 |
 | CYP2C8 | 1 |
 
@@ -59,7 +59,7 @@ A finding counts once for each of its two drugs.
 |---:|---|---:|---:|---:|
 | 1 | Cobicistat | 45 | 45 | 0 |
 | 2 | St. John's wort | 45 | 45 | 0 |
-| 3 | Phenytoin | 43 | 41 | 2 |
+| 3 | Phenytoin | 44 | 41 | 3 |
 | 4 | Rifampin | 43 | 43 | 0 |
 | 5 | Carbamazepine | 42 | 42 | 0 |
 | 6 | Adagrasib | 41 | 41 | 0 |
@@ -73,20 +73,20 @@ A finding counts once for each of its two drugs.
 | 14 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
 | 15 | Mitotane | 41 | 41 | 0 |
 | 16 | Relacorilant | 41 | 41 | 0 |
-| 17 | Tucatinib | 41 | 41 | 0 |
-| 18 | Nefazodone | 40 | 40 | 0 |
-| 19 | Ketoconazole | 39 | 39 | 0 |
-| 20 | Voriconazole | 38 | 38 | 0 |
-| 21 | Posaconazole | 37 | 37 | 0 |
-| 22 | Ritonavir | 37 | 37 | 0 |
-| 23 | Clarithromycin | 36 | 36 | 0 |
-| 24 | Colchicine | 36 | 0 | 36 |
-| 25 | Lopinavir/ritonavir | 32 | 32 | 0 |
-| 26 | Itraconazole | 30 | 30 | 0 |
-| 27 | Alfentanil | 25 | 0 | 25 |
-| 28 | Alprazolam | 25 | 0 | 25 |
-| 29 | Budesonide (oral / gut) | 25 | 0 | 25 |
-| 30 | Buspirone | 25 | 0 | 25 |
+| 17 | Telithromycin | 41 | 41 | 0 |
+| 18 | Tucatinib | 41 | 41 | 0 |
+| 19 | Nefazodone | 40 | 40 | 0 |
+| 20 | Ketoconazole | 39 | 39 | 0 |
+| 21 | Voriconazole | 38 | 38 | 0 |
+| 22 | Colchicine | 37 | 0 | 37 |
+| 23 | Posaconazole | 37 | 37 | 0 |
+| 24 | Ritonavir | 37 | 37 | 0 |
+| 25 | Clarithromycin | 36 | 36 | 0 |
+| 26 | Lopinavir/ritonavir | 32 | 32 | 0 |
+| 27 | Itraconazole | 30 | 30 | 0 |
+| 28 | Alfentanil | 26 | 0 | 26 |
+| 29 | Alprazolam | 26 | 0 | 26 |
+| 30 | Budesonide (oral / gut) | 26 | 0 | 26 |
 
 ## Pairs that stay contraindicated via another finding
 
