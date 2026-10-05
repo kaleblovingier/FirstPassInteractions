@@ -44,6 +44,7 @@ import {
 } from "@/lib/drugs/host-plain";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
+import { useId } from "react";
 
 const ORDER: Metabolizer[] = ["PM", "IM", "NM", "UM"];
 const ROUTES: KetamineRoute[] = ["iv", "in", "oral"];
@@ -61,9 +62,9 @@ const HINT: Record<PhenotypeEnzyme, string> = {
 };
 
 /** Plain section title with the scientific term muted beside it. */
-function SectionTitle({ title }: { title: PlainTitle }) {
+function SectionTitle({ title, id }: { title: PlainTitle; id?: string }) {
   return (
-    <div className="flex flex-wrap items-baseline gap-x-2">
+    <div id={id} className="flex flex-wrap items-baseline gap-x-2">
       <span className="text-xs font-medium text-fg">{title.plain}</span>
       <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">{title.scientific}</span>
     </div>
@@ -73,9 +74,10 @@ function SectionTitle({ title }: { title: PlainTitle }) {
 export function KetamineRouteCard() {
   const ketamineRoute = useDesk((s) => s.ketamineRoute);
   const setKetamineRoute = useDesk((s) => s.setKetamineRoute);
+  const uid = useId();
   return (
     <div className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
-      <h2 className="flex flex-wrap items-baseline gap-x-2">
+      <h2 id={`${uid}-ketamine`} className="flex flex-wrap items-baseline gap-x-2">
         <span className="text-xs font-medium text-fg">{HOST_SECTION_TITLES.ketamine.plain}</span>
         <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
           {HOST_SECTION_TITLES.ketamine.scientific}
@@ -84,7 +86,7 @@ export function KetamineRouteCard() {
       <p className="mt-1 text-[11px] leading-relaxed text-muted">
         {KETAMINE_ROUTE_NOTE} {OTHER_HOST_FACTORS_LINE}
       </p>
-      <div className="mt-3 grid grid-cols-3 gap-1">
+      <div role="group" aria-labelledby={`${uid}-ketamine`} className="mt-3 grid grid-cols-3 gap-1">
         {ROUTES.map((r) => {
           const on = ketamineRoute === r;
           return (
@@ -104,7 +106,7 @@ export function KetamineRouteCard() {
           );
         })}
       </div>
-      <p className="mt-1.5 text-xs leading-relaxed text-muted">{ketamineRouteBlurb(ketamineRoute)}</p>
+      <p aria-live="polite" className="mt-1.5 text-xs leading-relaxed text-muted">{ketamineRouteBlurb(ketamineRoute)}</p>
     </div>
   );
 }
@@ -127,6 +129,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
   const setKidney = useDesk((s) => s.setKidney);
   const preg = useDesk((s) => s.preg);
   const setPreg = useDesk((s) => s.setPreg);
+  const uid = useId();
   const dirty =
     PHENOTYPE_ENZYMES.some((e) => phenotypes[e] !== "NM") ||
     smoking ||
@@ -158,6 +161,7 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </div>
       <div
         className="mt-2 rounded-lg border border-accent/15 bg-accent-soft/30 p-3"
+        role="note"
         aria-label="Host factors coach"
       >
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{HOST_COACH.kicker}</p>
@@ -177,10 +181,10 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
           return (
           <li key={enzyme}>
             <div className="flex items-baseline justify-between gap-2">
-              <span className="font-mono text-xs text-fg">{enzyme}</span>
+              <span id={`${uid}-${enzyme}`} className="font-mono text-xs text-fg">{enzyme}</span>
               <span className="truncate text-[10px] text-subtle">{HINT[enzyme]}</span>
             </div>
-            <div className="mt-1.5 grid grid-cols-4 gap-1">
+            <div role="group" aria-labelledby={`${uid}-${enzyme}`} className="mt-1.5 grid grid-cols-4 gap-1">
               {ORDER.map((m) => {
                 const on = phenotypes[enzyme] === m;
                 const freq = PHENO_FREQ[enzyme][m];
@@ -202,20 +206,22 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
                 );
               })}
             </div>
+            <div aria-live="polite">
             {phenotypes[enzyme] !== "NM" && PHENO_FREQ[enzyme][phenotypes[enzyme]] ? (
               <p className="mt-1 text-[10px] text-subtle">
                 {howCommonLine(PHENO_FREQ[enzyme][phenotypes[enzyme]]!)}
               </p>
             ) : null}
             {gloss ? <p className="mt-1 text-xs leading-relaxed text-muted">{gloss}</p> : null}
+            </div>
           </li>
           );
         })}
       </ul>
 
       <div className="mt-4 border-t border-border pt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.smoking} />
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
+        <SectionTitle id={`${uid}-smoking`} title={HOST_SECTION_TITLES.smoking} />
+        <div role="group" aria-labelledby={`${uid}-smoking`} className="mt-1.5 grid grid-cols-2 gap-1">
           <button
             type="button"
             aria-pressed={!smoking}
@@ -239,12 +245,12 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             {SMOKING_PLAIN.on}
           </button>
         </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">{smokingBlurb(smoking)}</p>
+        <p aria-live="polite" className="mt-1.5 text-xs leading-relaxed text-muted">{smokingBlurb(smoking)}</p>
       </div>
 
       <div className="mt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.alcohol} />
-        <div className="mt-1.5 grid grid-cols-3 gap-1">
+        <SectionTitle id={`${uid}-alcohol`} title={HOST_SECTION_TITLES.alcohol} />
+        <div role="group" aria-labelledby={`${uid}-alcohol`} className="mt-1.5 grid grid-cols-3 gap-1">
           {ALCOHOL.map((a) => {
             const on = alcohol === a;
             return (
@@ -264,14 +270,14 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             );
           })}
         </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">{alcoholBlurb(alcohol)}</p>
+        <p aria-live="polite" className="mt-1.5 text-xs leading-relaxed text-muted">{alcoholBlurb(alcohol)}</p>
       </div>
 
       {!hideKetamineRoute ? (
       <div className="mt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.ketamine} />
+        <SectionTitle id={`${uid}-ketamine`} title={HOST_SECTION_TITLES.ketamine} />
         <p className="mt-0.5 text-[10px] text-subtle">{KETAMINE_ROUTE_NOTE}</p>
-        <div className="mt-1.5 grid grid-cols-3 gap-1">
+        <div role="group" aria-labelledby={`${uid}-ketamine`} className="mt-1.5 grid grid-cols-3 gap-1">
           {ROUTES.map((r) => {
             const on = ketamineRoute === r;
             return (
@@ -291,13 +297,13 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             );
           })}
         </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">{ketamineRouteBlurb(ketamineRoute)}</p>
+        <p aria-live="polite" className="mt-1.5 text-xs leading-relaxed text-muted">{ketamineRouteBlurb(ketamineRoute)}</p>
       </div>
       ) : null}
 
       <div className="mt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.cannabis} />
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
+        <SectionTitle id={`${uid}-cannabis`} title={HOST_SECTION_TITLES.cannabis} />
+        <div role="group" aria-labelledby={`${uid}-cannabis`} className="mt-1.5 grid grid-cols-2 gap-1">
           {CANNABIS.map((r) => {
             const on = cannabisRoute === r;
             return (
@@ -317,12 +323,12 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
             );
           })}
         </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">{cannabisRouteBlurb(cannabisRoute)}</p>
+        <p aria-live="polite" className="mt-1.5 text-xs leading-relaxed text-muted">{cannabisRouteBlurb(cannabisRoute)}</p>
       </div>
 
       <div className="mt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.age} />
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
+        <SectionTitle id={`${uid}-age`} title={HOST_SECTION_TITLES.age} />
+        <div role="group" aria-labelledby={`${uid}-age`} className="mt-1.5 grid grid-cols-2 gap-1">
           {AGES.map((a) => {
             const on = age === a;
             return (
@@ -345,8 +351,8 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </div>
 
       <div className="mt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.kidney} />
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
+        <SectionTitle id={`${uid}-kidney`} title={HOST_SECTION_TITLES.kidney} />
+        <div role="group" aria-labelledby={`${uid}-kidney`} className="mt-1.5 grid grid-cols-2 gap-1">
           {KIDNEYS.map((k) => {
             const on = kidney === k;
             return (
@@ -369,8 +375,8 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
       </div>
 
       <div className="mt-3">
-        <SectionTitle title={HOST_SECTION_TITLES.preg} />
-        <div className="mt-1.5 grid grid-cols-3 gap-1">
+        <SectionTitle id={`${uid}-preg`} title={HOST_SECTION_TITLES.preg} />
+        <div role="group" aria-labelledby={`${uid}-preg`} className="mt-1.5 grid grid-cols-3 gap-1">
           {PREGS.map((p) => {
             const on = preg === p;
             return (
