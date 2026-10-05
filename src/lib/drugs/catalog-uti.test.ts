@@ -6,10 +6,11 @@ import { analyze } from "./engine.ts";
 test("UTI antibiotic search includes both newer agents and established options", () => {
   assert.deepEqual(
     searchDrugs("cystitis antibiotics").map((drug) => drug.id),
-    ["nitrofurantoin", "fosfomycin", "pivmecillinam", "gepotidacin", "tmp-smx"],
+    ["nitrofurantoin", "fosfomycin", "pivmecillinam", "gepotidacin", "sulopenem", "tmp-smx"],
   );
   assert.equal(searchDrugs("Blujepa")[0]?.id, "gepotidacin");
   assert.equal(searchDrugs("Pivya")[0]?.id, "pivmecillinam");
+  assert.equal(searchDrugs("Orlynvah")[0]?.id, "sulopenem");
 });
 
 test("gepotidacin carries its labeled CYP3A4 and QTc cautions", () => {

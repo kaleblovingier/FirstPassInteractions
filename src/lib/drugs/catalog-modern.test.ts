@@ -5,6 +5,8 @@ import { DRUG_BY_ID, searchDrugs } from "./catalog.ts";
 const NEW_IDS = [
   "gepotidacin",
   "pivmecillinam",
+  "sulopenem",
+  "selpercatinib",
   "ensifentrine",
   "sotatercept",
   "dulaglutide",
@@ -58,6 +60,8 @@ test("modern formulary ids are present and searchable", () => {
 test("modern brand aliases resolve", () => {
   assert.equal(searchDrugs("Blujepa")[0]?.id, "gepotidacin");
   assert.equal(searchDrugs("Pivya")[0]?.id, "pivmecillinam");
+  assert.equal(searchDrugs("Orlynvah")[0]?.id, "sulopenem");
+  assert.equal(searchDrugs("Retevmo")[0]?.id, "selpercatinib");
   assert.equal(searchDrugs("Ohtuvayre")[0]?.id, "ensifentrine");
   assert.equal(searchDrugs("Winrevair")[0]?.id, "sotatercept");
   assert.equal(searchDrugs("Quviviq")[0]?.id, "daridorexant");

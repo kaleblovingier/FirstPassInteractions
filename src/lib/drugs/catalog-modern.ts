@@ -66,6 +66,22 @@ export const MODERN_FORMULARY: Drug[] = [
       aliases: ["pivya", "mecillinam prodrug"],
       note: "FDA-approved oral antibiotic for uncomplicated UTI. The label warns that exposure before delivery may cause a false-positive newborn screen for isovaleric acidemia; prolonged treatment has been associated with carnitine depletion in pediatric patients. No CYP or PD interaction grade is assigned here. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=440a5f17-ab11-0fc8-e063-6394a90a58e9",
     }),
+  d("sulopenem", "Sulopenem", ["Orlynvah"], "Oral penem antibiotic",
+    [],
+    [],
+    "Renal/probenecid considerations; no graded CYP/PD interaction map assigned here",
+    {
+      aliases: ["orlynvah"],
+      note: "Oral penem used for uncomplicated UTI and pyelonephritis. The product label emphasizes the co-formulated probenecid component and renal considerations. This desk does not assign a graded CYP or PD interaction map unless the current label supports one; check the label before co-prescribing with transporter-active or renal-toxic agents.",
+    }),
+  d("selpercatinib", "Selpercatinib", ["Retevmo"], "RET inhibitor",
+    [sub("CYP3A4", "major")],
+    ["hepatotoxic"],
+    "Strong CYP3A4 inhibitors and inducers change exposure; liver injury and QT warnings on the label",
+    {
+      aliases: ["retevmo"],
+      note: "RET kinase inhibitor used in RET-altered cancers. The current label supports CYP3A4-based exposure changes and cautions about hepatotoxicity and QT-related risk. This desk keeps the interaction story to the label-grounded 3A4 signal rather than inventing a broader PD map.",
+    }),
 
   // —— Pulmonary medicine ————————————————————————————
   d("ensifentrine", "Ensifentrine", ["Ohtuvayre"], "Inhaled PDE3/PDE4 inhibitor for COPD",
@@ -290,6 +306,30 @@ export const MODERN_FORMULARY: Drug[] = [
     {
       aliases: ["otezla"],
       note: "Strong 3A4 inducers (rifampin, carbamazepine, St John's wort) can steal it.",
+    }),
+  d("abrocitinib", "Abrocitinib", ["Cibinqo"], "JAK1 inhibitor",
+    [sub("CYP2C19", "major"), sub("CYP2C9", "minor"), sub("CYP3A4", "minor")],
+    ["immunosuppressant", "hepatotoxic"],
+    "Serious infection; herpes zoster; monitor lipids and liver enzymes",
+    {
+      aliases: ["cibinqo"],
+      note: "Atopic dermatitis JAK1 inhibitor. The label cautions about serious infections, herpes zoster, and lipid / liver-enzyme changes; CBC and LFT monitoring are part of the label-guided safety plan. This desk keeps the interaction note to the supported CYP2C19/2C9/3A4 exposure considerations and does not infer a broader PD interaction map.",
+    }),
+  d("ozanimod", "Ozanimod", ["Zeposia"], "S1P receptor modulator",
+    [sub("CYP3A4", "major"), sub("CYP2C8", "minor")],
+    ["bradycardic"],
+    "First-dose bradycardia and AV block; avoid with strong CYP3A4 or CYP2C8 interactions unless label directs otherwise",
+    {
+      aliases: ["zeposia"],
+      note: "Relapsing MS therapy. The label emphasizes first-dose bradycardia, AV block, and monitoring with concurrent bradycardic agents. Strong CYP3A4 or CYP2C8 inhibition can increase exposure. This desk keeps the interaction note limited to those label-supported PK cautions and does not assign a broader clinical PD map.",
+    }),
+  d("resmetirom", "Resmetirom", ["MGL-3196"], "THR-β agonist for MASH",
+    [sub("CYP2C8", "major"), sub("CYP3A4", "minor")],
+    ["hepatotoxic"],
+    "Hepatotoxicity risk; strong CYP2C8 inhibitors/inducers can change exposure and dose selection",
+    {
+      aliases: ["mgl-3196"],
+      note: "MASH therapy. The label warns about hepatotoxicity and specifies dose adjustment / avoidance issues with strong CYP2C8 inhibitors or inducers. This desk retains the label-grounded PK caution only and does not invent a broader interaction map.",
     }),
 
   // —— Street / RC opioids ——————————————————————————
