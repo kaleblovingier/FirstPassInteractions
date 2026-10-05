@@ -16,33 +16,33 @@
 | Measure | Count |
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,827 / 1,668,051 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,687 (1,647 CYP, 40 P-gp) on 1,680 pairs (1,680 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 579 |
-| **Findings that move contraindicated → major** | **1,108** on **1,101** pairs |
-| **Pairs whose overall severity changes** | **1,101** |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,697 (1,657 CYP, 40 P-gp) on 1,690 pairs (1,690 by display name, as #66 counts) |
+| … of which carry a label citation (kept at contraindicated) | 592 |
+| **Findings that move contraindicated → major** | **1,105** on **1,098** pairs |
+| **Pairs whose overall severity changes** | **1,098** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 272 / 272 → **272 / 272** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 286 / 286 → **286 / 286** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,687 findings on 1,680 pairs keyed by display name**: **differs**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,697 findings on 1,690 pairs keyed by display name**: **differs**.
 
-579 carry a label citation and are kept at contraindicated, so 1,108 are capped.
+592 carry a label citation and are kept at contraindicated, so 1,105 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 628 | 628 |
+| strong inhibitor × sensitive substrate | 625 | 625 |
 | strong inducer × sensitive substrate | 340 | 340 |
 | strong inhibitor × sensitive + NTI substrate | 98 | 98 |
 | strong inducer × sensitive + NTI substrate | 42 | 42 |
 
 | Enzyme | Findings |
 |---|---:|
-| CYP3A4 | 973 |
+| CYP3A4 | 970 |
 | CYP2D6 | 58 |
 | P-gp | 40 |
 | CYP2C19 | 16 |
@@ -68,14 +68,14 @@ A finding counts once for each of its two drugs.
 | 9 | Enzalutamide | 41 | 41 | 0 |
 | 10 | Idelalisib | 41 | 41 | 0 |
 | 11 | Ivosidenib | 41 | 41 | 0 |
-| 12 | Levoketoconazole | 41 | 41 | 0 |
-| 13 | Lonafarnib | 41 | 41 | 0 |
-| 14 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
-| 15 | Mitotane | 41 | 41 | 0 |
-| 16 | Relacorilant | 41 | 41 | 0 |
-| 17 | Tucatinib | 41 | 41 | 0 |
-| 18 | Nefazodone | 40 | 40 | 0 |
-| 19 | Ketoconazole | 39 | 39 | 0 |
+| 12 | Lonafarnib | 41 | 41 | 0 |
+| 13 | Lumacaftor–ivacaftor | 41 | 41 | 0 |
+| 14 | Mitotane | 41 | 41 | 0 |
+| 15 | Relacorilant | 41 | 41 | 0 |
+| 16 | Tucatinib | 41 | 41 | 0 |
+| 17 | Nefazodone | 40 | 40 | 0 |
+| 18 | Ketoconazole | 39 | 39 | 0 |
+| 19 | Levoketoconazole | 38 | 38 | 0 |
 | 20 | Voriconazole | 38 | 38 | 0 |
 | 21 | Posaconazole | 37 | 37 | 0 |
 | 22 | Ritonavir | 37 | 37 | 0 |
@@ -94,7 +94,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 307 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 321 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 
@@ -114,7 +114,7 @@ Also below the label and also unaffected: the label-contraindicated entries in `
 
 Audience catalog ids: `buprenorphine`, `buprenorphine-implant`, `buprenorphine-patch`, `buprenorphine-weekly`, `esketamine`, `ketamine`, `ketamine-iv`, `methadone`, `methadone-soluble`, `naltrexone`, `naltrexone-bupropion`.
 
-None. No finding involving these drugs is a CYP/P-gp contraindicated finding on main, so the what-if does not move any of them. (44 pairs with an audience drug are contraindicated today; all of them come from class/PD rules such as MAOI or oxybate stacks, which this what-if leaves alone.)
+None. No finding involving these drugs is a CYP/P-gp contraindicated finding on main, so the what-if does not move any of them. (45 pairs with an audience drug are contraindicated today; all of them come from class/PD rules such as MAOI or oxybate stacks, which this what-if leaves alone.)
 
 ## Informational: sodium oxybate × non-hypnotic CNS depressants (not part of this what-if)
 
