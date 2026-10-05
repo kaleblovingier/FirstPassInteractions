@@ -110,3 +110,205 @@ export function phenytoinCorrected({ total, albumin, crclLow }: PhenytoinInput):
   return { corrected: rounded, note };
 }
 
+/** Child-Pugh classification for hepatic impairment. FDA PK guidance standard. */
+export type BilirubinBand = "under2" | "twoToThree" | "over3";
+export type AlbuminBand = "over35" | "twoEightToThreeFive" | "under28";
+export type InrBand = "under17" | "oneSevenToTwoThree" | "over23";
+export type AscitesGrade = "none" | "slight" | "moderate";
+export type EncephalopathyGrade = "none" | "grade1_2" | "grade3_4";
+
+export interface ChildPughInput {
+  bilirubin: BilirubinBand;
+  albumin: AlbuminBand;
+  inr: InrBand;
+  ascites: AscitesGrade;
+  encephalopathy: EncephalopathyGrade;
+}
+
+export interface ChildPughResult {
+  score: number;
+  classBand: "A" | "B" | "C";
+  impairment: "mild" | "moderate" | "severe";
+  label: string;
+  note: string;
+}
+
+export function childPughOf({
+  bilirubin,
+  albumin,
+  inr,
+  ascites,
+  encephalopathy,
+}: ChildPughInput): ChildPughResult {
+  const biliPts = bilirubin === "under2" ? 1 : bilirubin === "twoToThree" ? 2 : 3;
+  const albPts = albumin === "over35" ? 1 : albumin === "twoEightToThreeFive" ? 2 : 3;
+  const inrPts = inr === "under17" ? 1 : inr === "oneSevenToTwoThree" ? 2 : 3;
+  const ascPts = ascites === "none" ? 1 : ascites === "slight" ? 2 : 3;
+  const encephPts = encephalopathy === "none" ? 1 : encephalopathy === "grade1_2" ? 2 : 3;
+
+  const score = biliPts + albPts + inrPts + ascPts + encephPts;
+  let classBand: ChildPughResult["classBand"] = "A";
+  let impairment: ChildPughResult["impairment"] = "mild";
+  let label = "Class A (5–6 pts) · Mild impairment";
+  let note =
+    "Class A (5–6 points): Well-compensated liver disease. Many FDA labels permit standard starting regimens with clinical and laboratory monitoring.";
+
+  if (score >= 10) {
+    classBand = "C";
+    impairment = "severe";
+    label = "Class C (10–15 pts) · Severe impairment";
+    note =
+      "Class C (10–15 points): Decompensated cirrhosis. Portosystemic shunting dramatically reduces first-pass hepatic extraction. Many labels contraindicate or lack pharmacokinetic data.";
+  } else if (score >= 7) {
+    classBand = "B";
+    impairment = "moderate";
+    label = "Class B (7–9 pts) · Moderate impairment";
+    note =
+      "Class B (7–9 points): Significant functional compromise. Frequent FDA label cutoff for empirical 50% dose reductions, extended dosing intervals, or specialist oversight.";
+  }
+
+  return { score, classBand, impairment, label, note };
+}
+
+/** Vancomycin 24-hour AUC / MIC consensus pharmacokinetic calculator (ASHP/IDSA/PIDS/SIDP 2020). */
+export interface VancoAucInput {
+  totalDailyDoseMg: number;
+  crcl: number;
+  mic?: number;
+}
+
+export interface VancoAucResult {
+  auc24: number;
+  mic: number;
+  ratio: number;
+  band: "subtherapeutic" | "target" | "supratherapeutic";
+  label: string;
+  note: string;
+}
+
+export function vancoAucOf({
+  totalDailyDoseMg,
+  crcl,
+  mic = 1,
+}: VancoAucInput): VancoAucResult | null {
+  if (
+    !Number.isFinite(totalDailyDoseMg) ||
+    !Number.isFinite(crcl) ||
+    !Number.isFinite(mic) ||
+    totalDailyDoseMg < 250 ||
+    totalDailyDoseMg > 8000 ||
+    crcl < 5 ||
+    crcl > 250 ||
+    mic <= 0 ||
+    mic > 16
+  ) {
+    return null;
+  }
+
+  const cl_L_h = 0.042 * crcl + 0.3;
+  const rawAuc = totalDailyDoseMg / cl_L_h;
+  const auc24 = Math.round(rawAuc);
+  const ratio = Math.round((auc24 / mic) * 10) / 10;
+
+  let band: VancoAucResult["band"] = "target";
+  let label = "Target therapeutic window (AUC24:MIC 400–600)";
+  let note =
+    "2020 ASHP/IDSA consensus target (400–600 mg·h/L assuming MIC 1 mg/L). Maximizes bactericidal kill while keeping nephrotoxicity risk low.";
+
+  if (ratio < 400) {
+    band = "subtherapeutic";
+    label = "Subtherapeutic (AUC24:MIC <400)";
+    note =
+      "AUC24:MIC <400 correlates with clinical treatment failure and selective pressure for intermediate resistance (VISA). Consider review with infectious diseases specialist.";
+  } else if (ratio > 600) {
+    band = "supratherapeutic";
+    label = "Supratherapeutic / Nephrotoxicity watch (AUC24:MIC >600)";
+    note =
+      "AUC24:MIC >600 confers a 3- to 4-fold increased incidence of acute kidney injury (AKI). Review intervals, hydration, and concomitant nephrotoxins (e.g. piperacillin/tazobactam, NSAIDs, contrast).";
+  }
+
+  return {
+    auc24,
+    mic,
+    ratio,
+    band,
+    label,
+    note,
+  };
+}
+
+/** Serum Osmolar Gap & Toxic Alcohol Screen. */
+export interface OsmolarGapInput {
+  measuredOsm: number;
+  na: number;
+  glucose: number;
+  bun: number;
+  ethanolMgDl?: number;
+}
+
+export interface OsmolarGapResult {
+  calculatedOsm: number;
+  gap: number;
+  band: "normal" | "borderline" | "elevated";
+  label: string;
+  note: string;
+}
+
+export function osmolarGapOf({
+  measuredOsm,
+  na,
+  glucose,
+  bun,
+  ethanolMgDl = 0,
+}: OsmolarGapInput): OsmolarGapResult | null {
+  if (
+    !Number.isFinite(measuredOsm) ||
+    !Number.isFinite(na) ||
+    !Number.isFinite(glucose) ||
+    !Number.isFinite(bun) ||
+    !Number.isFinite(ethanolMgDl) ||
+    measuredOsm < 200 ||
+    measuredOsm > 550 ||
+    na < 100 ||
+    na > 180 ||
+    glucose < 20 ||
+    glucose > 2500 ||
+    bun < 1 ||
+    bun > 250 ||
+    ethanolMgDl < 0 ||
+    ethanolMgDl > 1200
+  ) {
+    return null;
+  }
+
+  const ethContribution = ethanolMgDl > 0 ? ethanolMgDl / 4.6 : 0;
+  const rawCalc = 2 * na + glucose / 18 + bun / 2.8 + ethContribution;
+  const calculatedOsm = Math.round(rawCalc * 10) / 10;
+  const gap = Math.round((measuredOsm - calculatedOsm) * 10) / 10;
+
+  let band: OsmolarGapResult["band"] = "normal";
+  let label = "Normal osmolar gap (≤10 mOsm/kg)";
+  let note =
+    "Calculated osmolality accounts for measured solutes. A normal gap does not rule out late toxic alcohol presentation if parent alcohol is already metabolized into toxic acid metabolites.";
+
+  if (gap >= 15) {
+    band = "elevated";
+    label = "Significantly elevated gap (≥15 mOsm/kg)";
+    note =
+      "Gap ≥15 strongly suggests an unmeasured osmotically active low-MW solute: Ethylene glycol (antifreeze; renal failure, calcium oxalate crystals), Methanol (windshield fluid; formic acid retinal toxicity/blindness), Isopropanol (rubbing alcohol; ketosis without severe acidosis), or Propylene glycol (IV drug solvent; lactic acidosis). Consider ADH blockade (fomepizole) and emergent nephrology / poison center consult.";
+  } else if (gap > 10) {
+    band = "borderline";
+    label = "Borderline osmolar gap (11–14 mOsm/kg)";
+    note =
+      "Mildly elevated or borderline gap. May represent laboratory assay variation or early low-level ingestion. Correlate with clinical history, arterial blood gas, and anion gap.";
+  }
+
+  return {
+    calculatedOsm,
+    gap,
+    band,
+    label,
+    note,
+  };
+}
+

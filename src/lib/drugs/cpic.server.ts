@@ -35,7 +35,7 @@ async function getJson(url: string, ms = 8000): Promise<unknown> {
 }
 
 function cleanName(name: string) {
-  return name.replace(/\(.*?\)/g, "").replace(/[^A-Za-z0-9 +\-]/g, " ").replace(/\s+/g, " ").trim();
+  return name.replace(/\(.*?\)/g, "").replace(/[^A-Za-z0-9 +-]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 export async function lookupCpic(name: string): Promise<CpicResult> {

@@ -18,7 +18,10 @@ function find(dir, re) {
 }
 
 function run(cmd, args) {
-  const r = spawnSync(cmd, args, { stdio: "inherit", shell: process.platform === "win32" });
+  const r = spawnSync(cmd, args, {
+    stdio: "inherit",
+    shell: process.platform === "win32" && cmd !== process.execPath,
+  });
   return r.status ?? 1;
 }
 

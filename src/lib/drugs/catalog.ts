@@ -2999,6 +2999,7 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       "fosfomycin",
       "pivmecillinam",
       "gepotidacin",
+      "sulopenem",
       "tmp-smx",
     ];
     return utiOrder

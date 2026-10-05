@@ -34,6 +34,9 @@ const NEW_IDS = [
   "ritlecitinib",
   "deucravacitinib",
   "apremilast",
+  "abrocitinib",
+  "ozanimod",
+  "resmetirom",
   "etodesnitazene",
   "n-pyrrolidino-etonitazene",
   "butonitazene",
@@ -62,6 +65,9 @@ test("modern brand aliases resolve", () => {
   assert.equal(searchDrugs("Pivya")[0]?.id, "pivmecillinam");
   assert.equal(searchDrugs("Orlynvah")[0]?.id, "sulopenem");
   assert.equal(searchDrugs("Retevmo")[0]?.id, "selpercatinib");
+  assert.equal(searchDrugs("Cibinqo")[0]?.id, "abrocitinib");
+  assert.equal(searchDrugs("Zeposia")[0]?.id, "ozanimod");
+  assert.equal(searchDrugs("Rezdiffra")[0]?.id, "resmetirom");
   assert.equal(searchDrugs("Ohtuvayre")[0]?.id, "ensifentrine");
   assert.equal(searchDrugs("Winrevair")[0]?.id, "sotatercept");
   assert.equal(searchDrugs("Quviviq")[0]?.id, "daridorexant");

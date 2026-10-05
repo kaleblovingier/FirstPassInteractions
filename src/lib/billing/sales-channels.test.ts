@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 /** Source-level checks (commerce.ts / hunts.ts are Vite-bound and not importable under node --test). */
-const hunts = await readFile(new URL("./hunts.ts", import.meta.url), "utf8");
-const commerce = await readFile(new URL("./commerce.ts", import.meta.url), "utf8");
+const hunts = (await readFile(new URL("./hunts.ts", import.meta.url), "utf8")).replace(/\r\n/g, "\n");
+const commerce = (await readFile(new URL("./commerce.ts", import.meta.url), "utf8")).replace(/\r\n/g, "\n");
 
 function block(src: string, start: string, end: string) {
   const i = src.indexOf(start);
@@ -34,7 +34,7 @@ test("harm-reduction targets are active on the Hunt directory (operator un-park)
   assert.doesNotMatch(directory, /parked: true/);
   // PARKED may be empty; any remaining parked rows still carry the flag + reason.
   const parkedIds = [...parked.matchAll(/id: "([^"]+)"/g)].map((m) => m[1]);
-  const rows = parked.split(/\n  \{\n/).slice(1);
+  const rows = parked.split(/\n {2}\{\n/).slice(1);
   assert.equal(rows.length, parkedIds.length);
   for (const row of rows) {
     assert.match(row, /parked: true/);
@@ -61,7 +61,7 @@ test("no sales post targets r/ketamine or other public/patient venues", () => {
   assert.doesNotMatch(posts, /reddit\.com\/r\/ketamine/i);
   assert.match(posts, /r\/PharmacySchool/);
   // Every Reddit post carries a check-the-rules note and states the audience.
-  const reddit = posts.split(/\n    \{\n/).filter((p) => /channel: "Reddit"/.test(p));
+  const reddit = posts.split(/\n {4}\{\n/).filter((p) => /channel: "Reddit"/.test(p));
   assert.ok(reddit.length >= 2);
   for (const p of reddit) {
     assert.match(p, /Check sub rules before posting/);

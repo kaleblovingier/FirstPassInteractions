@@ -323,12 +323,12 @@ export const MODERN_FORMULARY: Drug[] = [
       aliases: ["zeposia"],
       note: "Relapsing MS therapy. The label emphasizes first-dose bradycardia, AV block, and monitoring with concurrent bradycardic agents. Strong CYP3A4 or CYP2C8 inhibition can increase exposure. This desk keeps the interaction note limited to those label-supported PK cautions and does not assign a broader clinical PD map.",
     }),
-  d("resmetirom", "Resmetirom", ["MGL-3196"], "THR-β agonist for MASH",
+  d("resmetirom", "Resmetirom", ["Rezdiffra", "MGL-3196"], "THR-β agonist for MASH",
     [sub("CYP2C8", "major"), sub("CYP3A4", "minor")],
     ["hepatotoxic"],
     "Hepatotoxicity risk; strong CYP2C8 inhibitors/inducers can change exposure and dose selection",
     {
-      aliases: ["mgl-3196"],
+      aliases: ["rezdiffra", "mgl-3196"],
       note: "MASH therapy. The label warns about hepatotoxicity and specifies dose adjustment / avoidance issues with strong CYP2C8 inhibitors or inducers. This desk retains the label-grounded PK caution only and does not invent a broader interaction map.",
     }),
 

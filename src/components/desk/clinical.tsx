@@ -2,7 +2,22 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { CheckSquare, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
-import { crclOf, phenytoinCorrected, qtcOf, type Sex } from "@/lib/drugs/bedside";
+import {
+  childPughOf,
+  crclOf,
+  osmolarGapOf,
+  phenytoinCorrected,
+  qtcOf,
+  vancoAucOf,
+  type AlbuminBand,
+  type AscitesGrade,
+  type BilirubinBand,
+  type EncephalopathyGrade,
+  type InrBand,
+  type Sex,
+} from "@/lib/drugs/bedside";
+import { acbOnDesk, acbWanted, type AcbReport } from "@/lib/drugs/acb";
+import { dialysisOnDesk, dialysisWanted, type DialysisReport } from "@/lib/drugs/dialysis";
 import { LIVERTOX_CAT_TONE, livertoxOnDesk, livertoxUrl } from "@/lib/drugs/livertox";
 import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
 import { hasPhenoConvert, phenoConvertOnDesk } from "@/lib/drugs/pheno-convert";
@@ -96,7 +111,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -115,6 +130,8 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const wardsOn = wardWanted(ids) || safetyWanted(ids);
   const doseOn = dosingWanted(ids);
   const inr = useMemo(() => inrOnDesk(ids), [ids.join("|")]);
+  const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
+  const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -132,11 +149,13 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "uds", label: "UDS", on: uds.length > 0 },
       { id: "anc", label: "ANC", on: ancOn },
       { id: "inr", label: "INR", on: Boolean(inr) },
+      { id: "acb", label: "ACB", on: Boolean(acb) },
+      { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, acb, dialysis, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -149,7 +168,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
           <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
           <p className="mt-1 text-xs text-muted">
             QT, TDM, LiverTox, phenoconversion, CYP start/stop clocks, reversal, MME, Hunter, UDS,
-            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, COWS / CIWA, bedside math. Teaching — not a
+            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, ACB anticholinergic burden, hemodialysis drug clearance, COWS / CIWA, bedside math (QTc, CrCl, Child-Pugh, Vancomycin AUC, Osmolar Gap). Teaching — not a
             protocol, not a QTc. The PI governs the milligram.
           </p>
         </div>
@@ -189,6 +208,8 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "uds" && uds.length ? <UdsPanel ids={ids} /> : null}
         {live === "anc" && ancOn ? <AncPanel /> : null}
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
+        {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
+        {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>
@@ -873,6 +894,12 @@ function BedsidePanel({ ids, host }: { ids: string[]; host: HostContext }) {
       </div>
 
       {ids.includes("phenytoin") ? <PhenytoinBlock /> : null}
+
+      <ChildPughBlock />
+
+      <VancoAucBlock defaultCrcl={crcl?.crcl} isHot={ids.includes("vancomycin")} />
+
+      <OsmolarGapBlock isHot={ids.includes("ethanol")} />
 
       <div className="rounded-xl border border-accent/15 bg-accent-soft/30 p-3 sm:p-4">
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{SCALES_COACH.kicker}</p>
@@ -1673,5 +1700,460 @@ function PhenytoinBlock() {
       )}
       {result ? <p className="mt-2 text-sm leading-relaxed text-muted">{result.note}</p> : null}
     </article>
+  );
+}
+
+function ChildPughBlock() {
+  const [bili, setBili] = useState<BilirubinBand>("under2");
+  const [alb, setAlb] = useState<AlbuminBand>("over35");
+  const [inrBand, setInrBand] = useState<InrBand>("under17");
+  const [ascites, setAscites] = useState<AscitesGrade>("none");
+  const [enceph, setEnceph] = useState<EncephalopathyGrade>("none");
+
+  const res = childPughOf({
+    bilirubin: bili,
+    albumin: alb,
+    inr: inrBand,
+    ascites,
+    encephalopathy: enceph,
+  });
+
+  return (
+    <article className="rounded-md bg-bg-sunken px-3 py-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Child-Pugh hepatic score</h3>
+          <p className="mt-1 text-xs text-muted">
+            Hepatic functional reserve for drug clearance and FDA labeling guidance. Teaching math — not MELD.
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="font-mono text-lg text-fg">{res.score} / 15</p>
+          <Badge tone={res.classBand === "A" ? "ok" : res.classBand === "B" ? "warn" : "danger"}>
+            Class {res.classBand}
+          </Badge>
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <p className="text-xs font-medium text-muted">Total Bilirubin</p>
+          <div className="mt-1 flex gap-1">
+            {([
+              { val: "under2", label: "<2 mg/dL" },
+              { val: "twoToThree", label: "2–3 mg/dL" },
+              { val: "over3", label: ">3 mg/dL" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.val}
+                type="button"
+                aria-pressed={bili === opt.val}
+                onClick={() => setBili(opt.val)}
+                className={cn(
+                  "h-9 flex-1 rounded-full text-[11px] font-medium",
+                  bili === opt.val ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-medium text-muted">Serum Albumin</p>
+          <div className="mt-1 flex gap-1">
+            {([
+              { val: "over35", label: ">3.5 g/dL" },
+              { val: "twoEightToThreeFive", label: "2.8–3.5" },
+              { val: "under28", label: "<2.8 g/dL" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.val}
+                type="button"
+                aria-pressed={alb === opt.val}
+                onClick={() => setAlb(opt.val)}
+                className={cn(
+                  "h-9 flex-1 rounded-full text-[11px] font-medium",
+                  alb === opt.val ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-medium text-muted">INR</p>
+          <div className="mt-1 flex gap-1">
+            {([
+              { val: "under17", label: "<1.7" },
+              { val: "oneSevenToTwoThree", label: "1.7–2.3" },
+              { val: "over23", label: ">2.3" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.val}
+                type="button"
+                aria-pressed={inrBand === opt.val}
+                onClick={() => setInrBand(opt.val)}
+                className={cn(
+                  "h-9 flex-1 rounded-full text-[11px] font-medium",
+                  inrBand === opt.val ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-medium text-muted">Ascites</p>
+          <div className="mt-1 flex gap-1">
+            {([
+              { val: "none", label: "None" },
+              { val: "slight", label: "Slight/Ctrl" },
+              { val: "moderate", label: "Mod/Severe" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.val}
+                type="button"
+                aria-pressed={ascites === opt.val}
+                onClick={() => setAscites(opt.val)}
+                className={cn(
+                  "h-9 flex-1 rounded-full text-[11px] font-medium",
+                  ascites === opt.val ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="sm:col-span-2 lg:col-span-2">
+          <p className="text-xs font-medium text-muted">Hepatic Encephalopathy</p>
+          <div className="mt-1 flex gap-1">
+            {([
+              { val: "none", label: "None" },
+              { val: "grade1_2", label: "Grade 1–2 (mild confusion / asterixis)" },
+              { val: "grade3_4", label: "Grade 3–4 (stupor / coma)" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.val}
+                type="button"
+                aria-pressed={enceph === opt.val}
+                onClick={() => setEnceph(opt.val)}
+                className={cn(
+                  "h-9 flex-1 rounded-full px-2 text-[11px] font-medium",
+                  enceph === opt.val ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={cn("mt-3 rounded-md px-3 py-2.5", toneClass(res.classBand === "A" ? "ok" : res.classBand === "B" ? "warn" : "danger"))}>
+        <p className="text-sm font-medium text-fg">{res.label}</p>
+        <p className="mt-1 text-sm leading-relaxed text-fg">{res.note}</p>
+      </div>
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Child & Turcotte 1964, Pugh 1973. Referenced across FDA drug labeling to define mild (A), moderate (B), and severe (C) hepatic impairment PK studies. Does not replace MELD for transplant urgency.
+      </p>
+    </article>
+  );
+}
+
+function AcbPanel({ report }: { report: AcbReport }) {
+  const isHigh = report.riskLevel === "high";
+  const tone = isHigh ? "danger" : report.riskLevel === "low" ? "warn" : "ok";
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Anticholinergic Cognitive Burden</h3>
+          <p className="mt-1 text-xs text-muted">
+            Cumulative anticholinergic exposure scoring (Boustani 2008 / Campbell 2013 / AGS Beers Criteria).
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="font-mono text-lg text-fg">Score: {report.totalScore}</p>
+          <Badge tone={tone}>
+            {isHigh ? "High Burden (≥3)" : "Low Burden"}
+          </Badge>
+        </div>
+      </div>
+
+      <div className={cn("rounded-md px-3 py-3", toneClass(tone))}>
+        <p className="text-sm font-medium text-fg">{report.summary}</p>
+        <p className="mt-1 text-sm leading-relaxed text-fg">{report.pearl}</p>
+      </div>
+
+      <div>
+        <h4 className="font-mono text-[11px] uppercase tracking-wide text-muted">Scored tray contributors</h4>
+        <ul className="mt-2 space-y-2">
+          {report.contributors.map((c) => (
+            <li key={c.drugId} className="rounded-md bg-bg-sunken px-3 py-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-medium text-fg">{c.name}</span>
+                <Badge tone={c.score === 3 ? "danger" : c.score === 2 ? "warn" : "info"}>
+                  +{c.score} pt{c.score > 1 ? "s" : ""}
+                </Badge>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-muted">{c.mechanism}</p>
+              {c.alternative ? (
+                <p className="mt-1.5 text-xs leading-relaxed text-accent">
+                  <span className="font-medium text-fg">Alternative consideration:</span> {c.alternative}
+                </p>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <article className="rounded-md bg-bg-sunken px-3 py-2.5">
+          <h4 className="text-xs font-semibold text-fg">Central manifestations</h4>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Memory impairment, confusion, acute delirium, hallucinations, slowed psychomotor processing, sedation, and increased fall risk.
+          </p>
+        </article>
+        <article className="rounded-md bg-bg-sunken px-3 py-2.5">
+          <h4 className="text-xs font-semibold text-fg">Peripheral manifestations</h4>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Dry mouth (xerostomia), blurred vision / cycloplegia, constipation / impaction, urinary retention, tachycardia, and anhidrosis / hyperthermia.
+          </p>
+        </article>
+      </div>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational reference only. A score ≥3 signals heightened vulnerability in older or cognitively fragile adults. Not a deprescribing order. Individual patient indications and specialist plans govern.
+      </p>
+    </div>
+  );
+}
+
+function VancoAucBlock({ defaultCrcl, isHot }: { defaultCrcl?: number; isHot?: boolean }) {
+  const [dose, setDose] = useState("2000");
+  const [crcl, setCrcl] = useState(defaultCrcl ? String(defaultCrcl) : "80");
+  const [mic, setMic] = useState("1.0");
+
+  useEffect(() => {
+    if (defaultCrcl && defaultCrcl > 0) {
+      setCrcl(String(defaultCrcl));
+    }
+  }, [defaultCrcl]);
+
+  const res = vancoAucOf({
+    totalDailyDoseMg: Number(dose),
+    crcl: Number(crcl),
+    mic: Number(mic),
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Vancomycin AUC24 / MIC</h3>
+            {isHot ? <Badge tone="info">Vancomycin on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            2020 ASHP/IDSA consensus target: 400–600 mg·h/L for serious MRSA infections (assuming MIC 1 mg/L).
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">AUC {res.auc24} mg·h/L</p>
+            <Badge tone={res.band === "target" ? "ok" : res.band === "subtherapeutic" ? "warn" : "danger"}>
+              {res.band === "target" ? "Target (400–600)" : res.band === "subtherapeutic" ? "Subtherapeutic (<400)" : "Supratherapeutic (>600)"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <label className="text-xs text-muted">
+          Total daily dose (mg/24h)
+          <Input className="mt-1" inputMode="decimal" value={dose} onChange={(e) => setDose(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          CrCl (mL/min)
+          <Input className="mt-1" inputMode="decimal" value={crcl} onChange={(e) => setCrcl(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          MIC (mg/L)
+          <Input className="mt-1" inputMode="decimal" value={mic} onChange={(e) => setMic(e.target.value)} />
+        </label>
+      </div>
+
+      {res ? (
+        <div className={cn("mt-3 rounded-md px-3 py-2.5", toneClass(res.band === "target" ? "ok" : res.band === "subtherapeutic" ? "warn" : "danger"))}>
+          <p className="text-sm font-medium text-fg">{res.label}</p>
+          <p className="mt-1 text-sm leading-relaxed text-fg">{res.note}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter total daily dose (250–8000 mg) and CrCl (5–250 mL/min).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Consensus guidelines retired trough-only targets (15–20 µg/mL) in favor of AUC24:MIC to minimize nephrotoxicity while preserving bactericidal efficacy. Bedside pharmacokinetic kinetic estimate; individual therapeutic drug monitoring and clinical judgment govern.
+      </p>
+    </article>
+  );
+}
+
+function OsmolarGapBlock({ isHot }: { isHot?: boolean }) {
+  const [meas, setMeas] = useState("300");
+  const [na, setNa] = useState("140");
+  const [glu, setGlu] = useState("90");
+  const [bun, setBun] = useState("14");
+  const [eth, setEth] = useState("0");
+
+  const res = osmolarGapOf({
+    measuredOsm: Number(meas),
+    na: Number(na),
+    glucose: Number(glu),
+    bun: Number(bun),
+    ethanolMgDl: Number(eth) || 0,
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Serum Osmolar Gap</h3>
+            {isHot ? <Badge tone="info">Alcohol / Osmolyte on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Measured osmolality minus calculated (2·Na + Glu/18 + BUN/2.8 + EtOH/4.6). Unmeasured toxic alcohol screen.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">Gap: {res.gap > 0 ? `+${res.gap}` : res.gap} mOsm/kg</p>
+            <Badge tone={res.band === "normal" ? "ok" : res.band === "borderline" ? "warn" : "danger"}>
+              {res.band === "normal" ? "Normal (≤10)" : res.band === "borderline" ? "Borderline (11–14)" : "Elevated (≥15)"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <label className="text-xs text-muted">
+          Measured Osm
+          <Input className="mt-1" inputMode="decimal" value={meas} onChange={(e) => setMeas(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Na (mEq/L)
+          <Input className="mt-1" inputMode="decimal" value={na} onChange={(e) => setNa(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Glucose (mg/dL)
+          <Input className="mt-1" inputMode="decimal" value={glu} onChange={(e) => setGlu(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          BUN (mg/dL)
+          <Input className="mt-1" inputMode="decimal" value={bun} onChange={(e) => setBun(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Ethanol (mg/dL)
+          <Input className="mt-1" inputMode="decimal" value={eth} onChange={(e) => setEth(e.target.value)} />
+        </label>
+      </div>
+
+      {res ? (
+        <div className={cn("mt-3 rounded-md px-3 py-2.5", toneClass(res.band === "normal" ? "ok" : res.band === "borderline" ? "warn" : "danger"))}>
+          <div className="flex justify-between text-xs font-mono">
+            <span>Calculated: {res.calculatedOsm} mOsm/kg</span>
+            <span>Delta: {res.gap} mOsm/kg</span>
+          </div>
+          <p className="mt-1 text-sm font-medium text-fg">{res.label}</p>
+          <p className="mt-1 text-sm leading-relaxed text-fg">{res.note}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter measured osmolality (200–550) and chemistry values.</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Normal gap does not exclude late toxic alcohol ingestions after the parent alcohol is converted into non-volatile acidic metabolites. Correlate with clinical state, anion gap, and poison center guidance.
+      </p>
+    </article>
+  );
+}
+
+function DialysisPanel({ report }: { report: DialysisReport }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Hemodialysis Drug Clearance</h3>
+          <p className="mt-1 text-xs text-muted">
+            Extracorporeal clearance and post-dialysis replacement schedule (Bennett / FDA PK labeling).
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1 text-right">
+          <Badge tone="danger">{report.dialyzedCount} Dialyzed</Badge>
+          {report.partiallyDialyzedCount ? (
+            <Badge tone="warn">{report.partiallyDialyzedCount} Partial</Badge>
+          ) : null}
+          <Badge tone="info">{report.notDialyzedCount} Non-dialyzed</Badge>
+        </div>
+      </div>
+
+      <div className="rounded-md bg-bg-sunken px-3 py-3">
+        <p className="text-sm font-medium text-fg">{report.summary}</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted">{report.principles}</p>
+      </div>
+
+      <div>
+        <h4 className="font-mono text-[11px] uppercase tracking-wide text-muted">Tray drug clearance profiles</h4>
+        <ul className="mt-2 space-y-2.5">
+          {report.rows.map((row) => (
+            <li key={row.id} className="rounded-md bg-bg-sunken px-3 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-sm font-semibold text-fg">{row.name}</span>
+                  {row.fractionRemovedPct ? (
+                    <span className="ml-2 font-mono text-xs text-muted">({row.fractionRemovedPct} removed)</span>
+                  ) : null}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Badge tone={row.dialyzability === "dialyzed" ? "danger" : row.dialyzability === "partially-dialyzed" ? "warn" : "ok"}>
+                    {row.dialyzability === "dialyzed" ? "Dialyzed" : row.dialyzability === "partially-dialyzed" ? "Partially dialyzed" : "Not dialyzed"}
+                  </Badge>
+                  <Badge tone={row.schedule === "post-hd" ? "danger" : row.schedule === "supplement" ? "warn" : "info"}>
+                    {row.schedule === "post-hd" ? "Dose post-HD" : row.schedule === "supplement" ? "Supplement" : "Standard schedule"}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
+                <span>MW: {row.molecularWeightDa} Da</span>
+                <span>Protein binding: {row.proteinBindingPct}%</span>
+                <span>Vd: {row.volumeDistributionLKg} L/kg</span>
+              </div>
+
+              <p className="mt-1.5 text-xs leading-relaxed text-muted">{row.mechanism}</p>
+              <p className="mt-1 text-xs leading-relaxed text-fg">{row.pearl}</p>
+              {row.caution ? (
+                <p className="mt-1 text-xs leading-relaxed text-danger font-medium">{row.caution}</p>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="rounded-md bg-bg-sunken p-3 text-[11px] leading-relaxed text-subtle">
+        Teaching reference grounded in Bennett's Drug Prescribing in Renal Failure and FDA package inserts. Does not generate replacement milligram orders. Consult nephrology and dialysis unit protocols for specific dialyzer membrane flux and blood/dialysate flow rates.
+      </div>
+    </div>
   );
 }

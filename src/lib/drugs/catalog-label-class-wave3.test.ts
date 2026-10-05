@@ -6,6 +6,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DRUG_BY_ID, searchDrugs } from "./catalog";
+import type { EnzymeRole } from "./types";
 
 test("wave3 catalog rows use one class word per role", () => {
   const cases = [
@@ -59,7 +60,10 @@ test("wave3 catalog rows use one class word per role", () => {
     assert.equal(searchDrugs(c.query)[0]?.id, c.id);
     assert.equal(searchDrugs(c.id)[0]?.id, c.id);
     assert.doesNotMatch(`${drug.toxicityHint ?? ""} ${drug.note ?? ""}`, /\b\d+(\.\d+)?\s*(mg|mcg|g)\b/i);
-    const graded = drug.enzymes.filter((r) => r.kind === "inhibitor" || r.kind === "inducer");
+    const graded = drug.enzymes.filter(
+      (r): r is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
+        r.kind === "inhibitor" || r.kind === "inducer",
+    );
     assert.equal(graded.length, c.roles.length, c.id);
     for (const want of c.roles) {
       const role = graded.find((r) => r.enzyme === want.enzyme && r.kind === want.kind);
