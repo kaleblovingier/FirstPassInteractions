@@ -42,6 +42,17 @@
  * 1–4 are not repeated. The floor is contraindicated ("Avoid together")
  * because a label pin holds the engine there. No new CYP grade.
  *
+ * Wave 6 is label-stated contraindications from the current Recorlev
+ * (levoketoconazole) SPL, retrieved 2026-10-05. Section 4 contraindicates
+ * drugs that cause QT prolongation associated with ventricular arrhythmias,
+ * and certain sensitive CYP3A4 or CYP3A4 and P-gp substrates (see 7.1).
+ * Table 6 in 7.1 says use with the QT row's drugs "is contraindicated" and
+ * names them; only catalog drugs named there are pairs. Table 6's
+ * sensitive-substrate row says "contraindicated or not recommended" without
+ * saying which drug is which, so it is not used. The metabolizer-conditional
+ * eliglustat line is not used. The floor is contraindicated ("Avoid
+ * together") because a label pin holds the engine there. No new CYP grade.
+ *
  * Quotes are verbatim substrings of the SPL text retrieved on `retrieved`; a
  * "…" marks an elided span. `labelExample` (also verbatim) is used when the
  * governing sentence names a class and a nearby sentence names the drug.
@@ -85,7 +96,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03";
+  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -94,8 +105,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon. */
-  wave: 1 | 2 | 3 | 4 | 5;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev. */
+  wave: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -157,6 +168,9 @@ export const LABEL_SETIDS = {
   // wave 5, DailyMed v2 SPL retrieved 2026-10-03.
   // Geodon capsules and injection. Effective time 2025-01-13. Published 2026-09-18.
   geodon: "8326928a-2cb6-4f7f-9712-03a425a14c37",
+  // wave 6, DailyMed v2 SPL retrieved 2026-10-05.
+  // Recorlev (levoketoconazole) tablets. SPL version 13, effective 2026-03-10, published 2026-06-26.
+  recorlev: "d4c5fead-bc4a-fb02-e053-2a95a90ae4fc",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -2502,9 +2516,133 @@ const WAVE_5: GoldPair[] = [
   }),
 ];
 
+/** Wave 6 row: Recorlev. The label says contraindicated and the pin holds the engine there. */
+function row6(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-05",
+    expectedFloor: "contraindicated",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 6,
+  };
+}
+
+const RECORLEV_SECTION = "7.1 Effect of RECORLEV on Other Drugs (Table 6)";
+const RECORLEV_QT =
+  "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated";
+const RECORLEV_NOTE =
+  "Table 6 row: CYP3A4 or CYP3A4 and P-gp substrates that may prolong QT. Section 4 contraindicates drugs that cause QT prolongation associated with ventricular arrhythmias.";
+
+const WAVE_6: GoldPair[] = [
+  // ── Recorlev Table 6: named QT drugs, use is contraindicated ──
+  row6({
+    drugA: "levoketoconazole", drugB: "bosutinib", queries: ["recorlev", "bosutinib"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "Bosutinib",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "clarithromycin", queries: ["recorlev", "clarithromycin"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "cobimetinib", queries: ["recorlev", "cobimetinib"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "cobimetinib",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "crizotinib", queries: ["recorlev", "crizotinib"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "crizotinib",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "disopyramide", queries: ["recorlev", "disopyramide"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "disopyramide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "dofetilide", queries: ["recorlev", "dofetilide"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "dronedarone", queries: ["recorlev", "dronedarone"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "dronedarone",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "ivabradine", queries: ["recorlev", "ivabradine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "ivabradine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "methadone", queries: ["recorlev", "methadone"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "midostaurin", queries: ["recorlev", "midostaurin"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "midostaurin",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "nicardipine", queries: ["recorlev", "nicardipine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "nicardipine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "pimozide", queries: ["recorlev", "pimozide"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "pimozide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "quinidine", queries: ["recorlev", "quinidine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "quinidine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "ranolazine", queries: ["recorlev", "ranolazine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "ranolazine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
 export const WAVE_5_COUNT = WAVE_5.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5];
+export const WAVE_6_COUNT = WAVE_6.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -2564,10 +2702,10 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
 export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
   { drug: "flibanserin", reason: "Not in catalog. Paxlovid section 4 names it. Not curated." },
-  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups." },
+  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition." },
   { drug: "astemizole", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
   { drug: "terfenadine", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
-  { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists." },
+  { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row." },
   { drug: "aminophylline", reason: "Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead." },
   {
     drug: "buprenorphine/naloxone",
@@ -2586,6 +2724,15 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
 
 /** Candidate pairs considered and dropped, with the reason. */
 export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
+  {
+    pair: "wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)",
+    reason:
+      "Recorlev Table 6 says use with these is \"contraindicated or not recommended\" and does not say which. Section 4 says \"certain\" sensitive substrates. Not pinned as contraindicated. Ebastine, lomitapide, saquinavir, and tipranavir are not in the catalog.",
+  },
+  {
+    pair: "wave 6: levoketoconazole + strong CYP3A4 inhibitors or inducers (Table 7)",
+    reason: "Recorlev Table 7 says \"not recommended\", not contraindicated.",
+  },
   {
     pair: "methadone / buprenorphine / fentanyl + strong CYP3A4 inhibitor or inducer",
     reason:

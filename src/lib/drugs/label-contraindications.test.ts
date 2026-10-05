@@ -233,6 +233,21 @@ const EXPECTED_PINS = [
   "ziprasidone+selegiline",
   "ziprasidone+safinamide",
   "ziprasidone+rasagiline",
+  // Recorlev Table 6 QT row (section 4 points there). CYP3A4 finding held, or a standalone for dofetilide.
+  "levoketoconazole+bosutinib",
+  "levoketoconazole+clarithromycin",
+  "levoketoconazole+cobimetinib",
+  "levoketoconazole+crizotinib",
+  "levoketoconazole+disopyramide",
+  "levoketoconazole+dofetilide",
+  "levoketoconazole+dronedarone",
+  "levoketoconazole+ivabradine",
+  "levoketoconazole+methadone",
+  "levoketoconazole+midostaurin",
+  "levoketoconazole+nicardipine",
+  "levoketoconazole+pimozide",
+  "levoketoconazole+quinidine",
+  "levoketoconazole+ranolazine",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -240,8 +255,9 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 49);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 23);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 24);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 23);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
@@ -439,4 +455,30 @@ test("Geodon holds one pharmacodynamic card and does not assign a CYP grade", ()
   assert.match(stand.id, /label-ci-standalone/);
   assert.equal(stand.tags.includes("inhibitor"), false);
   assert.equal(stand.tags.includes("inducer"), false);
+});
+
+test("Recorlev holds the existing CYP3A4 finding, adds no CYP grade, and stays narrow", () => {
+  const levo = DRUG_BY_ID.levoketoconazole.enzymes.filter((e) => e.kind === "inhibitor" && e.enzyme === "CYP3A4");
+  assert.equal(levo.length, 1);
+  assert.equal(levo[0].kind === "inhibitor" && levo[0].strength, "strong");
+  const bos = pairFindings("levoketoconazole", "bosutinib");
+  const pinned = bos.filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.equal(pinned.length, 1);
+  assert.equal(pinned[0].kind, "pk");
+  assert.deepEqual(pinned[0].enzymes, ["CYP3A4"]);
+  assert.equal(pinned[0].drugIds[0], "levoketoconazole", "levoketoconazole is the perpetrator");
+  assert.equal(bos.some((f) => f.id.includes("label-ci")), false, "no standalone card next to the held finding");
+  const dof = pairFindings("levoketoconazole", "dofetilide").find((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.ok(dof);
+  assert.match(dof.id, /label-ci-standalone/);
+  assert.deepEqual(dof.enzymes, []);
+  // Table 6's sensitive-substrate row says "contraindicated or not recommended"; not pinned.
+  for (const other of ["simvastatin", "midazolam", "triazolam", "lurasidone", "tacrolimus", "digoxin"]) {
+    assert.equal(labelContraindicationFor("levoketoconazole", other), undefined, other);
+  }
+  // Only the rows the label names. Sibling catalog rows are not pinned.
+  for (const other of ["methadone-soluble", "quinidine-gluconate"]) {
+    if (!DRUG_BY_ID[other]) continue;
+    assert.equal(labelContraindicationFor("levoketoconazole", other), undefined, other);
+  }
 });
