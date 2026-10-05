@@ -216,3 +216,14 @@ test('gemfibrozil quotes repaglinide and selexipag, and not an unnamed CYP2C8 su
   const mon = pkBasis('gemfibrozil', 'montelukast').map((x) => x.detail).join('\n');
   assert.doesNotMatch(mon, line);
 });
+
+test('paroxetine quotes pimozide and thioridazine, and not an unnamed CYP2D6 substrate', () => {
+  const line = /The Paroxetine label calls this combination contraindicated/;
+  for (const victim of ['pimozide', 'thioridazine']) {
+    const details = pkBasis('paroxetine', victim).map((x) => x.detail).join('\n');
+    assert.match(details, line, victim);
+    assert.match(details, /pimozide or thioridazine/, victim);
+  }
+  const met = pkBasis('paroxetine', 'metoprolol').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(met, line);
+});

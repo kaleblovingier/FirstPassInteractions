@@ -600,4 +600,23 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2025-12-18",
     retrieved: "2026-10-05",
   },
+  {
+    perpIds: ["paroxetine"],
+    brand: "Paroxetine",
+    enzyme: "CYP2D6",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote: "Paroxetine tablets are a CYP2D6 inhibitor",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide", "thioridazine"],
+        section: "7 Drug Interactions",
+        quote:
+          "Paroxetine tablets are contraindicated in patients taking pimozide or thioridazine",
+      },
+    ],
+    url: DM("009d8b89-eab9-43ba-b077-86bfa993a745"),
+    labelEffective: "2026-07-08",
+    retrieved: "2026-10-05",
+  },
 ];
