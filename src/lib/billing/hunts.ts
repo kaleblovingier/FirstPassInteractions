@@ -548,20 +548,39 @@ export function filterDirectory(prey: Prey | "all", range: Range | "all") {
   return DIRECTORY.filter((t) => (prey === "all" || t.prey === prey) && (range === "all" || t.range === range));
 }
 
-export function targetDm(t: Pick<Target, "name" | "city" | "hook">, price = COMMERCE.founding) {
+/** Free oral-ketamine teaching demo on the live desk (`?sample=gf-oral-ketamine`). No key needed. */
+export function oralKetamineDemoUrl(siteUrl: string = SITE.url) {
+  const url = new URL(siteUrl);
+  url.hash = "";
+  url.search = "";
+  url.searchParams.set("sample", "gf-oral-ketamine");
+  return url.toString();
+}
+
+/**
+ * Hunt DM. Canon: five drugs free; founding $79 once (not Pro, not a subscription);
+ * oral ketamine route is the free teaching demo; the other host factors come with founding.
+ * Clinic DMs lead with the free oral-ketamine link. Every DM carries the desk + Pages URLs.
+ */
+export function targetDm(t: Pick<Target, "name" | "city" | "hook"> & Partial<Pick<Target, "prey">>, price = COMMERCE.founding) {
+  const clinic = t.prey === "clinic";
   return [
     `I built FirstPass, an educational CYP450 teaching desk. ${t.hook}`,
     WHO_FOR,
     "",
     `Looked you up because of ${t.name} in ${t.city}.`,
     "",
-    "Up to five-drug collision checks stay free so you can kick the tires.",
-    `Founding license is $${price} once: host factors, metabolites, enzyme atlas, JSON/CSV export.`,
+    "Free: check up to five drugs. No card, no key.",
+    ...(clinic
+      ? [`Free teaching demo, oral ketamine × grapefruit (the gut first pass): ${oralKetamineDemoUrl()}`]
+      : []),
+    `Founding is $${price} once, not a subscription: ${clinic ? "the other host factors" : "host factors"}, metabolite maps, enzyme atlas, and JSON/CSV export.`,
     "",
-    SITE.url,
+    `Desk: ${SITE.url}`,
+    `One-pager: ${SITE.pages}`,
     "",
     payClose(price),
-    `${OPERATOR.email} · ${OPERATOR.phone}`,
+    `Questions or a missing key: ${OPERATOR.email} · ${OPERATOR.phone}`,
     "",
     "Educational model — not FDA-cleared, not a clinical system of record. The Prescribing Information governs.",
   ].join("\n");
