@@ -17,9 +17,9 @@
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,824 / 1,662,576 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 1,646 (1,606 CYP, 40 P-gp) on 1,639 pairs (1,639 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 578 |
-| **Findings that move contraindicated → major** | **1,068** on **1,061** pairs |
-| **Pairs whose overall severity changes** | **1,061** |
+| … of which carry a label citation (kept at contraindicated) | 579 |
+| **Findings that move contraindicated → major** | **1,067** on **1,060** pairs |
+| **Pairs whose overall severity changes** | **1,060** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
 | Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 272 / 272 → **272 / 272** |
@@ -29,13 +29,13 @@
 
 PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **1,646 findings on 1,639 pairs keyed by display name**: **differs**.
 
-578 carry a label citation and are kept at contraindicated, so 1,068 are capped.
+579 carry a label citation and are kept at contraindicated, so 1,067 are capped.
 
 ## Moved findings by rule / enzyme
 
 | Rule (pkSeverity branch) | Findings | Pairs |
 |---|---:|---:|
-| strong inhibitor × sensitive substrate | 592 | 592 |
+| strong inhibitor × sensitive substrate | 591 | 591 |
 | strong inducer × sensitive substrate | 340 | 340 |
 | strong inhibitor × sensitive + NTI substrate | 94 | 94 |
 | strong inducer × sensitive + NTI substrate | 42 | 42 |
@@ -48,8 +48,8 @@ PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings 
 | CYP2C19 | 16 |
 | CYP1A2 | 13 |
 | CYP2C9 | 6 |
-| CYP2C8 | 2 |
 | CYP2B6 | 1 |
+| CYP2C8 | 1 |
 
 ## Moved findings by drug (top 30)
 
