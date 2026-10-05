@@ -130,7 +130,7 @@ export const useDesk = create<DeskState>()(
               open: true,
               plan: "pro",
               interval: get().checkout.interval,
-              reason: `Free desks hold ${cap} drugs. Pro opens eight.`,
+              reason: `Free desks hold ${cap} drugs. Founding opens eight.`,
             },
           });
           return false;
@@ -169,7 +169,7 @@ export const useDesk = create<DeskState>()(
         const cap = maxDrugs(activePlan(get()));
         const next = ids.filter((id) => DRUG_BY_ID[id] && !id.startsWith("__")).slice(0, cap);
         // Oral/IN ketamine route is free for the teaching demo (grapefruit × oral K).
-        // Phenotype, smoke, alcohol, and cannabis route stay Pro.
+        // Phenotype, smoke, alcohol, and cannabis route come with founding.
         const wantsHost = Boolean(
           extras?.phenotypes ||
             extras?.smoking ||

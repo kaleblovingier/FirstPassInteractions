@@ -15,7 +15,7 @@ export interface PackMeta {
   caseIds: string[];
 }
 
-/** Teaching packs — free-friendly cases (oral/IN ketamine route OK; no Pro host extras). */
+/** Teaching packs — free-friendly cases (oral/IN ketamine route OK; no founding-gated host extras). */
 export const PACKS: Record<PackId, PackMeta> = {
   "clinic-onboard": {
     id: "clinic-onboard",
