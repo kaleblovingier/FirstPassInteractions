@@ -680,4 +680,33 @@ export {
   type VancoSawchukZaskeResult,
 } from "./vancomycin";
 
+export {
+  calculateAminoglycosideWeight,
+  evaluateHartfordNomogram,
+  type AminoglycosideAgentId,
+  type AminoglycosideWeightInput,
+  type AminoglycosideWeightResult,
+  type HartfordNomogramInput,
+  type HartfordNomogramResult,
+  type HartfordInterval,
+} from "./aminoglycosides";
+
+export {
+  classifyLithiumLevel,
+  evaluateExtripLithiumCriteria,
+  calculateLithiumClearance,
+  lithiumReportOnDesk,
+  LITHIUM_TARGET_RANGES,
+  type LithiumTargetBand,
+  type LithiumTargetRange,
+  type LithiumToxicitySeverity,
+  type LithiumLevelClassification,
+  type ExtripLithiumTriageInput,
+  type ExtripLithiumTriageResult,
+  type LithiumClearanceEstimateInput,
+  type LithiumClearanceEstimateResult,
+  type LithiumDeskReport,
+} from "./lithium";
+
+
 

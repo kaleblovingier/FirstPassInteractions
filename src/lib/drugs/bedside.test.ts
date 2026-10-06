@@ -13,6 +13,11 @@ import {
   crclWeightComparisonOf,
   calvertCarboplatinOf,
   calculateVancoSawchukZaske,
+  calculateAminoglycosideWeight,
+  evaluateHartfordNomogram,
+  classifyLithiumLevel,
+  evaluateExtripLithiumCriteria,
+  calculateLithiumClearance,
 } from "./bedside";
 
 test("qtcOf calculates Bazett and Fridericia", () => {
@@ -369,5 +374,31 @@ test("calculateVancoSawchukZaske calculates two-point PK equations and targets",
   assert.ok(res.auc24 >= 400 && res.auc24 <= 600);
   assert.equal(res.samplingTimingWarning, null);
 });
+
+test("bedside aminoglycoside weight and Hartford nomogram functions calculate accurately", () => {
+  const wt = calculateAminoglycosideWeight({ heightCm: 178, weightKg: 110, sex: "male" });
+  assert.ok(wt);
+  assert.equal(wt.weightCategory, "obese");
+  assert.equal(wt.recommendedWeightType, "adj");
+
+  const nomo = evaluateHartfordNomogram({ agent: "gentamicin", hoursPostStart: 8, serumLevelUgMl: 4.0 });
+  assert.ok(nomo);
+  assert.equal(nomo.interval, "q24h");
+});
+
+test("bedside lithium level classification, clearance physics, and EXTRIP hemodialysis operate accurately", () => {
+  const level = classifyLithiumLevel(0.7, "maintenance");
+  assert.equal(level.severity, "therapeutic");
+  assert.equal(level.inTargetRange, true);
+
+  const extrip = evaluateExtripLithiumCriteria({ serumLithiumMeqL: 4.5, crclMlMin: 35 });
+  assert.equal(extrip.indication, "recommended");
+  assert.ok(extrip.reboundWarning.isHighRisk);
+
+  const cl = calculateLithiumClearance({ crclMlMin: 100, weightKg: 70, takingThiazide: true });
+  assert.equal(cl.percentReduction, 40);
+  assert.equal(cl.estimatedLithiumClearanceMlMin, 12);
+});
+
 
 

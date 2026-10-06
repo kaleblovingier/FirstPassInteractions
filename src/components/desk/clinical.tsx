@@ -68,6 +68,24 @@ import {
   phenobarbitalReportOnDesk,
   type PhenobarbitalIndication,
 } from "@/lib/drugs/phenobarbital";
+import {
+  calculateAminoglycosideWeight,
+  evaluateHartfordNomogram,
+  aminoglycosidesOnDesk,
+  aminoglycosideReportOnDesk,
+  TRADITIONAL_AG_TARGETS,
+  type AminoglycosideAgentId,
+  type HartfordInterval,
+} from "@/lib/drugs/aminoglycosides";
+import {
+  classifyLithiumLevel,
+  evaluateExtripLithiumCriteria,
+  calculateLithiumClearance,
+  lithiumReportOnDesk,
+  LITHIUM_TARGET_RANGES,
+  type LithiumTargetBand,
+  type LithiumToxicitySeverity,
+} from "@/lib/drugs/lithium";
 import { LIVERTOX_CAT_TONE, livertoxOnDesk, livertoxUrl } from "@/lib/drugs/livertox";
 import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
 import { hasPhenoConvert, phenoConvertOnDesk } from "@/lib/drugs/pheno-convert";
@@ -161,7 +179,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -187,6 +205,8 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const ironOn = useMemo(() => ironOnDesk(ids).hasIron, [ids.join("|")]);
   const digOn = useMemo(() => digoxinOnDesk(ids).hasDigoxin, [ids.join("|")]);
   const phenoBarbiturateOn = useMemo(() => phenobarbitalOnDesk(ids), [ids.join("|")]);
+  const agOn = useMemo(() => aminoglycosidesOnDesk(ids), [ids.join("|")]);
+  const lithiumOn = useMemo(() => lithiumReportOnDesk(ids).hasLithium, [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -211,11 +231,13 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "iron", label: "Iron", on: ironOn },
       { id: "digoxin", label: "Digoxin", on: digOn },
       { id: "phenobarbital", label: "Phenobarb", on: phenoBarbiturateOn },
+      { id: "aminoglycosides", label: "Aminoglycosides", on: agOn },
+      { id: "lithium", label: "Lithium", on: lithiumOn },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -228,7 +250,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
           <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
           <p className="mt-1 text-xs text-muted">
             QT, TDM, LiverTox, phenoconversion, CYP start/stop clocks, reversal, MME, Hunter, UDS,
-            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, ACB anticholinergic burden, hemodialysis drug clearance, corticosteroids & HPA suppression, APAP overdose & Rumack-Matthew nomogram, parenteral iron & Ganzoni kinetics, digoxin toxicity & DigiFab sizing, phenobarbital kinetics & ion trapping, COWS / CIWA, bedside math (QTc, CrCl, Child-Pugh, Vancomycin AUC & Sawchuk-Zaske, Osmolar Gap, Anion Gap, Corrected Sodium, BSA, Calvert, Ganzoni, Digoxin). Teaching — not a
+            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, ACB anticholinergic burden, hemodialysis drug clearance, corticosteroids & HPA suppression, APAP overdose & Rumack-Matthew nomogram, parenteral iron & Ganzoni kinetics, digoxin toxicity & DigiFab sizing, phenobarbital kinetics & ion trapping, aminoglycosides & Hartford nomogram, lithium kinetics & EXTRIP hemodialysis, COWS / CIWA, bedside math (QTc, CrCl, Child-Pugh, Vancomycin AUC & Sawchuk-Zaske, Osmolar Gap, Anion Gap, Corrected Sodium, BSA, Calvert, Ganzoni, Digoxin, Hartford, Lithium). Teaching — not a
             protocol, not a QTc. The PI governs the milligram.
           </p>
         </div>
@@ -275,6 +297,8 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "iron" && ironOn ? <IronPanel ids={ids} /> : null}
         {live === "digoxin" && digOn ? <DigoxinPanel ids={ids} /> : null}
         {live === "phenobarbital" && phenoBarbiturateOn ? <PhenobarbitalPanel ids={ids} /> : null}
+        {live === "aminoglycosides" && agOn ? <AminoglycosidesPanel ids={ids} /> : null}
+        {live === "lithium" && lithiumOn ? <LithiumPanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>
@@ -979,6 +1003,10 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
       <VancoAucBlock defaultCrcl={crcl?.crcl} isHot={ids.includes("vancomycin")} />
 
       <PhenobarbitalBlock isHot={phenobarbitalOnDesk(ids)} defaultWeight={Number(wt)} />
+
+      <AminoglycosideBlock isHot={aminoglycosidesOnDesk(ids)} defaultWeight={Number(wt)} defaultSex={sex} />
+
+      <LithiumBlock isHot={lithiumReportOnDesk(ids).hasLithium} defaultWeight={Number(wt)} defaultCrcl={crcl?.crcl} />
 
       <OsmolarGapBlock isHot={ids.includes("ethanol")} />
 
@@ -4381,6 +4409,1046 @@ function PhenobarbitalPanel({ ids }: { ids: string[] }) {
 
       <p className="text-[11px] leading-relaxed text-subtle">
         Educational reference only. Urinary alkalinization requires intensive care monitoring and serial blood gas validation (keep blood pH ≤7.55). Prescribing Information and regional Poison Center consultation govern.
+      </p>
+    </div>
+  );
+}
+
+function AminoglycosideBlock({
+  isHot,
+  defaultWeight,
+  defaultSex = "male",
+}: {
+  isHot?: boolean;
+  defaultWeight?: number;
+  defaultSex?: Sex;
+}) {
+  const [agent, setAgent] = useState<AminoglycosideAgentId>("gentamicin");
+  const [wt, setWt] = useState(defaultWeight && defaultWeight > 0 ? String(defaultWeight) : "70");
+  const [ht, setHt] = useState("175");
+  const [hours, setHours] = useState("8");
+  const [level, setLevel] = useState("4.0");
+
+  useEffect(() => {
+    if (defaultWeight && defaultWeight > 0) {
+      setWt(String(defaultWeight));
+    }
+  }, [defaultWeight]);
+
+  const wtRes = calculateAminoglycosideWeight({
+    heightCm: Number(ht),
+    weightKg: Number(wt),
+    sex: defaultSex,
+  });
+
+  const nomoRes = evaluateHartfordNomogram({
+    agent,
+    hoursPostStart: Number(hours),
+    serumLevelUgMl: Number(level),
+  });
+
+  const dosePerKg = agent === "amikacin" ? 15 : 7;
+  const estDoseMg = wtRes ? Math.round((wtRes.dosingWeightKg * dosePerKg) / 20) * 20 : null;
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Aminoglycoside Dosing & Hartford Nomogram</h3>
+            {isHot ? <Badge tone="info">Aminoglycoside on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Obesity weight adjustment (AdjBW 0.4) and Nicolau 1995 Hartford extended-interval triage.
+          </p>
+        </div>
+        {wtRes && estDoseMg ? (
+          <div className="text-right">
+            <p className="font-mono text-lg font-semibold text-fg">~{estDoseMg} mg ({dosePerKg} mg/kg)</p>
+            <span className="font-mono text-xs text-muted">Dosing Wt: {wtRes.dosingWeightKg} kg ({wtRes.recommendedWeightType.toUpperCase()})</span>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 flex gap-1">
+        {(["gentamicin", "tobramycin", "amikacin"] as const).map((a) => (
+          <button
+            key={a}
+            type="button"
+            aria-pressed={agent === a}
+            onClick={() => setAgent(a)}
+            className={cn(
+              "h-8 rounded px-2.5 text-xs font-medium",
+              agent === a ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            {a === "gentamicin" ? "Gentamicin (7 mg/kg)" : a === "tobramycin" ? "Tobramycin (7 mg/kg)" : "Amikacin (15 mg/kg)"}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <label className="text-xs text-muted">
+          Height (cm)
+          <Input className="mt-1" inputMode="decimal" value={ht} onChange={(e) => setHt(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Actual Weight (kg)
+          <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Draw Time (6–14h post-start)
+          <Input className="mt-1" inputMode="decimal" value={hours} onChange={(e) => setHours(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Serum Level (µg/mL)
+          <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+        </label>
+      </div>
+
+      {nomoRes ? (
+        <div className="mt-3 space-y-2">
+          <div className={cn("rounded-md p-2.5 text-xs", nomoRes.interval === "off-nomogram" ? "bg-danger-soft text-fg" : nomoRes.interval === "q48h" ? "bg-warn-soft text-fg" : "bg-surface text-fg")}>
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <span className="font-semibold">{nomoRes.label}</span>
+              {nomoRes.q24CutoffUgMl ? (
+                <span className="font-mono text-[11px] text-muted">
+                  Cutoffs at {nomoRes.hoursPostStart}h: Q24 ≤{nomoRes.q24CutoffUgMl} | Q36 ≤{nomoRes.q36CutoffUgMl} | Q48 ≤{nomoRes.q48CutoffUgMl} µg/mL
+                </span>
+              ) : null}
+            </div>
+            <p className="mt-0.5 leading-relaxed text-muted">{nomoRes.clinicalGuidance}</p>
+            {nomoRes.safetyAlert ? (
+              <p className="mt-1 font-mono text-[11px] text-danger font-medium">{nomoRes.safetyAlert}</p>
+            ) : null}
+          </div>
+          {wtRes ? (
+            <p className="text-[11px] leading-relaxed text-muted font-mono">{wtRes.rationale}</p>
+          ) : null}
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid parameters (height 100–250 cm, weight 20–300 kg, hours 6–14).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Hartford nomogram assumes normal distribution volume; excludes CrCl &lt;20 mL/min, ascites, burns &gt;20%, and pregnancy. For traditional peak/trough targets and endocarditis synergy, open the Aminoglycosides tab.
+      </p>
+    </article>
+  );
+}
+
+function LithiumBlock({
+  isHot,
+  defaultWeight,
+  defaultCrcl,
+}: {
+  isHot?: boolean;
+  defaultWeight?: number;
+  defaultCrcl?: number;
+}) {
+  const [level, setLevel] = useState("1.0");
+  const [targetBand, setTargetBand] = useState<LithiumTargetBand>("maintenance");
+  const [crcl, setCrcl] = useState(defaultCrcl && defaultCrcl > 0 ? String(defaultCrcl) : "80");
+  const [wt, setWt] = useState(defaultWeight && defaultWeight > 0 ? String(defaultWeight) : "70");
+  const [takingThiazide, setTakingThiazide] = useState(false);
+  const [takingNsaid, setTakingNsaid] = useState(false);
+  const [takingAceiArb, setTakingAceiArb] = useState(false);
+  const [isDehydrated, setIsDehydrated] = useState(false);
+  const [severeNeuro, setSevereNeuro] = useState(false);
+
+  useEffect(() => {
+    if (defaultCrcl && defaultCrcl > 0) setCrcl(String(defaultCrcl));
+  }, [defaultCrcl]);
+
+  useEffect(() => {
+    if (defaultWeight && defaultWeight > 0) setWt(String(defaultWeight));
+  }, [defaultWeight]);
+
+  const numLevel = Number(level);
+  const numCrcl = Number(crcl);
+  const numWt = Number(wt);
+
+  const levelRes = useMemo(() => {
+    if (!Number.isFinite(numLevel) || numLevel < 0 || numLevel > 15) return null;
+    return classifyLithiumLevel(numLevel, targetBand);
+  }, [numLevel, targetBand]);
+
+  const clRes = useMemo(() => {
+    if (!Number.isFinite(numCrcl) || numCrcl <= 0 || !Number.isFinite(numWt) || numWt <= 0) return null;
+    return calculateLithiumClearance({
+      crclMlMin: numCrcl,
+      weightKg: numWt,
+      takingThiazide,
+      takingNsaid,
+      takingAceiArb,
+      isDehydrated,
+    });
+  }, [numCrcl, numWt, takingThiazide, takingNsaid, takingAceiArb, isDehydrated]);
+
+  const extripRes = useMemo(() => {
+    if (!Number.isFinite(numLevel) || numLevel < 0) return null;
+    return evaluateExtripLithiumCriteria({
+      serumLithiumMeqL: numLevel,
+      crclMlMin: Number.isFinite(numCrcl) ? numCrcl : undefined,
+      hasSevereNeurologicSigns: severeNeuro,
+    });
+  }, [numLevel, numCrcl, severeNeuro]);
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Lithium Kinetics & EXTRIP Dialysis Triage</h3>
+            {isHot ? <Badge tone="info">Lithium on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            12-hour trough target stratifier, proximal tubule NHE3 clearance drop, and EXTRIP dialysis rebound rules.
+          </p>
+        </div>
+        {levelRes ? (
+          <div className="text-right">
+            <Badge tone={levelRes.severity === "severe-life-threatening" || levelRes.severity === "moderate" ? "danger" : levelRes.severity === "mild" || levelRes.severity === "borderline-elevated" ? "warn" : "ok"}>
+              {levelRes.headline}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-1">
+        {(["acute-mania", "maintenance", "geriatric"] as const).map((b) => (
+          <button
+            key={b}
+            type="button"
+            aria-pressed={targetBand === b}
+            onClick={() => setTargetBand(b)}
+            className={cn(
+              "h-8 rounded px-2.5 text-xs font-medium",
+              targetBand === b ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            {b === "acute-mania" ? "Acute Mania (0.8–1.2)" : b === "maintenance" ? "Maintenance (0.6–0.8)" : "Geriatric (0.4–0.6)"}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <label className="text-xs text-muted">
+          Serum Lithium (mEq/L)
+          <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          CrCl (mL/min)
+          <Input className="mt-1" inputMode="decimal" value={crcl} onChange={(e) => setCrcl(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Weight (kg)
+          <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+        </label>
+        <div className="text-xs text-muted">
+          Severe Neuro (Coma/Seizures)
+          <button
+            type="button"
+            aria-pressed={severeNeuro}
+            onClick={() => setSevereNeuro((v) => !v)}
+            className={cn(
+              "mt-1 flex h-9 w-full items-center justify-between rounded px-2 text-xs font-medium",
+              severeNeuro ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            <span>{severeNeuro ? "Present" : "Absent"}</span>
+            {severeNeuro ? <CheckSquare className="size-4 text-danger" /> : <Square className="size-4 text-muted" />}
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-1">
+        <button
+          type="button"
+          aria-pressed={takingThiazide}
+          onClick={() => setTakingThiazide((v) => !v)}
+          className={cn("h-7 rounded px-2 text-[11px] font-medium", takingThiazide ? "bg-danger text-bg" : "bg-surface text-muted hover:text-fg")}
+        >
+          + Thiazide (-40% Cl)
+        </button>
+        <button
+          type="button"
+          aria-pressed={takingNsaid}
+          onClick={() => setTakingNsaid((v) => !v)}
+          className={cn("h-7 rounded px-2 text-[11px] font-medium", takingNsaid ? "bg-warn text-bg" : "bg-surface text-muted hover:text-fg")}
+        >
+          + NSAID (-25% Cl)
+        </button>
+        <button
+          type="button"
+          aria-pressed={takingAceiArb}
+          onClick={() => setTakingAceiArb((v) => !v)}
+          className={cn("h-7 rounded px-2 text-[11px] font-medium", takingAceiArb ? "bg-warn text-bg" : "bg-surface text-muted hover:text-fg")}
+        >
+          + ACEi/ARB (-20% Cl)
+        </button>
+        <button
+          type="button"
+          aria-pressed={isDehydrated}
+          onClick={() => setIsDehydrated((v) => !v)}
+          className={cn("h-7 rounded px-2 text-[11px] font-medium", isDehydrated ? "bg-warn text-bg" : "bg-surface text-muted hover:text-fg")}
+        >
+          + Dehydration (-30% Cl)
+        </button>
+      </div>
+
+      {clRes && extripRes && levelRes ? (
+        <div className="mt-3 space-y-2">
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="rounded bg-surface p-2 text-xs">
+              <span className="text-muted block text-[10px]">Lithium Clearance (Cl_Li)</span>
+              <span className="font-mono text-sm font-semibold text-fg">{clRes.estimatedLithiumClearanceMlMin} mL/min</span>
+              <span className="text-muted block text-[10px]">Baseline: {clRes.baselineLithiumClearanceMlMin} mL/min ({clRes.percentReduction > 0 ? `-${clRes.percentReduction}%` : "100%"})</span>
+            </div>
+            <div className="rounded bg-surface p-2 text-xs">
+              <span className="text-muted block text-[10px]">Elimination Half-Life</span>
+              <span className="font-mono text-sm font-semibold text-accent">~{clRes.halfLifeHours} hours</span>
+              <span className="text-muted block text-[10px]">Vd ~{clRes.volumeOfDistributionLiters} L</span>
+            </div>
+            <div className="rounded bg-surface p-2 text-xs">
+              <span className="text-muted block text-[10px]">EXTRIP Triage</span>
+              <span className={cn("font-mono text-xs font-semibold block uppercase", extripRes.indication === "recommended" ? "text-danger" : extripRes.indication === "suggested" ? "text-warn" : "text-ok")}>
+                {extripRes.indication === "recommended" ? "Dialysis Recommended" : extripRes.indication === "suggested" ? "Dialysis Suggested" : "Dialysis Not Indicated"}
+              </span>
+              <span className="text-muted block text-[10px]">{extripRes.indication !== "not-indicated" ? "IHD first-line" : "Conservative hydration"}</span>
+            </div>
+          </div>
+
+          <div className={cn("rounded-md p-2.5 text-xs", extripRes.reboundWarning.isHighRisk ? "bg-danger-soft/40 border border-danger/20 text-fg" : "bg-surface text-fg")}>
+            <span className="font-semibold text-danger block">EXTRIP Rebound Trap Warning:</span>
+            <p className="mt-0.5 leading-relaxed text-muted">{extripRes.reboundWarning.mitigation}</p>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid parameters (lithium 0–15 mEq/L, CrCl 5–200 mL/min, weight 30–250 kg).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Lithium is freely filtered and reabsorbed ~80% in the proximal tubule via NHE3. Distal-acting thiazides provoke proximal compensatory retention. For complete EXTRIP consensus criteria and multi-drug collision analysis, open the Lithium tab.
+      </p>
+    </article>
+  );
+}
+
+function AminoglycosidesPanel({ ids }: { ids: string[] }) {
+  const [agent, setAgent] = useState<AminoglycosideAgentId>("gentamicin");
+  const [ht, setHt] = useState("175");
+  const [wt, setWt] = useState("85");
+  const [sex, setSex] = useState<Sex>("male");
+  const [regimen, setRegimen] = useState<"extended-7" | "extended-5" | "extended-15">("extended-7");
+
+  // Hartford state
+  const [hours, setHours] = useState("8");
+  const [level, setLevel] = useState("4.5");
+
+  const report = aminoglycosideReportOnDesk(ids);
+
+  const wtRes = calculateAminoglycosideWeight({
+    heightCm: Number(ht),
+    weightKg: Number(wt),
+    sex,
+  });
+
+  const nomoRes = evaluateHartfordNomogram({
+    agent,
+    hoursPostStart: Number(hours),
+    serumLevelUgMl: Number(level),
+  });
+
+  const dosePerKg = agent === "amikacin" ? 15 : regimen === "extended-5" ? 5 : 7;
+  const calculatedDoseMg = wtRes ? Math.round((wtRes.dosingWeightKg * dosePerKg) / 20) * 20 : null;
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Aminoglycoside Pharmacokinetics & Hartford Nomogram</h3>
+          <p className="mt-1 text-xs text-muted">
+            Concentration-dependent killing, obesity adjusted weight, Nicolau extended-interval nomogram, and ototoxicity/nephrotoxicity monitoring.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {report.presentAgents.map((name) => (
+            <Badge key={name} tone="danger">{name} on tray</Badge>
+          ))}
+        </div>
+      </div>
+
+      {report.nephrotoxicityAlert || report.ototoxicityAlert ? (
+        <div className="space-y-2">
+          {report.nephrotoxicityAlert ? (
+            <div className="rounded-md border border-warn/30 bg-warn-soft/40 p-3 text-xs leading-relaxed text-fg">
+              <span className="font-semibold block text-fg">Nephrotoxicity Collision Warning:</span>
+              {report.nephrotoxicityAlert}
+            </div>
+          ) : null}
+          {report.ototoxicityAlert ? (
+            <div className="rounded-md border border-danger/30 bg-danger-soft/30 p-3 text-xs leading-relaxed text-fg">
+              <span className="font-semibold block text-danger">Sensory Ototoxicity Alert:</span>
+              {report.ototoxicityAlert}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {/* Section 1: Dosing Weight Optimization */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Dosing Weight Selection & Extended-Interval Sizing</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Hydrophilic distribution kinetics: IBW or Adjusted Body Weight (AdjBW 0.4) in obesity to prevent severe overdosing.
+            </p>
+          </div>
+          {wtRes && calculatedDoseMg ? (
+            <span className="font-mono text-sm font-bold text-accent">
+              Recommended Dose: ~{calculatedDoseMg} mg ({dosePerKg} mg/kg on {wtRes.dosingWeightKg} kg)
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1">
+          {(["gentamicin", "tobramycin", "amikacin"] as const).map((a) => (
+            <button
+              key={a}
+              type="button"
+              aria-pressed={agent === a}
+              onClick={() => {
+                setAgent(a);
+                if (a === "amikacin") setRegimen("extended-15");
+                else setRegimen("extended-7");
+              }}
+              className={cn(
+                "h-8 rounded px-3 text-xs font-medium",
+                agent === a ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {a === "gentamicin" ? "Gentamicin" : a === "tobramycin" ? "Tobramycin" : "Amikacin"}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-xs text-muted">
+            Height (cm)
+            <Input className="mt-1" inputMode="decimal" value={ht} onChange={(e) => setHt(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Actual Weight (kg)
+            <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+          </label>
+          <div className="text-xs text-muted">
+            Biological Sex
+            <div className="mt-1 flex gap-1">
+              {(["male", "female"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={sex === s}
+                  onClick={() => setSex(s)}
+                  className={cn(
+                    "h-9 flex-1 rounded text-xs font-medium",
+                    sex === s ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                  )}
+                >
+                  {s === "male" ? "Male" : "Female"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="text-xs text-muted">
+            Dosing Regimen
+            <div className="mt-1 flex gap-1">
+              {agent === "amikacin" ? (
+                <div className="flex h-9 w-full items-center justify-center rounded bg-surface font-mono text-xs font-medium text-fg">
+                  15 mg/kg Standard
+                </div>
+              ) : (
+                (["extended-7", "extended-5"] as const).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    aria-pressed={regimen === r}
+                    onClick={() => setRegimen(r)}
+                    className={cn(
+                      "h-9 flex-1 rounded text-xs font-medium",
+                      regimen === r ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                    )}
+                  >
+                    {r === "extended-7" ? "7 mg/kg" : "5 mg/kg"}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        {wtRes ? (
+          <div className="mt-4 space-y-3">
+            <div className="grid gap-2 sm:grid-cols-4">
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Actual Body Weight</span>
+                <span className="font-mono text-lg font-semibold text-fg">{wtRes.actualWeightKg} kg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Total mass</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Ideal Body Weight (IBW)</span>
+                <span className="font-mono text-lg font-semibold text-fg">{wtRes.ibwKg} kg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Devine formula</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Adjusted Wt (AdjBW 0.4)</span>
+                <span className="font-mono text-lg font-semibold text-fg">{wtRes.adjBwKg} kg</span>
+                <span className="text-[10px] text-muted block mt-0.5">40% extracellular adipose factor</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Dosing Weight Selected</span>
+                <span className="font-mono text-lg font-semibold text-accent">{wtRes.dosingWeightKg} kg</span>
+                <span className="text-[10px] text-muted block mt-0.5 uppercase font-medium">{wtRes.recommendedWeightType} ({wtRes.weightCategory})</span>
+              </div>
+            </div>
+
+            <p className="rounded bg-surface p-2.5 text-xs leading-relaxed text-muted font-mono">{wtRes.rationale}</p>
+          </div>
+        ) : null}
+      </article>
+
+      {/* Section 2: Hartford Nomogram */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Hartford Extended-Interval Nomogram (Nicolau 1995)</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Random timed serum concentration drawn between 6 and 14 hours following start of 60-minute infusion.
+            </p>
+          </div>
+          {nomoRes ? (
+            <Badge tone={nomoRes.interval === "off-nomogram" ? "danger" : nomoRes.interval === "q48h" || nomoRes.interval === "too-early" || nomoRes.interval === "too-late" ? "warn" : "ok"}>
+              {nomoRes.label}
+            </Badge>
+          ) : null}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-xs text-muted">
+            Hours Post-Infusion Start (6.0–14.0 h)
+            <Input className="mt-1" inputMode="decimal" value={hours} onChange={(e) => setHours(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Measured Serum Level (µg/mL)
+            <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+          </label>
+        </div>
+
+        {nomoRes ? (
+          <div className="mt-4 space-y-3">
+            <div className={cn("rounded-md p-3", toneClass(nomoRes.interval === "off-nomogram" ? "danger" : nomoRes.interval === "q48h" || nomoRes.interval === "too-early" || nomoRes.interval === "too-late" ? "warn" : "ok"))}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-fg">{nomoRes.label}</span>
+                {nomoRes.q24CutoffUgMl ? (
+                  <span className="font-mono text-xs">
+                    Cutoffs at {nomoRes.hoursPostStart}h: Q24 ≤{nomoRes.q24CutoffUgMl} | Q36 ≤{nomoRes.q36CutoffUgMl} | Q48 ≤{nomoRes.q48CutoffUgMl} µg/mL
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-fg">{nomoRes.clinicalGuidance}</p>
+              {nomoRes.safetyAlert ? (
+                <p className="mt-1 font-mono text-xs font-semibold text-danger">{nomoRes.safetyAlert}</p>
+              ) : null}
+            </div>
+
+            <p className="text-xs leading-relaxed text-muted font-mono">{nomoRes.exclusionCriteriaNote}</p>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-muted">Enter valid draw time (6–14 hours) and concentration.</p>
+        )}
+      </article>
+
+      {/* Section 3: Traditional Targets & Synergy */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">Conventional Dosing & Synergy Reference Matrix</h4>
+        <p className="mt-1 text-xs text-muted">
+          Target peaks (Cmax:MIC ≥8–10) and troughs for conventional multi-dose regimens and enterococcal endocarditis synergy.
+        </p>
+
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-left font-mono text-xs">
+            <thead>
+              <tr className="border-b border-subtle text-muted">
+                <th className="py-2 pr-3">Indication</th>
+                <th className="py-2 px-2 text-right">Target Peak</th>
+                <th className="py-2 px-2 text-right">Target Trough</th>
+                <th className="py-2 pl-3">Clinical Pharmacodynamic Rationale</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-subtle/50">
+              {(["severe-sepsis-pneumonia", "urinary-tract", "synergy-endocarditis"] as const).map((indKey) => {
+                const row = TRADITIONAL_AG_TARGETS[agent][indKey];
+                return (
+                  <tr key={indKey} className="hover:bg-surface/50">
+                    <td className="py-2 pr-3 font-sans font-medium text-fg">
+                      {indKey === "severe-sepsis-pneumonia"
+                        ? "Gram-Negative Bacteremia / Pneumonia"
+                        : indKey === "urinary-tract"
+                        ? "Urinary Tract Infection (UTI)"
+                        : "Enterococcal / Strep Endocarditis Synergy"}
+                    </td>
+                    <td className="py-2 px-2 text-right font-semibold text-accent">{row.peakTargetUgMl}</td>
+                    <td className="py-2 px-2 text-right font-semibold text-ok">{row.troughTargetUgMl}</td>
+                    <td className="py-2 pl-3 text-muted">{row.rationale}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Hartford nomogram requires normal extracellular distribution. Prescribing Information and hospital antimicrobial stewardship guidelines govern individual patient dosing.
+      </p>
+    </div>
+  );
+}
+
+function LithiumPanel({ ids }: { ids: string[]; host: HostContext }) {
+  // Section 1: Serum Level & Target Band
+  const [level, setLevel] = useState("1.1");
+  const [targetBand, setTargetBand] = useState<LithiumTargetBand>("maintenance");
+
+  // Section 2: Proximal Tubule Clearance & Interactions
+  const [crcl, setCrcl] = useState("75");
+  const [wt, setWt] = useState("70");
+  const [takingThiazide, setTakingThiazide] = useState(false);
+  const [takingNsaid, setTakingNsaid] = useState(false);
+  const [takingAceiArb, setTakingAceiArb] = useState(false);
+  const [takingLoopDiuretic, setTakingLoopDiuretic] = useState(false);
+  const [isDehydrated, setIsDehydrated] = useState(false);
+
+  // Section 3: EXTRIP Consensus & Rebound Protocol
+  const [severeNeuro, setSevereNeuro] = useState(false);
+  const [confusedOrStupor, setConfusedOrStupor] = useState(false);
+  const [acuteOverdose, setAcuteOverdose] = useState(false);
+
+  const report = lithiumReportOnDesk(ids);
+
+  useEffect(() => {
+    if (report.interactingDrugs.length > 0) {
+      if (ids.some((id) => ["hctz", "chlorthalidone", "chlorothiazide", "lisinopril-hctz", "losartan-hctz", "valsartan-hctz"].includes(id))) {
+        setTakingThiazide(true);
+      }
+      if (ids.some((id) => ["ibuprofen", "naproxen", "celecoxib", "meloxicam", "ketorolac", "indomethacin", "diclofenac"].includes(id))) {
+        setTakingNsaid(true);
+      }
+      if (ids.some((id) => ["lisinopril", "losartan", "valsartan", "enalapril", "ramipril"].includes(id))) {
+        setTakingAceiArb(true);
+      }
+      if (ids.some((id) => ["furosemide", "bumetanide", "torsemide"].includes(id))) {
+        setTakingLoopDiuretic(true);
+      }
+    }
+  }, [ids.join("|")]);
+
+  const numLevel = Number(level);
+  const numCrcl = Number(crcl);
+  const numWt = Number(wt);
+
+  const levelRes = useMemo(() => {
+    if (!Number.isFinite(numLevel) || numLevel < 0 || numLevel > 15) return null;
+    return classifyLithiumLevel(numLevel, targetBand);
+  }, [numLevel, targetBand]);
+
+  const clRes = useMemo(() => {
+    if (!Number.isFinite(numCrcl) || numCrcl <= 0 || !Number.isFinite(numWt) || numWt <= 0) return null;
+    return calculateLithiumClearance({
+      crclMlMin: numCrcl,
+      weightKg: numWt,
+      takingThiazide,
+      takingNsaid,
+      takingAceiArb,
+      takingLoopDiuretic,
+      isDehydrated,
+    });
+  }, [numCrcl, numWt, takingThiazide, takingNsaid, takingAceiArb, takingLoopDiuretic, isDehydrated]);
+
+  const extripRes = useMemo(() => {
+    if (!Number.isFinite(numLevel) || numLevel < 0) return null;
+    return evaluateExtripLithiumCriteria({
+      serumLithiumMeqL: numLevel,
+      crclMlMin: Number.isFinite(numCrcl) ? numCrcl : undefined,
+      hasSevereNeurologicSigns: severeNeuro,
+      hasDecreasedConsciousnessOrConfusion: confusedOrStupor,
+      isAcuteIngestion: acuteOverdose,
+    });
+  }, [numLevel, numCrcl, severeNeuro, confusedOrStupor, acuteOverdose]);
+
+  const severityTone: "ok" | "warn" | "danger" =
+    levelRes?.severity === "severe-life-threatening" || levelRes?.severity === "moderate"
+      ? "danger"
+      : levelRes?.severity === "mild" || levelRes?.severity === "borderline-elevated"
+      ? "warn"
+      : "ok";
+
+  const extripTone: "ok" | "warn" | "danger" =
+    extripRes?.indication === "recommended"
+      ? "danger"
+      : extripRes?.indication === "suggested"
+      ? "warn"
+      : "ok";
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Lithium Pharmacokinetics & EXTRIP Consensus Station</h3>
+          <p className="mt-1 text-xs text-muted">
+            Proximal tubular NHE3 reabsorption dynamics, 12-hour steady-state trough targeting, drug-induced clearance collapse, and international EXTRIP hemodialysis rebound protocols.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {report.hasLithium ? <Badge tone="info">Lithium active on tray</Badge> : null}
+          {report.interactingDrugs.map((d) => (
+            <Badge key={d} tone="warn">{d} on tray</Badge>
+          ))}
+        </div>
+      </div>
+
+      {report.warnings.length > 0 ? (
+        <div className="space-y-2">
+          {report.warnings.map((w, i) => (
+            <div key={i} className="rounded-md border border-warn/30 bg-warn-soft/40 p-3 text-xs leading-relaxed text-fg">
+              <span className="font-semibold block text-fg">Active Tray Clearance Warning:</span>
+              {w}
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Section 1: Serum Level & Target Stratification */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">12-Hour Serum Trough & Clinical Toxicity Stratification</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Standard 12-hour steady-state trough monitoring (drawn 12 hours post-dose at steady state, ~4–5 days after initiation/titration).
+            </p>
+          </div>
+          {levelRes ? (
+            <Badge tone={severityTone}>
+              {levelRes.headline}
+            </Badge>
+          ) : null}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1">
+          {(["acute-mania", "maintenance", "geriatric"] as const).map((b) => (
+            <button
+              key={b}
+              type="button"
+              aria-pressed={targetBand === b}
+              onClick={() => setTargetBand(b)}
+              className={cn(
+                "h-8 rounded px-3 text-xs font-medium",
+                targetBand === b ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {LITHIUM_TARGET_RANGES[b].label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-xs text-muted">
+            Measured 12-Hour Serum Lithium (mEq/L)
+            <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+          </label>
+          <div className="rounded bg-surface p-2.5 text-xs text-muted">
+            <span className="font-medium text-fg block">Target Band Rationale:</span>
+            {LITHIUM_TARGET_RANGES[targetBand].rationale}
+          </div>
+        </div>
+
+        {levelRes ? (
+          <div className="mt-4 space-y-3">
+            <div className={cn("rounded-md p-3", toneClass(severityTone))}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-fg">{levelRes.headline}</span>
+                <span className="font-mono text-xs">
+                  {levelRes.inTargetRange ? "IN THERAPEUTIC WINDOW" : "OUTSIDE TARGET WINDOW"}
+                </span>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-fg">{levelRes.clinicalNote}</p>
+
+              <div className="mt-2.5">
+                <span className="text-[11px] font-semibold text-fg block">Expected Clinical Signs / Symptoms:</span>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {levelRes.symptoms.map((s, idx) => (
+                    <span key={idx} className="rounded bg-surface/80 px-2 py-0.5 text-[11px] font-medium text-fg">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-muted">Enter a valid serum lithium concentration (0–15 mEq/L).</p>
+        )}
+      </article>
+
+      {/* Section 2: Proximal Tubule NHE3 Reabsorption & Interaction Simulator */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Proximal Tubule NHE3 Handling & Drug-Drug Clearance Simulator</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Lithium is reabsorbed ~80% in the proximal tubule via NHE3 (baseline Cl_Li ≈ 20% of CrCl). Distal diuretics, NSAIDs, and volume contraction force avid proximal retention.
+            </p>
+          </div>
+          {clRes ? (
+            <span className="font-mono text-sm font-bold text-accent">
+              Cl_Li: {clRes.estimatedLithiumClearanceMlMin} mL/min ({clRes.percentReduction > 0 ? `-${clRes.percentReduction}%` : "Baseline"})
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-xs text-muted">
+            Creatinine Clearance CrCl (mL/min)
+            <Input className="mt-1" inputMode="decimal" value={crcl} onChange={(e) => setCrcl(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Actual Weight (kg)
+            <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+          </label>
+        </div>
+
+        <div className="mt-3">
+          <span className="text-xs font-medium text-fg block mb-1.5">Concomitant Clearance-Altering Risk Factors:</span>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <button
+              type="button"
+              aria-pressed={takingThiazide}
+              onClick={() => setTakingThiazide((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                takingThiazide ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>Thiazide Diuretic (-40% Cl)</span>
+              {takingThiazide ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={takingNsaid}
+              onClick={() => setTakingNsaid((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                takingNsaid ? "bg-warn-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>NSAID Therapy (-25% Cl)</span>
+              {takingNsaid ? <CheckSquare className="size-4 shrink-0 text-warn" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={takingAceiArb}
+              onClick={() => setTakingAceiArb((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                takingAceiArb ? "bg-warn-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>ACEi / ARB (-20% Cl)</span>
+              {takingAceiArb ? <CheckSquare className="size-4 shrink-0 text-warn" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={isDehydrated}
+              onClick={() => setIsDehydrated((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                isDehydrated ? "bg-warn-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>Volume Depletion (-30% Cl)</span>
+              {isDehydrated ? <CheckSquare className="size-4 shrink-0 text-warn" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={takingLoopDiuretic}
+              onClick={() => setTakingLoopDiuretic((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                takingLoopDiuretic ? "bg-warn-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>Loop Diuretic (-15% Cl)</span>
+              {takingLoopDiuretic ? <CheckSquare className="size-4 shrink-0 text-warn" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+          </div>
+        </div>
+
+        {clRes ? (
+          <div className="mt-4 space-y-3">
+            <div className="grid gap-2 sm:grid-cols-4">
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Baseline Cl_Li (20% CrCl)</span>
+                <span className="font-mono text-lg font-semibold text-fg">{clRes.baselineLithiumClearanceMlMin} mL/min</span>
+                <span className="text-[10px] text-muted block mt-0.5">Uninhibited nephron</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Estimated Cl_Li</span>
+                <span className="font-mono text-lg font-semibold text-accent">{clRes.estimatedLithiumClearanceMlMin} mL/min</span>
+                <span className="text-[10px] text-muted block mt-0.5">
+                  {clRes.percentReduction > 0 ? `-${clRes.percentReduction}% reduction` : "No drug interactions"}
+                </span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Elimination Half-Life</span>
+                <span className="font-mono text-lg font-semibold text-fg">~{clRes.halfLifeHours} h</span>
+                <span className="text-[10px] text-muted block mt-0.5">Normal: 18–24 h</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Volume of Dist (Vd)</span>
+                <span className="font-mono text-lg font-semibold text-fg">{clRes.volumeOfDistributionLiters} L</span>
+                <span className="text-[10px] text-muted block mt-0.5">~0.8 L/kg total body water</span>
+              </div>
+            </div>
+
+            {clRes.interactingFactors.length > 0 ? (
+              <div className="rounded-md bg-surface p-3 space-y-1.5 text-xs text-fg">
+                <span className="font-semibold block text-fg">Active Interaction Mechanisms:</span>
+                {clRes.interactingFactors.map((f, idx) => (
+                  <p key={idx} className="leading-relaxed text-muted font-mono text-[11px]">• {f}</p>
+                ))}
+              </div>
+            ) : null}
+
+            <p className="rounded bg-surface p-2.5 text-xs leading-relaxed text-muted font-mono">{clRes.physiologicExplanation}</p>
+          </div>
+        ) : null}
+      </article>
+
+      {/* Section 3: EXTRIP Consensus & Redistribution Rebound Protocol */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">EXTRIP Consensus Extracorporeal Elimination & Rebound Station</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              International EXTRIP Workgroup guidelines (Decker et al. 2015) for hemodialysis triage in severe poisoning.
+            </p>
+          </div>
+          {extripRes ? (
+            <Badge tone={extripTone}>
+              {extripRes.indication === "recommended" ? "DIALYSIS RECOMMENDED" : extripRes.indication === "suggested" ? "DIALYSIS SUGGESTED" : "DIALYSIS NOT INDICATED"}
+            </Badge>
+          ) : null}
+        </div>
+
+        <div className="mt-3">
+          <span className="text-xs font-medium text-fg block mb-1.5">EXTRIP Clinical Status & Ingestion Chronicity:</span>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              aria-pressed={severeNeuro}
+              onClick={() => setSevereNeuro((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                severeNeuro ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>Severe Neuro (Coma, Seizures)</span>
+              {severeNeuro ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={confusedOrStupor}
+              onClick={() => setConfusedOrStupor((v) => !v)}
+              className={cn(
+                "flex h-auto min-h-10 items-center justify-between rounded p-2 text-left text-xs font-medium",
+                confusedOrStupor ? "bg-warn-soft text-fg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              <span>Decreased Consciousness / Confusion</span>
+              {confusedOrStupor ? <CheckSquare className="size-4 shrink-0 text-warn" /> : <Square className="size-4 shrink-0 text-muted" />}
+            </button>
+
+            <div className="flex rounded bg-surface p-1">
+              <button
+                type="button"
+                aria-pressed={!acuteOverdose}
+                onClick={() => setAcuteOverdose(false)}
+                className={cn(
+                  "flex-1 rounded text-xs font-medium py-1.5",
+                  !acuteOverdose ? "bg-ink text-bg" : "text-muted hover:text-fg",
+                )}
+              >
+                Chronic Toxicity
+              </button>
+              <button
+                type="button"
+                aria-pressed={acuteOverdose}
+                onClick={() => setAcuteOverdose(true)}
+                className={cn(
+                  "flex-1 rounded text-xs font-medium py-1.5",
+                  acuteOverdose ? "bg-ink text-bg" : "text-muted hover:text-fg",
+                )}
+              >
+                Acute Ingestion
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {extripRes ? (
+          <div className="mt-4 space-y-3">
+            <div className={cn("rounded-md p-3", toneClass(extripTone))}>
+              <span className="text-sm font-semibold text-fg block">{extripRes.summary}</span>
+              {extripRes.criteriaMet.length > 0 ? (
+                <div className="mt-2 space-y-1">
+                  <span className="text-[11px] font-semibold text-fg">Consensus Criteria Met:</span>
+                  {extripRes.criteriaMet.map((c, idx) => (
+                    <p key={idx} className="font-mono text-xs text-fg leading-relaxed">• {c}</p>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-xs text-fg">Current concentration and renal function do not satisfy EXTRIP threshold criteria. Continue volume resuscitation with 0.9% NaCl and serial monitoring.</p>
+              )}
+              <p className="mt-2 text-xs leading-relaxed text-muted">{extripRes.modalityRecommendation}</p>
+            </div>
+
+            {/* Rebound Warning Box */}
+            <div className={cn("rounded-md border p-3.5 space-y-2", extripRes.reboundWarning.isHighRisk ? "border-danger/30 bg-danger-soft/30" : "border-subtle bg-surface")}>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-danger uppercase tracking-wide">
+                  CRITICAL REBOUND TRAP: Intracellular Redistribution Protocol
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed text-fg">{extripRes.reboundWarning.rationale}</p>
+              <div className="rounded bg-surface/90 p-2.5 text-xs text-fg font-medium">
+                <span className="text-danger font-bold block mb-0.5">Mandatory Clinical Monitoring Protocol:</span>
+                {extripRes.reboundWarning.mitigation}
+              </div>
+            </div>
+
+            <p className="text-xs leading-relaxed text-muted font-mono">{extripRes.monitoringGuidance}</p>
+          </div>
+        ) : null}
+      </article>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational clinical pharmacology reference only (non-device CDS). Lithium clearance is governed by proximal tubule sodium handling. EXTRIP guidelines require integration of bedside hemodynamics, renal clearance, and continuous toxicologic consultation (Poison Center 1-800-222-1222).
       </p>
     </div>
   );

@@ -15,9 +15,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 24 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 32 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 24);
+    assert.equal(cards.length, 32);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -49,7 +49,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 24);
+    assert.equal(cards.length, 32);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -69,6 +69,11 @@ describe("study learning tools", () => {
       "r-ward-vanco-sawchuk-zaske",
       "r-ward-phenobarb-aws-kinetics",
       "r-ward-phenobarb-urine-alkalinization",
+      "r-ward-hartford-aminoglycoside-interval",
+      "r-ward-aminoglycoside-ototoxicity-mt1555",
+      "r-ward-gentamicin-synergy-endocarditis",
+      "r-ward-lithium-extrip-dialysis-rebound",
+      "r-ward-lithium-thiazide-triple-whammy",
     ];
 
     for (const rId of expectedRoundIds) {

@@ -13,7 +13,7 @@ test("signoff packet script runs and docs/clinical-review/signoff-packet.md is i
   assert.ok(data.rules.length > 0);
   assert.ok(data.rules.every((r) => r.severity === "contraindicated" || r.severity === "major"));
   const md = renderPacket(data);
-  assert.equal(readFileSync(PACKET_PATH, "utf8"), md, "packet is stale; re-run scripts/signoff-packet.ts");
+  assert.equal(readFileSync(PACKET_PATH, "utf8").replace(/\r\n/g, "\n"), md.replace(/\r\n/g, "\n"), "packet is stale; re-run scripts/signoff-packet.ts");
   assert.match(md, /no clinician has reviewed this content yet/);
   assert.match(md, /Known open questions/);
   assert.doesNotMatch(md, /clinical decision support/i);
