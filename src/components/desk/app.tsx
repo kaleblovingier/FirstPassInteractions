@@ -78,6 +78,7 @@ import { WindowBriefing } from "./window";
 import { WindowExtras } from "./tray";
 import { ClinicalBoard } from "./clinical";
 import { StudyPage } from "./study";
+import { HelpPage } from "./help";
 import { CaseCompare } from "./compare";
 import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
@@ -275,6 +276,7 @@ export function DeskApp() {
                   ["rounds", "Cases"],
                   ["compare", "Compare"],
                   ["label", "Safety"],
+                  ["help", "Find help"],
                   ["plans", "Plans"],
                 ] as const
               ).map(([id, label]) => (
@@ -314,6 +316,9 @@ export function DeskApp() {
             <div className="flex shrink-0 flex-wrap gap-2">
               <Button variant="secondary" size="sm" onClick={() => setView("label")}>
                 Safety notes
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setView("help")}>
+                Find help
               </Button>
               <Button size="sm" onClick={ackHcp}>
                 Continue
@@ -361,6 +366,8 @@ export function DeskApp() {
           <CitesPage />
         ) : view === "label" ? (
           <LabelPage />
+        ) : view === "help" ? (
+          <HelpPage />
         ) : view === "atlas" ? (
           pro ? (
             <EnzymeAtlas />

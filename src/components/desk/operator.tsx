@@ -1,4 +1,5 @@
 import { OPERATOR, PAY_RAILS } from "@/lib/billing/commerce";
+import { useDesk } from "@/lib/drugs/store";
 import { PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 
 export function OperatorCard() {
@@ -16,6 +17,7 @@ export function OperatorCard() {
 }
 
 export function DeskFooter() {
+  const setView = useDesk((s) => s.setView);
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
@@ -24,9 +26,21 @@ export function DeskFooter() {
           <p className="mt-2 font-serif text-lg tracking-tight text-fg">{OPERATOR.name}</p>
           <OperatorLines className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm" />
         </div>
-        <p className="max-w-sm text-[11px] leading-relaxed text-subtle">
-          {SOFTWARE.name} {SOFTWARE.version}. {PI_FOOTER}
-        </p>
+        <div className="max-w-sm">
+          <button
+            type="button"
+            onClick={() => {
+              setView("help");
+              window.scrollTo({ top: 0 });
+            }}
+            className="inline-flex min-h-11 items-center font-medium text-accent underline-offset-2 hover:underline"
+          >
+            Struggling with substance use? Find help near you
+          </button>
+          <p className="mt-1 text-[11px] leading-relaxed text-subtle">
+            {SOFTWARE.name} {SOFTWARE.version}. {PI_FOOTER}
+          </p>
+        </div>
       </div>
     </footer>
   );

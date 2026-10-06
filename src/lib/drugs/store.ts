@@ -30,7 +30,8 @@ type View =
   | "label"
   | "study"
   | "compare"
-  | "watch";
+  | "watch"
+  | "help";
 
 export interface LoadExtras {
   phenotypes?: Partial<PhenotypeMap>;
