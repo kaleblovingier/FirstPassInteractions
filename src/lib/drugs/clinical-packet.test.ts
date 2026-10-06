@@ -94,3 +94,16 @@ test("buildClinicalPacket: evaluates anticoagulants, DOAC renal rails, and bleed
   assert.ok(packet.ehrNoteText.includes("Emergency Reversal"));
 });
 
+test("buildClinicalPacket: evaluates valproate saturable binding, VHE, and L-carnitine antidote guidance", () => {
+  const host = { ...DEFAULT_HOST };
+  const ids = ["valproate", "topiramate"];
+  const findings = analyze(ids, host).findings;
+  const packet = buildClinicalPacket(ids, host, findings, { valproate: "500 mg BID" });
+
+  assert.ok(packet.ehrNoteText.includes("Valproate Pharmacokinetics & Hyperammonemia Evaluation"));
+  assert.ok(packet.ehrNoteText.includes("L-Carnitine"));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("hyperammonemia") || cp.includes("sluggishness")));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("spina bifida") || cp.includes("birth defects")));
+});
+
+

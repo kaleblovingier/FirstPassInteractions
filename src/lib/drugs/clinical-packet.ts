@@ -349,6 +349,19 @@ export function buildClinicalPacket(
       );
     }
   }
+  if (ids.includes("valproate")) {
+    counselingPoints.push(
+      "Valproate (Depakote): Contact your care team immediately if you notice severe sluggishness, extreme sleepiness, or trembling hands. These can be signs of hyperammonemia (ammonia build-up), which can occur even if standard liver tests are normal.",
+    );
+    counselingPoints.push(
+      "Never stop taking valproate suddenly without speaking to your doctor, as sudden discontinuation can trigger breakthrough seizures or psychiatric relapse.",
+    );
+    if (host.preg === "pregnant" || host.preg === "off") {
+      counselingPoints.push(
+        "Valproate carries an FDA boxed warning for severe birth defects (spina bifida) and permanent reductions in childhood IQ. Discuss effective contraception and alternative medications if you could become pregnant.",
+      );
+    }
+  }
   for (const f of collisions.contraindicated.slice(0, 3)) {
     counselingPoints.push(plainLanguageSummary(f));
   }
@@ -459,6 +472,15 @@ export function buildClinicalPacket(
         ehrLines.push(`  Emergency Reversal: ${rev.nonSpecificAlternative.agent} — ${rev.nonSpecificAlternative.dosing}`);
       }
     }
+  }
+
+  if (ids.includes("valproate")) {
+    ehrLines.push(
+      `- Valproate Pharmacokinetics & Hyperammonemia Evaluation: Active agent on desk`,
+      `  TDM & Albumin Binding: Target total (50–100 mcg/mL), free (5–15 mcg/mL). Saturable binding occurs >75–100 mcg/mL or in hypoalbuminemia.`,
+      `  Hyperammonemic Encephalopathy (VHE): Metabolite block of NAGS produces severe encephalopathy with completely normal AST/ALT.`,
+      `  Antidote Protocol: IV L-Carnitine (Levocarnitine) 100 mg/kg IV loading (max 6 g), then 50 mg/kg q8h until ammonia resolves.`,
+    );
   }
 
   ehrLines.push(

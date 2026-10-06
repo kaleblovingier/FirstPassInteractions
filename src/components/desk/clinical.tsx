@@ -103,6 +103,16 @@ import {
   type ProcedureBleedRisk,
   type BleedSeverity,
 } from "@/lib/drugs/doac";
+import {
+  valproateOnDesk,
+  valproateReportOnDesk,
+  evaluateValproateLevel,
+  evaluateVhe,
+  calculateCarnitineDosing,
+  findValproateCollisions,
+  CARBAPENEM_IDS,
+  type ValproateCollision,
+} from "@/lib/drugs/valproate";
 import { wardWanted, wardsOnDesk } from "@/lib/drugs/wards";
 import { safetyOnDesk, safetyWanted } from "@/lib/drugs/safety";
 import {
@@ -188,7 +198,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -208,6 +218,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const doseOn = dosingWanted(ids);
   const inr = useMemo(() => inrOnDesk(ids), [ids.join("|")]);
   const doacOn = useMemo(() => doacOnDesk(ids), [ids.join("|")]);
+  const valproateOn = useMemo(() => valproateOnDesk(ids), [ids.join("|")]);
   const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
   const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
   const steroids = useMemo(() => steroidReportOnDesk(ids), [ids.join("|")]);
@@ -235,6 +246,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "anc", label: "ANC", on: ancOn },
       { id: "inr", label: "INR", on: Boolean(inr) },
       { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
+      { id: "valproate", label: "Valproate", on: valproateOn.hasValproate },
       { id: "acb", label: "ACB", on: Boolean(acb) },
       { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
       { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
@@ -248,7 +260,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -302,6 +314,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "anc" && ancOn ? <AncPanel /> : null}
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
         {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoacPanel ids={ids} host={host} /> : null}
+        {live === "valproate" && valproateOn.hasValproate ? <ValproatePanel ids={ids} host={host} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
         {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
@@ -5974,6 +5987,299 @@ function DoacPanel({ ids, host }: { ids: string[]; host: HostContext }) {
     </div>
   );
 }
+
+function ValproatePanel({ ids, host }: { ids: string[]; host: HostContext }) {
+  const [totalLevel, setTotalLevel] = useState("75");
+  const [albumin, setAlbumin] = useState(host.kidney === "ckd" ? "3.0" : "4.0");
+  const [ammonia, setAmmonia] = useState("35");
+  const [weight, setWeight] = useState("70");
+  const [hasSymptoms, setHasSymptoms] = useState(false);
+  const [astAltElevated, setAstAltElevated] = useState(false);
+  const [carnitineIndication, setCarnitineIndication] = useState<"hyperammonemic-encephalopathy" | "acute-severe-overdose" | "asymptomatic-mild">("hyperammonemic-encephalopathy");
+
+  const numTotal = Number(totalLevel) || 75;
+  const numAlbumin = Number(albumin) || 4.0;
+  const numAmmonia = Number(ammonia) || 35;
+  const numWeight = Number(weight) || 70;
+
+  const levelEval = evaluateValproateLevel({ totalMcgMl: numTotal, albuminGDl: numAlbumin });
+  const vheEval = evaluateVhe({
+    ammoniaUmolL: numAmmonia,
+    astAltElevated,
+    hasEncephalopathySymptoms: hasSymptoms,
+    hasTopiramate: ids.includes("topiramate"),
+  });
+  const carnitineDosing = calculateCarnitineDosing(numWeight, vheEval.carnitineIndicated ? "hyperammonemic-encephalopathy" : carnitineIndication);
+  const collisions = findValproateCollisions(ids);
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Valproate Pharmacokinetics & Hyperammonemia Station</h3>
+          <p className="mt-1 text-xs text-muted">
+            Saturable albumin binding (Hermida free level equation), hyperammonemic encephalopathy (VHE), normal LFT diagnostic trap, and IV L-Carnitine antidote sizing.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          <Badge tone="warn">Valproate (Depakote)</Badge>
+          {ids.some((id) => CARBAPENEM_IDS.has(id)) && <Badge tone="danger">Carbapenem Crash</Badge>}
+          {ids.includes("lamotrigine") && <Badge tone="danger">Lamotrigine UGT Collision</Badge>}
+          {ids.includes("topiramate") && <Badge tone="warn">Topiramate VHE Synergy</Badge>}
+        </div>
+      </div>
+
+      {/* Section 1: Saturable Protein Binding & Free Valproate Estimator */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-sm font-semibold text-fg">1. Saturable Protein Binding & Free Valproate Estimator</h4>
+            <p className="text-xs text-muted mt-0.5">
+              Albumin binding sites saturate above 75–100 mcg/mL or in hypoalbuminemia, causing unbound active drug to surge non-linearly.
+            </p>
+          </div>
+          <span className={cn(
+            "font-mono text-xs font-bold px-2 py-0.5 rounded",
+            levelEval.freeBand === "toxic" ? "bg-danger text-bg" : levelEval.freeBand === "elevated" ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+          )}>
+            Est. Free: {levelEval.estimatedFreeMcgMl} mcg/mL ({levelEval.freeBand.toUpperCase()})
+          </span>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-xs text-muted">
+            Total Valproate (mcg/mL)
+            <Input className="mt-1" inputMode="decimal" value={totalLevel} onChange={(e) => setTotalLevel(e.target.value)} />
+            <span className="text-[10px] text-subtle block mt-0.5">Target: 50–100 (epilepsy), ≤125 (mania)</span>
+          </label>
+          <label className="text-xs text-muted">
+            Serum Albumin (g/dL)
+            <Input className="mt-1" inputMode="decimal" value={albumin} onChange={(e) => setAlbumin(e.target.value)} />
+            <span className="text-[10px] text-subtle block mt-0.5">Normal: 3.5–5.0 g/dL</span>
+          </label>
+          <div className="rounded bg-surface p-2.5 border border-border text-xs space-y-0.5">
+            <span className="text-muted block text-[11px]">Estimated Free Fraction:</span>
+            <span className="font-mono text-base font-bold text-fg">{levelEval.estimatedFreeFractionPct}%</span>
+            <span className="text-[10px] text-subtle block">Baseline: ~10% (expands to 25–40%+)</span>
+          </div>
+          <div className="rounded bg-surface p-2.5 border border-border text-xs space-y-0.5">
+            <span className="text-muted block text-[11px]">Free Therapeutic Target:</span>
+            <span className="font-mono text-base font-bold text-accent">5–15 mcg/mL</span>
+            <span className="text-[10px] text-subtle block">Hermida normalization</span>
+          </div>
+        </div>
+
+        {levelEval.saturationWarning && (
+          <div className="rounded-md bg-warn-soft/60 border border-warn/40 p-2.5 text-xs text-fg space-y-1">
+            <span className="font-bold text-warn block">BINDING SATURATION WARNING:</span>
+            <p className="leading-relaxed">{levelEval.clinicalInterpretation}</p>
+          </div>
+        )}
+
+        <div className="rounded bg-surface p-2.5 border border-border/70 text-[11px] text-muted space-y-0.5">
+          <span className="font-semibold text-fg">Clinical Pharmacology Rule: </span>
+          {levelEval.pearl}
+        </div>
+      </article>
+
+      {/* Section 2: Hyperammonemic Encephalopathy & Normal LFT Trap */}
+      <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base font-semibold text-fg">2. Hyperammonemic Encephalopathy (VHE) Evaluator</h4>
+            <p className="text-xs text-muted mt-0.5">
+              Valproate metabolite inhibition of N-acetylglutamate synthase (NAGS) depletes urea cycle activation.
+            </p>
+          </div>
+          <span className={cn(
+            "font-mono text-xs font-bold px-2 py-0.5 rounded",
+            vheEval.riskTier === "confirmed-vhe" ? "bg-danger text-bg" : vheEval.riskTier === "high-risk-vhe" ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+          )}>
+            {vheEval.headline}
+          </span>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <label className="text-xs text-muted">
+            Serum Ammonia (µmol/L)
+            <Input className="mt-1" inputMode="numeric" value={ammonia} onChange={(e) => setAmmonia(e.target.value)} />
+            <span className="text-[10px] text-subtle block mt-0.5">Normal: 15–45 µmol/L</span>
+          </label>
+
+          <div className="text-xs text-muted">
+            Encephalopathy Symptoms
+            <button
+              type="button"
+              aria-pressed={hasSymptoms}
+              onClick={() => setHasSymptoms(!hasSymptoms)}
+              className={cn(
+                "mt-1 w-full h-9 rounded text-xs font-medium border transition-colors",
+                hasSymptoms ? "bg-danger text-bg border-danger" : "bg-bg-sunken text-muted border-border hover:text-fg",
+              )}
+            >
+              {hasSymptoms ? "Lethargy / Asterixis / Confusion PRESENT" : "No Acute Encephalopathy"}
+            </button>
+            <span className="text-[10px] text-subtle block mt-0.5">Ataxia, stupor, paradoxical seizures</span>
+          </div>
+
+          <div className="text-xs text-muted">
+            Liver Transaminases (AST/ALT)
+            <button
+              type="button"
+              aria-pressed={astAltElevated}
+              onClick={() => setAstAltElevated(!astAltElevated)}
+              className={cn(
+                "mt-1 w-full h-9 rounded text-xs font-medium border transition-colors",
+                astAltElevated ? "bg-warn-soft text-warn border-warn/40" : "bg-bg-sunken text-muted border-border hover:text-fg",
+              )}
+            >
+              {astAltElevated ? "Elevated Transaminases (Hepatitis)" : "Completely Normal LFTs (Typical)"}
+            </button>
+            <span className="text-[10px] text-subtle block mt-0.5">VHE commonly presents with normal LFTs</span>
+          </div>
+        </div>
+
+        {/* Normal LFT Trap Box */}
+        <div className="rounded-md bg-danger-soft/40 border border-danger/40 p-3 text-xs space-y-1">
+          <span className="font-bold text-danger block uppercase tracking-wide">NORMAL LFT DIAGNOSTIC TRAP:</span>
+          <p className="text-fg leading-relaxed">{vheEval.normalLftTrapAlert}</p>
+        </div>
+
+        {vheEval.topiramateSynergyAlert && (
+          <div className="rounded-md bg-warn-soft/60 border border-warn/40 p-3 text-xs space-y-1">
+            <span className="font-bold text-warn block">TOPIRAMATE SYNERGY DETECTED:</span>
+            <p className="text-fg leading-relaxed">{vheEval.topiramateSynergyAlert}</p>
+          </div>
+        )}
+
+        {vheEval.recommendedActions.length > 0 && (
+          <div className="rounded bg-bg-sunken p-3 text-xs space-y-1">
+            <span className="font-semibold text-fg block">Urgent Clinical Management Actions:</span>
+            {vheEval.recommendedActions.map((act, idx) => (
+              <p key={idx} className="text-muted leading-relaxed font-mono text-[11px]">• {act}</p>
+            ))}
+          </div>
+        )}
+      </article>
+
+      {/* Section 3: L-Carnitine Antidote Protocol */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base font-semibold text-fg">3. IV L-Carnitine (Levocarnitine / Carnitor) Antidote Protocol</h4>
+            <p className="text-xs text-muted mt-0.5">
+              Valproate depletes mitochondrial carnitine stores. High-dose IV levocarnitine restores beta-oxidation and clears ammonia.
+            </p>
+          </div>
+          <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-accent text-bg">
+            Loading Dose: {carnitineDosing.ivLoadingDoseMg} mg IV
+          </span>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          {([
+            { id: "hyperammonemic-encephalopathy", label: "Hyperammonemic Encephalopathy (VHE)" },
+            { id: "acute-severe-overdose", label: "Acute Massive Overdose (>100 mg/kg)" },
+            { id: "asymptomatic-mild", label: "Mild / Maintenance Replenishment" },
+          ] as const).map((ind) => (
+            <button
+              key={ind.id}
+              type="button"
+              aria-pressed={carnitineIndication === ind.id}
+              onClick={() => setCarnitineIndication(ind.id)}
+              className={cn(
+                "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                carnitineIndication === ind.id ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {ind.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <label className="text-xs text-muted">
+            Patient Body Weight (kg)
+            <Input className="mt-1" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)} />
+          </label>
+          <div className="rounded bg-surface p-2.5 border border-border text-xs space-y-0.5">
+            <span className="text-muted text-[11px] block">IV Loading Regimen (100 mg/kg):</span>
+            <span className="font-mono text-base font-bold text-fg">{carnitineDosing.ivLoadingDoseMg} mg IV</span>
+            <span className="text-[10px] text-subtle block">({carnitineDosing.ivLoadingDoseVials} × 1 g / 5 mL vials over 30 min, max 6 g)</span>
+          </div>
+          <div className="rounded bg-surface p-2.5 border border-border text-xs space-y-0.5">
+            <span className="text-muted text-[11px] block">IV Maintenance Regimen (50 mg/kg):</span>
+            <span className="font-mono text-base font-bold text-fg">{carnitineDosing.ivMaintenanceDoseMg} mg IV</span>
+            <span className="text-[10px] text-subtle block">{carnitineDosing.ivMaintenanceFrequency}</span>
+          </div>
+        </div>
+
+        <div className="rounded bg-surface p-2.5 border border-border/70 text-[11px] text-muted space-y-1">
+          <p className="text-fg font-medium">{carnitineDosing.durationGuidance}</p>
+          <p className="text-subtle">{carnitineDosing.administrationNote}</p>
+        </div>
+      </article>
+
+      {/* Section 4: Severe Drug Collisions */}
+      {collisions.length > 0 && (
+        <article className="rounded-md border border-warn/40 bg-warn-soft/20 p-4 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="font-serif text-sm font-semibold text-fg">Valproate Drug Collisions on Active Tray</span>
+            <span className="font-mono text-xs font-bold text-warn">{collisions.length} Collisions Flagged</span>
+          </div>
+          <div className="space-y-2">
+            {collisions.map((col, idx) => (
+              <div key={idx} className="rounded bg-surface p-3 text-xs border border-border space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-fg">{col.headline}</span>
+                  <span className={cn(
+                    "font-mono text-[9px] uppercase font-bold px-1.5 py-0.5 rounded",
+                    col.severity === "contraindicated" ? "bg-danger text-bg" : col.severity === "major" ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+                  )}>
+                    {col.severity}
+                  </span>
+                </div>
+                <p className="text-muted leading-relaxed">{col.mechanism}</p>
+                <p className="text-fg font-medium leading-relaxed">{col.clinicalAction}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      )}
+
+      {/* Section 5: Black Box Warnings & Teratogenicity */}
+      <article className="rounded-md bg-danger-soft/30 border border-danger/30 p-4 space-y-2 text-xs">
+        <span className="font-serif font-bold text-danger block text-sm">FDA Boxed Warnings & Clinical Safety Rails</span>
+        <div className="grid gap-2 sm:grid-cols-3">
+          <div className="rounded bg-surface p-2 border border-border">
+            <span className="font-semibold text-fg block">Teratogenicity:</span>
+            <p className="text-muted text-[11px] mt-0.5 leading-relaxed">
+              Neural tube defects (spina bifida 1–2%), facial clefts, and permanent neurodevelopmental IQ drop. Contraindicated in pregnancy for migraine; avoid in epilepsy/bipolar.
+            </p>
+          </div>
+          <div className="rounded bg-surface p-2 border border-border">
+            <span className="font-semibold text-fg block">Hepatotoxicity:</span>
+            <p className="text-muted text-[11px] mt-0.5 leading-relaxed">
+              LiverTox Category A. Highest risk in children &lt;2 years and patients with hereditary mitochondrial POLG mutations.
+            </p>
+          </div>
+          <div className="rounded bg-surface p-2 border border-border">
+            <span className="font-semibold text-fg block">Pancreatitis:</span>
+            <p className="text-muted text-[11px] mt-0.5 leading-relaxed">
+              Hemorrhagic / necrotizing pancreatitis can occur rapidly regardless of duration of therapy. Discontinue if severe abdominal pain develops.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational clinical pharmacology reference only (non-device CDS). Valproic acid displays non-linear protein binding kinetics. Therapeutic drug monitoring, ammonia interpretation, and L-carnitine administration require individualized medical toxicologic evaluation.
+      </p>
+    </div>
+  );
+}
+
 
 
 
