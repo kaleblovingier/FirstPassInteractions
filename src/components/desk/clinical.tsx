@@ -662,6 +662,7 @@ function ReversalPanel({ rows }: { rows: ReturnType<typeof reversalOnDesk> }) {
         <span>Need naloxone (Narcan) or addiction support? Locate free mail-order naloxone, overdose peer monitoring, and local treatment.</span>
         <button
           type="button"
+          aria-pressed={false}
           onClick={() => {
             useDesk.getState().setView("help");
             window.scrollTo({ top: 0 });
@@ -1540,6 +1541,7 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
         <span>Need local treatment services? Find licensed Opioid Treatment Programs (OTPs), medical detox, and state addiction helplines.</span>
         <button
           type="button"
+          aria-pressed={false}
           onClick={() => {
             useDesk.getState().setView("help");
             window.scrollTo({ top: 0 });
