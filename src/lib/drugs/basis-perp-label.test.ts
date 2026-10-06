@@ -204,3 +204,26 @@ test('XOCOVA quotes the named CYP3A contraindications and not an unnamed substra
   const col = pkBasis('ensitrelvir', 'colchicine').map((x) => x.detail).join('\n');
   assert.doesNotMatch(col, line);
 });
+
+test('gemfibrozil quotes repaglinide and selexipag, and not an unnamed CYP2C8 substrate', () => {
+  const line = /The Gemfibrozil label calls this combination contraindicated/;
+  const rep = pkBasis('gemfibrozil', 'repaglinide').map((x) => x.detail).join('\n');
+  assert.match(rep, line);
+  assert.match(rep, /with repaglinide/);
+  const sel = pkBasis('gemfibrozil', 'selexipag').map((x) => x.detail).join('\n');
+  assert.match(sel, line);
+  assert.match(sel, /with selexipag is contraindicated/);
+  const mon = pkBasis('gemfibrozil', 'montelukast').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(mon, line);
+});
+
+test('paroxetine quotes pimozide and thioridazine, and not an unnamed CYP2D6 substrate', () => {
+  const line = /The Paroxetine label calls this combination contraindicated/;
+  for (const victim of ['pimozide', 'thioridazine']) {
+    const details = pkBasis('paroxetine', victim).map((x) => x.detail).join('\n');
+    assert.match(details, line, victim);
+    assert.match(details, /pimozide or thioridazine/, victim);
+  }
+  const met = pkBasis('paroxetine', 'metoprolol').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(met, line);
+});

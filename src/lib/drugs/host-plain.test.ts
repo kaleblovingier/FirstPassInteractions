@@ -95,4 +95,13 @@ test("paid host factors say founding, not a Pro tier", async () => {
     const src = await readFile(new URL(`../../components/desk/${name}`, import.meta.url), "utf8");
     assert.doesNotMatch(src, /\bPro\b/, name);
   }
+
+  const store = await readFile(new URL("./store.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(store, /\bPro opens\b|stay Pro/);
+  assert.match(store, /Founding opens eight/);
+  assert.match(store, /come with founding/);
+
+  const app = await readFile(new URL("../../components/desk/app.tsx", import.meta.url), "utf8");
+  assert.match(app, /lifetime \? "Founding" : PLAN_BY_ID\[plan\]\.name/);
+  assert.doesNotMatch(app, /lifetime \? "founding" : plan/);
 });

@@ -573,4 +573,50 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-06-03",
     retrieved: "2026-10-04",
   },
+  {
+    perpIds: ["gemfibrozil"],
+    brand: "Gemfibrozil",
+    enzyme: "CYP2C8",
+    role: "inhibitor",
+    section: "PRECAUTIONS – Drug Interactions",
+    roleQuote:
+      "Gemfibrozil is a strong inhibitor of CYP2C8 and may increase exposure of drugs mainly metabolized by CYP2C8 (e.g., dabrafenib, enzalutamide, loperamide, montelukast, paclitaxel, pioglitazone, rosiglitazone).",
+    contraindicatedGroups: [
+      {
+        victimIds: ["repaglinide"],
+        section: "CONTRAINDICATIONS",
+        quote: "Combination therapy of gemfibrozil with repaglinide (see PRECAUTIONS ).",
+      },
+      {
+        victimIds: ["selexipag"],
+        section: "PRECAUTIONS – Drug Interactions",
+        quote:
+          "Concomitant administration of gemfibrozil with selexipag is contraindicated (see CONTRAINDICATIONS ).",
+      },
+    ],
+    // Named in contraindications, but there is no CYP2C8 PK finding for this pair on the desk.
+    alsoNamed: ["simvastatin"],
+    url: DM("1967afce-ce55-4b10-bd8c-e4e94130de87"),
+    labelEffective: "2025-12-18",
+    retrieved: "2026-10-05",
+  },
+  {
+    perpIds: ["paroxetine"],
+    brand: "Paroxetine",
+    enzyme: "CYP2D6",
+    role: "inhibitor",
+    section: "7 Drug Interactions",
+    roleQuote: "Paroxetine tablets are a CYP2D6 inhibitor",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide", "thioridazine"],
+        section: "7 Drug Interactions",
+        quote:
+          "Paroxetine tablets are contraindicated in patients taking pimozide or thioridazine",
+      },
+    ],
+    url: DM("009d8b89-eab9-43ba-b077-86bfa993a745"),
+    labelEffective: "2026-07-08",
+    retrieved: "2026-10-05",
+  },
 ];
