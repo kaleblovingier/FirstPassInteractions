@@ -3,8 +3,13 @@ import { CheckSquare, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
 import {
+  anionGapOf,
+  bodyMetricsOf,
+  calvertCarboplatinOf,
   childPughOf,
+  correctedSodiumOf,
   crclOf,
+  crclWeightComparisonOf,
   osmolarGapOf,
   phenytoinCorrected,
   qtcOf,
@@ -16,8 +21,53 @@ import {
   type InrBand,
   type Sex,
 } from "@/lib/drugs/bedside";
+import {
+  apapOnDesk,
+  evaluateKingsCollege,
+  evaluateRumackMatthew,
+  NAC_REGIMENS,
+} from "@/lib/drugs/apap";
 import { acbOnDesk, acbWanted, type AcbReport } from "@/lib/drugs/acb";
 import { dialysisOnDesk, dialysisWanted, type DialysisReport } from "@/lib/drugs/dialysis";
+import {
+  convertSteroid,
+  hpaSuppressionRisk,
+  steroidReportOnDesk,
+  steroidsOnDesk,
+  STEROID_AGENTS,
+  STEROID_BY_ID,
+  type DosingTiming,
+  type SteroidAgent,
+  type SteroidReport,
+} from "@/lib/drugs/steroids";
+import {
+  IRON_FORMULATIONS,
+  calculateGanzoni,
+  ironOnDesk,
+  ironReportOnDesk,
+  type IronFormulation,
+  type GanzoniResult,
+} from "@/lib/drugs/iron";
+import {
+  evaluateDigoxinLevel,
+  calculateDigifab,
+  digoxinOnDesk,
+  digoxinReportOnDesk,
+  DIGOXIN_PGP_INTERACTORS,
+  type DigifabCalcResult,
+  type DigoxinLevelEvaluation,
+} from "@/lib/drugs/digoxin";
+import {
+  calculateVancoSawchukZaske,
+  type VancoSawchukZaskeResult,
+} from "@/lib/drugs/vancomycin";
+import {
+  calculatePhenobarbitalLoading,
+  calculatePhenobarbitalElimination,
+  phenobarbitalOnDesk,
+  phenobarbitalReportOnDesk,
+  type PhenobarbitalIndication,
+} from "@/lib/drugs/phenobarbital";
 import { LIVERTOX_CAT_TONE, livertoxOnDesk, livertoxUrl } from "@/lib/drugs/livertox";
 import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
 import { hasPhenoConvert, phenoConvertOnDesk } from "@/lib/drugs/pheno-convert";
@@ -111,7 +161,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -132,6 +182,11 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const inr = useMemo(() => inrOnDesk(ids), [ids.join("|")]);
   const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
   const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
+  const steroids = useMemo(() => steroidReportOnDesk(ids), [ids.join("|")]);
+  const apapOn = useMemo(() => apapOnDesk(ids), [ids.join("|")]);
+  const ironOn = useMemo(() => ironOnDesk(ids).hasIron, [ids.join("|")]);
+  const digOn = useMemo(() => digoxinOnDesk(ids).hasDigoxin, [ids.join("|")]);
+  const phenoBarbiturateOn = useMemo(() => phenobarbitalOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -151,11 +206,16 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "inr", label: "INR", on: Boolean(inr) },
       { id: "acb", label: "ACB", on: Boolean(acb) },
       { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
+      { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
+      { id: "apap", label: "APAP", on: apapOn },
+      { id: "iron", label: "Iron", on: ironOn },
+      { id: "digoxin", label: "Digoxin", on: digOn },
+      { id: "phenobarbital", label: "Phenobarb", on: phenoBarbiturateOn },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, acb, dialysis, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -168,7 +228,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
           <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
           <p className="mt-1 text-xs text-muted">
             QT, TDM, LiverTox, phenoconversion, CYP start/stop clocks, reversal, MME, Hunter, UDS,
-            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, ACB anticholinergic burden, hemodialysis drug clearance, COWS / CIWA, bedside math (QTc, CrCl, Child-Pugh, Vancomycin AUC, Osmolar Gap). Teaching — not a
+            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, ACB anticholinergic burden, hemodialysis drug clearance, corticosteroids & HPA suppression, APAP overdose & Rumack-Matthew nomogram, parenteral iron & Ganzoni kinetics, digoxin toxicity & DigiFab sizing, phenobarbital kinetics & ion trapping, COWS / CIWA, bedside math (QTc, CrCl, Child-Pugh, Vancomycin AUC & Sawchuk-Zaske, Osmolar Gap, Anion Gap, Corrected Sodium, BSA, Calvert, Ganzoni, Digoxin). Teaching — not a
             protocol, not a QTc. The PI governs the milligram.
           </p>
         </div>
@@ -210,7 +270,12 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
-        {live === "bedside" ? <BedsidePanel ids={ids} host={host} /> : null}
+        {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
+        {live === "apap" && apapOn ? <ApapPanel ids={ids} /> : null}
+        {live === "iron" && ironOn ? <IronPanel ids={ids} /> : null}
+        {live === "digoxin" && digOn ? <DigoxinPanel ids={ids} /> : null}
+        {live === "phenobarbital" && phenoBarbiturateOn ? <PhenobarbitalPanel ids={ids} /> : null}
+        {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>
     </section>
@@ -788,7 +853,7 @@ function UdsPanel({ ids }: { ids: string[] }) {
   );
 }
 
-function BedsidePanel({ ids, host }: { ids: string[]; host: HostContext }) {
+function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContext; steroids?: SteroidReport }) {
   const [qt, setQt] = useState("400");
   const [hr, setHr] = useState("60");
   const [age, setAge] = useState(host.age === "geriatric" ? "78" : "42");
@@ -895,9 +960,25 @@ function BedsidePanel({ ids, host }: { ids: string[]; host: HostContext }) {
 
       {ids.includes("phenytoin") ? <PhenytoinBlock /> : null}
 
+      <BodyMetricsBlock age={Number(age)} sex={sex} scr={Number(scr)} defaultWeight={Number(wt)} />
+
+      <CalvertBlock defaultGfr={crcl?.crcl} isHot={ids.some((id) => ["carboplatin", "cisplatin"].includes(id))} />
+
+      <AnionGapBlock isHot={ids.some((id) => ["metformin", "aspirin", "acetaminophen", "ethanol"].includes(id))} />
+
+      <CorrectedSodiumBlock isHot={ids.some((id) => ["insulin-glargine", "metformin", "glipizide"].includes(id))} />
+
+      <SteroidEquivBlock isHot={Boolean(steroids?.hasSteroid)} defaultDrugId={steroids?.present[0]?.id} />
+
+      <GanzoniBlock isHot={ironOnDesk(ids).hasIron} defaultWeight={Number(wt)} defaultSex={sex} />
+
+      <DigoxinBlock isHot={digoxinOnDesk(ids).hasDigoxin} defaultWeight={Number(wt)} />
+
       <ChildPughBlock />
 
       <VancoAucBlock defaultCrcl={crcl?.crcl} isHot={ids.includes("vancomycin")} />
+
+      <PhenobarbitalBlock isHot={phenobarbitalOnDesk(ids)} defaultWeight={Number(wt)} />
 
       <OsmolarGapBlock isHot={ids.includes("ethanol")} />
 
@@ -1940,9 +2021,19 @@ function AcbPanel({ report }: { report: AcbReport }) {
 }
 
 function VancoAucBlock({ defaultCrcl, isHot }: { defaultCrcl?: number; isHot?: boolean }) {
+  const [calcMode, setCalcMode] = useState<"empiric" | "sawchuk-zaske">("empiric");
   const [dose, setDose] = useState("2000");
   const [crcl, setCrcl] = useState(defaultCrcl ? String(defaultCrcl) : "80");
   const [mic, setMic] = useState("1.0");
+
+  // Sawchuk-Zaske 2-point state
+  const [szDose, setSzDose] = useState("1250");
+  const [szInfusion, setSzInfusion] = useState("1.5");
+  const [szTau, setSzTau] = useState("12");
+  const [szC1Peak, setSzC1Peak] = useState("28");
+  const [szT1Post, setSzT1Post] = useState("1.5");
+  const [szC2Trough, setSzC2Trough] = useState("12");
+  const [szT2Pre, setSzT2Pre] = useState("0.5");
 
   useEffect(() => {
     if (defaultCrcl && defaultCrcl > 0) {
@@ -1950,11 +2041,26 @@ function VancoAucBlock({ defaultCrcl, isHot }: { defaultCrcl?: number; isHot?: b
     }
   }, [defaultCrcl]);
 
-  const res = vancoAucOf({
+  const empiricRes = vancoAucOf({
     totalDailyDoseMg: Number(dose),
     crcl: Number(crcl),
     mic: Number(mic),
   });
+
+  const szRes = calculateVancoSawchukZaske({
+    doseMg: Number(szDose),
+    infusionHours: Number(szInfusion),
+    tauHours: Number(szTau),
+    c1PeakUgMl: Number(szC1Peak),
+    t1HoursPostInfusion: Number(szT1Post),
+    c2TroughUgMl: Number(szC2Trough),
+    t2HoursBeforeNextDose: Number(szT2Pre),
+    mic: Number(mic),
+  });
+
+  const activeRes = calcMode === "empiric" ? empiricRes : szRes;
+  const activeAuc = calcMode === "empiric" ? empiricRes?.auc24 : szRes?.auc24;
+  const activeBand = calcMode === "empiric" ? empiricRes?.band : szRes?.band;
 
   return (
     <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
@@ -1968,38 +2074,145 @@ function VancoAucBlock({ defaultCrcl, isHot }: { defaultCrcl?: number; isHot?: b
             2020 ASHP/IDSA consensus target: 400–600 mg·h/L for serious MRSA infections (assuming MIC 1 mg/L).
           </p>
         </div>
-        {res ? (
+        {activeRes ? (
           <div className="text-right">
-            <p className="font-mono text-lg text-fg">AUC {res.auc24} mg·h/L</p>
-            <Badge tone={res.band === "target" ? "ok" : res.band === "subtherapeutic" ? "warn" : "danger"}>
-              {res.band === "target" ? "Target (400–600)" : res.band === "subtherapeutic" ? "Subtherapeutic (<400)" : "Supratherapeutic (>600)"}
+            <p className="font-mono text-lg text-fg">AUC {activeAuc} mg·h/L</p>
+            <Badge tone={activeBand === "target" ? "ok" : activeBand === "subtherapeutic" ? "warn" : "danger"}>
+              {activeBand === "target" ? "Target (400–600)" : activeBand === "subtherapeutic" ? "Subtherapeutic (<400)" : "Supratherapeutic (>600)"}
             </Badge>
           </div>
         ) : null}
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        <label className="text-xs text-muted">
-          Total daily dose (mg/24h)
-          <Input className="mt-1" inputMode="decimal" value={dose} onChange={(e) => setDose(e.target.value)} />
-        </label>
-        <label className="text-xs text-muted">
-          CrCl (mL/min)
-          <Input className="mt-1" inputMode="decimal" value={crcl} onChange={(e) => setCrcl(e.target.value)} />
-        </label>
-        <label className="text-xs text-muted">
-          MIC (mg/L)
-          <Input className="mt-1" inputMode="decimal" value={mic} onChange={(e) => setMic(e.target.value)} />
-        </label>
+      <div className="mt-3 flex gap-1">
+        <button
+          type="button"
+          aria-pressed={calcMode === "empiric"}
+          onClick={() => setCalcMode("empiric")}
+          className={cn(
+            "h-8 rounded px-3 text-xs font-medium",
+            calcMode === "empiric" ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+          )}
+        >
+          Empiric CrCl Estimate
+        </button>
+        <button
+          type="button"
+          aria-pressed={calcMode === "sawchuk-zaske"}
+          onClick={() => setCalcMode("sawchuk-zaske")}
+          className={cn(
+            "h-8 rounded px-3 text-xs font-medium",
+            calcMode === "sawchuk-zaske" ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+          )}
+        >
+          Sawchuk-Zaske (Peak & Trough)
+        </button>
       </div>
 
-      {res ? (
-        <div className={cn("mt-3 rounded-md px-3 py-2.5", toneClass(res.band === "target" ? "ok" : res.band === "subtherapeutic" ? "warn" : "danger"))}>
-          <p className="text-sm font-medium text-fg">{res.label}</p>
-          <p className="mt-1 text-sm leading-relaxed text-fg">{res.note}</p>
-        </div>
+      {calcMode === "empiric" ? (
+        <>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <label className="text-xs text-muted">
+              Total daily dose (mg/24h)
+              <Input className="mt-1" inputMode="decimal" value={dose} onChange={(e) => setDose(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              CrCl (mL/min)
+              <Input className="mt-1" inputMode="decimal" value={crcl} onChange={(e) => setCrcl(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              MIC (mg/L)
+              <Input className="mt-1" inputMode="decimal" value={mic} onChange={(e) => setMic(e.target.value)} />
+            </label>
+          </div>
+
+          {empiricRes ? (
+            <div className={cn("mt-3 rounded-md px-3 py-2.5", toneClass(empiricRes.band === "target" ? "ok" : empiricRes.band === "subtherapeutic" ? "warn" : "danger"))}>
+              <p className="text-sm font-medium text-fg">{empiricRes.label}</p>
+              <p className="mt-1 text-sm leading-relaxed text-fg">{empiricRes.note}</p>
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-muted">Enter total daily dose (250–8000 mg) and CrCl (5–250 mL/min).</p>
+          )}
+        </>
       ) : (
-        <p className="mt-3 text-sm text-muted">Enter total daily dose (250–8000 mg) and CrCl (5–250 mL/min).</p>
+        <>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <label className="text-xs text-muted">
+              Dose per Admin (mg)
+              <Input className="mt-1" inputMode="decimal" value={szDose} onChange={(e) => setSzDose(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              Infusion Time (hours)
+              <Input className="mt-1" inputMode="decimal" value={szInfusion} onChange={(e) => setSzInfusion(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              Interval Tau (hours)
+              <Input className="mt-1" inputMode="decimal" value={szTau} onChange={(e) => setSzTau(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              MIC (mg/L)
+              <Input className="mt-1" inputMode="decimal" value={mic} onChange={(e) => setMic(e.target.value)} />
+            </label>
+          </div>
+
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <label className="text-xs text-muted">
+              C1 Peak (µg/mL)
+              <Input className="mt-1" inputMode="decimal" value={szC1Peak} onChange={(e) => setSzC1Peak(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              Post-Infusion Draw (h)
+              <Input className="mt-1" inputMode="decimal" value={szT1Post} onChange={(e) => setSzT1Post(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              C2 Trough (µg/mL)
+              <Input className="mt-1" inputMode="decimal" value={szC2Trough} onChange={(e) => setSzC2Trough(e.target.value)} />
+            </label>
+            <label className="text-xs text-muted">
+              Pre-Dose Draw (h)
+              <Input className="mt-1" inputMode="decimal" value={szT2Pre} onChange={(e) => setSzT2Pre(e.target.value)} />
+            </label>
+          </div>
+
+          {szRes ? (
+            <div className="mt-3 space-y-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded bg-surface p-2 text-xs">
+                  <span className="text-[10px] text-muted block">True Cmax (end-inf)</span>
+                  <span className="font-mono text-sm font-semibold text-fg">{szRes.trueCmaxUgMl} µg/mL</span>
+                </div>
+                <div className="rounded bg-surface p-2 text-xs">
+                  <span className="text-[10px] text-muted block">True Cmin (pre-dose)</span>
+                  <span className="font-mono text-sm font-semibold text-fg">{szRes.trueCminUgMl} µg/mL</span>
+                </div>
+                <div className="rounded bg-surface p-2 text-xs">
+                  <span className="text-[10px] text-muted block">ke & t½</span>
+                  <span className="font-mono text-sm font-semibold text-fg">{szRes.ke} h⁻¹ ({szRes.halfLifeHours} h)</span>
+                </div>
+                <div className="rounded bg-surface p-2 text-xs">
+                  <span className="text-[10px] text-muted block">Vd & Clearance</span>
+                  <span className="font-mono text-sm font-semibold text-fg">{szRes.vdL} L ({szRes.clearanceLPerHr} L/h)</span>
+                </div>
+              </div>
+
+              {szRes.samplingTimingWarning ? (
+                <div className="rounded bg-warn-soft p-2.5 text-xs text-fg leading-relaxed">
+                  {szRes.samplingTimingWarning}
+                </div>
+              ) : null}
+
+              <div className={cn("rounded-md px-3 py-2.5", toneClass(szRes.band === "target" ? "ok" : szRes.band === "subtherapeutic" ? "warn" : "danger"))}>
+                <p className="text-sm font-medium text-fg">{szRes.label}</p>
+                <p className="mt-1 text-sm leading-relaxed text-fg">{szRes.clinicalNote}</p>
+              </div>
+
+              <p className="text-xs leading-relaxed text-muted font-mono">{szRes.troughContextNote}</p>
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-muted">Enter valid peak/trough levels (Peak &gt; Trough) and sampling time points.</p>
+          )}
+        </>
       )}
 
       <p className="mt-2 text-[11px] leading-relaxed text-subtle">
@@ -2157,3 +2370,2020 @@ function DialysisPanel({ report }: { report: DialysisReport }) {
     </div>
   );
 }
+
+function AnionGapBlock({ isHot }: { isHot?: boolean }) {
+  const [na, setNa] = useState("140");
+  const [cl, setCl] = useState("100");
+  const [hco3, setHco3] = useState("15");
+  const [alb, setAlb] = useState("2.5");
+  const [useAlb, setUseAlb] = useState(true);
+
+  const res = anionGapOf({
+    na: Number(na),
+    cl: Number(cl),
+    hco3: Number(hco3),
+    albumin: useAlb ? Number(alb) : undefined,
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Serum Anion Gap & Albumin Correction</h3>
+            {isHot ? <Badge tone="info">Acidosis / Toxin on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Na - (Cl + HCO3). Figge-Jabor-Kazda albumin adjustment: +2.5 mEq/L per 1 g/dL drop below 4.0.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">
+              Gap: {res.correctedGap} mEq/L
+              {res.albuminCorrectionApplied ? (
+                <span className="text-xs text-muted"> (raw {res.rawGap})</span>
+              ) : null}
+            </p>
+            <Badge tone={res.band === "elevated" ? "danger" : res.band === "low" ? "warn" : "ok"}>
+              {res.band === "elevated" ? "HAGMA (Elevated)" : res.band === "low" ? "Low Gap (<4)" : "Normal Gap (8–12)"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <label className="text-xs text-muted">
+          Na (mEq/L)
+          <Input className="mt-1" inputMode="decimal" value={na} onChange={(e) => setNa(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Cl (mEq/L)
+          <Input className="mt-1" inputMode="decimal" value={cl} onChange={(e) => setCl(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          HCO3 (mEq/L)
+          <Input className="mt-1" inputMode="decimal" value={hco3} onChange={(e) => setHco3(e.target.value)} />
+        </label>
+        <div className="text-xs text-muted">
+          <div className="flex items-center justify-between">
+            <span>Albumin (g/dL)</span>
+            <button
+              type="button"
+              aria-pressed={useAlb}
+              onClick={() => setUseAlb((v) => !v)}
+              className="text-[10px] text-accent underline"
+            >
+              {useAlb ? "Disable" : "Enable"}
+            </button>
+          </div>
+          <Input
+            className="mt-1"
+            inputMode="decimal"
+            disabled={!useAlb}
+            value={useAlb ? alb : "4.0"}
+            onChange={(e) => setAlb(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {res ? (
+        <div className={cn("mt-3 rounded-md px-3 py-2.5", toneClass(res.band === "elevated" ? "danger" : res.band === "low" ? "warn" : "ok"))}>
+          <div className="flex flex-wrap justify-between gap-1 text-xs font-mono">
+            <span>Raw AG: {res.rawGap} mEq/L</span>
+            {res.albuminCorrectionApplied ? <span>Albumin Adj: {res.correctedGap} mEq/L</span> : null}
+            {res.deltaRatio !== null ? <span>Delta Ratio: {res.deltaRatio}</span> : null}
+          </div>
+          <p className="mt-1 text-sm font-medium text-fg">{res.label}</p>
+          <p className="mt-1 text-sm leading-relaxed text-fg">{res.interpretation}</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-fg/90">{res.etiologyNote}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid serum electrolytes (Na 100–180, Cl 50–150, HCO3 2–60).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Serum albumin is the predominant unmeasured anion. In critical illness or hypoalbuminemia, an uncorrected normal anion gap may obscure a true high anion gap metabolic acidosis. Delta ratio (ΔAG / ΔHCO3) assesses for mixed acid-base disorders.
+      </p>
+    </article>
+  );
+}
+
+function CorrectedSodiumBlock({ isHot }: { isHot?: boolean }) {
+  const [measNa, setMeasNa] = useState("130");
+  const [glu, setGlu] = useState("650");
+
+  const res = correctedSodiumOf({
+    measuredNa: Number(measNa),
+    glucose: Number(glu),
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Hyperglycemia-Corrected Sodium</h3>
+            {isHot ? <Badge tone="info">Insulin / Glucose on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Translocational pseudohyponatremia math for DKA / HHS resuscitation and IV fluid choice.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">
+              {res.hillierSodium} mEq/L
+              <span className="text-xs text-muted"> (meas {res.measuredNa})</span>
+            </p>
+            <Badge tone={res.hillierSodium >= 135 ? "ok" : "warn"}>
+              {res.hillierSodium >= 135 ? "Eunatremic / Hypernatremic" : "Persistent Hyponatremia"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <label className="text-xs text-muted">
+          Measured Na (mEq/L)
+          <Input className="mt-1" inputMode="decimal" value={measNa} onChange={(e) => setMeasNa(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Serum Glucose (mg/dL)
+          <Input className="mt-1" inputMode="decimal" value={glu} onChange={(e) => setGlu(e.target.value)} />
+        </label>
+      </div>
+
+      {res ? (
+        <div className="mt-3 rounded-md bg-bg-sunken px-3 py-2.5">
+          <div className="grid grid-cols-2 gap-2 text-xs font-mono sm:grid-cols-3">
+            <div>
+              <span className="text-muted block">Hillier 1999 (2.4x)</span>
+              <span className="font-semibold text-fg">{res.hillierSodium} mEq/L</span>
+            </div>
+            <div>
+              <span className="text-muted block">Katz 1973 (1.6x)</span>
+              <span className="font-semibold text-fg">{res.katzSodium} mEq/L</span>
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <span className="text-muted block">Water-shift ΔNa</span>
+              <span className="font-semibold text-fg">+{res.deltaNa} mEq/L</span>
+            </div>
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-accent font-medium">{res.fluidGuidance}</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted">{res.note}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid Na (100–180) and Glucose (30–2500).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Extracellular glucose pulls water from intracellular space into the vascular compartment, diluting serum sodium without actual total-body sodium loss. In DKA / HHS protocols, corrected sodium governs whether 0.45% NaCl vs 0.9% NaCl is selected once initial volume resuscitation is completed.
+      </p>
+    </article>
+  );
+}
+
+function SteroidEquivBlock({ defaultDrugId, isHot }: { defaultDrugId?: string; isHot?: boolean }) {
+  const [drugId, setDrugId] = useState(defaultDrugId ?? "prednisone");
+  const [doseMg, setDoseMg] = useState("20");
+
+  useEffect(() => {
+    if (defaultDrugId && STEROID_BY_ID[defaultDrugId]) {
+      setDrugId(defaultDrugId);
+    }
+  }, [defaultDrugId]);
+
+  const res = convertSteroid({
+    fromDrugId: drugId,
+    amountMg: Number(doseMg),
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Systemic Corticosteroid Equivalence</h3>
+            {isHot ? <Badge tone="info">Steroid on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Glucocorticoid anti-inflammatory equivalent dosing and mineralocorticoid potency comparison.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">{res.prednisoneEqMg} mg pred eq</p>
+            <Badge tone={res.prednisoneEqMg >= 20 ? "warn" : "ok"}>
+              {res.prednisoneEqMg >= 20 ? "High Dose (≥20 mg/d)" : "Low / Replacement Dose"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <label className="text-xs text-muted">
+          Steroid agent
+          <select
+            value={drugId}
+            onChange={(e) => setDrugId(e.target.value)}
+            className="mt-1 h-9 w-full rounded-md border border-input bg-surface px-2 text-xs font-medium text-fg"
+          >
+            {STEROID_AGENTS.map((agent) => (
+              <option key={agent.id} value={agent.id}>
+                {agent.name} ({agent.equivDoseMg} mg eq)
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs text-muted">
+          Current dose (mg)
+          <Input className="mt-1" inputMode="decimal" value={doseMg} onChange={(e) => setDoseMg(e.target.value)} />
+        </label>
+      </div>
+
+      {res ? (
+        <div className="mt-3 space-y-2">
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 font-mono text-xs">
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Prednisone eq</span>
+              <span className="text-sm font-semibold text-fg">{res.prednisoneEqMg} mg</span>
+            </div>
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Hydrocortisone eq</span>
+              <span className="text-sm font-semibold text-fg">{res.hydrocortisoneEqMg} mg</span>
+            </div>
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Methylprednisolone</span>
+              <span className="text-sm font-semibold text-fg">
+                {res.conversions.find((c) => c.id === "methylprednisolone")?.amountMg} mg
+              </span>
+            </div>
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Dexamethasone</span>
+              <span className="text-sm font-semibold text-fg">
+                {res.conversions.find((c) => c.id === "dexamethasone")?.amountMg} mg
+              </span>
+            </div>
+          </div>
+
+          {res.mineralocorticoidWarning ? (
+            <p className="rounded bg-warn-soft p-2 text-xs leading-relaxed text-fg">
+              {res.mineralocorticoidWarning}
+            </p>
+          ) : null}
+
+          {res.hepaticProdrugNote ? (
+            <p className="rounded bg-bg-sunken p-2 text-xs leading-relaxed text-muted">
+              {res.hepaticProdrugNote}
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter a valid dose in mg (0.1–5000).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Educational equivalence reference grounded in standard clinical pharmacology tables. Individual pharmacokinetics, route of administration, and biologic half-life vary. Does not replace clinical consultation.
+      </p>
+    </article>
+  );
+}
+
+function SteroidsPanel({ report }: { report: SteroidReport }) {
+  const [selectedAgent, setSelectedAgent] = useState("prednisone");
+  const [doseMg, setDoseMg] = useState("20");
+  const [targetId, setTargetId] = useState("methylprednisolone");
+
+  // HPA calculator state
+  const [hpaDose, setHpaDose] = useState("20");
+  const [hpaWeeks, setHpaWeeks] = useState("4");
+  const [timing, setTiming] = useState<DosingTiming>("morning");
+  const [cushingoid, setCushingoid] = useState(false);
+
+  const conv = convertSteroid({
+    fromDrugId: selectedAgent,
+    amountMg: Number(doseMg),
+    targetDrugId: targetId,
+  });
+
+  const hpa = hpaSuppressionRisk({
+    prednisoneEqMgPerDay: Number(hpaDose),
+    durationWeeks: Number(hpaWeeks),
+    timing,
+    cushingoidFeatures: cushingoid,
+  });
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Corticosteroid Pharmacology & HPA Axis Station</h3>
+          <p className="mt-1 text-xs text-muted">
+            Glucocorticoid equivalence, anti-inflammatory vs mineralocorticoid potency, and HPA axis suppression risk.
+          </p>
+        </div>
+        <Badge tone="info">
+          {report.present.length} on tray
+        </Badge>
+      </div>
+
+      {report.hasSteroid ? (
+        <div className="rounded-md bg-accent-soft/40 p-3">
+          <p className="text-sm font-semibold text-fg">{report.summary}</p>
+          <ul className="mt-2 space-y-1 text-xs text-fg">
+            {report.pearls.map((p, idx) => (
+              <li key={idx} className="leading-relaxed">• {p}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* Section 1: Equivalence Converter */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">Glucocorticoid Equivalence Converter</h4>
+        <p className="mt-1 text-xs text-muted">
+          Convert any systemic corticosteroid into therapeutic equivalents across standard clinical agents.
+        </p>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <label className="text-xs text-muted">
+            Source Steroid
+            <select
+              value={selectedAgent}
+              onChange={(e) => setSelectedAgent(e.target.value)}
+              className="mt-1 h-9 w-full rounded-md border border-input bg-surface px-2 text-xs font-medium text-fg"
+            >
+              {STEROID_AGENTS.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name} ({a.equivDoseMg} mg eq)
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-muted">
+            Current Dose (mg)
+            <Input className="mt-1" inputMode="decimal" value={doseMg} onChange={(e) => setDoseMg(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Target Steroid Comparison
+            <select
+              value={targetId}
+              onChange={(e) => setTargetId(e.target.value)}
+              className="mt-1 h-9 w-full rounded-md border border-input bg-surface px-2 text-xs font-medium text-fg"
+            >
+              {STEROID_AGENTS.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {conv ? (
+          <div className="mt-4 space-y-3">
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Prednisone Equivalent</span>
+                <span className="font-mono text-lg font-semibold text-fg">{conv.prednisoneEqMg} mg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Benchmark outpatient dose</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Hydrocortisone Equivalent</span>
+                <span className="font-mono text-lg font-semibold text-fg">{conv.hydrocortisoneEqMg} mg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Endogenous cortisol standard</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Target ({conv.specificTarget?.name})</span>
+                <span className="font-mono text-lg font-semibold text-accent">{conv.specificTarget?.amountMg} mg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Therapeutic equivalent dose</span>
+              </div>
+            </div>
+
+            {conv.mineralocorticoidWarning ? (
+              <div className="rounded bg-warn-soft p-2.5 text-xs text-fg leading-relaxed">
+                {conv.mineralocorticoidWarning}
+              </div>
+            ) : null}
+
+            {conv.hepaticProdrugNote ? (
+              <div className="rounded bg-bg-surface p-2.5 text-xs text-muted leading-relaxed">
+                {conv.hepaticProdrugNote}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </article>
+
+      {/* Section 2: HPA Axis Suppression & Tapering Framework */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">HPA Axis Suppression Risk & Tapering Framework</h4>
+        <p className="mt-1 text-xs text-muted">
+          Endocrine Society / CDC guidelines for hypothalamic-pituitary-adrenal axis recovery and stress-dosing indications.
+        </p>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-4">
+          <label className="text-xs text-muted">
+            Prednisone Eq (mg/day)
+            <Input className="mt-1" inputMode="decimal" value={hpaDose} onChange={(e) => setHpaDose(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Duration (weeks)
+            <Input className="mt-1" inputMode="decimal" value={hpaWeeks} onChange={(e) => setHpaWeeks(e.target.value)} />
+          </label>
+          <div className="text-xs text-muted">
+            Dosing Schedule
+            <div className="mt-1 flex gap-1">
+              {(["morning", "evening", "divided"] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  aria-pressed={timing === t}
+                  onClick={() => setTiming(t)}
+                  className={cn(
+                    "h-9 flex-1 rounded text-[11px] font-medium capitalize",
+                    timing === t ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="text-xs text-muted">
+            Cushingoid Signs
+            <button
+              type="button"
+              aria-pressed={cushingoid}
+              onClick={() => setCushingoid((v) => !v)}
+              className={cn(
+                "mt-1 flex h-9 w-full items-center justify-center rounded text-xs font-medium",
+                cushingoid ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {cushingoid ? "Present (Facies/Hump)" : "None noted"}
+            </button>
+          </div>
+        </div>
+
+        {hpa ? (
+          <div className="mt-4 space-y-3">
+            <div className={cn("rounded-md p-3", toneClass(hpa.risk === "high" ? "danger" : hpa.risk === "intermediate" ? "warn" : "ok"))}>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-fg">{hpa.label}</span>
+                <Badge tone={hpa.risk === "high" ? "danger" : hpa.risk === "intermediate" ? "warn" : "ok"}>
+                  {hpa.risk.toUpperCase()} RISK
+                </Badge>
+              </div>
+              <p className="mt-1 text-xs leading-relaxed text-fg">{hpa.summary}</p>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2 text-xs">
+              <div className="rounded bg-surface p-3">
+                <span className="font-semibold text-fg block">Tapering Strategy</span>
+                <p className="mt-1 text-muted leading-relaxed">{hpa.taperRecommendation}</p>
+              </div>
+              <div className="rounded bg-surface p-3">
+                <span className="font-semibold text-fg block">
+                  {hpa.stressDoseNeeded ? "Stress-Dose Coverage Indicated" : "Stress-Dose Coverage"}
+                </span>
+                <p className="mt-1 text-muted leading-relaxed">{hpa.stressDoseGuidance}</p>
+              </div>
+            </div>
+
+            {hpa.pjpProphylaxisNote ? (
+              <div className="rounded bg-danger-soft p-2.5 text-xs text-fg leading-relaxed font-medium">
+                {hpa.pjpProphylaxisNote}
+              </div>
+            ) : null}
+
+            <div className="rounded bg-bg-surface p-2.5 text-xs text-muted leading-relaxed">
+              <span className="font-medium text-fg">Glycemic Pattern Watch:</span> {hpa.glucoseWatch}
+            </div>
+          </div>
+        ) : null}
+      </article>
+
+      {/* Section 3: Comparative Reference Table */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">Comparative Glucocorticoid Reference Table</h4>
+        <p className="mt-1 text-xs text-muted">
+          Relative anti-inflammatory potency, mineralocorticoid effect, and biologic duration of action.
+        </p>
+
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-left font-mono text-xs">
+            <thead>
+              <tr className="border-b border-subtle text-muted">
+                <th className="py-2 pr-3">Steroid</th>
+                <th className="py-2 px-2 text-right">Eq Dose</th>
+                <th className="py-2 px-2 text-right">Anti-Inflam</th>
+                <th className="py-2 px-2 text-right">Mineralo</th>
+                <th className="py-2 px-2">Duration</th>
+                <th className="py-2 px-2">Biologic t½</th>
+                <th className="py-2 pl-2">Hepatic 11β-HSD1</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-subtle/50">
+              {STEROID_AGENTS.map((agent) => (
+                <tr key={agent.id} className="hover:bg-surface/50">
+                  <td className="py-2 pr-3 font-sans font-medium text-fg">
+                    {agent.name}
+                    {agent.brandNames.length ? (
+                      <span className="block text-[10px] text-muted font-normal">({agent.brandNames.join(", ")})</span>
+                    ) : null}
+                  </td>
+                  <td className="py-2 px-2 text-right font-semibold text-fg">{agent.equivDoseMg} mg</td>
+                  <td className="py-2 px-2 text-right text-fg">{agent.antiInflammatoryPotency}</td>
+                  <td className="py-2 px-2 text-right text-fg">{agent.mineralocorticoidPotency}</td>
+                  <td className="py-2 px-2 capitalize text-muted">{agent.durationCategory}</td>
+                  <td className="py-2 px-2 text-muted">{agent.biologicHalfLifeHours}</td>
+                  <td className="py-2 pl-2 text-muted">
+                    {agent.hepaticConversion ? (
+                      <Badge tone="warn">Prodrug</Badge>
+                    ) : (
+                      <Badge tone="ok">Active</Badge>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Dose conversions are approximate and do not account for individual bioavailability, formulation differences, or target organ sensitivity. Tapering schedules must be individualized based on disease activity and clinician judgment. Not a prescribing calculator.
+      </p>
+    </div>
+  );
+}
+
+function BodyMetricsBlock({
+  age,
+  sex,
+  scr,
+  defaultWeight = 70,
+}: {
+  age: number;
+  sex: Sex;
+  scr: number;
+  defaultWeight?: number;
+}) {
+  const [htCm, setHtCm] = useState("175");
+  const [wtKg, setWtKg] = useState(String(defaultWeight));
+
+  const metrics = bodyMetricsOf({
+    heightCm: Number(htCm),
+    weightKg: Number(wtKg),
+    sex,
+  });
+
+  const crclComp =
+    metrics && Number.isFinite(age) && Number.isFinite(scr) && scr > 0
+      ? crclWeightComparisonOf({
+          age,
+          sex,
+          scr,
+          weightKg: Number(wtKg),
+          heightCm: Number(htCm),
+        })
+      : null;
+
+  return (
+    <article className="rounded-md bg-bg-sunken px-3 py-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Body Metrics & Renal Dosing Sizing</h3>
+          <p className="mt-1 text-xs text-muted">
+            Devine 1974 Ideal Body Weight, Adjusted Body Weight (0.4), Mosteller / Du Bois BSA, and CrCl weight divergence.
+          </p>
+        </div>
+        {metrics ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">BSA {metrics.bsaMosteller} m²</p>
+            <Badge tone={metrics.weightCategory === "obese" ? "warn" : metrics.weightCategory === "underweight" ? "danger" : "ok"}>
+              {metrics.weightCategory === "obese"
+                ? `Obese (${Math.round(metrics.weightToIbwRatio * 100)}% IBW)`
+                : metrics.weightCategory === "underweight"
+                  ? "Underweight (<IBW)"
+                  : "Normal Weight"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <label className="text-xs text-muted">
+          Height (cm)
+          <Input className="mt-1" inputMode="decimal" value={htCm} onChange={(e) => setHtCm(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Weight (kg)
+          <Input className="mt-1" inputMode="decimal" value={wtKg} onChange={(e) => setWtKg(e.target.value)} />
+        </label>
+        {metrics ? (
+          <>
+            <div className="rounded bg-surface p-2 text-xs">
+              <span className="text-[10px] text-muted block uppercase">IBW (Devine)</span>
+              <span className="font-mono text-sm font-semibold text-fg">{metrics.ibwKg} kg</span>
+            </div>
+            <div className="rounded bg-surface p-2 text-xs">
+              <span className="text-[10px] text-muted block uppercase">AdjBW (0.4)</span>
+              <span className="font-mono text-sm font-semibold text-fg">{metrics.adjBwKg} kg</span>
+            </div>
+          </>
+        ) : null}
+      </div>
+
+      {metrics ? (
+        <div className="mt-3 space-y-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted">
+            <span>BMI: <strong className="text-fg">{metrics.bmi}</strong> kg/m²</span>
+            <span>Mosteller BSA: <strong className="text-fg">{metrics.bsaMosteller}</strong> m²</span>
+            <span>Du Bois BSA: <strong className="text-fg">{metrics.bsaDuBois}</strong> m²</span>
+            <span>Height: <strong className="text-fg">{metrics.heightInches}</strong> in</span>
+          </div>
+
+          <div className="rounded bg-surface p-2.5 text-xs text-fg leading-relaxed">
+            <span className="font-medium text-accent">Dosing Weight Guidance:</span> {metrics.dosingWeightAdvice}
+          </div>
+
+          {crclComp ? (
+            <div className="rounded bg-surface p-2.5">
+              <p className="text-xs font-semibold text-fg">Cockcroft–Gault Clearance Divergence</p>
+              <div className="mt-1.5 grid grid-cols-3 gap-2 font-mono text-xs text-center">
+                <div className={cn("rounded p-1.5", crclComp.recommendedWeightUsed === "actual" ? "bg-accent-soft font-bold text-fg" : "bg-bg-sunken text-muted")}>
+                  <span className="text-[10px] block uppercase">Actual Wt</span>
+                  <span>{crclComp.crclActual} mL/min</span>
+                </div>
+                <div className={cn("rounded p-1.5", crclComp.recommendedWeightUsed === "ibw" ? "bg-accent-soft font-bold text-fg" : "bg-bg-sunken text-muted")}>
+                  <span className="text-[10px] block uppercase">IBW</span>
+                  <span>{crclComp.crclIbw} mL/min</span>
+                </div>
+                <div className={cn("rounded p-1.5", crclComp.recommendedWeightUsed === "adj" ? "bg-accent-soft font-bold text-fg" : "bg-bg-sunken text-muted")}>
+                  <span className="text-[10px] block uppercase">AdjBW</span>
+                  <span>{crclComp.crclAdj} mL/min</span>
+                </div>
+              </div>
+              <p className="mt-1.5 text-[11px] leading-relaxed text-muted">{crclComp.clinicalCaveat}</p>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid height (100–250 cm) and weight (30–300 kg).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Educational sizing math. In severe obesity, Cockcroft–Gault using actual body weight markedly overestimates clearance, risking overdoses of narrow therapeutic index renally eliminated drugs. Prescribing Information guides whether product labeling specifies ABW, IBW, or AdjBW.
+      </p>
+    </article>
+  );
+}
+
+function CalvertBlock({ defaultGfr, isHot }: { defaultGfr?: number; isHot?: boolean }) {
+  const [auc, setAuc] = useState("5");
+  const [gfr, setGfr] = useState(defaultGfr ? String(defaultGfr) : "80");
+
+  useEffect(() => {
+    if (defaultGfr && defaultGfr > 0) {
+      setGfr(String(defaultGfr));
+    }
+  }, [defaultGfr]);
+
+  const res = calvertCarboplatinOf({
+    targetAuc: Number(auc),
+    gfrOrCrcl: Number(gfr),
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Calvert Formula (Carboplatin Dosing)</h3>
+            {isHot ? <Badge tone="info">Platinum on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Dose (mg) = Target AUC · (GFR + 25). Enforces FDA 125 mL/min GFR safety cap against myelosuppression.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">{res.carboplatinDoseMg} mg</p>
+            <Badge tone={res.capApplied ? "danger" : "ok"}>
+              {res.capApplied ? "FDA Cap Applied (125 mL/min)" : "Standard AUC Dose"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <label className="text-xs text-muted">
+          Target AUC (mg·min/mL)
+          <select
+            value={auc}
+            onChange={(e) => setAuc(e.target.value)}
+            className="mt-1 h-9 w-full rounded-md border border-input bg-surface px-2 text-xs font-medium text-fg"
+          >
+            {[4, 5, 6, 7].map((val) => (
+              <option key={val} value={val}>
+                AUC {val}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs text-muted">
+          GFR / CrCl (mL/min)
+          <Input className="mt-1" inputMode="decimal" value={gfr} onChange={(e) => setGfr(e.target.value)} />
+        </label>
+      </div>
+
+      {res ? (
+        <div className="mt-3 rounded-md bg-surface p-3 space-y-2">
+          <div className="grid grid-cols-2 gap-2 text-xs font-mono sm:grid-cols-3">
+            <div>
+              <span className="text-muted block">Effective GFR</span>
+              <span className="font-semibold text-fg">{res.effectiveGfr} mL/min</span>
+            </div>
+            <div>
+              <span className="text-muted block">Calvert Total Dose</span>
+              <span className="font-semibold text-accent">{res.carboplatinDoseMg} mg</span>
+            </div>
+            {res.capApplied ? (
+              <div>
+                <span className="text-muted block">Uncapped Dose</span>
+                <span className="line-through text-danger">{res.uncappedDoseMg} mg</span>
+              </div>
+            ) : null}
+          </div>
+          <p className="text-xs leading-relaxed text-fg">{res.safetyNote}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid target AUC (1–10) and GFR/CrCl (5–300 mL/min).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Calvert 1989. The 2010 FDA Drug Safety Communication capped GFR at 125 mL/min to prevent catastrophic thrombocytopenia and neutropenic fever in hyperfiltrating patients. Oncology regimen protocols and treating oncologist govern chemotherapy dosing.
+      </p>
+    </article>
+  );
+}
+
+function GanzoniBlock({
+  defaultWeight = 70,
+  defaultSex = "female",
+  isHot,
+}: {
+  defaultWeight?: number;
+  defaultSex?: Sex;
+  isHot?: boolean;
+}) {
+  const [actualHb, setActualHb] = useState("8.5");
+  const [targetHb, setTargetHb] = useState("15.0");
+  const [wt, setWt] = useState(String(defaultWeight));
+  const [ht, setHt] = useState("165");
+  const [sex, setSex] = useState<Sex>(defaultSex);
+
+  const res = calculateGanzoni({
+    actualHb: Number(actualHb),
+    targetHb: Number(targetHb),
+    weightKg: Number(wt),
+    heightCm: Number(ht),
+    sex,
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Ganzoni Total Iron Deficit</h3>
+            {isHot ? <Badge tone="info">Iron on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            Deficit (mg) = Weight · (Target Hb − Actual Hb) · 2.4 + 500 mg depot. Adjusted for obesity divergence.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">{res.suggestedDeficitMg} mg total</p>
+            <Badge tone={res.isObese ? "warn" : "ok"}>
+              {res.isObese ? "Obesity Adjusted (AdjBW)" : "Standard Adult Deficit"}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <label className="text-xs text-muted">
+          Actual Hb (g/dL)
+          <Input className="mt-1" inputMode="decimal" value={actualHb} onChange={(e) => setActualHb(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Target Hb (g/dL)
+          <Input className="mt-1" inputMode="decimal" value={targetHb} onChange={(e) => setTargetHb(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Weight (kg)
+          <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Height (cm)
+          <Input className="mt-1" inputMode="decimal" value={ht} onChange={(e) => setHt(e.target.value)} />
+        </label>
+        <div className="text-xs text-muted">
+          Sex
+          <div className="mt-1 flex gap-1">
+            {(["female", "male"] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                aria-pressed={sex === s}
+                onClick={() => setSex(s)}
+                className={cn(
+                  "h-9 flex-1 rounded text-xs font-medium",
+                  sex === s ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {s === "female" ? "F" : "M"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {res ? (
+        <div className="mt-3 space-y-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 font-mono text-xs">
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Circulating Hb Deficit</span>
+              <span className="text-sm font-semibold text-fg">
+                {Math.round(res.weightKg * res.hbDeficit * res.factorConstant)} mg
+              </span>
+            </div>
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Depot Iron Store</span>
+              <span className="text-sm font-semibold text-fg">{res.depotIronMg} mg</span>
+            </div>
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Simplified Matrix</span>
+              <span className="text-sm font-semibold text-accent">{res.simplifiedMatrixMg} mg</span>
+            </div>
+            <div className="rounded bg-surface p-2">
+              <span className="text-[10px] text-muted block uppercase">Recommended Deficit</span>
+              <span className="text-sm font-semibold text-fg">{res.suggestedDeficitMg} mg</span>
+            </div>
+          </div>
+
+          <div className="rounded bg-surface p-2.5 text-xs text-fg leading-relaxed">
+            <span className="font-medium text-accent">Dosing Kinetics:</span> {res.divergenceNote}
+          </div>
+
+          <div className="rounded bg-warn-soft/40 p-2.5 text-xs text-fg leading-relaxed">
+            <p className="font-semibold text-fg">Iron Overload Safety Screen:</p>
+            <ul className="mt-1 list-disc pl-4 space-y-0.5 text-muted">
+              {res.clinicalSafetyNotes.map((note, i) => (
+                <li key={i}>{note}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid hemoglobin (3–18 g/dL) and weight (10–250 kg).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Ganzoni 1970 classical equation. In severe obesity, adipose tissue is poorly vascularized; unadjusted weight overestimates deficit. Modern label tables (e.g. FERINJECT / MONOFERRIC) use simplified weight/Hb tiers. Not an automated order.
+      </p>
+    </article>
+  );
+}
+
+function DigoxinBlock({
+  defaultWeight = 70,
+  isHot,
+}: {
+  defaultWeight?: number;
+  isHot?: boolean;
+}) {
+  const [level, setLevel] = useState("1.4");
+  const [ind, setInd] = useState<"heart-failure" | "atrial-fib">("heart-failure");
+  const [hours, setHours] = useState("12");
+  const [wt, setWt] = useState(String(defaultWeight));
+
+  const evalRes = evaluateDigoxinLevel(Number(level), ind, Number(hours));
+  const fabRes = calculateDigifab({
+    scenario: "steady-state-level",
+    serumLevelNgMl: Number(level),
+    weightKg: Number(wt),
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Serum Digoxin & DigiFab Sizing</h3>
+            {isHot ? <Badge tone="info">Digoxin on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            TDM window (DIG trial 0.5–0.9 ng/mL vs AF rate control) and DigiFab stoichiometry (SDC · Wt / 100).
+          </p>
+        </div>
+        {evalRes ? (
+          <div className="text-right">
+            <p className="font-mono text-lg text-fg">{evalRes.levelNgMl} ng/mL</p>
+            <Badge tone={evalRes.band === "toxic" ? "danger" : evalRes.band === "elevated" || evalRes.band === "distribution-warning" ? "warn" : evalRes.band === "subtherapeutic" ? "info" : "ok"}>
+              {evalRes.label}
+            </Badge>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <label className="text-xs text-muted">
+          Serum Level (ng/mL)
+          <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Hours Post-Dose
+          <Input className="mt-1" inputMode="decimal" value={hours} onChange={(e) => setHours(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Patient Weight (kg)
+          <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+        </label>
+        <div className="text-xs text-muted">
+          Clinical Indication
+          <div className="mt-1 flex gap-1">
+            {(["heart-failure", "atrial-fib"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={ind === mode}
+                onClick={() => setInd(mode)}
+                className={cn(
+                  "h-9 flex-1 rounded text-xs font-medium",
+                  ind === mode ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {mode === "heart-failure" ? "HF" : "AF"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 space-y-2">
+        <div className={cn("rounded-md p-2.5 text-xs", evalRes.band === "toxic" ? "bg-danger-soft text-fg" : evalRes.band === "elevated" ? "bg-warn-soft text-fg" : "bg-surface text-muted")}>
+          <p className="font-semibold text-fg">{evalRes.label}</p>
+          <p className="mt-0.5 leading-relaxed">{evalRes.clinicalMeaning}</p>
+          {evalRes.mortalityNote ? (
+            <p className="mt-1 text-danger font-medium">{evalRes.mortalityNote}</p>
+          ) : null}
+          {evalRes.samplingTimingWarning ? (
+            <p className="mt-1 text-warn font-medium">{evalRes.samplingTimingWarning}</p>
+          ) : null}
+        </div>
+
+        {evalRes.band === "toxic" || Number(level) >= 2.0 ? (
+          <div className="rounded-md bg-surface p-2.5 text-xs space-y-1.5">
+            <div className="flex flex-wrap justify-between items-baseline gap-1">
+              <span className="font-semibold text-fg">DigiFab Stoichiometry Estimate:</span>
+              <span className="font-mono text-sm font-bold text-accent">{fabRes.vialsRounded} vial{fabRes.vialsRounded > 1 ? "s" : ""} (~{fabRes.mgDigoxinBound} mg bound)</span>
+            </div>
+            <p className="font-mono text-[11px] text-muted">{fabRes.formulaString}</p>
+            <p className="text-[11px] leading-relaxed text-danger font-medium">{fabRes.reboundHypokalemiaAlert}</p>
+            <p className="text-[11px] leading-relaxed text-subtle">{fabRes.postFabImmunoassayAlert}</p>
+          </div>
+        ) : null}
+      </div>
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Early levels (&lt;6–8 hours) reflect distribution and overestimate toxicity. Post-Fab total digoxin immunoassay levels are uninterpretable for 5–7 days. Prescribing Information and medical toxicology consultation govern.
+      </p>
+    </article>
+  );
+}
+
+function ApapPanel({ ids }: { ids: string[] }) {
+  const [hours, setHours] = useState("8");
+  const [level, setLevel] = useState("120");
+  const [chronicAlc, setChronicAlc] = useState(false);
+  const [fasting, setFasting] = useState(false);
+
+  // King's College state
+  const [phLow, setPhLow] = useState(false);
+  const [enceph, setEnceph] = useState(false);
+  const [crHigh, setCrHigh] = useState(false);
+  const [inrHigh, setInrHigh] = useState(false);
+  const [lactateHigh, setLactateHigh] = useState(false);
+
+  const nomo = evaluateRumackMatthew({
+    hoursPostIngestion: Number(hours),
+    serumApapUgMl: Number(level),
+    chronicAlcoholOrInducer: chronicAlc,
+    malnutritionOrFasting: fasting,
+  });
+
+  const kings = evaluateKingsCollege({
+    arterialPhUnder730: phLow,
+    encephalopathyGrade3Or4: enceph,
+    serumCreatinineOver34: crHigh,
+    inrOver65: inrHigh,
+    lactateOver3AfterResuscitation: lactateHigh,
+  });
+
+  const hasApap = ids.includes("acetaminophen");
+  const hasNac = ids.includes("nac");
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Acetaminophen Toxicology & NAC Station</h3>
+          <p className="mt-1 text-xs text-muted">
+            Rumack-Matthew Nomogram, N-acetylcysteine kinetics, and King's College transplant criteria.
+          </p>
+        </div>
+        <div className="flex gap-1.5">
+          {hasApap ? <Badge tone="danger">Acetaminophen on tray</Badge> : null}
+          {hasNac ? <Badge tone="ok">NAC on tray</Badge> : null}
+        </div>
+      </div>
+
+      {/* Section 1: Rumack-Matthew Nomogram */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Rumack-Matthew Nomogram Evaluator</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Single acute ingestion between 4 and 24 hours. Evaluated against 150-treatment line and 300-high risk line.
+            </p>
+          </div>
+          {nomo ? (
+            <Badge tone={nomo.nacIndicated ? "danger" : nomo.band === "too-early" ? "warn" : "ok"}>
+              {nomo.label}
+            </Badge>
+          ) : null}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-xs text-muted">
+            Hours Post-Ingestion (4–24h)
+            <Input className="mt-1" inputMode="decimal" value={hours} onChange={(e) => setHours(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Serum APAP (µg/mL)
+            <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+          </label>
+          <div className="text-xs text-muted">
+            Chronic Alcohol / 2E1 Inducer
+            <button
+              type="button"
+              aria-pressed={chronicAlc}
+              onClick={() => setChronicAlc((v) => !v)}
+              className={cn(
+                "mt-1 flex h-9 w-full items-center justify-center rounded text-xs font-medium",
+                chronicAlc ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {chronicAlc ? "Induction / GSH Depleted" : "No Inducer"}
+            </button>
+          </div>
+          <div className="text-xs text-muted">
+            Malnutrition / Fasting
+            <button
+              type="button"
+              aria-pressed={fasting}
+              onClick={() => setFasting((v) => !v)}
+              className={cn(
+                "mt-1 flex h-9 w-full items-center justify-center rounded text-xs font-medium",
+                fasting ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {fasting ? "GSH Depleted (<30%)" : "Normal Nutrition"}
+            </button>
+          </div>
+        </div>
+
+        {nomo ? (
+          <div className="mt-4 space-y-3">
+            <div className={cn("rounded-md p-3", toneClass(nomo.nacIndicated ? "danger" : nomo.band === "too-early" ? "warn" : "ok"))}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-fg">{nomo.label}</span>
+                {nomo.treatmentLineUgMl !== null ? (
+                  <span className="font-mono text-xs">
+                    150-Line Cut: {nomo.treatmentLineUgMl} µg/mL | High-Risk Cut: {nomo.highRiskLineUgMl} µg/mL
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1 text-sm leading-relaxed text-fg">{nomo.nacUrgency}</p>
+              <p className="mt-1 text-xs leading-relaxed text-fg/90">{nomo.clinicalGuidance}</p>
+            </div>
+
+            {nomo.riskModifiers.length ? (
+              <div className="rounded bg-warn-soft p-2.5 text-xs text-fg leading-relaxed">
+                <span className="font-semibold block">Risk Modifiers Active:</span>
+                {nomo.riskModifiers.map((m, i) => (
+                  <p key={i}>• {m}</p>
+                ))}
+              </div>
+            ) : null}
+
+            <p className="text-xs leading-relaxed text-muted font-mono">{nomo.toxicologyPearl}</p>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-muted">Enter hours (0–168) and APAP level (0–2500 µg/mL).</p>
+        )}
+      </article>
+
+      {/* Section 2: NAC Regimens Comparison */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">N-Acetylcysteine (NAC) Dosing Regimens & Kinetics</h4>
+        <p className="mt-1 text-xs text-muted">
+          Replenishes hepatic glutathione (GSH) reserves and detoxifies reactive NAPQI metabolites.
+        </p>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {NAC_REGIMENS.map((reg) => (
+            <div key={reg.name} className="rounded-md bg-surface p-3 flex flex-col justify-between">
+              <div>
+                <h5 className="font-semibold text-sm text-fg">{reg.name}</h5>
+                <span className="font-mono text-xs text-accent block mt-0.5">
+                  Total {reg.totalDoseMgKg} mg/kg over {reg.durationHours}h
+                </span>
+                <ul className="mt-2 space-y-1.5 text-xs">
+                  {reg.steps.map((st) => (
+                    <li key={st.phase} className="rounded bg-bg-sunken p-1.5">
+                      <span className="font-medium text-fg block">{st.phase} ({st.doseMgKg} mg/kg)</span>
+                      <span className="text-[11px] text-muted block leading-tight">{st.rateNote}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <p className="mt-2 text-[11px] leading-relaxed text-muted border-t border-subtle/50 pt-1.5">
+                {reg.pearl}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-3 rounded bg-surface p-3 text-xs leading-relaxed text-fg">
+          <span className="font-semibold text-accent block">Non-Allergic Anaphylactoid Reactions (NAAR):</span>
+          Flushing, pruritus, and urticaria occur in 10–20% of patients during IV loading due to rate-dependent non-IgE histamine release. Standard protocol: temporarily pause infusion, administer diphenhydramine (25–50 mg IV), and resume infusion at a 50% reduced rate once symptoms clear. Do NOT permanently discontinue NAC for cutaneous reactions.
+        </div>
+      </article>
+
+      {/* Section 3: King's College Criteria */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">King's College Criteria (Transplant Urgency)</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Prognostic criteria for emergency liver transplant evaluation in acetaminophen-induced acute liver failure.
+            </p>
+          </div>
+          <Badge tone={kings.meetsCriteria ? "danger" : "ok"}>
+            {kings.meetsCriteria ? "CRITERIA MET (High Mortality)" : "Criteria Not Met"}
+          </Badge>
+        </div>
+
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <button
+            type="button"
+            aria-pressed={phLow}
+            onClick={() => setPhLow((v) => !v)}
+            className={cn(
+              "flex h-auto min-h-11 items-center justify-between rounded p-2.5 text-left text-xs font-medium",
+              phLow ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            <span>Arterial pH &lt; 7.30 (post-fluids)</span>
+            {phLow ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+          </button>
+
+          <button
+            type="button"
+            aria-pressed={enceph}
+            onClick={() => setEnceph((v) => !v)}
+            className={cn(
+              "flex h-auto min-h-11 items-center justify-between rounded p-2.5 text-left text-xs font-medium",
+              enceph ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            <span>Encephalopathy Grade 3 or 4</span>
+            {enceph ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+          </button>
+
+          <button
+            type="button"
+            aria-pressed={crHigh}
+            onClick={() => setCrHigh((v) => !v)}
+            className={cn(
+              "flex h-auto min-h-11 items-center justify-between rounded p-2.5 text-left text-xs font-medium",
+              crHigh ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            <span>Serum Creatinine &gt; 3.4 mg/dL</span>
+            {crHigh ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+          </button>
+
+          <button
+            type="button"
+            aria-pressed={inrHigh}
+            onClick={() => setInrHigh((v) => !v)}
+            className={cn(
+              "flex h-auto min-h-11 items-center justify-between rounded p-2.5 text-left text-xs font-medium",
+              inrHigh ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            <span>INR &gt; 6.5 (PT &gt; 100 s)</span>
+            {inrHigh ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+          </button>
+
+          <button
+            type="button"
+            aria-pressed={lactateHigh}
+            onClick={() => setLactateHigh((v) => !v)}
+            className={cn(
+              "flex h-auto min-h-11 items-center justify-between rounded p-2.5 text-left text-xs font-medium sm:col-span-2 lg:col-span-2",
+              lactateHigh ? "bg-danger-soft text-fg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            <span>Arterial Lactate &gt; 3.0 mmol/L (post-resuscitation at 12h)</span>
+            {lactateHigh ? <CheckSquare className="size-4 shrink-0 text-danger" /> : <Square className="size-4 shrink-0 text-muted" />}
+          </button>
+        </div>
+
+        <div className={cn("mt-3 rounded-md p-3", toneClass(kings.meetsCriteria ? "danger" : "ok"))}>
+          <p className="text-sm font-semibold text-fg">{kings.summary}</p>
+          <p className="mt-1 text-xs leading-relaxed text-fg">{kings.reason}</p>
+          <p className="mt-1 text-xs leading-relaxed text-accent font-medium">{kings.urgency}</p>
+        </div>
+      </article>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational toxicology reference. Nomogram applies strictly to acute single ingestions with known time. Chronic supratherapeutic ingestion, staggered ingestions, or unknown time of ingestion require direct clinical consultation with a regional Poison Control Center (1-800-222-1222 in US) or medical toxicologist.
+      </p>
+    </div>
+  );
+}
+
+function IronPanel({ ids }: { ids: string[] }) {
+  const [actualHb, setActualHb] = useState("8.5");
+  const [targetHb, setTargetHb] = useState("15.0");
+  const [wt, setWt] = useState("70");
+  const [ht, setHt] = useState("165");
+  const [sex, setSex] = useState<Sex>("female");
+
+  const ganzoni = calculateGanzoni({
+    actualHb: Number(actualHb),
+    targetHb: Number(targetHb),
+    weightKg: Number(wt),
+    heightCm: Number(ht),
+    sex,
+  });
+
+  const report = ironReportOnDesk(ids);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Parenteral Iron Sizing & Ganzoni Kinetics</h3>
+          <p className="mt-1 text-xs text-muted">
+            Ganzoni formula deficit math, formulation comparative kinetics, test-dose protocols, and FGF23 hypophosphatemia.
+          </p>
+        </div>
+        <Badge tone="info">{report.headline}</Badge>
+      </div>
+
+      {report.items.length > 0 ? (
+        <div className="rounded-md bg-accent-soft/40 p-3 space-y-2">
+          {report.items.map((it, idx) => (
+            <div key={idx} className={cn("rounded p-2 text-xs", it.warning ? "bg-warn-soft text-fg" : "bg-surface text-muted")}>
+              <span className="font-semibold text-fg block">{it.title}</span>
+              <p className="mt-0.5 leading-relaxed">{it.detail}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Section 1: Interactive Ganzoni Sizing Station */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Ganzoni Iron Deficit Calculator</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Weight (kg) · (Target Hb − Actual Hb) · 2.4 + Depot (500 mg). Compared with European/US fixed-dose tiers.
+            </p>
+          </div>
+          {ganzoni ? (
+            <div className="text-right">
+              <span className="font-mono text-lg font-semibold text-fg">{ganzoni.suggestedDeficitMg} mg</span>
+              <span className="text-[11px] text-muted block">Deficit with depot</span>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <label className="text-xs text-muted">
+            Actual Hb (g/dL)
+            <Input className="mt-1" inputMode="decimal" value={actualHb} onChange={(e) => setActualHb(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Target Hb (g/dL)
+            <Input className="mt-1" inputMode="decimal" value={targetHb} onChange={(e) => setTargetHb(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Weight (kg)
+            <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Height (cm)
+            <Input className="mt-1" inputMode="decimal" value={ht} onChange={(e) => setHt(e.target.value)} />
+          </label>
+          <div className="text-xs text-muted">
+            Biological Sex
+            <div className="mt-1 flex gap-1">
+              {(["female", "male"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={sex === s}
+                  onClick={() => setSex(s)}
+                  className={cn(
+                    "h-9 flex-1 rounded text-xs font-medium",
+                    sex === s ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                  )}
+                >
+                  {s === "female" ? "Female" : "Male"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {ganzoni ? (
+          <div className="mt-4 space-y-3">
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Raw Ganzoni (ABW)</span>
+                <span className="font-mono text-lg font-semibold text-fg">{ganzoni.rawDeficitMg} mg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Unadjusted body weight</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Adjusted Deficit (AdjBW)</span>
+                <span className="font-mono text-lg font-semibold text-accent">
+                  {ganzoni.suggestedDeficitMg} mg
+                </span>
+                <span className="text-[10px] text-muted block mt-0.5">
+                  {ganzoni.isObese ? "Corrected for adiposity" : "Identical to standard"}
+                </span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Simplified Tier Matrix</span>
+                <span className="font-mono text-lg font-semibold text-fg">{ganzoni.simplifiedMatrixMg} mg</span>
+                <span className="text-[10px] text-muted block mt-0.5">Fixed 1000–1500 mg label tier</span>
+              </div>
+            </div>
+
+            <p className="rounded bg-surface p-2.5 text-xs text-fg leading-relaxed">
+              {ganzoni.divergenceNote}
+            </p>
+          </div>
+        ) : null}
+      </article>
+
+      {/* Section 2: Formulations Comparative Reference Table */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">Parenteral Iron Formulations Reference</h4>
+        <p className="mt-1 text-xs text-muted">
+          Elemental iron concentration, maximum single infusion dose, test-dose mandates, and FGF23 hypophosphatemia.
+        </p>
+
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-left font-mono text-xs">
+            <thead>
+              <tr className="border-b border-subtle text-muted">
+                <th className="py-2 pr-3">Formulation</th>
+                <th className="py-2 px-2 text-right">Iron Conc</th>
+                <th className="py-2 px-2 text-right">Max Dose</th>
+                <th className="py-2 px-2">Time</th>
+                <th className="py-2 px-2">Test Dose</th>
+                <th className="py-2 px-2">FGF23 Risk</th>
+                <th className="py-2 pl-2">Boxed Warning</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-subtle/50">
+              {Object.values(IRON_FORMULATIONS).map((f) => (
+                <tr key={f.id} className="hover:bg-surface/50">
+                  <td className="py-2 pr-3 font-sans font-medium text-fg">
+                    {f.name}
+                    <span className="block text-[10px] text-muted font-normal">({f.brand})</span>
+                  </td>
+                  <td className="py-2 px-2 text-right text-fg">{f.elementalIronMgPerMl} mg/mL</td>
+                  <td className="py-2 px-2 text-right font-semibold text-fg">{f.maxSingleDoseMg} mg</td>
+                  <td className="py-2 px-2 text-muted">{f.infusionTimeMin} min</td>
+                  <td className="py-2 px-2">
+                    {f.testDoseRequired ? (
+                      <Badge tone="danger">Mandatory 25 mg</Badge>
+                    ) : (
+                      <span className="text-muted">None</span>
+                    )}
+                  </td>
+                  <td className="py-2 px-2">
+                    <Badge tone={f.fgf23HypophosphatemiaRisk === "high" ? "danger" : f.fgf23HypophosphatemiaRisk === "low" ? "ok" : "info"}>
+                      {f.fgf23HypophosphatemiaRisk}
+                    </Badge>
+                  </td>
+                  <td className="py-2 pl-2">
+                    {f.boxedWarning ? (
+                      <Badge tone="danger">Black Box</Badge>
+                    ) : (
+                      <span className="text-muted">None</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      {/* Section 3: Deep Clinical Pearls */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <article className="rounded-md bg-bg-sunken p-3.5">
+          <h5 className="font-serif text-sm font-semibold text-fg">Oral vs IV Iron & Hepcidin Dynamics</h5>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Oral iron stimulates hepatic hepcidin synthesis for up to 48 hours, blocking duodenal ferroportin. Alternate-day oral dosing maximizes fractional absorption. IV iron bypasses hepcidin mucosal block and is preferred in malabsorption, celiac disease, bariatric anatomy, active IBD, hemodialysis, and heart failure (HFrEF NYHA II/III with ferritin &lt; 100 ng/mL or 100–300 with TSAT &lt; 20%).
+          </p>
+        </article>
+
+        <article className="rounded-md bg-bg-sunken p-3.5">
+          <h5 className="font-serif text-sm font-semibold text-fg">Infusion Reactions (Fishbane Reactions)</h5>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Acute chest/back tightness, flushing, and joint discomfort during rapid infusion usually represent complement activation-related pseudoallergy (CARPA) or labile free iron, NOT true IgE-mediated anaphylaxis. Stopping the infusion for 15 minutes and resuming at a slower rate resolves &gt;90% of mild reactions without antihistamines or epinephrine.
+          </p>
+        </article>
+      </div>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational clinical pharmacology reference. Not a prescribing order or therapeutic protocol. Always verify individual institutional infusion policies, patient ferritin/TSAT levels, and official Prescribing Information prior to ordering parenteral iron.
+      </p>
+    </div>
+  );
+}
+
+function DigoxinPanel({ ids }: { ids: string[] }) {
+  const [scenario, setScenario] = useState<"steady-state-level" | "acute-dose" | "empiric-arrest">("steady-state-level");
+  const [level, setLevel] = useState("3.5");
+  const [ingestedMg, setIngestedMg] = useState("10");
+  const [wt, setWt] = useState("70");
+  const [ind, setInd] = useState<"heart-failure" | "atrial-fib">("heart-failure");
+  const [arrestType, setArrestType] = useState<"acute" | "chronic">("acute");
+
+  const evalRes = evaluateDigoxinLevel(Number(level), ind);
+  const fabRes = calculateDigifab({
+    scenario,
+    serumLevelNgMl: Number(level),
+    ingestedDoseMg: Number(ingestedMg),
+    weightKg: Number(wt),
+    indication: arrestType,
+  });
+
+  const report = digoxinReportOnDesk(ids);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Digoxin Pharmacokinetics & DigiFab Sizing</h3>
+          <p className="mt-1 text-xs text-muted">
+            TDM windows, P-gp collision reductions, electrolyte sensitizers, and DigiFab reversal stoichiometry.
+          </p>
+        </div>
+        <Badge tone="info">{report.headline}</Badge>
+      </div>
+
+      {report.items.length > 0 ? (
+        <div className="rounded-md bg-accent-soft/40 p-3 space-y-2">
+          {report.items.map((it, idx) => (
+            <div key={idx} className={cn("rounded p-2 text-xs", it.warning ? "bg-warn-soft text-fg" : "bg-surface text-muted")}>
+              <span className="font-semibold text-fg block">{it.title}</span>
+              <p className="mt-0.5 leading-relaxed">{it.detail}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Section 1: Interactive DigiFab Sizing Calculator */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">DigiFab (Digoxin Immune Fab) Calculator</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Choose clinical presentation: known acute ingestion, steady-state SDC nomogram, or empiric arrest.
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="font-mono text-lg font-semibold text-fg">{fabRes.vialsRounded} vial{fabRes.vialsRounded > 1 ? "s" : ""}</span>
+            <span className="text-[11px] text-muted block">({fabRes.mgDigoxinBound} mg bound)</span>
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1">
+          {([
+            { id: "steady-state-level", label: "Steady-State Level (SDC)" },
+            { id: "acute-dose", label: "Known Acute Dose (mg)" },
+            { id: "empiric-arrest", label: "Empiric / Cardiac Arrest" },
+          ] as const).map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              aria-pressed={scenario === tab.id}
+              onClick={() => setScenario(tab.id)}
+              className={cn(
+                "h-8 rounded-full px-3 text-xs font-medium",
+                scenario === tab.id ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {scenario === "steady-state-level" ? (
+            <>
+              <label className="text-xs text-muted">
+                Serum Digoxin (ng/mL)
+                <Input className="mt-1" inputMode="decimal" value={level} onChange={(e) => setLevel(e.target.value)} />
+              </label>
+              <label className="text-xs text-muted">
+                Patient Weight (kg)
+                <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+              </label>
+              <div className="text-xs text-muted">
+                Baseline Indication
+                <div className="mt-1 flex gap-1">
+                  {(["heart-failure", "atrial-fib"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      aria-pressed={ind === m}
+                      onClick={() => setInd(m)}
+                      className={cn(
+                        "h-9 flex-1 rounded text-xs font-medium",
+                        ind === m ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                      )}
+                    >
+                      {m === "heart-failure" ? "HF" : "AF"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {scenario === "acute-dose" ? (
+            <label className="text-xs text-muted">
+              Estimated Ingested Dose (mg)
+              <Input className="mt-1" inputMode="decimal" value={ingestedMg} onChange={(e) => setIngestedMg(e.target.value)} />
+            </label>
+          ) : null}
+
+          {scenario === "empiric-arrest" ? (
+            <div className="text-xs text-muted">
+              Overdose Presentation
+              <div className="mt-1 flex gap-1">
+                {(["acute", "chronic"] as const).map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    aria-pressed={arrestType === a}
+                    onClick={() => setArrestType(a)}
+                    className={cn(
+                      "h-9 flex-1 rounded text-xs font-medium",
+                      arrestType === a ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                    )}
+                  >
+                    {a === "acute" ? "Acute Ingestion" : "Chronic Toxicity"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {scenario === "steady-state-level" ? (
+          <div className={cn("mt-3 rounded p-2.5 text-xs", evalRes.band === "toxic" ? "bg-danger-soft text-fg" : evalRes.band === "elevated" ? "bg-warn-soft text-fg" : "bg-surface text-muted")}>
+            <span className="font-semibold block">{evalRes.label}</span>
+            <p className="mt-0.5 leading-relaxed">{evalRes.clinicalMeaning}</p>
+            {evalRes.mortalityNote ? <p className="mt-0.5 text-danger font-medium">{evalRes.mortalityNote}</p> : null}
+          </div>
+        ) : null}
+
+        <div className="mt-4 space-y-2 rounded-md bg-surface p-3 text-xs">
+          <div className="flex flex-wrap justify-between gap-1">
+            <span className="font-semibold text-fg">Method: {fabRes.calculationMethod}</span>
+            <span className="font-mono text-accent font-semibold">{fabRes.vialsRecommended} vials ({fabRes.vialsRounded} rounded)</span>
+          </div>
+          <p className="font-mono text-[11px] text-muted">{fabRes.formulaString}</p>
+          <div className="rounded bg-danger-soft/60 p-2 text-fg">
+            <span className="font-semibold block">Rebound Hypokalemia Alert:</span>
+            <p className="mt-0.5 leading-relaxed">{fabRes.reboundHypokalemiaAlert}</p>
+          </div>
+          <div className="rounded bg-warn-soft/40 p-2 text-fg">
+            <span className="font-semibold block">Post-Fab Immunoassay Trap:</span>
+            <p className="mt-0.5 leading-relaxed">{fabRes.postFabImmunoassayAlert}</p>
+          </div>
+        </div>
+      </article>
+
+      {/* Section 2: P-gp Interactor Reference */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <h4 className="font-serif text-base tracking-tight text-fg">P-Glycoprotein (P-gp) Perpetrator Collisions</h4>
+        <p className="mt-1 text-xs text-muted">
+          P-gp inhibitors reduce renal and biliary digoxin clearance by 30–50%, prompting labeled dose reductions.
+        </p>
+
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-left font-mono text-xs">
+            <thead>
+              <tr className="border-b border-subtle text-muted">
+                <th className="py-2 pr-3">Perpetrator Drug</th>
+                <th className="py-2 px-2 text-right">Empiric Cut</th>
+                <th className="py-2 pl-3">Mechanism & Clinical Caution</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-subtle/50">
+              {DIGOXIN_PGP_INTERACTORS.map((p) => (
+                <tr key={p.id} className="hover:bg-surface/50">
+                  <td className="py-2 pr-3 font-sans font-medium text-fg">{p.name}</td>
+                  <td className="py-2 px-2 text-right font-semibold text-danger">−{p.reductionPct}%</td>
+                  <td className="py-2 pl-3 text-muted">{p.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      {/* Section 3: Deep Pearls */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <article className="rounded-md bg-bg-sunken p-3.5">
+          <h5 className="font-serif text-sm font-semibold text-fg">Electrolyte Sensitizers & Arrhythmogenesis</h5>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Hypokalemia facilitates digoxin binding to Na+/K+-ATPase, precipitating severe toxicity at "therapeutic" levels. Hypomagnesemia prevents intracellular potassium retention and inhibits the pump. Hypercalcemia compounds intracellular calcium overload, creating delayed afterdepolarizations (DADs) and ventricular ectopy. Always normalize K+ and Mg2+ before concluding an SDC is safe.
+          </p>
+        </article>
+        <article className="rounded-md bg-bg-sunken p-3.5">
+          <h5 className="font-serif text-sm font-semibold text-fg">DIG Trial Mortality Inflection</h5>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Historical laboratory references cited 0.8–2.0 ng/mL as "normal." The landmark DIG trial demonstrated that in heart failure, SDC 0.5–0.9 ng/mL reduced hospitalizations and improved functional class, whereas SDC ≥1.2 ng/mL independently increased all-cause mortality across all subgroups.
+          </p>
+        </article>
+      </div>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Does not replace regional poison control center guidance (1-800-222-1222 in US) or medical toxicologist consultation for acute poisoning.
+      </p>
+    </div>
+  );
+}
+
+function PhenobarbitalBlock({ isHot, defaultWeight }: { isHot?: boolean; defaultWeight?: number }) {
+  const [wt, setWt] = useState(defaultWeight && defaultWeight > 0 ? String(defaultWeight) : "70");
+  const [ind, setInd] = useState<PhenobarbitalIndication>("alcohol-withdrawal");
+  const [curr, setCurr] = useState("0");
+  const [target, setTarget] = useState("20");
+
+  useEffect(() => {
+    if (defaultWeight && defaultWeight > 0) {
+      setWt(String(defaultWeight));
+    }
+  }, [defaultWeight]);
+
+  const res = calculatePhenobarbitalLoading({
+    weightKg: Number(wt),
+    indication: ind,
+    currentLevelUgMl: Number(curr),
+    targetLevelUgMl: Number(target),
+  });
+
+  return (
+    <article className={cn("rounded-md px-3 py-3", isHot ? "bg-accent-soft/60" : "bg-bg-sunken")}>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-serif text-lg tracking-tight text-fg">Phenobarbital Loading & Elimination</h3>
+            {isHot ? <Badge tone="info">Barbiturate on tray</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-muted">
+            AWS built-in taper, status epilepticus loading velocity, and urinary alkalinization ion trapping.
+          </p>
+        </div>
+        {res ? (
+          <div className="text-right">
+            <p className="font-mono text-lg font-semibold text-fg">{res.loadingDoseMg} mg ({res.loadingDoseMgPerKg} mg/kg)</p>
+            <span className="font-mono text-xs text-muted">Min infusion {res.minInfusionDurationMinutes} min (≤60 mg/min)</span>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-3 flex gap-1">
+        {(["alcohol-withdrawal", "status-epilepticus", "maintenance-tdm"] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            aria-pressed={ind === mode}
+            onClick={() => {
+              setInd(mode);
+              if (mode === "status-epilepticus") setTarget("25");
+              else setTarget("20");
+            }}
+            className={cn(
+              "h-8 rounded px-2.5 text-xs font-medium",
+              ind === mode ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+            )}
+          >
+            {mode === "alcohol-withdrawal" ? "Alcohol Withdrawal (AWS)" : mode === "status-epilepticus" ? "Status Epilepticus" : "Maintenance / TDM"}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <label className="text-xs text-muted">
+          Patient Weight (kg)
+          <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Current Level (µg/mL)
+          <Input className="mt-1" inputMode="decimal" value={curr} onChange={(e) => setCurr(e.target.value)} />
+        </label>
+        <label className="text-xs text-muted">
+          Target Level (µg/mL)
+          <Input className="mt-1" inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} />
+        </label>
+        <div className="text-xs text-muted">
+          Max Infusion Velocity
+          <div className="mt-1 flex h-9 items-center rounded border border-input bg-surface px-2.5 font-mono text-xs text-fg">
+            60 mg/min (adult cap)
+          </div>
+        </div>
+      </div>
+
+      {res ? (
+        <div className="mt-3 space-y-2">
+          <div className="rounded-md bg-surface p-2.5 text-xs text-fg">
+            <p className="font-semibold">{res.indicationGuidance}</p>
+            <p className="mt-1 font-mono text-[11px] text-danger">{res.propyleneGlycolAlert}</p>
+          </div>
+          <p className="text-[11px] leading-relaxed text-muted">{res.builtInTaperPearl}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-sm text-muted">Enter valid weight (20–300 kg) and target level (5–60 µg/mL).</p>
+      )}
+
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Propylene glycol solvent limits infusion rate to ≤60 mg/min. For urinary alkalinization and detailed Henderson-Hasselbalch ion-trapping kinetics, open the Phenobarb tab.
+      </p>
+    </article>
+  );
+}
+
+function PhenobarbitalPanel({ ids }: { ids: string[] }) {
+  // Loading station state
+  const [ind, setInd] = useState<PhenobarbitalIndication>("alcohol-withdrawal");
+  const [wt, setWt] = useState("70");
+  const [curr, setCurr] = useState("0");
+  const [target, setTarget] = useState("20");
+  const [vd, setVd] = useState("0.6");
+
+  // Elimination station state
+  const [serumLvl, setSerumLvl] = useState("65");
+  const [basePh, setBasePh] = useState("6.0");
+  const [alkPh, setAlkPh] = useState("7.8");
+
+  const report = phenobarbitalReportOnDesk(ids);
+
+  const loadRes = calculatePhenobarbitalLoading({
+    weightKg: Number(wt),
+    indication: ind,
+    currentLevelUgMl: Number(curr),
+    targetLevelUgMl: Number(target),
+    vdLPerKg: Number(vd),
+  });
+
+  const elimRes = calculatePhenobarbitalElimination({
+    serumLevelUgMl: Number(serumLvl),
+    baselineUrinePh: Number(basePh),
+    alkalinizedUrinePh: Number(alkPh),
+  });
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">Phenobarbital Pharmacokinetics & Elimination Station</h3>
+          <p className="mt-1 text-xs text-muted">
+            AWS loading & built-in auto-taper kinetics, Status Epilepticus loading velocity, and Henderson-Hasselbalch urinary alkalinization ion trapping.
+          </p>
+        </div>
+        <div className="flex gap-1.5">
+          {report.hasPhenobarbital ? <Badge tone="danger">Phenobarbital on tray</Badge> : null}
+          {report.hasPrimidone ? <Badge tone="warn">Primidone on tray (CYP2C19 prodrug)</Badge> : null}
+        </div>
+      </div>
+
+      {report.broadInductionSummary ? (
+        <div className="rounded-md border border-warn/30 bg-warn-soft/40 p-3 text-xs leading-relaxed text-fg">
+          <span className="font-semibold block text-fg">Pan-CYP Induction Warning:</span>
+          {report.broadInductionSummary}
+          {report.primidoneProdrugNote ? (
+            <p className="mt-1 font-mono text-[11px] text-muted">{report.primidoneProdrugNote}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {/* Section 1: Loading Dose & Infusion Kinetics */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Loading Dose & Infusion Velocity Station</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Target serum level calculation with strict 60 mg/min rate limit to avoid propylene glycol solvent toxicity.
+            </p>
+          </div>
+          {loadRes ? (
+            <span className="font-mono text-sm font-bold text-accent">
+              {loadRes.loadingDoseMg} mg ({loadRes.loadingDoseMgPerKg} mg/kg)
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-3 flex gap-1">
+          {(["alcohol-withdrawal", "status-epilepticus", "maintenance-tdm"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={ind === mode}
+              onClick={() => {
+                setInd(mode);
+                if (mode === "status-epilepticus") setTarget("25");
+                else setTarget("20");
+              }}
+              className={cn(
+                "h-8 rounded px-3 text-xs font-medium",
+                ind === mode ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {mode === "alcohol-withdrawal" ? "Alcohol Withdrawal (AWS)" : mode === "status-epilepticus" ? "Status Epilepticus" : "Maintenance / TDM"}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <label className="text-xs text-muted">
+            Patient Weight (kg)
+            <Input className="mt-1" inputMode="decimal" value={wt} onChange={(e) => setWt(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Current Level (µg/mL)
+            <Input className="mt-1" inputMode="decimal" value={curr} onChange={(e) => setCurr(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Target Level (µg/mL)
+            <Input className="mt-1" inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Volume of Dist (L/kg)
+            <Input className="mt-1" inputMode="decimal" value={vd} onChange={(e) => setVd(e.target.value)} />
+          </label>
+          <div className="text-xs text-muted">
+            Max Infusion Speed
+            <div className="mt-1 flex h-9 items-center rounded border border-input bg-surface px-2.5 font-mono text-xs text-fg">
+              60 mg/min (adult cap)
+            </div>
+          </div>
+        </div>
+
+        {loadRes ? (
+          <div className="mt-4 space-y-3">
+            <div className="grid gap-2 sm:grid-cols-3">
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Loading Dose</span>
+                <span className="font-mono text-lg font-semibold text-fg">{loadRes.loadingDoseMg} mg</span>
+                <span className="text-[10px] text-muted block mt-0.5">{loadRes.loadingDoseMgPerKg} mg/kg (Vd {loadRes.totalVdL} L)</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Min Infusion Time</span>
+                <span className="font-mono text-lg font-semibold text-accent">{loadRes.minInfusionDurationMinutes} min</span>
+                <span className="text-[10px] text-muted block mt-0.5">Rate: ≤60 mg/min</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Deficit to Replete</span>
+                <span className="font-mono text-lg font-semibold text-fg">+{loadRes.deficitUgMl} µg/mL</span>
+                <span className="text-[10px] text-muted block mt-0.5">Target: {loadRes.targetLevelUgMl} µg/mL</span>
+              </div>
+            </div>
+
+            <div className="rounded bg-warn-soft p-2.5 text-xs text-fg leading-relaxed">
+              <span className="font-semibold block">Propylene Glycol Diluent Black Box Caution:</span>
+              <p className="mt-0.5">{loadRes.propyleneGlycolAlert}</p>
+            </div>
+
+            <div className="rounded bg-surface p-2.5 text-xs text-muted leading-relaxed">
+              <p className="font-medium text-fg">{loadRes.indicationGuidance}</p>
+              <p className="mt-1">{loadRes.respiratorySedationNote}</p>
+              <p className="mt-1 font-mono text-[11px] text-accent">{loadRes.builtInTaperPearl}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-muted">Enter valid parameters (weight 20–300 kg, target 5–60 µg/mL).</p>
+        )}
+      </article>
+
+      {/* Section 2: Barbiturate Toxicity & Ion-Trapping Urinary Alkalinization */}
+      <article className="rounded-md bg-bg-sunken p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base tracking-tight text-fg">Barbiturate Overdose & Ion-Trapping Urinary Alkalinization</h4>
+            <p className="mt-0.5 text-xs text-muted">
+              Weak acid pKa 7.24 kinetics: shifting urine pH from 6.0 to 7.8 traps ionized phenobarbital, multiplying renal clearance 5- to 10-fold.
+            </p>
+          </div>
+          {elimRes ? (
+            <Badge tone={elimRes.toxicityBand === "lethal-overdose" || elimRes.toxicityBand === "severe-toxicity" ? "danger" : elimRes.toxicityBand === "elevated" ? "warn" : "ok"}>
+              {elimRes.toxicityLabel}
+            </Badge>
+          ) : null}
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <label className="text-xs text-muted">
+            Serum Level (µg/mL)
+            <Input className="mt-1" inputMode="decimal" value={serumLvl} onChange={(e) => setSerumLvl(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Baseline Urine pH
+            <Input className="mt-1" inputMode="decimal" value={basePh} onChange={(e) => setBasePh(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Target Alkalinized Urine pH
+            <Input className="mt-1" inputMode="decimal" value={alkPh} onChange={(e) => setAlkPh(e.target.value)} />
+          </label>
+        </div>
+
+        {elimRes ? (
+          <div className="mt-4 space-y-3">
+            <div className="grid gap-2 sm:grid-cols-4">
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Drug pKa</span>
+                <span className="font-mono text-lg font-semibold text-fg">{elimRes.pKa}</span>
+                <span className="text-[10px] text-muted block mt-0.5">Weak organic acid</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Baseline (pH {elimRes.baselineUrinePh})</span>
+                <span className="font-mono text-lg font-semibold text-muted">{elimRes.baselineIonizedPercent}% Ionized</span>
+                <span className="text-[10px] text-muted block mt-0.5">&gt;90% lipid-soluble reabsorbed</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Alkalinized (pH {elimRes.alkalinizedUrinePh})</span>
+                <span className="font-mono text-lg font-semibold text-accent">{elimRes.alkalinizedIonizedPercent}% Ionized</span>
+                <span className="text-[10px] text-muted block mt-0.5">Trapped impermeable A⁻</span>
+              </div>
+              <div className="rounded-md bg-surface p-3">
+                <span className="text-[11px] text-muted block">Clearance Enhancement</span>
+                <span className="font-mono text-lg font-semibold text-fg">~{elimRes.clearanceFoldIncrease}× Multiplier</span>
+                <span className="text-[10px] text-muted block mt-0.5">{elimRes.ionizationFoldIncrease}× ionized fraction</span>
+              </div>
+            </div>
+
+            <div className="rounded-md border border-danger/40 bg-danger-soft/40 p-3 text-xs leading-relaxed text-fg">
+              <span className="font-semibold block text-danger">CRITICAL PITFALL — Paradoxical Aciduria & Potassium Wasting:</span>
+              <p className="mt-1">{elimRes.paradoxicalAciduriaAlert}</p>
+            </div>
+
+            <div className="rounded-md bg-surface p-3 text-xs space-y-2">
+              <p className="text-fg font-medium">{elimRes.protocolSummary}</p>
+              <p className="text-muted leading-relaxed">{elimRes.hemodialysisCriteria}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-muted">Enter valid parameters (serum level 0–300 µg/mL, urine pH 5.0–8.5).</p>
+        )}
+      </article>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational reference only. Urinary alkalinization requires intensive care monitoring and serial blood gas validation (keep blood pH ≤7.55). Prescribing Information and regional Poison Center consultation govern.
+      </p>
+    </div>
+  );
+}
+
+

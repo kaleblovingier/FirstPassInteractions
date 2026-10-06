@@ -312,3 +312,372 @@ export function osmolarGapOf({
   };
 }
 
+/** Serum Anion Gap with Albumin Correction & Delta Ratio */
+export interface AnionGapInput {
+  na: number;
+  cl: number;
+  hco3: number;
+  albumin?: number;
+}
+
+export interface AnionGapResult {
+  rawGap: number;
+  correctedGap: number;
+  albuminCorrectionApplied: boolean;
+  deltaGap: number;
+  deltaBicarb: number;
+  deltaRatio: number | null;
+  band: "low" | "normal" | "elevated";
+  label: string;
+  interpretation: string;
+  etiologyNote: string;
+}
+
+export function anionGapOf({ na, cl, hco3, albumin }: AnionGapInput): AnionGapResult | null {
+  if (
+    !Number.isFinite(na) ||
+    !Number.isFinite(cl) ||
+    !Number.isFinite(hco3) ||
+    na < 100 ||
+    na > 180 ||
+    cl < 50 ||
+    cl > 150 ||
+    hco3 < 2 ||
+    hco3 > 60 ||
+    (albumin !== undefined && (!Number.isFinite(albumin) || albumin < 0.5 || albumin > 6.0))
+  ) {
+    return null;
+  }
+
+  const rawGap = Math.round((na - (cl + hco3)) * 10) / 10;
+  const albVal = albumin ?? 4.0;
+  const albCorrection = Math.round(2.5 * (4.0 - albVal) * 10) / 10;
+  const correctedGap = Math.round((rawGap + albCorrection) * 10) / 10;
+  const albuminCorrectionApplied = albumin !== undefined && albumin !== 4.0;
+
+  const effectiveGap = albumin !== undefined ? correctedGap : rawGap;
+  const deltaGap = Math.round((effectiveGap - 12) * 10) / 10;
+  const deltaBicarb = Math.round((24 - hco3) * 10) / 10;
+  const deltaRatio =
+    deltaBicarb > 0 && deltaGap > 0
+      ? Math.round((deltaGap / deltaBicarb) * 100) / 100
+      : null;
+
+  let band: AnionGapResult["band"] = "normal";
+  let label = "Normal anion gap (8–12 mEq/L)";
+  let interpretation = "Unmeasured anions and cations in typical physiologic balance.";
+  let etiologyNote =
+    "If metabolic acidosis is present with a normal gap, consider non-anion gap metabolic acidosis (NAGMA / hyperchloremic: diarrhea, large-volume 0.9% saline infusion, RTA, acetazolamide).";
+
+  if (effectiveGap > 12) {
+    band = "elevated";
+    label = `Elevated anion gap (${effectiveGap} mEq/L)`;
+    interpretation = "High anion gap metabolic acidosis (HAGMA) pattern.";
+    etiologyNote =
+      "Classic etiology: GOLD MARK / MUDPILES — Glycols (ethylene/propylene), Oxoproline (chronic paracetamol/acetaminophen in malnourished/septic patients), L-lactate (hypoperfusion/sepsis/metformin), D-lactate (short bowel), Methanol, Aspirin / salicylates, Renal failure (uremic toxins/phosphates/sulfates), Ketoacidosis (DKA, alcoholic AKA, starvation).";
+  } else if (effectiveGap < 4) {
+    band = "low";
+    label = `Low / negative anion gap (${effectiveGap} mEq/L)`;
+    interpretation = "Reduced unmeasured anions or accumulation of unmeasured cations.";
+    etiologyNote =
+      "Hypoalbuminemia is the leading cause (each 1 g/dL drop in albumin lowers expected gap by ~2.5 mEq/L). Other etiologies: lithium toxicity (unmeasured cation), multiple myeloma (cationic IgG paraproteinemia), severe hypercalcemia, hypermagnesemia, or bromide/iodide assay interference.";
+  }
+
+  if (deltaRatio !== null) {
+    if (deltaRatio < 0.8) {
+      interpretation += ` Delta ratio ${deltaRatio}: suggests mixed HAGMA + concurrent NAGMA (hyperchloremic acidosis).`;
+    } else if (deltaRatio > 2.0) {
+      interpretation += ` Delta ratio ${deltaRatio}: suggests mixed HAGMA + concurrent metabolic alkalosis (vomiting, diuresis) or pre-existing compensated respiratory acidosis.`;
+    } else {
+      interpretation += ` Delta ratio ${deltaRatio}: consistent with uncomplicated pure high anion gap metabolic acidosis.`;
+    }
+  }
+
+  return {
+    rawGap,
+    correctedGap,
+    albuminCorrectionApplied,
+    deltaGap,
+    deltaBicarb,
+    deltaRatio,
+    band,
+    label,
+    interpretation,
+    etiologyNote,
+  };
+}
+
+/** Hyperglycemia-Corrected Sodium (Pseudohyponatremia math) */
+export interface CorrectedSodiumInput {
+  measuredNa: number;
+  glucose: number;
+}
+
+export interface CorrectedSodiumResult {
+  measuredNa: number;
+  glucose: number;
+  katzSodium: number;
+  hillierSodium: number;
+  deltaNa: number;
+  fluidGuidance: string;
+  note: string;
+}
+
+export function correctedSodiumOf({ measuredNa, glucose }: CorrectedSodiumInput): CorrectedSodiumResult | null {
+  if (
+    !Number.isFinite(measuredNa) ||
+    !Number.isFinite(glucose) ||
+    measuredNa < 100 ||
+    measuredNa > 180 ||
+    glucose < 30 ||
+    glucose > 2500
+  ) {
+    return null;
+  }
+
+  const excessGlu = Math.max(0, glucose - 100);
+  const katzSodium = Math.round((measuredNa + 1.6 * (excessGlu / 100)) * 10) / 10;
+  const hillierSodium = Math.round((measuredNa + 2.4 * (excessGlu / 100)) * 10) / 10;
+  const deltaNa = Math.round((hillierSodium - measuredNa) * 10) / 10;
+
+  let fluidGuidance = "Euvolemic / baseline sodium monitoring.";
+  if (glucose > 200) {
+    if (hillierSodium >= 135) {
+      fluidGuidance =
+        "Corrected sodium is normal or elevated (≥135 mEq/L). In DKA/HHS resuscitation, 0.45% NaCl (half-normal saline) is typically favored once hemodynamically stable to avoid worsening hypertonicity.";
+    } else {
+      fluidGuidance =
+        "Corrected sodium is low (<135 mEq/L). In DKA/HHS resuscitation, 0.9% NaCl (normal saline) is typically continued until corrected sodium normalizes.";
+    }
+  }
+
+  const note =
+    glucose > 400
+      ? "For marked hyperglycemia (>400 mg/dL), Hillier et al. 1999 (2.4 multiplier) showed superior prospective accuracy over the classic 1973 Katz 1.6 factor. Both are displayed for clinical teaching."
+      : "Hyperglycemia causes osmotic water shift from ICF to ECF, diluting serum sodium (translocational pseudohyponatremia).";
+
+  return {
+    measuredNa,
+    glucose,
+    katzSodium,
+    hillierSodium,
+    deltaNa,
+    fluidGuidance,
+    note,
+  };
+}
+
+/** Body Weight Metrics (IBW, AdjBW, BMI, BSA) */
+export interface BodyMetricsInput {
+  heightCm: number;
+  weightKg: number;
+  sex: Sex;
+}
+
+export interface BodyMetricsResult {
+  heightCm: number;
+  heightInches: number;
+  weightKg: number;
+  sex: Sex;
+  ibwKg: number;
+  adjBwKg: number;
+  bmi: number;
+  bsaMosteller: number;
+  bsaDuBois: number;
+  weightToIbwRatio: number;
+  weightCategory: "underweight" | "normal" | "obese";
+  dosingWeightAdvice: string;
+}
+
+export function bodyMetricsOf({ heightCm, weightKg, sex }: BodyMetricsInput): BodyMetricsResult | null {
+  if (
+    !Number.isFinite(heightCm) ||
+    !Number.isFinite(weightKg) ||
+    heightCm < 100 ||
+    heightCm > 250 ||
+    weightKg < 30 ||
+    weightKg > 300
+  ) {
+    return null;
+  }
+
+  const heightInches = Math.round((heightCm / 2.54) * 10) / 10;
+  const inchesOver60 = heightInches - 60;
+
+  // Devine 1974 formula
+  const baseIbw = sex === "male" ? 50 : 45.5;
+  const rawIbw = baseIbw + 2.3 * inchesOver60;
+  const ibwKg = Math.round(Math.max(20, rawIbw) * 10) / 10;
+
+  // Adjusted Body Weight (0.4 factor)
+  const adjBwKg = Math.round((ibwKg + 0.4 * (weightKg - ibwKg)) * 10) / 10;
+
+  // BMI = kg / m^2
+  const heightM = heightCm / 100;
+  const bmi = Math.round((weightKg / (heightM * heightM)) * 10) / 10;
+
+  // Mosteller BSA = sqrt(cm * kg / 3600)
+  const bsaMosteller = Math.round(Math.sqrt((heightCm * weightKg) / 3600) * 100) / 100;
+
+  // Du Bois BSA = 0.007184 * kg^0.425 * cm^0.725
+  const bsaDuBois =
+    Math.round(0.007184 * Math.pow(weightKg, 0.425) * Math.pow(heightCm, 0.725) * 100) / 100;
+
+  const weightToIbwRatio = Math.round((weightKg / ibwKg) * 100) / 100;
+
+  let weightCategory: BodyMetricsResult["weightCategory"] = "normal";
+  let dosingWeightAdvice = "Actual weight is within 100–120% of IBW. Use actual body weight or IBW per package insert.";
+
+  if (weightToIbwRatio < 1.0) {
+    weightCategory = "underweight";
+    dosingWeightAdvice =
+      "Actual weight is below Ideal Body Weight (<100% IBW). Use Actual Body Weight for Cockcroft–Gault (using IBW overestimates renal clearance).";
+  } else if (weightToIbwRatio > 1.2) {
+    weightCategory = "obese";
+    dosingWeightAdvice =
+      "Actual weight exceeds 120% of IBW. Using actual weight in Cockcroft–Gault overestimates GFR. Adjusted Body Weight (AdjBW 0.4) is standard for aminoglycosides and hydrophilic antimicrobials.";
+  }
+
+  return {
+    heightCm,
+    heightInches,
+    weightKg,
+    sex,
+    ibwKg,
+    adjBwKg,
+    bmi,
+    bsaMosteller,
+    bsaDuBois,
+    weightToIbwRatio,
+    weightCategory,
+    dosingWeightAdvice,
+  };
+}
+
+/** Cockcroft–Gault Weight Selection Comparison (ABW vs IBW vs AdjBW) */
+export interface CrclWeightComparisonInput {
+  age: number;
+  sex: Sex;
+  scr: number;
+  weightKg: number;
+  heightCm: number;
+}
+
+export interface CrclWeightComparisonResult {
+  crclActual: number;
+  crclIbw: number;
+  crclAdj: number;
+  recommendedWeightUsed: "actual" | "ibw" | "adj";
+  recommendedCrcl: number;
+  divergenceMlMin: number;
+  clinicalCaveat: string;
+}
+
+export function crclWeightComparisonOf({
+  age,
+  sex,
+  scr,
+  weightKg,
+  heightCm,
+}: CrclWeightComparisonInput): CrclWeightComparisonResult | null {
+  const metrics = bodyMetricsOf({ heightCm, weightKg, sex });
+  if (!metrics) return null;
+
+  const resActual = crclOf({ age, weightKg, scr, sex });
+  const resIbw = crclOf({ age, weightKg: metrics.ibwKg, scr, sex });
+  const resAdj = crclOf({ age, weightKg: metrics.adjBwKg, scr, sex });
+
+  if (!resActual || !resIbw || !resAdj) return null;
+
+  let recommendedWeightUsed: CrclWeightComparisonResult["recommendedWeightUsed"] = "ibw";
+  let recommendedCrcl = resIbw.crcl;
+  let clinicalCaveat = "Actual weight is within 120% of IBW; IBW or actual weight typically yield concordant dosing.";
+
+  if (metrics.weightCategory === "underweight") {
+    recommendedWeightUsed = "actual";
+    recommendedCrcl = resActual.crcl;
+    clinicalCaveat =
+      "Underweight (ABW < IBW): using IBW artificially inflates estimated clearance. Use actual body weight to prevent drug overdosing.";
+  } else if (metrics.weightCategory === "obese") {
+    recommendedWeightUsed = "adj";
+    recommendedCrcl = resAdj.crcl;
+    clinicalCaveat =
+      `Obesity (ABW is ${Math.round(metrics.weightToIbwRatio * 100)}% of IBW): using actual body weight inflates CrCl by +${resActual.crcl - resIbw.crcl} mL/min. For narrow-index hydrophilic drugs and aminoglycosides, Adjusted Body Weight (AdjBW) is standard. For DOACs, consult product-specific labeling.`;
+  }
+
+  const divergenceMlMin = Math.abs(resActual.crcl - resIbw.crcl);
+
+  return {
+    crclActual: resActual.crcl,
+    crclIbw: resIbw.crcl,
+    crclAdj: resAdj.crcl,
+    recommendedWeightUsed,
+    recommendedCrcl,
+    divergenceMlMin,
+    clinicalCaveat,
+  };
+}
+
+/** Calvert Formula for Carboplatin AUC-targeted Dosing */
+export interface CalvertInput {
+  targetAuc: number; // typically 4 to 6 mg·min/mL
+  gfrOrCrcl: number; // mL/min
+}
+
+export interface CalvertResult {
+  targetAuc: number;
+  inputGfr: number;
+  effectiveGfr: number;
+  capApplied: boolean;
+  carboplatinDoseMg: number;
+  uncappedDoseMg: number;
+  maxDoseCappedAt125: number;
+  safetyNote: string;
+}
+
+export function calvertCarboplatinOf({ targetAuc, gfrOrCrcl }: CalvertInput): CalvertResult | null {
+  if (
+    !Number.isFinite(targetAuc) ||
+    !Number.isFinite(gfrOrCrcl) ||
+    targetAuc < 1 ||
+    targetAuc > 10 ||
+    gfrOrCrcl < 5 ||
+    gfrOrCrcl > 300
+  ) {
+    return null;
+  }
+
+  // FDA 2010 safety alert: GFR capped at 125 mL/min
+  const capApplied = gfrOrCrcl > 125;
+  const effectiveGfr = Math.min(gfrOrCrcl, 125);
+  const carboplatinDoseMg = Math.round(targetAuc * (effectiveGfr + 25));
+  const uncappedDoseMg = Math.round(targetAuc * (gfrOrCrcl + 25));
+  const maxDoseCappedAt125 = Math.round(targetAuc * (125 + 25));
+
+  let safetyNote =
+    "Dose calculated using standard Calvert equation: Dose = Target AUC · (GFR + 25). Predicts severe thrombocytopenia nadir.";
+
+  if (capApplied) {
+    safetyNote =
+      `FDA Safety Cap Applied: GFR was capped at 125 mL/min (uncapped dose would be ${uncappedDoseMg} mg). Capping prevents lethal neutropenic sepsis and thrombocytopenia in patients with hyperfiltrating kidneys.`;
+  }
+
+  return {
+    targetAuc,
+    inputGfr: gfrOrCrcl,
+    effectiveGfr,
+    capApplied,
+    carboplatinDoseMg,
+    uncappedDoseMg,
+    maxDoseCappedAt125,
+    safetyNote,
+  };
+}
+
+export {
+  calculateVancoSawchukZaske,
+  type VancoSawchukZaskeInput,
+  type VancoSawchukZaskeResult,
+} from "./vancomycin";
+
+

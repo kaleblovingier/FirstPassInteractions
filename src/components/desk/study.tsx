@@ -44,6 +44,7 @@ const LANE_PLAIN: Record<StudyLane, string> = {
   drill: "Teaching rounds",
   boards: "Classic pairs",
   cyp: "Enzyme map",
+  clinical: "Bedside & toxicology",
   desk: "This desk",
 };
 
