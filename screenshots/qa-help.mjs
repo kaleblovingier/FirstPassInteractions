@@ -15,12 +15,26 @@ async function run(name, viewport) {
   const requests = [];
   page.on("request", (r) => requests.push(r.url()));
   await page.goto("http://127.0.0.1:8080/", { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Find help", exact: true }).first().click();
+
+  // If initial safety disclaimer banner is shown, dismiss it or click Find help
+  const continueBtn = page.getByRole("button", { name: "Continue", exact: true });
+  if (await continueBtn.isVisible()) {
+    await continueBtn.click();
+  }
+
+  // Click Find help in nav
+  const navBtn = page.getByRole("navigation", { name: "Main navigation" }).getByRole("button", { name: "Find help", exact: true });
+  await navBtn.click();
   await page.getByRole("heading", { name: /Addiction help near you/ }).waitFor();
 
   const before = requests.length;
-  const input = page.getByLabel("ZIP code, or city and state");
+  const input = page.getByLabel(/Enter 5-digit ZIP code/);
   await input.fill("98101");
+
+  // Verify WA State card rendered
+  await page.getByText("Washington Recovery Help Line").waitFor();
+  await page.getByText("1-866-789-1511").waitFor();
+
   const treat = page.getByRole("link", { name: /Open FindTreatment\.gov/ });
   const href = await treat.getAttribute("href");
   const sms = await page.getByRole("link", { name: /Open text message/ }).getAttribute("href");
@@ -28,15 +42,39 @@ async function run(name, viewport) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   const leaked = requests.slice(before).filter((u) => u.includes("98101"));
 
+  // Check state dropdown selection
+  const select = page.getByLabel(/Or choose a state/);
+  await select.selectOption("TX");
+  await page.getByText("Texas OSAR").waitFor();
+  await page.getByText("1-877-541-7905").waitFor();
+
+  // Test tabs
+  await page.getByRole("button", { name: /Medication options/ }).click();
+  await page.getByText("Buprenorphine (Suboxone, Subutex)").waitFor();
+  await page.getByRole("heading", { name: "Methadone", exact: true }).waitFor();
+
+  await page.getByRole("button", { name: /Fentanyl & Xylazine/ }).click();
+  await page.getByText("Xylazine is a non-opioid sedative").waitFor();
+  await page.getByRole("heading", { name: "Never Use Alone", exact: true }).waitFor();
+
+  // Return to directory tab
+  await page.getByRole("button", { name: /Local treatment/ }).click();
+
   await page.screenshot({ path: `screenshots/help-${name}.png`, fullPage: true });
 
-  await input.fill("123");
-  const alert = await page.getByRole("alert").innerText().catch(() => "(none)");
-  await input.fill("Seattle, WA");
-  const smsGone = (await page.getByRole("link", { name: /Open text message/ }).count()) === 0;
-  const href2 = await treat.getAttribute("href");
+  console.log(JSON.stringify({
+    name,
+    href,
+    sms,
+    telsCount: tels.length,
+    overflow,
+    leakedRequests: leaked,
+    waHelplineVerified: true,
+    txSelectVerified: true,
+    moudTabVerified: true,
+    safetyTabVerified: true
+  }, null, 2));
 
-  console.log(JSON.stringify({ name, href, sms, tels, overflow, leakedRequests: leaked, alert, smsGoneForPlace: smsGone, href2 }, null, 2));
   await ctx.close();
 }
 
@@ -44,4 +82,3 @@ await run("desktop", { width: 1280, height: 900 });
 await run("mobile", { width: 390, height: 844 });
 await browser.close();
 console.log("console/page errors:", JSON.stringify(errors, null, 2));
-

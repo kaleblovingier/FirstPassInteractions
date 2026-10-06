@@ -658,6 +658,19 @@ function LiverPanel({ rows }: { rows: ReturnType<typeof livertoxOnDesk> }) {
 function ReversalPanel({ rows }: { rows: ReturnType<typeof reversalOnDesk> }) {
   return (
     <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent-soft p-3 text-xs text-ink">
+        <span>Need naloxone (Narcan) or addiction support? Locate free mail-order naloxone, overdose peer monitoring, and local treatment.</span>
+        <button
+          type="button"
+          onClick={() => {
+            useDesk.getState().setView("help");
+            window.scrollTo({ top: 0 });
+          }}
+          className="font-medium text-accent underline underline-offset-2 hover:opacity-80"
+        >
+          Find naloxone &amp; help near you &rarr;
+        </button>
+      </div>
       {rows.map((row) => (
         <article key={`${row.id}-${row.card.agent}`} className="rounded-md bg-bg-sunken px-3 py-3">
           <div className="flex flex-wrap items-center gap-2">
@@ -1523,6 +1536,19 @@ function OtpPanel({ ids, qtPartner }: { ids: string[]; qtPartner: boolean }) {
 
   return (
     <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent-soft p-3 text-xs text-ink">
+        <span>Need local treatment services? Find licensed Opioid Treatment Programs (OTPs), medical detox, and state addiction helplines.</span>
+        <button
+          type="button"
+          onClick={() => {
+            useDesk.getState().setView("help");
+            window.scrollTo({ top: 0 });
+          }}
+          className="font-medium text-accent underline underline-offset-2 hover:opacity-80"
+        >
+          Find treatment near you &rarr;
+        </button>
+      </div>
       <p className="text-sm leading-relaxed text-muted">
         Occupancy, washout, take-homes, naloxone, ECG, and ID screens. ASAM 2020 / TIP 63 / 42 CFR 8
         2024 teaching — not a protocol and not a milligram.

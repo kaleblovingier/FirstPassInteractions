@@ -264,8 +264,8 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 xl:w-auto">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:flex-nowrap xl:justify-start xl:rounded-full">
+          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:flex-nowrap xl:justify-end">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:flex-nowrap xl:justify-start xl:rounded-full">
               {(
                 [
                   ["desk", "Desk"],
@@ -286,7 +286,7 @@ export function DeskApp() {
                   onClick={() => setView(id)}
                   aria-current={view === id ? "page" : undefined}
                   className={cn(
-                    "h-11 shrink-0 rounded-full px-2 text-xs font-medium sm:h-9 sm:px-4 sm:text-sm",
+                    "h-11 shrink-0 rounded-full px-2 text-xs font-medium sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm",
                     view === id ? "bg-surface-2 text-fg shadow-[var(--shadow-border)]" : "text-muted hover:text-fg",
                   )}
                 >
@@ -295,7 +295,7 @@ export function DeskApp() {
               ))}
             </nav>
             {hydrated && !pro ? (
-              <Button size="sm" className="hidden sm:inline-flex" onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
+              <Button size="sm" className="hidden shrink-0 sm:inline-flex" onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
               </Button>
             ) : null}
