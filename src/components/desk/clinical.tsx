@@ -1124,6 +1124,36 @@ function ScaleBlock({
         ))}
       </ul>
       <p className="mt-3 text-sm leading-relaxed text-fg">{softScaleCopy(band.note)}</p>
+      {scaleId === "cows" && total >= 5 ? (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-accent/20 bg-accent-soft/30 px-3 py-2 text-xs">
+          <span className="text-fg">
+            Elevated withdrawal score ({total} pts · {band.label}). Locate 24/7 medical detox beds, buprenorphine/methadone clinic access, and free mail-order naloxone in your state.
+          </span>
+          <button
+            type="button"
+            aria-pressed={false}
+            onClick={() => useDesk.getState().setView("help")}
+            className="font-mono text-[11px] uppercase tracking-wider text-accent underline underline-offset-2 hover:text-fg"
+          >
+            Find Addiction Care & Detox
+          </button>
+        </div>
+      ) : null}
+      {scaleId === "ciwa" && total >= 8 ? (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-warn/25 bg-warn-soft/30 px-3 py-2 text-xs">
+          <span className="text-fg">
+            Moderate/severe alcohol withdrawal score ({total} pts · {band.label}). Review symptom-triggered medical detoxification and seizure precautions.
+          </span>
+          <button
+            type="button"
+            aria-pressed={false}
+            onClick={() => useDesk.getState().setView("help")}
+            className="font-mono text-[11px] uppercase tracking-wider text-accent underline underline-offset-2 hover:text-fg"
+          >
+            Find Local Medical Detox & Support
+          </button>
+        </div>
+      ) : null}
     </article>
   );
 }

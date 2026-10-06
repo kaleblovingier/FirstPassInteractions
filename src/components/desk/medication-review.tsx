@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckSquare, Square } from "lucide-react";
+import { CheckSquare, FileText, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
 import {
@@ -17,15 +17,17 @@ import {
   type HostContext,
 } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface MedicationReviewProps {
   ids: string[];
   host: HostContext;
   findings: Finding[];
   doses: Record<string, string>;
+  onOpenPacket?: () => void;
 }
 
-export function MedicationReview({ ids, host, findings, doses }: MedicationReviewProps) {
+export function MedicationReview({ ids, host, findings, doses, onOpenPacket }: MedicationReviewProps) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [showRemainingOnly, setShowRemainingOnly] = useState(false);
   const highAlertItems = alertsOnDesk(ids);
@@ -149,7 +151,18 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
             A verification aid, not an order set or patient record. Checkmarks are temporary and reset when the regimen or modeled context changes.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {onOpenPacket ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenPacket}
+              className="h-8 gap-1.5 text-xs font-medium"
+            >
+              <FileText className="size-3.5 text-accent" />
+              Sign-off packet
+            </Button>
+          ) : null}
           <span className="rounded-full bg-bg-sunken px-2.5 py-1 font-mono text-[10px] text-muted" aria-live="polite">
             {completed}/{totalChecks} reviewed
           </span>

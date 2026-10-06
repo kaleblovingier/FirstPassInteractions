@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { Copy, Check, RotateCcw, Download, Share2 } from "lucide-react";
+import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
@@ -84,6 +84,8 @@ import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
 import { LabelPage } from "./label";
 import { PrescribingStrip } from "./pi";
+import { ClinicalPacketDialog } from "./clinical-packet-dialog";
+import { AddictionSafetyBanner } from "./safety-banner";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 
 export function DeskApp() {
@@ -91,6 +93,7 @@ export function DeskApp() {
   const setView = useDesk((s) => s.setView);
   const selectedRaw = useDesk((s) => s.selected);
   const [hydrated, setHydrated] = useState(false);
+  const [signOffOpen, setSignOffOpen] = useState(false);
   const [activePackId, setActivePackId] = useState<PackId | null>(null);
   const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
   const permalinkApplied = useRef(false);
@@ -449,6 +452,14 @@ export function DeskApp() {
               {selected.length > 0 ? <WindowExtras /> : null}
 
               {selected.length > 0 ? (
+                <AddictionSafetyBanner
+                  selected={selected}
+                  host={host}
+                  onOpenHelp={() => setView("help")}
+                />
+              ) : null}
+
+              {selected.length > 0 ? (
                 <CheckBoard
                   ids={selected}
                   findings={report.findings}
@@ -463,6 +474,7 @@ export function DeskApp() {
                   host={host}
                   findings={report.findings}
                   doses={doses}
+                  onOpenPacket={() => setSignOffOpen(true)}
                 />
               ) : null}
 
@@ -486,7 +498,15 @@ export function DeskApp() {
                   <Dossier ids={selected} host={host} />
                   {report.findings.length > 0 ? (
                     <>
-                      <RiskBanner report={report} selected={selected} host={host} plan={plan} caseId={activeCaseId} packId={activePackId} />
+                      <RiskBanner
+                        report={report}
+                        selected={selected}
+                        host={host}
+                        plan={plan}
+                        caseId={activeCaseId}
+                        packId={activePackId}
+                        onOpenPacket={() => setSignOffOpen(true)}
+                      />
                       {pro ? (
                         <StackMeters stacks={report.stacks} />
                       ) : report.stacks.some((s) => s.score > 0) ? (
@@ -521,7 +541,15 @@ export function DeskApp() {
                 </>
               ) : (
                 <>
-                  <RiskBanner report={report} selected={selected} host={host} plan={plan} caseId={activeCaseId} packId={activePackId} />
+                  <RiskBanner
+                    report={report}
+                    selected={selected}
+                    host={host}
+                    plan={plan}
+                    caseId={activeCaseId}
+                    packId={activePackId}
+                    onOpenPacket={() => setSignOffOpen(true)}
+                  />
                   <WindowBriefing ids={selected} host={host} report={report} />
                   <PrescribingStrip ids={selected} />
                   <ClinicPanel ids={selected} host={host} />
@@ -611,6 +639,15 @@ export function DeskApp() {
       </main>
       <DeskFooter />
       <CheckoutDrawer />
+      <ClinicalPacketDialog
+        open={signOffOpen}
+        onClose={() => setSignOffOpen(false)}
+        selected={selected}
+        host={host}
+        findings={report.findings}
+        doses={doses}
+        onOpenHelp={() => setView("help")}
+      />
     </div>
   );
 }
@@ -923,6 +960,7 @@ function RiskBanner({
   plan,
   caseId,
   packId,
+  onOpenPacket,
 }: {
   report: ReturnType<typeof analyze>;
   selected: string[];
@@ -930,6 +968,7 @@ function RiskBanner({
   plan: ReturnType<typeof usePlan>;
   caseId: string | null;
   packId: PackId | null;
+  onOpenPacket?: () => void;
 }) {
   const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
   const openCheckout = useDesk((s) => s.openCheckout);
@@ -1050,6 +1089,17 @@ function RiskBanner({
         {copied === "share" ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
         {copied === "share" ? "Copied" : "Share"}
       </Button>
+      {onOpenPacket ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onOpenPacket}
+          className="h-10 min-w-28 shrink-0 border border-accent/30 text-fg hover:bg-accent-soft"
+        >
+          <FileText className="size-3.5 text-accent" />
+          Clinical packet
+        </Button>
+      ) : null}
       <Button variant="secondary" size="sm" onClick={() => void copySummary()} className="h-10 min-w-24 shrink-0">
         {copied === "full" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
         {copied === "full" ? "Copied" : plan === "free" ? "Full report · Founding" : "Report"}
