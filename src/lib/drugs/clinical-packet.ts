@@ -13,6 +13,7 @@ import { alertsOnDesk, type AlertFlag } from "./alerts";
 import { acbOnDesk, type AcbReport } from "./acb";
 import { mmeOnDesk, type MmeFactor } from "./mme";
 import { qtReport, type QtReport } from "./qt";
+import { doacReportOnDesk, type DoacReport } from "./doac";
 import { plainLanguageSummary } from "./interaction-summary";
 import {
   AGE_LABEL,
@@ -63,6 +64,13 @@ export interface ClinicalRiskIndexes {
     hasStreetOrOpioid: boolean;
     headline: string | null;
     guidance: string | null;
+  };
+  anticoagulation: {
+    hasAnticoagulant: boolean;
+    agents: string[];
+    hasDoac: boolean;
+    report: DoacReport | null;
+    summary: string | null;
   };
 }
 
@@ -239,6 +247,15 @@ export function buildClinicalPacket(
       "Verify naloxone (Narcan) availability in patient's home and review signs of respiratory depression with patient and family members. Ensure state access line and free naloxone resources are provided.";
   }
 
+  // 3f. Anticoagulation & Bleed Management
+  const doacReport = doacReportOnDesk(ids, host);
+  const hasAnticoagulant = doacReport.hasAnticoagulant;
+  let anticoagulationSummary: string | null = null;
+  if (hasAnticoagulant) {
+    const agents = doacReport.anticoagulantsOnDesk.map((id) => DRUG_BY_ID[id]?.name ?? id);
+    anticoagulationSummary = `Anticoagulant therapy active (${agents.join(", ")}). Multi-agent bleed risk, organ clearance rails, and emergency reversal pathways evaluated.`;
+  }
+
   const riskIndexes: ClinicalRiskIndexes = {
     mme: {
       hasOpioid,
@@ -256,6 +273,13 @@ export function buildClinicalPacket(
       hasStreetOrOpioid,
       headline: harmHeadline,
       guidance: harmGuidance,
+    },
+    anticoagulation: {
+      hasAnticoagulant,
+      agents: doacReport.anticoagulantsOnDesk.map((id) => DRUG_BY_ID[id]?.name ?? id),
+      hasDoac: doacReport.hasDoac,
+      report: hasAnticoagulant ? doacReport : null,
+      summary: anticoagulationSummary,
     },
   };
 
@@ -301,6 +325,29 @@ export function buildClinicalPacket(
     counselingPoints.push(
       "Avoid consuming grapefruit or grapefruit juice, as it blocks the liver enzymes needed to break down your medicines and can cause dangerous drug build-up.",
     );
+  }
+  if (hasAnticoagulant) {
+    counselingPoints.push(
+      "Report any unusual bleeding immediately, including persistent nosebleeds, blood in your urine or stools (red or black/tarry), or unexpected large bruises. Seek emergency care for head injury or severe falls.",
+    );
+    counselingPoints.push(
+      "Do not stop taking your blood thinner without talking to your prescriber. Abrupt discontinuation sharply raises your risk of blood clots or stroke.",
+    );
+    if (ids.includes("rivaroxaban")) {
+      counselingPoints.push(
+        "Rivaroxaban (Xarelto) 15 mg and 20 mg tablets must always be taken with food (with your evening meal). Taking it without food reduces drug absorption by one-third and leaves you vulnerable to clots.",
+      );
+    }
+    if (ids.includes("dabigatran")) {
+      counselingPoints.push(
+        "Dabigatran (Pradaxa) capsules must be swallowed whole with plenty of water. Never open, crush, or chew capsules, and keep them in their original bottle with desiccant.",
+      );
+    }
+    if (ids.some((id) => ["ibuprofen", "naproxen", "aspirin", "ketorolac"].includes(id))) {
+      counselingPoints.push(
+        "Avoid taking over-the-counter pain medications like ibuprofen (Advil/Motrin) or naproxen (Aleve) while on a blood thinner without medical clearance, as this drastically raises stomach ulcer and bleeding risk.",
+      );
+    }
   }
   for (const f of collisions.contraindicated.slice(0, 3)) {
     counselingPoints.push(plainLanguageSummary(f));
@@ -388,6 +435,30 @@ export function buildClinicalPacket(
       `- Opioid / MME Evaluation: Opioids present on desk`,
       `  Guideline Advisory: ${riskIndexes.mme.warning}`,
     );
+  }
+
+  if (riskIndexes.anticoagulation.hasAnticoagulant && riskIndexes.anticoagulation.report) {
+    const r = riskIndexes.anticoagulation.report;
+    ehrLines.push(
+      `- Anticoagulation & Bleed Risk Evaluation: Active agents (${riskIndexes.anticoagulation.agents.join(", ")})`,
+    );
+    if (r.apixabanAbc) {
+      ehrLines.push(
+        `  Apixaban ABC Criteria: ${r.apixabanAbc.criteriaMetCount}/3 met (${r.apixabanAbc.reductionIndicated ? "Dose reduction to 2.5 mg BID indicated" : "Standard 5 mg BID maintained"})`,
+      );
+    }
+    for (const rail of r.renalRails) {
+      ehrLines.push(`  ${rail.agentName} Renal Rail: ${rail.doseRecommendation} [${rail.status.toUpperCase()}]`);
+      if (rail.foodRequirement) ehrLines.push(`    Administration Note: ${rail.foodRequirement}`);
+      if (rail.capsuleIntegrityWarning) ehrLines.push(`    Capsule Integrity: ${rail.capsuleIntegrityWarning}`);
+    }
+    for (const rev of r.reversals) {
+      if (rev.specificAntidote) {
+        ehrLines.push(`  Emergency Reversal: ${rev.specificAntidote.name} (${rev.specificAntidote.brand}) — ${rev.specificAntidote.regimen}`);
+      } else {
+        ehrLines.push(`  Emergency Reversal: ${rev.nonSpecificAlternative.agent} — ${rev.nonSpecificAlternative.dosing}`);
+      }
+    }
   }
 
   ehrLines.push(

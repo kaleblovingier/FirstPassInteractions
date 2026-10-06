@@ -94,6 +94,15 @@ import { qtReport } from "@/lib/drugs/qt";
 import { reversalOnDesk } from "@/lib/drugs/reversal";
 import { ancBand, ancWanted } from "@/lib/drugs/anc";
 import { inrOnDesk } from "@/lib/drugs/inr";
+import {
+  doacOnDesk,
+  doacReportOnDesk,
+  evaluateApixabanAbc,
+  calculateAndexxaDose,
+  type DoacIndication,
+  type ProcedureBleedRisk,
+  type BleedSeverity,
+} from "@/lib/drugs/doac";
 import { wardWanted, wardsOnDesk } from "@/lib/drugs/wards";
 import { safetyOnDesk, safetyWanted } from "@/lib/drugs/safety";
 import {
@@ -179,7 +188,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -198,6 +207,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const wardsOn = wardWanted(ids) || safetyWanted(ids);
   const doseOn = dosingWanted(ids);
   const inr = useMemo(() => inrOnDesk(ids), [ids.join("|")]);
+  const doacOn = useMemo(() => doacOnDesk(ids), [ids.join("|")]);
   const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
   const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
   const steroids = useMemo(() => steroidReportOnDesk(ids), [ids.join("|")]);
@@ -224,6 +234,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "uds", label: "UDS", on: uds.length > 0 },
       { id: "anc", label: "ANC", on: ancOn },
       { id: "inr", label: "INR", on: Boolean(inr) },
+      { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
       { id: "acb", label: "ACB", on: Boolean(acb) },
       { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
       { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
@@ -237,7 +248,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -290,6 +301,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "uds" && uds.length ? <UdsPanel ids={ids} /> : null}
         {live === "anc" && ancOn ? <AncPanel /> : null}
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
+        {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoacPanel ids={ids} host={host} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
         {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
@@ -5511,5 +5523,457 @@ function LithiumPanel({ ids }: { ids: string[]; host: HostContext }) {
     </div>
   );
 }
+
+function DoacPanel({ ids, host }: { ids: string[]; host: HostContext }) {
+  const [age, setAge] = useState(host.age === "geriatric" ? "82" : "68");
+  const [weight, setWeight] = useState("70");
+  const [scr, setScr] = useState(host.kidney === "ckd" ? "1.6" : "1.0");
+  const [sex, setSex] = useState<Sex>("male");
+  const [indication, setIndication] = useState<DoacIndication>("nvaf");
+  const [procRisk, setProcRisk] = useState<ProcedureBleedRisk>("low");
+  const [bleedSev, setBleedSev] = useState<BleedSeverity>("major");
+  const [andexxaMg, setAndexxaMg] = useState("5");
+  const [andexxaHrs, setAndexxaHrs] = useState("4");
+
+  const numAge = Number(age) || 68;
+  const numWt = Number(weight) || 70;
+  const numScr = Number(scr) || 1.0;
+
+  const crclCalc = crclOf({ age: numAge, weightKg: numWt, scr: numScr, sex });
+  const crcl = crclCalc?.crcl ?? 75;
+
+  const report = doacReportOnDesk(ids, host, {
+    age: numAge,
+    weightKg: numWt,
+    scr: numScr,
+    sex,
+    indication,
+    procedureRisk: procRisk,
+    bleedSeverity: bleedSev,
+  });
+
+  const apixabanAbc = report.apixabanAbc ?? evaluateApixabanAbc({ age: numAge, weightKg: numWt, scr: numScr, indication });
+
+  const activeDrugForAndexxa: "apixaban" | "rivaroxaban" = report.anticoagulantsOnDesk.includes("rivaroxaban") ? "rivaroxaban" : "apixaban";
+  const andexxaCalc = calculateAndexxaDose(activeDrugForAndexxa, Number(andexxaMg) || 5, Number(andexxaHrs) || 4);
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">DOAC & Bleed Management Desk</h3>
+          <p className="mt-1 text-xs text-muted">
+            Apixaban ABC criteria, renal rails, Edoxaban Black Box alert, Dabigatran capsule integrity, perioperative hold schedules, and reversal nomograms (Andexxa, Praxbind, 4F-PCC).
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {report.anticoagulantsOnDesk.map((id) => (
+            <Badge key={id} tone="warn">
+              {DRUG_BY_ID[id]?.name ?? id}
+            </Badge>
+          ))}
+          {report.reversalsOnDesk.map((id) => (
+            <Badge key={id} tone="info">
+              {DRUG_BY_ID[id]?.name ?? id}
+            </Badge>
+          ))}
+          {!report.anticoagulantsOnDesk.length && !report.reversalsOnDesk.length && (
+            <Badge tone="default">Reference Mode</Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Patient Physiology & Indication Bar */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-serif text-sm font-semibold text-fg">1. Patient Physiology & Indication</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted">Cockcroft–Gault CrCl:</span>
+            <span className={cn(
+              "font-mono text-sm font-bold px-2 py-0.5 rounded",
+              crcl < 30 ? "bg-danger-soft text-danger" : crcl <= 50 ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+            )}>
+              {crcl} mL/min
+            </span>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-xs text-muted">
+            Age (years)
+            <Input className="mt-1" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Total Body Weight (kg)
+            <Input className="mt-1" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Serum Creatinine (mg/dL)
+            <Input className="mt-1" inputMode="decimal" value={scr} onChange={(e) => setScr(e.target.value)} />
+          </label>
+          <div className="text-xs text-muted">
+            Biological Sex
+            <div className="mt-1 flex gap-1">
+              {(["male", "female"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={sex === s}
+                  onClick={() => setSex(s)}
+                  className={cn(
+                    "h-9 flex-1 rounded text-xs font-medium",
+                    sex === s ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                  )}
+                >
+                  {s === "male" ? "Male" : "Female"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-2 border-t border-border/50">
+          <span className="text-[11px] font-medium text-muted block mb-1.5">Clinical Indication:</span>
+          <div className="flex flex-wrap gap-1.5">
+            {([
+              { id: "nvaf", label: "Non-Valvular AF (Stroke Prevention)" },
+              { id: "vte-treatment", label: "Acute DVT / PE Treatment" },
+              { id: "vte-secondary", label: "Extended VTE Secondary Prevention" },
+              { id: "vte-prophylaxis", label: "Orthopedic VTE Prophylaxis" },
+            ] as const).map((ind) => (
+              <button
+                key={ind.id}
+                type="button"
+                aria-pressed={indication === ind.id}
+                onClick={() => setIndication(ind.id)}
+                className={cn(
+                  "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                  indication === ind.id ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+                )}
+              >
+                {ind.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </article>
+
+      {/* Section 2: Apixaban ABC Dose Reduction Criteria */}
+      <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base font-semibold text-fg">Apixaban (Eliquis) ABC Dose Reduction Rule</h4>
+            <p className="text-xs text-muted mt-0.5">
+              In Non-Valvular AF, reduce dose from 5 mg BID to 2.5 mg BID ONLY when patient meets ≥2 of 3 criteria.
+            </p>
+          </div>
+          <span className={cn(
+            "font-mono text-xs font-bold px-2.5 py-1 rounded",
+            apixabanAbc.reductionIndicated ? "bg-warn-soft text-warn border border-warn/40" : "bg-accent-soft text-accent"
+          )}>
+            {apixabanAbc.criteriaMetCount}/3 Met: {apixabanAbc.recommendedDose}
+          </span>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-3">
+          <div className={cn("rounded-md border p-2.5 text-xs", apixabanAbc.ageMet ? "border-warn/50 bg-warn-soft/30" : "border-border bg-bg-sunken")}>
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-fg">[A] Age ≥ 80 years</span>
+              <span className="font-mono text-[11px]">{apixabanAbc.ageMet ? "MET (≥80)" : "NO (<80)"}</span>
+            </div>
+            <p className="mt-1 text-muted text-[11px]">Current age: {numAge} years</p>
+          </div>
+
+          <div className={cn("rounded-md border p-2.5 text-xs", apixabanAbc.weightMet ? "border-warn/50 bg-warn-soft/30" : "border-border bg-bg-sunken")}>
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-fg">[B] Weight ≤ 60 kg</span>
+              <span className="font-mono text-[11px]">{apixabanAbc.weightMet ? "MET (≤60)" : "NO (>60)"}</span>
+            </div>
+            <p className="mt-1 text-muted text-[11px]">Current weight: {numWt} kg</p>
+          </div>
+
+          <div className={cn("rounded-md border p-2.5 text-xs", apixabanAbc.scrMet ? "border-warn/50 bg-warn-soft/30" : "border-border bg-bg-sunken")}>
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-fg">[C] SCr ≥ 1.5 mg/dL</span>
+              <span className="font-mono text-[11px]">{apixabanAbc.scrMet ? "MET (≥1.5)" : "NO (<1.5)"}</span>
+            </div>
+            <p className="mt-1 text-muted text-[11px]">Current SCr: {numScr} mg/dL</p>
+          </div>
+        </div>
+
+        <div className="rounded bg-bg-sunken p-3 text-xs space-y-1">
+          <p className="font-medium text-fg">{apixabanAbc.rationale}</p>
+          <p className="text-[11px] text-muted">{apixabanAbc.indicationNote}</p>
+          <p className="text-[11px] text-subtle italic">{apixabanAbc.esrdDialysisNote}</p>
+        </div>
+      </article>
+
+      {/* Section 3: Renal Rails & Critical Administration Safety */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-3">
+        <div>
+          <h4 className="font-serif text-base font-semibold text-fg">DOAC Renal Dose Rails & Administration Safety</h4>
+          <p className="text-xs text-muted mt-0.5">
+            Organ clearance parameters, food bioequivalence rules, capsule integrity requirements, and hemodialysis clearance.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {report.renalRails.map((rail) => (
+            <div
+              key={rail.agentId}
+              className={cn(
+                "rounded-md border p-3 text-xs space-y-1.5",
+                rail.status === "black-box"
+                  ? "border-danger bg-danger-soft/40"
+                  : rail.status === "avoid"
+                  ? "border-danger/40 bg-danger-soft/20"
+                  : rail.status === "reduced"
+                  ? "border-warn/40 bg-warn-soft/30"
+                  : "border-border bg-surface",
+              )}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-fg text-sm">{rail.agentName} {rail.brandName ? `(${rail.brandName})` : ""}</span>
+                  <span className={cn(
+                    "font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded",
+                    rail.status === "black-box" ? "bg-danger text-bg" : rail.status === "avoid" ? "bg-danger-soft text-danger" : rail.status === "reduced" ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+                  )}>
+                    {rail.status}
+                  </span>
+                </div>
+                <span className="font-mono text-xs font-semibold text-fg">{rail.doseRecommendation}</span>
+              </div>
+
+              <p className="text-fg leading-relaxed font-medium">{rail.headline}</p>
+              <p className="text-muted leading-relaxed">{rail.explanation}</p>
+
+              {rail.foodRequirement && (
+                <div className="rounded bg-warn-soft/60 border border-warn/30 p-2 text-[11px] text-fg font-medium">
+                  {rail.foodRequirement}
+                </div>
+              )}
+
+              {rail.capsuleIntegrityWarning && (
+                <div className="rounded bg-danger-soft/50 border border-danger/30 p-2 text-[11px] text-fg font-medium">
+                  {rail.capsuleIntegrityWarning}
+                </div>
+              )}
+
+              {rail.dialysisRole && (
+                <p className="text-[11px] text-subtle font-mono">{rail.dialysisRole}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      {/* Section 4: Perioperative Interruption & Neuraxial Schedule */}
+      <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base font-semibold text-fg">Perioperative Interruption & Neuraxial Schedule</h4>
+            <p className="text-xs text-muted mt-0.5">
+              Stratified by procedural bleed risk and CrCl (CHEST 2024 / ASRA 2022 guidelines). Rapid DOAC kinetics obviate heparin bridging.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          {([
+            { id: "minimal", label: "Minimal Risk (0–24h)" },
+            { id: "low", label: "Low Bleed Risk (24–36h)" },
+            { id: "high", label: "High Bleed Risk (48–72h)" },
+            { id: "neuraxial", label: "Neuraxial / Spinal (ASRA 72–120h)" },
+          ] as const).map((r) => (
+            <button
+              key={r.id}
+              type="button"
+              aria-pressed={procRisk === r.id}
+              onClick={() => setProcRisk(r.id)}
+              className={cn(
+                "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                procRisk === r.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+              )}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-2.5">
+          {report.perioperativeHolds.map((h) => (
+            <div key={h.agentId} className="rounded-md bg-bg-sunken p-3 text-xs space-y-1">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="font-bold text-fg">{h.agentName}</span>
+                <span className="font-mono text-xs font-bold text-warn">Hold: {h.holdDurationDisplay}</span>
+              </div>
+              <p className="text-fg">{h.preOpTimingSummary}</p>
+              <p className="text-muted"><span className="font-medium text-fg">Post-op Resumption:</span> {h.postOpResumptionSummary}</p>
+              <p className="text-muted"><span className="font-medium text-fg">Bridging:</span> {h.bridgingRecommendation}</p>
+              {h.neuraxialSpecificGuidance && (
+                <div className="rounded bg-accent-soft/40 p-2 text-[11px] text-fg font-medium">
+                  {h.neuraxialSpecificGuidance}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </article>
+
+      {/* Section 5: Acute Bleed Management & Reversal Nomogram */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-base font-semibold text-fg">Acute Bleed Management & Reversal Nomogram</h4>
+            <p className="text-xs text-muted mt-0.5">
+              Specific antidotes (Andexxa, Praxbind), 4F-PCC rescue, dialysis role, and laboratory assays.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          {([
+            { id: "minor", label: "Minor Bleed (Local Measures)" },
+            { id: "major", label: "Major / Life-Threatening Bleed" },
+            { id: "urgent-procedure", label: "Urgent Procedure / Surgery" },
+          ] as const).map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              aria-pressed={bleedSev === s.id}
+              onClick={() => setBleedSev(s.id)}
+              className={cn(
+                "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                bleedSev === s.id ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg",
+              )}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Andexxa Dosing Calculator Sub-card */}
+        {(report.anticoagulantsOnDesk.includes("apixaban") || report.anticoagulantsOnDesk.includes("rivaroxaban")) && bleedSev !== "minor" && (
+          <div className="rounded-md border border-accent/40 bg-surface p-3 text-xs space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <span className="font-serif font-bold text-fg">
+                Andexanet alfa (Andexxa) Sizing Calculator — {activeDrugForAndexxa === "apixaban" ? "Apixaban" : "Rivaroxaban"}
+              </span>
+              <span className={cn(
+                "font-mono text-[10px] uppercase font-bold px-2 py-0.5 rounded",
+                andexxaCalc.isHighDose ? "bg-danger text-bg" : "bg-accent text-bg"
+              )}>
+                {andexxaCalc.isHighDose ? "High-Dose Protocol" : "Low-Dose Protocol"}
+              </span>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              <label className="text-muted text-[11px]">
+                Last Ingested Dose (mg)
+                <Input className="mt-1" inputMode="numeric" value={andexxaMg} onChange={(e) => setAndexxaMg(e.target.value)} />
+              </label>
+              <label className="text-muted text-[11px]">
+                Hours Since Last Dose (hrs)
+                <Input className="mt-1" inputMode="numeric" value={andexxaHrs} onChange={(e) => setAndexxaHrs(e.target.value)} />
+              </label>
+            </div>
+
+            <div className="rounded bg-bg-sunken p-2.5 space-y-1 text-[11px]">
+              <p className="text-fg font-medium">{andexxaCalc.rationale}</p>
+              <p className="font-mono text-fg"><span className="font-semibold text-accent">IV Bolus:</span> {andexxaCalc.ivBolus}</p>
+              <p className="font-mono text-fg"><span className="font-semibold text-accent">Continuous Infusion:</span> {andexxaCalc.continuousInfusion}</p>
+              <p className="text-subtle font-mono">Vial preparation: {andexxaCalc.totalVials100mg} × 100 mg vials (or {andexxaCalc.totalVials200mg} × 200 mg vials).</p>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {report.reversals.map((rev) => (
+            <div key={rev.agentId} className="rounded-md border border-border bg-surface p-3 text-xs space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-1">
+                <span className="font-bold text-fg text-sm">{rev.agentName}: {rev.headline}</span>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-fg">Immediate Hemostatic Actions:</span>
+                {rev.immediateActions.map((act, idx) => (
+                  <p key={idx} className="text-muted leading-relaxed">• {act}</p>
+                ))}
+              </div>
+
+              {rev.specificAntidote && (
+                <div className="rounded bg-accent-soft/30 p-2.5 border border-accent/30 space-y-0.5">
+                  <span className="font-bold text-accent block">Specific Antidote: {rev.specificAntidote.name} ({rev.specificAntidote.brand})</span>
+                  <p className="text-fg">{rev.specificAntidote.regimen}</p>
+                  <p className="text-[11px] text-muted">{rev.specificAntidote.mechanism}</p>
+                </div>
+              )}
+
+              <div className="rounded bg-bg-sunken p-2.5 space-y-0.5 text-[11px]">
+                <span className="font-semibold text-fg block">Non-Specific Alternative: {rev.nonSpecificAlternative.agent}</span>
+                <p className="text-fg font-mono">{rev.nonSpecificAlternative.dosing}</p>
+                <p className="text-muted">{rev.nonSpecificAlternative.caution}</p>
+              </div>
+
+              {rev.hemodialysisRole.isDialyzable && (
+                <div className="rounded bg-warn-soft/40 border border-warn/30 p-2 text-[11px] text-fg">
+                  <span className="font-bold text-warn block">Hemodialysis Clearance: {rev.hemodialysisRole.clearancePct}</span>
+                  {rev.hemodialysisRole.note}
+                </div>
+              )}
+
+              <div className="text-[11px] text-subtle">
+                <span className="font-medium text-fg">Target Labs: </span>
+                {rev.monitoringLabs.join(" · ")}
+              </div>
+            </div>
+          ))}
+        </div>
+      </article>
+
+      {/* Section 6: Pharmacological Collisions & Bleed Synergy */}
+      {report.collisions.length > 0 && (
+        <article className="rounded-md border border-warn/40 bg-warn-soft/20 p-4 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="font-serif text-sm font-semibold text-fg">Anticoagulant Drug Collisions & Bleed Amplifiers</span>
+            <span className="font-mono text-xs font-bold text-warn">{report.collisions.length} Collisions Flagged</span>
+          </div>
+          <div className="space-y-2">
+            {report.collisions.map((col, idx) => (
+              <div key={idx} className="rounded bg-surface p-2.5 text-xs border border-border space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-fg">{col.headline}</span>
+                  <span className={cn(
+                    "font-mono text-[9px] uppercase font-bold px-1.5 py-0.5 rounded",
+                    col.severity === "contraindicated" ? "bg-danger text-bg" : col.severity === "major" ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+                  )}>
+                    {col.severity}
+                  </span>
+                </div>
+                <p className="text-muted">{col.mechanism}</p>
+                <p className="text-fg font-medium">{col.clinicalAction}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      )}
+
+      {/* Key Takeaways & Educational Disclaimer */}
+      <div className="rounded-md bg-accent-soft/30 p-3 space-y-1 text-xs">
+        <span className="font-semibold text-accent block">Core Anticoagulation Takeaways:</span>
+        {report.clinicalTakeaways.map((tip, idx) => (
+          <p key={idx} className="text-fg leading-relaxed">• {tip}</p>
+        ))}
+      </div>
+
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational clinical pharmacology reference only (non-device CDS). Dosing rails paraphrase FDA Prescribing Information and CHEST/ACC/AHA/ASRA guidelines. Hemostatic intervention, procedural hold intervals, and antidote selection require independent clinical evaluation.
+      </p>
+    </div>
+  );
+}
+
 
 

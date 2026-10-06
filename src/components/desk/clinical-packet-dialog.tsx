@@ -472,6 +472,39 @@ export function ClinicalPacketDialog({
                   <p className="mt-1.5 leading-relaxed text-fg">{packet.riskIndexes.harmReduction.guidance}</p>
                 </div>
               )}
+
+              {/* Anticoagulation & Bleed Management Card */}
+              {packet.riskIndexes.anticoagulation?.hasAnticoagulant && packet.riskIndexes.anticoagulation.report && (
+                <div className="rounded-xl border border-warn/40 bg-warn-soft/30 p-3.5 text-xs sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-semibold text-fg">
+                      Anticoagulation & Hemostatic Bleed Safety
+                    </span>
+                    <span className="font-mono text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-warn-soft text-warn border border-warn/30">
+                      Active Blood Thinner
+                    </span>
+                  </div>
+                  <p className="mt-1 text-fg leading-relaxed">
+                    {packet.riskIndexes.anticoagulation.summary}
+                  </p>
+                  {packet.riskIndexes.anticoagulation.report.apixabanAbc && (
+                    <div className="mt-2 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
+                      <span className="font-mono font-bold text-accent">Apixaban ABC Criteria: </span>
+                      {packet.riskIndexes.anticoagulation.report.apixabanAbc.rationale}
+                    </div>
+                  )}
+                  {packet.riskIndexes.anticoagulation.report.reversals.length > 0 && (
+                    <div className="mt-2 text-[11px] text-muted">
+                      <span className="font-semibold text-fg">Emergency Reversal Pathway: </span>
+                      {packet.riskIndexes.anticoagulation.report.reversals.map((rev) => (
+                        <span key={rev.agentId} className="block mt-0.5 font-mono">
+                          • {rev.agentName}: {rev.specificAntidote ? `${rev.specificAntidote.name} (${rev.specificAntidote.brand}) — ${rev.specificAntidote.regimen}` : `${rev.nonSpecificAlternative.agent} (${rev.nonSpecificAlternative.dosing})`}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
 

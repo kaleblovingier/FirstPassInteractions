@@ -75,3 +75,22 @@ test("buildClinicalPacket: evaluates QTc prolongation and host phenotypes", () =
   const cyp2d6 = packet.hostSummary.phenotypes.find((p) => p.enzyme === "CYP2D6");
   assert.equal(cyp2d6?.phenotype, "PM");
 });
+
+test("buildClinicalPacket: evaluates anticoagulants, DOAC renal rails, and bleed counseling", () => {
+  const host = {
+    ...DEFAULT_HOST,
+    age: "geriatric" as const,
+    kidney: "ckd" as const,
+  };
+  const ids = ["apixaban", "aspirin"];
+  const findings = analyze(ids, host).findings;
+  const packet = buildClinicalPacket(ids, host, findings, { apixaban: "5 mg BID" });
+
+  assert.equal(packet.riskIndexes.anticoagulation.hasAnticoagulant, true);
+  assert.equal(packet.riskIndexes.anticoagulation.hasDoac, true);
+  assert.ok(packet.riskIndexes.anticoagulation.report !== null);
+  assert.ok(packet.ehrNoteText.includes("Anticoagulation & Bleed Risk Evaluation"));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("blood thinner") || cp.includes("unusual bleeding")));
+  assert.ok(packet.ehrNoteText.includes("Emergency Reversal"));
+});
+
