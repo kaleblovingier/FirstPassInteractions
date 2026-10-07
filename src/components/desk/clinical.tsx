@@ -91,6 +91,7 @@ import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
 import { hasPhenoConvert, phenoConvertOnDesk } from "@/lib/drugs/pheno-convert";
 import { PhenoContrastBoard } from "./pheno-contrast";
 import { NarcoticBridge } from "./narcotic-bridge";
+import { QtStation } from "./qt-station";
 import { qtReport } from "@/lib/drugs/qt";
 import { reversalOnDesk } from "@/lib/drugs/reversal";
 import { ancBand, ancWanted } from "@/lib/drugs/anc";
@@ -327,7 +328,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "wards" && wardsOn ? <WardsPanel ids={ids} /> : null}
         {live === "dose" && doseOn ? <DosePanel ids={ids} host={host} /> : null}
         {live === "cyp" && cypOn ? <CypPanel ids={ids} /> : null}
-        {live === "qt" && qt ? <QtPanel report={qt} /> : null}
+        {live === "qt" && qt ? <QtPanel ids={ids} host={host} report={qt} /> : null}
         {live === "levels" && levels.length ? <LevelsPanel rows={levels} host={host} /> : null}
         {live === "liver" && liver.length ? <LiverPanel rows={liver} /> : null}
         {live === "pheno" ? <PhenoContrastBoard ids={ids} host={host} /> : null}
@@ -584,39 +585,16 @@ function CypPanel({ ids }: { ids: string[] }) {
   );
 }
 
-function QtPanel({ report }: { report: NonNullable<ReturnType<typeof qtReport>> }) {
-  return (
-    <div className="space-y-4">
-      <p className="text-sm leading-relaxed text-fg">{report.headline}</p>
-      <ul className="space-y-2">
-        {report.rows.map((row) => (
-          <li key={row.id} className="rounded-md bg-bg-sunken px-3 py-2.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium text-fg">{row.name}</span>
-              <Badge tone={row.risk === "known" ? "danger" : "warn"}>
-                {row.risk === "known" ? "known risk" : "possible"}
-              </Badge>
-            </div>
-            <p className="mt-1 text-sm leading-relaxed text-muted">{row.note}</p>
-          </li>
-        ))}
-      </ul>
-      {report.amplifiers.length ? (
-        <ul className="space-y-1.5">
-          {report.amplifiers.map((a) => (
-            <li key={a} className="text-sm leading-relaxed text-fg">
-              {a}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      <p className="text-sm leading-relaxed text-muted">{report.tell}</p>
-      <p className="text-[11px] leading-relaxed text-subtle">
-        Known / possible is this desk’s PD map, paraphrasing public QT lists (CredibleMeds). Not a QTc
-        and not a substitute for an ECG. Bedside tab has Bazett / Fridericia.
-      </p>
-    </div>
-  );
+function QtPanel({
+  ids,
+  host,
+  report,
+}: {
+  ids: string[];
+  host: HostContext;
+  report?: NonNullable<ReturnType<typeof qtReport>>;
+}) {
+  return <QtStation ids={ids} host={host} />;
 }
 
 function LevelsPanel({

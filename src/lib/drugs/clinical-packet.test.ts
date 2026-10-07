@@ -143,4 +143,23 @@ test("buildClinicalPacket: evaluates SGLT2 inhibitor perioperative hold and euDK
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("Euglycemic DKA") || cp.includes("blood sugar reading is completely normal")));
 });
 
+test("buildClinicalPacket: evaluates Tisdale QTc score, inpatient telemetry, and TdP resuscitation nomogram", () => {
+  const host = {
+    ...DEFAULT_HOST,
+    age: "geriatric" as const,
+  };
+  const ids = ["methadone", "ondansetron", "furosemide"];
+  const findings = analyze(ids, host).findings;
+  const packet = buildClinicalPacket(ids, host, findings, {});
+
+  assert.ok(packet.riskIndexes.qt !== null);
+  assert.ok(packet.riskIndexes.qt.tisdale !== undefined);
+  assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "ageGeriatric" && f.present), true);
+  assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "loopDiuretic" && f.present), true);
+  assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "twoOrMoreQtDrugs" && f.present), true);
+  assert.ok(packet.ehrNoteText.includes("Tisdale Inpatient QTc Risk"));
+  assert.ok(packet.ehrNoteText.includes("Acute TdP Resuscitation Directive: Magnesium Sulfate 2 g IV push"));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("fluttering in your chest") || cp.includes("racing heartbeat")));
+});
+
 

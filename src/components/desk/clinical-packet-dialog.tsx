@@ -416,6 +416,20 @@ export function ClinicalPacketDialog({
                     ? `${packet.riskIndexes.qt.known} known-risk, ${packet.riskIndexes.qt.possible} possible-risk agents on desk. ${packet.riskIndexes.qt.tell}`
                     : "No additive QTc prolongation agents mapped on this regimen."}
                 </p>
+                {packet.riskIndexes.qt?.tisdale && (
+                  <div className="mt-2 rounded-md border border-border/60 bg-surface/80 p-2 text-[11px]">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-fg">Tisdale Inpatient Score:</span>
+                      <span className="font-mono font-bold text-accent">
+                        {packet.riskIndexes.qt.tisdale.score}/21 ({packet.riskIndexes.qt.tisdale.tierLabel})
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-subtle">{packet.riskIndexes.qt.tisdale.predictedRiskPercentage}</p>
+                    <p className="mt-1 font-mono text-[10px] text-muted">
+                      Goals: K+ {packet.riskIndexes.qt.tisdale.electrolyteTargets.potassiumMeqL} · Mg2+ {packet.riskIndexes.qt.tisdale.electrolyteTargets.magnesiumMgDl}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* CNS Depression Box */}

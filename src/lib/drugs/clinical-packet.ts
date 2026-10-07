@@ -13,6 +13,7 @@ import { alertsOnDesk, type AlertFlag } from "./alerts";
 import { acbOnDesk, type AcbReport } from "./acb";
 import { mmeOnDesk, type MmeFactor } from "./mme";
 import { qtReport, type QtReport } from "./qt";
+import { deriveTisdaleDefaults, evaluateTisdaleScore, type TisdaleResult } from "./qt-resus";
 import { doacReportOnDesk, type DoacReport } from "./doac";
 import { potassiumReportOnDesk, potassiumOnDesk, type PotassiumEvaluation } from "./potassium";
 import { sglt2ReportOnDesk, sglt2OnDesk, type Sglt2Report } from "./sglt2";
@@ -56,7 +57,7 @@ export interface ClinicalRiskIndexes {
     warning: string | null;
   };
   acb: AcbReport | null;
-  qt: QtReport | null;
+  qt: (QtReport & { tisdale?: TisdaleResult }) | null;
   cnsDepression: {
     hasSynergy: boolean;
     agents: string[];
@@ -224,8 +225,17 @@ export function buildClinicalPacket(
   // 3b. Anticholinergic Cognitive Burden
   const acbReport = acbOnDesk(ids);
 
-  // 3c. Cardiac QTc Repolarization
-  const qtRep = qtReport(ids, host);
+  // 3c. Cardiac QTc Repolarization & Tisdale Risk Model
+  const rawQtRep = qtReport(ids, host);
+  let qtRep: (QtReport & { tisdale?: TisdaleResult }) | null = null;
+  if (rawQtRep) {
+    const tisdaleInput = deriveTisdaleDefaults(ids, host);
+    const tisdale = evaluateTisdaleScore(tisdaleInput);
+    qtRep = {
+      ...rawQtRep,
+      tisdale,
+    };
+  }
 
   // 3d. CNS / Respiratory Depression Synergism
   const cnsDepressants = ids.filter((id) => {
@@ -514,6 +524,13 @@ export function buildClinicalPacket(
       `  Agents: ${riskIndexes.qt.rows.map((r) => `${r.name} [${r.risk}]`).join(", ")}`,
       `  Clinical Watch: ${riskIndexes.qt.tell}`,
     );
+    if (riskIndexes.qt.tisdale) {
+      ehrLines.push(
+        `  Tisdale Inpatient QTc Risk: Score ${riskIndexes.qt.tisdale.score}/21 (${riskIndexes.qt.tisdale.tierLabel.toUpperCase()}) — ${riskIndexes.qt.tisdale.predictedRiskPercentage}`,
+        `  Telemetry Protocol: ${riskIndexes.qt.tisdale.telemetryRequirement} | Electrolyte Goals: K+ ${riskIndexes.qt.tisdale.electrolyteTargets.potassiumMeqL}, Mg2+ ${riskIndexes.qt.tisdale.electrolyteTargets.magnesiumMgDl}`,
+        `  Acute TdP Resuscitation Directive: Magnesium Sulfate 2 g IV push over 1–2 min (suppresses EADs regardless of baseline Mg) | Avoid Class Ia/III antiarrhythmics`,
+      );
+    }
   } else {
     ehrLines.push(`- Cardiac QTc Prolongation Burden: No additive QTc prolonging agents identified`);
   }
