@@ -15,6 +15,7 @@ import { mmeOnDesk, type MmeFactor } from "./mme";
 import { qtReport, type QtReport } from "./qt";
 import { doacReportOnDesk, type DoacReport } from "./doac";
 import { potassiumReportOnDesk, potassiumOnDesk, type PotassiumEvaluation } from "./potassium";
+import { sglt2ReportOnDesk, sglt2OnDesk, type Sglt2Report } from "./sglt2";
 import { plainLanguageSummary } from "./interaction-summary";
 import {
   AGE_LABEL,
@@ -80,6 +81,12 @@ export interface ClinicalRiskIndexes {
     hasBinder: boolean;
     perpetrators: string[];
     report: PotassiumEvaluation | null;
+    summary: string | null;
+  };
+  sglt2: {
+    hasSglt2: boolean;
+    agents: string[];
+    report: Sglt2Report | null;
     summary: string | null;
   };
 }
@@ -279,6 +286,16 @@ export function buildClinicalPacket(
     }
   }
 
+  // 3h. SGLT2 Inhibitor Homeostasis & euDKA
+  const sglt2Desk = sglt2OnDesk(ids);
+  let sglt2Report: Sglt2Report | null = null;
+  let sglt2Summary: string | null = null;
+  if (sglt2Desk.hasSglt2) {
+    sglt2Report = sglt2ReportOnDesk(ids, host);
+    const names = sglt2Report.agentsOnDesk.map((a) => a.name).join(", ");
+    sglt2Summary = `SGLT2 inhibitor therapy active (${names}). Pre-op surgical holds (3–4 days), euglycemic DKA vigilance (glucose < 250 mg/dL), and Fournier's safety rails evaluated.`;
+  }
+
   const riskIndexes: ClinicalRiskIndexes = {
     mme: {
       hasOpioid,
@@ -312,6 +329,12 @@ export function buildClinicalPacket(
       perpetrators: potReport ? potReport.perpetrators.map((p) => p.name) : [],
       report: potReport,
       summary: potSummary,
+    },
+    sglt2: {
+      hasSglt2: sglt2Desk.hasSglt2,
+      agents: sglt2Report ? sglt2Report.agentsOnDesk.map((a) => a.name) : [],
+      report: sglt2Report,
+      summary: sglt2Summary,
     },
   };
 
@@ -410,6 +433,17 @@ export function buildClinicalPacket(
         "Sodium zirconium cyclosilicate (Lokelma): Take as directed with meals. Report any noticeable swelling in your feet or legs, as each dose contains a small amount of dietary sodium.",
       );
     }
+  }
+  if (sglt2Desk.hasSglt2) {
+    counselingPoints.push(
+      "SGLT2 Inhibitor Safety: If you are scheduled for any surgery or dental procedure, you must stop your SGLT2 medication at least 3 to 4 days beforehand. Do not restart it until you are eating and drinking normally and your surgical team clears you.",
+    );
+    counselingPoints.push(
+      "Euglycemic DKA Warning: Contact your care team or emergency room immediately if you develop nausea, vomiting, shortness of breath, abdominal pain, or extreme fatigue — even if your home blood sugar reading is completely normal.",
+    );
+    counselingPoints.push(
+      "Drink plenty of water daily to prevent dehydration and dizziness, and seek urgent medical evaluation for any severe pain, redness, or swelling in the groin or genital area.",
+    );
   }
   for (const f of collisions.contraindicated.slice(0, 3)) {
     counselingPoints.push(plainLanguageSummary(f));
@@ -554,6 +588,18 @@ export function buildClinicalPacket(
     }
     if (pr.activeBindersOnRegimen.length > 0) {
       ehrLines.push(`  Active GI Binders: ${pr.activeBindersOnRegimen.join(", ")}`);
+    }
+  }
+
+  if (riskIndexes.sglt2.hasSglt2 && riskIndexes.sglt2.report) {
+    const sr = riskIndexes.sglt2.report;
+    ehrLines.push(
+      `- SGLT2 Inhibitor & Euglycemic DKA Evaluation: Active agents (${riskIndexes.sglt2.agents.join(", ")})`,
+      `  Perioperative Rail: Hold at least ${sr.preopSchedule.map((s) => `${s.agentName} (>= ${s.recommendedHoldDays} days)`).join(", ")} prior to major surgery.`,
+      `  Diagnostic Trap Alert: euDKA presents with blood glucose < 250 mg/dL with high anion gap metabolic acidosis & ketonemia; requires simultaneous IV dextrose + insulin resuscitation.`,
+    );
+    for (const rail of sr.renalRails) {
+      ehrLines.push(`  Renal Indication Rail (${rail.agentName}): Glycemic [${rail.glycemicStatus.toUpperCase()}], Cardiorenal [${rail.cardiorenalStatus.toUpperCase()}] at eGFR ${rail.currentEgfr} mL/min.`);
     }
   }
 

@@ -125,4 +125,22 @@ test("buildClinicalPacket: evaluates potassium homeostasis, perpetrators, binder
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("Patiromer") && cp.includes("3 hours")));
 });
 
+test("buildClinicalPacket: evaluates SGLT2 inhibitor perioperative hold and euDKA counseling", () => {
+  const host = {
+    ...DEFAULT_HOST,
+    kidney: "ckd" as const,
+  };
+  const ids = ["empagliflozin", "furosemide", "lisinopril"];
+  const findings = analyze(ids, host).findings;
+  const packet = buildClinicalPacket(ids, host, findings, { empagliflozin: "25 mg daily" });
+
+  assert.equal(packet.riskIndexes.sglt2.hasSglt2, true);
+  assert.ok(packet.riskIndexes.sglt2.report !== null);
+  assert.ok(packet.riskIndexes.sglt2.agents.some((a) => a.includes("Empagliflozin")));
+  assert.ok(packet.ehrNoteText.includes("SGLT2 Inhibitor & Euglycemic DKA Evaluation"));
+  assert.ok(packet.ehrNoteText.includes("Perioperative Rail"));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("SGLT2") && cp.includes("surgery")));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("Euglycemic DKA") || cp.includes("blood sugar reading is completely normal")));
+});
+
 

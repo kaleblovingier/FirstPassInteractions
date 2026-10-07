@@ -540,6 +540,33 @@ export function ClinicalPacketDialog({
                   )}
                 </div>
               )}
+
+              {/* SGLT2 Inhibitor & euDKA Card */}
+              {packet.riskIndexes.sglt2?.hasSglt2 && packet.riskIndexes.sglt2.report && (
+                <div className="rounded-xl border border-warn/40 bg-warn-soft/20 p-3.5 text-xs sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-semibold text-fg">
+                      SGLT2 Inhibitor Homeostasis, euDKA & Perioperative Rails
+                    </span>
+                    <span className="font-mono text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-warn-soft text-warn border border-warn/30">
+                      Active SGLT2i
+                    </span>
+                  </div>
+                  <p className="mt-1 text-fg leading-relaxed">
+                    {packet.riskIndexes.sglt2.summary}
+                  </p>
+                  {packet.riskIndexes.sglt2.report.preopSchedule.length > 0 && (
+                    <div className="mt-2 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
+                      <span className="font-mono font-bold text-accent">Perioperative Hold Schedule: </span>
+                      {packet.riskIndexes.sglt2.report.preopSchedule.map((s) => `${s.agentName}: Hold >= ${s.recommendedHoldDays} days prior to major surgery`).join("; ")}
+                    </div>
+                  )}
+                  <div className="mt-1.5 rounded bg-surface/60 p-2 border border-border/50 text-[11px] text-muted">
+                    <span className="font-semibold text-fg">Euglycemic DKA Alert: </span>
+                    Presents with glucose &lt; 250 mg/dL with high anion gap metabolic acidosis. Resuscitation requires concurrent IV Dextrose + Insulin infusion.
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 

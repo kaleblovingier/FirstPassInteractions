@@ -122,6 +122,16 @@ import {
   type PotassiumSeverityTier,
   type PotassiumEvaluation,
 } from "@/lib/drugs/potassium";
+import {
+  sglt2OnDesk,
+  sglt2ReportOnDesk,
+  evaluateEuDka,
+  calculatePreopHold,
+  evaluateSglt2RenalRails,
+  findSglt2Collisions,
+  SGLT2_PROFILES,
+  type Sglt2Report,
+} from "@/lib/drugs/sglt2";
 import { wardWanted, wardsOnDesk } from "@/lib/drugs/wards";
 import { safetyOnDesk, safetyWanted } from "@/lib/drugs/safety";
 import {
@@ -207,7 +217,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -229,6 +239,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const doacOn = useMemo(() => doacOnDesk(ids), [ids.join("|")]);
   const valproateOn = useMemo(() => valproateOnDesk(ids), [ids.join("|")]);
   const potassiumOn = useMemo(() => potassiumOnDesk(ids), [ids.join("|")]);
+  const sglt2On = useMemo(() => sglt2OnDesk(ids), [ids.join("|")]);
   const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
   const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
   const steroids = useMemo(() => steroidReportOnDesk(ids), [ids.join("|")]);
@@ -258,6 +269,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
       { id: "valproate", label: "Valproate", on: valproateOn.hasValproate },
       { id: "potassium", label: "Potassium", on: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent },
+      { id: "sglt2", label: "SGLT2", on: sglt2On.hasSglt2 },
       { id: "acb", label: "ACB", on: Boolean(acb) },
       { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
       { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
@@ -271,7 +283,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -327,6 +339,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoacPanel ids={ids} host={host} /> : null}
         {live === "valproate" && valproateOn.hasValproate ? <ValproatePanel ids={ids} host={host} /> : null}
         {live === "potassium" ? <PotassiumPanel ids={ids} host={host} /> : null}
+        {live === "sglt2" && sglt2On.hasSglt2 ? <Sglt2Panel ids={ids} host={host} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
         {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
@@ -6879,9 +6892,402 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
         </ul>
       </article>
 
-      {/* Regulatory Footer */}
       <p className="text-[11px] leading-relaxed text-subtle">
         Educational clinical pharmacology reference only (non-device CDS). Cardioprotective shifting and potassium binder selection require institutional emergency protocols and individualized clinical judgment.
+      </p>
+    </div>
+  );
+}
+
+function Sglt2Panel({ ids, host }: { ids: string[]; host: HostContext }) {
+  const onDesk = useMemo(() => sglt2OnDesk(ids), [ids.join("|")]);
+
+  // Initial inputs
+  const [glucoseInput, setGlucoseInput] = useState("175");
+  const [bicarbonateInput, setBicarbonateInput] = useState("13");
+  const [anionGapInput, setAnionGapInput] = useState("17");
+  const [betaOhbInput, setBetaOhbInput] = useState("3.8");
+  const [arterialPhInput, setArterialPhInput] = useState("7.25");
+  const [egfrInput, setEgfrInput] = useState(host.kidney === "ckd" ? "28" : "65");
+
+  const numGlucose = Number(glucoseInput) || 100;
+  const numBicarb = Number(bicarbonateInput) || 24;
+  const numAnionGap = Number(anionGapInput) || 10;
+  const numBetaOhb = Number(betaOhbInput) || 0.4;
+  const numPh = Number(arterialPhInput) || 7.38;
+  const numEgfr = Number(egfrInput) || 60;
+
+  const euDkaEval = useMemo(() => {
+    return evaluateEuDka({
+      glucoseMgDl: numGlucose,
+      bicarbonateMeqL: numBicarb,
+      arterialPh: numPh,
+      betaHydroxybutyrateMmolL: numBetaOhb,
+      anionGap: numAnionGap,
+    });
+  }, [numGlucose, numBicarb, numPh, numBetaOhb, numAnionGap]);
+
+  const preopSchedule = useMemo(() => calculatePreopHold(onDesk.sglt2Ids), [onDesk.sglt2Ids.join("|")]);
+  const renalRails = useMemo(() => evaluateSglt2RenalRails(onDesk.sglt2Ids, numEgfr), [onDesk.sglt2Ids.join("|"), numEgfr]);
+  const collisions = useMemo(() => findSglt2Collisions(ids), [ids.join("|")]);
+
+  const presets = [
+    {
+      label: "Severe euDKA (Normal Glucose)",
+      bg: "175",
+      bicarb: "12",
+      ag: "18",
+      bohb: "4.2",
+      ph: "7.24",
+      egfr: "55",
+    },
+    {
+      label: "Pre-Op Hold (Empagliflozin 3d)",
+      bg: "135",
+      bicarb: "24",
+      ag: "10",
+      bohb: "0.4",
+      ph: "7.40",
+      egfr: "65",
+    },
+    {
+      label: "CKD Cardiorenal Rail (eGFR 26)",
+      bg: "145",
+      bicarb: "22",
+      ag: "11",
+      bohb: "0.5",
+      ph: "7.36",
+      egfr: "26",
+    },
+    {
+      label: "Quadruple AKI Whammy",
+      bg: "160",
+      bicarb: "19",
+      ag: "13",
+      bohb: "1.2",
+      ph: "7.32",
+      egfr: "22",
+    },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">
+            SGLT2 Inhibitor Homeostasis, Euglycemic DKA & Perioperative Rails
+          </h3>
+          <p className="mt-1 text-xs text-muted">
+            Euglycemic DKA diagnostic trap (glucose &lt; 250 mg/dL), Dextrose+Insulin resuscitation protocol, FDA 3-to-4 day surgical hold schedules, and cardiorenal eGFR rails.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          <Badge tone={euDkaEval.isEuDkaSuspected ? "danger" : "ok"}>
+            {euDkaEval.isEuDkaSuspected ? "HIGH SUSPICION: euDKA" : "euDKA Unlikely"}
+          </Badge>
+          {onDesk.hasLoopDiuretic && <Badge tone="warn">Loop Diuretic Co-prescribed</Badge>}
+          {onDesk.hasRaas && onDesk.hasNsaid && <Badge tone="danger">Quadruple AKI Risk</Badge>}
+          {onDesk.hasSecretagogue && <Badge tone="warn">Secretagogue Stack</Badge>}
+        </div>
+      </div>
+
+      {/* Preset Scenarios */}
+      <div className="rounded-md border border-border bg-surface p-3 space-y-2">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-muted font-bold block">
+          Clinical Simulation Presets:
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {presets.map((p, idx) => {
+            const isMatch =
+              glucoseInput === p.bg &&
+              bicarbonateInput === p.bicarb &&
+              anionGapInput === p.ag &&
+              betaOhbInput === p.bohb;
+            return (
+              <button
+                key={idx}
+                type="button"
+                aria-pressed={isMatch}
+                onClick={() => {
+                  setGlucoseInput(p.bg);
+                  setBicarbonateInput(p.bicarb);
+                  setAnionGapInput(p.ag);
+                  setBetaOhbInput(p.bohb);
+                  setArterialPhInput(p.ph);
+                  setEgfrInput(p.egfr);
+                }}
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-xs font-medium transition",
+                  isMatch ? "bg-ink text-bg font-semibold" : "bg-bg-sunken text-fg hover:bg-surface-elevated"
+                )}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Section 1: Laboratory Parameters & euDKA Evaluator */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2">
+          <h4 className="font-serif text-sm font-semibold text-fg">
+            1. Acid-Base & Metabolic Parameters (euDKA Evaluator)
+          </h4>
+          <span className="font-mono text-xs text-muted">
+            Glucose: <strong className="text-fg">{numGlucose} mg/dL</strong> | Anion Gap: <strong className="text-fg">{numAnionGap}</strong> | Bicarb: <strong className="text-fg">{numBicarb} mEq/L</strong>
+          </span>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+          <label className="text-xs text-muted">
+            Blood Glucose (mg/dL)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={glucoseInput}
+              onChange={(e) => setGlucoseInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">&lt;250 mg/dL in euDKA</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            Bicarbonate (mEq/L)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={bicarbonateInput}
+              onChange={(e) => setBicarbonateInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">Critical: &lt;18 mEq/L</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            Serum Anion Gap
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={anionGapInput}
+              onChange={(e) => setAnionGapInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">Elevated: &gt;12 mEq/L</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            &beta;-Hydroxybutyrate (mmol/L)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={betaOhbInput}
+              onChange={(e) => setBetaOhbInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">DKA Threshold: &ge;3.0</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            Arterial / Venous pH
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={arterialPhInput}
+              onChange={(e) => setArterialPhInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">Acidemia: &lt;7.30</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            eGFR (mL/min/1.73m²)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={egfrInput}
+              onChange={(e) => setEgfrInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">CKD cutoffs: 20–45</span>
+          </label>
+        </div>
+
+        {/* Diagnostic Trap Alert Box */}
+        <div className={cn(
+          "rounded p-3 border text-xs space-y-1.5",
+          euDkaEval.isEuDkaSuspected
+            ? "bg-danger-soft/30 border-danger text-fg"
+            : "bg-surface border-border text-muted"
+        )}>
+          <div className="flex items-center justify-between">
+            <span className="font-serif font-bold text-sm text-fg">
+              {euDkaEval.headline}
+            </span>
+            <Badge tone={euDkaEval.isEuDkaSuspected ? "danger" : "default"}>
+              {euDkaEval.isEuDkaSuspected ? "EMERGENCY PROTOCOL" : "BASELINE"}
+            </Badge>
+          </div>
+          <p className="leading-relaxed text-fg">
+            {euDkaEval.diagnosticTrapAlert}
+          </p>
+        </div>
+
+        {/* Emergency euDKA Resuscitation Cards */}
+        {euDkaEval.isEuDkaSuspected && (
+          <div className="rounded bg-surface p-3 border border-border space-y-2 text-xs">
+            <span className="font-serif font-bold text-danger block text-sm">
+              Emergency Resuscitation & Treatment Mandate
+            </span>
+            <div className="grid gap-2 sm:grid-cols-2 text-[11px]">
+              <div className="rounded bg-bg-sunken p-2.5 border border-border space-y-1">
+                <span className="font-mono font-bold text-accent block">
+                  Simultaneous IV Dextrose + Insulin Infusion:
+                </span>
+                <p className="text-fg leading-relaxed">
+                  {euDkaEval.resuscitationGuidance.dextroseInsulinCoadministration}
+                </p>
+              </div>
+              <div className="rounded bg-bg-sunken p-2.5 border border-border space-y-1">
+                <span className="font-mono font-bold text-fg block">
+                  Volume Resuscitation & Drug Hold:
+                </span>
+                <p className="text-muted leading-relaxed">
+                  {euDkaEval.resuscitationGuidance.fluidResuscitation}
+                </p>
+                <p className="text-danger font-medium pt-1">
+                  {euDkaEval.resuscitationGuidance.sglt2Discontinuation}
+                </p>
+              </div>
+            </div>
+            <p className="text-[10px] text-subtle">
+              Endpoint: {euDkaEval.resuscitationGuidance.ketoneClearanceTarget}
+            </p>
+          </div>
+        )}
+      </article>
+
+      {/* Section 2: FDA Perioperative Hold Schedule */}
+      <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-sm font-semibold text-fg">
+              2. FDA Perioperative Hold Schedule ({preopSchedule.length} Agent{preopSchedule.length !== 1 ? "s" : ""})
+            </h4>
+            <p className="text-xs text-muted mt-0.5">
+              FDA mandates holding SGLT2 inhibitors 3 to 4 days prior to scheduled surgery to prevent postoperative ketoacidosis.
+            </p>
+          </div>
+          <Badge tone="warn">Surgical Safety Rail</Badge>
+        </div>
+
+        <div className="space-y-2 text-xs">
+          {preopSchedule.map((sched, idx) => (
+            <div key={idx} className="rounded bg-bg-sunken p-3 border border-border space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">{sched.agentName}</span>
+                <span className="font-mono text-xs font-bold text-danger">
+                  Hold &ge; {sched.recommendedHoldDays} Days Prior
+                </span>
+              </div>
+              <p className="text-muted">{sched.surgeryTimingNote}</p>
+              <p className="text-fg font-medium">{sched.resumptionCriteria}</p>
+              <p className="text-[11px] text-subtle pt-0.5">{sched.urgentSurgeryProtocol}</p>
+            </div>
+          ))}
+        </div>
+      </article>
+
+      {/* Section 3: Glycemic Efficacy vs Cardiorenal Protection eGFR Rails */}
+      <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h4 className="font-serif text-sm font-semibold text-fg">
+              3. Cardiorenal Protection vs Glycemic eGFR Thresholds
+            </h4>
+            <p className="text-xs text-muted mt-0.5">
+              Glycemic lowering diminishes in renal impairment, but cardiac (HFrEF/HFpEF) and renal protection persist down to eGFR 20–25 mL/min.
+            </p>
+          </div>
+          <span className="font-mono text-xs text-muted">
+            Current eGFR: <strong className="text-fg">{numEgfr} mL/min</strong>
+          </span>
+        </div>
+
+        <div className="space-y-2 text-xs">
+          {renalRails.map((rail, idx) => (
+            <div key={idx} className="rounded bg-bg-sunken p-3 border border-border space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">{rail.agentName}</span>
+                <div className="flex gap-1">
+                  <Badge tone={rail.glycemicStatus === "effective" ? "ok" : rail.glycemicStatus === "blunted" ? "warn" : "default"}>
+                    Glycemic: {rail.glycemicStatus.toUpperCase()}
+                  </Badge>
+                  <Badge tone={rail.cardiorenalStatus === "indicated" ? "ok" : rail.cardiorenalStatus === "caution-dose-reduce" ? "warn" : "danger"}>
+                    Cardiorenal: {rail.cardiorenalStatus.toUpperCase()}
+                  </Badge>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted leading-relaxed">
+                {rail.initialEgfrDipReassurance}
+              </p>
+            </div>
+          ))}
+        </div>
+      </article>
+
+      {/* Section 4: Severe Collisions & Multi-Drug Cascades */}
+      {collisions.length > 0 && (
+        <article className="rounded-md border border-warn/40 bg-warn-soft/20 p-4 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="font-serif text-sm font-semibold text-fg">
+              Active SGLT2 Drug Collisions on Tray ({collisions.length})
+            </span>
+            <span className="font-mono text-xs font-bold text-warn">Hemodynamic & Glycemic Collisions</span>
+          </div>
+          <div className="space-y-2">
+            {collisions.map((col, idx) => (
+              <div key={idx} className="rounded bg-surface p-3 text-xs border border-border space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-fg">{col.headline}</span>
+                  <span className={cn(
+                    "font-mono text-[9px] uppercase font-bold px-1.5 py-0.5 rounded",
+                    col.severity === "major" ? "bg-danger text-bg" : "bg-warn-soft text-warn"
+                  )}>
+                    {col.severity}
+                  </span>
+                </div>
+                <p className="text-muted leading-relaxed">{col.mechanism}</p>
+                <p className="text-fg font-medium leading-relaxed">{col.clinicalAction}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      )}
+
+      {/* Section 5: Fournier's Gangrene Warning */}
+      <article className="rounded-md bg-danger-soft/30 border border-danger/30 p-4 space-y-1.5 text-xs">
+        <span className="font-serif font-bold text-danger block text-sm">
+          Fournier's Gangrene (Necrotizing Fasciitis of the Perineum) Alert
+        </span>
+        <p className="text-fg leading-relaxed">
+          Rare but fatal necrotizing soft-tissue infection of the perineum and genitalia associated with SGLT2 inhibitors. Evaluate urgently for any localized pain, erythema, tenderness, or swelling in genital/perineal area accompanied by fever or chills. Discontinue SGLT2 inhibitor immediately and initiate emergent broad-spectrum IV antibiotics and surgical consultation.
+        </p>
+      </article>
+
+      {/* Clinical Pearls */}
+      <article className="rounded-md bg-accent-soft/20 border border-accent/30 p-4 space-y-2 text-xs">
+        <span className="font-serif font-bold text-accent block text-sm">
+          High-Yield Clinical Pharmacology Pearls
+        </span>
+        <ul className="space-y-1.5 list-disc list-inside text-fg leading-relaxed">
+          <li>Euglycemic DKA presents with blood glucose &lt; 250 mg/dL (frequently normal or mildly elevated) because persistent renal glycosuria clears circulating glucose while insulinopenia and glucagon excess drive ketoacidosis.</li>
+          <li>When treating euDKA, IV Dextrose (D5W or D10W) MUST be co-administered with IV insulin infusion — without dextrose, blood glucose will drop before adequate insulin can be given to halt lipolysis and clear ketonemia.</li>
+          <li>FDA requires holding SGLT2 inhibitors at least 3 days prior to surgery (4 days for ertugliflozin); resume only when oral intake is fully re-established and catabolic stress resolves.</li>
+          <li>The acute 2–4 mL/min dip in eGFR upon SGLT2i initiation is an expected hemodynamic effect of restored tubuloglomerular feedback, not structural nephrotoxicity, and predicts long-term renal preservation.</li>
+          <li>Fournier's gangrene (necrotizing fasciitis of the perineum) is a rare medical emergency associated with SGLT2 inhibitors requiring immediate surgical debridement and broad-spectrum antibiotics.</li>
+          <li>Stacking SGLT2 inhibitors with loop diuretics, ACEi/ARBs, and NSAIDs produces a severe Quadruple Collision resulting in acute prerenal azotemia and tubular necrosis.</li>
+        </ul>
+      </article>
+
+      {/* Regulatory Footer */}
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational clinical pharmacology reference only (non-device CDS). SGLT2 inhibitor perioperative hold timing, cardiorenal thresholds, and euDKA resuscitation require institutional protocols and clinical judgment.
       </p>
     </div>
   );
