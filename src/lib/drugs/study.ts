@@ -1352,7 +1352,7 @@ export function clinicalCards(): StudyCard[] {
       lane: "clinical",
       kicker: "Harm Reduction & Resuscitation",
       title: "Naloxone Half-Life vs Synthetic Opioids (Renarcotization)",
-      prompt: "A patient with suspected opioid overdose regains spontaneous breathing and alertness after 2 mg intranasal naloxone, but wishes to leave the emergency department immediately.",
+      prompt: "A patient with suspected opioid overdose regains spontaneous breathing and alertness after intranasal naloxone reversal, but wishes to leave the emergency department immediately.",
       ask: "Why is a minimum observation period warranted after successful naloxone reversal?",
       choices: [
         { id: "naloxone-short-half-life", label: "Naloxone has a short terminal half-life (~30–90 min), whereas long-acting or depot synthetic opioids remain active far longer, risking recurrent respiratory arrest (renarcotization)" },
@@ -1391,7 +1391,7 @@ export function clinicalCards(): StudyCard[] {
       choices: [
         { id: "naltrexone-7-14-day-washout", label: "At least 7–10 days opioid-free for short-acting opioids (and 10–14 days for long-acting agents like methadone or buprenorphine), verified by negative UDS and/or naloxone challenge" },
         { id: "naltrexone-24-hour-cows", label: "A 24-hour abstinence period verified by a COWS score of at least 8" },
-        { id: "naltrexone-no-washout-needed", label: "No washout is necessary if starting with oral naltrexone 50 mg before the depot intramuscular injection" },
+        { id: "naltrexone-no-washout-needed", label: "No washout is necessary if starting with oral naltrexone before the depot intramuscular injection" },
         { id: "naltrexone-loperamide-bridge", label: "Concurrent administration of high-dose loperamide eliminates the need for an opioid washout window" },
       ],
       correct: "naltrexone-7-14-day-washout",
@@ -1407,7 +1407,7 @@ export function clinicalCards(): StudyCard[] {
       ask: "What clinical principle governs the management of xylazine-induced toxicity?",
       choices: [
         { id: "xylazine-alpha2-airway-priority", label: "Xylazine is a non-opioid alpha-2 adrenergic agonist unresponsive to naloxone; prioritize airway support, oxygenation, and perfusion rather than escalating naloxone" },
-        { id: "xylazine-high-dose-naloxone", label: "Continuous high-dose naloxone infusion (10 mg/hr) competitively displaces xylazine from alpha-2 adrenergic receptors" },
+        { id: "xylazine-high-dose-naloxone", label: "Continuous high-dose naloxone infusion competitively displaces xylazine from alpha-2 adrenergic receptors" },
         { id: "xylazine-flumazenil-reversal", label: "Administration of flumazenil specifically reverses central xylazine-induced respiratory depression" },
         { id: "xylazine-emergent-dialysis", label: "Emergent hemodialysis is required within 2 hours to clear the water-soluble xylazine metabolite" },
       ],
@@ -1446,7 +1446,7 @@ export function clinicalCards(): StudyCard[] {
         { id: "bup-alternating-q4h-methadone", label: "Alternating buprenorphine every 4 hours with methadone prevents competitive binding at the same receptor pool" },
       ],
       correct: "bup-bernese-overlapping-micro",
-      answer: "The Bernese method (Hälg 2016) utilizes overlapping low doses of buprenorphine (e.g. starting with 0.5 mg daily and titrating over 5–8 days) while continuing the patient's baseline full opioid agonist (fentanyl or methadone). Because buprenorphine binds with extremely high affinity and dissociates very slowly, sub-therapeutic micro-doses progressively saturate a fraction of receptors without displacing enough full agonist to provoke withdrawal symptoms. Once buprenorphine reaches therapeutic receptor occupancy (~8–16 mg daily), the full agonist is discontinued seamlessly without an acute withdrawal window.",
+      answer: "The Bernese method (Hämmig et al., 2016; Subst Abuse Rehabil 2016) utilizes overlapping micro-dosing of buprenorphine titrating over several days while continuing the patient's baseline full opioid agonist (fentanyl or methadone). Because buprenorphine binds with extremely high affinity and dissociates very slowly, sub-therapeutic micro-doses progressively saturate a fraction of receptors without displacing enough full agonist to provoke withdrawal symptoms. Once buprenorphine achieves therapeutic receptor occupancy, the full agonist is discontinued seamlessly without an acute withdrawal window.",
       drugIds: ["buprenorphine", "methadone", "fentanyl"],
     },
   ];

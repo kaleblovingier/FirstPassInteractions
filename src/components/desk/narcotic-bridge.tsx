@@ -28,7 +28,7 @@ export const LINES: readonly ServiceLine[] = [
   },
   {
     name: "988 Suicide & Crisis Lifeline",
-    detail: "Call or text if the person is in crisis. Free, confidential support 24/7 across the US.",
+    detail: "Call or text 988. Free, confidential crisis support 24/7 across the US.",
     category: "crisis",
     phone: "988",
     phoneLabel: "Call or text 988",
@@ -52,7 +52,7 @@ export const LINES: readonly ServiceLine[] = [
     hrefLabel: "Free mail naloxone",
   },
   {
-    name: "NASEN Syringe Access Directory",
+    name: "NASEN Syringe Access Map",
     detail: "North America Syringe Exchange Network directory for free, sterile supplies, test strips, and community harm reduction programs.",
     category: "harm",
     href: "https://nasen.org/map/",
@@ -60,7 +60,7 @@ export const LINES: readonly ServiceLine[] = [
   },
   {
     name: "Veterans Crisis Line",
-    detail: "24/7 confidential crisis line for military veterans, service members, and their loved ones.",
+    detail: "Call 988 (Press 1) or text 838255. 24/7 confidential crisis line for military veterans, service members, and their loved ones.",
     category: "specialty",
     phone: "988",
     phoneLabel: "988 (Press 1)",
@@ -69,7 +69,7 @@ export const LINES: readonly ServiceLine[] = [
   },
   {
     name: "Trevor Project Lifeline",
-    detail: "Free, confidential 24/7 suicide prevention and crisis intervention for LGBTQ+ young people.",
+    detail: "Call 866-488-7386 or text START to 678-678. Free, confidential 24/7 suicide prevention and crisis intervention for LGBTQ+ young people.",
     category: "specialty",
     phone: "18664887386",
     phoneLabel: "866-488-7386",
@@ -78,10 +78,10 @@ export const LINES: readonly ServiceLine[] = [
   },
   {
     name: "Línea de Prevención en Español",
-    detail: "Apoyo gratuito y confidencial en español las 24 horas del día para personas en crisis.",
+    detail: "Llame al 988 (presione 2) o envíe AYUDA al 988. Apoyo gratuito y confidencial en español las 24 horas del día para personas en crisis.",
     category: "specialty",
-    phone: "18886289454",
-    phoneLabel: "888-628-9454 (Español)",
+    phone: "988",
+    phoneLabel: "988 (Press 2)",
     href: "https://988lifeline.org/help-yourself/en-espanol/",
     hrefLabel: "Ayuda en español",
   },
@@ -140,22 +140,29 @@ function hasPhone(line: (typeof LINES)[number]): line is (typeof LINES)[number] 
   return typeof line.phone === "string" && Boolean(line.phoneLabel);
 }
 
-const CHIP: Record<string, string> = {
+export const CHIP: Record<string, string> = {
   "SAMHSA National Helpline": "SAMHSA 1-800-662-HELP",
+  "SAMHSA Helpline": "SAMHSA 1-800-662-HELP",
   "988 Suicide & Crisis Lifeline": "988 crisis",
   "Never Use Alone": "Never Use Alone 800-484-3731",
   "NEXT Distro (Mail Naloxone)": "NEXT Distro Naloxone",
+  "NEXT Distro": "NEXT Distro Naloxone",
+  "NASEN Syringe Access Map": "Syringe Access Map",
   "NASEN Syringe Access Directory": "Syringe Access Map",
   "Veterans Crisis Line": "Veterans 988 (Press 1)",
   "Trevor Project Lifeline": "Trevor Project 866-488-7386",
-  "Línea de Prevención en Español": "Español 1-888-628-9454",
+  "Trevor Project": "Trevor Project 866-488-7386",
+  "Línea de Prevención en Español": "Español 988 (Press 2)",
+  "Spanish Lifeline": "Español 988 (Press 2)",
+  "FindTreatment.gov": "FindTreatment.gov",
+  "FindSupport.gov": "FindSupport.gov",
 };
 
 export function linesText(note: string, zip: string, stateRes?: StateResource | null) {
   const loc =
     zip.length === 5
-      ? `Text ${zip} to 435748 for a SAMHSA referral. Type ${zip} at https://findtreatment.gov/locator — that link does not carry the ZIP.`
-      : "Text a ZIP code to 435748. Search it at https://findtreatment.gov/locator";
+      ? `Text ${zip} to 435748 for a SAMHSA referral. Type ${zip} at https://findtreatment.gov/locator — that link does not carry the ZIP. State lookup uses a static in-browser table that does not transmit or store the ZIP.`
+      : "Text a ZIP code to 435748. Search it at https://findtreatment.gov/locator. State lookup uses a static in-browser table that does not transmit or store the ZIP.";
 
   const stateSection = stateRes
     ? [
@@ -263,6 +270,14 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
             >
               NEXT Distro Naloxone
             </a>
+            <a
+              href="https://nasen.org/map/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-xs font-medium text-accent hover:underline"
+            >
+              Syringe Access Map
+            </a>
             <button
               type="button"
               onClick={() => void copyLines()}
@@ -347,9 +362,9 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
           <p className="text-[11px] leading-relaxed text-subtle">
             {zipReady
               ? stateRes
-                ? `Mapped to ${stateRes.name}. The text carries the ZIP. The locator does not. Type it there. This desk does not look up a private facility.`
-                : "The text carries the ZIP. The locator does not. Type it there. This desk does not look up a facility."
-              : "A ZIP can be texted to 435748. It is not stored."}
+                ? `Mapped to ${stateRes.name} via static in-browser table. The ZIP is not transmitted or stored. The text carries the ZIP. The locator link does not carry it. This desk does not look up a private facility.`
+                : "No state mapped from static in-browser table. The ZIP is not transmitted or stored. The text carries the ZIP. The locator link does not carry it. This desk does not look up a facility."
+              : "State matching uses a static in-browser table that does not transmit or store the ZIP. A ZIP can be texted to 435748."}
           </p>
 
           {copied === "fail" ? (
@@ -433,7 +448,7 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
           ) : null}
 
           <p className="text-[11px] leading-relaxed text-subtle">
-            Public lines for the person. The ZIP stays on this screen. This desk does not look up a facility, store the code, diagnose a substance use disorder, or pick a milligram. Naloxone is available without an individual prescription under standing orders across all 50 US states and DC.
+            Public lines for the person. State lookup uses a static in-browser table that does not transmit or store the ZIP. This desk does not look up a facility, diagnose a substance use disorder, or pick a milligram or treatment. Naloxone is available without an individual prescription under standing orders across all 50 US states and DC.
           </p>
         </>
       ) : null}

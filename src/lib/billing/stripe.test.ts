@@ -7,6 +7,7 @@ import {
   createCheckout,
   handleStripeWebhook,
   listPaidSessions,
+  validatePaidSession,
 } from "./stripe.server";
 import {
   mintKeyFromPaid,
@@ -141,5 +142,122 @@ describe("stripe billing functionality", () => {
       assert.equal(res.ok, false);
       assert.equal(res.reason, "Stripe is not live on this desk yet.");
     }
+  });
+
+  describe("validatePaidSession", () => {
+    const validSession = {
+      id: "cs_test_valid_123",
+      payment_status: "paid",
+      currency: "usd",
+      amount_total: 7900,
+      metadata: {
+        product: "firstpass",
+        plan: "lab",
+        interval: "life",
+      },
+    };
+
+    it("accepts a valid paid session with or without matching expected price", () => {
+      const resWithoutPrice = validatePaidSession(validSession);
+      assert.equal(resWithoutPrice.ok, true);
+      if (resWithoutPrice.ok) {
+        assert.equal(resWithoutPrice.plan, "lab");
+        assert.equal(resWithoutPrice.interval, "life");
+        assert.equal(resWithoutPrice.issued, "life");
+      }
+
+      const resWithPrice = validatePaidSession(validSession, 7900);
+      assert.equal(resWithPrice.ok, true);
+
+      // Uppercase currency (e.g. USD) should be accepted case-insensitively
+      const resUpperCurrency = validatePaidSession({ ...validSession, currency: "USD" });
+      assert.equal(resUpperCurrency.ok, true);
+
+      // Pro plan with monthly interval
+      const proSession = {
+        ...validSession,
+        amount_total: 1200,
+        metadata: { product: "firstpass", plan: "pro", interval: "month" },
+      };
+      const resPro = validatePaidSession(proSession, 1200);
+      assert.equal(resPro.ok, true);
+      if (resPro.ok) {
+        assert.equal(resPro.plan, "pro");
+        assert.equal(resPro.interval, "month");
+        assert.equal(resPro.issued, "pro");
+      }
+    });
+
+    it("rejects amount mismatch when expectedPriceCents is provided", () => {
+      const resMismatch = validatePaidSession(validSession, 9900);
+      assert.equal(resMismatch.ok, false);
+      assert.match(resMismatch.reason ?? "", /Amount mismatch/);
+
+      const resDifferentAmount = validatePaidSession({ ...validSession, amount_total: 5000 }, 7900);
+      assert.equal(resDifferentAmount.ok, false);
+      assert.match(resDifferentAmount.reason ?? "", /Amount mismatch/);
+    });
+
+    it("rejects sessions with wrong currency", () => {
+      const resEur = validatePaidSession({ ...validSession, currency: "eur" });
+      assert.equal(resEur.ok, false);
+      assert.match(resEur.reason ?? "", /USD/);
+
+      const resEmpty = validatePaidSession({ ...validSession, currency: "" });
+      assert.equal(resEmpty.ok, false);
+
+      const resNull = validatePaidSession({ ...validSession, currency: null });
+      assert.equal(resNull.ok, false);
+    });
+
+    it("rejects sessions with wrong product metadata", () => {
+      const resWrongProduct = validatePaidSession({
+        ...validSession,
+        metadata: { ...validSession.metadata, product: "not_firstpass" },
+      });
+      assert.equal(resWrongProduct.ok, false);
+      assert.match(resWrongProduct.reason ?? "", /not a FirstPass license/);
+
+      const resNoMeta = validatePaidSession({ ...validSession, metadata: undefined });
+      assert.equal(resNoMeta.ok, false);
+    });
+
+    it("rejects sessions with unpaid status", () => {
+      const resUnpaid = validatePaidSession({ ...validSession, payment_status: "unpaid" });
+      assert.equal(resUnpaid.ok, false);
+      assert.match(resUnpaid.reason ?? "", /Payment has not cleared/);
+
+      const resNoPayment = validatePaidSession({ ...validSession, payment_status: "no_payment_required" });
+      assert.equal(resNoPayment.ok, false);
+    });
+
+    it("rejects sessions with invalid plan or interval", () => {
+      const resFreePlan = validatePaidSession({
+        ...validSession,
+        metadata: { ...validSession.metadata, plan: "free" },
+      });
+      assert.equal(resFreePlan.ok, false);
+      assert.match(resFreePlan.reason ?? "", /Invalid plan/);
+
+      const resInvalidPlan = validatePaidSession({
+        ...validSession,
+        metadata: { ...validSession.metadata, plan: "enterprise" },
+      });
+      assert.equal(resInvalidPlan.ok, false);
+      assert.match(resInvalidPlan.reason ?? "", /Invalid plan/);
+
+      const resInvalidInterval = validatePaidSession({
+        ...validSession,
+        metadata: { ...validSession.metadata, interval: "decade" },
+      });
+      assert.equal(resInvalidInterval.ok, false);
+      assert.match(resInvalidInterval.reason ?? "", /Invalid interval/);
+    });
+
+    it("rejects null or non-object session input", () => {
+      assert.equal(validatePaidSession(null).ok, false);
+      assert.equal(validatePaidSession(undefined).ok, false);
+      assert.equal(validatePaidSession("cs_test_123").ok, false);
+    });
   });
 });

@@ -133,6 +133,69 @@ describe("study learning tools", () => {
     }
   });
 
+  it("contains no Hälg citation and correctly cites Hämmig et al., 2016", () => {
+    const cards = clinicalCards();
+    const berneseCard = cards.find((c) => c.id === "clin-bup-micro-induction-bernese");
+    assert.ok(berneseCard, "Bernese card must exist");
+    assert.doesNotMatch(berneseCard.answer, /Hälg/i);
+    assert.doesNotMatch(berneseCard.prompt, /Hälg/i);
+    assert.match(berneseCard.answer, /Hämmig et al\., 2016/);
+
+    const berneseRound = ROUNDS.find((r) => r.id === "r-mat-bup-micro-induction-bernese");
+    assert.ok(berneseRound, "Bernese round must exist");
+    assert.doesNotMatch(berneseRound.teach, /Hälg/i);
+    assert.doesNotMatch(berneseRound.stem, /Hälg/i);
+    assert.match(berneseRound.teach, /Hämmig et al\., 2016/);
+
+    // Verify across all clinical cards and rounds that no Hälg remains
+    for (const card of cards) {
+      const text = `${card.title} ${card.prompt} ${card.ask} ${card.answer}`;
+      assert.doesNotMatch(text, /Hälg/i, `Card ${card.id} must not contain Hälg`);
+    }
+    for (const round of ROUNDS) {
+      const text = `${round.title} ${round.stem} ${round.ask} ${round.teach}`;
+      assert.doesNotMatch(text, /Hälg/i, `Round ${round.id} must not contain Hälg`);
+    }
+  });
+
+  it("addiction study cards and rounds avoid prescriptive milligram numbers and stay educational", () => {
+    const addictionCardIds = [
+      "clin-bup-precip-pharmacology",
+      "clin-fentanyl-adipose-depot-kinetics",
+      "clin-naloxone-half-life-renarcotization",
+      "clin-methadone-cyp-qtc-safety",
+      "clin-naltrexone-washout-window",
+      "clin-xylazine-tranq-management",
+      "clin-alcohol-withdrawal-ciwa-gaba",
+      "clin-bup-micro-induction-bernese",
+    ];
+    const cards = clinicalCards();
+    for (const id of addictionCardIds) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, `Card ${id} must exist`);
+      const allText = `${card.prompt} ${card.ask} ${card.answer} ${card.choices?.map((c) => c.label).join(" ") ?? ""}`;
+      assert.doesNotMatch(allText, /0\.5\s*mg/i, `Card ${id} should not specify 0.5 mg`);
+      assert.doesNotMatch(allText, /8\s*[-–]\s*16\s*mg/i, `Card ${id} should not specify 8-16 mg`);
+      assert.doesNotMatch(allText, /16\s*mg\s+total/i, `Card ${id} should not specify 16 mg total`);
+      assert.doesNotMatch(allText, /\b2\s*mg\s+intranasal\s+naloxone/i, `Card ${id} should not specify 2 mg intranasal naloxone`);
+      assert.doesNotMatch(allText, /\b50\s*mg\b/i, `Card ${id} should not specify 50 mg`);
+      assert.doesNotMatch(allText, /\b10\s*mg\/hr\b/i, `Card ${id} should not specify 10 mg/hr`);
+    }
+
+    const addictionRoundIds = [
+      "r-mat-bup-micro-induction-bernese",
+      "r-street-xylazine-resuscitation-airway",
+    ];
+    for (const rId of addictionRoundIds) {
+      const round = ROUNDS.find((r) => r.id === rId);
+      assert.ok(round, `Round ${rId} must exist`);
+      const text = `${round.stem} ${round.ask} ${round.teach}`;
+      assert.doesNotMatch(text, /0\.5\s*mg/i, `Round ${rId} should not specify 0.5 mg`);
+      assert.doesNotMatch(text, /8\s*[-–]\s*16\s*mg/i, `Round ${rId} should not specify 8-16 mg`);
+      assert.doesNotMatch(text, /16\s*mg\s+total/i, `Round ${rId} should not specify 16 mg total`);
+    }
+  });
+
   it("sub-topic categories cover all 53 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);

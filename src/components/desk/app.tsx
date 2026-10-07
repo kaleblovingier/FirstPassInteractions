@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
@@ -59,8 +59,6 @@ import { MetaboliteCard } from "./metabolites";
 import { Paywall } from "./paywall";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import { CheckoutDrawer, PlansPage } from "./plans";
-import { Foundry } from "./foundry";
-import { RoundsPage } from "./rounds";
 import { HostDelta } from "./delta";
 import { DeskFooter } from "./operator";
 import { severitySurface } from "./severity";
@@ -71,20 +69,33 @@ import { Formulary } from "./library";
 import { WashoutCard } from "./washout";
 import { PkExplorer } from "./pk";
 import { StripeReturn } from "./stripe-return";
-import { Dossier } from "./dossier";
 import { ClinicPanel } from "./clinic";
-import { CitesPage } from "./cites";
 import { WindowBriefing } from "./window";
 import { WindowExtras } from "./tray";
-import { ClinicalBoard } from "./clinical";
-import { StudyPage } from "./study";
-import { HelpPage } from "./help";
-import { CaseCompare } from "./compare";
 import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
-import { LabelPage } from "./label";
 import { PrescribingStrip } from "./pi";
-import { ClinicalPacketDialog } from "./clinical-packet-dialog";
+
+const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
+const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
+const Foundry = lazy(() => import("./foundry").then((m) => ({ default: m.Foundry })));
+const Dossier = lazy(() => import("./dossier").then((m) => ({ default: m.Dossier })));
+const HelpPage = lazy(() => import("./help").then((m) => ({ default: m.HelpPage })));
+const RoundsPage = lazy(() => import("./rounds").then((m) => ({ default: m.RoundsPage })));
+const CaseCompare = lazy(() => import("./compare").then((m) => ({ default: m.CaseCompare })));
+const LabelPage = lazy(() => import("./label").then((m) => ({ default: m.LabelPage })));
+const CitesPage = lazy(() => import("./cites").then((m) => ({ default: m.CitesPage })));
+const ClinicalPacketDialog = lazy(() =>
+  import("./clinical-packet-dialog").then((m) => ({ default: m.ClinicalPacketDialog })),
+);
+
+function DeskFallback({ label = "Loading desk view…" }: { label?: string }) {
+  return (
+    <div role="status" className="py-8 text-center text-xs text-muted">
+      {label}
+    </div>
+  );
+}
 import { AddictionSafetyBanner } from "./safety-banner";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 
@@ -354,23 +365,37 @@ export function DeskApp() {
         {view === "plans" ? (
           <PlansPage />
         ) : view === "foundry" ? (
-          <Foundry />
+          <Suspense fallback={<DeskFallback />}>
+            <Foundry />
+          </Suspense>
         ) : view === "rounds" ? (
-          <RoundsPage />
+          <Suspense fallback={<DeskFallback />}>
+            <RoundsPage />
+          </Suspense>
         ) : view === "study" ? (
-          <StudyPage />
+          <Suspense fallback={<DeskFallback />}>
+            <StudyPage />
+          </Suspense>
         ) : view === "compare" ? (
-          <CaseCompare
-            pro={pro}
-            onUnlock={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}
-            onOpenCase={(sample) => loadSample(sample.id, null)}
-          />
+          <Suspense fallback={<DeskFallback />}>
+            <CaseCompare
+              pro={pro}
+              onUnlock={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}
+              onOpenCase={(sample) => loadSample(sample.id, null)}
+            />
+          </Suspense>
         ) : view === "cites" ? (
-          <CitesPage />
+          <Suspense fallback={<DeskFallback />}>
+            <CitesPage />
+          </Suspense>
         ) : view === "label" ? (
-          <LabelPage />
+          <Suspense fallback={<DeskFallback />}>
+            <LabelPage />
+          </Suspense>
         ) : view === "help" ? (
-          <HelpPage />
+          <Suspense fallback={<DeskFallback />}>
+            <HelpPage />
+          </Suspense>
         ) : view === "atlas" ? (
           pro ? (
             <EnzymeAtlas />
@@ -494,8 +519,12 @@ export function DeskApp() {
                   <WindowBriefing ids={selected} host={host} report={report} />
                   <PrescribingStrip ids={selected} />
                   <ClinicPanel ids={selected} host={host} />
-                  <ClinicalBoard ids={selected} host={host} />
-                  <Dossier ids={selected} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+                    <ClinicalBoard ids={selected} host={host} />
+                  </Suspense>
+                  <Suspense fallback={<DeskFallback />}>
+                    <Dossier ids={selected} host={host} />
+                  </Suspense>
                   {report.findings.length > 0 ? (
                     <>
                       <RiskBanner
@@ -553,7 +582,9 @@ export function DeskApp() {
                   <WindowBriefing ids={selected} host={host} report={report} />
                   <PrescribingStrip ids={selected} />
                   <ClinicPanel ids={selected} host={host} />
-                  <ClinicalBoard ids={selected} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+                    <ClinicalBoard ids={selected} host={host} />
+                  </Suspense>
                   <button
                     type="button"
                     onClick={() => setView("study")}
@@ -583,7 +614,9 @@ export function DeskApp() {
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
                   )}
-                  <Dossier ids={selected} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+                    <Dossier ids={selected} host={host} />
+                  </Suspense>
                   <PkExplorer drugs={hostDrugs} host={host} />
                   {pro ? (
                     <MetaboliteCard ids={selected} />
@@ -639,15 +672,19 @@ export function DeskApp() {
       </main>
       <DeskFooter />
       <CheckoutDrawer />
-      <ClinicalPacketDialog
-        open={signOffOpen}
-        onClose={() => setSignOffOpen(false)}
-        selected={selected}
-        host={host}
-        findings={report.findings}
-        doses={doses}
-        onOpenHelp={() => setView("help")}
-      />
+      <Suspense fallback={null}>
+        {signOffOpen ? (
+          <ClinicalPacketDialog
+            open={signOffOpen}
+            onClose={() => setSignOffOpen(false)}
+            selected={selected}
+            host={host}
+            findings={report.findings}
+            doses={doses}
+            onOpenHelp={() => setView("help")}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 }

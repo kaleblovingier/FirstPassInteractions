@@ -20,6 +20,7 @@ import {
   STUDY_PILES,
   CLINICAL_TOPICS,
   cardsFor,
+  clinicalCards,
   pileOf,
   type ClinicalTopic,
   type StudyCard,
@@ -153,6 +154,17 @@ export function StudyPage() {
   );
 
   const leadHeadline = findings[0]?.headline ?? null;
+  const clinicalAllCards = useMemo(() => clinicalCards(), []);
+  const clinicalTopicStats = useMemo(() => {
+    return CLINICAL_TOPICS.map((t) => {
+      const cards = t.id === "all" ? clinicalAllCards : clinicalAllCards.filter((c) => c.topic === t.id);
+      const got = cards.filter((c) => marks[c.id] === "got").length;
+      const review = cards.filter((c) => marks[c.id] === "miss").length;
+      const unseen = cards.length - got - review;
+      return { topic: t, got, review, unseen, total: cards.length };
+    });
+  }, [clinicalAllCards, marks]);
+
   const source = useMemo(() => {
     const raw = cardsFor(lane, selected, findings);
     if (lane === "clinical" && clinicalTopic !== "all") {
@@ -483,23 +495,69 @@ export function StudyPage() {
       </div>
 
       {lane === "clinical" ? (
-        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Clinical topics">
-          {CLINICAL_TOPICS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setClinicalTopic(t.id)}
-              aria-pressed={clinicalTopic === t.id}
-              className={cn(
-                "h-8 rounded-full px-3 text-xs font-medium",
-                clinicalTopic === t.id
-                  ? "bg-accent text-accent-foreground"
-                  : "bg-bg-sunken text-muted hover:text-fg",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="space-y-2.5">
+          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Clinical topics">
+            {CLINICAL_TOPICS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setClinicalTopic(t.id)}
+                aria-pressed={clinicalTopic === t.id}
+                className={cn(
+                  "h-8 rounded-full px-3 text-xs font-medium",
+                  clinicalTopic === t.id
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-bg-sunken text-muted hover:text-fg",
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div
+            className="flex flex-wrap items-center gap-1.5 rounded-lg bg-surface p-2.5 shadow-[var(--shadow-border)] text-xs"
+            role="region"
+            aria-label="Clinical topic progress strip"
+          >
+            <div className="flex w-full items-center justify-between px-0.5 pb-0.5 text-[11px] font-mono uppercase tracking-wider text-muted">
+              <span>Topic progress</span>
+              <span className="flex items-center gap-1 text-[10px]">
+                <span className="text-ok font-medium">got</span>
+                <span className="text-subtle">/</span>
+                <span className="text-warn font-medium">review</span>
+                <span className="text-subtle">/</span>
+                <span className="text-subtle">unseen</span>
+              </span>
+            </div>
+            {clinicalTopicStats.map(({ topic, got, review, unseen, total }) => {
+              const active = clinicalTopic === topic.id;
+              return (
+                <button
+                  key={topic.id}
+                  type="button"
+                  onClick={() => setClinicalTopic(topic.id)}
+                  aria-pressed={active}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
+                    active
+                      ? "bg-bg-sunken font-medium text-fg ring-1 ring-accent"
+                      : "bg-bg-sunken/60 text-muted hover:bg-bg-sunken hover:text-fg",
+                  )}
+                  title={`${topic.label}: ${got} got, ${review} review, ${unseen} unseen (${total} total)`}
+                >
+                  <span className={active ? "font-medium text-fg" : "text-fg"}>{topic.shortLabel}</span>
+                  <span className="font-mono text-[11px] tabular-nums">
+                    <span className="text-ok font-medium">{got}</span>
+                    <span className="text-subtle">/</span>
+                    <span className="text-warn font-medium">{review}</span>
+                    <span className="text-subtle">/</span>
+                    <span className="text-subtle">{unseen}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       ) : null}
 

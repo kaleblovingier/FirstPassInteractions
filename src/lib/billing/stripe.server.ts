@@ -65,6 +65,57 @@ export function issuedFor(plan: string, interval: string): IssuedPlan {
   return "pro";
 }
 
+export type ValidatedPaidSessionResult =
+  | {
+      ok: true;
+      plan: Exclude<PlanId, "free">;
+      interval: Interval;
+      issued: IssuedPlan;
+    }
+  | {
+      ok: false;
+      reason: string;
+    };
+
+export function validatePaidSession(
+  session: any,
+  expectedPriceCents?: number,
+): ValidatedPaidSessionResult {
+  if (!session || typeof session !== "object") {
+    return { ok: false, reason: "Session is missing or invalid." };
+  }
+  if (session.metadata?.product !== "firstpass") {
+    return { ok: false, reason: "That session is not a FirstPass license." };
+  }
+  if (session.payment_status !== "paid") {
+    return {
+      ok: false,
+      reason: "Payment has not cleared yet. Refresh after the receipt, or write if it stalls.",
+    };
+  }
+  if (typeof session.currency !== "string" || session.currency.toLowerCase() !== "usd") {
+    return { ok: false, reason: "Invalid currency. FirstPass licenses require USD." };
+  }
+  if (typeof expectedPriceCents === "number") {
+    if (session.amount_total !== expectedPriceCents) {
+      return {
+        ok: false,
+        reason: `Amount mismatch: expected ${expectedPriceCents} cents, got ${session.amount_total}.`,
+      };
+    }
+  }
+  const plan = session.metadata?.plan;
+  if (plan !== "pro" && plan !== "lab") {
+    return { ok: false, reason: "Invalid plan in session metadata." };
+  }
+  const interval = session.metadata?.interval;
+  if (interval !== "month" && interval !== "year" && interval !== "life") {
+    return { ok: false, reason: "Invalid interval in session metadata." };
+  }
+  const issued = (session.metadata?.issued as IssuedPlan | undefined) || issuedFor(plan, interval);
+  return { ok: true, plan, interval, issued };
+}
+
 function asPlan(plan: string): Exclude<PlanId, "free"> {
   return plan === "lab" ? "lab" : "pro";
 }
@@ -120,8 +171,16 @@ async function sendLicenseMail(opts: { to: string; key: string; soldTo?: string 
 }
 
 /** Mint, stamp Stripe, receipt-email. Safe to call twice — same key, no double mail. */
-async function fulfillPaidSession(stripe: Stripe, session: Stripe.Checkout.Session) {
-  const issued = issuedFor(session.metadata?.plan ?? "pro", session.metadata?.interval ?? "life");
+async function fulfillPaidSession(
+  stripe: Stripe,
+  session: Stripe.Checkout.Session,
+  expectedPriceCents?: number,
+) {
+  const valid = validatePaidSession(session, expectedPriceCents);
+  if (!valid.ok) {
+    return { ok: false as const, reason: valid.reason };
+  }
+  const issued = issuedFor(valid.plan, valid.interval);
   const tagged = (session.metadata?.issued as IssuedPlan | undefined) ?? issued;
   const key = session.metadata?.license_key || mintKeyFromPaid(tagged, session.id);
   const verified = verifyKey(key);
@@ -246,7 +305,7 @@ export async function createCheckout(planRaw: string, intervalRaw: string, email
   }
 }
 
-export async function claimSession(sessionIdRaw: string) {
+export async function claimSession(sessionIdRaw: string, expectedPriceCents?: number) {
   const sessionId = sessionIdRaw.trim();
   if (!sessionId.startsWith("cs_")) {
     return { ok: false as const, reason: "Not a Stripe session." };
@@ -259,16 +318,11 @@ export async function claimSession(sessionIdRaw: string) {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["payment_intent"],
     });
-    if (session.metadata?.product !== "firstpass") {
-      return { ok: false as const, reason: "That session is not a FirstPass license." };
+    const valid = validatePaidSession(session, expectedPriceCents);
+    if (!valid.ok) {
+      return { ok: false as const, reason: valid.reason };
     }
-    if (session.payment_status !== "paid") {
-      return {
-        ok: false as const,
-        reason: "Payment has not cleared yet. Refresh after the receipt, or write if it stalls.",
-      };
-    }
-    return fulfillPaidSession(stripe, session);
+    return fulfillPaidSession(stripe, session, expectedPriceCents);
   } catch {
     return { ok: false as const, reason: "Could not read that Stripe session." };
   }
@@ -291,11 +345,11 @@ export async function listPaidSessions(): Promise<
         ...(startingAfter ? { starting_after: startingAfter } : {}),
       });
       for (const session of list.data) {
-        if (session.payment_status !== "paid") continue;
-        if (session.metadata?.product !== "firstpass") continue;
-        const issued = issuedFor(session.metadata.plan ?? "pro", session.metadata.interval ?? "life");
-        const tagged = (session.metadata.issued as IssuedPlan | undefined) ?? issued;
-        const key = session.metadata.license_key || mintKeyFromPaid(tagged, session.id);
+        const valid = validatePaidSession(session);
+        if (!valid.ok) continue;
+        const issued = issuedFor(valid.plan, valid.interval);
+        const tagged = (session.metadata?.issued as IssuedPlan | undefined) ?? issued;
+        const key = session.metadata?.license_key || mintKeyFromPaid(tagged, session.id);
         rows.push({
           sessionId: session.id,
           email: sessionEmail(session),
@@ -304,7 +358,7 @@ export async function listPaidSessions(): Promise<
           plan: tagged,
           amount: (session.amount_total ?? 0) / 100,
           paidAt: session.created ? new Date(session.created * 1000).toISOString() : "",
-          mailed: session.metadata.license_mailed === "1",
+          mailed: session.metadata?.license_mailed === "1",
         });
       }
       if (!list.has_more || !list.data.length) break;
@@ -341,7 +395,8 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
     if (session.payment_status === "paid") {
       try {
         session = await stripe.checkout.sessions.retrieve(session.id, { expand: ["payment_intent"] });
-        if (session.metadata?.product === "firstpass") {
+        const valid = validatePaidSession(session);
+        if (valid.ok) {
           await fulfillPaidSession(stripe, session);
         }
       } catch {
