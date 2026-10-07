@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -379,6 +379,14 @@ function CompoundsShelf() {
   const [family, setFamily] = useState<FamilyId>("all");
   const [shelf, setShelf] = useState("");
   const [q, setQ] = useState("");
+  const libraryShelf = useDesk((s) => s.libraryShelf);
+  useEffect(() => {
+    if (!libraryShelf) return;
+    setFamily("all");
+    setQ("");
+    setShelf(libraryShelf);
+    useDesk.setState({ libraryShelf: "" });
+  }, [libraryShelf]);
 
   const inFamily = useMemo(
     () => DRUGS.filter((d) => family === "all" || familyOf(d) === family),
@@ -391,12 +399,23 @@ function CompoundsShelf() {
       if (!d.cls) continue;
       map.set(d.cls, (map.get(d.cls) ?? 0) + 1);
     }
-    return [...map.entries()]
+    const all = [...map.entries()]
       .filter(([, n]) => n > 1)
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-      .slice(0, 14)
       .map(([cls, n]) => ({ cls, n }));
-  }, [inFamily]);
+    const needle = q.trim().toLowerCase();
+    const matched = needle ? all.filter((row) => row.cls.toLowerCase().includes(needle)) : [];
+    const picked = shelf ? all.filter((row) => row.cls === shelf) : [];
+    const seen = new Set<string>();
+    const out: { cls: string; n: number }[] = [];
+    for (const row of [...matched, ...picked, ...all.slice(0, 12)]) {
+      if (seen.has(row.cls)) continue;
+      seen.add(row.cls);
+      out.push(row);
+      if (out.length >= 16) break;
+    }
+    return out;
+  }, [inFamily, q, shelf]);
 
   const shelfLine = useMemo(() => {
     if (!shelf) return "";
@@ -409,10 +428,14 @@ function CompoundsShelf() {
         tally.set(key, (tally.get(key) ?? 0) + 1);
       }
     }
-    const top = [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+    const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const top = ranked[0];
     if (!top || top[1] < 2)
       return `${members.length} on the ${shelf} shelf. No shared enzyme role on this map. Not a collision.`;
-    return `${top[1]} of ${members.length} on the ${shelf} shelf carry ${top[0]}. Not a collision.`;
+    const second = ranked[1];
+    const next =
+      second && second[0] !== top[0] && second[1] >= 2 ? ` Next: ${second[1]} carry ${second[0]}.` : "";
+    return `${top[1]} of ${members.length} on the ${shelf} shelf carry ${top[0]}.${next} Not a collision.`;
   }, [inFamily, shelf]);
 
   const rows = useMemo(() => {
@@ -484,7 +507,7 @@ function CompoundsShelf() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Filter by name, brand, alias, or enzyme (CYP)…"
+          placeholder="Filter by name, brand, class, or enzyme…"
           aria-label="Filter the shelf"
           className="min-h-[44px] h-12 w-full rounded-lg bg-surface-2 pl-10 pr-4 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         />

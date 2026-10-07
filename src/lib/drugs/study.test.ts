@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { DRUG_BY_ID } from "./catalog";
+import { FDA_GRADES } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
 import {
   STUDY_LANES,
@@ -15,7 +16,7 @@ import {
 describe("study learning tools", () => {
   it("enzyme map asks the row words back", () => {
     const cards = cardsFor("cyp", [], []);
-    const ids = ["cyp-arrow-inhibit", "cyp-arrow-induce", "cyp-arrow-prodrug", "cyp-arrow-blank", "cyp-arrow-shelf", "cyp-arrow-victim"];
+    const ids = ["cyp-arrow-inhibit", "cyp-arrow-induce", "cyp-arrow-prodrug", "cyp-arrow-blank", "cyp-arrow-shelf", "cyp-arrow-victim", "cyp-arrow-moderate", "cyp-arrow-weak"];
     for (const id of ids) {
       const card = cards.find((c) => c.id === id);
       assert.ok(card, id);
@@ -23,8 +24,29 @@ describe("study learning tools", () => {
       assert.ok(card.choices && card.choices.some((choice) => choice.id === card.correct));
       assert.equal(card.drugIds.length, 0);
     }
+    const moderate = cards.find((c) => c.id === "cyp-arrow-moderate");
+    const weak = cards.find((c) => c.id === "cyp-arrow-weak");
+    assert.equal(
+      moderate?.choices?.find((choice) => choice.id === moderate.correct)?.label,
+      FDA_GRADES.inhibitor.moderate.fold,
+    );
+    assert.equal(
+      weak?.choices?.find((choice) => choice.id === weak.correct)?.label,
+      FDA_GRADES.inhibitor.weak.fold,
+    );
     const roles = cards.filter((c) => c.id.startsWith("cyp-CYP3A4-inhibitor-"));
     assert.ok(roles.length >= 1 && roles.length <= 3);
+  });
+
+  it("class shelf cards ask the most common enzyme role", () => {
+    const cards = cardsFor("cyp", [], []).filter((c) => c.id.startsWith("cyp-shelf-"));
+    assert.ok(cards.length >= 1 && cards.length <= 8);
+    for (const card of cards) {
+      assert.equal(card.choices?.length, 4);
+      assert.ok(card.choices?.some((choice) => choice.id === card.correct));
+      assert.equal(card.drugIds.length, 0);
+      assert.ok(card.answer.includes("Not a milligram."));
+    }
   });
 
   it("includes clinical lane in STUDY_LANES", () => {

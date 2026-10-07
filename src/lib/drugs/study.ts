@@ -256,7 +256,7 @@ export function cypCards(): StudyCard[] {
     });
   }
 
-  return [...out, ...directionCards()];
+  return [...out, ...directionCards(), ...shelfCards()];
 }
 
 function directionCards(): StudyCard[] {
@@ -353,8 +353,91 @@ function directionCards(): StudyCard[] {
       ],
       correct: "minor",
     },
+    {
+      id: "cyp-arrow-moderate",
+      kicker: "Direction",
+      title: "Moderate inhibitor",
+      prompt: "The row says moderate inhibitor. The fold is already stored.",
+      ask: "What does FDA call a moderate inhibitor?",
+      answer: `FDA calls a moderate inhibitor ${FDA_GRADES.inhibitor.moderate.fold}. Not a milligram.`,
+      choices: [
+        { id: "moderate", label: FDA_GRADES.inhibitor.moderate.fold },
+        { id: "strong", label: FDA_GRADES.inhibitor.strong.fold },
+        { id: "weak", label: FDA_GRADES.inhibitor.weak.fold },
+        { id: "mg", label: "A milligram change" },
+      ],
+      correct: "moderate",
+    },
+    {
+      id: "cyp-arrow-weak",
+      kicker: "Direction",
+      title: "Weak inhibitor",
+      prompt: "The row says weak inhibitor. The fold is already stored.",
+      ask: "What does FDA call a weak inhibitor?",
+      answer: `FDA calls a weak inhibitor ${FDA_GRADES.inhibitor.weak.fold}. Not a milligram.`,
+      choices: [
+        { id: "weak", label: FDA_GRADES.inhibitor.weak.fold },
+        { id: "strong", label: FDA_GRADES.inhibitor.strong.fold },
+        { id: "moderate", label: FDA_GRADES.inhibitor.moderate.fold },
+        { id: "mg", label: "A milligram change" },
+      ],
+      correct: "weak",
+    },
   ];
   return cards.map((card) => ({ ...card, lane: "cyp" as const, drugIds: [] }));
+}
+
+function shelfSlug(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+/** Most common enzyme role on a class shelf. Counted from the catalog. Not a collision. */
+function shelfCards(): StudyCard[] {
+  const byClass = new Map<string, Drug[]>();
+  for (const d of DRUGS) {
+    if (d.kind !== "drug") continue;
+    const list = byClass.get(d.cls);
+    if (list) list.push(d);
+    else byClass.set(d.cls, [d]);
+  }
+
+  const shelves: { cls: string; n: number; ranked: { role: string; count: number }[] }[] = [];
+  for (const [cls, drugs] of byClass) {
+    if (drugs.length < 6) continue;
+    if (/combo/i.test(cls) || cls.length > 36) continue;
+    const tally = new Map<string, number>();
+    for (const d of drugs) {
+      for (const e of d.enzymes) {
+        const role = e.kind === "substrate" ? `${e.enzyme} substrate` : `${e.strength} ${e.enzyme} ${e.kind}`;
+        tally.set(role, (tally.get(role) ?? 0) + 1);
+      }
+    }
+    const ranked = [...tally.entries()]
+      .map(([role, count]) => ({ role, count }))
+      .sort((a, b) => b.count - a.count || a.role.localeCompare(b.role));
+    if (ranked.length < 4 || ranked[0].count < 2) continue;
+    if (!/CYP|P-gp/.test(ranked[0].role)) continue;
+    shelves.push({ cls, n: drugs.length, ranked });
+  }
+
+  shelves.sort((a, b) => b.n - a.n || a.cls.localeCompare(b.cls));
+
+  return shelves.slice(0, 8).map(({ cls, n, ranked }) => {
+    const winner = ranked[0];
+    const choices = ranked.slice(0, 4).map((row) => ({ id: shelfSlug(row.role), label: row.role }));
+    return {
+      id: `cyp-shelf-${shelfSlug(cls)}`,
+      lane: "cyp" as const,
+      kicker: "Class shelf",
+      title: cls,
+      prompt: `${n} drugs are on the ${cls} shelf on this map.`,
+      ask: "Which enzyme role is the most common on this shelf?",
+      answer: `${winner.count} of ${n} carry ${winner.role}. Same shelf is not a collision and not a clearance. Not a milligram.`,
+      choices,
+      correct: shelfSlug(winner.role),
+      drugIds: [],
+    };
+  });
 }
 
 export function drillCards(): StudyCard[] {

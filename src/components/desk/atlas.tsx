@@ -30,6 +30,12 @@ export function EnzymeAtlas() {
     ? (atlasEnzyme as Enzyme)
     : "CYP3A4";
   const bucket = index[enzyme];
+  const strongInhibitors = bucket.inhibitors.filter((drug) =>
+    drug.enzymes.some(
+      (role) => role.enzyme === enzyme && role.kind === "inhibitor" && role.strength === "strong",
+    ),
+  ).length;
+  const atlasMapLine = `On this map: ${bucket.substrates.length} substrates, ${bucket.inhibitors.length} inhibitors, ${bucket.inducers.length} inducers.${strongInhibitors > 0 ? ` ${strongInhibitors} of the inhibitors are strong.` : ""} Not a clearance.`;
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -147,29 +153,32 @@ export function EnzymeAtlas() {
           </div>
         )
       ) : (
-        <div className="grid gap-3 lg:grid-cols-3">
-          <AtlasColumn
-            role="substrate"
-            drugs={bucket.substrates}
-            selected={selected}
-            onAdd={add}
-            enzyme={enzyme}
-          />
-          <AtlasColumn
-            role="inhibitor"
-            drugs={bucket.inhibitors}
-            selected={selected}
-            onAdd={add}
-            enzyme={enzyme}
-          />
-          <AtlasColumn
-            role="inducer"
-            drugs={bucket.inducers}
-            selected={selected}
-            onAdd={add}
-            enzyme={enzyme}
-          />
-        </div>
+        <>
+          <p className="text-sm leading-relaxed text-muted">{atlasMapLine}</p>
+          <div className="grid gap-3 lg:grid-cols-3">
+            <AtlasColumn
+              role="substrate"
+              drugs={bucket.substrates}
+              selected={selected}
+              onAdd={add}
+              enzyme={enzyme}
+            />
+            <AtlasColumn
+              role="inhibitor"
+              drugs={bucket.inhibitors}
+              selected={selected}
+              onAdd={add}
+              enzyme={enzyme}
+            />
+            <AtlasColumn
+              role="inducer"
+              drugs={bucket.inducers}
+              selected={selected}
+              onAdd={add}
+              enzyme={enzyme}
+            />
+          </div>
+        </>
       )}
       <p className="text-[11px] leading-relaxed text-subtle">{ATLAS_FOOTER}</p>
     </div>

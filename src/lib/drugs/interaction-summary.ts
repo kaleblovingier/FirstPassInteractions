@@ -1,3 +1,5 @@
+import { FDA_GRADES } from "./cyp-protocol";
+
 export type InteractionSummaryLike = {
   headline?: string;
   effect?: string;
@@ -5,10 +7,17 @@ export type InteractionSummaryLike = {
   clinical?: string;
 };
 
+function fdaOpener(mechanism: string): "strong" | "moderate" | "weak" | undefined {
+  const first = mechanism.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+  if (first === "strong" || first === "moderate" || first === "weak") return first;
+  return undefined;
+}
+
 export function plainLanguageSummary(finding: InteractionSummaryLike): string {
   const headline = (finding.headline ?? "This interaction").replace(/ × /g, " and ");
   const effect = (finding.effect ?? "").toLowerCase();
-  const mechanism = (finding.mechanism ?? "").toLowerCase();
+  const rawMechanism = finding.mechanism ?? "";
+  const mechanism = rawMechanism.toLowerCase();
   const clinical = (finding.clinical ?? "").toLowerCase();
 
   let outcome = "change how much drug is in the body and how strongly it acts";
@@ -43,7 +52,11 @@ export function plainLanguageSummary(finding: InteractionSummaryLike): string {
     outcome = "make both drugs compete for the same pathway and shift levels unexpectedly";
   }
 
-  return `In plain English: ${headline} can ${outcome}.`;
+  const summary = `In plain English: ${headline} can ${outcome}.`;
+  const grade = fdaOpener(rawMechanism);
+  if (!grade || (!mechanism.includes("inhib") && !mechanism.includes("induc"))) return summary;
+  const kind = mechanism.includes("induc") ? "inducer" : "inhibitor";
+  return `${summary} FDA calls a ${grade} ${kind} ${FDA_GRADES[kind][grade].fold}. Not a milligram.`;
 }
 
 /** One scan line for a clinician: enzyme, then the direction already on the finding. */

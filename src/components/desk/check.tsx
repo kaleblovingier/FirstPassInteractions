@@ -170,9 +170,11 @@ function extraNote(rows: Finding[]) {
 
 function othersOnShelf(ids: string[], cls: string) {
   const on = new Set(ids);
-  return DRUGS.filter((d) => d.kind === "drug" && d.cls === cls && !on.has(d.id))
+  const names = DRUGS.filter((d) => d.kind === "drug" && d.cls === cls && !on.has(d.id))
     .map((d) => d.name)
     .sort((a, b) => a.localeCompare(b));
+  const single = names.filter((name) => !name.includes("–") && !name.includes(" + "));
+  return single.length ? single : names;
 }
 
 function gradeOf(f: Finding) {
@@ -187,6 +189,11 @@ function foldLine(f: Finding) {
   const kind = f.tags.includes("inducer") ? "inducer" : f.tags.includes("inhibitor") ? "inhibitor" : "";
   if (!kind) return "";
   return FDA_GRADES[kind][grade].fold;
+}
+
+function optionalFold(f: Finding): { fold?: string } {
+  const fold = foldLine(f);
+  return fold ? { fold } : {};
 }
 
 function sourceOf(f: Finding) {
@@ -319,6 +326,7 @@ export function CheckBoard({
         : "",
     watch: leadWatch,
     source: leadSource,
+    fold: lead ? foldLine(lead) : "",
     hands: ids.some((id) => {
       const flags = DRUG_BY_ID[id]?.pd ?? [];
       return flags.includes("opioid") || flags.includes("partial-opioid");
@@ -333,6 +341,15 @@ export function CheckBoard({
     quiet: quietPairs.map((p) => `${p.title}: ${p.reason}`),
     food: foodPairs.slice(0, 4).map((g) => `${g.title}: ${directionLine(g.rows)}`),
   };
+  const contents = [
+    `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
+    shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
+    food.length ? `${food.length} food beside` : "",
+    quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ")
+    .concat(". Not a clearance.");
 
   return (
     <section className="space-y-3 rounded-xl bg-surface px-4 py-4 shadow-[var(--shadow-border)] sm:px-5 sm:py-5">
@@ -342,6 +359,9 @@ export function CheckBoard({
           <h2 className="mt-1 font-serif text-2xl tracking-tight text-fg">
             {lead ? verdictTitle(lead) : "No interaction found in this map."}
           </h2>
+          {ids.length > 0 ? (
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-muted">{contents}</p>
+          ) : null}
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
             {foodOutranks
               ? "The main concern shown is a food or drink, listed below the names. This is an educational map, not a dose tool — product labeling and a clinician still guide care."
@@ -411,6 +431,7 @@ export function CheckBoard({
                   severity: g.rows[0].severity,
                   findingId: g.rows[0].id,
                   source: sourceOf(g.rows[0]),
+                  ...optionalFold(g.rows[0]),
                 }))
               : []
           }
@@ -422,6 +443,7 @@ export function CheckBoard({
             severity: g.rows[0].severity,
             findingId: g.rows[0].id,
             source: sourceOf(g.rows[0]),
+            ...optionalFold(g.rows[0]),
           }))}
           besideHidden={Math.max(0, foodPairs.length - 4)}
           hosts={lanes
@@ -435,6 +457,7 @@ export function CheckBoard({
                 severity: top.severity,
                 findingId: `${lane.id}-${top.id}`,
                 source: sourceOf(top),
+                ...optionalFold(top),
               };
             })
             .filter((cell): cell is NonNullable<typeof cell> => Boolean(cell))
@@ -626,6 +649,7 @@ type GridCell = {
   severity: Severity;
   findingId: string;
   source?: { label: string; href: string };
+  fold?: string;
 };
 
 function MappedCell({
@@ -646,6 +670,9 @@ function MappedCell({
         {tag ? <span className="ml-1 font-mono text-[10px] uppercase tracking-wide text-subtle">{tag}</span> : null}
         <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
         <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
+        {cell.fold ? (
+          <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.fold} Not a milligram.</span>
+        ) : null}
       </button>
       {cell.source ? (
         <a
@@ -678,6 +705,7 @@ function PairGrid({
   shelves?: { key: string; title: string; line: string; also?: string }[];
   onOpen: (id: string) => void;
 }) {
+  const openShelf = useDesk((s) => s.openShelf);
   if (hits.length + blanks.length < 2 && beside.length === 0 && hosts.length === 0 && shelves.length === 0) return null;
   const pairs = hits.length + blanks.length >= 2;
   return (
@@ -717,6 +745,13 @@ function PairGrid({
                 <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
                 <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
                 {cell.also ? <span className="mt-1 block text-[11px] leading-snug text-subtle">{cell.also}</span> : null}
+                <button
+                  type="button"
+                  onClick={() => openShelf(cell.key)}
+                  className="mt-2 h-10 text-xs font-medium text-accent underline-offset-2 hover:underline"
+                >
+                  Open the {cell.key} shelf
+                </button>
               </div>
             ))}
           </div>
@@ -885,6 +920,8 @@ function CheckRow({
 }) {
   const a = actors(finding);
   const basis = basisFor(finding).slice(0, 2);
+  const setAtlasEnzyme = useDesk((s) => s.setAtlasEnzyme);
+  const enzyme = finding.enzymes.length === 1 ? finding.enzymes[0] : "";
   return (
     <li className="rounded-lg bg-bg-sunken">
       <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-start gap-3 px-3 py-3 text-left">
@@ -934,6 +971,15 @@ function CheckRow({
           </p>
           {foldLine(finding) ? (
             <p className="text-xs leading-relaxed text-muted">FDA fold: {foldLine(finding)}. Not a milligram.</p>
+          ) : null}
+          {enzyme ? (
+            <button
+              type="button"
+              onClick={() => setAtlasEnzyme(enzyme)}
+              className="h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+            >
+              Open {enzyme} in the atlas
+            </button>
           ) : null}
           <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Sources to check</p>
           <div className="flex flex-wrap gap-2">

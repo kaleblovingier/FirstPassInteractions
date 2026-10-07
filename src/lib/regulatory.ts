@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.32.0",
+  version: "1.38.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.32.0",
+  buildId: "FP-SW-1.38.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -51,7 +51,12 @@ export const INDICATIONS = [
   "Naming the opioid or partial opioid that opened the public lines. A same-shelf cell names two drugs in one class and says it is not a collision. On a row with one enzyme, the chip includes the perpetrator grade already on that row. The three readers are told the public lines are not a finding.",
   "On Learn, defining the words already on a check row, and asking them back on the enzyme map: direction, prodrug, minor pathway, blank cell, and same shelf. Up to three strong examples per enzyme role. Not an exam key and not a milligram.",
   "On an open CYP row, naming the FDA fold already stored for that perpetrator grade. A one-day preview counts down in hours once less than a day remains. The fold is not a milligram.",
-  "Class shelves on the formulary, counted from the catalog. A selected class states the most common enzyme role already mapped, and says that is not a collision. A same-shelf cell can name others in that class who are not on the desk, without suggesting they be added.",
+  "Class shelves on the formulary, counted from the catalog. A selected class states the most common enzyme role already mapped, and says that is not a collision. Typing a class pulls that shelf forward even when it is not one of the largest. A same-shelf cell names single-ingredient classmates who are not on the desk, without suggesting they be added.",
+  "On a mapped grid cell, showing the FDA fold already stored for that perpetrator grade. Learn asks which enzyme role is most common on eight class shelves, counted from the catalog, and can open those shelves. The fold and the count are not a milligram.",
+  "The atlas counts substrates, inhibitors, and inducers already stored for the selected enzyme, and how many of those inhibitors are strong. A plain-language row restates the FDA fold when the mechanism already names a strong, moderate, or weak inhibitor or inducer. An enzyme header on the desk map opens that enzyme in the atlas. None of these is a milligram or a clearance.",
+  "A same-shelf cell can open that class on the formulary. An open row with one enzyme can open that enzyme in the atlas. Neither jump adds a drug or picks a milligram.",
+  "Learn asks the FDA fold already stored for a moderate inhibitor and for a weak inhibitor. A class shelf also names the second-most-common enzyme role when at least two drugs carry it. A revealed shelf card can open that shelf, and a revealed direction card can open the atlas or the formulary. None of these is a milligram.",
+  "The check opens with a contents line: mapped rows, same-shelf groups, food beside the desk, and blank pairs. Each name on the desk shows its class. The enzyme map counts how many drugs on the tray touch each enzyme. The counts are not a clearance.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

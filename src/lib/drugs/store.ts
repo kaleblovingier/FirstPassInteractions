@@ -62,6 +62,8 @@ interface DeskState {
   previewUntil: number | null;
   /** True after a preview has been started on this browser. Not cleared by returning to free. */
   previewUsed: boolean;
+  /** Class name to open on the formulary. Not saved. */
+  libraryShelf: string;
   justActivated: boolean;
   hcpAck: boolean;
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
@@ -71,6 +73,7 @@ interface DeskState {
   load: (ids: string[], extras?: LoadExtras) => boolean;
   setView: (view: View) => void;
   setAtlasEnzyme: (id: string | null) => void;
+  openShelf: (cls: string) => void;
   setPhenotype: (enzyme: PhenotypeEnzyme, value: Metabolizer) => void;
   setSmoking: (smoking: boolean) => void;
   setKetamineRoute: (route: KetamineRoute) => void;
@@ -120,6 +123,7 @@ export const useDesk = create<DeskState>()(
       lifetime: false,
       previewUntil: null,
       previewUsed: false,
+      libraryShelf: "",
       justActivated: false,
       hcpAck: false,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
@@ -229,6 +233,7 @@ export const useDesk = create<DeskState>()(
         }
         set({ atlasEnzyme, view: "atlas" });
       },
+      openShelf: (cls) => set({ libraryShelf: cls, view: "library" }),
       setPhenotype: (enzyme, value) => {
         if (activePlan(get()) === "free") {
           get().openCheckout("lab", foundingGateCopy("host").reason, "life");

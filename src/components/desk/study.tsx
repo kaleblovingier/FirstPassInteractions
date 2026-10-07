@@ -331,6 +331,24 @@ export function StudyPage() {
       </section>
 
       <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Class shelves</p>
+        <h3 className="mt-2 font-serif text-xl tracking-tight text-fg">
+          The formulary groups a class before the desk does.
+        </h3>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+          A class shelf counts drugs that share a class on this map and names the most common enzyme role
+          already stored. Same class is not a collision and not a clearance.
+        </p>
+        <button
+          type="button"
+          onClick={() => setView("library")}
+          className="mt-4 h-10 rounded-full bg-ink px-3 text-xs font-medium text-bg"
+        >
+          Open the shelves
+        </button>
+      </section>
+
+      <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Phenoconversion</p>
@@ -933,10 +951,44 @@ function StudyCardView({
         <div className="mt-4 rounded-md bg-bg-sunken px-3 py-3">
           {card.choices && correct ? (
             <p className="text-sm font-medium text-fg">
-              {picked === card.correct ? "That role is on the map." : `Mapped answer: ${correct.label}`}
+              {picked === card.correct
+                ? card.id.startsWith("cyp-shelf-")
+                  ? "That role is on the map."
+                  : "That is the mapped answer."
+                : `Mapped answer: ${correct.label}`}
             </p>
           ) : null}
           <p className={cn("text-sm leading-relaxed text-fg", card.choices && correct && "mt-2")}>{card.answer}</p>
+          {card.id.startsWith("cyp-shelf-") ? (
+            <button
+              type="button"
+              className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+              onClick={() => useDesk.getState().openShelf(card.title)}
+            >
+              {`Open the ${card.title} shelf`}
+            </button>
+          ) : null}
+          {card.id === "cyp-arrow-shelf" ? (
+            <button
+              type="button"
+              className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+              onClick={() => useDesk.getState().setView("library")}
+            >
+              Open the formulary
+            </button>
+          ) : null}
+          {card.id === "cyp-arrow-inhibit" ||
+          card.id === "cyp-arrow-moderate" ||
+          card.id === "cyp-arrow-weak" ||
+          card.id === "cyp-arrow-induce" ? (
+            <button
+              type="button"
+              className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+              onClick={() => useDesk.getState().setView("atlas")}
+            >
+              Open the atlas
+            </button>
+          ) : null}
           {card.drugIds.length ? (
             <p className="mt-2 text-[11px] leading-relaxed text-subtle">
               {card.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" · ")}

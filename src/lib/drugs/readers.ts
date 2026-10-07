@@ -8,6 +8,7 @@ export type ReaderBrief = {
   clock: string;
   watch: string;
   source: string;
+  fold: string;
   hands: string;
   rows: { severity: string; line: string; why: string }[];
   quiet: string[];
@@ -48,6 +49,7 @@ export function sanitizeBrief(input: unknown): ReaderBrief {
     clock: clip(src.clock, 240),
     watch: clip(src.watch, 240),
     source: clip(src.source, 160),
+    fold: clip(src.fold, 160),
     hands: clip(src.hands, 240),
     rows,
     quiet,
