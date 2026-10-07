@@ -32,9 +32,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 88 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 96 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 88);
+    assert.equal(cards.length, 96);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -66,7 +66,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 88);
+    assert.equal(cards.length, 96);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -113,6 +113,9 @@ describe("study learning tools", () => {
       "r-ed-salicylate-zero-order-acidosis",
       "r-ed-loperamide-verapamil-overdose",
       "r-clinic-statin-cyclosporine-oatp1b1-rhabdo",
+      "r-ed-organophosphate-pralidoxime-atropine",
+      "r-icu-flecainide-toxicity-sodium-bicarb",
+      "r-clinic-clopidogrel-cyp2c19-pci-thrombosis",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -206,7 +209,7 @@ describe("study learning tools", () => {
     }
   });
 
-  it("sub-topic categories cover all 88 clinical cards with balanced distribution", () => {
+  it("sub-topic categories cover all 96 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);
 
@@ -308,7 +311,7 @@ describe("study learning tools", () => {
       "clin-methadone-fluconazole-qtc-3a4",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 88, "Total clinical cards must be exactly 88");
+    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
 
     for (const id of highYieldCardIds) {
       const card = cards.find((c) => c.id === id);
@@ -407,7 +410,7 @@ describe("study learning tools", () => {
       "clin-aspirin-platelet-covalent-acetylation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 88, "Total clinical cards must be exactly 88");
+    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
 
     for (const id of new7CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -519,7 +522,7 @@ describe("study learning tools", () => {
       "clin-sglt2-ketogenesis-glucagon",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 88, "Total clinical cards must be exactly 88");
+    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -655,7 +658,7 @@ describe("study learning tools", () => {
       "clin-pde5-cgmp-smooth-muscle-relaxation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 88, "Total clinical cards must be exactly 88");
+    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -780,6 +783,69 @@ describe("study learning tools", () => {
     assert.doesNotMatch(statRoundText, /prescribe\s+\d+\s*mg/i);
     assert.doesNotMatch(statRoundText, /dispense\s+\d+\s*mg/i);
     assert.doesNotMatch(statRoundText, /clinical decision support/i);
+  });
+
+  it("cardiac electrophysiology, toxidrome, and pharmacogenomics cards expand clinicalCards to 96 and verify non-prescriptive regulatory posture", () => {
+    const cards = clinicalCards();
+    assert.equal(cards.length, 96);
+
+    const targetCardIds = [
+      "clin-cardiac-phase0-ina-nav15-vaughan-williams",
+      "clin-cardiac-phase3-herg-ead-torsades",
+      "clin-cardiac-phase4-if-dad-digoxin",
+      "clin-tox-anticholinergic-vs-sympathomimetic",
+      "clin-tox-cyanide-hydroxocobalamin-complex-iv",
+      "clin-tox-organophosphate-ache-pralidoxime-aging",
+      "clin-pgx-cyp2c19-clopidogrel-stent-thrombosis",
+      "clin-pgx-hla-b5701-abacavir-f-pocket",
+    ];
+
+    for (const cardId of targetCardIds) {
+      const card = cards.find((c) => c.id === cardId);
+      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
+      assert.ok(card.correct, `Card ${cardId} must define correct`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
+
+      // Verify non-prescriptive posture
+      const text = `${card.prompt} ${card.ask} ${card.answer}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /clinical decision support/i);
+
+      // Verify catalog drugs
+      for (const dId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
+      }
+    }
+
+    // Verify the 3 new clinical rounds
+    const organoRound = ROUNDS.find((r) => r.id === "r-ed-organophosphate-pralidoxime-atropine");
+    assert.ok(organoRound, "Round 'r-ed-organophosphate-pralidoxime-atropine' must exist");
+    assert.equal(organoRound.setting, "ward");
+    assert.deepEqual(organoRound.drugIds, ["malathion", "atropine", "pralidoxime"]);
+    assert.match(organoRound.teach, /atropine/i);
+    assert.match(organoRound.teach, /pralidoxime|2-PAM/i);
+    assert.match(organoRound.teach, /chemical aging/i);
+
+    const flecRound = ROUNDS.find((r) => r.id === "r-icu-flecainide-toxicity-sodium-bicarb");
+    assert.ok(flecRound, "Round 'r-icu-flecainide-toxicity-sodium-bicarb' must exist");
+    assert.equal(flecRound.setting, "ward");
+    assert.deepEqual(flecRound.drugIds, ["flecainide", "sodium-bicarbonate"]);
+    assert.match(flecRound.teach, /use-dependence/i);
+    assert.match(flecRound.teach, /Nav1\.5/i);
+    assert.match(flecRound.teach, /sodium bicarbonate/i);
+
+    const clopRound = ROUNDS.find((r) => r.id === "r-clinic-clopidogrel-cyp2c19-pci-thrombosis");
+    assert.ok(clopRound, "Round 'r-clinic-clopidogrel-cyp2c19-pci-thrombosis' must exist");
+    assert.equal(clopRound.setting, "clinic");
+    assert.deepEqual(clopRound.drugIds, ["clopidogrel", "prasugrel", "ticagrelor"]);
+    assert.match(clopRound.teach, /CYP2C19/i);
+    assert.match(clopRound.teach, /bioactivation/i);
+    assert.match(clopRound.teach, /stent thrombosis/i);
+    assert.match(clopRound.teach, /CPIC/i);
   });
 });
 

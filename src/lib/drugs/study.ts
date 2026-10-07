@@ -504,6 +504,9 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-statin-oatp1b1-rhabdomyolysis": "cardio",
   "clin-gs-adenylyl-cyclase-pka-beta": "cardio",
   "clin-pde5-cgmp-smooth-muscle-relaxation": "cardio",
+  "clin-cardiac-phase0-ina-nav15-vaughan-williams": "cardio",
+  "clin-cardiac-phase3-herg-ead-torsades": "cardio",
+  "clin-cardiac-phase4-if-dad-digoxin": "cardio",
 
   // Endocrine & SGLT2
   "clin-steroid-equiv-potency": "endocrine",
@@ -570,6 +573,9 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-aspirin-zero-order-salicylate": "tox",
   "clin-anticholinergic-hyperthermia": "tox",
   "clin-loperamide-pgp-bbb-penetration": "tox",
+  "clin-tox-anticholinergic-vs-sympathomimetic": "tox",
+  "clin-tox-cyanide-hydroxocobalamin-complex-iv": "tox",
+  "clin-tox-organophosphate-ache-pralidoxime-aging": "tox",
 
   // Addiction Medicine & Harm Reduction
   "clin-bup-precip-pharmacology": "addiction",
@@ -591,6 +597,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   // CYP & Pharmacokinetics
   "clin-warfarin-bactrim-cyp2c9": "cyp",
   "clin-phenytoin-michaelis-menten": "cyp",
+  "clin-pgx-cyp2c19-clopidogrel-stent-thrombosis": "cyp",
+  "clin-pgx-hla-b5701-abacavir-f-pocket": "cyp",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -2438,6 +2446,238 @@ export function clinicalCards(): StudyCard[] {
       correct: "pde5-cgmp-breakdown-blockade-plus-sgc-stimulation",
       answer: "In vascular smooth muscle, endogenous nitric oxide (NO) released by endothelial cells diffuses into adjacent vascular smooth muscle cells and binds the heme moiety of soluble Guanylyl Cyclase (sGC), stimulating the synthesis of cyclic Guanosine Monophosphate (cGMP) from GTP. Elevated cGMP activates Protein Kinase G (PKG), which initiates several concerted vasodilatory actions: PKG activates Myosin Light Chain Phosphatase (MLCP) to dephosphorylate myosin regulatory light chains, halts intracellular calcium release by inhibiting IP3 receptors, stimulates SERCA to sequester calcium, and activates large-conductance calcium-activated potassium (BKCa) channels to hyperpolarize the sarcolemma. Under normal physiological conditions, cGMP signaling is rapidly terminated by Phosphodiesterase type 5 (PDE-5), which selectively hydrolyzes active cGMP into inactive 5'-GMP. Sildenafil is a potent, selective competitive inhibitor of PDE-5 that prevents cGMP degradation. When sildenafil is combined with exogenous organic nitrates (e.g., nitroglycerin, isosorbide mononitrate/dinitrate), a catastrophic pharmacological synergy occurs: nitrates massively accelerate cGMP production via continuous sGC activation, while sildenafil completely blocks its metabolic destruction. Intracellular cGMP accumulates to supranormal levels, provoking unrestricted PKG activation, total dephosphorylation of myosin light chains, and profound, uncompensated systemic arterial and venous vasodilation. Systemic vascular resistance drops precipitously and venous return plummets, resulting in life-threatening hypotension and coronary hypoperfusion that is often refractory to standard crystalloid resuscitation. Consequently, consensus ACC/AHA guidelines and FDA labeling strictly contraindicate organic nitrates within 24 hours of sildenafil administration.",
       drugIds: ["sildenafil", "nitroglycerin"],
+    },
+    {
+      id: "clin-cardiac-phase0-ina-nav15-vaughan-williams",
+      lane: "clinical",
+      kicker: "Cardiac Electrophysiology & Ion Channels",
+      title: "Phase 0 Fast Sodium Influx: Nav1.5 Dissociation Kinetics Across Vaughan Williams Classes",
+      prompt: "The cardiac ventricular action potential upstroke (Phase 0) is driven by rapid inward sodium current (INa) through voltage-gated Nav1.5 channels.",
+      ask: "How do the unbinding kinetics of Class IA, IB, and IC antiarrhythmics diverge, and why does Class IC (flecainide) exhibit marked use-dependent QRS widening?",
+      choices: [
+        {
+          id: "class-ic-slow-unbinding-accumulates-block",
+          label: "Class IC agents (flecainide) have very slow dissociation kinetics (tau > 10 s); at faster heart rates, channels remain blocked across successive beats (use-dependence), progressively depressing Phase 0 upstroke velocity and widening the QRS complex without altering repolarization",
+        },
+        {
+          id: "class-ib-slowest-dissociation-blocks-repolarization",
+          label: "Class IB agents (lidocaine) have the slowest dissociation kinetics of all classes, selectively blocking Phase 3 potassium channels and dramatically prolonging the QT interval at fast heart rates",
+        },
+        {
+          id: "class-ia-pure-calcium-channel-blockade",
+          label: "Class IA agents (procainamide) bypass Nav1.5 completely to block L-type calcium channels, causing use-dependent PR interval prolongation without affecting ventricular conduction velocity",
+        },
+        {
+          id: "all-classes-identical-dissociation-kinetics",
+          label: "All three subclasses dissociate within milliseconds, with QRS widening determined strictly by plasma protein binding rather than channel unbinding kinetics",
+        },
+      ],
+      correct: "class-ic-slow-unbinding-accumulates-block",
+      answer: "In ventricular myocardium, Phase 0 depolarization is mediated by fast inward sodium current (INa) conducted by Nav1.5 channels (SCN5A gene), driving rapid membrane upstroke (dV/dt max 200-400 V/s) from -90 mV to +30 mV. The Vaughan Williams classification subdivides sodium channel blockers by their channel binding/unbinding dissociation time constant (tau) and their secondary impact on repolarization: 1) Class IB (lidocaine, mexiletine) exhibits rapid dissociation (tau < 0.5 s), binding predominantly in inactivated states in ischemic/depolarized myocardium with unbinding complete during diastole, leaving QRS width unaffected at normal rates; 2) Class IA (procainamide, quinidine, disopyramide) exhibits intermediate kinetics (tau 1-5 s) with concurrent hERG potassium channel blockade, moderately slowing Phase 0 (QRS widening) and prolonging action potential duration (QT prolongation); 3) Class IC (flecainide, propafenone) exhibits remarkably slow dissociation kinetics (tau > 10-20 s). Because drug unbinding is so slow during diastole, higher heart rates allow insufficient time for channel dissociation between beats; blocked channels progressively accumulate with each excitation. This hallmark 'use-dependence' profoundly depresses Phase 0 upstroke velocity (dV/dt max), slowing intraventricular conduction velocity and causing progressive QRS widening and bundle branch distortion. In structural or ischemic heart disease, this slow conduction creates a potent substrate for fatal re-entrant ventricular tachycardias (the historic CAST trial warning).",
+      drugIds: ["flecainide", "lidocaine", "procainamide"],
+    },
+    {
+      id: "clin-cardiac-phase3-herg-ead-torsades",
+      lane: "clinical",
+      kicker: "Cardiac Electrophysiology & Arrhythmias",
+      title: "Phase 3 Rapid Repolarization: hERG / IKr Blockade, Early Afterdepolarizations & Torsades",
+      prompt: "Ventricular Phase 3 repolarization restores resting membrane potential primarily through rapid delayed rectifier potassium current (IKr).",
+      ask: "What biophysical sequence connects pharmacological hERG (IKr) inhibition to Early Afterdepolarizations (EADs) and pause-dependent Torsades de Pointes?",
+      choices: [
+        {
+          id: "herg-block-prolongs-plateau-cav12-window-reopens",
+          label: "hERG blockade diminishes outward IKr, prolonging Phase 2/3 plateau duration; this delayed repolarization allows voltage-gated L-type calcium channels (Cav1.2) to recover from inactivation and reopen in the 'window current' range (-30 to 0 mV), triggering depolarizing inward calcium spikes (EADs) that fire Torsades de Pointes",
+        },
+        {
+          id: "herg-block-drives-massive-sodium-potassium-pump-inversion",
+          label: "hERG inhibition directly reverses the Na+/K+ ATPase pump, causing massive intracellular sodium extrusion and extracellular potassium depletion that precipitates sudden ventricular fibrillation without QT prolongation",
+        },
+        {
+          id: "direct-stimulation-of-sarcoplasmic-ryanodine-release",
+          label: "hERG blockers cross into the sarcoplasmic reticulum and lock open RyR2 channels, causing delayed afterdepolarizations strictly during Phase 4 diastole without changing action potential duration",
+        },
+        {
+          id: "herg-block-selectively-slows-sa-nodal-pacemaker-firing",
+          label: "hERG channels exist exclusively in the sinoatrial node, so drug-induced block induces isolated sinus bradycardia without affecting ventricular repolarization or torsadogenic risk",
+        },
+      ],
+      correct: "herg-block-prolongs-plateau-cav12-window-reopens",
+      answer: "Phase 3 rapid repolarization of ventricular myocytes is primarily driven by outward potassium efflux through rapid delayed rectifier channels (IKr, encoded by KCNH2/hERG) and slow delayed rectifiers (IKs, KCNQ1). The hERG channel pore possesses unique aromatic amino acid residues (Tyr652 and Phe656) within its inner vestibule that permit promiscuous high-affinity binding of diverse therapeutic molecules (Class III antiarrhythmics like sotalol and dofetilide, psychotropics like haloperidol, antiemetics like ondansetron, and macrolides). When hERG is blocked, outward potassium repolarizing current collapses, markedly prolonging action potential duration (APD) and the surface ECG QT interval. As the plateau phase (Phase 2) and early Phase 3 are abnormally protracted, sarcolemmal voltage remains within the membrane potential window (-30 mV to 0 mV) where L-type calcium channels (Cav1.2) can recover from inactivation while remaining above their activation threshold. Inward calcium current reactivates ('window current'), generating spontaneous secondary depolarizing spikes termed Early Afterdepolarizations (EADs). If an EAD reaches threshold before full repolarization, it triggers a premature ventricular beat. In the setting of transmural dispersion of repolarization, this triggered activity initiates the twisting polymorphic ventricular tachycardia known as Torsades de Pointes (TdP). Because hERG blockers exhibit 'reverse use-dependence' (blockade and APD prolongation are exaggerated at slower heart rates), bradycardia and post-extrasystolic compensatory pauses ('short-long-short' sequence) strongly facilitate EAD genesis.",
+      drugIds: ["sotalol", "amiodarone", "ondansetron"],
+    },
+    {
+      id: "clin-cardiac-phase4-if-dad-digoxin",
+      lane: "clinical",
+      kicker: "Electrophysiology & Cellular Kinetics",
+      title: "Phase 4 Diastolic Dynamics: HCN 'Funny' Current vs. Digoxin Delayed Afterdepolarizations",
+      prompt: "Phase 4 membrane potential dynamics distinguish automatic pacemaker tissue (spontaneous diastolic depolarization) from resting ventricular myocardium.",
+      ask: "How does the pacemaking 'funny' current (If) generate spontaneous Phase 4 depolarization, and by what cellular mechanism does digoxin toxicity generate Delayed Afterdepolarizations (DADs)?",
+      choices: [
+        {
+          id: "if-hyperpolarization-activation-vs-digoxin-na-k-atpase-ca-overload",
+          label: "HCN4 If channels open upon hyperpolarization to drive slow inward mixed Na+/K+ diastolic depolarization in nodal pacemakers; conversely, digoxin inhibits Na+/K+ ATPase, raising intracellular Na+, blunting NCX1 Ca2+ extrusion, and causing sarcoplasmic Ca2+ overload that fires transient inward current (Iti) and DADs in Phase 4",
+        },
+        {
+          id: "if-is-a-fast-voltage-gated-chloride-channel",
+          label: "If is a voltage-gated chloride channel that opens during Phase 1 to induce early repolarization, while digoxin directly opens Ryanodine receptors to prevent calcium uptake",
+        },
+        {
+          id: "digoxin-selectively-opens-ik1-inward-rectifiers",
+          label: "Digoxin toxicity locks open Kir2.1 inward rectifier channels, causing excessive potassium efflux that hyperpolarizes myocytes below -120 mV and stops diastolic automaticity",
+        },
+        {
+          id: "nodal-phase-4-is-purely-passive-leakage-without-channels",
+          label: "SA nodal diastolic depolarization occurs entirely without ion channels via passive water shift, whereas digoxin toxicity causes membrane rupture from osmotic swelling",
+        },
+      ],
+      correct: "if-hyperpolarization-activation-vs-digoxin-na-k-atpase-ca-overload",
+      answer: "In specialized cardiac pacemaker tissue (SA node and AV node), cells do not have a stable resting membrane potential; instead, they display spontaneous diastolic depolarization during Phase 4. Following repolarization to maximum diastolic potential (-60 mV), Hyperpolarization-activated Cyclic Nucleotide-gated channels (predominantly HCN4) activate. These conduct the 'funny' pacemaker current (If)—an inward mixed sodium-potassium current named for its unusual activation by hyperpolarization rather than depolarization. Inward If flux, coupled with decay of delayed rectifier potassium currents and diastolic local calcium releases from the sarcoplasmic reticulum (SR clock engaging NCX), drives slow membrane depolarization toward threshold (-40 mV), triggering Phase 0 action potentials driven by L-type calcium channels (Cav1.2). Ivabradine selectively blocks HCN channels, flattening Phase 4 slope and reducing heart rate without altering inotropy. Conversely, in working ventricular myocytes, resting Phase 4 potential is held stable at -90 mV by inward rectifier potassium current (IK1) and the electrogenic Na+/K+ ATPase pump. Digoxin binds the extracellular alpha subunit of Na+/K+ ATPase, inhibiting active extrusion of sodium (3 Na+ out, 2 K+ in). Intracellular [Na+] rises, reducing the trans-sarcolemmal sodium gradient and blunting forward-mode Sodium-Calcium Exchanger (NCX1, which normally extrudes 1 Ca2+ in exchange for 3 Na+ in). Consequently, calcium extrusion drops and intracellular [Ca2+] climbs, leading to supranormal calcium loading into the sarcoplasmic reticulum via SERCA2a (the basis of positive inotropy). However, in digitalis toxicity, severe SR calcium overload triggers spontaneous, uncoordinated diastolic calcium sparks through ryanodine receptors (RyR2). This surges free cytosolic calcium during Phase 4, driving electrogenic forward NCX1 activity (3 Na+ in for 1 Ca2+ out), creating a net inward depolarizing current termed the transient inward current (Iti). This produces a Delayed Afterdepolarization (DAD). When DAD amplitude reaches the Nav1.5 threshold, triggered repetitive action potentials fire, generating ventricular bigeminy, bidirectional ventricular tachycardia, and ventricular fibrillation.",
+      drugIds: ["digoxin", "ivabradine"],
+    },
+    {
+      id: "clin-tox-anticholinergic-vs-sympathomimetic",
+      lane: "clinical",
+      kicker: "Clinical Toxicology & Physical Exam",
+      title: "Autonomic Hyperactivity Toxidromes: The Critical Skin Moisture Discriminator",
+      prompt: "Patients presenting with acute tachycardia, hypertension, hyperthermia, mydriasis, and delirium present a classic diagnostic challenge between anticholinergic and sympathomimetic toxicity.",
+      ask: "What pathognomonic physical examination finding decisively discriminates between anticholinergic and sympathomimetic toxidromes, and what is its physiological basis?",
+      choices: [
+        {
+          id: "skin-moisture-anhidrosis-vs-diaphoresis",
+          label: "Skin moisture: Anticholinergic toxicity causes complete anhidrosis (dry, hot, flushed skin) due to muscarinic M3 blockade on eccrine sweat glands; sympathomimetic toxicity causes profuse diaphoresis (drenching sweats) due to alpha-1 and beta-adrenergic overstimulation",
+        },
+        {
+          id: "pupillary-light-reflex-size-divergence",
+          label: "Pupil diameter: Anticholinergic toxicity causes pinpoint miosis from Edinger-Westphal stimulation, whereas sympathomimetic toxicity causes wide mydriasis",
+        },
+        {
+          id: "respiratory-rate-bradypnea-in-sympathomimetics",
+          label: "Respiratory rate: Sympathomimetics selectively depress brainstem pre-Bötzinger centers causing severe bradypnea, while anticholinergics cause extreme tachypnea",
+        },
+        {
+          id: "deep-tendon-reflexes-are-absent-in-cocaine",
+          label: "Deep tendon reflexes: Cocaine toxicity abolishes all peripheral reflexes through spinal reflex arc severance, while diphenhydramine induces hyperreflexia",
+        },
+      ],
+      correct: "skin-moisture-anhidrosis-vs-diaphoresis",
+      answer: "Both anticholinergic (e.g., diphenhydramine, atropine, scopolamine, tricyclic antidepressants) and sympathomimetic (e.g., cocaine, amphetamines, MDMA) toxicity present with autonomic hyperarousal: tachycardia, hypertension, hyperthermia, mydriasis (dilated pupils), and agitated delirium. However, evaluating sweat production (skin moisture and axillary folds) is the pathognomonic clinical differentiator: 1) Eccrine sweat glands are anatomically innervated by postganglionic sympathetic cholinergic fibers that release acetylcholine onto muscarinic M3 receptors. In anticholinergic toxicity, competitive blockade of M3 receptors completely paralyzes sweat gland secretion. The patient is 'dry as a bone'—demonstrating total anhidrosis with hot, dry, erythematous skin, bone-dry mucous membranes, and dry axillae. The loss of evaporative cooling significantly exacerbates their hyperthermia ('hot as a hare'); 2) In contrast, sympathomimetics stimulate peripheral alpha-1 and beta adrenoceptors and activate central sympathetic outflow, provoking profuse diaphoresis. The patient with sympathomimetic toxicity is drenched in sweat ('wet and wild'). Secondary discriminators reinforce this distinction: bowel sounds are typically hypoactive or absent in anticholinergic poisoning due to intestinal muscarinic blockade ('full as a flask' urinary retention and ileus), whereas bowel sounds are normoactive or hyperactive in sympathomimetic intoxication.",
+      drugIds: ["diphenhydramine", "cocaine", "amphetamine"],
+    },
+    {
+      id: "clin-tox-cyanide-hydroxocobalamin-complex-iv",
+      lane: "clinical",
+      kicker: "Toxicology & Cellular Respiration",
+      title: "Cyanide Toxicity & Hydroxocobalamin: Complex IV Extraction vs. Methemoglobin Inducers",
+      prompt: "Cyanide halts aerobic cellular respiration, presenting with severe lactic acidosis despite normal or elevated arterial PO2 ('histotoxic hypoxia').",
+      ask: "What is the molecular mechanism by which hydroxocobalamin neutralizes cyanide, and why is it preferred over traditional nitrite-induced methemoglobinemia in smoke inhalation victims?",
+      choices: [
+        {
+          id: "hydroxocobalamin-co3-chelates-cyanide-sparing-oxygen-carrying-capacity",
+          label: "Hydroxocobalamin's central trivalent cobalt (Co3+) coordinates cyanide with higher affinity than ferric iron (Fe3+) in cytochrome c oxidase, forming nontoxic cyanocobalamin without inducing methemoglobinemia or compromising oxygen carriage in victims with concurrent carbon monoxide poisoning",
+        },
+        {
+          id: "hydroxocobalamin-hydrolyzes-cyanide-into-nitrogen-gas",
+          label: "Hydroxocobalamin enzymatically hydrolyzes cyanide into inert nitrogen and carbon dioxide gas within the pulmonary capillary bed via alkaline phosphatase",
+        },
+        {
+          id: "hydroxocobalamin-induces-massive-methemoglobinemia-safely",
+          label: "Hydroxocobalamin induces up to 40% methemoglobinemia, safely converting all hemoglobin into scavenger methemoglobin without affecting oxygen delivery",
+        },
+        {
+          id: "direct-stimulation-of-anaerobic-glycolysis-by-vitamin-b12",
+          label: "Hydroxocobalamin acts as a catalytic cofactor that bypasses the electron transport chain completely, generating 36 ATP molecules via anaerobic fermentation",
+        },
+      ],
+      correct: "hydroxocobalamin-co3-chelates-cyanide-sparing-oxygen-carrying-capacity",
+      answer: "Cyanide (CN-) is a potent cellular poison released during structural fires (combustion of synthetic polymers, polyurethane, wool) and industrial exposures, as well as prolonged high-dose sodium nitroprusside infusions. Cyanide binds with high affinity to the ferric (Fe3+) iron moiety of cytochrome a3 within cytochrome c oxidase (Complex IV) of the mitochondrial electron transport chain. This completely halts oxidative phosphorylation and electron transfer to oxygen. Cells are starved of ATP despite abundant arterial oxygen saturation (histotoxic hypoxia), leading to massive compensatory anaerobic glycolysis, profound lactic acidosis (lactate > 8-10 mmol/L), and rapid cardiovascular collapse. Hydroxocobalamin (Vitamin B12a) is a cobalt metallo-complex containing a central trivalent cobalt ion (Co3+) bound to a hydroxyl group. Cobalt(III) possesses a significantly higher binding affinity for cyanide than the ferric iron in cytochrome c oxidase. Hydroxocobalamin exchanges its hydroxyl ligand for cyanide, directly binding two cyanide ions per molecule to form stable, nontoxic cyanocobalamin (Vitamin B12), which is safely eliminated in the urine. This strips cyanide off mitochondrial Complex IV and restores aerobic ATP generation. In contrast, the historical Cyanide Antidote Kit employed sodium nitrite to oxidize hemoglobin (Fe2+) into methemoglobin (Fe3+), creating an intravascular methemoglobin sink for cyanide. However, in smoke inhalation victims, concurrent carbon monoxide (CO) exposure frequently causes severe carboxyhemoglobinemia; adding nitrite-induced methemoglobinemia dangerously destroys remaining functional oxygen-carrying capacity, precipitating lethal tissue hypoxia. Hydroxocobalamin produces zero methemoglobin and preserves oxygen carriage, making it the international standard of care.",
+      drugIds: ["hydroxocobalamin", "nitroprusside"],
+    },
+    {
+      id: "clin-tox-organophosphate-ache-pralidoxime-aging",
+      lane: "clinical",
+      kicker: "Toxicology & Chemical Receptors",
+      title: "Organophosphate Toxicity: Dual Antidote Mechanics & Chemical Aging of AChE",
+      prompt: "Organophosphate insecticides covalently phosphorylate acetylcholinesterase (AChE), producing catastrophic cholinergic hyperstimulation.",
+      ask: "What distinct physiological targets are addressed by atropine versus pralidoxime (2-PAM), and what irreversible chemical event occurs if oxime administration is delayed?",
+      choices: [
+        {
+          id: "atropine-muscarinic-drying-pralidoxime-nicotinic-oxime-cleaves-before-aging",
+          label: "Atropine blocks muscarinic M1/M2/M3 receptors to clear life-threatening bronchorrhea and bronchospasm but has zero nicotinic activity; pralidoxime (2-PAM) nucleophilically attacks phosphorylated AChE to regenerate enzyme at motor endplates, which fails if covalent dealkylation ('aging') occurs",
+        },
+        {
+          id: "atropine-regenerates-enzyme-pralidoxime-blocks-muscarinic-receptors",
+          label: "Atropine is the enzymatic reactivator that restores catalytic serine function, while pralidoxime is a competitive antagonist that exclusively blocks smooth muscle muscarinic receptors",
+        },
+        {
+          id: "pralidoxime-is-an-anticoagulant-preventing-thrombosis",
+          label: "Pralidoxime acts as a heparin-like antithrombin activator to prevent microvascular thrombosis caused by organophosphate endothelial damage",
+        },
+        {
+          id: "atropine-crosses-into-motor-endplates-to-stop-fasciculations",
+          label: "Atropine competitively blocks nicotinic acetylcholine receptors at neuromuscular junctions to resolve skeletal muscle paralysis, requiring no secondary agents",
+        },
+      ],
+      correct: "atropine-muscarinic-drying-pralidoxime-nicotinic-oxime-cleaves-before-aging",
+      answer: "Organophosphates (e.g., malathion, parathion, sarin) are potent electrophilic inhibitors that covalently phosphorylate the active-site catalytic serine (Ser203) of acetylcholinesterase (AChE). Acetylcholine accumulates rapidly at both muscarinic parasympathetic neuroeffector junctions and nicotinic neuromuscular and ganglionic synapses, producing the classic cholinergic toxidrome (SLUDGEM/DUMBELS: Salivation, Lacrimation, Urination, Defecation, GI cramping, Emesis, Miosis, Bradycardia, Bronchorrhea, Bronchospasm, plus skeletal muscle fasciculations, weakness, and diaphragmatic paralysis). Treatment requires a dual-antidote mechanistic strategy: 1) Atropine is a tertiary amine competitive antagonist that selectively blocks muscarinic acetylcholine receptors (M1, M2, M3). It rapidly dries life-threatening airway secretions (bronchorrhea) and relieves bronchospasm and bradycardia (titrated until lung fields are clear); however, atropine has ZERO binding affinity for nicotinic receptors and does not treat skeletal muscle fasciculations or respiratory muscle paralysis; 2) Pralidoxime (2-PAM) is a nucleophilic pyridinium oxime. Its positively charged quaternary nitrogen electrostatically anchors to the peripheral anionic site of AChE, orienting its oxime group (-N-O-) to launch a directed nucleophilic attack on the organophosphate phosphorus atom. This cleaves the covalent bond to Ser203 and regenerates active AChE at the neuromuscular junction, restoring diaphragmatic effort; 3) The critical therapeutic window is governed by 'chemical aging': the organophosphate-enzyme conjugate undergoes non-enzymatic loss of an alkyl side chain (dealkylation), leaving an oxyanion that forms a stable salt bridge with the enzyme catalytic triad. Once aged, AChE is permanently inactivated and chemically resistant to oxime nucleophilic attack, leaving supportive mechanical ventilation as the only recourse until de novo enzyme is synthesized over weeks.",
+      drugIds: ["malathion", "atropine", "pralidoxime"],
+    },
+    {
+      id: "clin-pgx-cyp2c19-clopidogrel-stent-thrombosis",
+      lane: "clinical",
+      kicker: "Pharmacogenomics & Cardiovascular Medicine",
+      title: "CYP2C19 Loss-of-Function & Clopidogrel: The Bioactivation Failure in Stent Thrombosis",
+      prompt: "Clopidogrel is widely prescribed for dual antiplatelet therapy following percutaneous coronary intervention (PCI) with stent placement.",
+      ask: "Why do CYP2C19 loss-of-function alleles (*2, *3) cause catastrophic antiplatelet failure with clopidogrel, and what bypass strategies are recommended by CPIC Level A guidelines?",
+      choices: [
+        {
+          id: "prodrug-two-step-bioactivation-failure-vs-prasugrel-ticagrelor",
+          label: "Clopidogrel is an inactive prodrug requiring a two-step hepatic bioactivation where CYP2C19 generates the active thiol metabolite that blocks P2Y12; poor metabolizers (*2/*3) fail to generate active drug, leading to uninhibited platelet aggregation and stent thrombosis, warranting alternative therapy with prasugrel or direct-acting ticagrelor",
+        },
+        {
+          id: "cyp2c19-poor-metabolizers-rapidly-destroy-clopidogrel",
+          label: "CYP2C19 poor metabolizers hyper-activate esterase cleavage of clopidogrel into toxic carboxylic acid metabolites that directly destroy endothelial prostacyclin synthesis",
+        },
+        {
+          id: "clopidogrel-is-an-active-drug-cleared-by-cyp2c19",
+          label: "Clopidogrel is an active drug that is cleared and eliminated by CYP2C19; poor metabolizers accumulate extreme supratherapeutic drug levels resulting in intracranial hemorrhage",
+        },
+        {
+          id: "prasugrel-and-ticagrelor-are-identical-prodrugs-requiring-cyp2c19",
+          label: "Prasugrel and ticagrelor both require exclusive CYP2C19 bioactivation and are equally ineffective in *2 and *3 allele carriers",
+        },
+      ],
+      correct: "prodrug-two-step-bioactivation-failure-vs-prasugrel-ticagrelor",
+      answer: "Clopidogrel (Plavix) is an inactive thienopyridine prodrug that requires a sequential two-step hepatic bioactivation cascade to generate its active, short-lived thiol metabolite. Approximately 85% of an oral clopidogrel dose is immediately hydrolyzed by ubiquitous serum/hepatic carboxylesterases into inactive carboxylic acid derivatives. Only the remaining 15% undergoes hepatic cytochrome P450 oxidation: first to 2-oxo-clopidogrel (mediated by CYP2C19, CYP1A2, CYP2B6), and subsequently to the active thiol metabolite (R-130964, mediated by CYP2C19, CYP2C9, CYP2B6, CYP3A4). The active thiol metabolite forms a covalent disulfide bond with critical cysteine residues on the platelet P2Y12 adenosine diphosphate (ADP) receptor, irreversibly blocking ADP-induced adenylyl cyclase inhibition and preventing platelet activation and fibrinogen cross-linking for the platelet's lifespan. CYP2C19 is the rate-limiting enzyme in both bioactivation steps. Patients carrying loss-of-function alleles (*2 [c.681G>A splice site defect] or *3 [c.636G>A premature stop codon]) are classified as intermediate (IM) or poor metabolizers (PM). In CYP2C19 PMs (*2/*2, *2/*3), active thiol metabolite exposure drops by >70%, resulting in minimal platelet inhibition (high on-treatment platelet reactivity) and an up to 3- to 4-fold increase in acute stent thrombosis and major adverse cardiovascular events (MACE). The Clinical Pharmacogenetics Implementation Consortium (CPIC Level A recommendation) and FDA boxed warnings recommend alternative antiplatelet strategies in IMs and PMs undergoing PCI: prasugrel (Effient, a prodrug requiring CYP bioactivation that relies predominantly on CYP3A4/CYP2B6 with minimal CYP2C19 dependency) or ticagrelor (Brilinta, a cyclopentyltriazolopyrimidine direct-acting, reversibly-binding P2Y12 antagonist requiring no metabolic activation).",
+      drugIds: ["clopidogrel", "prasugrel", "ticagrelor"],
+    },
+    {
+      id: "clin-pgx-hla-b5701-abacavir-f-pocket",
+      lane: "clinical",
+      kicker: "Pharmacogenomics & Immunopharmacology",
+      title: "HLA-B*57:01 & Abacavir: The Altered Self-Peptide F-Pocket Mechanism of Hypersensitivity",
+      prompt: "Abacavir is an antiretroviral nucleoside reverse transcriptase inhibitor (NRTI) that causes life-threatening multisystem hypersensitivity in susceptible patients.",
+      ask: "What molecular immunopharmacological mechanism triggers abacavir hypersensitivity in HLA-B*57:01 carriers, and what is the CPIC recommendation regarding pre-treatment testing?",
+      choices: [
+        {
+          id: "abacavir-lodges-in-f-pocket-altering-self-peptide-repertoire",
+          label: "Abacavir binds non-covalently in the F-pocket of the HLA-B*57:01 antigen-binding groove, altering its shape and chemical specificity to present novel self-peptides that trigger massive polyclonal CD8+ T-cell autoimmune attack; CPIC Level A mandates pre-treatment screening and strict avoidance if positive",
+        },
+        {
+          id: "abacavir-covalently-alkylates-b-cell-receptors",
+          label: "Abacavir covalently alkylates membrane immunoglobulin on memory B-cells, stimulating immediate high-titer IgE production and classical anaphylaxis within seconds",
+        },
+        {
+          id: "abacavir-inhibits-cyp-metabolism-of-endogenous-steroids",
+          label: "Abacavir completely inhibits adrenal CYP11B1, causing acute glucocorticoid depletion that presents as pseudo-allergic Addisonian crisis",
+        },
+        {
+          id: "hla-b5701-is-a-drug-metabolizing-enzyme-that-generates-napqi",
+          label: "HLA-B*57:01 is a polymorphic Phase I hepatic monooxygenase that cleaves abacavir into toxic quinone-imine electrophiles",
+        },
+      ],
+      correct: "abacavir-lodges-in-f-pocket-altering-self-peptide-repertoire",
+      answer: "Abacavir hypersensitivity reaction (HSR) is a severe, potentially fatal multisystem syndrome characterized by fever, maculopapular rash, gastrointestinal distress (nausea, vomiting, diarrhea), constitutional malaise, and respiratory symptoms, typically emerging within the first six weeks of therapy. Re-challenge after discontinuation can trigger catastrophic distributive shock, hypotension, and death. The molecular mechanism represents a landmark paradigm in immunopharmacology: HLA-B*57:01 is a Major Histocompatibility Complex (MHC) Class I allele. The antigen-binding cleft of the HLA-B*57:01 molecule possesses a distinctive, narrow 114-116 residue 'F-pocket' that normally accommodates endogenous peptides terminating in bulky hydrophobic/tryptophan residues. Abacavir fits non-covalently into the base of this F-pocket with remarkable stereochemical specificity, modifying the internal volume and electrostatic topology of the cleft. By altering the architecture of the peptide-binding groove, abacavir changes the spectrum of self-peptides that can be loaded into the MHC molecule in the endoplasmic reticulum—specifically allowing endogenous self-peptides with smaller aliphatic C-terminal residues (isoleucine, leucine) to bind. When these newly accommodated 'altered self-peptide' complexes are displayed on the surface of antigen-presenting cells, naive CD8+ cytotoxic T cells perceive them as foreign antigens. This triggers a massive, systemic polyclonal CD8+ T-cell activation cascade, releasing cytotoxic cytokines (IFN-gamma, TNF-alpha) and granulysin that mediate widespread tissue injury. Due to 100% negative predictive value, CPIC guidelines (Level A) and FDA labeling mandate HLA-B*57:01 pharmacogenetic screening prior to initiating abacavir. In HLA-B*57:01-positive individuals, abacavir is strictly contraindicated, completely eliminating immunologically confirmed HSR in clinical practice.",
+      drugIds: ["abacavir"],
     },
   ];
   return cards.map((c) => ({

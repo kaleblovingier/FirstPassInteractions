@@ -5,11 +5,14 @@ import {
   ArrowLeftRight,
   ArrowRight,
   Check,
+  Dna,
   GitFork,
+  Heart,
   Layers,
   Lock,
   Pill,
   Search,
+  HeartPulse,
   ShieldAlert,
   Sparkles,
   TrendingUp,
@@ -21,6 +24,9 @@ import { MechanismIntersect } from "./mechanism-intersect";
 import { PkTdmMechanisms } from "./pk-tdm-mechanisms";
 import { TransporterNetwork } from "./transporter-network";
 import { GProteinSignaling } from "./g-protein-signaling";
+import { CardiacElectrophysiology } from "./cardiac-electrophysiology";
+import { Pharmacogenomics } from "./pharmacogenomics";
+import { ToxidromeSimulator } from "./toxidromes";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
 import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
@@ -75,6 +81,9 @@ export function Formulary() {
     | "pk"
     | "transporters"
     | "gpcr"
+    | "cardiac"
+    | "pgx"
+    | "toxidromes"
   >("compounds");
 
   return (
@@ -218,6 +227,54 @@ export function Formulary() {
           <Zap className="size-4 shrink-0 text-rose-500" />
           <span>GPCR Signaling</span>
         </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "cardiac"}
+          onClick={() => setViewTab("cardiac")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "cardiac"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Heart className="size-4 shrink-0 text-rose-600 dark:text-rose-400" />
+          <span>Cardiac Electrophysiology</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "pgx"}
+          onClick={() => setViewTab("pgx")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "pgx"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Dna className="size-4 shrink-0 text-accent" />
+          <span>Pharmacogenomics &amp; CPIC</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "toxidromes"}
+          onClick={() => setViewTab("toxidromes")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "toxidromes"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <HeartPulse className="size-4 shrink-0 text-rose-500" />
+          <span>Toxidromes &amp; Antidotes</span>
+        </button>
       </div>
 
       {viewTab === "compounds" ? (
@@ -234,8 +291,14 @@ export function Formulary() {
         <PkTdmMechanisms />
       ) : viewTab === "transporters" ? (
         <TransporterNetwork />
-      ) : (
+      ) : viewTab === "gpcr" ? (
         <GProteinSignaling />
+      ) : viewTab === "cardiac" ? (
+        <CardiacElectrophysiology />
+      ) : viewTab === "pgx" ? (
+        <Pharmacogenomics />
+      ) : (
+        <ToxidromeSimulator />
       )}
     </div>
   );
