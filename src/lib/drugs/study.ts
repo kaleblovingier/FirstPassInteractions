@@ -599,6 +599,18 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-phenytoin-michaelis-menten": "cyp",
   "clin-pgx-cyp2c19-clopidogrel-stent-thrombosis": "cyp",
   "clin-pgx-hla-b5701-abacavir-f-pocket": "cyp",
+  "clin-cyp-tdi-suicidal-mbi-recovery-kinetics": "cyp",
+  "clin-cyp-pxr-car-ahr-nuclear-induction-lag": "cyp",
+
+  // Renal Tubular & Electrolytes
+  "clin-renal-nkcc2-romk-calcium-wasting": "electrolytes",
+  "clin-renal-ncc-trpv5-thiazide-calcium-retention": "electrolytes",
+  "clin-renal-triple-whammy-hemodynamics": "electrolytes",
+  "clin-renal-enac-lithium-ndi-amiloride": "electrolytes",
+
+  // Blood-Brain Barrier & Neuro / Bedside
+  "clin-cns-antihistamine-1st-vs-2nd-gen-psa": "neuro",
+  "clin-cns-meningitis-tight-junction-permeability": "bedside",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -2678,6 +2690,238 @@ export function clinicalCards(): StudyCard[] {
       correct: "abacavir-lodges-in-f-pocket-altering-self-peptide-repertoire",
       answer: "Abacavir hypersensitivity reaction (HSR) is a severe, potentially fatal multisystem syndrome characterized by fever, maculopapular rash, gastrointestinal distress (nausea, vomiting, diarrhea), constitutional malaise, and respiratory symptoms, typically emerging within the first six weeks of therapy. Re-challenge after discontinuation can trigger catastrophic distributive shock, hypotension, and death. The molecular mechanism represents a landmark paradigm in immunopharmacology: HLA-B*57:01 is a Major Histocompatibility Complex (MHC) Class I allele. The antigen-binding cleft of the HLA-B*57:01 molecule possesses a distinctive, narrow 114-116 residue 'F-pocket' that normally accommodates endogenous peptides terminating in bulky hydrophobic/tryptophan residues. Abacavir fits non-covalently into the base of this F-pocket with remarkable stereochemical specificity, modifying the internal volume and electrostatic topology of the cleft. By altering the architecture of the peptide-binding groove, abacavir changes the spectrum of self-peptides that can be loaded into the MHC molecule in the endoplasmic reticulum—specifically allowing endogenous self-peptides with smaller aliphatic C-terminal residues (isoleucine, leucine) to bind. When these newly accommodated 'altered self-peptide' complexes are displayed on the surface of antigen-presenting cells, naive CD8+ cytotoxic T cells perceive them as foreign antigens. This triggers a massive, systemic polyclonal CD8+ T-cell activation cascade, releasing cytotoxic cytokines (IFN-gamma, TNF-alpha) and granulysin that mediate widespread tissue injury. Due to 100% negative predictive value, CPIC guidelines (Level A) and FDA labeling mandate HLA-B*57:01 pharmacogenetic screening prior to initiating abacavir. In HLA-B*57:01-positive individuals, abacavir is strictly contraindicated, completely eliminating immunologically confirmed HSR in clinical practice.",
       drugIds: ["abacavir"],
+    },
+    {
+      id: "clin-renal-nkcc2-romk-calcium-wasting",
+      lane: "clinical",
+      kicker: "Renal Tubular & Electrolyte Pharmacology",
+      title: "NKCC2 Inhibition & ROMK Lumen-Positive Potential: Mechanism of Calcium Wasting",
+      prompt: "Loop diuretics inhibit the apical Na+-K+-2Cl- cotransporter (NKCC2) in the thick ascending limb of the loop of Henle.",
+      ask: "How does NKCC2 inhibition abolish the lumen-positive transepithelial potential (+10 mV) and cause secondary urinary wasting of calcium and magnesium?",
+      choices: [
+        {
+          id: "romk-recycling-loss-erodes-transepithelial-gradient-driving-paracellular-calcium-flux",
+          label: "Blocking NKCC2 halts apical K+ entry, diminishing ROMK-mediated K+ back-diffusion into the lumen; this collapses the +10 mV lumen-positive transepithelial voltage that normally electrostatically drives paracellular reabsorption of divalent cations (Ca2+ and Mg2+) through claudin-16/19",
+        },
+        {
+          id: "direct-inhibition-of-apical-trpv5-calcium-channels",
+          label: "Loop diuretics act as direct allosteric antagonists of apical TRPV5 epithelial calcium channels in the proximal tubule",
+        },
+        {
+          id: "upregulation-of-paracellular-chloride-channels-in-collecting-duct",
+          label: "Loop diuretics activate apical CFTR chloride channels in the collecting duct, generating a negative lumen that repels calcium into the urine",
+        },
+        {
+          id: "basolateral-ncx1-exchanger-reversal-in-loop-of-henle",
+          label: "NKCC2 inhibition causes intracellular sodium overload that reverses basolateral NCX1 exchangers to pump calcium into the tubule lumen",
+        },
+      ],
+      correct: "romk-recycling-loss-erodes-transepithelial-gradient-driving-paracellular-calcium-flux",
+      answer: "In the thick ascending limb (TAL) of Henle's loop, the apical Na+-K+-2Cl- cotransporter (NKCC2) reabsorbs one sodium, one potassium, and two chloride ions from tubular fluid. For NKCC2 to sustain high-capacity transport, luminal potassium must be continuously replenished; this occurs via apical renal outer medullary potassium (ROMK) channels that back-diffuse intracellular K+ back into the lumen. Because K+ carries a net positive charge back into the tubular lumen while basolateral ClC-Kb channels extrude Cl- with Na+/K+-ATPase extruding Na+ across the basolateral membrane, a transepithelial voltage gradient of approximately +8 to +10 mV (lumen-positive) is generated. This lumen-positive potential provides the essential electrostatic driving force for passive paracellular reabsorption of divalent cations—specifically calcium (Ca2+) and magnesium (Mg2+)—through the tight-junction pore complexes composed of claudin-16 (paracellin-1) and claudin-19. When loop diuretics (such as furosemide, bumetanide, torsemide) reversibly bind the chloride-binding pocket of NKCC2, apical ionic transport stops. Without intracellular K+ accumulation from NKCC2, ROMK recycling diminishes, and the lumen-positive potential collapses toward zero. Deprived of the electrostatic repelling force, passive paracellular reabsorption of Ca2+ and Mg2+ halts, resulting in profound urinary wasting of calcium ('calciuria') and magnesium ('magnesuria'). This mechanistic property is why loop diuretics reduce serum calcium in acute hypercalcemic crisis (supported by isotonic volume repletion) but aggravate osteopenia and nephrocalcinosis with chronic administration.",
+      drugIds: ["furosemide"],
+    },
+    {
+      id: "clin-renal-ncc-trpv5-thiazide-calcium-retention",
+      lane: "clinical",
+      kicker: "Renal Tubular & Electrolyte Pharmacology",
+      title: "Distal Convoluted Tubule NCC Blockade & Active Calcium Sparing via TRPV5/NCX1",
+      prompt: "Thiazide and thiazide-like diuretics inhibit the apical Na+-Cl- cotransporter (NCC) in the early distal convoluted tubule (DCT).",
+      ask: "What cellular mechanism explains why thiazides increase renal calcium reabsorption and induce hypercalcemia, in stark contrast to loop diuretics?",
+      choices: [
+        {
+          id: "intracellular-sodium-depletion-steepens-basolateral-ncx1-gradient-enhancing-apical-trpv5-entry",
+          label: "NCC inhibition lowers intracellular Na+, steepening the chemical gradient that drives basolateral 3Na+/Ca2+ exchange (NCX1); the resulting reduction in intracellular Ca2+ accelerates apical Ca2+ entry through TRPV5 channels, alongside volume contraction-induced proximal Ca2+ reabsorption",
+        },
+        {
+          id: "direct-stimulation-of-parathyroid-hormone-receptors-in-the-medulla",
+          label: "Thiazides act as direct agonists at tubular parathyroid hormone 1 receptors (PTH1R), stimulating calcium synthesis",
+        },
+        {
+          id: "activation-of-apical-enac-channels-which-electrostatically-attract-calcium",
+          label: "NCC inhibition shifts sodium downstream to hyperactivate ENaC, generating a positive lumen that attracts calcium into principal cells",
+        },
+        {
+          id: "inhibition-of-renal-1-alpha-hydroxylase-preventing-vitamin-d-degradation",
+          label: "Thiazides inhibit renal CYP24A1, raising 1,25-dihydroxyvitamin D levels and stimulating calcitriol-dependent bone resorption",
+        },
+      ],
+      correct: "intracellular-sodium-depletion-steepens-basolateral-ncx1-gradient-enhancing-apical-trpv5-entry",
+      answer: "The early distal convoluted tubule (DCT) reabsorbs 5–7% of filtered sodium and chloride via the apical electroneutral Na+-Cl- cotransporter (NCC), which is sensitive to thiazides (such as hydrochlorothiazide and chlorthalidone). Unlike the thick ascending limb where calcium transport is passive and paracellular, calcium transport in the DCT is entirely active, transcellular, and regulated. When thiazides inhibit NCC, sodium entry across the apical membrane is curtailed. Concurrently, the basolateral Na+/K+-ATPase continues pumping sodium out of the DCT cell, leading to marked depletion of intracellular sodium concentration ([Na+]i). This steepens the electrochemical gradient across the basolateral membrane for sodium entry, which dramatically accelerates the activity of the basolateral 3Na+/Ca2+ exchanger (NCX1) and the plasma membrane Ca2+-ATPase (PMCA1b). As NCX1 pumps intracellular calcium out into the interstitial blood in exchange for sodium, intracellular calcium drops, which dramatically widens the chemical gradient driving apical calcium influx via transient receptor potential vanilloid 5 (TRPV5) channels. Intracellular calcium is then shuttled across the cytoplasm bound to calbindin-D28k to basolateral NCX1. Furthermore, thiazide-induced mild extracellular fluid volume contraction enhances non-specific isosmotic proximal tubular sodium and calcium reabsorption. The net clinical result is hypocalciuria (reduced urinary calcium) and potential hypercalcemia. This calcium-sparing mechanism makes thiazides uniquely advantageous in patients with recurrent calcium oxalate nephrolithiasis and osteoporosis, while posing a risk of unmasking subclinical primary hyperparathyroidism.",
+      drugIds: ["hctz"],
+    },
+    {
+      id: "clin-renal-triple-whammy-hemodynamics",
+      lane: "clinical",
+      kicker: "Renal Hemodynamics & Acute Kidney Injury",
+      title: "The 'Triple Whammy' Hemodynamic Collapse: ACEi/ARB + NSAID + Diuretic",
+      prompt: "The co-prescription of an ACE inhibitor (or ARB), an NSAID, and a diuretic is a notoriously high-risk triad colloquially known as the 'Triple Whammy'.",
+      ask: "What distinct physiological mechanisms on afferent/efferent arteriolar tone and intravascular volume converge to catastrophically reduce intraglomerular filtration pressure (Pgc) and precipitate acute kidney injury?",
+      choices: [
+        {
+          id: "convergent-afferent-constriction-efferent-dilation-and-volume-depletion",
+          label: "Diuretics induce intravascular volume contraction; NSAIDs block prostaglandin synthesis (PGI2/PGE2) preventing compensatory afferent arteriolar vasodilation; ACE inhibitors/ARBs block angiotensin II-mediated efferent arteriolar vasoconstriction, collapsing the transcapillary hydraulic pressure gradient (Pgc) and GFR",
+        },
+        {
+          id: "direct-tubulotoxic-crystallization-in-the-collecting-duct",
+          label: "The three agents form insoluble microcrystals in distal tubules under acidic pH, causing physical obstructive nephropathy",
+        },
+        {
+          id: "synergistic-activation-of-renal-thromboxane-a2-receptors",
+          label: "The combination synergistically upregulates systemic thromboxane A2 synthases, triggering diffuse cortical necrosis and renal vein thrombosis",
+        },
+        {
+          id: "antagonism-of-endothelin-receptors-causing-diffuse-renal-ischemia",
+          label: "NSAIDs and ACE inhibitors competitively block ETA/ETB receptors, preventing autoregulatory renal blood flow maintenance",
+        },
+      ],
+      correct: "convergent-afferent-constriction-efferent-dilation-and-volume-depletion",
+      answer: "Glomerular filtration rate (GFR) is primarily determined by the glomerular capillary hydraulic pressure (Pgc), which is finely regulated by bidirectional myogenic and humoral autoregulation of afferent and efferent arteriolar tone. Under normal physiological conditions, renal perfusion is maintained across wide mean arterial pressure ranges. However, when intravascular volume is depleted—such as by loop or thiazide diuretics—renal perfusion drops, and the kidney depends critically on two counter-regulatory autoregulatory pathways to preserve Pgc: 1) Afferent arteriolar vasodilation, mediated by locally synthesized vasodilatory prostaglandins (prostacyclin PGI2 and PGE2 via COX-1 and COX-2) in response to sympathetic and renin stimulation, which minimizes pre-glomerular resistance; and 2) Efferent arteriolar vasoconstriction, mediated by angiotensin II acting on AT1 receptors, which increases post-glomerular resistance and acts like a 'dam' to sustain intraglomerular filtration pressure. In the 'Triple Whammy' triad: 1) The diuretic reduces circulating plasma volume and renal blood flow; 2) The NSAID inhibits cyclooxygenases, suppressing prostaglandin synthesis and causing paradoxical afferent vasoconstriction (choking off inflow); 3) The ACE inhibitor or ARB abolishes angiotensin II production or AT1 signaling, dilating the efferent arteriole (relieving downstream outflow resistance). With inflow restricted and downstream outflow wide open in a volume-depleted kidney, the glomerular capillary hydraulic pressure (Pgc) collapses below the threshold needed for net ultrafiltration, resulting in precipitous hemodynamic acute kidney injury (AKI), prerenal azotemia, and hyperkalemia. Clinical guidelines urge avoiding this combination, especially in elderly patients, chronic kidney disease (CKD), or heart failure.",
+      drugIds: ["lisinopril", "ibuprofen", "furosemide"],
+    },
+    {
+      id: "clin-renal-enac-lithium-ndi-amiloride",
+      lane: "clinical",
+      kicker: "Renal Tubular Secretion & Toxicology",
+      title: "Lithium-Induced Nephrogenic Diabetes Insipidus & ENaC-Mediated Amiloride Rescue",
+      prompt: "Chronic lithium therapy frequently causes nephrogenic diabetes insipidus (NDI) manifested by polyuria, polydipsia, and impaired urinary concentrating ability refractory to exogenous vasopressin.",
+      ask: "How does lithium gain access to collecting duct principal cells, what intracellular signaling cascade does it disrupt, and why is amiloride the specific mechanistically targeted pharmacotherapy?",
+      choices: [
+        {
+          id: "lithium-enters-via-enac-inhibits-gsk3beta-downregulating-aqp2-amiloride-blocks-enac-entry",
+          label: "Lithium is transported into principal cells through apical epithelial sodium channels (ENaC), where it accumulates and inhibits glycogen synthase kinase-3beta (GSK-3beta) and adenylyl cyclase, degrading aquaporin-2 (AQP2) water channels; amiloride selectively blocks apical ENaC, preventing cellular lithium uptake and preserving water reabsorption",
+        },
+        {
+          id: "lithium-cleaves-v2-vasopressin-receptors-on-basolateral-membrane",
+          label: "Lithium acts as an extracellular metalloproteinase that enzymatically cleaves V2 vasopressin receptors off the basolateral membrane; amiloride inhibits this enzyme",
+        },
+        {
+          id: "lithium-crystallizes-inside-aquaporin-1-tetramers-in-the-loop-of-henle",
+          label: "Lithium forms macro-complexes inside AQP1 channels in the thin descending limb; amiloride chelates lithium to dissolve intratubular precipitates",
+        },
+        {
+          id: "lithium-stimulates-pendrin-mediated-bicarbonate-secretion-in-intercalated-cells",
+          label: "Lithium binds apical pendrin in Type B intercalated cells, generating massive osmotic diuresis that washes out medullary tonicity",
+        },
+      ],
+      correct: "lithium-enters-via-enac-inhibits-gsk3beta-downregulating-aqp2-amiloride-blocks-enac-entry",
+      answer: "Lithium is a monovalent cation with a hydrated radius and chemical properties similar to sodium. In the cortical collecting duct, apical epithelial sodium channels (ENaC) on principal cells cannot distinguish lithium from sodium, allowing lithium to pass freely from the tubular lumen into the cytoplasm down an electrochemical gradient. However, unlike sodium, lithium cannot be efficiently extruded across the basolateral membrane by the Na+/K+-ATPase (which has low affinity for lithium), leading to intracellular lithium trapping and accumulation in principal cells. Once concentrated inside the cell, lithium exerts toxic molecular actions: it directly inhibits adenylyl cyclase (diminishing cAMP generation in response to arginine vasopressin binding to basolateral V2 receptors) and potently inhibits glycogen synthase kinase-3beta (GSK-3beta). This disruption suppresses transcription and triggers lysosomal degradation and impaired apical trafficking of aquaporin-2 (AQP2) water channels. Deprived of apical AQP2 channels, the collecting duct becomes impermeable to water, leading to inability to concentrate urine, severe hypotonic polyuria, and nephrogenic diabetes insipidus (NDI). Amiloride is the definitive, mechanism-targeted pharmacotherapy for lithium-induced NDI: as a selective potassium-sparing ENaC blocker, amiloride blocks the apical pore of ENaC, directly shutting the cellular gateway through which lithium enters principal cells. By halting intracellular lithium influx, principal cells regenerate cAMP signaling and restore apical AQP2 density, reversing polyuria without requiring lithium discontinuation when psychiatric stability is critical. Thiazides are also used in NDI via volume contraction-induced proximal reabsorption, but thiazides reduce lithium clearance and can cause lithium toxicity, whereas amiloride maintains lithium excretion.",
+      drugIds: ["lithium", "amiloride"],
+    },
+    {
+      id: "clin-cyp-tdi-suicidal-mbi-recovery-kinetics",
+      lane: "clinical",
+      kicker: "Cytochrome P450 Kinetics & Inactivation",
+      title: "Time-Dependent & Mechanism-Based Inactivation (TDI/MBI): Suicide Inhibition & Enzyme Resynthesis",
+      prompt: "Certain drugs act as mechanism-based 'suicide' inhibitors of cytochrome P450 enzymes (e.g., clarithromycin, erythromycin, diltiazem, ritonavir, bergamottin in grapefruit juice).",
+      ask: "What distinguishes mechanism-based time-dependent inhibition (TDI) from classical reversible competitive inhibition, and what kinetic parameter dictates the recovery of metabolic clearance after inhibitor withdrawal?",
+      choices: [
+        {
+          id: "catalytic-bioactivation-to-quasi-irreversible-metabolite-intermediate-complex-recovery-depends-on-de-novo-cyp-resynthesis-kdeg",
+          label: "The perpetrator is bioactivated by the CYP into a reactive intermediate that forms a stable, quasi-irreversible metabolite-intermediate complex (MIC) or covalently alkylates the apoprotein/heme; inhibition is time-dependent and clearance recovery requires de novo enzyme resynthesis governed by the CYP degradation rate constant (kdeg)",
+        },
+        {
+          id: "rapid-reversible-active-site-competition-cleared-within-three-half-lives-of-the-inhibitor",
+          label: "The inhibitor binds reversibly to the substrate pocket with high affinity (low Ki), and normal metabolic clearance recovers immediately as soon as systemic drug concentration drops below Ki (within 1-2 drug half-lives)",
+        },
+        {
+          id: "epigenetic-methylation-of-the-cyp-promoter-requiring-histone-demethylase-turnover",
+          label: "The inhibitor methylates CpG islands in the CYP3A4 promoter, requiring nuclear histone demethylase turnover over 6 months to reactivate gene transcription",
+        },
+        {
+          id: "depletion-of-hepatic-nadph-cytochrome-p450-oxidoreductase-cofactor-pools",
+          label: "The inhibitor selectively drains hepatic intracellular NADPH pools, paralyzing electron transfer to all Phase I monooxygenases simultaneously",
+        },
+      ],
+      correct: "catalytic-bioactivation-to-quasi-irreversible-metabolite-intermediate-complex-recovery-depends-on-de-novo-cyp-resynthesis-kdeg",
+      answer: "Cytochrome P450 inhibition is classically divided into reversible inhibition (competitive, non-competitive, or uncompetitive) and time-dependent inhibition (TDI). In reversible competitive inhibition, the inhibitor binds non-covalently to the active site; once the inhibitor is cleared from systemic circulation (governed by its own pharmacokinetic elimination half-life), normal catalytic activity instantly returns. In contrast, mechanism-based inactivation (MBI), a specialized form of TDI, represents 'suicide inhibition'. The CYP enzyme recognizes the perpetrator (such as clarithromycin, diltiazem, or grapefruit furanocoumarins) as a substrate and catalytically oxidizes it. During catalytic turnover, the parent drug is converted into an electrophilic reactive intermediate (e.g., a nitrosoalkane, carbene, or furan epoxide). This reactive species either: 1) Covalently alkylates the CYP apoprotein or prosthetic heme group; or 2) Forms an ultra-stable, quasi-irreversible coordinate covalent bond with the catalytic ferrous (Fe2+) heme iron atom, known as a Metabolite-Intermediate Complex (MIC). The modified CYP enzyme is permanently inactivated and catalytically dead. Crucially, the extent of inhibition accumulates progressively over time with repeated dosing (dictated by the inactivation rate constant kinact and apparent affinity KI), even as drug concentrations fluctuate. Furthermore, because the enzyme is permanently disabled, drug elimination does NOT recover when the inhibitor is cleared from the bloodstream. Instead, metabolic clearance can only be restored through the transcription, translation, and de novo folding of brand new CYP enzyme proteins. The rate of functional recovery is governed strictly by the physiological degradation/synthesis turnover rate constant (kdeg) of that specific CYP isoform. For hepatic CYP3A4, kdeg is approximately 0.019–0.03 h^-1 (half-life of 24–40 hours), requiring 3 to 7 days after the last dose for metabolic activity to return to baseline; for intestinal CYP3A4, recovery requires enterocyte turnover (3–5 days). Recognizing MBI is vital in clinical practice: a sensitive CYP3A4 substrate (such as midazolam or tacrolimus) co-administered days after discontinuing clarithromycin will still experience profound toxicity due to residual enzyme depletion.",
+      drugIds: ["clarithromycin", "midazolam"],
+    },
+    {
+      id: "clin-cyp-pxr-car-ahr-nuclear-induction-lag",
+      lane: "clinical",
+      kicker: "Cytochrome P450 Kinetics & Transcriptional Induction",
+      title: "Nuclear Receptor-Mediated Induction (PXR, CAR, AhR): The Pharmacokinetic Lag & Decay Paradox",
+      prompt: "Potent xenobiotics like rifampin, carbamazepine, St. John's wort, phenytoin, and polycyclic aromatic hydrocarbons in tobacco smoke induce cytochrome P450 and transporter expression.",
+      ask: "What molecular mechanism drives transcriptional induction via PXR, CAR, and AhR, and why is there a characteristic 3–7 day onset lag and prolonged 2–3 week washout decay in clinical practice?",
+      choices: [
+        {
+          id: "ligand-activation-of-nuclear-receptors-drives-denovo-mrna-and-protein-synthesis-lag-and-decay-reflect-cyp-half-life",
+          label: "Xenobiotics bind nuclear receptors (PXR for CYP3A4/2C9, CAR for CYP2B6/2C19, AhR for CYP1A2) that heterodimerize with RXR and bind XRE/PBREM response elements; maximal induction requires days for transcription and translation, and offset is delayed because induced enzyme mass must naturally degrade over its 2-3 week half-life",
+        },
+        {
+          id: "allosteric-activation-of-pre-existing-cyp-tetramers-in-the-smooth-endoplasmic-reticulum",
+          label: "Inducers act as positive allosteric modulators directly on pre-existing CYP enzymes, speeding up catalytic turnover instantly within minutes of first ingestion",
+        },
+        {
+          id: "stabilization-of-cyp-apoproteins-against-ubiquitin-proteasomal-degradation",
+          label: "Inducers inhibit the 26S proteasome in hepatocytes, preventing basal protein degradation without altering mRNA transcription",
+        },
+        {
+          id: "upregulation-of-mitochondrial-cytochrome-c-oxidase-complex-iv",
+          label: "Inducers transfer electrons directly into mitochondrial Complex IV, causing secondary spillover of ATP into smooth endoplasmic reticulum ribosomes",
+        },
+      ],
+      correct: "ligand-activation-of-nuclear-receptors-drives-denovo-mrna-and-protein-synthesis-lag-and-decay-reflect-cyp-half-life",
+      answer: "Unlike enzymatic inhibition which occurs rapidly upon target binding, CYP induction is a nuclear, genomic process that requires de novo protein synthesis. Perpetrators act as high-affinity ligands for specific nuclear receptor superfamilies: 1) Pregnane X Receptor (PXR, NR1I2): Activated by rifampin, St. John's wort (hyperforin), carbamazepine, and phenytoin. Ligand-bound PXR translocates to the nucleus, heterodimerizes with the Retinoid X Receptor alpha (RXRalpha), and binds xenobiotic response elements (XRE / ER6 motifs) in promoter regions of CYP3A4, CYP2C9, and P-glycoprotein (ABCB1). 2) Constitutive Androstane Receptor (CAR, NR1I3): Activated by phenobarbital and phenytoin, translocates to upregulate CYP2B6, CYP2C19, and UGT1A1 via phenobarbital-responsive enhancer modules (PBREM). 3) Aryl Hydrocarbon Receptor (AhR): Activated by planar aromatic hydrocarbons (polycyclic aromatic hydrocarbons in tobacco smoke and charbroiled meat), inducing CYP1A1, CYP1A2, and CYP1B1. Because this pathway requires chromatin remodeling, mRNA transcription, splicing, cytoplasmic translation, heme cofactor incorporation, and endoplasmic reticulum membrane insertion, induction exhibits a pronounced pharmacokinetic lag: maximal inductive effect is rarely reached before 7 to 14 days of sustained perpetrator administration. Conversely, when the inducer is stopped, clearance does not immediately normalize. The expanded pool of newly synthesized enzyme proteins remains catalytic until cleared by endogenous degradation processes, governed by the first-order turnover rate constant (kdeg). As a result, the 'de-induction' phase typically takes 2 to 3 weeks (and up to 4 weeks for long-lived inducers like rifampin or carbamazepine) to return to baseline metabolic clearance. Clinically, if a victim drug dose (e.g., methadone, warfarin, oral contraceptives) was escalated to compensate for induction, failing to taper the victim dose as the inducer is withdrawn will precipitate severe toxicity as de-induction slowly clears.",
+      drugIds: ["rifampin", "midazolam"],
+    },
+    {
+      id: "clin-cns-antihistamine-1st-vs-2nd-gen-psa",
+      lane: "clinical",
+      kicker: "Blood-Brain Barrier & Neuro-Pharmacokinetics",
+      title: "Antihistamine Generation Divergence: Polar Surface Area, Lipophilicity & P-gp Efflux",
+      prompt: "First-generation H1-antihistamines (diphenhydramine, hydroxyzine, chlorpheniramine) cause marked sedation and cognitive impairment, whereas second-generation agents (loratadine, fexofenadine, cetirizine) are non-sedating.",
+      ask: "What physicochemical properties and blood-brain barrier transport characteristics govern why second-generation antihistamines are excluded from the central nervous system?",
+      choices: [
+        {
+          id: "higher-topological-polar-surface-area-zwitterionic-charge-and-p-glycoprotein-efflux-prevent-cns-penetration",
+          label: "Second-generation agents possess higher topological polar surface area (TPSA >90-140 Å²), zwitterionic carboxylate charges at physiological pH, and high substrate affinity for active P-glycoprotein (ABCB1) efflux pumps at brain capillary endothelial cells, whereas 1st-gen agents are lipophilic, low-TPSA tertiary amines that rapidly cross by passive transcellular diffusion",
+        },
+        {
+          id: "first-generation-agents-selectively-bind-h3-autoreceptors-in-the-cortex",
+          label: "First-generation agents have 1,000-fold higher affinity for H3 autoreceptors, whereas second-generation agents only bind peripheral H4 receptors",
+        },
+        {
+          id: "second-generation-agents-are-hydrolyzed-by-plasma-cholinesterases-before-reaching-the-carotid-artery",
+          label: "Second-generation antihistamines are prodrugs that are exclusively cleaved in respiratory epithelium and never enter systemic circulation",
+        },
+        {
+          id: "first-generation-agents-open-tight-junction-claudin-5-strands-to-enter-csf",
+          label: "First-generation antihistamines directly disrupt claudin-5 and occludin tight-junction complexes, creating physical paracellular pores across brain capillaries",
+        },
+      ],
+      correct: "higher-topological-polar-surface-area-zwitterionic-charge-and-p-glycoprotein-efflux-prevent-cns-penetration",
+      answer: "The blood-brain barrier (BBB) is composed of brain capillary endothelial cells connected by continuous, high-resistance tight junctions (claudin-5, occludin, ZO-1), wrapped by pericytes and astrocytic end-feet, with no fenestrations. For a small molecule to penetrate the BBB via passive transcellular diffusion, it must satisfy strict physicochemical rules of neuro-pharmacokinetics: low molecular weight (MW <400–450 Da), moderate lipophilicity (logP 1.5–3.5), few hydrogen bond donors (<3) and acceptors (<7), and critically, a low Topological Polar Surface Area (TPSA <70–90 Å²). First-generation H1-antihistamines (such as diphenhydramine) are small, highly lipophilic (logP ~3.3) molecules with low TPSA (~12.5 Å²) and uncharged/lipophilic tertiary amine structures that rapidly diffuse passively across endothelial luminal membranes. In the brain, they occupy 50–70% of cortical H1 receptors at therapeutic doses, disrupting histamine-mediated arousal from the tuberomammillary nucleus, and cross-react with muscarinic M1 receptors to cause sedation, psychomotor slowing, and delirium. In contrast, second-generation H1-antihistamines were rationally engineered to avoid CNS penetration: 1) Elevated Polar Surface Area: Carboxylated derivatives like cetirizine (the carboxylic acid metabolite of hydroxyzine) and fexofenadine possess TPSA >50–90 Å²; 2) Ionization / Zwitterionic Charge: At physiological pH (7.4), carboxyl groups are ionized, forming zwitterionic species that face enormous desolvation energy barriers when attempting to partition into the lipid bilayer; 3) Active Efflux: Second-generation agents (notably fexofenadine and cetirizine) are high-affinity substrates for luminal P-glycoprotein (ABCB1) and BCRP (ABCG2) efflux pumps. Any small fraction of drug that passively diffuses into the endothelial cell membrane is instantly pumped back into the capillary lumen. Consequently, brain H1 receptor occupancy for second-generation agents remains under 10–15% at approved doses, preserving cognitive alertness.",
+      drugIds: ["diphenhydramine", "loratadine"],
+    },
+    {
+      id: "clin-cns-meningitis-tight-junction-permeability",
+      lane: "clinical",
+      kicker: "Blood-Brain Barrier & Neuro-Infectious Pharmacology",
+      title: "Bacterial Meningitis BBB Disruption: Claudin-5 Breakdown & Adjuvant Dexamethasone Timing",
+      prompt: "In acute bacterial meningitis, therapeutic concentrations of hydrophilic beta-lactams (e.g., ceftriaxone, ampicillin) and glycopeptides (vancomycin) achieve bactericidal CSF levels despite poor baseline CNS penetration.",
+      ask: "How does acute neuro-inflammation alter blood-brain barrier permeability, and why must adjuvant dexamethasone be administered prior to or concurrently with the first antibiotic dose?",
+      choices: [
+        {
+          id: "inflammatory-cytokines-disrupt-tight-junctions-to-allow-paracellular-entry-early-steroids-blunt-subsequent-bacteriolytic-swelling-without-prematurely-blocking-drug-penetration",
+          label: "Bacterial peptidoglycans and cytokines (TNF-alpha, IL-1beta) downregulate claudin-5 and occludin, creating paracellular leaks that permit hydrophilic drug entry; adjuvant dexamethasone must precede or coincide with antibiotics because rapid antibiotic-induced bacterial lysis triggers a secondary inflammatory surge that causes permanent cochlear and neurological damage",
+        },
+        {
+          id: "bacteria-upregulate-endothelial-oatp-transporters-which-dexamethasone-blocks",
+          label: "Bacterial exotoxins induce brain capillary OATP1A2 influx transporters, and dexamethasone is given to shut down these transporters before toxic antibiotic accumulation occurs",
+        },
+        {
+          id: "antibiotics-cannot-cross-unless-dexamethasone-physically-cleaves-pericyte-membranes",
+          label: "Beta-lactams require corticosteroid cleavage of pericyte basement membranes to establish a mechanical fluid channel into the subarachnoid space",
+        },
+        {
+          id: "dexamethasone-is-given-exclusively-to-prevent-acute-adrenal-crisis-from-waterhouse-friderichsen-syndrome",
+          label: "Dexamethasone has no CNS or blood-brain barrier effects and is prescribed solely as systemic hormone replacement therapy for adrenal hemorrhage",
+        },
+      ],
+      correct: "inflammatory-cytokines-disrupt-tight-junctions-to-allow-paracellular-entry-early-steroids-blunt-subsequent-bacteriolytic-swelling-without-prematurely-blocking-drug-penetration",
+      answer: "Under basal healthy conditions, the blood-brain barrier severely excludes hydrophilic, highly polar, or large molecular weight antimicrobials: ceftriaxone CSF penetration is <1–2%, and vancomycin (MW ~1448 Da, high TPSA) achieves negligible CSF concentrations (<1%). However, during acute bacterial meningitis (e.g., Streptococcus pneumoniae, Neisseria meningitidis), bacterial pathogens invade the subarachnoid space and release pathogen-associated molecular patterns (PAMPs like lipopolysaccharide and peptidoglycan). Resident microglia and perivascular macrophages release massive bursts of pro-inflammatory cytokines, specifically tumor necrosis factor-alpha (TNF-alpha), interleukin-1beta (IL-1beta), and matrix metalloproteinases (MMP-9). These mediators disrupt endothelial tight-junction complexes by inducing phosphorylation, internalization, and degradation of claudin-5, occludin, and zonula occludens-1 (ZO-1). The resulting loss of tight-junction integrity creates fenestrated-like paracellular permeability leaks, markedly increasing CSF penetration of hydrophilic beta-lactams and vancomycin (CSF-to-serum ratios rise to 10–20%). However, administering bactericidal antibiotics causes rapid, massive bacterial lysis within hours, releasing huge waves of bacterial cell-wall fragments that trigger an even more destructive secondary inflammatory cascade. This secondary storm drives vasogenic cerebral edema, intracranial hypertension, neuronal apoptosis, and purulent exudate in the cochlear aqueduct causing sensorineural hearing loss. Adjuvant dexamethasone attenuates this disastrous secondary cytokine burst by suppressing NF-kappaB transcription. Pivotal trials and guidelines (such as IDSA and ESCMID guidelines) demonstrate that dexamethasone must be administered prior to or concurrently with the first dose of antibiotics; administering steroids after antibiotics produces zero clinical benefit because the initial bacteriolytic inflammatory cascade has already been triggered. Note: As dexamethasone seals tight junctions over subsequent days, vancomycin CSF penetration may decline, necessitating therapeutic monitoring and high-dose targets.",
+      drugIds: ["ceftriaxone", "vancomycin", "dexamethasone"],
     },
   ];
   return cards.map((c) => ({

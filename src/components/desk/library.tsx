@@ -13,6 +13,9 @@ import {
   Pill,
   Search,
   HeartPulse,
+  Brain,
+  Droplets,
+  Flame,
   ShieldAlert,
   Sparkles,
   TrendingUp,
@@ -27,6 +30,9 @@ import { GProteinSignaling } from "./g-protein-signaling";
 import { CardiacElectrophysiology } from "./cardiac-electrophysiology";
 import { Pharmacogenomics } from "./pharmacogenomics";
 import { ToxidromeSimulator } from "./toxidromes";
+import { CnsPenetrationMatrix } from "./cns-penetration";
+import { RenalMechanisms } from "./renal-mechanisms";
+import { CypKinetics } from "./cyp-kinetics";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
 import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
@@ -84,6 +90,9 @@ export function Formulary() {
     | "cardiac"
     | "pgx"
     | "toxidromes"
+    | "cns"
+    | "cyp-kinetics"
+    | "renal"
   >("compounds");
 
   return (
@@ -275,6 +284,54 @@ export function Formulary() {
           <HeartPulse className="size-4 shrink-0 text-rose-500" />
           <span>Toxidromes &amp; Antidotes</span>
         </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "cns"}
+          onClick={() => setViewTab("cns")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "cns"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Brain className="size-4 shrink-0 text-cyan-500" />
+          <span>BBB &amp; CNS Penetration</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "cyp-kinetics"}
+          onClick={() => setViewTab("cyp-kinetics")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "cyp-kinetics"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Flame className="size-4 shrink-0 text-amber-500" />
+          <span>CYP Induction &amp; TDI</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "renal"}
+          onClick={() => setViewTab("renal")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "renal"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Droplets className="size-4 shrink-0 text-cyan-600 dark:text-cyan-400" />
+          <span>Renal Tubular Pharmacology</span>
+        </button>
       </div>
 
       {viewTab === "compounds" ? (
@@ -297,8 +354,14 @@ export function Formulary() {
         <CardiacElectrophysiology />
       ) : viewTab === "pgx" ? (
         <Pharmacogenomics />
-      ) : (
+      ) : viewTab === "toxidromes" ? (
         <ToxidromeSimulator />
+      ) : viewTab === "cns" ? (
+        <CnsPenetrationMatrix />
+      ) : viewTab === "cyp-kinetics" ? (
+        <CypKinetics />
+      ) : (
+        <RenalMechanisms />
       )}
     </div>
   );

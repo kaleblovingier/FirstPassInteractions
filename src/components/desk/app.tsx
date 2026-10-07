@@ -278,8 +278,8 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:flex-nowrap xl:justify-end">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:flex-nowrap xl:justify-start xl:rounded-full">
+          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:justify-end">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap xl:flex-nowrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:rounded-full">
               {(
                 [
                   ["desk", "Desk"],
@@ -300,7 +300,7 @@ export function DeskApp() {
                   onClick={() => setView(id)}
                   aria-current={view === id ? "page" : undefined}
                   className={cn(
-                    "h-11 shrink-0 rounded-full px-2 text-xs font-medium sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm",
+                    "h-11 shrink-0 whitespace-nowrap rounded-full px-2 text-xs font-medium sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm",
                     view === id ? "bg-surface-2 text-fg shadow-[var(--shadow-border)]" : "text-muted hover:text-fg",
                   )}
                 >
@@ -318,28 +318,44 @@ export function DeskApp() {
       </header>
 
       {hydrated && !hcpAck ? (
-        <div className="border-b border-border bg-warn-soft">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p className="max-w-3xl text-sm leading-relaxed text-fg">
-              <span className="font-medium">For clinicians and supervised learning.</span> Not for
-              personal treatment, dose changes, or deciding whether to combine substances. This
-              educational checker can miss risks and cannot test what is in a product. If someone is
-              seriously unwell or may be overdosing, contact local emergency services or a poison
-              center now; do not wait for this checker.
-            </p>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <Button variant="secondary" size="sm" onClick={() => setView("label")}>
+        <aside aria-label="Clinical education disclaimer" className="border-b border-border bg-warn-soft/90 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm leading-relaxed text-fg">
+                <strong className="font-semibold text-fg">For clinicians and supervised learning.</strong> Not for
+                personal treatment, dose changes, or deciding whether to combine substances. This
+                educational checker can miss risks and cannot test what is in a product. If someone is
+                seriously unwell or may be overdosing, contact local emergency services or a poison
+                center immediately; do not wait for this checker.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap items-center gap-2 pt-1 md:pt-0">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setView("label")}
+                className="h-8 whitespace-nowrap text-xs font-medium"
+              >
                 Safety notes
               </Button>
-              <Button variant="secondary" size="sm" onClick={() => setView("help")}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setView("help")}
+                className="h-8 whitespace-nowrap text-xs font-medium text-accent hover:text-accent-fg"
+              >
                 Find help
               </Button>
-              <Button size="sm" onClick={ackHcp}>
+              <Button
+                size="sm"
+                onClick={ackHcp}
+                className="h-8 whitespace-nowrap text-xs font-semibold bg-fg text-bg hover:bg-fg/90"
+              >
                 Continue
               </Button>
             </div>
           </div>
-        </div>
+        </aside>
       ) : null}
 
       {justActivated ? (

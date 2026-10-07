@@ -68,7 +68,7 @@ export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionS
               variant="default"
               size="sm"
               onClick={onOpenHelp}
-              className="h-8 gap-1.5 bg-danger text-bg hover:bg-danger/90 text-xs font-medium"
+              className="h-8 gap-1.5 bg-danger text-bg hover:bg-danger/90 text-xs font-medium whitespace-nowrap"
             >
               <HeartPulse className="size-3.5" />
               Safety Protocols & Local Care
@@ -110,7 +110,7 @@ export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionS
               variant="secondary"
               size="sm"
               onClick={onOpenHelp}
-              className="h-8 gap-1.5 text-xs font-medium border border-accent/30"
+              className="h-8 gap-1.5 text-xs font-medium border border-accent/30 whitespace-nowrap"
             >
               <HeartPulse className="size-3.5 text-accent" />
               Find Naloxone & Care
@@ -147,7 +147,7 @@ export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionS
             variant="ghost"
             size="sm"
             onClick={onOpenHelp}
-            className="h-8 gap-1.5 text-xs font-medium text-accent hover:bg-surface"
+            className="h-8 gap-1.5 text-xs font-medium text-accent hover:bg-surface whitespace-nowrap"
           >
             Local Addiction Support
             <ExternalLink className="size-3.5" />

@@ -32,9 +32,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 96 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 104 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 96);
+    assert.equal(cards.length, 104);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -66,7 +66,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 96);
+    assert.equal(cards.length, 104);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -116,6 +116,9 @@ describe("study learning tools", () => {
       "r-ed-organophosphate-pralidoxime-atropine",
       "r-icu-flecainide-toxicity-sodium-bicarb",
       "r-clinic-clopidogrel-cyp2c19-pci-thrombosis",
+      "r-ward-triple-whammy-aki",
+      "r-clinic-clarithromycin-midazolam-tdi-rebound",
+      "r-ward-lithium-ndi-amiloride-rescue",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -209,7 +212,7 @@ describe("study learning tools", () => {
     }
   });
 
-  it("sub-topic categories cover all 96 clinical cards with balanced distribution", () => {
+  it("sub-topic categories cover all 104 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);
 
@@ -311,7 +314,7 @@ describe("study learning tools", () => {
       "clin-methadone-fluconazole-qtc-3a4",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
+    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
 
     for (const id of highYieldCardIds) {
       const card = cards.find((c) => c.id === id);
@@ -410,7 +413,7 @@ describe("study learning tools", () => {
       "clin-aspirin-platelet-covalent-acetylation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
+    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
 
     for (const id of new7CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -522,7 +525,7 @@ describe("study learning tools", () => {
       "clin-sglt2-ketogenesis-glucagon",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
+    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -658,7 +661,7 @@ describe("study learning tools", () => {
       "clin-pde5-cgmp-smooth-muscle-relaxation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 96, "Total clinical cards must be exactly 96");
+    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -787,7 +790,7 @@ describe("study learning tools", () => {
 
   it("cardiac electrophysiology, toxidrome, and pharmacogenomics cards expand clinicalCards to 96 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 96);
+    assert.equal(cards.length, 104);
 
     const targetCardIds = [
       "clin-cardiac-phase0-ina-nav15-vaughan-williams",
@@ -846,6 +849,86 @@ describe("study learning tools", () => {
     assert.match(clopRound.teach, /bioactivation/i);
     assert.match(clopRound.teach, /stent thrombosis/i);
     assert.match(clopRound.teach, /CPIC/i);
+  });
+
+  it("renal tubular, CYP kinetics TDI, and CNS penetration cards expand clinicalCards to 104 and verify non-prescriptive regulatory posture", () => {
+    const cards = clinicalCards();
+    assert.equal(cards.length, 104);
+
+    const targetCardIds = [
+      "clin-renal-nkcc2-romk-calcium-wasting",
+      "clin-renal-ncc-trpv5-thiazide-calcium-retention",
+      "clin-renal-triple-whammy-hemodynamics",
+      "clin-renal-enac-lithium-ndi-amiloride",
+      "clin-cyp-tdi-suicidal-mbi-recovery-kinetics",
+      "clin-cyp-pxr-car-ahr-nuclear-induction-lag",
+      "clin-cns-antihistamine-1st-vs-2nd-gen-psa",
+      "clin-cns-meningitis-tight-junction-permeability",
+    ];
+
+    for (const cardId of targetCardIds) {
+      const card = cards.find((c) => c.id === cardId);
+      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
+      assert.ok(card.correct, `Card ${cardId} must define correct`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
+
+      // Verify non-prescriptive posture
+      const text = `${card.prompt} ${card.ask} ${card.answer}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /clinical decision support/i);
+
+      // Verify catalog drugs
+      for (const dId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
+      }
+    }
+
+    // Verify topic assignments
+    assert.equal(cards.find((c) => c.id === "clin-renal-nkcc2-romk-calcium-wasting")?.topic, "electrolytes");
+    assert.equal(cards.find((c) => c.id === "clin-renal-ncc-trpv5-thiazide-calcium-retention")?.topic, "electrolytes");
+    assert.equal(cards.find((c) => c.id === "clin-renal-triple-whammy-hemodynamics")?.topic, "electrolytes");
+    assert.equal(cards.find((c) => c.id === "clin-renal-enac-lithium-ndi-amiloride")?.topic, "electrolytes");
+    assert.equal(cards.find((c) => c.id === "clin-cyp-tdi-suicidal-mbi-recovery-kinetics")?.topic, "cyp");
+    assert.equal(cards.find((c) => c.id === "clin-cyp-pxr-car-ahr-nuclear-induction-lag")?.topic, "cyp");
+    assert.equal(cards.find((c) => c.id === "clin-cns-antihistamine-1st-vs-2nd-gen-psa")?.topic, "neuro");
+    assert.equal(cards.find((c) => c.id === "clin-cns-meningitis-tight-junction-permeability")?.topic, "bedside");
+
+    // Verify the 3 new clinical rounds
+    const tripleRound = ROUNDS.find((r) => r.id === "r-ward-triple-whammy-aki");
+    assert.ok(tripleRound, "Round 'r-ward-triple-whammy-aki' must exist");
+    assert.equal(tripleRound.setting, "ward");
+    assert.deepEqual(tripleRound.drugIds, ["lisinopril", "ibuprofen", "furosemide"]);
+    assert.match(tripleRound.teach, /Triple Whammy/i);
+    assert.match(tripleRound.teach, /prostaglandin/i);
+    assert.match(tripleRound.teach, /efferent/i);
+
+    const tdiRound = ROUNDS.find((r) => r.id === "r-clinic-clarithromycin-midazolam-tdi-rebound");
+    assert.ok(tdiRound, "Round 'r-clinic-clarithromycin-midazolam-tdi-rebound' must exist");
+    assert.equal(tdiRound.setting, "clinic");
+    assert.deepEqual(tdiRound.drugIds, ["clarithromycin", "midazolam"]);
+    assert.match(tdiRound.teach, /suicide/i);
+    assert.match(tdiRound.teach, /de novo/i);
+    assert.match(tdiRound.teach, /kdeg/i);
+
+    const ndiRound = ROUNDS.find((r) => r.id === "r-ward-lithium-ndi-amiloride-rescue");
+    assert.ok(ndiRound, "Round 'r-ward-lithium-ndi-amiloride-rescue' must exist");
+    assert.equal(ndiRound.setting, "ward");
+    assert.deepEqual(ndiRound.drugIds, ["lithium", "amiloride"]);
+    assert.match(ndiRound.teach, /ENaC/i);
+    assert.match(ndiRound.teach, /amiloride/i);
+    assert.match(ndiRound.teach, /AQP2/i);
+
+    // Verify non-prescriptive posture on rounds
+    for (const round of [tripleRound, tdiRound, ndiRound]) {
+      const roundText = `${round.stem} ${round.ask} ${round.teach}`;
+      assert.doesNotMatch(roundText, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(roundText, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(roundText, /clinical decision support/i);
+    }
   });
 });
 
