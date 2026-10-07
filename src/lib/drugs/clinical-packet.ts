@@ -14,6 +14,7 @@ import { acbOnDesk, type AcbReport } from "./acb";
 import { mmeOnDesk, type MmeFactor } from "./mme";
 import { qtReport, type QtReport } from "./qt";
 import { doacReportOnDesk, type DoacReport } from "./doac";
+import { potassiumReportOnDesk, potassiumOnDesk, type PotassiumEvaluation } from "./potassium";
 import { plainLanguageSummary } from "./interaction-summary";
 import {
   AGE_LABEL,
@@ -70,6 +71,15 @@ export interface ClinicalRiskIndexes {
     agents: string[];
     hasDoac: boolean;
     report: DoacReport | null;
+    summary: string | null;
+  };
+  potassium: {
+    hasPotassiumIssue: boolean;
+    perpetratorCount: number;
+    hasPerpetrator: boolean;
+    hasBinder: boolean;
+    perpetrators: string[];
+    report: PotassiumEvaluation | null;
     summary: string | null;
   };
 }
@@ -256,6 +266,19 @@ export function buildClinicalPacket(
     anticoagulationSummary = `Anticoagulant therapy active (${agents.join(", ")}). Multi-agent bleed risk, organ clearance rails, and emergency reversal pathways evaluated.`;
   }
 
+  // 3g. Potassium Homeostasis & Cardioprotection
+  const potDesk = potassiumOnDesk(ids);
+  let potReport: PotassiumEvaluation | null = null;
+  let potSummary: string | null = null;
+  const hasPotassiumIssue = potDesk.hasPerpetrator || potDesk.hasBinder || potDesk.hasSupplement || potDesk.hasShiftAgent;
+  if (hasPotassiumIssue) {
+    potReport = potassiumReportOnDesk(ids, host);
+    potSummary = `${potReport.headline}. ${potReport.perpetrators.length} potassium-retaining agent(s) on regimen (${potReport.perpetrators.map((p) => p.name).join(", ")}).`;
+    if (potReport.activeBindersOnRegimen.length > 0) {
+      potSummary += ` Active GI binder: ${potReport.activeBindersOnRegimen.join(", ")}.`;
+    }
+  }
+
   const riskIndexes: ClinicalRiskIndexes = {
     mme: {
       hasOpioid,
@@ -280,6 +303,15 @@ export function buildClinicalPacket(
       hasDoac: doacReport.hasDoac,
       report: hasAnticoagulant ? doacReport : null,
       summary: anticoagulationSummary,
+    },
+    potassium: {
+      hasPotassiumIssue,
+      perpetratorCount: potDesk.perpetratorCount,
+      hasPerpetrator: potDesk.hasPerpetrator,
+      hasBinder: potDesk.hasBinder,
+      perpetrators: potReport ? potReport.perpetrators.map((p) => p.name) : [],
+      report: potReport,
+      summary: potSummary,
     },
   };
 
@@ -359,6 +391,23 @@ export function buildClinicalPacket(
     if (host.preg === "pregnant" || host.preg === "off") {
       counselingPoints.push(
         "Valproate carries an FDA boxed warning for severe birth defects (spina bifida) and permanent reductions in childhood IQ. Discuss effective contraception and alternative medications if you could become pregnant.",
+      );
+    }
+  }
+  if (potDesk.hasPerpetrator || potDesk.hasSupplement) {
+    counselingPoints.push(
+      "Avoid using salt substitutes containing potassium chloride (such as NoSalt or Nu-Salt) and check with your prescriber before taking potassium supplements, as combining them with your heart or kidney medications can lead to dangerous potassium spikes.",
+    );
+  }
+  if (potDesk.hasBinder) {
+    if (ids.includes("patiromer")) {
+      counselingPoints.push(
+        "Patiromer (Veltassa): Separate all your other oral medications by at least 3 hours before or 3 hours after taking patiromer, because it can bind other medications in your stomach and stop them from working.",
+      );
+    }
+    if (ids.includes("sodium-zirconium-cyclosilicate")) {
+      counselingPoints.push(
+        "Sodium zirconium cyclosilicate (Lokelma): Take as directed with meals. Report any noticeable swelling in your feet or legs, as each dose contains a small amount of dietary sodium.",
       );
     }
   }
@@ -481,6 +530,31 @@ export function buildClinicalPacket(
       `  Hyperammonemic Encephalopathy (VHE): Metabolite block of NAGS produces severe encephalopathy with completely normal AST/ALT.`,
       `  Antidote Protocol: IV L-Carnitine (Levocarnitine) 100 mg/kg IV loading (max 6 g), then 50 mg/kg q8h until ammonia resolves.`,
     );
+  }
+
+  if (riskIndexes.potassium.hasPotassiumIssue && riskIndexes.potassium.report) {
+    const pr = riskIndexes.potassium.report;
+    ehrLines.push(
+      `- Potassium Homeostasis & Cardioprotective Shifting: ${pr.headline}`,
+      `  Severity Tier: ${pr.severityTier.toUpperCase()} | Modeled Baseline: ${pr.potassiumMeqL.toFixed(1)} mEq/L (eGFR ${pr.egfrMlMin} mL/min)`,
+    );
+    if (pr.perpetrators.length > 0) {
+      ehrLines.push(`  Active Perpetrators: ${pr.perpetrators.map((p) => `${p.name} [${p.category}]`).join(", ")}`);
+    }
+    if (pr.membraneStabilization.indicated) {
+      ehrLines.push(`  Myocardial Membrane Stabilization: ${pr.membraneStabilization.primaryAgent.name} ${pr.membraneStabilization.primaryAgent.dose} (${pr.membraneStabilization.primaryAgent.routePreference})`);
+    }
+    if (pr.intracellularShifting.indicated) {
+      ehrLines.push(`  Intracellular Shifting: Regular Insulin ${pr.intracellularShifting.insulinDoseUnits} units IV + D50W ${pr.intracellularShifting.dextroseRequirement.administer ? "25 g" : "omitted"} | Albuterol 10–20 mg nebulized`);
+    }
+    if (pr.elimination.hemodialysis.emergentIndicated) {
+      ehrLines.push(`  Definitive Elimination: Emergent Hemodialysis Indicated (${pr.elimination.hemodialysis.triggersPresent.join("; ")})`);
+    } else if (pr.elimination.loopDiuretic.candidate) {
+      ehrLines.push(`  Kaliuresis: ${pr.elimination.loopDiuretic.recommendedDose}`);
+    }
+    if (pr.activeBindersOnRegimen.length > 0) {
+      ehrLines.push(`  Active GI Binders: ${pr.activeBindersOnRegimen.join(", ")}`);
+    }
   }
 
   ehrLines.push(

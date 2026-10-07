@@ -505,6 +505,41 @@ export function ClinicalPacketDialog({
                   )}
                 </div>
               )}
+
+              {/* Potassium Homeostasis & Cardioprotection Card */}
+              {packet.riskIndexes.potassium?.hasPotassiumIssue && packet.riskIndexes.potassium.report && (
+                <div className="rounded-xl border border-danger/30 bg-danger-soft/20 p-3.5 text-xs sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-semibold text-fg">
+                      Potassium Homeostasis & Cardioprotective Shifting
+                    </span>
+                    <span className="font-mono text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-danger-soft text-danger border border-danger/30">
+                      Tier: {packet.riskIndexes.potassium.report.severityTier}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-fg leading-relaxed">
+                    {packet.riskIndexes.potassium.summary}
+                  </p>
+                  {packet.riskIndexes.potassium.report.perpetrators.length > 0 && (
+                    <div className="mt-2 text-[11px] text-muted">
+                      <span className="font-semibold text-fg">Active Perpetrators on Regimen: </span>
+                      {packet.riskIndexes.potassium.report.perpetrators.map((p) => `${p.name} (${p.category})`).join(", ")}
+                    </div>
+                  )}
+                  {packet.riskIndexes.potassium.report.membraneStabilization.indicated && (
+                    <div className="mt-2 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
+                      <span className="font-mono font-bold text-danger">Membrane Stabilization Required: </span>
+                      {packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.name} {packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.dose} ({packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.routePreference})
+                    </div>
+                  )}
+                  {packet.riskIndexes.potassium.report.intracellularShifting.indicated && (
+                    <div className="mt-1.5 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
+                      <span className="font-mono font-bold text-accent">Intracellular Shifting Nomogram: </span>
+                      Regular Insulin {packet.riskIndexes.potassium.report.intracellularShifting.insulinDoseUnits} units IV + D50W {packet.riskIndexes.potassium.report.intracellularShifting.dextroseRequirement.administer ? "25 g" : "omitted (high BG)"} IV | Albuterol 10–20 mg nebulized (4x-8x asthma dose)
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
 

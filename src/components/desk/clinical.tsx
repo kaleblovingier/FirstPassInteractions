@@ -113,6 +113,15 @@ import {
   CARBAPENEM_IDS,
   type ValproateCollision,
 } from "@/lib/drugs/valproate";
+import {
+  potassiumOnDesk,
+  potassiumReportOnDesk,
+  evaluatePotassium,
+  type EcgFinding,
+  type UrineOutputStatus,
+  type PotassiumSeverityTier,
+  type PotassiumEvaluation,
+} from "@/lib/drugs/potassium";
 import { wardWanted, wardsOnDesk } from "@/lib/drugs/wards";
 import { safetyOnDesk, safetyWanted } from "@/lib/drugs/safety";
 import {
@@ -198,7 +207,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -219,6 +228,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const inr = useMemo(() => inrOnDesk(ids), [ids.join("|")]);
   const doacOn = useMemo(() => doacOnDesk(ids), [ids.join("|")]);
   const valproateOn = useMemo(() => valproateOnDesk(ids), [ids.join("|")]);
+  const potassiumOn = useMemo(() => potassiumOnDesk(ids), [ids.join("|")]);
   const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
   const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
   const steroids = useMemo(() => steroidReportOnDesk(ids), [ids.join("|")]);
@@ -247,6 +257,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "inr", label: "INR", on: Boolean(inr) },
       { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
       { id: "valproate", label: "Valproate", on: valproateOn.hasValproate },
+      { id: "potassium", label: "Potassium", on: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent },
       { id: "acb", label: "ACB", on: Boolean(acb) },
       { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
       { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
@@ -260,7 +271,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -315,6 +326,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
         {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoacPanel ids={ids} host={host} /> : null}
         {live === "valproate" && valproateOn.hasValproate ? <ValproatePanel ids={ids} host={host} /> : null}
+        {live === "potassium" ? <PotassiumPanel ids={ids} host={host} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
         {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
@@ -6275,6 +6287,601 @@ function ValproatePanel({ ids, host }: { ids: string[]; host: HostContext }) {
 
       <p className="text-[11px] leading-relaxed text-subtle">
         Educational clinical pharmacology reference only (non-device CDS). Valproic acid displays non-linear protein binding kinetics. Therapeutic drug monitoring, ammonia interpretation, and L-carnitine administration require individualized medical toxicologic evaluation.
+      </p>
+    </div>
+  );
+}
+
+function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
+  const potOn = useMemo(() => potassiumOnDesk(ids), [ids.join("|")]);
+
+  // Initial defaults
+  const initialK = potOn.perpetratorCount >= 3 ? "6.6" : potOn.perpetratorCount >= 2 ? "6.1" : potOn.hasPerpetrator ? "5.4" : "6.2";
+  const initialEgfr = host.kidney === "ckd" ? "28" : "65";
+  const initialUrine: UrineOutputStatus = host.kidney === "ckd" ? "oliguric" : "normal";
+
+  const [potassiumInput, setPotassiumInput] = useState(initialK);
+  const [egfrInput, setEgfrInput] = useState(initialEgfr);
+  const [ecgFinding, setEcgFinding] = useState<EcgFinding>(Number(initialK) >= 6.0 ? "peaked-t" : "normal");
+  const [urineOutput, setUrineOutput] = useState<UrineOutputStatus>(initialUrine);
+  const [glucoseInput, setGlucoseInput] = useState("140");
+  const [acidosisPresent, setAcidosisPresent] = useState(false);
+
+  const numK = Number(potassiumInput) || 5.0;
+  const numEgfr = Number(egfrInput) || 60;
+  const numGlucose = Number(glucoseInput) || 140;
+
+  const evaluation = useMemo(() => {
+    const res = evaluatePotassium({
+      potassiumMeqL: numK,
+      egfrMlMin: numEgfr,
+      ecgFinding,
+      urineOutput,
+      baselineGlucoseMgDl: numGlucose,
+      regimenIds: ids,
+    });
+    if (acidosisPresent) {
+      res.intracellularShifting.sodiumBicarbonateGuidance.indicated = true;
+    }
+    return res;
+  }, [numK, numEgfr, ecgFinding, urineOutput, numGlucose, ids.join("|"), acidosisPresent]);
+
+  const presets = [
+    {
+      label: "Severe HyperK with Peaked T",
+      k: "6.8",
+      egfr: "45",
+      ecg: "peaked-t" as EcgFinding,
+      urine: "normal" as UrineOutputStatus,
+      bg: "150",
+      acidosis: false,
+    },
+    {
+      label: "CKD Triad (ACEi+MRA+Bactrim)",
+      k: "6.4",
+      egfr: "22",
+      ecg: "pr-prolongation" as EcgFinding,
+      urine: "oliguric" as UrineOutputStatus,
+      bg: "125",
+      acidosis: false,
+    },
+    {
+      label: "Mild Outpatient on Lisinopril",
+      k: "5.3",
+      egfr: "65",
+      ecg: "normal" as EcgFinding,
+      urine: "normal" as UrineOutputStatus,
+      bg: "140",
+      acidosis: false,
+    },
+    {
+      label: "Dialysis Anuric Crash",
+      k: "7.4",
+      egfr: "8",
+      ecg: "sine-wave" as EcgFinding,
+      urine: "anuric" as UrineOutputStatus,
+      bg: "180",
+      acidosis: true,
+    },
+    {
+      label: "Digoxin Toxicity Collision",
+      k: "6.1",
+      egfr: "35",
+      ecg: "normal" as EcgFinding,
+      urine: "normal" as UrineOutputStatus,
+      bg: "130",
+      acidosis: false,
+    },
+  ];
+
+  const ecgOptions: { value: EcgFinding; label: string }[] = [
+    { value: "normal", label: "Normal Sinus" },
+    { value: "peaked-t", label: "Peaked T Waves" },
+    { value: "pr-prolongation", label: "PR Prolongation" },
+    { value: "p-loss", label: "Loss of P Waves" },
+    { value: "qrs-widening", label: "QRS Widening" },
+    { value: "sine-wave", label: "Sine Wave Pattern" },
+    { value: "none-documented", label: "Not Documented" },
+  ];
+
+  const urineOptions: { value: UrineOutputStatus; label: string }[] = [
+    { value: "normal", label: "Normal (>0.5 mL/kg/h)" },
+    { value: "oliguric", label: "Oliguric (<500 mL/24h)" },
+    { value: "anuric", label: "Anuric (<50 mL/24h)" },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h3 className="font-serif text-lg tracking-tight text-fg">
+            Hyperkalemia, Potassium Homeostasis & Cardioprotective Shifting Station
+          </h3>
+          <p className="mt-1 text-xs text-muted">
+            Membrane electrophysiology, EKG progression stages, 3-step stabilization nomogram (Calcium · Insulin/Dextrose/Albuterol · Diuretic/Binders/HD), and perpetrator triage.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          <Badge tone={evaluation.severityTier === "severe-emergency" ? "danger" : evaluation.severityTier === "moderate" ? "warn" : evaluation.severityTier === "mild" ? "info" : "ok"}>
+            Tier: {evaluation.severityTier.toUpperCase()}
+          </Badge>
+          {potOn.hasRaas && <Badge tone="warn">RAASi on Desk</Badge>}
+          {potOn.hasMra && <Badge tone="danger">MRA on Desk</Badge>}
+          {potOn.hasEnac && <Badge tone="danger">ENaC / Bactrim</Badge>}
+          {potOn.hasCni && <Badge tone="warn">Calcineurin Inhibitor</Badge>}
+          {potOn.hasBinder && <Badge tone="info">Active GI Binder</Badge>}
+        </div>
+      </div>
+
+      {/* Preset Scenarios */}
+      <div className="rounded-md border border-border bg-surface p-3 space-y-2">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-muted font-bold block">
+          Clinical Simulation Presets:
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {presets.map((p, idx) => {
+            const isMatch = potassiumInput === p.k && egfrInput === p.egfr && ecgFinding === p.ecg && urineOutput === p.urine;
+            return (
+              <button
+                key={idx}
+                type="button"
+                aria-pressed={isMatch}
+                onClick={() => {
+                  setPotassiumInput(p.k);
+                  setEgfrInput(p.egfr);
+                  setEcgFinding(p.ecg);
+                  setUrineOutput(p.urine);
+                  setGlucoseInput(p.bg);
+                  setAcidosisPresent(p.acidosis);
+                }}
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-xs font-medium transition",
+                  isMatch ? "bg-ink text-bg font-semibold" : "bg-bg-sunken text-fg hover:bg-surface-elevated"
+                )}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Interactive Inputs Grid */}
+      <article className="rounded-md bg-bg-sunken p-4 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2">
+          <h4 className="font-serif text-sm font-semibold text-fg">Patient Laboratory & Bedside Parameters</h4>
+          <span className="font-mono text-xs text-muted">
+            Modeled K+: <strong className="text-fg">{numK.toFixed(1)} mEq/L</strong> | eGFR: <strong className="text-fg">{numEgfr} mL/min</strong>
+          </span>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-xs text-muted">
+            Serum Potassium (mEq/L)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={potassiumInput}
+              onChange={(e) => setPotassiumInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">Normal: 3.5–5.0 mEq/L | Critical: &ge;6.5</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            Estimated GFR (mL/min/1.73m²)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={egfrInput}
+              onChange={(e) => setEgfrInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">CKD cutoff: &lt;30 mL/min halves insulin dose</span>
+          </label>
+
+          <label className="text-xs text-muted">
+            Baseline Glucose (mg/dL)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              value={glucoseInput}
+              onChange={(e) => setGlucoseInput(e.target.value)}
+            />
+            <span className="text-[10px] text-subtle block mt-0.5">Omit D50W push if BG &ge; 250 mg/dL</span>
+          </label>
+
+          <div>
+            <span className="text-xs text-muted block mb-1">Severe Metabolic Acidosis</span>
+            <button
+              type="button"
+              aria-pressed={acidosisPresent}
+              onClick={() => setAcidosisPresent(!acidosisPresent)}
+              className={cn(
+                "w-full rounded h-9 text-xs font-medium border text-center transition",
+                acidosisPresent ? "bg-warn-soft text-warn border-warn/40 font-bold" : "bg-surface text-muted border-border hover:text-fg"
+              )}
+            >
+              {acidosisPresent ? "pH < 7.20 / HCO3 < 15 (Present)" : "Non-Acidemic Baseline"}
+            </button>
+            <span className="text-[10px] text-subtle block mt-0.5">Only acidemic patients respond to NaHCO3</span>
+          </div>
+        </div>
+
+        {/* EKG & Urine Output Selectors */}
+        <div className="grid gap-3 md:grid-cols-2 pt-1">
+          <div>
+            <span className="text-xs text-muted block mb-1.5 font-medium">12-Lead EKG Finding:</span>
+            <div className="flex flex-wrap gap-1">
+              {ecgOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  aria-pressed={ecgFinding === opt.value}
+                  onClick={() => setEcgFinding(opt.value)}
+                  className={cn(
+                    "rounded px-2 py-1 text-[11px] font-medium border transition",
+                    ecgFinding === opt.value
+                      ? opt.value === "sine-wave" || opt.value === "qrs-widening" || opt.value === "peaked-t"
+                        ? "bg-danger text-bg border-danger font-bold"
+                        : "bg-ink text-bg border-ink font-semibold"
+                      : "bg-surface text-muted border-border hover:text-fg"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <span className="text-xs text-muted block mb-1.5 font-medium">Urine Output Status:</span>
+            <div className="flex flex-wrap gap-1">
+              {urineOptions.map((u) => (
+                <button
+                  key={u.value}
+                  type="button"
+                  aria-pressed={urineOutput === u.value}
+                  onClick={() => setUrineOutput(u.value)}
+                  className={cn(
+                    "rounded px-2.5 py-1 text-[11px] font-medium border transition",
+                    urineOutput === u.value ? "bg-ink text-bg border-ink font-bold" : "bg-surface text-muted border-border hover:text-fg"
+                  )}
+                >
+                  {u.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </article>
+
+      {/* Severity Headline & EKG Dissociation Warning */}
+      <article className={cn(
+        "rounded-md p-4 border space-y-2",
+        evaluation.severityTier === "severe-emergency"
+          ? "bg-danger-soft/30 border-danger/40"
+          : evaluation.severityTier === "moderate"
+          ? "bg-warn-soft/20 border-warn/30"
+          : "bg-bg-sunken border-border"
+      )}>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-serif text-sm font-bold text-fg">{evaluation.headline}</span>
+          <span className="font-mono text-xs font-bold text-muted">EKG: {ecgFinding.toUpperCase()}</span>
+        </div>
+        <p className="text-xs text-fg leading-relaxed">
+          <strong className="text-fg">Electrophysiology: </strong>
+          {evaluation.ecgInterpretation}
+        </p>
+
+        {evaluation.dissociationTrapAlert.includes("CRITICAL EKG DISSOCIATION TRAP") && (
+          <div className="mt-2 rounded bg-surface/90 p-3 border border-warn text-xs space-y-1">
+            <span className="font-mono text-[11px] font-bold uppercase text-warn block">
+              Diagnostic Trap: EKG Dissociation
+            </span>
+            <p className="text-fg leading-relaxed">
+              {evaluation.dissociationTrapAlert}
+            </p>
+          </div>
+        )}
+      </article>
+
+      {/* The 3-Step Acute Treatment Nomogram */}
+      <div className="space-y-4">
+        <h4 className="font-serif text-base font-semibold text-fg">
+          Acute 3-Step Stabilization & Shifting Nomogram
+        </h4>
+
+        {/* STEP 1: Myocardial Membrane Stabilization */}
+        <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 items-center justify-center rounded-full bg-danger text-[11px] font-bold text-bg">
+                1
+              </span>
+              <h5 className="font-serif text-sm font-semibold text-fg">
+                Myocardial Membrane Stabilization (Cardiac Protective)
+              </h5>
+            </div>
+            <Badge tone={evaluation.membraneStabilization.indicated ? "danger" : "default"}>
+              {evaluation.membraneStabilization.indicated ? "INDICATED STAT" : "MONITOR / RESERVE"}
+            </Badge>
+          </div>
+
+          <p className="text-xs text-muted leading-relaxed">
+            {evaluation.membraneStabilization.rationale}
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2 text-xs">
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">{evaluation.membraneStabilization.primaryAgent.name}</span>
+                <span className="font-mono text-[10px] text-accent font-semibold">Peripheral IV Preferred</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-fg">{evaluation.membraneStabilization.primaryAgent.dose}</p>
+              <p className="text-muted text-[11px]">{evaluation.membraneStabilization.primaryAgent.infusionTime}</p>
+              <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px] text-subtle">
+                <span>Onset: {evaluation.membraneStabilization.primaryAgent.onset}</span>
+                <span>Duration: {evaluation.membraneStabilization.primaryAgent.duration}</span>
+                <span>Ca2+: {evaluation.membraneStabilization.primaryAgent.elementalCalciumMeq} mEq</span>
+              </div>
+              <p className="text-[10px] text-muted pt-0.5">{evaluation.membraneStabilization.primaryAgent.repeatInterval}</p>
+            </div>
+
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">{evaluation.membraneStabilization.alternativeAgent.name}</span>
+                <span className="font-mono text-[10px] text-danger font-semibold">Central Line Preferred</span>
+              </div>
+              <p className="font-mono text-sm font-bold text-fg">{evaluation.membraneStabilization.alternativeAgent.dose}</p>
+              <p className="text-muted text-[11px]">{evaluation.membraneStabilization.alternativeAgent.infusionTime}</p>
+              <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px] text-subtle">
+                <span>Ca2+: {evaluation.membraneStabilization.alternativeAgent.elementalCalciumMeq} mEq (3x higher)</span>
+              </div>
+              <p className="text-[10px] text-danger font-medium leading-relaxed">
+                {evaluation.membraneStabilization.alternativeAgent.specialAlert}
+              </p>
+            </div>
+          </div>
+
+          {evaluation.membraneStabilization.digoxinPrecaution.includes("DIGOXIN ALERT") && (
+            <div className="rounded bg-warn-soft/30 p-2.5 border border-warn/30 text-xs text-fg leading-relaxed">
+              <span className="font-mono font-bold text-warn text-[11px] block">Digoxin Warning:</span>
+              {evaluation.membraneStabilization.digoxinPrecaution}
+            </div>
+          )}
+        </article>
+
+        {/* STEP 2: Intracellular Shifting */}
+        <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-bg">
+                2
+              </span>
+              <h5 className="font-serif text-sm font-semibold text-fg">
+                Intracellular Shifting (Temporizing K+ Redistribution)
+              </h5>
+            </div>
+            <Badge tone={evaluation.intracellularShifting.indicated ? "accent" : "default"}>
+              {evaluation.intracellularShifting.indicated ? "ACTIVE SHIFT" : "BASELINE"}
+            </Badge>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 text-xs">
+            {/* Insulin + Dextrose */}
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-1">
+              <span className="font-bold text-fg block">A. Regular Insulin IV Push</span>
+              <span className="font-mono text-base font-bold text-accent block">
+                {evaluation.intracellularShifting.insulinDoseUnits} Units IV
+              </span>
+              <p className="text-muted text-[11px] leading-relaxed">
+                {evaluation.intracellularShifting.insulinAdjustmentReason}
+              </p>
+              <div className="mt-2 pt-1.5 border-t border-border/70 space-y-0.5">
+                <span className="font-semibold text-fg block text-[11px]">Co-administered Dextrose:</span>
+                <span className="font-mono text-xs font-bold text-fg">
+                  {evaluation.intracellularShifting.dextroseRequirement.administer
+                    ? "D50W 25 g (50 mL) IV"
+                    : "Deferred (BG &ge; 250 mg/dL)"}
+                </span>
+                <p className="text-[10px] text-subtle leading-relaxed">
+                  {evaluation.intracellularShifting.dextroseRequirement.reason}
+                </p>
+              </div>
+            </div>
+
+            {/* High-Dose Nebulized Albuterol */}
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-1">
+              <span className="font-bold text-fg block">B. High-Dose Albuterol Nebulizer</span>
+              <span className="font-mono text-base font-bold text-fg block">
+                {evaluation.intracellularShifting.albuterolDosing.doseMg} to 20 mg Nebulized
+              </span>
+              <p className="text-[11px] text-accent font-medium">
+                {evaluation.intracellularShifting.albuterolDosing.asthmaComparison}
+              </p>
+              <p className="text-muted text-[11px] leading-relaxed">
+                {evaluation.intracellularShifting.albuterolDosing.onsetAndDuration}
+              </p>
+              <p className="text-subtle text-[10px] leading-relaxed pt-1">
+                {evaluation.intracellularShifting.albuterolDosing.caution}
+              </p>
+            </div>
+
+            {/* Sodium Bicarbonate */}
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">C. Sodium Bicarbonate IV</span>
+                <Badge tone={evaluation.intracellularShifting.sodiumBicarbonateGuidance.indicated ? "warn" : "default"}>
+                  {evaluation.intracellularShifting.sodiumBicarbonateGuidance.indicated ? "INDICATED" : "NOT BENEFICIAL"}
+                </Badge>
+              </div>
+              <p className="font-mono text-xs font-bold text-fg pt-1">
+                {evaluation.intracellularShifting.sodiumBicarbonateGuidance.dose}
+              </p>
+              <p className="text-[11px] text-muted leading-relaxed">
+                {evaluation.intracellularShifting.sodiumBicarbonateGuidance.acidosisRequirement}
+              </p>
+              <p className="text-[10px] text-subtle leading-relaxed pt-1">
+                {evaluation.intracellularShifting.sodiumBicarbonateGuidance.ineffectiveWarning}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded bg-surface p-2.5 border border-border text-[11px] text-muted">
+            <strong className="text-fg">Monitoring Cadence: </strong>
+            {evaluation.intracellularShifting.glucoseMonitoringCadence}
+          </div>
+        </article>
+
+        {/* STEP 3: Potassium Elimination */}
+        <article className="rounded-md border border-border bg-surface p-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 items-center justify-center rounded-full bg-ok text-[11px] font-bold text-bg">
+                3
+              </span>
+              <h5 className="font-serif text-sm font-semibold text-fg">
+                Total Body Potassium Elimination (Actual Removal)
+              </h5>
+            </div>
+            {evaluation.elimination.hemodialysis.emergentIndicated && (
+              <Badge tone="danger">EMERGENT HD REQUIRED</Badge>
+            )}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 text-xs">
+            {/* Loop Diuretic */}
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">A. Loop Diuretic</span>
+                <Badge tone={evaluation.elimination.loopDiuretic.candidate ? "ok" : "default"}>
+                  {evaluation.elimination.loopDiuretic.candidate ? "CANDIDATE" : "INEFFECTIVE"}
+                </Badge>
+              </div>
+              <p className="font-mono text-sm font-bold text-fg">
+                {evaluation.elimination.loopDiuretic.recommendedDose}
+              </p>
+              <p className="text-[11px] text-muted leading-relaxed">
+                {evaluation.elimination.loopDiuretic.feasibilityNote}
+              </p>
+            </div>
+
+            {/* Modern GI Binders */}
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1.5 sm:col-span-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-fg">B. Gastrointestinal Potassium Binders</span>
+                <span className="font-mono text-[10px] text-muted">SZC vs Patiromer vs SPS</span>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3 text-[11px]">
+                {/* Lokelma */}
+                <div className="rounded bg-surface p-2 border border-border space-y-1">
+                  <span className="font-bold text-fg block">SZC (Lokelma)</span>
+                  <span className="font-mono text-[10px] font-bold text-ok block">Onset: ~1 hour (Rapid)</span>
+                  <p className="text-muted text-[10px]">{evaluation.elimination.giBinders.szcLokelma.dose}</p>
+                  <p className="text-subtle text-[9px]">{evaluation.elimination.giBinders.szcLokelma.sodiumLoadWarning}</p>
+                </div>
+
+                {/* Patiromer */}
+                <div className="rounded bg-surface p-2 border border-border space-y-1">
+                  <span className="font-bold text-fg block">Patiromer (Veltassa)</span>
+                  <span className="font-mono text-[10px] font-bold text-accent block">Onset: 4–7 hours (Subacute)</span>
+                  <p className="text-muted text-[10px]">{evaluation.elimination.giBinders.patiromerVeltassa.dose}</p>
+                  <p className="text-warn text-[9px] font-medium">{evaluation.elimination.giBinders.patiromerVeltassa.drugSeparationWindow}</p>
+                </div>
+
+                {/* SPS */}
+                <div className="rounded bg-surface p-2 border border-border space-y-1">
+                  <span className="font-bold text-fg block">SPS (Kayexalate)</span>
+                  <span className="font-mono text-[10px] font-bold text-danger block">Delayed & Erratic</span>
+                  <p className="text-muted text-[10px]">{evaluation.elimination.giBinders.spsKayexalate.dose}</p>
+                  <p className="text-danger text-[9px] font-semibold">{evaluation.elimination.giBinders.spsKayexalate.boxedWarningBowelNecrosis}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Emergent Hemodialysis Card */}
+          <div className={cn(
+            "rounded p-3 border text-xs space-y-1",
+            evaluation.elimination.hemodialysis.emergentIndicated
+              ? "bg-danger-soft/40 border-danger text-fg"
+              : "bg-bg-sunken border-border text-muted"
+          )}>
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-fg">C. Emergent Hemodialysis (Definitive Clearance)</span>
+              <span className="font-mono text-[11px] font-semibold">
+                {evaluation.elimination.hemodialysis.clearanceRateMeqPerHour}
+              </span>
+            </div>
+            <p className="leading-relaxed">{evaluation.elimination.hemodialysis.summary}</p>
+            {evaluation.elimination.hemodialysis.triggersPresent.length > 0 && (
+              <div className="pt-1 flex flex-wrap gap-1 font-mono text-[10px]">
+                {evaluation.elimination.hemodialysis.triggersPresent.map((trig, i) => (
+                  <span key={i} className="rounded bg-surface px-1.5 py-0.5 border border-border">
+                    • {trig}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </article>
+      </div>
+
+      {/* Perpetrator Audit on Regimen */}
+      {evaluation.perpetrators.length > 0 ? (
+        <article className="rounded-md border border-warn/40 bg-warn-soft/20 p-4 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="font-serif text-sm font-semibold text-fg">
+              Active Hyperkalemic Perpetrators on Tray ({evaluation.perpetrators.length})
+            </span>
+            <span className="font-mono text-xs font-bold text-warn">Audit & Hold Actions</span>
+          </div>
+          <div className="space-y-2">
+            {evaluation.perpetrators.map((perp, idx) => (
+              <div key={idx} className="rounded bg-surface p-3 text-xs border border-border space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-fg">{perp.name}</span>
+                  <span className={cn(
+                    "font-mono text-[9px] uppercase font-bold px-1.5 py-0.5 rounded",
+                    perp.potency === "high" ? "bg-danger text-bg" : perp.potency === "moderate" ? "bg-warn-soft text-warn" : "bg-accent-soft text-accent"
+                  )}>
+                    {perp.category} ({perp.potency})
+                  </span>
+                </div>
+                <p className="text-muted leading-relaxed">
+                  <strong className="text-fg">Mechanism ({perp.nephronSite}): </strong>
+                  {perp.mechanism}
+                </p>
+                <p className="text-fg font-medium leading-relaxed pt-0.5">
+                  <strong className="text-accent">Recommended Hold Action: </strong>
+                  {perp.recommendedHoldAction}
+                </p>
+              </div>
+            ))}
+          </div>
+        </article>
+      ) : (
+        <article className="rounded-md bg-bg-sunken p-3 text-xs text-muted border border-border">
+          No potassium-sparing diuretics, RAAS inhibitors, MRAs, or supplements detected on the current active desk tray. Add lisinopril, spironolactone, triamterene, Bactrim, or potassium supplements to model interactions.
+        </article>
+      )}
+
+      {/* Clinical Pearls */}
+      <article className="rounded-md bg-accent-soft/20 border border-accent/30 p-4 space-y-2 text-xs">
+        <span className="font-serif font-bold text-accent block text-sm">
+          High-Yield Clinical Pharmacology Pearls
+        </span>
+        <ul className="space-y-1.5 list-disc list-inside text-fg leading-relaxed">
+          {evaluation.clinicalPearls.map((pearl, i) => (
+            <li key={i}>{pearl}</li>
+          ))}
+        </ul>
+      </article>
+
+      {/* Regulatory Footer */}
+      <p className="text-[11px] leading-relaxed text-subtle">
+        Educational clinical pharmacology reference only (non-device CDS). Cardioprotective shifting and potassium binder selection require institutional emergency protocols and individualized clinical judgment.
       </p>
     </div>
   );

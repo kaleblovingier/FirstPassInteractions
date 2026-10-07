@@ -106,4 +106,23 @@ test("buildClinicalPacket: evaluates valproate saturable binding, VHE, and L-car
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("spina bifida") || cp.includes("birth defects")));
 });
 
+test("buildClinicalPacket: evaluates potassium homeostasis, perpetrators, binders, and shifting guidance", () => {
+  const host = {
+    ...DEFAULT_HOST,
+    kidney: "ckd" as const,
+  };
+  const ids = ["lisinopril", "spironolactone", "tmp-smx", "patiromer"];
+  const findings = analyze(ids, host).findings;
+  const packet = buildClinicalPacket(ids, host, findings, { lisinopril: "20 mg daily", spironolactone: "25 mg daily" });
+
+  assert.equal(packet.riskIndexes.potassium.hasPotassiumIssue, true);
+  assert.equal(packet.riskIndexes.potassium.hasBinder, true);
+  assert.ok(packet.riskIndexes.potassium.report !== null);
+  assert.ok(packet.riskIndexes.potassium.perpetrators.length >= 3);
+  assert.ok(packet.ehrNoteText.includes("Potassium Homeostasis & Cardioprotective Shifting"));
+  assert.ok(packet.ehrNoteText.includes("Regular Insulin"));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("salt substitutes") || cp.includes("potassium chloride")));
+  assert.ok(packet.counselingPoints.some((cp) => cp.includes("Patiromer") && cp.includes("3 hours")));
+});
+
 
