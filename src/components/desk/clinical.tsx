@@ -90,6 +90,7 @@ import { LIVERTOX_CAT_TONE, livertoxOnDesk, livertoxUrl } from "@/lib/drugs/live
 import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
 import { hasPhenoConvert, phenoConvertOnDesk } from "@/lib/drugs/pheno-convert";
 import { PhenoContrastBoard } from "./pheno-contrast";
+import { NarcoticBridge } from "./narcotic-bridge";
 import { qtReport } from "@/lib/drugs/qt";
 import { reversalOnDesk } from "@/lib/drugs/reversal";
 import { ancBand, ancWanted } from "@/lib/drugs/anc";
@@ -1255,6 +1256,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
         stripped), TripSit combination ratings, SAMHSA and CDC paraphrases — teaching, not a
         protocol, not a milligram, not a cooking guide.
       </p>
+      <NarcoticBridge ids={ids} />
 
       {combos.map((row) => (
         <article key={row.id} className={cn("rounded-md px-3 py-3", toneClass(comboTone(row.rating)))}>

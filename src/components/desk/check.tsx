@@ -13,6 +13,7 @@ import { SEVERITY_LABEL } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
 import { DeskReaders } from "./readers";
+import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
@@ -167,6 +168,12 @@ function extraNote(rows: Finding[]) {
   return rest > 0 ? `also ${named} · +${rest}` : `also ${named}`;
 }
 
+function gradeOf(f: Finding) {
+  const word = f.mechanism.split(" ")[0]?.toLowerCase();
+  if (word === "strong" || word === "moderate" || word === "weak") return word;
+  return "";
+}
+
 function sourceOf(f: Finding) {
   const basis = basisFor(f).find((item) => item.href && item.label);
   if (!basis?.href) return undefined;
@@ -186,7 +193,10 @@ function directionLine(rows: Finding[]) {
     base = short.charAt(0).toUpperCase() + short.slice(1);
   }
   const enzyme = f.enzymes.find((e) => !base.includes(e));
-  if (enzyme) base = `${base} · ${enzyme}`;
+  if (enzyme) {
+    const grade = gradeOf(f);
+    base = grade ? `${base} · ${grade} ${enzyme}` : `${base} · ${enzyme}`;
+  }
   const mark = victimMark(f);
   if (mark) base = `${base} · ${mark}`;
   const more = extraNote(rows);
@@ -336,6 +346,7 @@ export function CheckBoard({
 
       {lead ? <LeadRail finding={lead} /> : null}
       {lead ? <LeadSources finding={lead} /> : null}
+      <NarcoticBridge ids={ids} findings={findings} />
 
       {shelf ? (
         <p className="rounded-md bg-bg-sunken px-3 py-2 text-sm leading-relaxed text-fg">

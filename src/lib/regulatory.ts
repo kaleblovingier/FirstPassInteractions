@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.21.0",
+  version: "1.25.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.21.0",
+  buildId: "FP-SW-1.25.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -43,6 +43,10 @@ export const INDICATIONS = [
   "Showing the sharpest pregnancy, CKD, older-adult, and daily-smoke row on the pair grid, labeled as a different host. Those cells are not the person on the desk unless that flag is on. They do not pick a milligram.",
   "Showing the sharpest food and host rows on a two-drug check, not only on a longer regimen. A host cell that says more in this lane has other rows below. None of those cells pick a milligram.",
   "Naming the first openable source on a mapped cell, a food cell, and a host cell. The source is for independent review. It is not a clearance and not a milligram.",
+  "On a CYP cell, naming the perpetrator grade already on that row: strong, moderate, or weak. The grade is the map’s word. It is not a milligram and not a clearance.",
+  "When narcotic use is reported, or an opioid or partial opioid is on the desk, showing public lines for treatment referral, a treatment locator, a crisis line, and an overdose-response line. The desk does not diagnose a substance use disorder and does not pick a treatment or a milligram. The report is not stored.",
+  "When that card is open and the map already has an opioid-with-benzodiazepine, gabapentinoid, or second-agonist row, naming that row. Copying the public lines does not store the report and does not pick a next step.",
+  "Keeping the call buttons on one line and the explanation of each public line behind a disclosure, so the interaction check stays reachable. If the copy fails, the same lines are shown to copy by hand.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",
