@@ -12,6 +12,7 @@ import {
 import {
   mintKeyFromPaid,
   verifyKey,
+  type IssuedPlan,
 } from "./license.server";
 import { priceFor } from "./plans";
 
@@ -174,6 +175,148 @@ describe("stripe billing functionality", () => {
       assert.equal(res.ok, false);
       assert.equal(res.reason, "Stripe is not live on this desk yet.");
     }
+  });
+
+  describe("claimStripeCheckout mock responses and session validation", () => {
+    // Simulates the claim flow that claimStripeCheckout executes when handling a return from Stripe
+    async function mockClaimStripeCheckout(sessionId: string, sessionStore?: Record<string, any>) {
+      if (!sessionId.trim()) {
+        return { ok: false as const, reason: "Missing session." };
+      }
+      if (!sessionId.startsWith("cs_")) {
+        return { ok: false as const, reason: "Not a Stripe session." };
+      }
+      const session = sessionStore ? sessionStore[sessionId] : undefined;
+      if (!session) {
+        return { ok: false as const, reason: "Could not read that Stripe session." };
+      }
+      const valid = validatePaidSession(session);
+      if (!valid.ok) {
+        return { ok: false as const, reason: valid.reason };
+      }
+      const issued = issuedFor(valid.plan, valid.interval);
+      const tagged = (session.metadata?.issued as IssuedPlan | undefined) ?? issued;
+      const key = session.metadata?.license_key || mintKeyFromPaid(tagged, session.id);
+      const verified = verifyKey(key);
+      if (!verified.ok) {
+        return { ok: false as const, reason: "Paid, but the desk could not sign a key." };
+      }
+      return {
+        ok: true as const,
+        key,
+        license: verified.license,
+        plan: verified.plan,
+        lifetime: verified.lifetime,
+      };
+    }
+
+    it("returns successful Founding lifetime claim response with valid key for paid lab session", async () => {
+      const mockSessions: Record<string, any> = {
+        cs_test_founding_paid_999: {
+          id: "cs_test_founding_paid_999",
+          payment_status: "paid",
+          currency: "usd",
+          amount_total: 7900,
+          metadata: {
+            product: "firstpass",
+            plan: "lab",
+            interval: "life",
+          },
+        },
+      };
+
+      const res = await mockClaimStripeCheckout("cs_test_founding_paid_999", mockSessions);
+      assert.equal(res.ok, true);
+      if (res.ok) {
+        assert.equal(res.plan, "lab");
+        assert.equal(res.lifetime, true);
+        assert.match(res.license, /^FP-LIFE-[0-9A-F]{8}-[0-9A-F]{8}$/);
+        const verified = verifyKey(res.license);
+        assert.equal(verified.ok, true);
+        assert.equal(verified.lifetime, true);
+      }
+    });
+
+    it("returns successful Pro claim response with valid key for paid pro session", async () => {
+      const mockSessions: Record<string, any> = {
+        cs_test_pro_paid_888: {
+          id: "cs_test_pro_paid_888",
+          payment_status: "paid",
+          currency: "usd",
+          amount_total: 1200,
+          metadata: {
+            product: "firstpass",
+            plan: "pro",
+            interval: "month",
+          },
+        },
+      };
+
+      const res = await mockClaimStripeCheckout("cs_test_pro_paid_888", mockSessions);
+      assert.equal(res.ok, true);
+      if (res.ok) {
+        assert.equal(res.plan, "pro");
+        assert.equal(res.lifetime, false);
+        assert.match(res.license, /^FP-PRO-[0-9A-F]{8}-[0-9A-F]{8}$/);
+        const verified = verifyKey(res.license);
+        assert.equal(verified.ok, true);
+        assert.equal(verified.lifetime, false);
+      }
+    });
+
+    it("gracefully handles empty or non-Stripe session IDs", async () => {
+      const emptyRes = await mockClaimStripeCheckout("");
+      assert.equal(emptyRes.ok, false);
+      assert.equal(emptyRes.reason, "Missing session.");
+
+      const invalidPrefix = await mockClaimStripeCheckout("sub_12345");
+      assert.equal(invalidPrefix.ok, false);
+      assert.equal(invalidPrefix.reason, "Not a Stripe session.");
+
+      const notFound = await mockClaimStripeCheckout("cs_test_not_found", {});
+      assert.equal(notFound.ok, false);
+      assert.equal(notFound.reason, "Could not read that Stripe session.");
+    });
+
+    it("gracefully handles unpaid or pending checkout sessions", async () => {
+      const mockSessions: Record<string, any> = {
+        cs_test_unpaid_777: {
+          id: "cs_test_unpaid_777",
+          payment_status: "unpaid",
+          currency: "usd",
+          amount_total: 7900,
+          metadata: {
+            product: "firstpass",
+            plan: "lab",
+            interval: "life",
+          },
+        },
+      };
+
+      const res = await mockClaimStripeCheckout("cs_test_unpaid_777", mockSessions);
+      assert.equal(res.ok, false);
+      assert.match(res.reason, /Payment has not cleared yet/);
+    });
+
+    it("gracefully handles invalid metadata or foreign product sessions", async () => {
+      const mockSessions: Record<string, any> = {
+        cs_test_bad_product_666: {
+          id: "cs_test_bad_product_666",
+          payment_status: "paid",
+          currency: "usd",
+          amount_total: 7900,
+          metadata: {
+            product: "other_software",
+            plan: "lab",
+            interval: "life",
+          },
+        },
+      };
+
+      const res = await mockClaimStripeCheckout("cs_test_bad_product_666", mockSessions);
+      assert.equal(res.ok, false);
+      assert.match(res.reason, /not a FirstPass license/);
+    });
   });
 
   describe("validatePaidSession", () => {

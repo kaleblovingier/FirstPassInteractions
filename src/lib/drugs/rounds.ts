@@ -1,4 +1,9 @@
 import { sampleNeedsPro, type SampleRegimen } from "./samples";
+import { DRUG_BY_ID } from "./catalog";
+
+if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
+  DRUG_BY_ID["hydrochlorothiazide"] = DRUG_BY_ID["hctz"];
+}
 
 export type RoundSetting = "clinic" | "mat" | "street" | "ward" | "kitchen";
 
@@ -1462,7 +1467,30 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Gabapentin 100% renal elimination · GFR accumulation · neurotoxicity and myoclonus",
   },
+  {
+    id: "r-icu-lithium-hctz-toxicity",
+    title: "The bipolar stabilizer and the added thiazide",
+    setting: "ward",
+    stem: "A bipolar patient maintained on stable lithium therapy is started on hydrochlorothiazide for hypertension. Over the subsequent three weeks, the patient presents to the intensive care unit with acute kidney injury, coarse tremor, marked ataxia, and profound confusion.",
+    ask: "What renal transport mechanism caused this acute lithium toxicity, and how does distal natriuresis alter proximal reabsorption?",
+    teach: "Lithium is handled like sodium in the nephron: ~80% is reabsorbed in the proximal tubule via NHE3 (Na+/H+ exchanger), with negligible distal reabsorption. Hydrochlorothiazide blocks the distal convoluted tubule Na-Cl cotransporter (NCCT), producing distal natriuresis and mild volume contraction. This triggers compensatory proximal tubular sodium reabsorption. Because the proximal tubule cannot distinguish lithium from sodium, it hyper-reabsorbs both, cutting lithium clearance in half (30% to 50%). Consequent supratherapeutic lithium accumulation provokes acute neurotoxicity—coarse tremor, ataxia, confusion—and acute kidney injury. Consensus literature advises avoiding thiazides with lithium or intensely monitoring levels with empiric dose adjustments. Open the Lithium tab for proximal tubule mechanics.",
+    drugIds: ["lithium", "hydrochlorothiazide"],
+    lane: "clinic",
+    blurb: "Lithium-thiazide proximal NHE3 reabsorption · 50% clearance drop · neurotoxicity",
+  },
+  {
+    id: "r-ed-digoxin-amiodarone-heart-block",
+    title: "The atrial fibrillation rate control collision",
+    setting: "clinic",
+    stem: "A heart failure patient maintained on digoxin therapy is started on amiodarone for persistent atrial fibrillation. Two weeks later, the patient presents to the emergency department with profound weakness, nausea, yellow-green visual halos (xanthopsia), and an ECG revealing high-grade AV block with a junctional escape rhythm at 32 bpm.",
+    ask: "What dual pharmacokinetic and pharmacodynamic mechanisms explain this severe digitalis intoxication?",
+    teach: "Amiodarone potently inhibits P-glycoprotein (ABCB1) efflux pumps in renal proximal tubular cells and intestinal enterocytes, doubling serum digoxin concentrations within 1 to 2 weeks. Simultaneously, both agents exert additive negative dromotropic effects on the AV node, precipitating severe bradycardia, high-grade AV block, and junctional escape rhythms alongside classic visual halos (xanthopsia) and gastrointestinal toxicity. Consensus guidelines and FDA labeling recommend an empiric 30% to 50% digoxin dose reduction with serial concentration monitoring whenever amiodarone is initiated. Open the Cardio tab for AV nodal and P-gp interactions.",
+    drugIds: ["digoxin", "amiodarone"],
+    lane: "clinic",
+    blurb: "Digoxin-amiodarone P-gp inhibition · doubled serum concentrations · additive AV block",
+  },
 ];
+
 
 
 

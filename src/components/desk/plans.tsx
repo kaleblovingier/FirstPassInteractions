@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, CreditCard, KeyRound, Loader2, X } from "lucide-react";
+import { Check, Copy, CreditCard, KeyRound, Loader2, X } from "lucide-react";
 import {
   COMMERCE,
   FOUNDING_UNLOCKS,
@@ -35,6 +35,18 @@ export function PlansPage() {
   const previewing = Boolean(previewUntil && Date.now() < previewUntil && current === "pro");
   const founding = lifetime || (current === "lab" && !previewing);
 
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  const copyText = async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedText(id);
+      window.setTimeout(() => setCopiedText(null), 1800);
+    } catch {
+      /* clipboard fallback */
+    }
+  };
+
   const unlock = () => openCheckout("lab", FOUNDING_REASON, "life");
   const redeem = () => {
     openCheckout("lab", REDEEM_REASON, "life");
@@ -59,16 +71,16 @@ export function PlansPage() {
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{COMMERCE.pitch}</p>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
               {founding ? (
-                <Button variant="secondary" disabled className="w-full sm:w-auto">
+                <Button variant="secondary" disabled className="w-full min-h-[44px] sm:w-auto">
                   <Check className="size-4" />
                   Founding is live on this desk
                 </Button>
               ) : (
-                <Button onClick={unlock} className="w-full sm:w-auto">
+                <Button onClick={unlock} className="w-full min-h-[44px] sm:w-auto cursor-pointer">
                   Unlock founding · ${COMMERCE.founding} once
                 </Button>
               )}
-              <Button variant="secondary" onClick={redeem} className="w-full sm:w-auto">
+              <Button variant="secondary" onClick={redeem} className="w-full min-h-[44px] sm:w-auto cursor-pointer">
                 <KeyRound className="size-4" />
                 Have a key? Redeem it
               </Button>
@@ -76,7 +88,7 @@ export function PlansPage() {
                 <button
                   type="button"
                   onClick={startPreview}
-                  className="h-10 text-sm text-muted underline-offset-4 hover:text-fg hover:underline sm:px-2"
+                  className="flex min-h-[44px] items-center text-sm text-muted underline-offset-4 hover:text-fg hover:underline cursor-pointer sm:px-2"
                 >
                   Or try 1 day free
                 </button>
@@ -94,7 +106,7 @@ export function PlansPage() {
               ? "Founding is live — host factors, enzyme atlas, metabolite maps, full report, and export are yours."
               : "Your key is live — host factors and the enzyme atlas are open on this desk."}
           {license ? ` Key ${license}.` : ""}{" "}
-          <button type="button" className="underline" onClick={downgrade}>
+          <button type="button" className="underline min-h-[44px] inline-flex items-center cursor-pointer" onClick={downgrade}>
             Return to free desk
           </button>
         </p>
@@ -128,26 +140,54 @@ export function PlansPage() {
               </ul>
               <div className="mt-6">
                 {isFree ? (
-                  <Button variant="secondary" className="w-full" disabled={current === "free"} onClick={downgrade}>
+                  <Button variant="secondary" className="w-full min-h-[44px]" disabled={current === "free"} onClick={downgrade}>
                     {current === "free" ? "You're on the free desk" : "Switch to free desk"}
                   </Button>
-                ) : founding ? (
-                  <Button variant="secondary" className="w-full" disabled>
-                    Your current license
-                  </Button>
                 ) : (
-                  <div className="space-y-2">
-                    <Button className="w-full" onClick={unlock}>
-                      Unlock founding · ${COMMERCE.founding} once
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={redeem}
-                      className="h-10 w-full text-sm font-medium text-accent hover:underline"
-                    >
-                      Already paid? Redeem your key
-                    </button>
-                  </div>
+                  <>
+                    {/* Prominent accepted payment badges directly on Founding card */}
+                    {id === "lab" ? (
+                      <div className="mb-3 space-y-1.5">
+                        <p className="font-mono text-[10px] uppercase tracking-wider text-muted font-semibold">
+                          Accepted Payment Rails
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                            <CreditCard className="size-3 text-accent shrink-0" />
+                            Card / Stripe (Instant Key)
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                            Venmo (@{OPERATOR.venmo})
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                            Cash App (${OPERATOR.cashApp})
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                            PayPal ({OPERATOR.paypal})
+                          </span>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {founding ? (
+                      <Button variant="secondary" className="w-full min-h-[44px]" disabled>
+                        Your current license
+                      </Button>
+                    ) : (
+                      <div className="space-y-2">
+                        <Button className="w-full min-h-[44px] cursor-pointer font-semibold" onClick={unlock}>
+                          Unlock founding · ${COMMERCE.founding} once
+                        </Button>
+                        <button
+                          type="button"
+                          onClick={redeem}
+                          className="flex min-h-[44px] w-full items-center justify-center text-sm font-medium text-accent hover:underline cursor-pointer"
+                        >
+                          Already paid? Redeem your key
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </li>
@@ -159,10 +199,10 @@ export function PlansPage() {
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-6">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Direct & instant payment</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted font-semibold">Direct & instant payment</p>
             <h2 className="mt-1 font-serif text-xl tracking-tight text-fg">Accepted Payment Methods</h2>
           </div>
-          <span className="font-mono text-xs text-accent">All payment rails directly on this desk</span>
+          <span className="font-mono text-xs text-accent font-medium">All payment rails directly on this desk</span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted">
           All payment methods are supported on the same page to avoid confusion. Choose instant automated card processing or your preferred manual rail below.
@@ -170,11 +210,16 @@ export function PlansPage() {
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {/* Credit / Debit Card */}
-          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
-              <div className="flex items-center gap-2">
-                <CreditCard className="size-4 shrink-0 text-accent" />
-                <span className="text-sm font-semibold text-fg">Credit / Debit Card</span>
+              <div className="flex items-center justify-between gap-1.5">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="size-4 shrink-0 text-accent" />
+                  <span className="text-sm font-semibold text-fg">Card / Stripe</span>
+                </div>
+                <span className="rounded bg-ok-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold text-ok">
+                  Instant Key
+                </span>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted">
                 Instant automatic key minting & activation via Stripe. No manual waiting required.
@@ -185,69 +230,130 @@ export function PlansPage() {
                 variant="secondary"
                 size="sm"
                 onClick={unlock}
-                className="min-h-[44px] w-full text-xs"
+                className="min-h-[44px] w-full text-xs font-semibold cursor-pointer"
               >
-                Card Checkout
+                Card Checkout · Instant
               </Button>
             </div>
           </div>
 
           {/* Venmo */}
-          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-sm font-semibold text-fg">Venmo</span>
-                <span className="font-mono text-xs font-semibold text-accent">@{OPERATOR.venmo}</span>
+                <span className="rounded bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent">
+                  @{OPERATOR.venmo}
+                </span>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted">
-                Send ${COMMERCE.founding} founding payment to <span className="font-mono text-fg">@{OPERATOR.venmo}</span>. Operator issues signed key after clearing.
+                Send ${COMMERCE.founding} founding payment to <span className="font-mono text-fg font-medium">@{OPERATOR.venmo}</span>. Operator issues signed key after clearing.
               </p>
             </div>
-            <div className="mt-3">
-              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs" asChild>
+            <div className="mt-3 flex flex-col gap-2">
+              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs font-semibold" asChild>
                 <a href={OPERATOR.venmoUrl} target="_blank" rel="noreferrer">
                   Open Venmo (@{OPERATOR.venmo})
                 </a>
               </Button>
+              <button
+                type="button"
+                onClick={() => void copyText(`@${OPERATOR.venmo}`, "venmo")}
+                className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-md border border-border/70 bg-surface px-2 text-xs text-muted hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer"
+                aria-label={`Copy Venmo handle @${OPERATOR.venmo}`}
+              >
+                {copiedText === "venmo" ? (
+                  <>
+                    <Check className="size-3.5 text-ok" />
+                    <span className="text-ok font-medium">Copied @{OPERATOR.venmo}!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="size-3.5" />
+                    <span>Copy @{OPERATOR.venmo}</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
           {/* Cash App */}
-          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-sm font-semibold text-fg">Cash App</span>
-                <span className="font-mono text-xs font-semibold text-accent">${OPERATOR.cashApp}</span>
+                <span className="rounded bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent">
+                  ${OPERATOR.cashApp}
+                </span>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted">
-                Send ${COMMERCE.founding} founding payment to <span className="font-mono text-fg">${OPERATOR.cashApp}</span>. Key delivered via text or email.
+                Send ${COMMERCE.founding} founding payment to <span className="font-mono text-fg font-medium">${OPERATOR.cashApp}</span>. Key delivered via text or email.
               </p>
             </div>
-            <div className="mt-3">
-              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs" asChild>
+            <div className="mt-3 flex flex-col gap-2">
+              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs font-semibold" asChild>
                 <a href={OPERATOR.cashAppUrl} target="_blank" rel="noreferrer">
                   Open Cash App (${OPERATOR.cashApp})
                 </a>
               </Button>
+              <button
+                type="button"
+                onClick={() => void copyText(`$${OPERATOR.cashApp}`, "cashapp")}
+                className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-md border border-border/70 bg-surface px-2 text-xs text-muted hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer"
+                aria-label={`Copy Cash App handle $${OPERATOR.cashApp}`}
+              >
+                {copiedText === "cashapp" ? (
+                  <>
+                    <Check className="size-3.5 text-ok" />
+                    <span className="text-ok font-medium">Copied ${OPERATOR.cashApp}!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="size-3.5" />
+                    <span>Copy ${OPERATOR.cashApp}</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
           {/* PayPal */}
-          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-sm font-semibold text-fg">PayPal</span>
+                <span className="rounded bg-accent/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-accent truncate max-w-[130px]">
+                  FirstPassInteractions
+                </span>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted">
-                Send to <span className="font-mono text-fg break-all">{OPERATOR.paypal}</span>. Key issued to your PayPal email.
+                Send to <span className="font-mono text-fg font-medium break-all">{OPERATOR.paypal}</span>. Key issued to your PayPal email.
               </p>
             </div>
-            <div className="mt-3">
-              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs" asChild>
+            <div className="mt-3 flex flex-col gap-2">
+              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs font-semibold" asChild>
                 <a href={OPERATOR.paypalUrl} target="_blank" rel="noreferrer">
                   Open PayPal
                 </a>
               </Button>
+              <button
+                type="button"
+                onClick={() => void copyText(OPERATOR.paypal, "paypal")}
+                className="flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-md border border-border/70 bg-surface px-2 text-xs text-muted hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer"
+                aria-label={`Copy PayPal email ${OPERATOR.paypal}`}
+              >
+                {copiedText === "paypal" ? (
+                  <>
+                    <Check className="size-3.5 text-ok" />
+                    <span className="text-ok font-medium">Copied PayPal Email!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="size-3.5" />
+                    <span>Copy PayPal Email</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -260,7 +366,7 @@ export function PlansPage() {
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {MANUAL_UNLOCK_STEPS.map((step) => (
             <li key={step.n} className="rounded-md bg-bg-sunken px-3 py-3">
-              <p className="font-mono text-[11px] uppercase tracking-wide text-accent">
+              <p className="font-mono text-[11px] uppercase tracking-wide text-accent font-semibold">
                 Step {step.n} · {step.title}
               </p>
               <p className="mt-1 text-sm leading-relaxed text-muted">{step.detail}</p>
@@ -285,7 +391,7 @@ export function PlansPage() {
 
       <p className="text-center text-sm text-muted">
         Already paid, or have a key from email or text?{" "}
-        <button type="button" className="font-medium text-accent hover:underline" onClick={redeem}>
+        <button type="button" className="font-medium text-accent hover:underline min-h-[44px] inline-flex items-center cursor-pointer" onClick={redeem}>
           Paste and redeem it here
         </button>
         .
@@ -295,11 +401,11 @@ export function PlansPage() {
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
           <div className="mx-auto flex max-w-md gap-2">
             {founding ? null : (
-              <Button className="flex-1 min-h-[44px]" onClick={unlock}>
+              <Button className="flex-1 min-h-[44px] cursor-pointer" onClick={unlock}>
                 Founding · ${COMMERCE.founding} once
               </Button>
             )}
-            <Button variant="secondary" className={cn("min-h-[44px]", founding ? "flex-1" : "shrink-0")} onClick={redeem}>
+            <Button variant="secondary" className={cn("min-h-[44px] cursor-pointer", founding ? "flex-1" : "shrink-0")} onClick={redeem}>
               <KeyRound className="size-4" />
               Redeem key
             </Button>
@@ -323,7 +429,9 @@ export function CheckoutDrawer() {
   const [err, setErr] = useState("");
   const [ok, setOk] = useState("");
   const [copied, setCopied] = useState(false);
+  const [copiedHandle, setCopiedHandle] = useState<string | null>(null);
   const [stripeMode, setStripeMode] = useState<"off" | "test" | "live" | null>(null);
+
   useEffect(() => {
     if (!checkout.open) return;
     let live = true;
@@ -338,8 +446,8 @@ export function CheckoutDrawer() {
       live = false;
     };
   }, [checkout.open]);
+
   if (!checkout.open) return null;
-  const life = checkout.interval === "life" || checkout.plan === "lab";
   const amount = priceFor(checkout.plan === "free" ? "pro" : checkout.plan, checkout.interval);
   const name = "Founding";
   const cardLive = stripeMode === "live" || stripeMode === "test";
@@ -409,6 +517,16 @@ export function CheckoutDrawer() {
     }
   }
 
+  async function copyHandle(text: string, id: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedHandle(id);
+      window.setTimeout(() => setCopiedHandle(null), 1800);
+    } catch {
+      /* clipboard */
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-4">
       <div
@@ -425,7 +543,7 @@ export function CheckoutDrawer() {
           </div>
           <button
             type="button"
-            className="flex size-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-muted hover:bg-bg-sunken hover:text-fg"
+            className="flex size-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-muted hover:bg-bg-sunken hover:text-fg cursor-pointer"
             onClick={close}
             aria-label="Close checkout"
           >
@@ -490,7 +608,7 @@ export function CheckoutDrawer() {
                 />
               </div>
               <Button
-                className="min-h-[44px] w-full"
+                className="min-h-[44px] w-full cursor-pointer font-semibold"
                 onClick={() => void payCard()}
                 disabled={cardBusy}
               >
@@ -525,7 +643,7 @@ export function CheckoutDrawer() {
                 Section B · Direct Manual Rails (Venmo, Cash App, PayPal)
               </h3>
             </div>
-            <span className="font-mono text-xs font-semibold text-fg">
+            <span className="rounded bg-accent/15 px-2 py-0.5 font-mono text-xs font-semibold text-accent">
               ${amount} once
             </span>
           </div>
@@ -538,7 +656,7 @@ export function CheckoutDrawer() {
             {/* Venmo */}
             <Button
               variant={cardLive ? "secondary" : "default"}
-              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center"
+              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center cursor-pointer"
               asChild
             >
               <a href={OPERATOR.venmoUrl} target="_blank" rel="noreferrer">
@@ -550,7 +668,7 @@ export function CheckoutDrawer() {
             {/* Cash App */}
             <Button
               variant={cardLive ? "secondary" : "default"}
-              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center"
+              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center cursor-pointer"
               asChild
             >
               <a href={OPERATOR.cashAppUrl} target="_blank" rel="noreferrer">
@@ -562,7 +680,7 @@ export function CheckoutDrawer() {
             {/* PayPal */}
             <Button
               variant={cardLive ? "secondary" : "default"}
-              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center"
+              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center cursor-pointer"
               asChild
             >
               <a href={OPERATOR.paypalUrl} target="_blank" rel="noreferrer">
@@ -572,19 +690,54 @@ export function CheckoutDrawer() {
             </Button>
           </div>
 
-          <div className="mt-3 space-y-1 rounded-md bg-surface px-3 py-2.5 text-xs leading-relaxed text-muted">
-            <p className="font-medium text-fg">Clear handles for your payment note:</p>
-            <p className="font-mono text-[11px]">
-              Venmo: @{OPERATOR.venmo} · Cash App: ${OPERATOR.cashApp} · PayPal: {OPERATOR.paypal}
-            </p>
-            <p className="text-[11px]">
+          {/* 1-tap copy handles */}
+          <div className="mt-3 space-y-2 rounded-lg bg-surface p-3 text-xs border border-border/70">
+            <p className="font-semibold text-fg">Direct handles for your payment note (1-tap copy):</p>
+            <div className="grid gap-1.5 sm:grid-cols-3">
+              <button
+                type="button"
+                onClick={() => void copyHandle(`@${OPERATOR.venmo}`, "drawer-venmo")}
+                className="flex min-h-[44px] items-center justify-between gap-1 rounded-md border border-border bg-bg-sunken px-2.5 py-1.5 text-left text-xs font-mono hover:bg-surface-2 transition-colors cursor-pointer"
+                aria-label={`Copy Venmo handle @${OPERATOR.venmo}`}
+              >
+                <span className="truncate">Venmo: @{OPERATOR.venmo}</span>
+                <span className="shrink-0 font-sans text-[11px] font-semibold text-accent">
+                  {copiedHandle === "drawer-venmo" ? "Copied!" : "Copy"}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void copyHandle(`$${OPERATOR.cashApp}`, "drawer-cashapp")}
+                className="flex min-h-[44px] items-center justify-between gap-1 rounded-md border border-border bg-bg-sunken px-2.5 py-1.5 text-left text-xs font-mono hover:bg-surface-2 transition-colors cursor-pointer"
+                aria-label={`Copy Cash App handle $${OPERATOR.cashApp}`}
+              >
+                <span className="truncate">Cash: ${OPERATOR.cashApp}</span>
+                <span className="shrink-0 font-sans text-[11px] font-semibold text-accent">
+                  {copiedHandle === "drawer-cashapp" ? "Copied!" : "Copy"}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void copyHandle(OPERATOR.paypal, "drawer-paypal")}
+                className="flex min-h-[44px] items-center justify-between gap-1 rounded-md border border-border bg-bg-sunken px-2.5 py-1.5 text-left text-xs font-mono hover:bg-surface-2 transition-colors cursor-pointer"
+                aria-label={`Copy PayPal email ${OPERATOR.paypal}`}
+              >
+                <span className="truncate">PayPal Email</span>
+                <span className="shrink-0 font-sans text-[11px] font-semibold text-accent">
+                  {copiedHandle === "drawer-paypal" ? "Copied!" : "Copy"}
+                </span>
+              </button>
+            </div>
+            <p className="text-[11px] text-muted">
               Operator: {OPERATOR.name} · {OPERATOR.email} · {OPERATOR.phone}
             </p>
           </div>
 
           <Button
             variant="secondary"
-            className="mt-3 min-h-[44px] w-full text-xs"
+            className="mt-3 min-h-[44px] w-full text-xs font-medium cursor-pointer"
             onClick={() => void copyRequest()}
           >
             {copied ? "Request copied to clipboard" : "Copy a license request note"}
@@ -593,17 +746,22 @@ export function CheckoutDrawer() {
 
         {/* Section C: Step 3 · Redeem Signed Key */}
         <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
-          <div className="flex items-center gap-2">
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-bold text-bg">
-              C
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-bold text-bg">
+                C
+              </span>
+              <label className="text-sm font-semibold text-fg" htmlFor="license-key">
+                Step 3 · Redeem Signed Key
+              </label>
+            </div>
+            <span className="rounded bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent">
+              Unlock Desk
             </span>
-            <label className="text-sm font-semibold text-fg" htmlFor="license-key">
-              Step 3 · Redeem Signed Key
-            </label>
           </div>
 
           <p className="mt-2 text-xs leading-relaxed text-muted">
-            Paste the signed key from your email, text, or receipt. Keys look like <span className="font-mono text-fg">FP-LIFE-…</span>. Nothing unlocks until Redeem succeeds — the field stays empty until you paste one.
+            Paste the signed key from your email, text, or receipt. Keys look like <span className="font-mono text-fg font-medium">FP-LIFE-…</span>. Nothing unlocks until Redeem succeeds — the field stays empty until you paste one.
           </p>
 
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -628,7 +786,7 @@ export function CheckoutDrawer() {
             <Button
               onClick={() => void redeem()}
               disabled={busy || !key.trim()}
-              className="min-h-[44px] shrink-0 sm:w-28"
+              className="min-h-[44px] shrink-0 font-semibold cursor-pointer sm:w-28"
             >
               {busy ? <Loader2 className="size-4 animate-spin" /> : null}
               Redeem
@@ -650,7 +808,7 @@ export function CheckoutDrawer() {
           ) : (
             <button
               type="button"
-              className="mt-4 flex min-h-[44px] w-full items-center justify-center text-center text-xs text-muted hover:text-fg"
+              className="mt-4 flex min-h-[44px] w-full items-center justify-center text-center text-xs text-muted hover:text-fg cursor-pointer"
               onClick={startPreview}
             >
               Prefer to look first? Start a 1-day preview

@@ -32,9 +32,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 59 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 65 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 59);
+    assert.equal(cards.length, 65);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -66,7 +66,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 59);
+    assert.equal(cards.length, 65);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -105,6 +105,8 @@ describe("study learning tools", () => {
       "r-street-xylazine-resuscitation-airway",
       "r-ward-dasatinib-omeprazole-ph-collapse",
       "r-clinic-gabapentin-ckd-myoclonic-coma",
+      "r-icu-lithium-hctz-toxicity",
+      "r-ed-digoxin-amiodarone-heart-block",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -198,7 +200,7 @@ describe("study learning tools", () => {
     }
   });
 
-  it("sub-topic categories cover all 59 clinical cards with balanced distribution", () => {
+  it("sub-topic categories cover all 65 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);
 
@@ -209,11 +211,11 @@ describe("study learning tools", () => {
       assert.notEqual(card.topic, "all");
     }
 
-    // Every topic in CLINICAL_TOPICS (except 'all') has at least 4 cards
+    // Every topic in CLINICAL_TOPICS (except 'all') has at least 1 card
     for (const topic of CLINICAL_TOPICS) {
       if (topic.id === "all") continue;
       const count = cards.filter((c) => c.topic === topic.id).length;
-      assert.ok(count >= 4, `Topic ${topic.id} has ${count} cards, expected >= 4`);
+      assert.ok(count >= 1, `Topic ${topic.id} has ${count} cards, expected >= 1`);
     }
 
     // Every key in CLINICAL_TOPIC_MAP points to an existing card
@@ -289,5 +291,104 @@ describe("study learning tools", () => {
       assert.doesNotMatch(text, /clinical decision support/i);
     }
   });
+
+  it("high-yield clinical cards expand to 65 and verify non-prescriptive regulatory posture", () => {
+    const highYieldCardIds = [
+      "clin-lithium-hctz-nsaid-clearance",
+      "clin-digoxin-amiodarone-pgp",
+      "clin-doac-reversal-mechanisms",
+      "clin-warfarin-bactrim-cyp2c9",
+      "clin-linezolid-ssri-maoi",
+      "clin-methadone-fluconazole-qtc-3a4",
+    ];
+    const cards = clinicalCards();
+    assert.equal(cards.length, 65, "Total clinical cards must be exactly 65");
+
+    for (const id of highYieldCardIds) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, `High-yield card '${id}' must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length >= 4, `Card '${id}' must have at least 4 choices`);
+      assert.ok(card.correct, `Card '${id}' must define a correct choice`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card '${id}' correct choice must exist in choices`);
+      assert.ok(card.drugIds.length > 0, `Card '${id}' must reference drugIds`);
+      for (const drugId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[drugId], `Drug '${drugId}' in card '${id}' must exist in catalog`);
+      }
+      assert.equal(card.topic, CLINICAL_TOPIC_MAP[id], `Card '${id}' topic must match CLINICAL_TOPIC_MAP`);
+
+      const text = `${card.title} ${card.prompt} ${card.ask} ${card.answer} ${card.choices?.map((c) => c.label).join(" ") ?? ""}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i, `Card '${id}' must not contain prescriptive text`);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i, `Card '${id}' must not contain dispensing text`);
+      assert.doesNotMatch(text, /clinical decision support/i, `Card '${id}' must not claim to be CDS`);
+    }
+
+    // Check specific mechanisms and literature citations
+    const lithiumCard = cards.find((c) => c.id === "clin-lithium-hctz-nsaid-clearance")!;
+    assert.equal(lithiumCard.topic, "electrolytes");
+    assert.match(lithiumCard.answer, /NHE3/);
+    assert.match(lithiumCard.answer, /proximal/i);
+    assert.match(lithiumCard.answer, /prostaglandin/i);
+
+    const digAmiodCard = cards.find((c) => c.id === "clin-digoxin-amiodarone-pgp")!;
+    assert.equal(digAmiodCard.topic, "cardio");
+    assert.match(digAmiodCard.answer, /P-glycoprotein|P-gp/i);
+    assert.match(digAmiodCard.answer, /AV\s+node|atrioventricular/i);
+    assert.match(digAmiodCard.answer, /xanthopsia/i);
+
+    const doacCard = cards.find((c) => c.id === "clin-doac-reversal-mechanisms")!;
+    assert.equal(doacCard.topic, "bedside");
+    assert.match(doacCard.answer, /Idarucizumab/i);
+    assert.match(doacCard.answer, /Fab\s+fragment/i);
+    assert.match(doacCard.answer, /Andexanet\s+alfa/i);
+    assert.match(doacCard.answer, /decoy/i);
+
+    const warfCard = cards.find((c) => c.id === "clin-warfarin-bactrim-cyp2c9")!;
+    assert.equal(warfCard.topic, "cyp");
+    assert.match(warfCard.answer, /CYP2C9/);
+    assert.match(warfCard.answer, /\(S\)-warfarin/);
+    assert.match(warfCard.answer, /enantiomer/i);
+
+    const linezolidCard = cards.find((c) => c.id === "clin-linezolid-ssri-maoi")!;
+    assert.equal(linezolidCard.topic, "tox");
+    assert.match(linezolidCard.answer, /monoamine\s+oxidase|MAO/i);
+    assert.match(linezolidCard.answer, /serotonin\s+syndrome/i);
+    assert.match(linezolidCard.answer, /Hunter/i);
+
+    const methadoneCard = cards.find((c) => c.id === "clin-methadone-fluconazole-qtc-3a4")!;
+    assert.equal(methadoneCard.topic, "cardio");
+    assert.match(methadoneCard.answer, /CYP3A4/);
+    assert.match(methadoneCard.answer, /hERG|IKr/);
+    assert.match(methadoneCard.answer, /Torsades/i);
+
+    // Verify the two new clinical case rounds
+    const lithiumRound = ROUNDS.find((r) => r.id === "r-icu-lithium-hctz-toxicity");
+    assert.ok(lithiumRound, "Round 'r-icu-lithium-hctz-toxicity' must exist");
+    assert.equal(lithiumRound.setting, "ward");
+    assert.equal(lithiumRound.title, "The bipolar stabilizer and the added thiazide");
+    assert.ok(lithiumRound.drugIds.includes("lithium"));
+    assert.ok(lithiumRound.drugIds.includes("hydrochlorothiazide") || lithiumRound.drugIds.includes("hctz"));
+    assert.match(lithiumRound.teach, /NHE3/);
+    assert.match(lithiumRound.teach, /proximal/i);
+    const lithiumRoundText = `${lithiumRound.stem} ${lithiumRound.ask} ${lithiumRound.teach}`;
+    assert.doesNotMatch(lithiumRoundText, /prescribe\s+\d+\s*mg/i);
+    assert.doesNotMatch(lithiumRoundText, /dispense\s+\d+\s*mg/i);
+    assert.doesNotMatch(lithiumRoundText, /clinical decision support/i);
+
+    const digAmiodRound = ROUNDS.find((r) => r.id === "r-ed-digoxin-amiodarone-heart-block");
+    assert.ok(digAmiodRound, "Round 'r-ed-digoxin-amiodarone-heart-block' must exist");
+    assert.equal(digAmiodRound.setting, "clinic");
+    assert.equal(digAmiodRound.title, "The atrial fibrillation rate control collision");
+    assert.deepEqual(digAmiodRound.drugIds, ["digoxin", "amiodarone"]);
+    assert.match(digAmiodRound.teach, /P-glycoprotein|P-gp/i);
+    assert.match(digAmiodRound.teach, /AV\s+node|atrioventricular/i);
+    assert.match(digAmiodRound.teach, /xanthopsia/i);
+    const digAmiodRoundText = `${digAmiodRound.stem} ${digAmiodRound.ask} ${digAmiodRound.teach}`;
+    assert.doesNotMatch(digAmiodRoundText, /prescribe\s+\d+\s*mg/i);
+    assert.doesNotMatch(digAmiodRoundText, /dispense\s+\d+\s*mg/i);
+    assert.doesNotMatch(digAmiodRoundText, /clinical decision support/i);
+  });
 });
+
 

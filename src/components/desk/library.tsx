@@ -451,20 +451,22 @@ function ContraindicatedConditionsView() {
   }, [query, category]);
 
   /** Add or load a contraindicated pair onto the desk */
-  const handleAddPair = (drug1Id: string, drug2Id: string) => {
+  const handleAddPair = (drug1Id: string, drug2Id: string, drug3Id?: string) => {
     const is1On = selected.includes(drug1Id);
     const is2On = selected.includes(drug2Id);
-    if (is1On && is2On) {
+    const is3On = drug3Id ? selected.includes(drug3Id) : true;
+    if (is1On && is2On && is3On) {
       setView("desk");
       return;
     }
-    const needed = (is1On ? 0 : 1) + (is2On ? 0 : 1);
+    const needed = (is1On ? 0 : 1) + (is2On ? 0 : 1) + (drug3Id && !is3On ? 1 : 0);
     if (selected.length + needed <= cap) {
       if (!is1On) add(drug1Id);
       if (!is2On) add(drug2Id);
+      if (drug3Id && !is3On) add(drug3Id);
       setView("desk");
     } else {
-      load([drug1Id, drug2Id]);
+      load(drug3Id ? [drug1Id, drug2Id, drug3Id] : [drug1Id, drug2Id]);
     }
   };
 
@@ -492,9 +494,10 @@ function ContraindicatedConditionsView() {
               <p className="text-sm leading-relaxed text-muted">
                 Explore verified clinical disease thresholds, organ impairment contraindications,
                 and fatal drug-pair collisions (Severe Renal Impairment CrCl &lt; 30, Child-Pugh C
-                Cirrhosis, Teratogenicity, Prolonged QTc &gt; 500 ms, MAOI Washouts, HFrEF, G6PD
-                Deficiency, and Parkinson’s). Educational clinical decision support under FD&amp;C
-                Act 520(o)(1)(E).
+                Cirrhosis, Myasthenia Gravis, Pheochromocytoma, Active Peptic Ulcer &amp; GI Bleed,
+                Teratogenicity, Prolonged QTc &gt; 500 ms, MAOI Washouts, HFrEF, G6PD Deficiency,
+                and Parkinson’s). Educational clinical decision support under FD&amp;C Act
+                520(o)(1)(E).
               </p>
             </div>
             <div className="flex shrink-0 flex-col items-start gap-2.5 sm:items-end">
@@ -545,12 +548,13 @@ function ContraindicatedConditionsView() {
           <div className="relative overflow-hidden rounded-xl border border-dashed border-subtle/40 bg-surface/60 p-6 text-center sm:p-8">
             <ShieldAlert className="mx-auto size-10 text-muted" />
             <h4 className="mt-3 font-serif text-lg font-medium text-fg">
-              + 7 More Clinical Disease Contraindications Locked
+              + {CONTRAINDICATED_CONDITIONS.length - 2} More Clinical Disease Contraindications Locked
             </h4>
             <p className="mx-auto mt-1 max-w-lg text-xs leading-relaxed text-muted">
-              Pregnancy Teratogenicity (FDA Category X), Prolonged QTc / LQTS (&gt; 500 ms), Recent
-              MAOI Exposure (&lt; 14 days), Heart Failure HFrEF, Narrow-Angle Glaucoma, G6PD
-              Deficiency, and Parkinson’s / Lewy Body Dementia are reserved for Founding and Pro.
+              Myasthenia Gravis, Pheochromocytoma, Active Peptic Ulcer &amp; GI Bleed, Pregnancy
+              Teratogenicity (FDA Category X), Prolonged QTc / LQTS (&gt; 500 ms), Recent MAOI
+              Exposure (&lt; 14 days), Heart Failure HFrEF, Narrow-Angle Glaucoma, G6PD Deficiency,
+              and Parkinson’s / Lewy Body Dementia are reserved for Founding and Pro.
             </p>
             <div className="mt-5 flex justify-center">
               <Button
@@ -735,7 +739,7 @@ function ConditionCard({
 }: {
   condition: ContraindicatedCondition;
   selected: string[];
-  onAddPair: (drug1Id: string, drug2Id: string) => void;
+  onAddPair: (drug1Id: string, drug2Id: string, drug3Id?: string) => void;
 }) {
   const categoryTone = useMemo(() => {
     switch (condition.category) {
@@ -848,7 +852,7 @@ function ConditionCard({
           <div className="space-y-3">
             {condition.contraindicatedPairs.map((pair) => (
               <PairCard
-                key={`${pair.drug1Id}-${pair.drug2Id}`}
+                key={`${pair.drug1Id}-${pair.drug2Id}${pair.drug3Id ? `-${pair.drug3Id}` : ""}`}
                 pair={pair}
                 selected={selected}
                 onAddPair={onAddPair}
@@ -871,16 +875,23 @@ function PairCard({
 }: {
   pair: ContraindicatedPair;
   selected: string[];
-  onAddPair: (drug1Id: string, drug2Id: string) => void;
+  onAddPair: (drug1Id: string, drug2Id: string, drug3Id?: string) => void;
 }) {
-  const isBothOnDesk = selected.includes(pair.drug1Id) && selected.includes(pair.drug2Id);
+  const isAllOnDesk =
+    selected.includes(pair.drug1Id) &&
+    selected.includes(pair.drug2Id) &&
+    (pair.drug3Id ? selected.includes(pair.drug3Id) : true);
+
+  const displayNames = pair.drug3Name
+    ? `${pair.drug1Name} + ${pair.drug2Name} + ${pair.drug3Name}`
+    : `${pair.drug1Name} + ${pair.drug2Name}`;
 
   return (
     <div className="flex flex-col justify-between gap-3 rounded-lg border border-subtle/20 bg-bg-sunken p-4 sm:flex-row sm:items-center">
       <div className="space-y-1.5 flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-serif text-sm font-bold text-fg sm:text-base">
-            {pair.drug1Name} + {pair.drug2Name}
+            {displayNames}
           </span>
           <Badge tone={pair.severity === "contraindicated" ? "danger" : "warn"}>
             {pair.severity === "contraindicated" ? "Contraindicated" : "High Risk"}
@@ -898,16 +909,16 @@ function PairCard({
         <Button
           type="button"
           size="sm"
-          variant={isBothOnDesk ? "secondary" : "default"}
-          onClick={() => onAddPair(pair.drug1Id, pair.drug2Id)}
+          variant={isAllOnDesk ? "secondary" : "default"}
+          onClick={() => onAddPair(pair.drug1Id, pair.drug2Id, pair.drug3Id)}
           className="min-h-[44px] w-full px-4 text-xs font-semibold sm:w-auto"
           aria-label={
-            isBothOnDesk
-              ? `${pair.drug1Name} and ${pair.drug2Name} already on desk — view desk`
-              : `Add ${pair.drug1Name} and ${pair.drug2Name} pair to desk`
+            isAllOnDesk
+              ? `${displayNames} already on desk — view desk`
+              : `Add ${displayNames} pair to desk`
           }
         >
-          {isBothOnDesk ? (
+          {isAllOnDesk ? (
             <>
               <Check className="mr-1.5 size-4 text-accent" />
               Pair on desk

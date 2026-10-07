@@ -50,6 +50,8 @@ export interface ContraindicatedPair {
   drug1Name: string;
   drug2Id: string;
   drug2Name: string;
+  drug3Id?: string;
+  drug3Name?: string;
   hazard: string;
   mechanism: string;
   clinicalManagement: string;
@@ -769,6 +771,268 @@ export const CONTRAINDICATED_CONDITIONS: readonly ContraindicatedCondition[] = [
       },
     ],
   },
+
+  {
+    id: "myasthenia-gravis",
+    name: "Myasthenia Gravis & Neuromuscular Junction Disorders",
+    shortName: "Myasthenia Gravis",
+    category: "Neuro & Psych",
+    clinicalThreshold:
+      "Confirmed Myasthenia Gravis, Lambert-Eaton Syndrome, or Myasthenic Crisis History",
+    organSystem: "Neuromuscular",
+    pathophysiology:
+      "Autoantibodies against post-synaptic nicotinic acetylcholine receptors (AChR) or MuSK impair neuromuscular transmission. Pharmacologic agents that impair pre-synaptic ACh release, block calcium channels, or exhibit post-synaptic curare-like effects can precipitate acute respiratory failure (myasthenic crisis).",
+    educationalRationale:
+      "Neuromuscular junction transmission has a narrow safety margin in myasthenia gravis. Agents that interfere with either pre-synaptic calcium-dependent vesicular acetylcholine release (aminoglycosides) or post-synaptic receptor sensitivity (fluoroquinolones, macrolides) can rapidly precipitate fatal ventilatory failure.",
+    clinicalSummary:
+      "Strict contraindication for fluoroquinolones (FDA Boxed Warning), aminoglycosides, and macrolides/ketolides. High risk of precipitating acute myasthenic crisis requiring emergent intubation.",
+    contraindicatedDrugs: [
+      {
+        drugId: "ciprofloxacin",
+        drugName: "Ciprofloxacin",
+        hazard: "Exacerbation of Muscle Weakness & Respiratory Depression",
+        mechanism:
+          "FDA Boxed Warning: fluoroquinolones exacerbate muscle weakness and respiratory depression in myasthenia gravis via post-synaptic neuromuscular blockade and impaired acetylcholine release.",
+        fdaBoxedWarning: true,
+      },
+      {
+        drugId: "levofloxacin",
+        drugName: "Levofloxacin",
+        hazard: "Fluoroquinolone Neuromuscular Blockade & Crisis Risk",
+        mechanism:
+          "FDA Boxed Warning: fluoroquinolones worsen muscle weakness in patients with myasthenia gravis; can precipitate acute ventilatory failure requiring mechanical ventilation.",
+        fdaBoxedWarning: true,
+      },
+      {
+        drugId: "gentamicin",
+        drugName: "Gentamicin",
+        hazard: "Inhibition of Pre-Synaptic Calcium Influx & ACh Release",
+        mechanism:
+          "Aminoglycosides inhibit pre-synaptic voltage-gated calcium channels, blocking vesicular acetylcholine release at the motor endplate and exacerbating neuromuscular blockade.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "tobramycin",
+        drugName: "Tobramycin",
+        hazard: "Aminoglycoside-Mediated Neuromuscular Junction Blockade",
+        mechanism:
+          "Inhibits pre-synaptic vesicular acetylcholine release and exhibits curare-like post-synaptic block, precipitating severe weakness and ventilatory failure.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "azithromycin",
+        drugName: "Azithromycin",
+        hazard: "Macrolide Post-Synaptic Neuromuscular Blockade",
+        mechanism:
+          "Macrolides impair post-synaptic acetylcholine receptor responsiveness; FDA warnings cite life-threatening exacerbation of myasthenia gravis symptoms.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "telithromycin",
+        drugName: "Telithromycin",
+        hazard: "Ketolide Nicotinic Receptor Blockade & Rapid Respiratory Crisis",
+        mechanism:
+          "FDA Boxed Warning: ketolide post-synaptic neuromuscular blockade; competitively antagonizes nicotinic acetylcholine receptors, precipitating acute respiratory arrest.",
+        fdaBoxedWarning: true,
+      },
+    ],
+    contraindicatedPairs: [
+      {
+        drug1Id: "ciprofloxacin",
+        drug1Name: "Ciprofloxacin",
+        drug2Id: "gentamicin",
+        drug2Name: "Gentamicin",
+        hazard: "Synergistic Presynaptic and Postsynaptic Neuromuscular Transmission Collapse",
+        mechanism:
+          "Gentamicin blocks pre-synaptic voltage-gated calcium entry while ciprofloxacin impairs post-synaptic acetylcholine response, inducing profound additive motor paralysis and acute respiratory failure.",
+        clinicalManagement:
+          "Avoid combination in myasthenia gravis. Select non-neuromuscular-impairing antimicrobial alternatives (e.g., beta-lactams) and maintain respiratory monitoring.",
+        severity: "contraindicated",
+      },
+      {
+        drug1Id: "azithromycin",
+        drug1Name: "Azithromycin",
+        drug2Id: "ciprofloxacin",
+        drug2Name: "Ciprofloxacin",
+        hazard: "Dual NMJ Blockade Combined with Additive Ventricular Repolarization Delay",
+        mechanism:
+          "Additive post-synaptic neuromuscular junction blockade compounds muscle weakness and respiratory depression while dual cardiac IKr potassium channel inhibition elevates QTc prolongation risk.",
+        clinicalManagement:
+          "Avoid concurrent administration. Discontinue fluoroquinolones and macrolides; select alternative antimicrobial classes under clinical supervision.",
+        severity: "contraindicated",
+      },
+    ],
+  },
+
+  {
+    id: "pheochromocytoma",
+    name: "Pheochromocytoma & Paraganglioma (Without Alpha Blockade)",
+    shortName: "Pheochromocytoma",
+    category: "Metabolic",
+    clinicalThreshold:
+      "Active catecholamine-secreting pheochromocytoma prior to complete alpha-1 blockade",
+    organSystem: "Endocrine / Adrenal",
+    pathophysiology:
+      "Tumor hypersecretion of norepinephrine and epinephrine. Initiating beta-blockade without prior irreversible or competitive alpha-1 blockade (e.g., phenoxybenzamine) removes beta-2 vasodilatory tone and cardiac beta-1 chronotropy while leaving peripheral alpha-1 vasoconstriction completely unopposed, precipitating catastrophic hypertensive emergency and acute pulmonary edema.",
+    educationalRationale:
+      "Adrenergic pharmacology dictates strict sequential receptor blockade in pheochromocytoma. Alpha-1 adrenergic receptors must be fully blocked before administering any beta-antagonist to avoid lethal unopposed vasoconstriction.",
+    clinicalSummary:
+      "Absolute contraindication for beta-blocker monotherapy prior to alpha blockade, metoclopramide (catecholamine secretagogue), and glucagon. High risk of malignant hypertensive crisis and flash pulmonary edema.",
+    contraindicatedDrugs: [
+      {
+        drugId: "propranolol",
+        drugName: "Propranolol",
+        hazard: "Unopposed Alpha-1 Vasoconstriction & Hypertensive Crisis",
+        mechanism:
+          "Non-selective beta-blocker monotherapy without alpha blockade: removes beta-2 vasodilatory tone, allowing circulating catecholamines to produce severe unchecked peripheral alpha-1 vasoconstriction.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "metoprolol",
+        drugName: "Metoprolol",
+        hazard: "Beta-1 Blockade Without Vasodilatory Protection",
+        mechanism:
+          "Beta-blocker monotherapy without alpha blockade: blunts cardiac compensatory contractility against extreme afterload spikes driven by unopposed alpha-1 vasoconstriction.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "metoclopramide",
+        drugName: "Metoclopramide",
+        hazard: "Direct Adrenal Catecholamine Release & Malignant Hypertension",
+        mechanism:
+          "Direct dopamine antagonist that stimulates catecholamine release from pheochromocytoma chromaffin cells; labeled contraindication in pheochromocytoma.",
+        fdaBoxedWarning: true,
+      },
+      {
+        drugId: "glucagon",
+        drugName: "Glucagon",
+        hazard: "Potent Secretagogue Provoking Hypertensive Crisis",
+        mechanism:
+          "Potent secretagogue for adrenal pheochromocytoma catecholamine release; binds chromaffin cell receptors triggering massive surge of epinephrine and norepinephrine.",
+        fdaBoxedWarning: false,
+      },
+    ],
+    contraindicatedPairs: [
+      {
+        drug1Id: "metoprolol",
+        drug1Name: "Metoprolol",
+        drug2Id: "metoclopramide",
+        drug2Name: "Metoclopramide",
+        hazard: "Surge of Circulating Catecholamines & Malignant Hypertension",
+        mechanism:
+          "Metoclopramide surges circulating catecholamines while beta-blocker prevents vasodilatory buffering, inducing malignant hypertension and acute cardiac afterload failure.",
+        clinicalManagement:
+          "Contraindicated in unblocked pheochromocytoma. Alpha-1 blockade must be fully established prior to beta-blockade; avoid dopamine receptor antagonists.",
+        severity: "contraindicated",
+      },
+      {
+        drug1Id: "propranolol",
+        drug1Name: "Propranolol",
+        drug2Id: "phenylephrine",
+        drug2Name: "Phenylephrine",
+        hazard: "Massive Afterload Spike & Severe Reflex Bradycardia",
+        mechanism:
+          "Pure alpha agonist with non-selective beta blockade causing massive afterload spike and reflex severe bradycardia from unchecked alpha-1 vasoconstriction.",
+        clinicalManagement:
+          "Contraindicated in pheochromocytoma without prior alpha blockade. Manage hypertensive emergencies with alpha-adrenergic antagonists.",
+        severity: "contraindicated",
+      },
+    ],
+  },
+
+  {
+    id: "active-peptic-ulcer-gi-bleed",
+    name: "Active Peptic Ulcer Disease & Acute GI Hemorrhage",
+    shortName: "Active Peptic Ulcer & GI Bleed",
+    category: "Organ Impairment",
+    clinicalThreshold:
+      "Active gastric/duodenal ulceration, erosive gastritis, or acute GI bleeding within 30 days",
+    organSystem: "Gastroenterology",
+    pathophysiology:
+      "Loss of mucosal epithelial integrity combined with inhibition of cytoprotective prostaglandin E2/I2 synthesis (via COX-1 inhibition) and pharmacologic impairment of platelet aggregation or coagulation cascade prevents hemostatic clot stabilization, resulting in exsanguinating gastrointestinal hemorrhage.",
+    educationalRationale:
+      "Gastric mucosal defense relies on continuous prostaglandin-mediated bicarbonate secretion and microvascular blood flow. Combining COX-inhibiting ulcerogenic agents with antithrombotic or platelet serotonin-depleting drugs removes both epithelial defense and hemostatic clotting, leading to uncontrolled hemorrhage.",
+    clinicalSummary:
+      "Strict contraindication for ketorolac (FDA Boxed Warning), non-selective NSAIDs, and systemic anticoagulants in active peptic ulceration or recent hemorrhage. High mortality from rapid hemorrhagic shock.",
+    contraindicatedDrugs: [
+      {
+        drugId: "ketorolac",
+        drugName: "Ketorolac",
+        hazard: "Exsanguinating GI Hemorrhage & Ulcer Perforation",
+        mechanism:
+          "FDA Boxed Warning: contraindicated in active peptic ulcer disease, recent GI bleeding, or history of PUD due to profound inhibition of gastric mucosal prostaglandins and platelet thromboxane.",
+        fdaBoxedWarning: true,
+      },
+      {
+        drugId: "aspirin",
+        drugName: "Aspirin",
+        hazard: "Irreversible Platelet Inhibition & Mucosal Ulceration",
+        mechanism:
+          "Non-selective COX-1/2 inhibition eroding gastric mucosal barrier and irreversibly inhibiting platelet thromboxane A2 aggregation at bleeding sites.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "ibuprofen",
+        drugName: "Ibuprofen",
+        hazard: "Prostaglandin Synthesis Depletion & Impaired Mucosal Healing",
+        mechanism:
+          "Non-selective COX-1/2 inhibition eroding gastric mucosal barrier by blocking cytoprotective prostaglandin synthesis, preventing ulcer resolution and promoting active hemorrhage.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "apixaban",
+        drugName: "Apixaban",
+        hazard: "Systemic Factor Xa Inhibition Preventing Clot Stabilization",
+        mechanism:
+          "Systemic anticoagulation preventing clot formation at mucosal erosions; direct factor Xa inhibition suppresses thrombin generation at active bleeding craters.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "rivaroxaban",
+        drugName: "Rivaroxaban",
+        hazard: "Potent Anticoagulant Pressure on Exposed Ulcer Vasculature",
+        mechanism:
+          "Systemic anticoagulation preventing clot formation at mucosal erosions; impairs secondary hemostasis leading to continuous blood loss from denuded tissue.",
+        fdaBoxedWarning: false,
+      },
+      {
+        drugId: "warfarin",
+        drugName: "Warfarin",
+        hazard: "Coagulation Factor Depletion & Uncontrolled Bleeding",
+        mechanism:
+          "FDA Boxed Warning for major or fatal bleeding; systemic anticoagulation prevents clot stabilization at mucosal erosions by suppressing functional factors II, VII, IX, and X.",
+        fdaBoxedWarning: true,
+      },
+    ],
+    contraindicatedPairs: [
+      {
+        drug1Id: "ketorolac",
+        drug1Name: "Ketorolac",
+        drug2Id: "apixaban",
+        drug2Name: "Apixaban",
+        hazard: "Dual Mucosal Erosion & Factor Xa Inhibition Fatal Hemorrhage",
+        mechanism:
+          "Dual mucosal erosion and systemic factor Xa inhibition; prohibitive risk of fatal GI bleeding due to simultaneous epithelial injury and loss of secondary hemostasis.",
+        clinicalManagement:
+          "Absolute contraindication. Avoid systemic NSAIDs in anticoagulated patients with active ulceration; utilize gastroprotective proton pump inhibitors and non-ulcerogenic analgesics.",
+        severity: "contraindicated",
+      },
+      {
+        drug1Id: "aspirin",
+        drug1Name: "Aspirin",
+        drug2Id: "ibuprofen",
+        drug2Name: "Ibuprofen",
+        drug3Id: "sertraline",
+        drug3Name: "Sertraline",
+        hazard: "Synergistic Platelet Serotonin Depletion & Compounded GI Bleed",
+        mechanism:
+          "Dual COX inhibition plus serotonin reuptake blockade depleting platelet dense-granule serotonin, magnifying upper GI bleed risk 8-fold.",
+        clinicalManagement:
+          "Avoid dual NSAID combinations and co-administration with SSRIs in active ulcer disease; prescribe mucosal gastroprotection if antiplatelet therapy cannot be safely deferred.",
+        severity: "contraindicated",
+      },
+    ],
+  },
 ] as const;
 
 /**
@@ -815,6 +1079,8 @@ export function filterContraindicatedConditions(options?: {
         p.drug1Name.toLowerCase().includes(q) ||
         p.drug2Id.toLowerCase().includes(q) ||
         p.drug2Name.toLowerCase().includes(q) ||
+        (p.drug3Id && p.drug3Id.toLowerCase().includes(q)) ||
+        (p.drug3Name && p.drug3Name.toLowerCase().includes(q)) ||
         p.hazard.toLowerCase().includes(q) ||
         p.mechanism.toLowerCase().includes(q),
     );
@@ -827,6 +1093,13 @@ export function filterContraindicatedConditions(options?: {
  */
 export function findConditionById(id: string): ContraindicatedCondition | undefined {
   return CONTRAINDICATED_CONDITIONS.find((c) => c.id === id);
+}
+
+/**
+ * Get a condition by its unique ID (alias for findConditionById).
+ */
+export function getConditionById(id: string): ContraindicatedCondition | undefined {
+  return findConditionById(id);
 }
 
 /**
@@ -845,7 +1118,9 @@ export function getConditionsForDrug(drugIdOrName: string): ContraindicatedCondi
         p.drug1Id.toLowerCase() === needle ||
         p.drug1Name.toLowerCase() === needle ||
         p.drug2Id.toLowerCase() === needle ||
-        p.drug2Name.toLowerCase() === needle,
+        p.drug2Name.toLowerCase() === needle ||
+        (p.drug3Id && p.drug3Id.toLowerCase() === needle) ||
+        (p.drug3Name && p.drug3Name.toLowerCase() === needle),
     );
     return pairMatch;
   });
@@ -861,7 +1136,10 @@ export function isDrugContraindicatedInCondition(conditionId: string, drugId: st
   return (
     cond.contraindicatedDrugs.some((d) => d.drugId.toLowerCase() === target) ||
     cond.contraindicatedPairs.some(
-      (p) => p.drug1Id.toLowerCase() === target || p.drug2Id.toLowerCase() === target,
+      (p) =>
+        p.drug1Id.toLowerCase() === target ||
+        p.drug2Id.toLowerCase() === target ||
+        (p.drug3Id && p.drug3Id.toLowerCase() === target),
     )
   );
 }
@@ -877,7 +1155,10 @@ export function getContraindicatedPairsForDesk(
 
   for (const condition of CONTRAINDICATED_CONDITIONS) {
     for (const pair of condition.contraindicatedPairs) {
-      if (idSet.has(pair.drug1Id.toLowerCase()) && idSet.has(pair.drug2Id.toLowerCase())) {
+      const match1 = idSet.has(pair.drug1Id.toLowerCase());
+      const match2 = idSet.has(pair.drug2Id.toLowerCase());
+      const match3 = pair.drug3Id ? idSet.has(pair.drug3Id.toLowerCase()) : true;
+      if (match1 && match2 && match3) {
         results.push({ condition, pair });
       }
     }
@@ -898,7 +1179,125 @@ export function getAllContraindicatedDrugIds(): string[] {
     for (const p of cond.contraindicatedPairs) {
       set.add(p.drug1Id);
       set.add(p.drug2Id);
+      if (p.drug3Id) {
+        set.add(p.drug3Id);
+      }
     }
   }
   return Array.from(set).sort();
+}
+
+export interface ContraindicatedFinding {
+  conditionId: string;
+  conditionName: string;
+  condition: ContraindicatedCondition;
+  category: ConditionCategory;
+  type: "single" | "pair";
+  drugIds: string[];
+  drugNames: string[];
+  hazard: string;
+  mechanism: string;
+  severity: "contraindicated" | "high-risk";
+  fdaBoxedWarning?: boolean;
+  clinicalManagement?: string;
+}
+
+export interface ContraindicatedConditionsResult extends Array<ContraindicatedCondition> {
+  conditions: ContraindicatedCondition[];
+  matchedConditions: ContraindicatedCondition[];
+  findings: ContraindicatedFinding[];
+}
+
+/**
+ * Checks drug IDs against all single contraindicated drugs and pairs in CONTRAINDICATED_CONDITIONS.
+ * Returns matched conditions and a structured findings list.
+ */
+export function findContraindicatedConditionsForDrugs(
+  drugIds: string[],
+): ContraindicatedConditionsResult {
+  const normalized = (drugIds ?? [])
+    .map((id) => (typeof id === "string" ? id.trim().toLowerCase() : ""))
+    .filter(Boolean);
+  const idSet = new Set(normalized);
+
+  const matchedConditionsMap = new Map<string, ContraindicatedCondition>();
+  const findings: ContraindicatedFinding[] = [];
+
+  for (const condition of CONTRAINDICATED_CONDITIONS) {
+    let conditionMatched = false;
+
+    // Check single contraindicated drugs
+    for (const drug of condition.contraindicatedDrugs) {
+      if (
+        idSet.has(drug.drugId.toLowerCase()) ||
+        idSet.has(drug.drugName.toLowerCase())
+      ) {
+        conditionMatched = true;
+        findings.push({
+          conditionId: condition.id,
+          conditionName: condition.name,
+          condition,
+          category: condition.category,
+          type: "single",
+          drugIds: [drug.drugId],
+          drugNames: [drug.drugName],
+          hazard: drug.hazard,
+          mechanism: drug.mechanism,
+          severity: "contraindicated",
+          fdaBoxedWarning: Boolean(drug.fdaBoxedWarning),
+        });
+      }
+    }
+
+    // Check contraindicated pairs
+    for (const pair of condition.contraindicatedPairs) {
+      const match1 =
+        idSet.has(pair.drug1Id.toLowerCase()) ||
+        idSet.has(pair.drug1Name.toLowerCase());
+      const match2 =
+        idSet.has(pair.drug2Id.toLowerCase()) ||
+        idSet.has(pair.drug2Name.toLowerCase());
+      const match3 = pair.drug3Id
+        ? idSet.has(pair.drug3Id.toLowerCase()) ||
+          (pair.drug3Name ? idSet.has(pair.drug3Name.toLowerCase()) : false)
+        : true;
+
+      if (match1 && match2 && match3) {
+        conditionMatched = true;
+        const pairDrugIds = [pair.drug1Id, pair.drug2Id];
+        const pairDrugNames = [pair.drug1Name, pair.drug2Name];
+        if (pair.drug3Id && pair.drug3Name) {
+          pairDrugIds.push(pair.drug3Id);
+          pairDrugNames.push(pair.drug3Name);
+        }
+
+        findings.push({
+          conditionId: condition.id,
+          conditionName: condition.name,
+          condition,
+          category: condition.category,
+          type: "pair",
+          drugIds: pairDrugIds,
+          drugNames: pairDrugNames,
+          hazard: pair.hazard,
+          mechanism: pair.mechanism,
+          severity: pair.severity,
+          clinicalManagement: pair.clinicalManagement,
+        });
+      }
+    }
+
+    if (conditionMatched) {
+      matchedConditionsMap.set(condition.id, condition);
+    }
+  }
+
+  const conditions = Array.from(matchedConditionsMap.values());
+  const result = Object.assign([...conditions], {
+    conditions,
+    matchedConditions: conditions,
+    findings,
+  }) as ContraindicatedConditionsResult;
+
+  return result;
 }

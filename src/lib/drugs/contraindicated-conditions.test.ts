@@ -7,6 +7,8 @@ import {
   NON_PRESCRIPTIVE_CDS_POSTURE,
   filterContraindicatedConditions,
   findConditionById,
+  getConditionById,
+  findContraindicatedConditionsForDrugs,
   getConditionsForDrug,
   getContraindicatedPairsForDesk,
   isDrugContraindicatedInCondition,
@@ -14,12 +16,12 @@ import {
   type ConditionCategory,
 } from "./contraindicated-conditions.ts";
 
-test("contraindicated conditions catalog contains at least 8 major clinical conditions", () => {
+test("contraindicated conditions catalog contains exactly 12 major clinical conditions", () => {
   assert.ok(
-    CONTRAINDICATED_CONDITIONS.length >= 8,
-    `Expected at least 8 conditions, got ${CONTRAINDICATED_CONDITIONS.length}`,
+    CONTRAINDICATED_CONDITIONS.length >= 12,
+    `Expected at least 12 conditions, got ${CONTRAINDICATED_CONDITIONS.length}`,
   );
-  assert.equal(CONTRAINDICATED_CONDITIONS.length, 9);
+  assert.equal(CONTRAINDICATED_CONDITIONS.length, 12);
 });
 
 test("all condition IDs are unique and well-formatted", () => {
@@ -71,6 +73,9 @@ test("all referenced drug IDs exist in the FirstPass DRUGS catalog", () => {
       }
       if (!catalogDrugIds.has(pair.drug2Id)) {
         missingDrugs.push(`[${cond.id}] pair drug2: ${pair.drug2Id} (${pair.drug2Name})`);
+      }
+      if (pair.drug3Id && !catalogDrugIds.has(pair.drug3Id)) {
+        missingDrugs.push(`[${cond.id}] pair drug3: ${pair.drug3Id} (${pair.drug3Name})`);
       }
     }
   }
@@ -200,6 +205,78 @@ test("verified high-risk clinical conditions cover all required clinical scenari
   assert.ok(pdDrugIds.includes("metoclopramide"), "PD must include metoclopramide");
   assert.ok(pdDrugIds.includes("prochlorperazine"), "PD must include prochlorperazine");
   assert.ok(pdDrugIds.includes("haloperidol"), "PD must include haloperidol");
+
+  // 10. Myasthenia Gravis
+  const mg = conditionMap.get("myasthenia-gravis");
+  assert.ok(mg, "Myasthenia gravis condition must exist");
+  assert.match(mg.clinicalThreshold, /Myasthenia Gravis/i);
+  assert.equal(mg.category, "Neuro & Psych");
+  assert.equal(mg.organSystem, "Neuromuscular");
+  const mgDrugIds = mg.contraindicatedDrugs.map((d) => d.drugId);
+  assert.ok(mgDrugIds.includes("ciprofloxacin"), "MG must include ciprofloxacin");
+  assert.ok(mgDrugIds.includes("levofloxacin"), "MG must include levofloxacin");
+  assert.ok(mgDrugIds.includes("gentamicin"), "MG must include gentamicin");
+  assert.ok(mgDrugIds.includes("tobramycin"), "MG must include tobramycin");
+  assert.ok(mgDrugIds.includes("azithromycin"), "MG must include azithromycin");
+  assert.ok(mgDrugIds.includes("telithromycin"), "MG must include telithromycin");
+  const mgPairs = mg.contraindicatedPairs;
+  assert.ok(
+    mgPairs.some((p) => p.drug1Id === "ciprofloxacin" && p.drug2Id === "gentamicin"),
+    "MG must include ciprofloxacin + gentamicin pair",
+  );
+  assert.ok(
+    mgPairs.some((p) => p.drug1Id === "azithromycin" && p.drug2Id === "ciprofloxacin"),
+    "MG must include azithromycin + ciprofloxacin pair",
+  );
+
+  // 11. Pheochromocytoma
+  const pheo = conditionMap.get("pheochromocytoma");
+  assert.ok(pheo, "Pheochromocytoma condition must exist");
+  assert.match(pheo.clinicalThreshold, /alpha-1 blockade/i);
+  assert.equal(pheo.category, "Metabolic");
+  assert.equal(pheo.organSystem, "Endocrine / Adrenal");
+  const pheoDrugIds = pheo.contraindicatedDrugs.map((d) => d.drugId);
+  assert.ok(pheoDrugIds.includes("propranolol"), "Pheo must include propranolol");
+  assert.ok(pheoDrugIds.includes("metoprolol"), "Pheo must include metoprolol");
+  assert.ok(pheoDrugIds.includes("metoclopramide"), "Pheo must include metoclopramide");
+  assert.ok(pheoDrugIds.includes("glucagon"), "Pheo must include glucagon");
+  const pheoPairs = pheo.contraindicatedPairs;
+  assert.ok(
+    pheoPairs.some((p) => p.drug1Id === "metoprolol" && p.drug2Id === "metoclopramide"),
+    "Pheo must include metoprolol + metoclopramide pair",
+  );
+  assert.ok(
+    pheoPairs.some((p) => p.drug1Id === "propranolol" && p.drug2Id === "phenylephrine"),
+    "Pheo must include propranolol + phenylephrine pair",
+  );
+
+  // 12. Active Peptic Ulcer & Acute GI Hemorrhage
+  const gi = conditionMap.get("active-peptic-ulcer-gi-bleed");
+  assert.ok(gi, "Active peptic ulcer & GI bleed condition must exist");
+  assert.match(gi.clinicalThreshold, /ulceration|GI bleeding/i);
+  assert.equal(gi.category, "Organ Impairment");
+  assert.equal(gi.organSystem, "Gastroenterology");
+  const giDrugIds = gi.contraindicatedDrugs.map((d) => d.drugId);
+  assert.ok(giDrugIds.includes("ketorolac"), "GI bleed must include ketorolac");
+  assert.ok(giDrugIds.includes("aspirin"), "GI bleed must include aspirin");
+  assert.ok(giDrugIds.includes("ibuprofen"), "GI bleed must include ibuprofen");
+  assert.ok(giDrugIds.includes("apixaban"), "GI bleed must include apixaban");
+  assert.ok(giDrugIds.includes("rivaroxaban"), "GI bleed must include rivaroxaban");
+  assert.ok(giDrugIds.includes("warfarin"), "GI bleed must include warfarin");
+  const giPairs = gi.contraindicatedPairs;
+  assert.ok(
+    giPairs.some((p) => p.drug1Id === "ketorolac" && p.drug2Id === "apixaban"),
+    "GI bleed must include ketorolac + apixaban pair",
+  );
+  assert.ok(
+    giPairs.some(
+      (p) =>
+        p.drug1Id === "aspirin" &&
+        p.drug2Id === "ibuprofen" &&
+        p.drug3Id === "sertraline",
+    ),
+    "GI bleed must include aspirin + ibuprofen + sertraline pair",
+  );
 });
 
 test("search and filtering helpers function correctly", () => {
@@ -289,6 +366,170 @@ test("getAllContraindicatedDrugIds returns deduplicated sorted list", () => {
   assert.deepEqual(ids, sorted, "Must be sorted");
 });
 
+test("getConditionById helper retrieves conditions accurately", () => {
+  const mg = getConditionById("myasthenia-gravis");
+  assert.ok(mg);
+  assert.equal(mg?.shortName, "Myasthenia Gravis");
+  assert.equal(mg?.category, "Neuro & Psych");
+
+  const pheo = getConditionById("pheochromocytoma");
+  assert.ok(pheo);
+  assert.equal(pheo?.shortName, "Pheochromocytoma");
+  assert.equal(pheo?.category, "Metabolic");
+
+  const gi = getConditionById("active-peptic-ulcer-gi-bleed");
+  assert.ok(gi);
+  assert.equal(gi?.shortName, "Active Peptic Ulcer & GI Bleed");
+  assert.equal(gi?.category, "Organ Impairment");
+
+  const missing = getConditionById("non-existent-condition-id");
+  assert.equal(missing, undefined);
+});
+
+test("FDA Boxed Warnings are present on high-risk drugs across clinical conditions", () => {
+  const conditionsWithBoxed = CONTRAINDICATED_CONDITIONS.filter((c) =>
+    c.contraindicatedDrugs.some((d) => d.fdaBoxedWarning === true),
+  );
+  assert.ok(
+    conditionsWithBoxed.length >= 9,
+    `Expected at least 9 conditions with Boxed Warning drugs, got ${conditionsWithBoxed.length}`,
+  );
+
+  // Check specific Boxed Warnings in new conditions
+  const mg = findConditionById("myasthenia-gravis");
+  assert.ok(mg);
+  const cipro = mg?.contraindicatedDrugs.find((d) => d.drugId === "ciprofloxacin");
+  assert.equal(cipro?.fdaBoxedWarning, true, "Ciprofloxacin must have Boxed Warning in MG");
+  const levo = mg?.contraindicatedDrugs.find((d) => d.drugId === "levofloxacin");
+  assert.equal(levo?.fdaBoxedWarning, true, "Levofloxacin must have Boxed Warning in MG");
+  const teli = mg?.contraindicatedDrugs.find((d) => d.drugId === "telithromycin");
+  assert.equal(teli?.fdaBoxedWarning, true, "Telithromycin must have Boxed Warning in MG");
+
+  const pheo = findConditionById("pheochromocytoma");
+  assert.ok(pheo);
+  const metoc = pheo?.contraindicatedDrugs.find((d) => d.drugId === "metoclopramide");
+  assert.equal(metoc?.fdaBoxedWarning, true, "Metoclopramide must carry Boxed Warning in pheochromocytoma");
+
+  const gi = findConditionById("active-peptic-ulcer-gi-bleed");
+  assert.ok(gi);
+  const keto = gi?.contraindicatedDrugs.find((d) => d.drugId === "ketorolac");
+  assert.equal(keto?.fdaBoxedWarning, true, "Ketorolac must carry Boxed Warning for peptic ulcer / GI bleeding");
+  const warf = gi?.contraindicatedDrugs.find((d) => d.drugId === "warfarin");
+  assert.equal(warf?.fdaBoxedWarning, true, "Warfarin must carry Boxed Warning for major or fatal bleeding");
+});
+
+test("findContraindicatedConditionsForDrugs identifies single drugs and high-risk pairs", () => {
+  // 1. Single drug: metformin -> severe-renal-impairment
+  const metforminRes = findContraindicatedConditionsForDrugs(["metformin"]);
+  assert.ok(metforminRes.conditions.some((c) => c.id === "severe-renal-impairment"));
+  assert.ok(
+    metforminRes.findings.some(
+      (f) =>
+        f.conditionId === "severe-renal-impairment" &&
+        f.type === "single" &&
+        f.drugIds.includes("metformin") &&
+        f.fdaBoxedWarning === true,
+    ),
+  );
+
+  // 2. Single drug: ciprofloxacin -> myasthenia-gravis and prolonged-qtc
+  const ciproRes = findContraindicatedConditionsForDrugs(["ciprofloxacin"]);
+  assert.ok(ciproRes.conditions.some((c) => c.id === "myasthenia-gravis"));
+  assert.ok(ciproRes.conditions.some((c) => c.id === "prolonged-qtc"));
+  assert.ok(
+    ciproRes.findings.some(
+      (f) =>
+        f.conditionId === "myasthenia-gravis" &&
+        f.type === "single" &&
+        f.drugIds.includes("ciprofloxacin") &&
+        f.fdaBoxedWarning === true,
+    ),
+  );
+
+  // 3. Single drug: ketorolac -> active-peptic-ulcer-gi-bleed
+  const ketoRes = findContraindicatedConditionsForDrugs(["ketorolac"]);
+  assert.ok(ketoRes.conditions.some((c) => c.id === "active-peptic-ulcer-gi-bleed"));
+  assert.ok(
+    ketoRes.findings.some(
+      (f) =>
+        f.conditionId === "active-peptic-ulcer-gi-bleed" &&
+        f.type === "single" &&
+        f.drugIds.includes("ketorolac") &&
+        f.fdaBoxedWarning === true,
+    ),
+  );
+
+  // 4. Pair: ketorolac + apixaban -> active-peptic-ulcer-gi-bleed
+  const ketoApixRes = findContraindicatedConditionsForDrugs(["ketorolac", "apixaban"]);
+  assert.ok(ketoApixRes.conditions.some((c) => c.id === "active-peptic-ulcer-gi-bleed"));
+  const ketoApixPairFinding = ketoApixRes.findings.find(
+    (f) =>
+      f.conditionId === "active-peptic-ulcer-gi-bleed" &&
+      f.type === "pair" &&
+      f.drugIds.includes("ketorolac") &&
+      f.drugIds.includes("apixaban"),
+  );
+  assert.ok(ketoApixPairFinding, "Must return pair finding for ketorolac + apixaban");
+  assert.equal(ketoApixPairFinding?.severity, "contraindicated");
+
+  // 5. Pair: metoprolol + metoclopramide -> pheochromocytoma
+  const metoMetocRes = findContraindicatedConditionsForDrugs(["metoprolol", "metoclopramide"]);
+  assert.ok(metoMetocRes.conditions.some((c) => c.id === "pheochromocytoma"));
+  const pheoPairFinding = metoMetocRes.findings.find(
+    (f) =>
+      f.conditionId === "pheochromocytoma" &&
+      f.type === "pair" &&
+      f.drugIds.includes("metoprolol") &&
+      f.drugIds.includes("metoclopramide"),
+  );
+  assert.ok(pheoPairFinding, "Must return pair finding for metoprolol + metoclopramide");
+  assert.equal(pheoPairFinding?.severity, "contraindicated");
+
+  // 6. Pair: ciprofloxacin + gentamicin -> myasthenia-gravis
+  const ciproGentRes = findContraindicatedConditionsForDrugs(["ciprofloxacin", "gentamicin"]);
+  assert.ok(ciproGentRes.conditions.some((c) => c.id === "myasthenia-gravis"));
+  const mgPairFinding = ciproGentRes.findings.find(
+    (f) =>
+      f.conditionId === "myasthenia-gravis" &&
+      f.type === "pair" &&
+      f.drugIds.includes("ciprofloxacin") &&
+      f.drugIds.includes("gentamicin"),
+  );
+  assert.ok(mgPairFinding, "Must return pair finding for ciprofloxacin + gentamicin");
+  assert.equal(mgPairFinding?.severity, "contraindicated");
+
+  // 7. Triplet: aspirin + ibuprofen + sertraline -> active-peptic-ulcer-gi-bleed
+  const tripletRes = findContraindicatedConditionsForDrugs([
+    "aspirin",
+    "ibuprofen",
+    "sertraline",
+  ]);
+  assert.ok(tripletRes.conditions.some((c) => c.id === "active-peptic-ulcer-gi-bleed"));
+  const tripletFinding = tripletRes.findings.find(
+    (f) =>
+      f.conditionId === "active-peptic-ulcer-gi-bleed" &&
+      f.type === "pair" &&
+      f.drugIds.includes("aspirin") &&
+      f.drugIds.includes("ibuprofen") &&
+      f.drugIds.includes("sertraline"),
+  );
+  assert.ok(tripletFinding, "Must return pair finding for aspirin + ibuprofen + sertraline");
+
+  // 8. Safe non-colliding pair
+  const safeRes = findContraindicatedConditionsForDrugs(["amoxicillin", "atorvastatin"]);
+  const mgPairs = safeRes.findings.filter(
+    (f) => f.conditionId === "myasthenia-gravis" && f.type === "pair",
+  );
+  assert.equal(mgPairs.length, 0);
+
+  // 9. Object and array destructuring compatibility
+  const { conditions, findings } = ciproGentRes;
+  assert.ok(Array.isArray(conditions));
+  assert.ok(Array.isArray(findings));
+  assert.ok(Array.isArray(ciproGentRes));
+  assert.equal(ciproGentRes.length, conditions.length);
+});
+
 test("regulatory posture conforms strictly to non-prescriptive FDA 520(o)(1)(E) requirements", () => {
   assert.match(NON_PRESCRIPTIVE_CDS_POSTURE, /520\(o\)\(1\)\(E\)/);
   assert.match(NON_PRESCRIPTIVE_CDS_POSTURE, /non-prescriptive/i);
@@ -301,7 +542,19 @@ test("regulatory posture conforms strictly to non-prescriptive FDA 520(o)(1)(E) 
     assert.doesNotMatch(
       cond.educationalRationale,
       /you must prescribe|stop therapy immediately|diagnostic order/i,
-      `Condition ${cond.id} must remain non-prescriptive`,
+      `Condition ${cond.id} educationalRationale must remain non-prescriptive`,
     );
+    assert.doesNotMatch(
+      cond.clinicalSummary,
+      /you must prescribe|diagnostic order/i,
+      `Condition ${cond.id} clinicalSummary must remain non-prescriptive`,
+    );
+    for (const pair of cond.contraindicatedPairs) {
+      assert.doesNotMatch(
+        pair.clinicalManagement,
+        /you must prescribe|diagnostic order/i,
+        `Pair in ${cond.id} (${pair.drug1Id} + ${pair.drug2Id}) must remain non-prescriptive`,
+      );
+    }
   }
 });

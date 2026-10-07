@@ -11,6 +11,10 @@ import type { Drug, Enzyme, Finding } from "./types";
 import { ENZYMES } from "./types";
 import { safetyOnDesk } from "./safety";
 
+if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
+  DRUG_BY_ID["hydrochlorothiazide"] = DRUG_BY_ID["hctz"];
+}
+
 export type StudyLane = "drill" | "boards" | "desk" | "cyp" | "clinical";
 export type StudyMark = "got" | "miss";
 export type StudyPile = "all" | "open" | "miss";
@@ -23,7 +27,9 @@ export type ClinicalTopic =
   | "neuro"
   | "anticoag"
   | "tox"
-  | "addiction";
+  | "addiction"
+  | "bedside"
+  | "cyp";
 
 export interface ClinicalTopicDef {
   id: ClinicalTopic;
@@ -40,6 +46,8 @@ export const CLINICAL_TOPICS: ClinicalTopicDef[] = [
   { id: "anticoag", label: "Anticoagulation & DOACs", shortLabel: "Anticoag" },
   { id: "tox", label: "Toxicology & TDM", shortLabel: "Tox & TDM" },
   { id: "addiction", label: "Addiction Medicine & Harm Reduction", shortLabel: "Addiction & MOUD" },
+  { id: "bedside", label: "Bedside & Reversal", shortLabel: "Bedside" },
+  { id: "cyp", label: "CYP & Transporters", shortLabel: "CYP & PK" },
 ];
 
 export interface StudyChoice {
@@ -487,6 +495,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-tdp-magnesium-mechanism": "cardio",
   "clin-tdp-overdrive-pacing-isoproterenol": "cardio",
   "clin-qtc-hypokalemia-herg-blockade": "cardio",
+  "clin-digoxin-amiodarone-pgp": "cardio",
+  "clin-methadone-fluconazole-qtc-3a4": "cardio",
 
   // Endocrine & SGLT2
   "clin-steroid-equiv-potency": "endocrine",
@@ -509,6 +519,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-hyperk-ckd-insulin-dose-reduction": "electrolytes",
   "clin-renal-gabapentinoid-myoclonus": "electrolytes",
   "clin-hd-dialyzability-factors": "electrolytes",
+  "clin-lithium-hctz-nsaid-clearance": "electrolytes",
 
   // Neurology & Sedation
   "clin-acb-threshold": "neuro",
@@ -540,6 +551,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-ag-mt1555-ototoxicity": "tox",
   "clin-dasatinib-ppi-gastric-ph": "tox",
   "clin-ss-vs-nms-differentials": "tox",
+  "clin-linezolid-ssri-maoi": "tox",
 
   // Addiction Medicine & Harm Reduction
   "clin-bup-precip-pharmacology": "addiction",
@@ -550,6 +562,12 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-xylazine-tranq-management": "addiction",
   "clin-alcohol-withdrawal-ciwa-gaba": "addiction",
   "clin-bup-micro-induction-bernese": "addiction",
+
+  // Bedside & Reversal
+  "clin-doac-reversal-mechanisms": "bedside",
+
+  // CYP & Pharmacokinetics
+  "clin-warfarin-bactrim-cyp2c9": "cyp",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -1556,6 +1574,180 @@ export function clinicalCards(): StudyCard[] {
       correct: "hypok-decreases-ikr-enhances-binding",
       answer: "Cardiac Phase 3 repolarization is driven by outward potassium movement through rapid delayed rectifier channels (IKr), encoded by the human ether-a-go-go-related gene (hERG / KCNH2). Lower extracellular potassium concentrations paradoxically decrease outward IKr current by accelerating voltage-dependent channel inactivation and reducing single-channel conductance. Concurrently, lower extracellular potassium enhances the conformational binding affinity of many drugs (e.g., sotalol, haloperidol, azoles) for the inner cavity of the hERG pore. This dual impairment delays repolarization, stretches the QTc interval, and facilitates L-type calcium channel reactivation (early afterdepolarizations, EADs), precipitating Torsades de Pointes (TdP). AHA/ACC guidelines advise maintaining serum potassium ≥4.0 mEq/L and magnesium ≥2.0 mg/dL in patients on QTc-prolonging pharmacotherapy.",
       drugIds: ["potassium", "sotalol", "haloperidol"],
+    },
+    {
+      id: "clin-lithium-hctz-nsaid-clearance",
+      lane: "clinical",
+      kicker: "Renal Physiology & Electrolytes",
+      title: "Lithium Proximal Tubule Reabsorption with Thiazides & NSAIDs",
+      prompt: "A patient on stable lithium therapy for bipolar disorder is prescribed hydrochlorothiazide for hypertension and takes over-the-counter ibuprofen for musculoskeletal pain. Several weeks later, the patient develops coarse tremor, ataxia, confusion, and acute kidney injury.",
+      ask: "What renal transport mechanism explains why thiazide diuretics and NSAIDs synergistically collapse lithium clearance?",
+      choices: [
+        {
+          id: "nhe3-compensatory-reabsorption-nsaid-gfr",
+          label: "Thiazide-induced natriuresis provokes compensatory proximal tubular reabsorption of lithium via NHE3 (cutting clearance by 30–50%), while NSAIDs inhibit renal prostaglandins to reduce GFR",
+        },
+        {
+          id: "cyp-inhibition-lithium-degradation",
+          label: "Thiazides potently inhibit hepatic CYP2C9 enzymes responsible for lithium oxidative metabolism",
+        },
+        {
+          id: "enac-channel-trapping",
+          label: "Thiazides and NSAIDs block cortical collecting duct ENaC channels, trapping lithium in tubular cells",
+        },
+        {
+          id: "albumin-displacement-free-fraction",
+          label: "NSAIDs competitively displace lithium from plasma albumin binding sites, precipitating acute free-fraction surges",
+        },
+      ],
+      correct: "nhe3-compensatory-reabsorption-nsaid-gfr",
+      answer: "The kidneys handle lithium identically to sodium: approximately 80% is reabsorbed in the proximal convoluted tubule via the apical Na+/H+ exchanger 3 (NHE3), with zero distal reabsorption. Thiazide diuretics (such as HCTZ) block the Na-Cl cotransporter (NCCT) in the distal convoluted tubule, causing distal natriuresis and mild intravascular volume contraction. The nephron compensates by increasing sodium reabsorption in the proximal tubule; because the proximal tubule cannot distinguish lithium from sodium, it hyper-reabsorbs both via NHE3, reducing renal lithium clearance by 30% to 50%. Concurrently, NSAIDs inhibit renal cyclooxygenase and vasodilatory prostaglandins (PGE2/PGI2), constricting afferent arterioles and decreasing GFR, further blunting lithium elimination. The resulting collision precipitates acute lithium neurotoxicity (coarse tremor, ataxia, hyperreflexia, confusion) and acute kidney injury. Consensus guidelines recommend avoiding thiazides and NSAIDs with lithium or intensely monitoring serum levels with empiric dose reductions.",
+      drugIds: ["lithium", "hctz", "ibuprofen"],
+    },
+    {
+      id: "clin-digoxin-amiodarone-pgp",
+      lane: "clinical",
+      kicker: "Cardiology & Transporters",
+      title: "Digoxin and Amiodarone P-gp Interaction & AV Blockade",
+      prompt: "A patient with heart failure on maintenance digoxin therapy is started on amiodarone for persistent atrial fibrillation. Weeks later, the patient develops severe lethargy, nausea, yellow-green visual halos (xanthopsia), and an ECG showing junctional escape rhythm at 34 bpm.",
+      ask: "What dual pharmacokinetic and pharmacodynamic mechanisms explain this life-threatening drug collision?",
+      choices: [
+        {
+          id: "pgp-inhibition-plus-av-block",
+          label: "Amiodarone inhibits renal tubular and intestinal P-glycoprotein (ABCB1) to double serum digoxin levels, while exerting additive AV-nodal blockade",
+        },
+        {
+          id: "cyp2d6-induction-digoxin-metabolite",
+          label: "Amiodarone strongly induces hepatic CYP2D6, generating cardiotoxic digoxin active metabolites",
+        },
+        {
+          id: "thyroid-displacement-arrhythmia",
+          label: "Digoxin displaces amiodarone from thyroid receptors, precipitating acute thyrotoxic junctional tachycardia",
+        },
+        {
+          id: "oat-transporter-acceleration",
+          label: "Amiodarone accelerates renal organic anion transporters (OAT1/3), inducing profound hypokalemia",
+        },
+      ],
+      correct: "pgp-inhibition-plus-av-block",
+      answer: "Amiodarone is a potent inhibitor of the efflux transporter P-glycoprotein (P-gp / ABCB1) located on renal proximal tubular apical membranes and intestinal enterocytes. Concomitant administration suppresses active renal tubular secretion and intestinal clearance of digoxin, routinely doubling (by 70% to 100%) serum digoxin concentrations within 1 to 2 weeks. Pharmacodynamically, both amiodarone and digoxin exert potent negative dromotropic effects on the atrioventricular (AV) node, leading to synergistic AV block, junctional escape rhythm, and profound bradycardia. Digitalis toxicity classically manifests with gastrointestinal distress (nausea, anorexia), neurologic symptoms, and xanthopsia (yellow-green visual halos). Consensus guidelines and FDA labeling recommend an empiric 30% to 50% digoxin dose reduction with frequent serum concentration monitoring when initiating amiodarone.",
+      drugIds: ["digoxin", "amiodarone"],
+    },
+    {
+      id: "clin-doac-reversal-mechanisms",
+      lane: "clinical",
+      kicker: "Critical Care & Anticoagulation Reversal",
+      title: "Targeted DOAC Reversal Agents: Idarucizumab vs Andexanet Alfa",
+      prompt: "An emergency resuscitation team prepares targeted reversal therapy for a patient with direct oral anticoagulant-associated life-threatening intracranial hemorrhage.",
+      ask: "Which statement correctly distinguishes the specific molecular mechanisms of idarucizumab and andexanet alfa?",
+      choices: [
+        {
+          id: "idarucizumab-fab-andexanet-decoy",
+          label: "Idarucizumab is a monoclonal Fab fragment with ~350-fold higher affinity for dabigatran than thrombin; andexanet alfa is a catalytically inactive factor Xa decoy that sequesters factor Xa inhibitors (apixaban, rivaroxaban)",
+        },
+        {
+          id: "idarucizumab-antithrombin-activator",
+          label: "Idarucizumab directly activates antithrombin III to neutralize all factor Xa inhibitors; andexanet alfa is a proteolytic enzyme that degrades dabigatran",
+        },
+        {
+          id: "andexanet-thrombin-antibody",
+          label: "Andexanet alfa is a monoclonal antibody specific for direct thrombin inhibitors, whereas idarucizumab is a modified factor IX decoy",
+        },
+        {
+          id: "vkorc1-competitive-antagonists",
+          label: "Both reversal agents function as competitive antagonists at the hepatic VKORC1 enzyme complex to restore endogenous clotting factors",
+        },
+      ],
+      correct: "idarucizumab-fab-andexanet-decoy",
+      answer: "Targeted reversal of direct oral anticoagulants relies on distinct molecular constructs: Idarucizumab (Praxbind) is a humanized monoclonal antibody Fab fragment that binds free and thrombin-bound dabigatran with an affinity approximately 350 times greater than that of dabigatran for thrombin, neutralizing dabigatran within minutes without procoagulant rebound. Andexanet alfa (Andexxa) is a genetically engineered, catalytically inactive recombinant modified human factor Xa protein (with active site Ser419Ala mutation and Gla domain deletion); it functions as a decoy receptor that binds and sequesters oral direct factor Xa inhibitors (apixaban, rivaroxaban, edoxaban) and indirect inhibitors (enoxaparin). Consensus guidelines (ACC 2020 / ASH 2024) recommend these specific targeted reversal agents for life-threatening hemorrhage or emergent invasive procedures.",
+      drugIds: ["dabigatran", "apixaban", "rivaroxaban"],
+    },
+    {
+      id: "clin-warfarin-bactrim-cyp2c9",
+      lane: "clinical",
+      kicker: "CYP Pharmacokinetics & Anticoagulation",
+      title: "Warfarin and TMP-SMX CYP2C9 Stereoselective Collision",
+      prompt: "A patient on stable maintenance warfarin therapy is prescribed trimethoprim-sulfamethoxazole (TMP-SMX) for a skin and soft tissue infection. Four days later, the patient presents with gross hematuria, extensive ecchymoses, and an INR of 8.5.",
+      ask: "What enantiomer-specific pharmacokinetic mechanism accounts for this abrupt, severe supratherapeutic INR escalation?",
+      choices: [
+        {
+          id: "smx-cyp2c9-s-warfarin-inhibition",
+          label: "Sulfamethoxazole potently inhibits CYP2C9, selectively blocking clearance of the 5-fold more potent (S)-warfarin enantiomer",
+        },
+        {
+          id: "trimethoprim-r-warfarin-absorption",
+          label: "Trimethoprim accelerates intestinal absorption of the inactive (R)-warfarin enantiomer via P-glycoprotein induction",
+        },
+        {
+          id: "gut-flora-immediate-depletion",
+          label: "TMP-SMX completely depletes all hepatic and systemic vitamin K stores within 12 hours through gut decontamination",
+        },
+        {
+          id: "oct-renal-secretion-blockade",
+          label: "Sulfamethoxazole competitively blocks renal organic cation transporters, suppressing tubular excretion of (R)-warfarin",
+        },
+      ],
+      correct: "smx-cyp2c9-s-warfarin-inhibition",
+      answer: "Warfarin is administered as a racemic mixture of (R)- and (S)-enantiomers. The (S)-enantiomer is 3 to 5 times more biologically potent than the (R)-enantiomer in inhibiting vitamin K epoxide reductase (VKORC1). (S)-warfarin is cleared almost exclusively via hepatic CYP2C9 oxidative metabolism, whereas (R)-warfarin is cleared through CYP1A2, CYP3A4, and CYP2C19. Sulfamethoxazole (in TMP-SMX) is a potent stereoselective inhibitor of CYP2C9. Concomitant administration inhibits (S)-warfarin clearance, driving a dramatic 2- to 4-fold surge in active (S)-warfarin plasma concentrations within 3 to 5 days, precipitating extreme supratherapeutic INR spikes and fatal hemorrhage. Consensus guidelines recommend avoiding TMP-SMX with warfarin or proactively reducing warfarin dosing by 30% to 50% with serial INR monitoring every 2 to 3 days.",
+      drugIds: ["warfarin", "tmp-smx"],
+    },
+    {
+      id: "clin-linezolid-ssri-maoi",
+      lane: "clinical",
+      kicker: "Toxicology & Neuropharmacology",
+      title: "Linezolid MAO Inhibition and SSRI Serotonin Syndrome",
+      prompt: "A patient receiving maintenance sertraline therapy for major depression is prescribed linezolid for a vancomycin-resistant enterococcal (VRE) infection. Within 24 hours of initiation, the patient develops ocular clonus, hyperreflexia, agitation, diaphoresis, and hyperthermia.",
+      ask: "What intrinsic pharmacological property of linezolid precipitates severe serotonin syndrome when coadministered with an SSRI?",
+      choices: [
+        {
+          id: "linezolid-reversible-mao-inhibition",
+          label: "Linezolid possesses non-selective, reversible monoamine oxidase (MAO-A and MAO-B) inhibitory activity, preventing serotonin catabolism",
+        },
+        {
+          id: "direct-5ht1a-postsynaptic-agonism",
+          label: "Linezolid acts as a direct high-affinity agonist at brainstem postsynaptic 5-HT1A receptors",
+        },
+        {
+          id: "cyp2d6-hyper-induction",
+          label: "Linezolid potently induces hepatic CYP2D6, generating toxic pro-serotonergic sertraline metabolites",
+        },
+        {
+          id: "vmat2-inhibition-dopamine-depletion",
+          label: "Linezolid blocks vesicular monoamine transporter 2 (VMAT2), causing acute central catecholamine collapse",
+        },
+      ],
+      correct: "linezolid-reversible-mao-inhibition",
+      answer: "Although developed as an oxazolidinone antibacterial that binds the 50S ribosomal subunit, linezolid is structurally related to the antidepressant toloxatone and possesses potent, non-selective, reversible monoamine oxidase (MAO-A and MAO-B) inhibitory activity. MAO-A is the primary enzyme responsible for the metabolic deamination of serotonin (5-HT). When linezolid is combined with selective serotonin reuptake inhibitors (SSRIs), SNRIs, or other serotonergic agents, reuptake inhibition combined with impaired metabolic clearance causes massive intrasynaptic serotonin accumulation. This precipitates severe, potentially fatal Serotonin Syndrome (Hunter Criteria: spontaneous clonus, tremor, lower extremity hyperreflexia, autonomic instability, hyperthermia) without requiring high dosages. FDA safety alerts and guidelines recommend avoiding linezolid in patients receiving serotonergic psychotropics unless alternative antibacterials are unavailable, with mandatory clinical monitoring.",
+      drugIds: ["linezolid", "sertraline"],
+    },
+    {
+      id: "clin-methadone-fluconazole-qtc-3a4",
+      lane: "clinical",
+      kicker: "Cardiology & Pharmacokinetics",
+      title: "Methadone and Fluconazole Dual PK/PD Collision & TdP Risk",
+      prompt: "A patient on stable methadone maintenance therapy for opioid use disorder is prescribed oral fluconazole for esophageal candidiasis. Several days later, the patient experiences syncope and is found to have marked QTc prolongation (>540 ms) and runs of polymorphic ventricular tachycardia.",
+      ask: "What dual pharmacokinetic (PK) and pharmacodynamic (PD) collision produces this severe arrhythmogenic risk?",
+      choices: [
+        {
+          id: "cyp3a4-inhibition-plus-herg-blockade",
+          label: "Fluconazole inhibits CYP3A4 and CYP2C19 to raise methadone levels (PK), while both drugs independently block hERG/IKr potassium channels (PD)",
+        },
+        {
+          id: "cyp2b6-induction-plus-sodium-influx",
+          label: "Fluconazole accelerates CYP2B6 clearance of methadone (PK), while stimulating inward Nav1.5 cardiac sodium channels (PD)",
+        },
+        {
+          id: "oat-displacement-hyperkalemia",
+          label: "Methadone displaces fluconazole from renal organic anion transporters (PK), inducing acute arrhythmogenic hyperkalemia (PD)",
+        },
+        {
+          id: "mu-receptor-cooperativity-tachycardia",
+          label: "Both drugs bind postsynaptic mu-opioid receptors with negative cooperativity, triggering acute adrenergic withdrawal tachycardia (PD)",
+        },
+      ],
+      correct: "cyp3a4-inhibition-plus-herg-blockade",
+      answer: "Methadone and fluconazole represent a classic dual PK and PD collision. Pharmacokinetically (PK), methadone clearance is mediated primarily by CYP3A4, CYP2B6, and CYP2C19; fluconazole is a potent inhibitor of CYP2C19 and a moderate-to-strong dose-dependent inhibitor of CYP3A4 and CYP2C9. Fluconazole coadministration significantly impairs methadone metabolic clearance, raising systemic methadone serum concentrations (AUC increased by 30% to 50% or more). Pharmacodynamically (PD), both (S)-methadone and fluconazole independently produce concentration-dependent blockade of the rapid delayed rectifier potassium channel (IKr / hERG). Elevated methadone levels combined with additive hERG channel inhibition synergistically delay cardiac ventricular repolarization, triggering marked QTc interval prolongation, early afterdepolarizations, and Torsades de Pointes (TdP). Consensus guidelines (CSAT / AHA) advise baseline and serial ECG monitoring, electrolyte repletion (potassium ≥ 4.0 mEq/L, magnesium ≥ 2.0 mg/dL), or alternative antifungal selection.",
+      drugIds: ["methadone", "fluconazole"],
     },
   ];
   return cards.map((c) => ({

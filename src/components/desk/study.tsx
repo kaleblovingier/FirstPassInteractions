@@ -346,6 +346,7 @@ export function StudyPage() {
           <Button
             size="sm"
             variant="secondary"
+            className="min-h-[44px]"
             onClick={() => {
               const sample = SAMPLE_REGIMENS.find((s) => s.id === "pheno-codeine");
               if (!sample) return;
@@ -385,6 +386,7 @@ export function StudyPage() {
               <Button
                 size="sm"
                 variant="secondary"
+                className="min-h-[44px]"
                 onClick={() => {
                   void navigator.clipboard?.writeText(buildLabPermalink(assignment.id));
                 }}
@@ -403,7 +405,7 @@ export function StudyPage() {
                   type="button"
                   onClick={() => selectAssignment(a)}
                   className={cn(
-                    "h-10 rounded-full px-3 text-xs font-medium",
+                    "min-h-[44px] rounded-full px-3.5 text-xs font-medium",
                     labId === a.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                   )}
                   title={locked ? "Host factors — Founding" : a.title}
@@ -431,13 +433,14 @@ export function StudyPage() {
             )}
           />
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Button size="sm" onClick={exportReceipt}>
+            <Button size="sm" className="min-h-[44px]" onClick={exportReceipt}>
               <Download className="size-3.5" />
               {plan === "lab" ? "Export receipt" : "Export receipt · Founding"}
             </Button>
             <Button
               size="sm"
               variant="secondary"
+              className="min-h-[44px]"
               onClick={() => {
                 const sample = sampleForLab(assignment);
                 if (sample) {
@@ -470,6 +473,75 @@ export function StudyPage() {
         </section>
       ) : null}
 
+      {/* Study Mastery Stats Header Bar */}
+      <section
+        className="rounded-xl bg-surface px-5 py-4 shadow-[var(--shadow-border)] sm:px-6"
+        aria-label="Study Mastery Stats"
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent font-semibold">
+                Study Mastery Stats
+              </span>
+              <Badge tone={missed > 0 ? "warn" : "ok"}>
+                {lane === "clinical"
+                  ? `${clinicalAllCards.length} clinical cards`
+                  : `${source.length} cards in deck`}
+              </Badge>
+            </div>
+            <p className="text-xs text-muted">
+              <span className="font-medium text-fg">
+                {lane === "clinical" ? `${clinicalAllCards.length} cards available in clinical deck` : `${source.length} cards available in ${LANE_PLAIN[lane]}`}
+              </span>
+              {" · "}
+              <span className="font-mono font-medium text-ok">{known} Got it</span>
+              {" vs "}
+              <span className="font-mono font-medium text-warn">{missed} Review</span>
+              {unseen > 0 ? (
+                <>
+                  {" · "}
+                  <span className="font-mono text-subtle">{unseen} Unseen</span>
+                </>
+              ) : null}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPile(pile === "miss" ? "all" : "miss")}
+              aria-pressed={pile === "miss"}
+              className={cn(
+                "inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 text-xs font-medium transition-colors shadow-[var(--shadow-border)]",
+                pile === "miss"
+                  ? "bg-warn text-accent-fg ring-2 ring-warn/30"
+                  : "bg-bg-sunken text-muted hover:bg-surface-2 hover:text-fg",
+              )}
+            >
+              <span>{pile === "miss" ? "Viewing Review Cards" : "Focus Review Cards"}</span>
+              <span
+                className={cn(
+                  "rounded-full px-2 py-0.5 font-mono text-[11px] font-semibold tabular-nums",
+                  pile === "miss" ? "bg-black/20 text-accent-fg" : "bg-surface text-fg",
+                )}
+              >
+                {missed}
+              </span>
+            </button>
+            {pile === "miss" ? (
+              <button
+                type="button"
+                onClick={() => setPile("all")}
+                className="inline-flex min-h-[44px] items-center rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
+              >
+                Show all cards
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </section>
+
       <div className="flex flex-wrap items-center gap-1">
         {STUDY_LANES.map((s) => (
           <button
@@ -478,7 +550,7 @@ export function StudyPage() {
             onClick={() => setLane(s.id)}
             aria-pressed={lane === s.id}
             className={cn(
-              "h-10 rounded-full px-3 text-xs font-medium",
+              "min-h-[44px] rounded-full px-3.5 text-xs font-medium",
               lane === s.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
             )}
           >
@@ -488,7 +560,7 @@ export function StudyPage() {
         <button
           type="button"
           onClick={resetMarks}
-          className="h-10 rounded-full px-3 text-xs font-medium text-muted hover:text-fg"
+          className="min-h-[44px] rounded-full px-3.5 text-xs font-medium text-muted hover:text-fg"
         >
           Reset marks
         </button>
@@ -504,7 +576,7 @@ export function StudyPage() {
                 onClick={() => setClinicalTopic(t.id)}
                 aria-pressed={clinicalTopic === t.id}
                 className={cn(
-                  "h-8 rounded-full px-3 text-xs font-medium",
+                  "min-h-[44px] rounded-full px-3.5 text-xs font-medium",
                   clinicalTopic === t.id
                     ? "bg-accent text-accent-foreground"
                     : "bg-bg-sunken text-muted hover:text-fg",
@@ -539,7 +611,7 @@ export function StudyPage() {
                   onClick={() => setClinicalTopic(topic.id)}
                   aria-pressed={active}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
+                    "min-h-[44px] flex items-center gap-1.5 rounded-md px-3 py-2 text-xs transition-colors",
                     active
                       ? "bg-bg-sunken font-medium text-fg ring-1 ring-accent"
                       : "bg-bg-sunken/60 text-muted hover:bg-bg-sunken hover:text-fg",
@@ -571,7 +643,7 @@ export function StudyPage() {
               onClick={() => setPile(s.id)}
               aria-pressed={pile === s.id}
               className={cn(
-                "h-10 rounded-full px-3 text-xs font-medium",
+                "min-h-[44px] rounded-full px-3.5 text-xs font-medium",
                 pile === s.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
               )}
             >
@@ -597,21 +669,21 @@ export function StudyPage() {
             <button
               type="button"
               onClick={() => setView("desk")}
-              className="h-9 rounded-full bg-ink px-3 text-xs font-medium text-bg"
+              className="min-h-[44px] rounded-full bg-ink px-4 text-xs font-medium text-bg"
             >
               Open desk
             </button>
             <button
               type="button"
               onClick={() => setView("library")}
-              className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+              className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
             >
               Browse library
             </button>
             <button
               type="button"
               onClick={() => setView("rounds")}
-              className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+              className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
             >
               Open rounds
             </button>
@@ -708,7 +780,7 @@ function StudyEmptyCoach({
             <button
               type="button"
               onClick={() => onPile("all")}
-              className="h-9 rounded-full bg-ink px-3 text-xs font-medium text-bg"
+              className="min-h-[44px] rounded-full bg-ink px-4 text-xs font-medium text-bg"
             >
               Show all
             </button>
@@ -716,7 +788,7 @@ function StudyEmptyCoach({
               <button
                 type="button"
                 onClick={() => onPile("miss")}
-                className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+                className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
               >
                 Open Review
               </button>
@@ -724,7 +796,7 @@ function StudyEmptyCoach({
             <button
               type="button"
               onClick={onReset}
-              className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+              className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
             >
               Reset marks
             </button>
@@ -735,21 +807,21 @@ function StudyEmptyCoach({
             <button
               type="button"
               onClick={() => onLane("drill")}
-              className="h-9 rounded-full bg-ink px-3 text-xs font-medium text-bg"
+              className="min-h-[44px] rounded-full bg-ink px-4 text-xs font-medium text-bg"
             >
               Try teaching rounds
             </button>
             <button
               type="button"
               onClick={() => onLane("boards")}
-              className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+              className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
             >
               Classic pairs
             </button>
             <button
               type="button"
               onClick={() => onLane("cyp")}
-              className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+              className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
             >
               Enzyme map
             </button>
@@ -758,21 +830,21 @@ function StudyEmptyCoach({
         <button
           type="button"
           onClick={() => onView("desk")}
-          className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+          className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
         >
           Open desk
         </button>
         <button
           type="button"
           onClick={() => onView("library")}
-          className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+          className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
         >
           Browse library
         </button>
         <button
           type="button"
           onClick={() => onView("rounds")}
-          className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+          className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
         >
           Open rounds
         </button>
@@ -875,29 +947,29 @@ function StudyCardView({
 
       <div className="mt-4 flex flex-wrap gap-2">
         {!card.choices && !revealed ? (
-          <Button size="sm" onClick={onReveal}>
+          <Button size="sm" className="min-h-[44px]" onClick={onReveal}>
             Reveal
           </Button>
         ) : null}
         {revealed && !card.choices ? (
           <>
-            <Button size="sm" variant={mark === "got" ? "default" : "secondary"} onClick={() => onMark("got")}>
+            <Button size="sm" variant={mark === "got" ? "default" : "secondary"} className="min-h-[44px]" onClick={() => onMark("got")}>
               Got it
             </Button>
-            <Button size="sm" variant={mark === "miss" ? "danger" : "secondary"} onClick={() => onMark("miss")}>
+            <Button size="sm" variant={mark === "miss" ? "danger" : "secondary"} className="min-h-[44px]" onClick={() => onMark("miss")}>
               Review
             </Button>
           </>
         ) : null}
         {card.drugIds.length ? (
-          <Button size="sm" variant="secondary" onClick={onLoad}>
+          <Button size="sm" variant="secondary" className="min-h-[44px]" onClick={onLoad}>
             Put on desk
           </Button>
         ) : null}
-        <Button size="sm" variant="ghost" onClick={onPrev} disabled={n <= 1}>
+        <Button size="sm" variant="ghost" className="min-h-[44px]" onClick={onPrev} disabled={n <= 1}>
           Back
         </Button>
-        <Button size="sm" variant="ghost" onClick={onNext} disabled={n >= total}>
+        <Button size="sm" variant="ghost" className="min-h-[44px]" onClick={onNext} disabled={n >= total}>
           Next
         </Button>
         {mark ? <Badge tone={mark === "got" ? "ok" : "warn"}>{mark === "got" ? "Got it" : "Review"}</Badge> : null}
