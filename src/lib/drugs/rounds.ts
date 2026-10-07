@@ -1533,6 +1533,28 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Salicylate zero-order kinetics · glycine saturation · sodium bicarbonate urine alkalinization",
   },
+  {
+    id: "r-ed-loperamide-verapamil-overdose",
+    title: "The high-dose antidiarrheal and the P-glycoprotein bypass",
+    setting: "ward",
+    stem: "A young adult is brought to the emergency department obtunded with pinpoint pupils, respirations of 6 breaths/min, and profound lethargy after supratherapeutic abuse of loperamide co-ingested with verapamil in an attempt to alleviate opioid withdrawal and achieve euphoria. An electrocardiogram demonstrates marked QTc prolongation (>540 ms) and widening of the QRS complex.",
+    ask: "How does co-administration of verapamil dismantle blood-brain barrier exclusion of loperamide, and what dual neurological and cardiac toxicity ensues?",
+    teach: "Loperamide is a potent peripheral mu-opioid agonist normally excluded from the central nervous system by blood-brain barrier P-glycoprotein (ABCB1) efflux pumps. Verapamil potently inhibits P-glycoprotein efflux, allowing loperamide to bypass the barrier and cross into the central nervous system, producing profound opioid respiratory depression, coma, and central euphoria. Simultaneously, supratherapeutic concentrations of loperamide block cardiac hERG potassium channels and voltage-gated sodium channels, precipitating dangerous QTc prolongation, torsades de pointes, and ventricular arrhythmias. Educational consensus literature and toxicology guidelines emphasize that managing high-dose loperamide toxicity requires prompt airway stabilization, naloxone titration to restore ventilation, and continuous cardiac monitoring.",
+    drugIds: ["loperamide", "verapamil"],
+    lane: "clinic",
+    blurb: "Loperamide-verapamil P-glycoprotein bypass · central opioid toxicity · QTc prolongation & torsades",
+  },
+  {
+    id: "r-clinic-statin-cyclosporine-oatp1b1-rhabdo",
+    title: "The renal transplant and the statin myopathy surge",
+    setting: "clinic",
+    stem: "A renal transplant recipient maintained on stable cyclosporine immunosuppression is initiated on atorvastatin for dyslipidemia. Several weeks later, the patient presents to clinic reporting severe diffuse proximal myalgias, profound muscle weakness, and dark brown urine. Laboratory analysis reveals a creatine kinase exceeding 35,000 U/L and acute serum creatinine elevation consistent with myoglobinuric acute kidney injury.",
+    ask: "What transporter and metabolic mechanisms explain the dramatic surge in systemic statin exposure and catastrophic rhabdomyolysis when cyclosporine is combined with atorvastatin?",
+    teach: "Renal transplant recipients stable on cyclosporine face severe pharmacokinetic interactions when initiated on atorvastatin. Cyclosporine potently inhibits hepatic sinusoidal OATP1B1 (SLCO1B1) and OATP1B3 uptake transporters as well as CYP3A4, blocking hepatic statin clearance and hepatic uptake. This precipitates a 6-to-10 fold surge in systemic circulating statin concentrations, triggering acute myoglobinuric rhabdomyolysis and muscle necrosis. Consensus transplant and cardiology literature underscores avoiding atorvastatin or using strict exposure caps with alternative non-interacting agents such as pravastatin or low-dose rosuvastatin, with regular creatine kinase and renal surveillance.",
+    drugIds: ["atorvastatin", "cyclosporine"],
+    lane: "clinic",
+    blurb: "Atorvastatin-cyclosporine OATP1B1 & CYP3A4 blockade · 6-10x plasma surge · myoglobinuric rhabdomyolysis",
+  },
 ];
 
 

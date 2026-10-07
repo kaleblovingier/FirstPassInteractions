@@ -501,6 +501,9 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-sildenafil-nitrate-cgmp-shock": "cardio",
   "clin-sacubitril-neprilysin-angioedema": "cardio",
   "clin-amiodarone-thyroid-mechanisms": "cardio",
+  "clin-statin-oatp1b1-rhabdomyolysis": "cardio",
+  "clin-gs-adenylyl-cyclase-pka-beta": "cardio",
+  "clin-pde5-cgmp-smooth-muscle-relaxation": "cardio",
 
   // Endocrine & SGLT2
   "clin-steroid-equiv-potency": "endocrine",
@@ -527,6 +530,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-sglt2-tubuloglomerular-feedback": "electrolytes",
   "clin-vd-dialysis-clearance": "electrolytes",
   "clin-sglt2-ketogenesis-glucagon": "electrolytes",
+  "clin-metformin-oct2-mate1-cimetidine": "electrolytes",
 
   // Neurology & Sedation
   "clin-acb-threshold": "neuro",
@@ -539,6 +543,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-beers-anticholinergic-fall-fracture": "neuro",
   "clin-vmat2-vesicular-depletion": "neuro",
   "clin-gaba-a-subtypes-sedation-anxiolysis": "neuro",
+  "clin-gq-phospholipase-c-ip3-dag": "neuro",
+  "clin-gi-girk-potassium-channel-opioid": "neuro",
 
   // Anticoagulation & DOACs
   "clin-dabigatran-reversal": "anticoag",
@@ -563,6 +569,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-linezolid-ssri-maoi": "tox",
   "clin-aspirin-zero-order-salicylate": "tox",
   "clin-anticholinergic-hyperthermia": "tox",
+  "clin-loperamide-pgp-bbb-penetration": "tox",
 
   // Addiction Medicine & Harm Reduction
   "clin-bup-precip-pharmacology": "addiction",
@@ -579,6 +586,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-sugammadex-cyclodextrin-chelation": "bedside",
   "clin-aspirin-platelet-covalent-acetylation": "bedside",
   "clin-steroid-nuclear-receptor-transactivation": "bedside",
+  "clin-probenecid-oat1-oat3-penicillin": "bedside",
 
   // CYP & Pharmacokinetics
   "clin-warfarin-bactrim-cyp2c9": "cyp",
@@ -2198,6 +2206,238 @@ export function clinicalCards(): StudyCard[] {
       correct: "glucosuria-insulin-drop-glucagon-cpt1",
       answer: "Sodium-glucose cotransporter 2 (SGLT2) inhibitors (empagliflozin, dapagliflozin, canagliflozin) promote sustained urinary excretion of glucose by blocking reabsorption in the early proximal renal tubule. This continual glucosuria lowers plasma glucose and decreases daily caloric availability, triggering a physiological reduction in pancreatic beta-cell insulin secretion. Concurrently, removal of paracrine insulin inhibition alongside direct effects on pancreatic alpha-cells stimulates glucagon secretion, markedly elevating the circulating glucagon-to-insulin ratio. This altered hormonal balance exerts powerful metabolic downstream effects: 1) Enhanced peripheral lipolysis in adipose tissue releases free fatty acids (FFAs) into circulation; 2) In the liver, the high glucagon-to-insulin ratio suppresses malonyl-CoA synthesis, which relieves allosteric inhibition of carnitine palmitoyltransferase-1 (CPT-1); 3) CPT-1 rapidly transports fatty acyl-CoA into mitochondrial matrices for beta-oxidation, fueling extensive hepatic synthesis of acetoacetate and beta-hydroxybutyrate. Crucially, because the kidney continues to dump glucose into the urine, systemic blood glucose remains normal or only mildly elevated (<200–250 mg/dL), masking the underlying ketoacidotic crisis ('euglycemic' DKA). ADA, AACE, and FDA safety communications emphasize that diagnosis requires measuring serum beta-hydroxybutyrate and blood gas/anion gap, as normal point-of-care fingerstick glucose frequently leads to delays in recognition and intervention.",
       drugIds: ["empagliflozin", "dapagliflozin"],
+    },
+    {
+      id: "clin-loperamide-pgp-bbb-penetration",
+      lane: "clinical",
+      kicker: "Transporter Kinetics & Toxicology",
+      title: "Loperamide BBB Exclusion & P-Glycoprotein Efflux Bypass",
+      prompt: "Loperamide is an over-the-counter antidiarrheal that acts as a potent mu-opioid receptor agonist yet produces negligible central opioid euphoria or respiratory depression at standard therapeutic doses.",
+      ask: "What physiological transporter mechanism restricts loperamide to the intestinal periphery, and how do inhibitors like quinidine or verapamil provoke life-threatening central opioid toxicity?",
+      choices: [
+        {
+          id: "pgp-efflux-bbb-exclusion",
+          label: "Loperamide is a high-affinity substrate for P-glycoprotein (ABCB1) efflux pumps at the blood-brain barrier that actively extrude it into capillary lumens; potent P-gp inhibition by quinidine or verapamil allows central penetration, causing respiratory depression and euphoria",
+        },
+        {
+          id: "rapid-first-pass-sulfation",
+          label: "Loperamide undergoes 99% immediate first-pass hepatic sulfoconjugation that inactivates all mu-opioid binding before reaching the brain",
+        },
+        {
+          id: "quaternary-amine-polar-exclusion",
+          label: "Loperamide carries a permanent quaternary ammonium charge that physically prevents any lipid bilayer crossing regardless of transporter activity",
+        },
+        {
+          id: "direct-cns-mu-downregulation",
+          label: "Central mu-opioid receptors are allosterically insensitive to loperamide due to constitutive phosphorylation by beta-arrestin-2",
+        },
+      ],
+      correct: "pgp-efflux-bbb-exclusion",
+      answer: "Loperamide is a lipophilic, potent mu-opioid receptor agonist with peripheral antidiarrheal efficacy mediated through myenteric plexus opiate receptors. Despite high intrinsic potency, it displays minimal central opioid effects at normal doses because it is an avid substrate for the ATP-binding cassette transporter P-glycoprotein (P-gp, encoded by ABCB1 / MDR1) located on the apical luminal membrane of brain capillary endothelial cells. P-gp actively pumps loperamide out of endothelial cells back into the bloodstream, creating a steep blood-brain barrier efflux gradient that maintains central concentrations near zero. When co-administered with potent P-gp inhibitors (e.g., quinidine, verapamil, ketoconazole) or ingested in massive supratherapeutic doses that saturate P-gp capacity, loperamide crosses the blood-brain barrier freely. This precipitates severe central mu-opioid toxicity: profound respiratory depression, central nervous system depression, and euphoria. Additionally, supratherapeutic concentrations block hERG cardiac potassium channels and cardiac voltage-gated sodium channels, causing QTc prolongation, torsades de pointes, and fatal ventricular dysrhythmias. Consensus toxicology and FDA drug safety communications emphasize that loperamide abuse or P-gp co-inhibition constitutes a dual neurorespiratory and arrhythmogenic emergency requiring prompt airway support, naloxone titration, and continuous cardiac monitoring.",
+      drugIds: ["loperamide", "verapamil", "quinidine"],
+    },
+    {
+      id: "clin-statin-oatp1b1-rhabdomyolysis",
+      lane: "clinical",
+      kicker: "Hepatic Transporters & Myotoxicity",
+      title: "Statin Sinusoidal Influx via OATP1B1 & Transporter-Mediated Rhabdomyolysis",
+      prompt: "HMG-CoA reductase inhibitors (statins) rely on active transport into hepatocytes to exert their cholesterol-lowering actions and undergo hepatic clearance.",
+      ask: "Which hepatic sinusoidal uptake transporter is responsible for the hepatic extraction of atorvastatin and rosuvastatin, and why does its inhibition by cyclosporine or gemfibrozil precipitate severe rhabdomyolysis?",
+      choices: [
+        {
+          id: "oatp1b1-sinusoidal-uptake-inhibition",
+          label: "OATP1B1 (SLCO1B1) mediates sinusoidal influx into hepatocytes for hepatic clearance; potent inhibition by cyclosporine or gemfibrozil prevents hepatic extraction, causing massive systemic plasma exposure spikes that trigger skeletal muscle myopathy and rhabdomyolysis",
+        },
+        {
+          id: "oct1-renal-tubular-blockade",
+          label: "OCT1 mediates renal tubular secretion of statins; its inhibition prevents urinary clearance, driving systemic accumulation and myoglobinuria",
+        },
+        {
+          id: "bcrp-canalicular-efflux-blockade",
+          label: "BCRP canalicular efflux pumps statins into bile; its blockade traps active drug in bile ducts, causing secondary hepatic necrosis without muscle toxicity",
+        },
+        {
+          id: "cyp2d6-prodrug-hyperactivation",
+          label: "Cyclosporine hyperactivates CYP2D6 conversion of statins to active toxic lactone metabolites in plasma",
+        },
+      ],
+      correct: "oatp1b1-sinusoidal-uptake-inhibition",
+      answer: "Statins (including atorvastatin, rosuvastatin, and pravastatin) are organic anions that require active transport across the basolateral (sinusoidal) membrane of hepatocytes to reach their intracellular therapeutic target (HMG-CoA reductase) and clearance pathways. The primary sinusoidal influx transporter responsible for this uptake is Organic Anion Transporting Polypeptide 1B1 (OATP1B1, encoded by SLCO1B1), alongside OATP1B3. Potent OATP1B1 inhibitors such as cyclosporine and gemfibrozil (specifically gemfibrozil 1-O-beta-glucuronide) strongly block this sinusoidal uptake. Because hepatic first-pass extraction is severely curtailed, statins cannot enter hepatocytes and instead remain in the systemic circulation, causing plasma area under the curve (AUC) exposure spikes of 5- to 10-fold or higher. These dramatically elevated systemic circulating statin concentrations penetrate skeletal muscle myocytes, disrupting intracellular prenylation pathways, depleting coenzyme Q10, and destabilizing sarcolemmal integrity. The clinical result is severe statin-associated myopathy, marked creatine kinase elevation, and life-threatening myoglobinuric rhabdomyolysis with acute kidney injury. Consensus guidelines (AHA/ACC and CPIC) emphasize recognizing OATP1B1 interactions and utilizing dose restrictions or non-interacting lipid-lowering alternatives.",
+      drugIds: ["atorvastatin", "rosuvastatin", "cyclosporine", "gemfibrozil"],
+    },
+    {
+      id: "clin-metformin-oct2-mate1-cimetidine",
+      lane: "clinical",
+      kicker: "Renal Cation Transporters & Acid-Base",
+      title: "Metformin Renal Tubular Secretion via OCT2/MATE & Transporter Retention",
+      prompt: "Metformin is eliminated almost exclusively by the kidneys unchanged via both glomerular filtration and active renal tubular secretion.",
+      ask: "Which sequential basolateral and apical renal transport systems drive active metformin secretion, and what interaction mechanism with cimetidine or dolutegravir increases the risk of metformin-associated lactic acidosis (MALA)?",
+      choices: [
+        {
+          id: "oct2-mate-competitive-blockade",
+          label: "Metformin enters proximal tubular cells via basolateral OCT2 and exits into urine via apical MATE1/MATE2-K; cimetidine and dolutegravir competitively inhibit OCT2 and MATE transporters, impairing active secretion and causing systemic metformin retention",
+        },
+        {
+          id: "oat1-oat3-anion-exchange-saturation",
+          label: "Metformin relies on basolateral OAT1 and apical OAT3 anion exchangers; cimetidine stimulates OAT1 to deplete intracellular bicarbonate",
+        },
+        {
+          id: "sglt2-cotransport-inhibition",
+          label: "Metformin is co-transported with glucose via SGLT2; dolutegravir blocks SGLT2, provoking severe osmotic diuresis and lactic acidosis",
+        },
+        {
+          id: "cyp2c9-metabolic-shunting",
+          label: "Cimetidine inhibits hepatic CYP2C9 conversion of metformin to inactive metabolites, shunting parent drug to renal elimination",
+        },
+      ],
+      correct: "oct2-mate-competitive-blockade",
+      answer: "Metformin is a hydrophilic, positively charged organic cation at physiological pH with negligible plasma protein binding and zero hepatic metabolism; it is cleared >90% unchanged by the kidneys. Renal clearance exceeds glomerular filtration rate (GFR) by 3- to 4-fold, demonstrating robust active proximal tubular secretion. This transepithelial secretion occurs through a coordinated two-step transporter system: 1) Basolateral influx from peritubular capillaries into proximal tubular cells is mediated by Organic Cation Transporter 2 (OCT2, SLC22A2); 2) Apical efflux from tubular cells into the luminal urine is mediated by Multidrug and Toxin Extrusion proteins MATE1 (SLC47A1) and MATE2-K (SLC47A2). Cimetidine (an H2 antagonist) and dolutegravir (an HIV integrase inhibitor) are potent competitive inhibitors of renal OCT2 and MATE transporters. Co-administration competitively blocks tubular metformin secretion, reducing renal metformin clearance by 30% to 50% and precipitating significant plasma concentration increases. In patients with underlying renal impairment, dehydration, or acute illness, this transporter-mediated accumulation dramatically increases the risk of metformin-associated lactic acidosis (MALA) due to excessive inhibition of mitochondrial complex I and impaired hepatic gluconeogenesis. FDA labeling and consensus clinical pharmacology literature recommend vigilant renal surveillance, dose adjustment, or alternative therapy when initiating potent OCT2/MATE inhibitors.",
+      drugIds: ["metformin", "cimetidine", "dolutegravir"],
+    },
+    {
+      id: "clin-probenecid-oat1-oat3-penicillin",
+      lane: "clinical",
+      kicker: "Renal Anion Transporters & Drug Excretion",
+      title: "Probenecid OAT1/OAT3 Inhibition: Beta-Lactam Sparing vs Methotrexate Toxicity",
+      prompt: "Probenecid is a classic uricosuric agent historically developed during World War II to conserve scarce penicillin supplies.",
+      ask: "What molecular transport mechanism explains probenecid's ability to extend penicillin concentrations, and why is this same interaction hazardous when combined with methotrexate?",
+      choices: [
+        {
+          id: "oat1-oat3-competitive-tubular-blockade",
+          label: "Probenecid competitively inhibits basolateral renal Organic Anion Transporters (OAT1 and OAT3), blocking active tubular secretion of anionic drugs to prolong beta-lactam half-life, but dangerously reducing methotrexate clearance and triggering severe bone marrow suppression and mucositis",
+        },
+        {
+          id: "loop-of-henle-nkcc2-inhibition",
+          label: "Probenecid blocks the luminal NKCC2 cotransporter in the thick ascending limb, inducing diuresis that washes penicillin into the systemic circulation",
+        },
+        {
+          id: "albumin-binding-displacement-only",
+          label: "Probenecid binds competitively to plasma alpha-1 acid glycoprotein, displacing penicillin and methotrexate without affecting renal transporter physiology",
+        },
+        {
+          id: "cyp2c19-phase1-metabolism-inhibition",
+          label: "Probenecid is a potent mechanism-based inactivator of hepatic CYP2C19, slowing hepatic cleavage of beta-lactams and antifolates",
+        },
+      ],
+      correct: "oat1-oat3-competitive-tubular-blockade",
+      answer: "Penicillins, cephalosporins, and methotrexate are hydrophilic organic anions eliminated predominantly by the kidney through glomerular filtration coupled with vigorous active proximal tubular secretion. Basolateral uptake from peritubular capillaries into renal proximal tubular epithelial cells is mediated by Organic Anion Transporters 1 and 3 (OAT1/SLC22A6 and OAT3/SLC22A8). Probenecid is a potent competitive inhibitor of renal OAT1 and OAT3. By occupying these basolateral transporters, probenecid blocks the entry of anionic drugs into proximal tubular cells, effectively shutting down active tubular secretion. For beta-lactams (e.g., penicillin G, ampicillin, cefazolin), this extends the elimination half-life, increases area under the curve (AUC), and maintains plasma concentrations above the minimum inhibitory concentration (MIC)—a deliberate therapeutic synergy used in neurosyphilis and pelvic inflammatory disease regimens. Conversely, when probenecid is co-administered with methotrexate (an OAT1/OAT3 substrate), the blockade of renal tubular elimination severely reduces total clearance of methotrexate, causing prolonged toxic systemic exposure. This leads to profound methotrexate accumulation, life-threatening myelosuppression, severe gastrointestinal mucositis, and acute kidney injury. Consensus pharmacology and oncology guidelines emphasize that probenecid is strictly contraindicated with intermediate- or high-dose methotrexate.",
+      drugIds: ["probenecid", "penicillin-g", "methotrexate"],
+    },
+    {
+      id: "clin-gq-phospholipase-c-ip3-dag",
+      lane: "clinical",
+      kicker: "GPCR Signaling & Autonomic Pharmacology",
+      title: "The Gq Second Messenger Cascade: PLC-beta, IP3, DAG & Intracellular Calcium",
+      prompt: "Multiple autonomic and neurotransmitter receptor families (histamine H1, alpha-1 adrenergic, muscarinic M1 and M3, and serotonin 5-HT2) share a common heterotrimeric G-protein coupling mechanism.",
+      ask: "What intracellular biochemical cascade is activated upon stimulation of Gq-coupled receptors, and how does it drive smooth muscle contraction and glandular secretion?",
+      choices: [
+        {
+          id: "plc-ip3-calcium-dag-pkc",
+          label: "Gq alpha activates phospholipase C-beta (PLC-beta), hydrolyzing PIP2 into IP3 (which releases calcium from the endoplasmic/sarcoplasmic reticulum) and DAG (which activates protein kinase C), driving smooth muscle contraction and exocrine glandular secretion",
+        },
+        {
+          id: "adenylyl-cyclase-camp-pka-inhibition",
+          label: "Gq alpha directly stimulates adenylyl cyclase to increase cyclic AMP and activate protein kinase A, dephosphorylating myosin light chain kinase",
+        },
+        {
+          id: "girk-potassium-channel-hyperpolarization",
+          label: "Gq beta-gamma subunits directly open inwardly rectifying potassium (GIRK) channels, hyperpolarizing the cell membrane and terminating calcium influx",
+        },
+        {
+          id: "guanylyl-cyclase-cgmp-pkg-activation",
+          label: "Gq alpha activates soluble guanylyl cyclase, generating cGMP which stimulates protein kinase G to promote vascular smooth muscle relaxation",
+        },
+      ],
+      correct: "plc-ip3-calcium-dag-pkc",
+      answer: "Heterotrimeric Gq protein-coupled receptors (including histamine H1, alpha-1 adrenergic, muscarinic M1, M3, and M5, and serotonin 5-HT2A/2C) transduce extracellular signals via the Gq alpha subunit. Ligand binding prompts GTP-for-GDP exchange on Gq alpha, which dissociates from beta-gamma subunits and activates membrane-bound Phospholipase C-beta (PLC-beta). PLC-beta catalyzes the hydrolysis of membrane phospholipid phosphatidylinositol 4,5-bisphosphate (PIP2) into two crucial second messengers: 1) Inositol 1,4,5-trisphosphate (IP3), a water-soluble molecule that diffuses to the endoplasmic/sarcoplasmic reticulum to bind ligand-gated IP3 receptor channels, triggering rapid calcium release into the cytoplasm. In vascular smooth muscle, this surge in cytosolic calcium binds calmodulin to activate Myosin Light Chain Kinase (MLCK), phosphorylating myosin and driving contraction (vasoconstriction via alpha-1). In exocrine glands (sweat, lacrimal, salivary), elevated calcium stimulates exocytosis (secretion via M3); 2) Diacylglycerol (DAG), a lipophilic messenger that remains in the plasma membrane and, in synergy with calcium, recruits and activates Protein Kinase C (PKC), which phosphorylates targeted downstream structural and regulatory enzymes. Understanding this cascade clarifies why alpha-1 agonists (norepinephrine, phenylephrine) cause vasoconstriction, whereas alpha-1 antagonists (prazosin) promote vasodilation; and why antimuscarinics (atropine) shut down M3-mediated glandular secretions and bronchoconstriction.",
+      drugIds: ["prazosin", "diphenhydramine", "atropine"],
+    },
+    {
+      id: "clin-gs-adenylyl-cyclase-pka-beta",
+      lane: "clinical",
+      kicker: "Cardiovascular Pharmacology & Second Messengers",
+      title: "The Gs Cascade: Adenylyl Cyclase, cAMP, PKA & Tissue-Specific Divergence",
+      prompt: "Stimulation of Gs-coupled receptors (such as beta-1, beta-2, dopamine D1, and vasopressin V2) activates the adenylyl cyclase–cyclic AMP–protein kinase A pathway.",
+      ask: "How does the same Gs-cAMP-PKA cascade produce positive inotropy and chronotropy in cardiac myocytes (beta-1) while simultaneously causing smooth muscle relaxation and vasodilation in bronchioles and vasculature (beta-2)?",
+      choices: [
+        {
+          id: "cardiac-l-type-ca-vs-smooth-muscle-mlck-inhibition",
+          label: "In cardiac myocytes, PKA phosphorylates L-type calcium channels and phospholamban to increase calcium influx and inotropy; in smooth muscle, PKA phosphorylates and inhibits Myosin Light Chain Kinase (MLCK), preventing contraction and causing vasodilation and bronchodilation",
+        },
+        {
+          id: "ip3-receptor-translocation-in-heart-only",
+          label: "Beta-1 receptors in myocytes couple directly to IP3 generation, whereas beta-2 receptors activate calcium-activated potassium channels without altering cAMP",
+        },
+        {
+          id: "pka-selectively-stimulates-troponin-c-in-bronchi",
+          label: "PKA directly degrades troponin C in vascular smooth muscle to block contraction, while activating troponin C in ventricular myocytes",
+        },
+        {
+          id: "differential-girk-potassium-channel-gating",
+          label: "The cardiac response is driven entirely by G-protein beta-gamma subunit gating of potassium channels, while smooth muscle ignores PKA",
+        },
+      ],
+      correct: "cardiac-l-type-ca-vs-smooth-muscle-mlck-inhibition",
+      answer: "Receptors coupled to the stimulatory G-protein Gs (beta-1, beta-2, beta-3, dopamine D1, histamine H2, vasopressin V2) activate adenylyl cyclase upon agonist binding. Adenylyl cyclase catalyzes the conversion of cytosolic ATP into cyclic adenosine monophosphate (cAMP). cAMP binds the regulatory subunits of Protein Kinase A (PKA), releasing active catalytic PKA subunits that phosphorylate cell-specific downstream targets, producing divergent physiological endpoints: 1) In cardiac myocytes (predominantly beta-1): PKA phosphorylates sarcolemmal L-type voltage-gated calcium channels (Cav1.2), increasing inward calcium current (trigger calcium); phosphorylates ryanodine receptors (RyR2), enhancing calcium-induced calcium release; and phosphorylates phospholamban, relieving its inhibition of SERCA2a to accelerate calcium re-uptake into the sarcoplasmic reticulum. These actions generate positive inotropy (contractility), positive chronotropy (heart rate via SA node If channels), and positive lusitropy (relaxation rate); 2) In vascular and bronchial smooth muscle (predominantly beta-2): PKA phosphorylates Myosin Light Chain Kinase (MLCK), markedly decreasing MLCK's affinity for the calcium-calmodulin complex. Consequently, myosin regulatory light chains cannot be phosphorylated, preventing actin-myosin cross-bridge cycling. Concurrently, PKA stimulates calcium extrusion and calcium-activated potassium channels (KCa), leading to membrane hyperpolarization. The macroscopic result is smooth muscle relaxation: bronchodilation (e.g., albuterol) and arteriolar vasodilation. Understanding this tissue-specific target phosphorylation explains why non-selective beta-blockers (propranolol) can induce bronchospasm while slowing heart rate, whereas cardioselective beta-1 blockers (metoprolol) spare airway MLCK.",
+      drugIds: ["albuterol", "metoprolol", "epinephrine"],
+    },
+    {
+      id: "clin-gi-girk-potassium-channel-opioid",
+      lane: "clinical",
+      kicker: "Neuropharmacology & Inhibitory Signaling",
+      title: "The Gi Signaling Cascade: Adenylyl Cyclase Inhibition, GIRK Channels & Calcium Blockade",
+      prompt: "Inhibitory G-protein-coupled receptors (including muscarinic M2, alpha-2 adrenergic, dopamine D2, and mu-opioid receptors) mediate potent central and autonomic inhibition.",
+      ask: "What molecular dual mechanism triggered by Gi/o protein activation mediates cellular hyperpolarization and profound inhibition of neurotransmitter release?",
+      choices: [
+        {
+          id: "gi-ac-inhibition-girk-open-voltage-ca-block",
+          label: "The Gi alpha subunit inhibits adenylyl cyclase (lowering cAMP/PKA activity), while dissociated G-beta-gamma subunits directly open inwardly rectifying potassium (GIRK) channels to hyperpolarize membranes and close presynaptic voltage-gated N-type calcium channels to block neurotransmitter exocytosis",
+        },
+        {
+          id: "direct-gaba-a-receptor-pore-opening",
+          label: "Gi alpha directly binds the GABA-A receptor chloride pore, causing immediate massive chloride influx without involving G-beta-gamma subunits",
+        },
+        {
+          id: "phospholipase-c-inhibition-and-pkc-degradation",
+          label: "Gi directly degrades phospholipase C-beta, preventing basal IP3 formation and causing passive potassium leakage",
+        },
+        {
+          id: "guanylyl-cyclase-activation-and-pkg-hyperpolarization",
+          label: "Gi proteins activate soluble guanylyl cyclase, generating cyclic GMP that opens calcium-activated chloride channels to inhibit action potentials",
+        },
+      ],
+      correct: "gi-ac-inhibition-girk-open-voltage-ca-block",
+      answer: "Receptors coupled to the inhibitory G-protein family Gi/o (muscarinic M2/M4, alpha-2 adrenergic, dopamine D2/D3/D4, GABA-B, and mu/delta/kappa opioid receptors) elicit profound cellular inhibition through a dual signaling pathway mediated by both alpha and beta-gamma subunits: 1) The Gi alpha subunit directly binds and inhibits adenylyl cyclase, suppressing the synthesis of cyclic AMP (cAMP) and reducing Protein Kinase A (PKA) activity. This halts PKA-mediated phosphorylation of downstream ion channels and pro-exocytotic machinery; 2) Upon receptor activation and GDP-GTP exchange, dissociated G-protein beta-gamma (G-beta-gamma) dimers directly interact with two critical membrane ion channels: (a) They bind and open G-protein-coupled Inwardly Rectifying Potassium (GIRK / Kir3) channels, driving outward potassium flux that hyperpolarizes the neuronal resting membrane potential away from threshold, rendering the neuron resistant to action potential firing (e.g., central sedation and spinal analgesia from opioids and clonidine; SA nodal hyperpolarization and negative chronotropy from acetylcholine acting on M2); (b) They directly bind and inhibit presynaptic voltage-gated N-type and P/Q-type calcium channels (Cav2.2 and Cav2.1), blocking depolarization-induced calcium influx into presynaptic nerve terminals. Because vesicle exocytosis is strictly calcium-dependent, neurotransmitter release (substance P, glutamate, norepinephrine) is profoundly suppressed. This explains the potent clinical analgesic, sympatholytic, and sedative actions of mu-opioid agonists (morphine, fentanyl) and central alpha-2 agonists (clonidine, dexmedetomidine).",
+      drugIds: ["morphine", "clonidine"],
+    },
+    {
+      id: "clin-pde5-cgmp-smooth-muscle-relaxation",
+      lane: "clinical",
+      kicker: "Cardiovascular Pharmacology & Second Messengers",
+      title: "PDE-5 Degradation of cGMP: Nitric Oxide Synergy & Vasodilatory Collapse",
+      prompt: "Vascular smooth muscle tone is finely regulated by the nitric oxide (NO)–cyclic guanosine monophosphate (cGMP) signaling pathway.",
+      ask: "How does phosphodiesterase-5 (PDE-5) normally regulate vascular cGMP levels, and why does combining a PDE-5 inhibitor (sildenafil) with an organic nitrate (nitroglycerin) trigger profound, refractory hypotension?",
+      choices: [
+        {
+          id: "pde5-cgmp-breakdown-blockade-plus-sgc-stimulation",
+          label: "PDE-5 specifically hydrolyzes cGMP to 5'-GMP; sildenafil blocks cGMP degradation while nitrates donate nitric oxide to stimulate soluble guanylyl cyclase (sGC) synthesis of cGMP, causing massive synergistic cGMP accumulation, PKG activation, myosin light chain dephosphorylation, and refractory vasodilatory shock",
+        },
+        {
+          id: "competitive-inhibition-of-endothelin-eta-receptors",
+          label: "Sildenafil and nitrates competitively block endothelin ETA receptors on vascular endothelium, preventing basal release of endothelin-1",
+        },
+        {
+          id: "irreversible-covalent-alkylation-of-at1-receptors",
+          label: "The drug combination forms a covalent adduct that irreversibly inactivates vascular angiotensin AT1 receptors, preventing sympathetic vasoconstriction",
+        },
+        {
+          id: "direct-opening-of-l-type-calcium-channels",
+          label: "Nitrates and sildenafil open L-type calcium channels in vascular smooth muscle, causing paradoxical intracellular calcium depletion and cell arrest",
+        },
+      ],
+      correct: "pde5-cgmp-breakdown-blockade-plus-sgc-stimulation",
+      answer: "In vascular smooth muscle, endogenous nitric oxide (NO) released by endothelial cells diffuses into adjacent vascular smooth muscle cells and binds the heme moiety of soluble Guanylyl Cyclase (sGC), stimulating the synthesis of cyclic Guanosine Monophosphate (cGMP) from GTP. Elevated cGMP activates Protein Kinase G (PKG), which initiates several concerted vasodilatory actions: PKG activates Myosin Light Chain Phosphatase (MLCP) to dephosphorylate myosin regulatory light chains, halts intracellular calcium release by inhibiting IP3 receptors, stimulates SERCA to sequester calcium, and activates large-conductance calcium-activated potassium (BKCa) channels to hyperpolarize the sarcolemma. Under normal physiological conditions, cGMP signaling is rapidly terminated by Phosphodiesterase type 5 (PDE-5), which selectively hydrolyzes active cGMP into inactive 5'-GMP. Sildenafil is a potent, selective competitive inhibitor of PDE-5 that prevents cGMP degradation. When sildenafil is combined with exogenous organic nitrates (e.g., nitroglycerin, isosorbide mononitrate/dinitrate), a catastrophic pharmacological synergy occurs: nitrates massively accelerate cGMP production via continuous sGC activation, while sildenafil completely blocks its metabolic destruction. Intracellular cGMP accumulates to supranormal levels, provoking unrestricted PKG activation, total dephosphorylation of myosin light chains, and profound, uncompensated systemic arterial and venous vasodilation. Systemic vascular resistance drops precipitously and venous return plummets, resulting in life-threatening hypotension and coronary hypoperfusion that is often refractory to standard crystalloid resuscitation. Consequently, consensus ACC/AHA guidelines and FDA labeling strictly contraindicate organic nitrates within 24 hours of sildenafil administration.",
+      drugIds: ["sildenafil", "nitroglycerin"],
     },
   ];
   return cards.map((c) => ({

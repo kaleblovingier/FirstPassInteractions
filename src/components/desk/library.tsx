@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   Activity,
   AlertTriangle,
+  ArrowLeftRight,
   ArrowRight,
   Check,
   GitFork,
@@ -12,11 +13,14 @@ import {
   ShieldAlert,
   Sparkles,
   TrendingUp,
+  Zap,
 } from "lucide-react";
 import { ReceptorProfiler } from "./receptor-profiler";
 import { MechanismPathways } from "./mechanism-pathways";
 import { MechanismIntersect } from "./mechanism-intersect";
 import { PkTdmMechanisms } from "./pk-tdm-mechanisms";
+import { TransporterNetwork } from "./transporter-network";
+import { GProteinSignaling } from "./g-protein-signaling";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
 import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
@@ -63,7 +67,14 @@ function foundingGateCopy(kind: "contraindications" | FoundingGateKind) {
 
 export function Formulary() {
   const [viewTab, setViewTab] = useState<
-    "compounds" | "contraindications" | "receptors" | "pathways" | "intersect" | "pk"
+    | "compounds"
+    | "contraindications"
+    | "receptors"
+    | "pathways"
+    | "intersect"
+    | "pk"
+    | "transporters"
+    | "gpcr"
   >("compounds");
 
   return (
@@ -175,6 +186,38 @@ export function Formulary() {
           <TrendingUp className="size-4 shrink-0 text-purple-500" />
           <span>PK &amp; Nonlinear Kinetics</span>
         </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "transporters"}
+          onClick={() => setViewTab("transporters")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "transporters"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <ArrowLeftRight className="size-4 shrink-0 text-cyan-500" />
+          <span>Transporter Network</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "gpcr"}
+          onClick={() => setViewTab("gpcr")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "gpcr"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Zap className="size-4 shrink-0 text-rose-500" />
+          <span>GPCR Signaling</span>
+        </button>
       </div>
 
       {viewTab === "compounds" ? (
@@ -187,8 +230,12 @@ export function Formulary() {
         <MechanismPathways />
       ) : viewTab === "intersect" ? (
         <MechanismIntersect />
-      ) : (
+      ) : viewTab === "pk" ? (
         <PkTdmMechanisms />
+      ) : viewTab === "transporters" ? (
+        <TransporterNetwork />
+      ) : (
+        <GProteinSignaling />
       )}
     </div>
   );
