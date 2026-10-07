@@ -3,7 +3,7 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
 import { clockForFinding } from "@/lib/drugs/cyp-protocol";
-import { conditionLanes, foodBeside, sameShelf } from "@/lib/drugs/also";
+import { conditionLanes, foodBeside, sameShelfGroups } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { maxDrugs } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -253,7 +253,7 @@ export function CheckBoard({
     () => conditionLanes(ids, host, new Set(findings.map((f) => f.id))),
     [ids, host, findings],
   );
-  const shelf = sameShelf(ids);
+  const shelfGroups = sameShelfGroups(ids);
   const pairKey = ids.join("|");
   const [scope, setScope] = useState(pairKey);
   const [openId, setOpenId] = useState<string | null>(rows[0]?.id ?? food[0]?.id ?? null);
@@ -304,6 +304,12 @@ export function CheckBoard({
         : "",
     watch: leadWatch,
     source: leadSource,
+    hands: ids.some((id) => {
+      const flags = DRUG_BY_ID[id]?.pd ?? [];
+      return flags.includes("opioid") || flags.includes("partial-opioid");
+    })
+      ? "Public lines are on this check. They are not a finding, a facility, or a ZIP."
+      : "",
     rows: regimenGroups(rows).pairs.slice(0, 6).map((g) => ({
       severity: SEVERITY_LABEL[g.rows[0].severity],
       line: `${g.title}. ${directionLine(g.rows)}`,
@@ -348,12 +354,6 @@ export function CheckBoard({
       {lead ? <LeadSources finding={lead} /> : null}
       <NarcoticBridge ids={ids} findings={findings} />
 
-      {shelf ? (
-        <p className="rounded-md bg-bg-sunken px-3 py-2 text-sm leading-relaxed text-fg">
-          {shelf}. Same shelf is not a collision by itself.
-        </p>
-      ) : null}
-
       {rows.length > 0 ? (
         <>
           <p className="text-xs leading-relaxed text-muted">
@@ -385,7 +385,7 @@ export function CheckBoard({
         </>
       ) : null}
 
-      {regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) || foodPairs.length > 0 || lanes.length > 0 ? (
+      {regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0) || foodPairs.length > 0 || lanes.length > 0 || shelfGroups.length > 0 ? (
         <PairGrid
           hits={
             regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0)
@@ -424,6 +424,14 @@ export function CheckBoard({
             })
             .filter((cell): cell is NonNullable<typeof cell> => Boolean(cell))
             .slice(0, 4)}
+          shelves={shelfGroups.map((group) => ({
+            key: group.cls,
+            title: group.names.join(" · "),
+            line:
+              group.names.length > 2
+                ? `These are on the ${group.cls} shelf. Not a collision and not a clearance.`
+                : `Both are on the ${group.cls} shelf. Not a collision and not a clearance.`,
+          }))}
           onOpen={(id) => {
             setTier("all");
             setShowAll(true);
@@ -637,6 +645,7 @@ function PairGrid({
   beside = [],
   besideHidden = 0,
   hosts = [],
+  shelves = [],
   onOpen,
 }: {
   hits: GridCell[];
@@ -644,9 +653,10 @@ function PairGrid({
   beside?: GridCell[];
   besideHidden?: number;
   hosts?: GridCell[];
+  shelves?: { key: string; title: string; line: string }[];
   onOpen: (id: string) => void;
 }) {
-  if (hits.length + blanks.length < 2 && beside.length === 0 && hosts.length === 0) return null;
+  if (hits.length + blanks.length < 2 && beside.length === 0 && hosts.length === 0 && shelves.length === 0) return null;
   const pairs = hits.length + blanks.length >= 2;
   return (
     <div className="space-y-2">
@@ -674,6 +684,20 @@ function PairGrid({
             <p className="text-[11px] leading-relaxed text-subtle">A blank cell says why this map stayed quiet. It is not a clearance.</p>
           ) : null}
         </>
+      ) : null}
+      {shelves.length > 0 ? (
+        <div className="space-y-1.5 pt-1">
+          <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">Same shelf, not a collision</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {shelves.map((cell) => (
+              <div key={cell.key} className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2">
+                <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">Same shelf</span>
+                <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : null}
       {beside.length > 0 ? (
         <div className="space-y-1.5 pt-1">
@@ -865,11 +889,14 @@ function CheckRow({
             {finding.tags.includes("boxed") ? (
               <span className="font-mono text-[10px] uppercase tracking-wide text-danger">Boxed warning (label)</span>
             ) : null}
-            {finding.enzymes.map((e) => (
-              <span key={e} className="font-mono text-[10px] uppercase tracking-wide text-subtle">
-                {e}
-              </span>
-            ))}
+            {finding.enzymes.map((e) => {
+              const grade = finding.enzymes.length === 1 ? gradeOf(finding) : "";
+              return (
+                <span key={e} className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+                  {grade ? `${grade} ${e}` : e}
+                </span>
+              );
+            })}
           </span>
         </span>
         <ChevronDown className={cn("mt-1 size-4 shrink-0 text-subtle", open && "rotate-180")} />

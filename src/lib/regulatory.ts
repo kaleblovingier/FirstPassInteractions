@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.25.0",
+  version: "1.29.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.25.0",
+  buildId: "FP-SW-1.29.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -47,6 +47,9 @@ export const INDICATIONS = [
   "When narcotic use is reported, or an opioid or partial opioid is on the desk, showing public lines for treatment referral, a treatment locator, a crisis line, and an overdose-response line. The desk does not diagnose a substance use disorder and does not pick a treatment or a milligram. The report is not stored.",
   "When that card is open and the map already has an opioid-with-benzodiazepine, gabapentinoid, or second-agonist row, naming that row. Copying the public lines does not store the report and does not pick a next step.",
   "Keeping the call buttons on one line and the explanation of each public line behind a disclosure, so the interaction check stays reachable. If the copy fails, the same lines are shown to copy by hand.",
+  "Letting a person type a ZIP and text it to 435748, or open the FindTreatment.gov locator and search it there. The desk does not look up a facility and does not store the ZIP. The locator link cannot carry the ZIP. The card appears once, on the interaction check, not again on the harm-reduction tab.",
+  "Naming the opioid or partial opioid that opened the public lines. A same-shelf cell names two drugs in one class and says it is not a collision. On a row with one enzyme, the chip includes the perpetrator grade already on that row. The three readers are told the public lines are not a finding.",
+  "On Learn, defining the words already on a check row, and asking them back on the enzyme map: direction, prodrug, minor pathway, blank cell, and same shelf. Up to three strong examples per enzyme role. Not an exam key and not a milligram.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

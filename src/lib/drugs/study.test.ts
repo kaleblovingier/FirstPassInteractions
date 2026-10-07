@@ -13,6 +13,20 @@ import {
 } from "./study";
 
 describe("study learning tools", () => {
+  it("enzyme map asks the row words back", () => {
+    const cards = cardsFor("cyp", [], []);
+    const ids = ["cyp-arrow-inhibit", "cyp-arrow-induce", "cyp-arrow-prodrug", "cyp-arrow-blank", "cyp-arrow-shelf", "cyp-arrow-victim"];
+    for (const id of ids) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, id);
+      assert.equal(card.lane, "cyp");
+      assert.ok(card.choices && card.choices.some((choice) => choice.id === card.correct));
+      assert.equal(card.drugIds.length, 0);
+    }
+    const roles = cards.filter((c) => c.id.startsWith("cyp-CYP3A4-inhibitor-"));
+    assert.ok(roles.length >= 1 && roles.length <= 3);
+  });
+
   it("includes clinical lane in STUDY_LANES", () => {
     const laneIds = STUDY_LANES.map((l) => l.id);
     assert.ok(laneIds.includes("clinical" as StudyLane));

@@ -75,6 +75,16 @@ const HOW_STEPS = [
   },
 ] as const;
 
+const ROW_WORDS = [
+  { word: "Strong, moderate, weak", line: "The perpetrator grade already on that row. An FDA fold-change, not a milligram." },
+  { word: "Slows clearance", line: "An inhibitor. Parent can rise when the enzyme was clearing it." },
+  { word: "Speeds clearance", line: "An inducer. Parent can fall. Stopping the inducer can bring the enzyme back." },
+  { word: "Prodrug", line: "The enzyme activates it. Inhibition can mean less active product, not a higher parent." },
+  { word: "Minor pathway", line: "A smaller share of clearance. Sensitive substrate is the index victim." },
+  { word: "Blank cell", line: "No perpetrator or no victim was mapped. Not a clearance." },
+  { word: "Same shelf", line: "Two drugs in one class. Not a collision by itself." },
+] as const;
+
 export function StudyPage() {
   const selected = useDesk((s) => s.selected);
   const doses = useDesk((s) => s.doses);
@@ -290,6 +300,22 @@ export function StudyPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">How a row is read</p>
+        <h3 className="mt-2 font-serif text-xl tracking-tight text-fg">The words on the check, before the cards.</h3>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          {ROW_WORDS.map((row) => (
+            <li key={row.word} className="rounded-md bg-bg-sunken px-3 py-2.5">
+              <p className="text-sm font-medium text-fg">{row.word}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted">{row.line}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-[11px] leading-relaxed text-subtle">
+          Enzyme map cards ask these words back. A blank answer is not a clearance. Not a milligram.
+        </p>
       </section>
 
       <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">

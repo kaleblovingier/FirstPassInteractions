@@ -184,9 +184,9 @@ export function cypCards(): StudyCard[] {
     );
     const sensitive = POOL.filter((d) => sensitiveOf(d, enzyme)).sort((a, b) => a.name.localeCompare(b.name));
     const activation = POOL.filter((d) => activationOf(d, enzyme)).sort((a, b) => a.name.localeCompare(b.name));
-    pushRole(out, enzyme, "inhibitor", strongInh, 1);
-    pushRole(out, enzyme, "inducer", strongInd, 1);
-    pushRole(out, enzyme, "substrate", sensitive, 1);
+    pushRole(out, enzyme, "inhibitor", strongInh, 3);
+    pushRole(out, enzyme, "inducer", strongInd, 3);
+    pushRole(out, enzyme, "substrate", sensitive, 3);
     if (activation.length) pushRole(out, enzyme, "activation", activation, 1);
   }
 
@@ -246,7 +246,105 @@ export function cypCards(): StudyCard[] {
     });
   }
 
-  return out;
+  return [...out, ...directionCards()];
+}
+
+function directionCards(): StudyCard[] {
+  const foldInh = FDA_GRADES.inhibitor.strong.fold;
+  const foldInd = FDA_GRADES.inducer.strong.fold;
+  const cards: Array<Omit<StudyCard, "lane" | "drugIds" | "topic">> = [
+    {
+      id: "cyp-arrow-inhibit",
+      kicker: "Direction",
+      title: "Inhibitor, parent cleared",
+      prompt: "The enzyme was clearing the parent. A strong inhibitor is on the desk.",
+      ask: "What does the strong inhibitor do to that parent?",
+      answer: `Slows clearance. Parent can rise. FDA strong inhibitor: ${foldInh}. This card does not pick a milligram.`,
+      choices: [
+        { id: "slows", label: "Slows clearance" },
+        { id: "speeds", label: "Speeds clearance" },
+        { id: "activates", label: "Makes more active product" },
+        { id: "none", label: "No mapped change" },
+      ],
+      correct: "slows",
+    },
+    {
+      id: "cyp-arrow-induce",
+      kicker: "Direction",
+      title: "Inducer, parent cleared",
+      prompt: "The enzyme was clearing the parent. A strong inducer is on the desk.",
+      ask: "What does the strong inducer do to that parent?",
+      answer: `Speeds clearance. Parent can fall. FDA strong inducer: ${foldInd}. When the inducer stops, the enzyme can come back. Not a milligram.`,
+      choices: [
+        { id: "speeds", label: "Speeds clearance" },
+        { id: "slows", label: "Slows clearance" },
+        { id: "activates", label: "Makes more active product" },
+        { id: "none", label: "No mapped change" },
+      ],
+      correct: "speeds",
+    },
+    {
+      id: "cyp-arrow-prodrug",
+      kicker: "Direction",
+      title: "Inhibitor meets a prodrug",
+      prompt: "The enzyme activates the prodrug. A strong inhibitor is on the desk.",
+      ask: "Which way does the active product move?",
+      answer: "Less active product. Inhibition is not “the drug builds up” when the pathway is activation. Not a milligram.",
+      choices: [
+        { id: "less", label: "Less active product" },
+        { id: "more", label: "More active product" },
+        { id: "parent", label: "Parent only rises" },
+        { id: "none", label: "No mapped change" },
+      ],
+      correct: "less",
+    },
+    {
+      id: "cyp-arrow-blank",
+      kicker: "Direction",
+      title: "Blank cell",
+      prompt: "Two drugs share an enzyme. Neither is mapped as a perpetrator.",
+      ask: "What is the blank cell?",
+      answer: "Not a clearance. It says no perpetrator or no victim was mapped. It does not say the pair is safe.",
+      choices: [
+        { id: "blank", label: "Not a clearance" },
+        { id: "safe", label: "Safe to combine" },
+        { id: "minor", label: "A minor interaction" },
+        { id: "contra", label: "A contraindication" },
+      ],
+      correct: "blank",
+    },
+    {
+      id: "cyp-arrow-shelf",
+      kicker: "Direction",
+      title: "Same shelf",
+      prompt: "Two drugs share a class. No perpetrator is mapped between them.",
+      ask: "What is the same-shelf cell?",
+      answer: "Not a collision by itself, and not a clearance. Same class is not the same as an enzyme hit.",
+      choices: [
+        { id: "shelf", label: "Not a collision by itself" },
+        { id: "cyp", label: "A CYP collision" },
+        { id: "contra", label: "A contraindication" },
+        { id: "dose", label: "A milligram change" },
+      ],
+      correct: "shelf",
+    },
+    {
+      id: "cyp-arrow-victim",
+      kicker: "Direction",
+      title: "Victim marks",
+      prompt: "The chip under a CYP row names the victim, not a dose.",
+      ask: "Which mark means the enzyme is a small part of clearance?",
+      answer: "Minor pathway. Sensitive substrate is the index victim. Narrow window is a tight range. Prodrug means the enzyme activates it. None of these is a milligram.",
+      choices: [
+        { id: "minor", label: "Minor pathway" },
+        { id: "sensitive", label: "Sensitive substrate" },
+        { id: "nti", label: "Narrow window" },
+        { id: "prodrug", label: "Prodrug" },
+      ],
+      correct: "minor",
+    },
+  ];
+  return cards.map((card) => ({ ...card, lane: "cyp" as const, drugIds: [] }));
 }
 
 export function drillCards(): StudyCard[] {
