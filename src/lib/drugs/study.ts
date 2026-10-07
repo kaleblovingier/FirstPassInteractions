@@ -15,6 +15,31 @@ export type StudyLane = "drill" | "boards" | "desk" | "cyp" | "clinical";
 export type StudyMark = "got" | "miss";
 export type StudyPile = "all" | "open" | "miss";
 
+export type ClinicalTopic =
+  | "all"
+  | "cardio"
+  | "endocrine"
+  | "electrolytes"
+  | "neuro"
+  | "anticoag"
+  | "tox";
+
+export interface ClinicalTopicDef {
+  id: ClinicalTopic;
+  label: string;
+  shortLabel: string;
+}
+
+export const CLINICAL_TOPICS: ClinicalTopicDef[] = [
+  { id: "all", label: "All topics", shortLabel: "All" },
+  { id: "cardio", label: "Cardiology & QTc", shortLabel: "Cardio & QTc" },
+  { id: "endocrine", label: "Endocrine & SGLT2", shortLabel: "Endocrine" },
+  { id: "electrolytes", label: "Electrolytes & Renal", shortLabel: "Electrolytes" },
+  { id: "neuro", label: "Neurology & Sedation", shortLabel: "Neurology" },
+  { id: "anticoag", label: "Anticoagulation & DOACs", shortLabel: "Anticoag" },
+  { id: "tox", label: "Toxicology & TDM", shortLabel: "Tox & TDM" },
+];
+
 export interface StudyChoice {
   id: string;
   label: string;
@@ -31,6 +56,7 @@ export interface StudyCard {
   choices?: StudyChoice[];
   correct?: string;
   drugIds: string[];
+  topic?: ClinicalTopic;
 }
 
 export const STUDY_LANES: { id: StudyLane; label: string }[] = [
@@ -351,8 +377,67 @@ export function boardsCards(): StudyCard[] {
   return out;
 }
 
+export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
+  // Cardiology & QTc
+  "clin-digoxin-hf-targets": "cardio",
+  "clin-digifab-post-lab-trap": "cardio",
+  "clin-ag-endocarditis-synergy": "cardio",
+  "clin-tisdale-score-cutoffs": "cardio",
+  "clin-bazett-tachycardia-inflation": "cardio",
+  "clin-tdp-magnesium-mechanism": "cardio",
+  "clin-tdp-overdrive-pacing-isoproterenol": "cardio",
+
+  // Endocrine & SGLT2
+  "clin-steroid-equiv-potency": "endocrine",
+  "clin-hpa-suppression-threshold": "endocrine",
+  "clin-dka-pseudohyponatremia-fluids": "endocrine",
+  "clin-iron-fgf23-hypophosphatemia": "endocrine",
+  "clin-sglt2-eudka-triad": "endocrine",
+  "clin-sglt2-preop-hold-guidance": "endocrine",
+
+  // Electrolytes & Renal
+  "clin-dialysis-ceftriaxone-vs-cefepime": "electrolytes",
+  "clin-lithium-post-hd-rebound": "electrolytes",
+  "clin-anion-gap-albumin-correction": "electrolytes",
+  "clin-calvert-gfr-cap": "electrolytes",
+  "clin-lithium-extrip-criteria": "electrolytes",
+  "clin-lithium-intracellular-rebound": "electrolytes",
+  "clin-lithium-proximal-reabsorption-nhe3": "electrolytes",
+  "clin-hyperk-normal-ekg-trap": "electrolytes",
+  "clin-hyperk-calcium-salt-selection": "electrolytes",
+  "clin-hyperk-ckd-insulin-dose-reduction": "electrolytes",
+
+  // Neurology & Sedation
+  "clin-acb-threshold": "neuro",
+  "clin-phenytoin-sheiner-tozer": "neuro",
+  "clin-clozapine-rems-anc": "neuro",
+  "clin-pheno-infusion-rate-limit": "neuro",
+  "clin-lithium-target-bands": "neuro",
+  "clin-valproate-vhe-normal-lft-trap": "neuro",
+  "clin-valproate-carbapenem-crash": "neuro",
+
+  // Anticoagulation & DOACs
+  "clin-dabigatran-reversal": "anticoag",
+  "clin-ganzoni-iron-depot": "anticoag",
+  "clin-rivaroxaban-food-bioavailability": "anticoag",
+  "clin-dabigatran-capsule-crush-hazard": "anticoag",
+
+  // Toxicology & TDM
+  "clin-vanco-target": "tox",
+  "clin-osmolar-gap-alcohol": "tox",
+  "clin-child-pugh-classes": "tox",
+  "clin-serotonin-hunter-hallmark": "tox",
+  "clin-apap-rumack-treatment-line": "tox",
+  "clin-vanco-sawchuk-zaske-timing": "tox",
+  "clin-vanco-auc-vs-trough-nephro": "tox",
+  "clin-pheno-urine-alkalinization-trap": "tox",
+  "clin-hartford-draw-timing": "tox",
+  "clin-ag-obesity-adjbw": "tox",
+  "clin-ag-mt1555-ototoxicity": "tox",
+};
+
 export function clinicalCards(): StudyCard[] {
-  return [
+  const cards: StudyCard[] = [
     {
       id: "clin-vanco-target",
       lane: "clinical",
@@ -897,7 +982,232 @@ export function clinicalCards(): StudyCard[] {
       answer: "Validated 12-hour serum trough bands are: Acute Mania: 0.8–1.2 mEq/L (for rapid mood stabilization); Maintenance: 0.6–0.8 mEq/L (to prevent relapse while preserving renal tubular health); Geriatric/Vulnerable: 0.4–0.6 mEq/L. Critical toxicity (>2.5 mEq/L) can precipitate SILENT syndrome (Syndrome of Irreversible Lithium-Effectuated Neurotoxicity), marked by persistent cerebellar ataxia, dysarthria, cognitive deficits, and peripheral neuropathy persisting months to years after serum lithium has cleared.",
       drugIds: ["lithium"],
     },
+    {
+      id: "clin-tisdale-score-cutoffs",
+      lane: "clinical",
+      kicker: "Cardiology / Telemetry",
+      title: "Tisdale Inpatient QTc Risk Score Tiers",
+      prompt: "A hospitalized patient is scored using the validated Tisdale QTc risk prediction model (Circulation 2013; 0–21 points).",
+      ask: "What are the score thresholds for Low, Moderate, and High risk of critical QTc prolongation (≥500 ms)?",
+      choices: [
+        { id: "score-tisdale", label: "Low risk ≤6 points (<15% risk); Moderate 7–10 points (~37% risk); High risk ≥11 points (~73% risk)" },
+        { id: "score-equal-thirds", label: "Low 0–7; Moderate 8–14; High 15–21" },
+        { id: "score-dichotomous", label: "Low <10; High ≥10 only" },
+        { id: "score-percentile", label: "Low <2; Moderate 3–5; High ≥6" },
+      ],
+      correct: "score-tisdale",
+      answer: "The prospective Tisdale risk model stratifies hospitalized patients into: Low risk (≤6 points, <15% probability of QTc ≥500 ms), Moderate risk (7–10 points, ~37% probability; triggers continuous telemetry and daily ECG), and High risk (≥11 points, ~73% probability; triggers mandatory continuous telemetry, strict avoidance of additional QT agents, and potassium targets 4.5–5.0 mEq/L).",
+      drugIds: ["methadone", "citalopram"],
+    },
+    {
+      id: "clin-bazett-tachycardia-inflation",
+      lane: "clinical",
+      kicker: "Electrophysiology / Rate Traps",
+      title: "Bazett Tachycardia Inflation Trap",
+      prompt: "An automated ECG read for a patient with heart rate 110 bpm reports Bazett QTc as 510 ms, while manual Fridericia calculation yields 465 ms.",
+      ask: "Why does Bazett's formula diverge from Fridericia during tachycardia, and which formula governs clinical trial safety?",
+      choices: [
+        { id: "bazett-sqrt-overcorrect", label: "Bazett (QT/√RR) non-linearly overcorrects at heart rates >60 bpm, creating false-positive prolongation; Fridericia (QT/∛RR) is the FDA and ACC/AHA regulatory standard" },
+        { id: "fridericia-underpredict", label: "Fridericia is inaccurate above 80 bpm and misses true prolongation" },
+        { id: "linear-identical", label: "Both formulas yield identical mathematical values at all heart rates" },
+        { id: "bazett-bradycardia-only", label: "Bazett was only validated for ventricular pacing rhythms" },
+      ],
+      correct: "bazett-sqrt-overcorrect",
+      answer: "Bazett's 1920 square-root formula assumes QT scales with √RR. At elevated heart rates (>80–85 bpm), the square root over-adjusts, inflating calculated QTc by 20–50+ ms and causing panic and inappropriate medication holds. Fridericia's cube-root formula provides superior physiological stability and is the consensus standard endorsed by the FDA, ACC, AHA, and ESC.",
+      drugIds: ["ondansetron", "azithromycin"],
+    },
+    {
+      id: "clin-tdp-magnesium-mechanism",
+      lane: "clinical",
+      kicker: "Emergency Resuscitation",
+      title: "IV Magnesium Mechanism in Torsades de Pointes",
+      prompt: "A patient with drug-induced polymorphic ventricular tachycardia (TdP) has a normal baseline serum magnesium of 2.1 mg/dL.",
+      ask: "Why is IV Magnesium Sulfate 2 g push administered even when serum magnesium is completely normal?",
+      choices: [
+        { id: "mg-suppresses-eads", label: "Magnesium antagonizes inward L-type calcium currents (ICa-L), extinguishing Phase 2/3 Early Afterdepolarizations (EADs) independent of serum levels" },
+        { id: "mg-shortens-qt", label: "Magnesium directly shortens the baseline QT interval by 150 ms within 60 seconds" },
+        { id: "mg-increases-sodium", label: "Magnesium activates cardiac sodium channels (Nav1.5) to speed Phase 0 depolarization" },
+        { id: "mg-only-if-low", label: "Magnesium is contraindicated if baseline serum magnesium is within normal reference range" },
+      ],
+      correct: "mg-suppresses-eads",
+      answer: "Pharmacological magnesium acts as a functional calcium channel blocker at the myocyte membrane, suppressing triggered Early Afterdepolarizations (EADs) without significantly shortening the baseline QT interval. Its antiarrhythmic efficacy in TdP does not depend on correcting hypomagnesemia; it is therapeutic regardless of baseline serum magnesium concentration. Administer 2 g IV push over 1–2 minutes.",
+      drugIds: ["sotalol", "methadone"],
+    },
+    {
+      id: "clin-tdp-overdrive-pacing-isoproterenol",
+      lane: "clinical",
+      kicker: "Cardiac Electrophysiology",
+      title: "Torsades Overdrive Therapy & Isoproterenol Contraindication",
+      prompt: "A team manages recurrent pause-dependent bursts of Torsades de Pointes following IV magnesium boluses.",
+      ask: "What heart rate is targeted by overdrive therapy, and when is pharmacological overdrive with isoproterenol contraindicated?",
+      choices: [
+        { id: "overdrive-90-110-contra", label: "Target rate 90–110 bpm to shorten action potential duration and abolish pauses; Isoproterenol is strictly contraindicated in congenital LQTS (LQT1/2) and acute MI" },
+        { id: "overdrive-150-contra", label: "Target rate 140–160 bpm; Isoproterenol is contraindicated in all elderly patients" },
+        { id: "overdrive-bradycardia-goal", label: "Target rate 45–55 bpm to reduce myocardial oxygen demand" },
+        { id: "overdrive-safe-all", label: "Isoproterenol is completely safe in all long QT subtypes and ischemic syndromes" },
+      ],
+      correct: "overdrive-90-110-contra",
+      answer: "TdP is characteristically pause-dependent ('short-long-short' sequence). Accelerating heart rate to 90–110 bpm shortens the ventricular repolarization period and extinguishes the triggering pause. Temporary transvenous pacing is preferred. Isoproterenol is a pharmacological bridge, but is strictly contraindicated in congenital LQTS (where beta-adrenergic stimulation directly triggers polymorphic VT) and in acute coronary ischemia/MI.",
+      drugIds: ["methadone", "citalopram"],
+    },
+    {
+      id: "clin-sglt2-eudka-triad",
+      lane: "clinical",
+      kicker: "Endocrinology / Critical Care",
+      title: "Euglycemic DKA Diagnostic Triad & Resuscitation",
+      prompt: "A patient on dapagliflozin presents with severe high anion gap metabolic acidosis and elevated beta-hydroxybutyrate, but blood glucose is only 172 mg/dL.",
+      ask: "Why does SGLT2 inhibitor ketoacidosis present with normal/near-normal blood glucose, and what IV fluid is mandatory alongside insulin?",
+      choices: [
+        { id: "eudka-glycosuria-dextrose", label: "Renal glycosuria blunts blood glucose while insulinopenia drives ketogenesis; IV Dextrose (D5W/D10W) must be infused concurrently with IV insulin" },
+        { id: "eudka-insulin-alone", label: "Blood glucose is normal because no insulin is needed; IV bicarbonate alone cures the condition" },
+        { id: "eudka-fluid-restrict", label: "Patients are hypervolemic from glycosuria; fluid restriction is primary therapy" },
+        { id: "eudka-stop-insulin", label: "Insulin is contraindicated because blood glucose is below 200 mg/dL" },
+      ],
+      correct: "eudka-glycosuria-dextrose",
+      answer: "SGLT2 inhibitors cause persistent proximal tubular glycosuria (50–100 g/day), preventing marked hyperglycemia even in profound ketoacidosis. Relative insulinopenia combined with glucagon surge triggers unchecked lipolysis and hepatic ketonemia. Resuscitation requires concurrent IV Dextrose (D5W/D10W) alongside IV regular insulin infusion: dextrose prevents hypoglycemia while allowing sufficient insulin administration to suppress ketogenesis.",
+      drugIds: ["dapagliflozin", "empagliflozin"],
+    },
+    {
+      id: "clin-sglt2-preop-hold-guidance",
+      lane: "clinical",
+      kicker: "Perioperative Medicine",
+      title: "FDA SGLT2 Inhibitor Preoperative Hold Schedules",
+      prompt: "An anesthesiologist reviews the preoperative medication list for a patient scheduled for major elective abdominal surgery.",
+      ask: "What is the FDA-mandated preoperative hold duration for empagliflozin, dapagliflozin, canagliflozin vs ertugliflozin?",
+      choices: [
+        { id: "hold-3-vs-4-days", label: "Hold at least 3 full days prior to surgery for empagliflozin, dapagliflozin, and canagliflozin; hold at least 4 full days for ertugliflozin" },
+        { id: "hold-morning-of", label: "Hold only the morning dose of surgery for all SGLT2 inhibitors" },
+        { id: "hold-24-hours", label: "Hold 24 hours prior to surgery regardless of the agent" },
+        { id: "hold-7-days", label: "Hold 7 full days prior to surgery for all oral antidiabetic agents" },
+      ],
+      correct: "hold-3-vs-4-days",
+      answer: "The FDA revised prescribing information across the SGLT2 class to prevent perioperative euglycemic DKA: discontinue empagliflozin, dapagliflozin, canagliflozin, and sotagliflozin at least 3 days before surgery; discontinue ertugliflozin at least 4 days before surgery. Resume only when oral nutrition is established and surgical stress resolves.",
+      drugIds: ["empagliflozin", "dapagliflozin"],
+    },
+    {
+      id: "clin-hyperk-normal-ekg-trap",
+      lane: "clinical",
+      kicker: "Electrophysiology / Critical Care",
+      title: "Hyperkalemia Normal EKG Dissociation Trap",
+      prompt: "A dialysis patient presents with a confirmed serum potassium of 7.1 mEq/L. The 12-lead EKG shows normal sinus rhythm without peaked T waves, PR prolongation, or QRS widening.",
+      ask: "What percentage of patients with severe hyperkalemia (K+ ≥6.5 mEq/L) lack classic EKG findings, and what is the immediate management?",
+      choices: [
+        { id: "ekg-50-percent-calcium", label: "46–52% of patients lack classic EKG changes prior to cardiac arrest; IV calcium must be administered immediately without waiting for EKG changes" },
+        { id: "ekg-zero-percent-safe", label: "0% of patients lack EKG changes; a normal EKG proves cardiac stability and calcium should be withheld" },
+        { id: "ekg-only-peaked-t", label: "Peaked T waves are 100% sensitive for severe hyperkalemia" },
+        { id: "ekg-calcium-lowers-k", label: "Calcium is given because it directly binds and clears serum potassium" },
+      ],
+      correct: "ekg-50-percent-calcium",
+      answer: "Published prospective studies (Montague 2008) show that approximately half (46–52%) of patients with K+ ≥6.5 mEq/L have completely normal or non-diagnostic EKGs immediately prior to sudden ventricular arrest. Resting membrane potential (Nernst equation) is severely depolarized. Normal EKG must NEVER delay IV calcium membrane stabilization (Calcium Gluconate 1–2 g IV or Calcium Chloride 1 g central).",
+      drugIds: ["spironolactone", "lisinopril", "potassium"],
+    },
+    {
+      id: "clin-hyperk-calcium-salt-selection",
+      lane: "clinical",
+      kicker: "Resuscitation Pharmacology",
+      title: "Calcium Gluconate vs Calcium Chloride Selection",
+      prompt: "A clinician selects an IV calcium formulation for myocardial membrane stabilization in severe hyperkalemia.",
+      ask: "How does elemental calcium content and tissue extravasation risk differ between Calcium Chloride and Calcium Gluconate?",
+      choices: [
+        { id: "ca-chloride-3x-central", label: "Calcium chloride provides 3x the elemental calcium (27.2 vs 9.3 mg/mL) but causes severe tissue necrosis if extravasated (central line preferred); Calcium gluconate is preferred for peripheral IV" },
+        { id: "ca-gluconate-3x-central", label: "Calcium gluconate provides 3x elemental calcium and is central-line only" },
+        { id: "ca-salts-identical", label: "Both formulations provide identical elemental calcium and carry identical peripheral extravasation risk" },
+        { id: "ca-chloride-slow", label: "Calcium chloride requires hepatic conversion before becoming active" },
+      ],
+      correct: "ca-chloride-3x-central",
+      answer: "1 ampule (10 mL 10%) of Calcium Chloride contains 27.2 mg/mL elemental calcium (total 272 mg, ~13.6 mEq), providing 3-fold more calcium than Calcium Gluconate (9.3 mg/mL elemental Ca, total 93 mg, ~4.65 mEq). However, chloride causes severe ischemic chemical necrosis if extravasated into peripheral tissues. Calcium Gluconate is preferred for peripheral IV access; Calcium Chloride is reserved for central venous access or active cardiac arrest.",
+      drugIds: ["spironolactone", "potassium"],
+    },
+    {
+      id: "clin-hyperk-ckd-insulin-dose-reduction",
+      lane: "clinical",
+      kicker: "Nephrology / Medication Safety",
+      title: "Hyperkalemia Insulin Shifting in Renal Impairment",
+      prompt: "A patient with Stage 4 CKD (eGFR 20 mL/min) and severe hyperkalemia receives regular insulin + dextrose to shift potassium intracellularly.",
+      ask: "Why is the regular insulin dose reduced from 10 units down to 5 units IV in advanced renal impairment?",
+      choices: [
+        { id: "ckd-insulin-clearance-5u", label: "Renal insulin clearance is severely impaired, prolonging insulin half-life and causing profound late hypoglycemia (peak 90–180 min); 5 units IV provides equivalent potassium shifting with significantly lower hypoglycemia risk" },
+        { id: "ckd-insulin-resistance-20u", label: "CKD patients are resistant to insulin and require 20 units IV" },
+        { id: "ckd-dextrose-contraindicated", label: "Dextrose cannot be given in CKD due to volume overload" },
+        { id: "ckd-potassium-unresponsive", label: "Insulin does not shift potassium into cells in patients with renal failure" },
+      ],
+      correct: "ckd-insulin-clearance-5u",
+      answer: "The kidneys clear 30–40% of systemic insulin. In eGFR <30 mL/min, insulin clearance is blunted, prolonging half-life and causing peak hypoglycemic risk to occur late (90–180 minutes post-infusion), long after the single 25 g D50W ampule has been consumed. Consensus guidelines recommend reducing the IV regular insulin dose to 5 units in patients with eGFR <30 or baseline glucose <140 mg/dL, with serial glucose checks for 3 hours.",
+      drugIds: ["lisinopril", "furosemide"],
+    },
+    {
+      id: "clin-valproate-vhe-normal-lft-trap",
+      lane: "clinical",
+      kicker: "Neurology / Toxicology",
+      title: "Valproate Hyperammonemia & The Normal LFT Trap",
+      prompt: "A patient on valproate and topiramate presents with confusion, lethargy, and asterixis. Serum ALT and AST are completely normal.",
+      ask: "What enzymatic inhibition causes hyperammonemic encephalopathy without hepatocellular necrosis, and what is the antidote?",
+      choices: [
+        { id: "vhe-nags-carnitine", label: "Valproate metabolite 2-ene-VPA inhibits N-acetylglutamate synthase (NAGS) in the urea cycle, causing hyperammonemia with normal transaminases; IV L-Carnitine (Levocarnitine) is the antidote" },
+        { id: "vhe-alt-ast-false", label: "Transaminases are falsely normal because valproate destroys all ALT enzymes" },
+        { id: "vhe-hemodialysis-only", label: "Hyperammonemia is caused by renal failure; emergency hemodialysis is the only treatment" },
+        { id: "vhe-lactulose-only", label: "VHE is identical to cirrhosis; lactulose enemas cure mitochondrial dysfunction" },
+      ],
+      correct: "vhe-nags-carnitine",
+      answer: "Valproate metabolite 2-ene-VPA inhibits N-acetylglutamate synthase (NAGS), depleting N-acetylglutamate which is the obligate allosteric activator of carbamoyl phosphate synthetase 1 (CPS-1) in the mitochondrial urea cycle. This halts ammonia clearance, producing severe encephalopathy with completely normal AST/ALT in >80% of patients! IV L-Carnitine (100 mg/kg load, max 6 g, then 50 mg/kg q8h) restores mitochondrial beta-oxidation and clears ammonia.",
+      drugIds: ["valproate", "topiramate"],
+    },
+    {
+      id: "clin-valproate-carbapenem-crash",
+      lane: "clinical",
+      kicker: "Drug-Drug Interactions / Neurology",
+      title: "Carbapenem-Valproate Crash Mechanism",
+      prompt: "An epileptic patient on valproic acid receives IV meropenem for an intra-abdominal infection. Within 24 hours, serum valproate collapses from 80 µg/mL to 12 µg/mL.",
+      ask: "What irreversible enzymatic mechanism drives this collapse, and how does valproate dose escalation respond?",
+      choices: [
+        { id: "carbapenem-apeh-irreversible", label: "Carbapenems irreversibly inhibit acylpeptide hydrolase (APEH) and accelerate UGT clearance, collapsing levels by >80%; dose escalation fails completely and co-administration is contraindicated" },
+        { id: "carbapenem-absorption-block", label: "Carbapenems bind oral valproate in the gut lumen; switching to IV valproate overcomes the interaction" },
+        { id: "carbapenem-cyp-induction", label: "Carbapenems induce CYP3A4; doubling the valproate dose restores therapeutic levels" },
+        { id: "carbapenem-protein-displacement", label: "Carbapenems displace valproate from albumin, causing rapid renal excretion without dropping active drug" },
+      ],
+      correct: "carbapenem-apeh-irreversible",
+      answer: "Carbapenems irreversibly inhibit erythrocyte acylpeptide hydrolase (APEH), blocking the cleavage of valproate-glucuronide back into parent valproic acid. They also accelerate hepatic glucuronidation (UGT) and renal elimination. Serum valproate plunges by 60–90% within 24 hours. Because the clearance pathway is accelerated and irreversible, increasing valproate doses fails completely. The combination is CONTRAINDICATED.",
+      drugIds: ["valproate", "meropenem"],
+    },
+    {
+      id: "clin-rivaroxaban-food-bioavailability",
+      lane: "clinical",
+      kicker: "Pharmacokinetics / Hematology",
+      title: "Rivaroxaban 15/20 mg Meal Requirement",
+      prompt: "A patient prescribed rivaroxaban 20 mg daily for DVT takes the medication every morning with black coffee without eating breakfast.",
+      ask: "How does taking rivaroxaban 15 mg or 20 mg without food alter its pharmacokinetics and clinical efficacy?",
+      choices: [
+        { id: "riva-fasting-drops-auc", label: "Fasting administration reduces bioavailability by 39% (AUC drops from ~100% to ~66%), resulting in subtherapeutic anticoagulation and recurrent thrombosis" },
+        { id: "riva-fasting-doubles-auc", label: "Fasting administration doubles absorption, predisposing to fatal gastrointestinal hemorrhage" },
+        { id: "riva-food-no-effect", label: "Food intake has zero effect on rivaroxaban absorption at any dose" },
+        { id: "riva-morning-mandatory", label: "Rivaroxaban must only be taken at bedtime on an empty stomach" },
+      ],
+      correct: "riva-fasting-drops-auc",
+      answer: "While rivaroxaban 10 mg has ~100% bioavailability regardless of food, the 15 mg and 20 mg tablets have poor aqueous solubility. Taking rivaroxaban 15 mg or 20 mg without food drops absorption by 39% (bioavailability ~66%), leading to subtherapeutic Factor Xa inhibition and recurrent thromboembolism. The FDA Prescribing Information mandates taking rivaroxaban 15 mg and 20 mg tablets with food (with the evening meal).",
+      drugIds: ["rivaroxaban", "aspirin"],
+    },
+    {
+      id: "clin-dabigatran-capsule-crush-hazard",
+      lane: "clinical",
+      kicker: "Medication Safety / Pharmacokinetics",
+      title: "Dabigatran Capsule Integrity & Bioavailability Surge",
+      prompt: "A dysphagic patient has dabigatran (Pradaxa) capsules opened and pellets mixed into food for administration.",
+      ask: "Why does opening or crushing dabigatran capsules cause a dangerous surge in drug exposure?",
+      choices: [
+        { id: "dabigatran-75-percent-surge", label: "The capsule shell regulates exposure to the internal tartaric acid core; opening the capsule surges bioavailability by 75% (and up to 2- to 3-fold), precipitating severe hemorrhage" },
+        { id: "dabigatran-inactivated", label: "Gastric acid immediately destroys unbound dabigatran, rendering the drug completely inactive" },
+        { id: "dabigatran-capsule-safe", label: "Dabigatran pellets can be safely crushed and delivered via enteral feeding tubes" },
+        { id: "dabigatran-delayed-release", label: "Opening the capsule converts dabigatran into an extended-release formulation" },
+      ],
+      correct: "dabigatran-75-percent-surge",
+      answer: "Dabigatran etexilate pellets contain an internal tartaric acid core to provide an acidic microenvironment for dissolution. The intact capsule regulates release. Opening, chewing, or crushing capsules surges systemic bioavailability by 75% (up to 200–300%), causing massive over-anticoagulation and life-threatening bleeding. Capsules must always be swallowed whole and stored in the original bottle with desiccant.",
+      drugIds: ["dabigatran"],
+    },
   ];
+  return cards.map((c) => ({
+    ...c,
+    topic: CLINICAL_TOPIC_MAP[c.id] ?? "tox",
+  }));
 }
 
 export function pileOf(

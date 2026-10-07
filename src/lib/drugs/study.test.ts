@@ -4,9 +4,12 @@ import { DRUG_BY_ID } from "./catalog";
 import { ROUNDS } from "./rounds";
 import {
   STUDY_LANES,
+  CLINICAL_TOPICS,
+  CLINICAL_TOPIC_MAP,
   cardsFor,
   clinicalCards,
   type StudyLane,
+  type ClinicalTopic,
 } from "./study";
 
 describe("study learning tools", () => {
@@ -15,9 +18,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 32 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 45 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 32);
+    assert.equal(cards.length, 45);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -49,7 +52,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 32);
+    assert.equal(cards.length, 45);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -74,6 +77,16 @@ describe("study learning tools", () => {
       "r-ward-gentamicin-synergy-endocarditis",
       "r-ward-lithium-extrip-dialysis-rebound",
       "r-ward-lithium-thiazide-triple-whammy",
+      "r-ward-qtc-bazett-tachycardia-trap",
+      "r-ward-tdp-magnesium-normal-paradox",
+      "r-ward-eudka-sglt2-normal-glucose",
+      "r-ward-sglt2-preop-surgical-hold",
+      "r-ward-hyperkalemia-normal-ekg-dissociation",
+      "r-ward-hyperkalemia-ckd-insulin-dose-reduction",
+      "r-ward-valproate-vhe-normal-lft-trap",
+      "r-ward-valproate-meropenem-crash",
+      "r-clinic-rivaroxaban-food-bioavailability",
+      "r-clinic-dabigatran-capsule-crush-hemorrhage",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -101,6 +114,31 @@ describe("study learning tools", () => {
       assert.doesNotMatch(allText, /prescribe\s+\d+\s*mg/i);
       assert.doesNotMatch(allText, /dispense\s+\d+\s*mg/i);
       assert.doesNotMatch(allText, /clinical decision support/i);
+    }
+  });
+
+  it("sub-topic categories cover all 45 clinical cards with balanced distribution", () => {
+    const cards = clinicalCards();
+    const topicIds = CLINICAL_TOPICS.map((t) => t.id);
+
+    // Every card has a valid non-all topic
+    for (const card of cards) {
+      assert.ok(card.topic, `Card ${card.id} must have a topic defined`);
+      assert.ok(topicIds.includes(card.topic), `Card ${card.id} topic ${card.topic} must be valid`);
+      assert.notEqual(card.topic, "all");
+    }
+
+    // Every topic in CLINICAL_TOPICS (except 'all') has at least 4 cards
+    for (const topic of CLINICAL_TOPICS) {
+      if (topic.id === "all") continue;
+      const count = cards.filter((c) => c.topic === topic.id).length;
+      assert.ok(count >= 4, `Topic ${topic.id} has ${count} cards, expected >= 4`);
+    }
+
+    // Every key in CLINICAL_TOPIC_MAP points to an existing card
+    for (const cardId of Object.keys(CLINICAL_TOPIC_MAP)) {
+      const card = cards.find((c) => c.id === cardId);
+      assert.ok(card, `Key ${cardId} in CLINICAL_TOPIC_MAP must exist in clinicalCards()`);
     }
   });
 });

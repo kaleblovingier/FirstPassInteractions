@@ -18,8 +18,10 @@ import { buildLabPermalink } from "@/lib/drugs/permalinks";
 import {
   STUDY_LANES,
   STUDY_PILES,
+  CLINICAL_TOPICS,
   cardsFor,
   pileOf,
+  type ClinicalTopic,
   type StudyCard,
   type StudyLane,
   type StudyPile,
@@ -92,6 +94,7 @@ export function StudyPage() {
   const openCheckout = useDesk((s) => s.openCheckout);
   const plan = usePlan();
   const [lane, setLane] = useState<StudyLane>(selected.length ? "desk" : "drill");
+  const [clinicalTopic, setClinicalTopic] = useState<ClinicalTopic>("all");
   const [pile, setPile] = useState<StudyPile>("all");
   const [epoch, setEpoch] = useState(0);
   const resetMarks = () => {
@@ -140,8 +143,14 @@ export function StudyPage() {
   );
 
   const leadHeadline = findings[0]?.headline ?? null;
-  const source = useMemo(() => cardsFor(lane, selected, findings), [lane, selected, findings]);
-  const key = `${lane}|${pile}|${epoch}|${source.map((c) => c.id).join(",")}`;
+  const source = useMemo(() => {
+    const raw = cardsFor(lane, selected, findings);
+    if (lane === "clinical" && clinicalTopic !== "all") {
+      return raw.filter((c) => c.topic === clinicalTopic);
+    }
+    return raw;
+  }, [lane, selected, findings, clinicalTopic]);
+  const key = `${lane}|${clinicalTopic}|${pile}|${epoch}|${source.map((c) => c.id).join(",")}`;
   const [frozen, setFrozen] = useState({ key: "", deck: [] as StudyCard[] });
   if (frozen.key !== key) {
     setFrozen({ key, deck: pileOf(source, pile, marks) });
@@ -447,6 +456,27 @@ export function StudyPage() {
         </button>
       </div>
 
+      {lane === "clinical" ? (
+        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Clinical topics">
+          {CLINICAL_TOPICS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setClinicalTopic(t.id)}
+              aria-pressed={clinicalTopic === t.id}
+              className={cn(
+                "h-8 rounded-full px-3 text-xs font-medium",
+                clinicalTopic === t.id
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-bg-sunken text-muted hover:text-fg",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Study piles">
         {STUDY_PILES.map((s) => {
           const n = s.id === "all" ? source.length : s.id === "open" ? unseen : missed;
@@ -513,7 +543,9 @@ export function StudyPage() {
               ? "Nothing unseen here. Switch to All, or reset marks to start over."
               : lane === "desk"
                 ? "Nothing on the desk yet. Load a lab assignment, a pair, or switch to Rounds, Named pairs, or Enzyme map."
-                : "No cards in this lane."}
+                : lane === "clinical" && clinicalTopic !== "all"
+                  ? `No cards in ${CLINICAL_TOPICS.find((t) => t.id === clinicalTopic)?.label ?? clinicalTopic} for this pile.`
+                  : "No cards in this lane."}
         </p>
       ) : (
         <StudyCardView
@@ -696,7 +728,14 @@ function StudyCardView({
   return (
     <article className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">{card.kicker}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">{card.kicker}</p>
+          {card.topic ? (
+            <span className="rounded bg-bg-sunken px-1.5 py-0.5 font-mono text-[10px] uppercase text-muted">
+              {CLINICAL_TOPICS.find((t) => t.id === card.topic)?.shortLabel ?? card.topic}
+            </span>
+          ) : null}
+        </div>
         <p className="font-mono text-[11px] text-muted">
           {n} / {total}
           {mark ? ` · ${mark === "got" ? "got it" : "review"}` : ""}
@@ -718,6 +757,7 @@ function StudyCardView({
                   type="button"
                   disabled={revealed}
                   onClick={() => onPick(c.id)}
+                  aria-pressed={on}
                   className={cn(
                     "flex min-h-11 w-full items-start rounded-md px-3 py-2.5 text-left text-sm leading-relaxed",
                     isCorrect && "bg-ok-soft text-fg",
