@@ -36,17 +36,27 @@ function client(): Stripe | null {
 }
 
 function publicOrigin(): string | null {
+  const fallback =
+    env("PUBLIC_ORIGIN") ||
+    env("APP_URL") ||
+    (env("VERCEL_PROJECT_PRODUCTION_URL")
+      ? `https://${env("VERCEL_PROJECT_PRODUCTION_URL")}`
+      : null);
   const req = getRequest();
-  if (!req) return null;
-  const url = new URL(req.url);
-  const proto = (req.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", ""))
-    .split(",")[0]
-    ?.trim();
-  const host = (req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? url.host)
-    .split(",")[0]
-    ?.trim();
-  if (!proto || !host) return null;
-  return `${proto}://${host}`;
+  if (!req) return fallback;
+  try {
+    const url = new URL(req.url);
+    const proto = (req.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", ""))
+      .split(",")[0]
+      ?.trim();
+    const host = (req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? url.host)
+      .split(",")[0]
+      ?.trim();
+    if (proto && host) return `${proto}://${host}`;
+  } catch {
+    /* fallback below */
+  }
+  return fallback;
 }
 
 export function issuedFor(plan: string, interval: string): IssuedPlan {
@@ -170,7 +180,7 @@ async function fulfillPaidSession(stripe: Stripe, session: Stripe.Checkout.Sessi
   };
 }
 
-export async function createCheckout(planRaw: string, intervalRaw: string) {
+export async function createCheckout(planRaw: string, intervalRaw: string, emailRaw?: string) {
   const stripe = client();
   if (!stripe) {
     return { ok: false as const, reason: "Card checkout is not live on this desk yet." };
@@ -186,6 +196,8 @@ export async function createCheckout(planRaw: string, intervalRaw: string) {
   if (!origin) {
     return { ok: false as const, reason: "Could not resolve the return address." };
   }
+  const cleanEmail = typeof emailRaw === "string" ? emailRaw.trim() : "";
+  const validEmail = cleanEmail.includes("@") && cleanEmail.includes(".") ? cleanEmail : undefined;
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -193,8 +205,15 @@ export async function createCheckout(planRaw: string, intervalRaw: string) {
       allow_promotion_codes: true,
       billing_address_collection: "auto",
       customer_creation: "if_required",
+      ...(validEmail ? { customer_email: validEmail } : {}),
       payment_intent_data: {
         description: productName(issued, interval),
+        metadata: {
+          product: "firstpass",
+          plan,
+          interval,
+          issued,
+        },
       },
       line_items: [
         {
@@ -228,13 +247,13 @@ export async function createCheckout(planRaw: string, intervalRaw: string) {
 }
 
 export async function claimSession(sessionIdRaw: string) {
-  const stripe = client();
-  if (!stripe) {
-    return { ok: false as const, reason: "Card checkout is not live on this desk yet." };
-  }
   const sessionId = sessionIdRaw.trim();
   if (!sessionId.startsWith("cs_")) {
     return { ok: false as const, reason: "Not a Stripe session." };
+  }
+  const stripe = client();
+  if (!stripe) {
+    return { ok: false as const, reason: "Card checkout is not live on this desk yet." };
   }
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -319,10 +338,12 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
     event.type === "checkout.session.async_payment_succeeded"
   ) {
     let session = event.data.object as Stripe.Checkout.Session;
-    if (session.payment_status === "paid" && session.metadata?.product === "firstpass") {
+    if (session.payment_status === "paid") {
       try {
         session = await stripe.checkout.sessions.retrieve(session.id, { expand: ["payment_intent"] });
-        await fulfillPaidSession(stripe, session);
+        if (session.metadata?.product === "firstpass") {
+          await fulfillPaidSession(stripe, session);
+        }
       } catch {
         /* Stripe will retry the webhook */
         return Response.json({ ok: false, reason: "fulfill failed" }, { status: 500 });

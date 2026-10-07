@@ -219,6 +219,7 @@ export function CheckoutDrawer() {
   const [busy, setBusy] = useState(false);
   const [cardBusy, setCardBusy] = useState(false);
   const [key, setKey] = useState("");
+  const [email, setEmail] = useState("");
   const [err, setErr] = useState("");
   const [ok, setOk] = useState("");
   const [copied, setCopied] = useState(false);
@@ -283,6 +284,7 @@ export function CheckoutDrawer() {
         data: {
           plan: checkout.plan === "lab" ? "lab" : "pro",
           interval: checkout.interval,
+          email: email.trim(),
         },
       });
       if (!res.ok) {
@@ -356,7 +358,20 @@ export function CheckoutDrawer() {
 
         {cardLive ? (
           <>
-            <Button className="mt-5 w-full" onClick={() => void payCard()} disabled={cardBusy}>
+            <div className="mt-4">
+              <label htmlFor="checkout-email" className="block text-xs font-medium text-muted">
+                Receipt & license key email (optional)
+              </label>
+              <input
+                id="checkout-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@clinic.org"
+                className="mt-1 h-9 w-full rounded-md bg-surface-2 px-3 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+              />
+            </div>
+            <Button className="mt-3 w-full" onClick={() => void payCard()} disabled={cardBusy}>
               {cardBusy ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
               Pay ${amount} with card
             </Button>

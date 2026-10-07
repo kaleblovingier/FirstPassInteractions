@@ -15,10 +15,11 @@ export const startStripeCheckout = createServerFn({ method: "POST" })
   .validator((input: unknown) => ({
     plan: readString(input, "plan"),
     interval: readString(input, "interval"),
+    email: readString(input, "email"),
   }))
   .handler(async ({ data }) => {
     const { createCheckout } = await import("./stripe.server");
-    return createCheckout(data.plan, data.interval);
+    return createCheckout(data.plan, data.interval, data.email);
   });
 
 export const claimStripeCheckout = createServerFn({ method: "POST" })

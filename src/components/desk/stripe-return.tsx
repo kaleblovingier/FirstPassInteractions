@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { claimStripeCheckout } from "@/lib/billing/stripe";
 import { useDesk } from "@/lib/drugs/store";
 
@@ -7,6 +8,7 @@ export function StripeReturn({ ready }: { ready: boolean }) {
   const activate = useDesk((s) => s.activateLicense);
   const openCheckout = useDesk((s) => s.openCheckout);
   const ran = useRef(false);
+  const [claiming, setClaiming] = useState(false);
 
   useEffect(() => {
     if (!ready || ran.current) return;
@@ -30,20 +32,41 @@ export function StripeReturn({ ready }: { ready: boolean }) {
       clean();
       return;
     }
+    setClaiming(true);
     void (async () => {
-      const res = await claimStripeCheckout({ data: { sessionId: paid ?? "" } });
-      if (res.ok) {
-        activate({ plan: res.plan, license: res.license, lifetime: res.lifetime });
-      } else {
+      try {
+        const res = await claimStripeCheckout({ data: { sessionId: paid ?? "" } });
+        if (res.ok) {
+          activate({ plan: res.plan, license: res.license, lifetime: res.lifetime });
+        } else {
+          openCheckout(
+            "lab",
+            res.reason ??
+              "Payment did not clear yet. If you were charged, wait a moment or paste the key from your email under Redeem.",
+          );
+        }
+      } catch {
         openCheckout(
           "lab",
-          res.reason ??
-            "Payment did not clear yet. If you were charged, wait a moment or paste the key from your email under Redeem.",
+          "Could not verify your card session. Check your internet connection or paste your key under Redeem.",
         );
+      } finally {
+        setClaiming(false);
+        clean();
       }
-      clean();
     })();
   }, [ready, activate, openCheckout]);
 
-  return null;
+  if (!claiming) return null;
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border border-accent/30 bg-surface px-4 py-3 text-sm font-medium text-fg shadow-lg"
+    >
+      <Loader2 className="size-4 animate-spin text-accent" />
+      <span>Verifying Stripe checkout & minting license…</span>
+    </div>
+  );
 }

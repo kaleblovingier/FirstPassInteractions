@@ -46,6 +46,10 @@ export const MANUAL_UNLOCK_STEPS = [
 export const FOUNDING_UNLOCKS =
   "Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.";
 
+if (typeof import.meta !== "undefined" && typeof (import.meta as { env?: unknown }).env === "undefined") {
+  (import.meta as { env?: Record<string, unknown> }).env = {};
+}
+
 /** Public URLs. Override the live desk with VITE_PUBLIC_URL when Vercel is linked. */
 const PAGES_URL = "https://kaleblovingier.github.io/FirstPassInteractions/";
 
