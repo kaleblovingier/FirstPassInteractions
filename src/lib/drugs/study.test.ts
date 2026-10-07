@@ -32,9 +32,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 45 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 53 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 45);
+    assert.equal(cards.length, 53);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -66,7 +66,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 45);
+    assert.equal(cards.length, 53);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -101,6 +101,8 @@ describe("study learning tools", () => {
       "r-ward-valproate-meropenem-crash",
       "r-clinic-rivaroxaban-food-bioavailability",
       "r-clinic-dabigatran-capsule-crush-hemorrhage",
+      "r-mat-bup-micro-induction-bernese",
+      "r-street-xylazine-resuscitation-airway",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -131,7 +133,7 @@ describe("study learning tools", () => {
     }
   });
 
-  it("sub-topic categories cover all 45 clinical cards with balanced distribution", () => {
+  it("sub-topic categories cover all 53 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);
 

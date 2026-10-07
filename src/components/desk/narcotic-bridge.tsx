@@ -1,25 +1,35 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import type { Finding } from "@/lib/drugs/types";
+import { resolveState, type StateResource } from "@/lib/drugs/help-resources";
+import { useDesk } from "@/lib/drugs/store";
 
-const LINES = [
+export type ServiceCategory = "all" | "crisis" | "treatment" | "harm" | "specialty";
+
+export interface ServiceLine {
+  name: string;
+  detail: string;
+  category: "crisis" | "treatment" | "harm" | "specialty";
+  phone?: string;
+  phoneLabel?: string;
+  href: string;
+  hrefLabel: string;
+}
+
+export const LINES: readonly ServiceLine[] = [
   {
     name: "SAMHSA National Helpline",
     detail: "Free, confidential, 24/7 treatment referral in English and Spanish. TTY 1-800-487-4889. Text a ZIP code to 435748.",
+    category: "treatment",
     phone: "18006624357",
     phoneLabel: "1-800-662-HELP (4357)",
     href: "https://www.samhsa.gov/find-help/national-helpline",
     hrefLabel: "Helpline page",
   },
   {
-    name: "FindTreatment.gov",
-    detail: "State-licensed substance use and mental health treatment near a ZIP code.",
-    href: "https://findtreatment.gov/",
-    hrefLabel: "Find treatment",
-  },
-  {
     name: "988 Suicide & Crisis Lifeline",
-    detail: "Call or text if the person is in crisis. 24/7.",
+    detail: "Call or text if the person is in crisis. Free, confidential support 24/7 across the US.",
+    category: "crisis",
     phone: "988",
     phoneLabel: "Call or text 988",
     href: "https://988lifeline.org/",
@@ -27,15 +37,65 @@ const LINES = [
   },
   {
     name: "Never Use Alone",
-    detail: "A volunteer stays on the line while someone is using and calls for help if they stop answering. Also 877-696-1996. Not treatment.",
+    detail: "A volunteer stays on the line while someone is using and calls for emergency help if they stop answering. Also 877-696-1996. Not treatment.",
+    category: "crisis",
     phone: "18004843731",
     phoneLabel: "800-484-3731",
     href: "https://neverusealone.com/",
     hrefLabel: "neverusealone.com",
   },
   {
+    name: "NEXT Distro (Mail Naloxone)",
+    detail: "Free, confidential mail delivery of naloxone nasal spray and harm reduction supplies for individuals unable to access in-person programs.",
+    category: "harm",
+    href: "https://nextdistro.org/",
+    hrefLabel: "Free mail naloxone",
+  },
+  {
+    name: "NASEN Syringe Access Directory",
+    detail: "North America Syringe Exchange Network directory for free, sterile supplies, test strips, and community harm reduction programs.",
+    category: "harm",
+    href: "https://nasen.org/map/",
+    hrefLabel: "Syringe access map",
+  },
+  {
+    name: "Veterans Crisis Line",
+    detail: "24/7 confidential crisis line for military veterans, service members, and their loved ones.",
+    category: "specialty",
+    phone: "988",
+    phoneLabel: "988 (Press 1)",
+    href: "https://www.veteranscrisisline.net/",
+    hrefLabel: "VeteransCrisisLine.net",
+  },
+  {
+    name: "Trevor Project Lifeline",
+    detail: "Free, confidential 24/7 suicide prevention and crisis intervention for LGBTQ+ young people.",
+    category: "specialty",
+    phone: "18664887386",
+    phoneLabel: "866-488-7386",
+    href: "https://www.thetrevorproject.org/get-help/",
+    hrefLabel: "The Trevor Project",
+  },
+  {
+    name: "Línea de Prevención en Español",
+    detail: "Apoyo gratuito y confidencial en español las 24 horas del día para personas en crisis.",
+    category: "specialty",
+    phone: "18886289454",
+    phoneLabel: "888-628-9454 (Español)",
+    href: "https://988lifeline.org/help-yourself/en-espanol/",
+    hrefLabel: "Ayuda en español",
+  },
+  {
+    name: "FindTreatment.gov",
+    detail: "State-licensed substance use and mental health treatment near a ZIP code.",
+    category: "treatment",
+    href: "https://findtreatment.gov/",
+    hrefLabel: "Find treatment",
+  },
+  {
     name: "FindSupport.gov",
     detail: "SAMHSA’s starting point for mental health and substance use support. Not a treatment plan.",
+    category: "treatment",
     href: "https://findsupport.gov/",
     hrefLabel: "FindSupport.gov",
   },
@@ -77,37 +137,73 @@ function airwayNote(findings: Finding[]) {
 }
 
 function hasPhone(line: (typeof LINES)[number]): line is (typeof LINES)[number] & { phone: string; phoneLabel: string } {
-  return "phone" in line;
+  return typeof line.phone === "string" && Boolean(line.phoneLabel);
 }
 
 const CHIP: Record<string, string> = {
   "SAMHSA National Helpline": "SAMHSA 1-800-662-HELP",
   "988 Suicide & Crisis Lifeline": "988 crisis",
   "Never Use Alone": "Never Use Alone 800-484-3731",
+  "NEXT Distro (Mail Naloxone)": "NEXT Distro Naloxone",
+  "NASEN Syringe Access Directory": "Syringe Access Map",
+  "Veterans Crisis Line": "Veterans 988 (Press 1)",
+  "Trevor Project Lifeline": "Trevor Project 866-488-7386",
+  "Línea de Prevención en Español": "Español 1-888-628-9454",
 };
 
-function linesText(note: string, zip: string) {
+export function linesText(note: string, zip: string, stateRes?: StateResource | null) {
   const loc =
     zip.length === 5
       ? `Text ${zip} to 435748 for a SAMHSA referral. Type ${zip} at https://findtreatment.gov/locator — that link does not carry the ZIP.`
       : "Text a ZIP code to 435748. Search it at https://findtreatment.gov/locator";
+
+  const stateSection = stateRes
+    ? [
+        `\n--- Local State Resource (${stateRes.name}) ---`,
+        `${stateRes.helplineName}: ${stateRes.phone} (${stateRes.hours})`,
+        stateRes.textInfo ? `Text support: ${stateRes.textInfo}` : "",
+        `Website: ${stateRes.website}`,
+        stateRes.naloxoneUrl ? `Free mail naloxone (${stateRes.code}): ${stateRes.naloxoneUrl}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n")
+    : "";
+
+  const harmSection = [
+    "\n--- Naloxone & Harm Reduction ---",
+    "Naloxone is available under pharmacy standing orders in all 50 US states & DC without an individual prescription.",
+    "NEXT Distro (free mail delivery): https://nextdistro.org/",
+    "NASEN Syringe Access Map: https://nasen.org/map/",
+  ].join("\n");
+
   const body = LINES.map((line) => {
-    const phone = "phoneLabel" in line ? `${line.phoneLabel}. ` : "";
+    const phone = "phoneLabel" in line && line.phoneLabel ? `${line.phoneLabel}. ` : "";
     return `${line.name}. ${phone}${line.detail} ${line.href}`;
   }).join("\n");
-  return [note, loc, body].filter(Boolean).join("\n");
+
+  return [note, loc, stateSection, harmSection, "\n--- National Helplines ---", body]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings?: Finding[] }) {
   const [reported, setReported] = useState(false);
   const [copied, setCopied] = useState<"ok" | "fail" | "">("");
   const [details, setDetails] = useState(false);
+  const [category, setCategory] = useState<ServiceCategory>("all");
   const [zip, setZip] = useState("");
+  const setView = useDesk((s) => s.setView);
   const onMap = namedOpioids(ids);
   const open = reported || onMap;
   const note = open ? airwayNote(findings) : "";
-  const handoff = linesText(note, zip);
   const zipReady = zip.length === 5;
+  const stateRes = useMemo(() => (zipReady ? resolveState(zip) : null), [zipReady, zip]);
+  const handoff = useMemo(() => linesText(note, zip, stateRes), [note, zip, stateRes]);
+
+  const filteredLines = useMemo(() => {
+    if (category === "all") return LINES;
+    return LINES.filter((l) => l.category === category);
+  }, [category]);
 
   async function copyLines() {
     try {
@@ -147,17 +243,26 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
       </div>
       {open ? (
         <>
+          {/* Quick-dial and Direct Service Chips */}
           <div className="flex flex-wrap gap-2">
             {LINES.filter(hasPhone).map((line) => (
               <a
                 key={line.name}
                 href={`tel:${line.phone}`}
                 aria-label={`${line.name}, ${line.phoneLabel}`}
-                className="inline-flex h-11 items-center rounded-full bg-ink px-3 text-xs font-medium text-bg"
+                className="inline-flex h-11 items-center rounded-full bg-ink px-3 text-xs font-medium text-bg hover:opacity-90"
               >
                 {CHIP[line.name] ?? line.phoneLabel}
               </a>
             ))}
+            <a
+              href="https://nextdistro.org/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-11 items-center rounded-full bg-surface px-3 text-xs font-medium text-accent hover:underline"
+            >
+              NEXT Distro Naloxone
+            </a>
             <button
               type="button"
               onClick={() => void copyLines()}
@@ -166,6 +271,8 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
               {copied === "ok" ? "Copied" : "Copy these lines"}
             </button>
           </div>
+
+          {/* Localized State Matching & ZIP Navigation */}
           <div className="flex flex-wrap items-center gap-2">
             <label htmlFor="tx-zip" className="text-xs text-muted">
               ZIP for a local referral
@@ -198,11 +305,53 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
               {zipReady ? `Search ${zip} on the locator` : "Open the locator"}
             </a>
           </div>
+
+          {/* State-specific Helpline Banner */}
+          {stateRes ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-accent/25 bg-surface px-3 py-2 text-xs">
+              <div className="min-w-0">
+                <span className="font-semibold text-fg">📍 {stateRes.name} ({stateRes.code}):</span>{" "}
+                <span className="text-muted">{stateRes.helplineName}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <a
+                  href={stateRes.tel}
+                  className="inline-flex h-8 items-center rounded-full bg-ink px-3 text-[11px] font-medium text-bg hover:opacity-90"
+                >
+                  Call {stateRes.phone}
+                </a>
+                {stateRes.naloxoneUrl ? (
+                  <a
+                    href={stateRes.naloxoneUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-8 items-center rounded-full bg-accent/15 px-3 text-[11px] font-medium text-accent hover:underline"
+                  >
+                    Free mail naloxone
+                  </a>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setView("help");
+                    window.scrollTo({ top: 0 });
+                  }}
+                  className="inline-flex h-8 items-center rounded-full bg-bg-sunken px-2.5 text-[11px] font-medium text-muted hover:text-fg"
+                >
+                  All {stateRes.name} services →
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           <p className="text-[11px] leading-relaxed text-subtle">
             {zipReady
-              ? "The text carries the ZIP. The locator does not. Type it there. This desk does not look up a facility."
+              ? stateRes
+                ? `Mapped to ${stateRes.name}. The text carries the ZIP. The locator does not. Type it there. This desk does not look up a private facility.`
+                : "The text carries the ZIP. The locator does not. Type it there. This desk does not look up a facility."
               : "A ZIP can be texted to 435748. It is not stored."}
           </p>
+
           {copied === "fail" ? (
             <textarea
               readOnly
@@ -212,34 +361,79 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
               aria-label="Public lines to copy by hand"
             />
           ) : null}
-          <button
-            type="button"
-            onClick={() => setDetails((on) => !on)}
-            className="h-10 text-left text-xs font-medium text-muted hover:text-fg"
-            aria-expanded={details}
-          >
-            {details ? "Hide what each line does" : "What each line does"}
-          </button>
+
+          {/* Service Directory Disclosure & Category Filter */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setDetails((on) => !on)}
+              className="h-10 text-left text-xs font-medium text-muted hover:text-fg"
+              aria-expanded={details}
+            >
+              {details ? "Hide what each line does" : "What each line does"}
+            </button>
+            {details ? (
+              <div className="flex flex-wrap gap-1">
+                {(
+                  [
+                    { id: "all", label: "All" },
+                    { id: "crisis", label: "Crisis (24/7)" },
+                    { id: "treatment", label: "Treatment" },
+                    { id: "harm", label: "Harm Reduction" },
+                    { id: "specialty", label: "Veterans / Youth" },
+                  ] as const
+                ).map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setCategory(cat.id)}
+                    className={`h-7 rounded-full px-2.5 text-[11px] font-medium ${
+                      category === cat.id ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
           {details ? (
-          <ul className="space-y-2">
-            {LINES.map((line) => (
-              <li key={line.name} className="rounded-md bg-surface px-3 py-2.5">
-                <p className="text-sm font-medium text-fg">{line.name}</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted">{line.detail}</p>
-                <a
-                  href={line.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex h-10 items-center text-xs font-medium text-accent hover:underline"
-                >
-                  {line.hrefLabel}
-                </a>
-              </li>
-            ))}
-          </ul>
+            <ul className="space-y-2">
+              {filteredLines.map((line) => (
+                <li key={line.name} className="rounded-md bg-surface px-3 py-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-fg">{line.name}</p>
+                    <span className="font-mono text-[10px] uppercase text-muted tracking-wider">
+                      {line.category}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-muted">{line.detail}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    {line.phone ? (
+                      <a
+                        href={`tel:${line.phone}`}
+                        className="inline-flex h-8 items-center text-xs font-medium text-fg hover:underline"
+                      >
+                        {line.phoneLabel ?? line.phone}
+                      </a>
+                    ) : null}
+                    <a
+                      href={line.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-8 items-center text-xs font-medium text-accent hover:underline"
+                    >
+                      {line.hrefLabel}
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : null}
+
           <p className="text-[11px] leading-relaxed text-subtle">
-            Public lines for the person. The ZIP stays on this screen. This desk does not look up a facility, store the code, diagnose a substance use disorder, or pick a milligram.
+            Public lines for the person. The ZIP stays on this screen. This desk does not look up a facility, store the code, diagnose a substance use disorder, or pick a milligram. Naloxone is available without an individual prescription under standing orders across all 50 US states and DC.
           </p>
         </>
       ) : null}

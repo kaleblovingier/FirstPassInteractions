@@ -22,7 +22,8 @@ export type ClinicalTopic =
   | "electrolytes"
   | "neuro"
   | "anticoag"
-  | "tox";
+  | "tox"
+  | "addiction";
 
 export interface ClinicalTopicDef {
   id: ClinicalTopic;
@@ -38,6 +39,7 @@ export const CLINICAL_TOPICS: ClinicalTopicDef[] = [
   { id: "neuro", label: "Neurology & Sedation", shortLabel: "Neurology" },
   { id: "anticoag", label: "Anticoagulation & DOACs", shortLabel: "Anticoag" },
   { id: "tox", label: "Toxicology & TDM", shortLabel: "Tox & TDM" },
+  { id: "addiction", label: "Addiction Medicine & Harm Reduction", shortLabel: "Addiction & MOUD" },
 ];
 
 export interface StudyChoice {
@@ -532,6 +534,16 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-hartford-draw-timing": "tox",
   "clin-ag-obesity-adjbw": "tox",
   "clin-ag-mt1555-ototoxicity": "tox",
+
+  // Addiction Medicine & Harm Reduction
+  "clin-bup-precip-pharmacology": "addiction",
+  "clin-fentanyl-adipose-depot-kinetics": "addiction",
+  "clin-naloxone-half-life-renarcotization": "addiction",
+  "clin-methadone-cyp-qtc-safety": "addiction",
+  "clin-naltrexone-washout-window": "addiction",
+  "clin-xylazine-tranq-management": "addiction",
+  "clin-alcohol-withdrawal-ciwa-gaba": "addiction",
+  "clin-bup-micro-induction-bernese": "addiction",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -1300,6 +1312,142 @@ export function clinicalCards(): StudyCard[] {
       correct: "dabigatran-75-percent-surge",
       answer: "Dabigatran etexilate pellets contain an internal tartaric acid core to provide an acidic microenvironment for dissolution. The intact capsule regulates release. Opening, chewing, or crushing capsules surges systemic bioavailability by 75% (up to 200–300%), causing massive over-anticoagulation and life-threatening bleeding. Capsules must always be swallowed whole and stored in the original bottle with desiccant.",
       drugIds: ["dabigatran"],
+    },
+    {
+      id: "clin-bup-precip-pharmacology",
+      lane: "clinical",
+      kicker: "Addiction Pharmacology",
+      title: "Buprenorphine Precipitated Withdrawal Mechanism",
+      prompt: "Buprenorphine possesses unique pharmacodynamic properties at the mu-opioid receptor (MOR) compared to traditional full agonists (e.g. methadone, oxycodone, morphine).",
+      ask: "Why does initiating standard-dose buprenorphine in an opioid-dependent patient with high full-agonist receptor occupancy precipitate acute withdrawal?",
+      choices: [
+        { id: "bup-affinity-low-intrinsic", label: "High MOR binding affinity with low intrinsic efficacy (partial agonist) displaces full agonists and abruptly drops downstream intracellular signaling" },
+        { id: "bup-cyp-induction", label: "Rapid induction of CYP3A4 accelerates the metabolic clearance of circulating full agonists" },
+        { id: "bup-kappa-antagonism", label: "Competitive antagonism at kappa-opioid receptors causes sudden dysphoria and autonomic hyperarousal" },
+        { id: "bup-peripheral-vaso", label: "Peripheral vasodilation and histamine release mimic hyperadrenergic opioid withdrawal symptoms" },
+      ],
+      correct: "bup-affinity-low-intrinsic",
+      answer: "Buprenorphine has very high binding affinity (Ki ~0.2 nM) but low intrinsic activity (~30–40% maximal G-protein activation) at mu-opioid receptors. When administered while receptors are occupied by full agonists, buprenorphine competitively displaces the full agonist. The net decrease in receptor signaling precipitates acute, severe withdrawal. Initiation requires waiting for receptor clearance (objective withdrawal) or employing low-dose micro-induction.",
+      drugIds: ["buprenorphine"],
+    },
+    {
+      id: "clin-fentanyl-adipose-depot-kinetics",
+      lane: "clinical",
+      kicker: "Addiction Pharmacokinetics",
+      title: "Fentanyl Adipose Sequestration & Delayed Clearance",
+      prompt: "Patients using illicit fentanyl frequently experience precipitated withdrawal when initiated on buprenorphine despite waiting >24–48 hours and exhibiting objective withdrawal signs.",
+      ask: "What pharmacokinetic feature explains prolonged receptor occupancy and unpredictable clearance after chronic high-dose fentanyl use?",
+      choices: [
+        { id: "fentanyl-lipophilicity-adipose", label: "High lipophilicity results in massive tissue accumulation with slow, prolonged redistribution back into circulation from deep adipose stores" },
+        { id: "fentanyl-irreversible-binding", label: "Irreversible covalent bonding to mu-opioid receptors prevents enzymatic clearance" },
+        { id: "fentanyl-enterohepatic", label: "Extensive enterohepatic recirculation bypasses renal and fecal elimination pathways" },
+        { id: "fentanyl-auto-inhibition", label: "Potent auto-inhibition of CYP3A4 halts its own hepatic N-dealkylation to norfentanyl" },
+      ],
+      correct: "fentanyl-lipophilicity-adipose",
+      answer: "Unlike therapeutic single doses (where terminal half-life is ~2–4 hours due to rapid redistribution), chronic high-dose fentanyl use saturates peripheral lipid depots (octanol-water partition coefficient logP ~4.05). Fentanyl slowly leaches back into systemic circulation for days to weeks (context-sensitive half-life exceeding 24–72 hours), maintaining high receptor occupancy and provoking precipitated withdrawal even when clinical withdrawal scores appear moderate.",
+      drugIds: ["fentanyl", "buprenorphine"],
+    },
+    {
+      id: "clin-naloxone-half-life-renarcotization",
+      lane: "clinical",
+      kicker: "Harm Reduction & Resuscitation",
+      title: "Naloxone Half-Life vs Synthetic Opioids (Renarcotization)",
+      prompt: "A patient with suspected opioid overdose regains spontaneous breathing and alertness after 2 mg intranasal naloxone, but wishes to leave the emergency department immediately.",
+      ask: "Why is a minimum observation period warranted after successful naloxone reversal?",
+      choices: [
+        { id: "naloxone-short-half-life", label: "Naloxone has a short terminal half-life (~30–90 min), whereas long-acting or depot synthetic opioids remain active far longer, risking recurrent respiratory arrest (renarcotization)" },
+        { id: "naloxone-toxic-metabolites", label: "Naloxone converts into active nephrotoxic metabolites that precipitate acute kidney injury without alkaline diuresis" },
+        { id: "naloxone-rebound-hypertension", label: "Post-reversal rebound hypertension consistently triggers hemorrhagic stroke within 2 hours" },
+        { id: "naloxone-receptor-downregulation", label: "Intranasal naloxone induces prolonged down-regulation of respiratory chemoreceptors in the brainstem" },
+      ],
+      correct: "naloxone-short-half-life",
+      answer: "Naloxone is a pure competitive opioid antagonist with a rapid distribution phase and a terminal elimination half-life of only 30–90 minutes. In contrast, lipophilic synthetic opioids (fentanyl, carfentanil) and long-acting agonists (methadone) remain present at toxic tissue concentrations for 6–24+ hours. As naloxone clears the receptor, uneliminated agonist reoccupies receptors, causing recurrent respiratory depression ('renarcotization'). Observation for at least 2–4 hours (and longer for sustained-release opioids or methadone) is standard practice.",
+      drugIds: ["naloxone", "fentanyl", "methadone"],
+    },
+    {
+      id: "clin-methadone-cyp-qtc-safety",
+      lane: "clinical",
+      kicker: "MOUD & Electrophysiology",
+      title: "Methadone Metabolism and Cardiac Electrophysiology",
+      prompt: "A patient enrolled in an Opioid Treatment Program (OTP) on stable methadone maintenance presents with pneumonia and is prescribed clarithromycin or fluconazole.",
+      ask: "What dual pharmacological risk arises from co-administering potent CYP3A4 inhibitors with methadone?",
+      choices: [
+        { id: "methadone-cyp-herg-qtc", label: "Impaired clearance elevates methadone plasma concentrations, compounding dose-dependent hERG potassium channel blockade and precipitating QTc prolongation and TdP" },
+        { id: "methadone-alpha-glycoprotein", label: "Rapid displacement of methadone from plasma alpha-1-acid glycoprotein provokes acute opioid toxicity with normal total levels" },
+        { id: "methadone-cyp2b6-induction", label: "Induction of CYP2B6 abruptly lowers active R-methadone enantiomer, triggering acute withdrawal" },
+        { id: "methadone-pgp-nephrotoxicity", label: "Competitive inhibition of renal P-glycoprotein causes proximal tubular necrosis and interstitial nephritis" },
+      ],
+      correct: "methadone-cyp-herg-qtc",
+      answer: "Methadone is primarily metabolized by CYP3A4 and CYP2B6 to inactive EDDP. Potent CYP3A4 inhibitors (clarithromycin, fluconazole, ketoconazole) increase methadone AUC and half-life. Because methadone (specifically the S-enantiomer) causes concentration-dependent blockade of the human ether-a-go-go-related gene (hERG) cardiac potassium current (IKr), elevated levels markedly prolong the QTc interval and increase the incidence of Torsades de Pointes. Baseline and serial ECG monitoring with alternative anti-infective selection is advised.",
+      drugIds: ["methadone", "clarithromycin", "fluconazole"],
+    },
+    {
+      id: "clin-naltrexone-washout-window",
+      lane: "clinical",
+      kicker: "MOUD Pharmacotherapy",
+      title: "Naltrexone Induction Washout Requirements",
+      prompt: "A patient with Opioid Use Disorder requests initiation of extended-release injectable naltrexone (Vivitrol) to maintain abstinence.",
+      ask: "What opioid-free washout interval is necessary prior to naltrexone administration to prevent catastrophic precipitated withdrawal?",
+      choices: [
+        { id: "naltrexone-7-14-day-washout", label: "At least 7–10 days opioid-free for short-acting opioids (and 10–14 days for long-acting agents like methadone or buprenorphine), verified by negative UDS and/or naloxone challenge" },
+        { id: "naltrexone-24-hour-cows", label: "A 24-hour abstinence period verified by a COWS score of at least 8" },
+        { id: "naltrexone-no-washout-needed", label: "No washout is necessary if starting with oral naltrexone 50 mg before the depot intramuscular injection" },
+        { id: "naltrexone-loperamide-bridge", label: "Concurrent administration of high-dose loperamide eliminates the need for an opioid washout window" },
+      ],
+      correct: "naltrexone-7-14-day-washout",
+      answer: "Naltrexone is a potent, competitive mu-opioid receptor antagonist with no intrinsic opioid agonist activity. Administering naltrexone to an individual with active opioid receptor occupancy provokes immediate, severe, and prolonged precipitated withdrawal lasting days (with intramuscular depot lasting weeks). FDA labeling mandates an absolute opioid-free interval of 7–10 days for short-acting opioids and 10–14 days for long-acting opioids (methadone, buprenorphine), verified by urine drug screening and/or a naloxone challenge test prior to injection.",
+      drugIds: ["naltrexone", "methadone", "buprenorphine"],
+    },
+    {
+      id: "clin-xylazine-tranq-management",
+      lane: "clinical",
+      kicker: "Street Supply & Adulterants",
+      title: "Xylazine Adulteration ('Tranq') and Resuscitation",
+      prompt: "An unresponsive individual with suspected opioid overdose receives multiple doses of naloxone. Respiratory rate improves with bag-valve-mask ventilation, but profound sedation, severe bradycardia, and hypotension persist.",
+      ask: "What clinical principle governs the management of xylazine-induced toxicity?",
+      choices: [
+        { id: "xylazine-alpha2-airway-priority", label: "Xylazine is a non-opioid alpha-2 adrenergic agonist unresponsive to naloxone; prioritize airway support, oxygenation, and perfusion rather than escalating naloxone" },
+        { id: "xylazine-high-dose-naloxone", label: "Continuous high-dose naloxone infusion (10 mg/hr) competitively displaces xylazine from alpha-2 adrenergic receptors" },
+        { id: "xylazine-flumazenil-reversal", label: "Administration of flumazenil specifically reverses central xylazine-induced respiratory depression" },
+        { id: "xylazine-emergent-dialysis", label: "Emergent hemodialysis is required within 2 hours to clear the water-soluble xylazine metabolite" },
+      ],
+      correct: "xylazine-alpha2-airway-priority",
+      answer: "Xylazine ('tranq') is a veterinary alpha-2 adrenergic agonist commonly co-adulterated into illicit fentanyl supplies. Naloxone has no affinity for alpha-2 adrenergic receptors and will NOT reverse xylazine sedation, bradycardia, or hypotension. Responders must administer sufficient naloxone only to restore spontaneous ventilation (target RR ≥10–12/min) and avoid excessive dosing that triggers acute opioid withdrawal without reversing coma. Management centers on basic life support: bag-valve mask ventilation, supplemental oxygen, warming, and IV crystalloids for hypotension.",
+      drugIds: ["xylazine", "naloxone", "fentanyl"],
+    },
+    {
+      id: "clin-alcohol-withdrawal-ciwa-gaba",
+      lane: "clinical",
+      kicker: "Alcohol Withdrawal Syndromes",
+      title: "GABA-A Allosteric Modulation & Delirium Tremens Prevention",
+      prompt: "A patient presenting with acute tremors, diaphoresis, and tactile hallucinations 36 hours after cessation of heavy alcohol intake is assessed for symptom-triggered pharmacotherapy.",
+      ask: "What neuropharmacological mechanism justifies benzodiazepines or phenobarbital as gold-standard agents for alcohol withdrawal?",
+      choices: [
+        { id: "alcohol-gaba-pam-blunts-excitotoxicity", label: "Positive allosteric modulation of GABA-A receptors compensates for depleted inhibitory tone and blunts NMDA/glutamatergic excitotoxicity" },
+        { id: "alcohol-beta-blocker-sympathetic", label: "Competitive antagonism at post-synaptic beta-1 adrenergic receptors blunts central sympathetic outflow" },
+        { id: "alcohol-adh-inhibition", label: "Direct inhibition of alcohol dehydrogenase halts production of neurotoxic acetaldehyde" },
+        { id: "alcohol-d2-blockade", label: "Blockade of central dopamine D2 receptors directly terminates alcohol withdrawal seizures and hallucinosis" },
+      ],
+      correct: "alcohol-gaba-pam-blunts-excitotoxicity",
+      answer: "Chronic ethanol consumption causes homeostatic down-regulation and desensitization of inhibitory GABA-A receptors and up-regulation of excitatory NMDA glutamate receptors. Abrupt cessation unmasks an acute imbalance: loss of GABAergic inhibition combined with profound glutamate-driven neuro-excitotoxicity, precipitating tremors, sympathetic hyperarousal, seizures, and delirium tremens. Benzodiazepines and phenobarbital act as positive allosteric modulators at GABA-A receptors, restoring chloride conductance and suppressing excitotoxicity. Thiamine must be co-administered prior to IV dextrose to prevent Wernicke-Korsakoff syndrome.",
+      drugIds: ["diazepam", "lorazepam", "phenobarbital", "ethanol"],
+    },
+    {
+      id: "clin-bup-micro-induction-bernese",
+      lane: "clinical",
+      kicker: "Low-Dose Buprenorphine Initiation",
+      title: "Low-Dose Buprenorphine Induction (Bernese Model)",
+      prompt: "In patients with high fentanyl exposure or those on chronic methadone maintenance where traditional withdrawal is intolerable or unsafe, low-dose initiation protocols (Bernese method) are increasingly utilized.",
+      ask: "What is the core pharmacodynamic strategy of low-dose buprenorphine initiation?",
+      choices: [
+        { id: "bup-bernese-overlapping-micro", label: "Titrating micro-doses of buprenorphine while maintaining full agonist slowly builds receptor occupancy without triggering acute precipitated withdrawal" },
+        { id: "bup-naloxone-peripheral-block", label: "Pre-treating with naloxone blocks peripheral receptors so buprenorphine acts exclusively on spinal nociceptive pathways" },
+        { id: "bup-rapid-receptor-desensitization", label: "Using intravenous boluses rapidly desensitizes mu-opioid G-protein coupled receptors to full agonists" },
+        { id: "bup-alternating-q4h-methadone", label: "Alternating buprenorphine every 4 hours with methadone prevents competitive binding at the same receptor pool" },
+      ],
+      correct: "bup-bernese-overlapping-micro",
+      answer: "The Bernese method (Hälg 2016) utilizes overlapping low doses of buprenorphine (e.g. starting with 0.5 mg daily and titrating over 5–8 days) while continuing the patient's baseline full opioid agonist (fentanyl or methadone). Because buprenorphine binds with extremely high affinity and dissociates very slowly, sub-therapeutic micro-doses progressively saturate a fraction of receptors without displacing enough full agonist to provoke withdrawal symptoms. Once buprenorphine reaches therapeutic receptor occupancy (~8–16 mg daily), the full agonist is discontinued seamlessly without an acute withdrawal window.",
+      drugIds: ["buprenorphine", "methadone", "fentanyl"],
     },
   ];
   return cards.map((c) => ({
