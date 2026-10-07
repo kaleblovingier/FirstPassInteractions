@@ -497,6 +497,9 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-qtc-hypokalemia-herg-blockade": "cardio",
   "clin-digoxin-amiodarone-pgp": "cardio",
   "clin-methadone-fluconazole-qtc-3a4": "cardio",
+  "clin-ivabradine-if-hcn-channel": "cardio",
+  "clin-sildenafil-nitrate-cgmp-shock": "cardio",
+  "clin-sacubitril-neprilysin-angioedema": "cardio",
 
   // Endocrine & SGLT2
   "clin-steroid-equiv-potency": "endocrine",
@@ -520,6 +523,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-renal-gabapentinoid-myoclonus": "electrolytes",
   "clin-hd-dialyzability-factors": "electrolytes",
   "clin-lithium-hctz-nsaid-clearance": "electrolytes",
+  "clin-sglt2-tubuloglomerular-feedback": "electrolytes",
 
   // Neurology & Sedation
   "clin-acb-threshold": "neuro",
@@ -530,6 +534,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-valproate-vhe-normal-lft-trap": "neuro",
   "clin-valproate-carbapenem-crash": "neuro",
   "clin-beers-anticholinergic-fall-fracture": "neuro",
+  "clin-vmat2-vesicular-depletion": "neuro",
 
   // Anticoagulation & DOACs
   "clin-dabigatran-reversal": "anticoag",
@@ -565,6 +570,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
 
   // Bedside & Reversal
   "clin-doac-reversal-mechanisms": "bedside",
+  "clin-sugammadex-cyclodextrin-chelation": "bedside",
+  "clin-aspirin-platelet-covalent-acetylation": "bedside",
 
   // CYP & Pharmacokinetics
   "clin-warfarin-bactrim-cyp2c9": "cyp",
@@ -1748,6 +1755,209 @@ export function clinicalCards(): StudyCard[] {
       correct: "cyp3a4-inhibition-plus-herg-blockade",
       answer: "Methadone and fluconazole represent a classic dual PK and PD collision. Pharmacokinetically (PK), methadone clearance is mediated primarily by CYP3A4, CYP2B6, and CYP2C19; fluconazole is a potent inhibitor of CYP2C19 and a moderate-to-strong dose-dependent inhibitor of CYP3A4 and CYP2C9. Fluconazole coadministration significantly impairs methadone metabolic clearance, raising systemic methadone serum concentrations (AUC increased by 30% to 50% or more). Pharmacodynamically (PD), both (S)-methadone and fluconazole independently produce concentration-dependent blockade of the rapid delayed rectifier potassium channel (IKr / hERG). Elevated methadone levels combined with additive hERG channel inhibition synergistically delay cardiac ventricular repolarization, triggering marked QTc interval prolongation, early afterdepolarizations, and Torsades de Pointes (TdP). Consensus guidelines (CSAT / AHA) advise baseline and serial ECG monitoring, electrolyte repletion (potassium ≥ 4.0 mEq/L, magnesium ≥ 2.0 mg/dL), or alternative antifungal selection.",
       drugIds: ["methadone", "fluconazole"],
+    },
+    {
+      id: "clin-sugammadex-cyclodextrin-chelation",
+      lane: "clinical",
+      kicker: "Anesthesiology & Neuromuscular Reversal",
+      title: "Sugammadex Selective Cyclodextrin Chelation vs AChE Inhibition",
+      prompt: "An anesthesia resuscitation team prepares to reverse deep rocuronium-induced neuromuscular blockade in an emergent surgical patient with severe reactive airway disease.",
+      ask: "How does the molecular mechanism of sugammadex differ from traditional reversal with neostigmine, and why does it avoid muscarinic side effects?",
+      choices: [
+        {
+          id: "cyclodextrin-chelation-guest-host",
+          label: "Sugammadex forms a tight 1:1 guest-host inclusion complex encapsulating rocuronium in plasma, avoiding acetylcholinesterase inhibition and muscarinic cholinergic side effects",
+        },
+        {
+          id: "competitive-nicotinic-displacement",
+          label: "Sugammadex competitively displaces rocuronium from postjunctional nicotinic receptors, requiring co-administration of glycopyrrolate to prevent bradycardia",
+        },
+        {
+          id: "pseudocholinesterase-enzymatic-cleavage",
+          label: "Sugammadex accelerates hepatic and plasma pseudocholinesterase hydrolysis of aminosteroid neuromuscular blocking agents",
+        },
+        {
+          id: "ryanodine-calcium-sequestration",
+          label: "Sugammadex closes sarcoplasmic reticulum ryanodine receptor channels, restoring excitation-contraction coupling independent of junctional acetylcholine",
+        },
+      ],
+      correct: "cyclodextrin-chelation-guest-host",
+      answer: "Sugammadex is a modified gamma-cyclodextrin with eight lipophilic inner-cavity glucopyranose units and negatively charged carboxyl thioether extensions. It acts as a chelating host that forms a biologically inert, high-affinity 1:1 guest-host inclusion complex encapsulating the lipophilic steroid rings of rocuronium or vecuronium in plasma. Encapsulation rapidly reduces free intravascular drug concentration, driving a concentration gradient that draws the neuromuscular blocker away from junctional nicotinic receptors back into circulation, restoring train-of-four recovery within minutes without affecting acetylcholinesterase. In stark contrast, neostigmine acts by inhibiting acetylcholinesterase, non-selectively raising acetylcholine at both nicotinic and muscarinic receptors; without co-administered muscarinic antagonists (glycopyrrolate or atropine), neostigmine provokes severe bronchospasm, profound bradycardia, and salivation. Consensus ASA guidelines recognize sugammadex for rapid, predictable reversal of aminosteroid neuromuscular blockade.",
+      drugIds: ["sugammadex", "rocuronium"],
+    },
+    {
+      id: "clin-ivabradine-if-hcn-channel",
+      lane: "clinical",
+      kicker: "Cardiovascular Electrophysiology",
+      title: "Ivabradine Selective SA Node HCN (If) Channel Blockade",
+      prompt: "A patient with heart failure with reduced ejection fraction (HFrEF) in normal sinus rhythm has a persistent resting heart rate of 78 bpm despite guideline-directed beta-blocker therapy.",
+      ask: "What unique electrophysiological mechanism enables ivabradine to lower heart rate without reducing myocardial inotropy or altering ventricular repolarization?",
+      choices: [
+        {
+          id: "selective-hcn-if-blockade",
+          label: "Ivabradine selectively blocks hyperpolarization-activated cyclic nucleotide-gated (HCN) If 'funny' channels in the SA node, slowing Phase 4 diastolic depolarization without altering contractility or QTc duration",
+        },
+        {
+          id: "av-nodal-calcium-slow-channel",
+          label: "Ivabradine inhibits L-type calcium channels selectively at the atrioventricular node, prolonging the PR interval while preserving left ventricular ejection fraction",
+        },
+        {
+          id: "beta1-allosteric-inverse-agonism",
+          label: "Ivabradine acts as an allosteric inverse agonist at myocardial beta-1 adrenergic receptors, diminishing intracellular cAMP generation in ventricular myocytes",
+        },
+        {
+          id: "herg-ikr-ventricular-repolarization",
+          label: "Ivabradine inhibits rapid delayed rectifier potassium channels (IKr), slowing heart rate by selectively prolonging the ventricular effective refractory period",
+        },
+      ],
+      correct: "selective-hcn-if-blockade",
+      answer: "Ivabradine enters the hyperpolarization-activated cyclic nucleotide-gated (HCN) channel pore from the intracellular side, selectively blocking the inward hyperpolarization-activated 'funny' current (If) expressed predominantly in sinoatrial (SA) node pacemaker cells. By reducing inward mixed sodium-potassium entry during diastole, ivabradine slows the slope of Phase 4 spontaneous diastolic depolarization, lengthening the time to reach threshold and decreasing sinus node firing rate in a use-dependent manner. Crucially, because HCN4 channels are largely restricted to pacemaker tissue, ivabradine exerts zero negative inotropic (contractility) or lusitropic (relaxation) effects, does not alter intracardiac conduction times or vascular tone, and does not block hERG/IKr potassium channels (preserving ventricular repolarization and QTc). ACC/AHA and ESC heart failure consensus guidelines recommend ivabradine for symptomatic HFrEF with sinus rhythm ≥70 bpm on maximally tolerated beta-blockers to reduce cardiovascular death and hospitalizations.",
+      drugIds: ["ivabradine"],
+    },
+    {
+      id: "clin-sildenafil-nitrate-cgmp-shock",
+      lane: "clinical",
+      kicker: "Cardiovascular Pharmacology & Hemodynamics",
+      title: "PDE-5 Inhibition & Organic Nitrates Synergistic cGMP Shock",
+      prompt: "A patient presenting to the emergency department with acute retrosternal chest pain receives sublingual nitroglycerin, precipitating profound diaphoresis, unmeasurable blood pressure, and refractory vasodilatory shock; the patient took sildenafil 4 hours prior.",
+      ask: "What molecular signaling pathway accounts for this catastrophic, life-threatening hypotensive interaction?",
+      choices: [
+        {
+          id: "synergistic-cgmp-accumulation-vasodilation",
+          label: "Organic nitrates stimulate guanylyl cyclase to surge cGMP synthesis while sildenafil blocks PDE-5 degradation, producing synergistic cGMP accumulation, profound MLC dephosphorylation, and refractory vasodilation",
+        },
+        {
+          id: "camp-pka-hyperstimulation-collapse",
+          label: "Nitrates and sildenafil synergistically stimulate adenylyl cyclase, depleting vascular smooth muscle ATP stores via cyclic AMP-dependent protein kinase cascades",
+        },
+        {
+          id: "alpha1-adrenergic-receptor-internalization",
+          label: "Concomitant administration triggers rapid endocytosis and degradation of vascular alpha-1 adrenergic receptors, eliminating sympathetic vascular tone",
+        },
+        {
+          id: "cyp3a4-suicide-inhibition-accumulation",
+          label: "Nitroglycerin acts as a mechanism-based inhibitor of CYP3A4, provoking a 10-fold surge in sildenafil systemic bioavailability",
+        },
+      ],
+      correct: "synergistic-cgmp-accumulation-vasodilation",
+      answer: "Vascular smooth muscle tone is modulated by cyclic guanosine monophosphate (cGMP). Organic nitrates (nitroglycerin, isosorbide dinitrate/mononitrate) donate nitric oxide (NO), stimulating soluble guanylyl cyclase (sGC) to synthesize cGMP from GTP. cGMP activates protein kinase G (PKG), promoting intracellular calcium reuptake and activating myosin light-chain (MLC) phosphatase, relaxing vascular smooth muscle. Phosphodiesterase type 5 (PDE-5) is the primary physiological enzyme responsible for hydrolyzing cGMP to inactive 5'-GMP. Sildenafil, tadalafil, and vardenafil potently inhibit PDE-5. When an organic nitrate is administered to a patient with PDE-5 inhibition, unregulated cGMP production combines with blocked degradation, sparking massive, synergistic intracellular cGMP accumulation. This leads to profound, unrelenting arteriolar and venous vasodilation, collapse of preload and systemic vascular resistance, severe coronary hypoperfusion, and refractory shock unresponsive to conventional fluid resuscitation. ACC/AHA consensus guidelines and FDA labeling strictly contraindicate organic nitrates within 24 hours of sildenafil (and 48 hours of tadalafil).",
+      drugIds: ["sildenafil", "nitroglycerin"],
+    },
+    {
+      id: "clin-sacubitril-neprilysin-angioedema",
+      lane: "clinical",
+      kicker: "Cardiorenal Pharmacology & Peptidase Safety",
+      title: "Sacubitril Neprilysin Inhibition & ACE Inhibitor Angioedema Contraindication",
+      prompt: "When switching a heart failure patient from an angiotensin-converting enzyme (ACE) inhibitor like lisinopril to sacubitril/valsartan (ARNI), clinical guidelines mandate a strict 36-hour washout period.",
+      ask: "What dual enzymatic clearance mechanism explains why combining an ACE inhibitor with a neprilysin inhibitor triggers a severe risk of life-threatening angioedema?",
+      choices: [
+        {
+          id: "dual-bradykinin-degradation-blockade",
+          label: "Neprilysin and ACE are both primary enzymes responsible for metabolizing bradykinin; concurrent inhibition shuts down both clearance routes, driving extreme bradykinin accumulation and angioedema",
+        },
+        {
+          id: "substance-p-depletion-mast-cell-degranulation",
+          label: "Dual inhibition causes complete depletion of substance P and neurokinin A, triggering compensatory mast cell histamine degranulation",
+        },
+        {
+          id: "aldosterone-hypersecretion-laryngeal-edema",
+          label: "Dual inhibition stimulates adrenal glomerulosa mineralocorticoid synthesis, inducing acute severe volume overload and laryngeal edema",
+        },
+        {
+          id: "cyp2c9-metabolic-knockout-acei",
+          label: "Sacubitrilat potently inhibits CYP2C9 and CYP3A4, preventing hepatic oxidative breakdown of circulating ACE inhibitors",
+        },
+      ],
+      correct: "dual-bradykinin-degradation-blockade",
+      answer: "Neprilysin (neutral endopeptidase / NEP 24.11) is an endothelial and renal cell-surface metallopeptidase that degrades various biologically active vasoactive peptides, including natriuretic peptides (ANP, BNP, CNP), adrenomedullin, and bradykinin. Angiotensin-converting enzyme (ACE, also known as kininase II) is the predominant enzyme that inactivates circulating bradykinin into inactive peptide fragments. Because ACE and neprilysin serve as parallel, complementary degradation pathways for bradykinin, co-administering an ACE inhibitor and a neprilysin inhibitor (sacubitril) shuts off both major catabolic routes simultaneously. The resulting massive accumulation of bradykinin stimulates endothelial B2 receptors, provoking intense nitric oxide and prostacyclin release, microvascular hyperpermeability, and life-threatening angioedema (particularly fatal laryngeal edema). In contrast, angiotensin receptor blockers (ARBs) do not inhibit kininase II, which is why sacubitril is safely combined with valsartan rather than an ACE inhibitor. ACC/AHA and ESC guidelines mandate a mandatory 36-hour washout period when transitioning from an ACE inhibitor to ARNI (or vice versa).",
+      drugIds: ["sacubitril", "lisinopril"],
+    },
+    {
+      id: "clin-sglt2-tubuloglomerular-feedback",
+      lane: "clinical",
+      kicker: "Renal Physiology & Hemodynamics",
+      title: "SGLT2 Inhibition and Tubuloglomerular Feedback (TGF) Restoration",
+      prompt: "In diabetic kidney disease, proximal solute hyper-reabsorption impairs distal signaling and causes progressive renal decline. Initiation of an SGLT2 inhibitor induces an initial reversible eGFR dip followed by long-term renal preservation.",
+      ask: "What microvascular hemodynamic mechanism mediated by tubuloglomerular feedback (TGF) accounts for this nephroprotective profile?",
+      choices: [
+        {
+          id: "macula-densa-solute-afferent-constriction",
+          label: "SGLT2 inhibition increases sodium and chloride delivery to the macula densa, restoring tubuloglomerular feedback and inducing adenosine-mediated afferent arteriolar constriction to reduce intraglomerular hypertension",
+        },
+        {
+          id: "efferent-arteriolar-vasoconstriction",
+          label: "SGLT2 inhibitors selectively constrict postglomerular efferent arterioles via local endothelin release, boosting glomerular filtration pressure",
+        },
+        {
+          id: "podocyte-nhe1-stabilization",
+          label: "SGLT2 inhibitors block podocyte NHE1 antiporters, directly reducing filtration barrier permeability to albumin without altering arteriolar resistance",
+        },
+        {
+          id: "medullary-collecting-duct-compression",
+          label: "Increased osmotic drag in the medullary collecting duct mechanically compresses peritubular capillaries, lowering filtration fractions",
+        },
+      ],
+      correct: "macula-densa-solute-afferent-constriction",
+      answer: "In early diabetes mellitus, proximal tubular glucose and sodium hyper-reabsorption via upregulated sodium-glucose cotransporter 2 (SGLT2) diminishes distal solute delivery. The macula densa senses low luminal sodium chloride delivery and shuts off tubuloglomerular feedback (TGF), triggering inappropriate afferent arteriolar vasodilation. Coupled with angiotensin II-mediated efferent arteriolar constriction, this creates marked intraglomerular hypertension and progressive diabetic nephropathy. SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) block proximal glucose and sodium uptake, restoring solute delivery to the macula densa. Solute entry via the NKCC2 cotransporter stimulates basolateral ATP release and breakdown into adenosine, which activates vascular adenosine A1 receptors to constrict the dilated afferent arteriole. This restores normal TGF, reduces intraglomerular capillary hydrostatic pressure, and mitigates glomerular barotrauma. While this manifests as a benign 30% initial 'eGFR dip', KDIGO and ADA consensus guidelines emphasize that this hemodynamic unloading halts progressive nephron loss and preserves long-term renal function.",
+      drugIds: ["empagliflozin", "dapagliflozin"],
+    },
+    {
+      id: "clin-vmat2-vesicular-depletion",
+      lane: "clinical",
+      kicker: "Neuropharmacology & Movement Disorders",
+      title: "VMAT2 Inhibition in Tardive Dyskinesia: Presynaptic Depletion vs D2 Blockade",
+      prompt: "A patient maintained on chronic second-generation antipsychotic therapy develops involuntary choreoathetoid movements of the tongue and face consistent with tardive dyskinesia.",
+      ask: "Why does vesicular monoamine transporter 2 (VMAT2) inhibition treat tardive dyskinesia without worsening postsynaptic D2 receptor hypersensitivity or provoking prominent parkinsonism?",
+      choices: [
+        {
+          id: "vmat2-presynaptic-depletion-no-d2-block",
+          label: "VMAT2 inhibitors selectively block presynaptic monoamine vesicular loading, depleting dopamine storage and synaptic release without blocking postsynaptic D2 receptors",
+        },
+        {
+          id: "striatal-d2-partial-agonism",
+          label: "VMAT2 inhibitors act as high-affinity partial agonists at striatal postsynaptic D2 receptors, displacing antipsychotic molecules",
+        },
+        {
+          id: "tyrosine-hydroxylase-inactivation",
+          label: "Valbenazine irreversibly inactivates tyrosine hydroxylase, halting total presynaptic catecholamine biosynthesis",
+        },
+        {
+          id: "dat-carrier-reversal-efflux",
+          label: "VMAT2 inhibitors invert dopamine active transporter (DAT) directionality, pumping cytosolic monoamines back into extracellular astrocytes",
+        },
+      ],
+      correct: "vmat2-presynaptic-depletion-no-d2-block",
+      answer: "Tardive dyskinesia (TD) is pathophysiologically linked to chronic antipsychotic-induced dopamine D2 receptor blockade, resulting in postsynaptic receptor upregulation and striatal supersensitivity. Vesicular monoamine transporter 2 (VMAT2) is an integral presynaptic membrane transporter responsible for packaging monoamines (dopamine, norepinephrine, serotonin) from the neuronal cytoplasm into synaptic vesicles for exocytotic release. Selective VMAT2 inhibitors (valbenazine, deutetrabenazine) reversibly inhibit VMAT2, preventing vesicular dopamine loading; unsequestered cytosolic dopamine is degraded by monoamine oxidase, depleting presynaptic dopamine stores and reducing synaptic exocytosis. Critically, unlike neuroleptics, VMAT2 inhibitors have negligible affinity for postsynaptic dopamine D2 receptors; they diminish involuntary hyperkinetic movements without exacerbating D2 receptor supersensitivity or producing the severe extrapyramidal parkinsonian rigidity characteristic of postjunctional D2 receptor antagonists. APA and AAN consensus guidelines recognize VMAT2 inhibitors as first-line evidence-based pharmacotherapy for tardive dyskinesia.",
+      drugIds: ["valbenazine", "deutetrabenazine"],
+    },
+    {
+      id: "clin-aspirin-platelet-covalent-acetylation",
+      lane: "clinical",
+      kicker: "Hematology & Bedside Antiplatelet Pharmacology",
+      title: "Aspirin Covalent Serine 529 Acetylation & Anucleate Platelet Lifespan",
+      prompt: "Prior to elective major surgery, low-dose aspirin is discontinued 7 to 10 days in advance, whereas reversible NSAIDs (such as ibuprofen) require a much shorter withholding period of 1 to 2 days.",
+      ask: "What distinct molecular mechanism explains why aspirin's antiplatelet action persists for the entire circulating lifespan of the platelet, unlike reversible NSAIDs?",
+      choices: [
+        {
+          id: "irreversible-ser529-acetylation-anucleate",
+          label: "Aspirin irreversibly acetylates Serine 529 in COX-1, permanently disabling thromboxane A2 synthesis in anucleate platelets that lack de novo protein synthesis machinery",
+        },
+        {
+          id: "reversible-cox2-allosteric-inhibition",
+          label: "Aspirin reversibly binds allosteric regulatory sites on endothelial COX-2, which clears slowly from systemic circulation over 10 days",
+        },
+        {
+          id: "p2y12-receptor-covalent-crosslinking",
+          label: "Aspirin permanently cross-links surface P2Y12 purinergic receptors, triggering irreversible platelet apoptosis in the spleen",
+        },
+        {
+          id: "glycoprotein-iib-iiia-acylation",
+          label: "Aspirin covalently acylates the RGD recognition sequence of glycoprotein IIb/IIIa integrins, preventing fibrinogen adherence",
+        },
+      ],
+      correct: "irreversible-ser529-acetylation-anucleate",
+      answer: "Aspirin (acetylsalicylic acid) acts through a unique chemical mechanism distinct from reversible NSAIDs: it covalently transfers its acetyl group to the hydroxyl group of Serine 529 situated within the catalytic channel of platelet cyclooxygenase-1 (COX-1). This irreversible covalent modification creates steric hindrance that permanently blocks arachidonic acid from accessing the catalytic pocket, abolishing conversion into prostaglandin H2 and its downstream product, thromboxane A2 (TXA2)—a potent inducer of platelet aggregation and vasoconstriction. Because mature circulating platelets are anucleate cytoplasmic fragments of megakaryocytes lacking cell nuclei and ribosomes, they cannot transcribe or translate new COX-1 enzymes. Consequently, platelet COX-1 remains irreversibly inactivated for the entire 7- to 10-day circulating lifespan of the platelet. Recovery of platelet hemostatic function requires generation of new platelets from bone marrow megakaryocytes (turnover rate ~10% per day). In contrast, traditional NSAIDs (ibuprofen, naproxen) bind competitively and reversibly, allowing platelet function to normalize as soon as systemic drug concentrations drop. ACC/AHA and ASA guidelines base perioperative antiplatelet timelines on this irreversible biology.",
+      drugIds: ["aspirin"],
     },
   ];
   return cards.map((c) => ({

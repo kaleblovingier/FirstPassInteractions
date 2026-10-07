@@ -32,9 +32,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 65 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 72 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 65);
+    assert.equal(cards.length, 72);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -66,7 +66,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 65);
+    assert.equal(cards.length, 72);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -107,6 +107,8 @@ describe("study learning tools", () => {
       "r-clinic-gabapentin-ckd-myoclonic-coma",
       "r-icu-lithium-hctz-toxicity",
       "r-ed-digoxin-amiodarone-heart-block",
+      "r-icu-sildenafil-nitroglycerin-cgmp-shock",
+      "r-or-rocuronium-sugammadex-chelation",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -200,7 +202,7 @@ describe("study learning tools", () => {
     }
   });
 
-  it("sub-topic categories cover all 65 clinical cards with balanced distribution", () => {
+  it("sub-topic categories cover all 72 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);
 
@@ -302,7 +304,7 @@ describe("study learning tools", () => {
       "clin-methadone-fluconazole-qtc-3a4",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 65, "Total clinical cards must be exactly 65");
+    assert.equal(cards.length, 72, "Total clinical cards must be exactly 72");
 
     for (const id of highYieldCardIds) {
       const card = cards.find((c) => c.id === id);
@@ -388,6 +390,117 @@ describe("study learning tools", () => {
     assert.doesNotMatch(digAmiodRoundText, /prescribe\s+\d+\s*mg/i);
     assert.doesNotMatch(digAmiodRoundText, /dispense\s+\d+\s*mg/i);
     assert.doesNotMatch(digAmiodRoundText, /clinical decision support/i);
+  });
+
+  it("new clinical mechanism cards expand clinicalCards to 72 and verify non-prescriptive regulatory posture", () => {
+    const new7CardIds = [
+      "clin-sugammadex-cyclodextrin-chelation",
+      "clin-ivabradine-if-hcn-channel",
+      "clin-sildenafil-nitrate-cgmp-shock",
+      "clin-sacubitril-neprilysin-angioedema",
+      "clin-sglt2-tubuloglomerular-feedback",
+      "clin-vmat2-vesicular-depletion",
+      "clin-aspirin-platelet-covalent-acetylation",
+    ];
+    const cards = clinicalCards();
+    assert.equal(cards.length, 72, "Total clinical cards must be exactly 72");
+
+    for (const id of new7CardIds) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, `Card '${id}' must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length >= 4, `Card '${id}' must have at least 4 choices`);
+      assert.ok(card.correct, `Card '${id}' must define a correct choice`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card '${id}' correct choice must exist in choices`);
+      assert.ok(card.drugIds.length > 0, `Card '${id}' must reference drugIds`);
+      for (const drugId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[drugId], `Drug '${drugId}' in card '${id}' must exist in catalog`);
+      }
+      assert.equal(card.topic, CLINICAL_TOPIC_MAP[id], `Card '${id}' topic must match CLINICAL_TOPIC_MAP`);
+
+      const text = `${card.title} ${card.prompt} ${card.ask} ${card.answer} ${card.choices?.map((c) => c.label).join(" ") ?? ""}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i, `Card '${id}' must not contain prescriptive text`);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i, `Card '${id}' must not contain dispensing text`);
+      assert.doesNotMatch(text, /clinical decision support/i, `Card '${id}' must not claim to be CDS`);
+    }
+
+    // Verify specific mechanism assertions
+    const sugCard = cards.find((c) => c.id === "clin-sugammadex-cyclodextrin-chelation")!;
+    assert.equal(sugCard.topic, "bedside");
+    assert.match(sugCard.answer, /cyclodextrin/i);
+    assert.match(sugCard.answer, /guest-host|inclusion complex/i);
+    assert.match(sugCard.answer, /rocuronium/i);
+    assert.match(sugCard.answer, /acetylcholinesterase/i);
+
+    const ivaCard = cards.find((c) => c.id === "clin-ivabradine-if-hcn-channel")!;
+    assert.equal(ivaCard.topic, "cardio");
+    assert.match(ivaCard.answer, /HCN/);
+    assert.match(ivaCard.answer, /funny/i);
+    assert.match(ivaCard.answer, /sinoatrial|SA node/i);
+    assert.match(ivaCard.answer, /inotropy|contractility/i);
+
+    const silCard = cards.find((c) => c.id === "clin-sildenafil-nitrate-cgmp-shock")!;
+    assert.equal(silCard.topic, "cardio");
+    assert.match(silCard.answer, /PDE-5/);
+    assert.match(silCard.answer, /cGMP/);
+    assert.match(silCard.answer, /guanylyl cyclase/i);
+    assert.match(silCard.answer, /vasodilation|shock/i);
+
+    const sacCard = cards.find((c) => c.id === "clin-sacubitril-neprilysin-angioedema")!;
+    assert.equal(sacCard.topic, "cardio");
+    assert.match(sacCard.answer, /neprilysin/i);
+    assert.match(sacCard.answer, /bradykinin/i);
+    assert.match(sacCard.answer, /angioedema/i);
+    assert.match(sacCard.answer, /36-hour washout/i);
+
+    const sgltCard = cards.find((c) => c.id === "clin-sglt2-tubuloglomerular-feedback")!;
+    assert.equal(sgltCard.topic, "electrolytes");
+    assert.match(sgltCard.answer, /macula densa/i);
+    assert.match(sgltCard.answer, /tubuloglomerular feedback/i);
+    assert.match(sgltCard.answer, /afferent/i);
+
+    const vmatCard = cards.find((c) => c.id === "clin-vmat2-vesicular-depletion")!;
+    assert.equal(vmatCard.topic, "neuro");
+    assert.match(vmatCard.answer, /VMAT2/);
+    assert.match(vmatCard.answer, /presynaptic/i);
+    assert.match(vmatCard.answer, /dopamine/i);
+    assert.match(vmatCard.answer, /tardive dyskinesia/i);
+
+    const aspCard = cards.find((c) => c.id === "clin-aspirin-platelet-covalent-acetylation")!;
+    assert.equal(aspCard.topic, "bedside");
+    assert.match(aspCard.answer, /Serine 529|Ser529/i);
+    assert.match(aspCard.answer, /COX-1/);
+    assert.match(aspCard.answer, /thromboxane/i);
+    assert.match(aspCard.answer, /anucleate/i);
+
+    // Verify the two new clinical rounds
+    const silRound = ROUNDS.find((r) => r.id === "r-icu-sildenafil-nitroglycerin-cgmp-shock");
+    assert.ok(silRound, "Round 'r-icu-sildenafil-nitroglycerin-cgmp-shock' must exist");
+    assert.equal(silRound.setting, "ward");
+    assert.equal(silRound.lane, "clinic");
+    assert.deepEqual(silRound.drugIds, ["sildenafil", "nitroglycerin"]);
+    assert.match(silRound.teach, /cGMP/);
+    assert.match(silRound.teach, /guanylyl cyclase/i);
+    assert.match(silRound.teach, /PDE-5/);
+    const silRoundText = `${silRound.stem} ${silRound.ask} ${silRound.teach}`;
+    assert.doesNotMatch(silRoundText, /prescribe\s+\d+\s*mg/i);
+    assert.doesNotMatch(silRoundText, /dispense\s+\d+\s*mg/i);
+    assert.doesNotMatch(silRoundText, /clinical decision support/i);
+
+    const rocRound = ROUNDS.find((r) => r.id === "r-or-rocuronium-sugammadex-chelation");
+    assert.ok(rocRound, "Round 'r-or-rocuronium-sugammadex-chelation' must exist");
+    assert.equal(rocRound.setting, "ward");
+    assert.equal(rocRound.lane, "clinic");
+    assert.deepEqual(rocRound.drugIds, ["rocuronium", "sugammadex"]);
+    assert.match(rocRound.teach, /cyclodextrin/i);
+    assert.match(rocRound.teach, /1:1/);
+    assert.match(rocRound.teach, /rocuronium/i);
+    assert.match(rocRound.teach, /muscarinic|bradycardia/i);
+    const rocRoundText = `${rocRound.stem} ${rocRound.ask} ${rocRound.teach}`;
+    assert.doesNotMatch(rocRoundText, /prescribe\s+\d+\s*mg/i);
+    assert.doesNotMatch(rocRoundText, /dispense\s+\d+\s*mg/i);
+    assert.doesNotMatch(rocRoundText, /clinical decision support/i);
   });
 });
 

@@ -1,14 +1,18 @@
 import { useMemo, useState } from "react";
 import {
+  Activity,
   AlertTriangle,
   ArrowRight,
   Check,
+  GitFork,
   Lock,
   Pill,
   Search,
   ShieldAlert,
   Sparkles,
 } from "lucide-react";
+import { ReceptorProfiler } from "./receptor-profiler";
+import { MechanismPathways } from "./mechanism-pathways";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
 import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
@@ -54,7 +58,9 @@ function foundingGateCopy(kind: "contraindications" | FoundingGateKind) {
 }
 
 export function Formulary() {
-  const [viewTab, setViewTab] = useState<"compounds" | "contraindications">("compounds");
+  const [viewTab, setViewTab] = useState<
+    "compounds" | "contraindications" | "receptors" | "pathways"
+  >("compounds");
 
   return (
     <div className="space-y-6">
@@ -101,9 +107,49 @@ export function Formulary() {
             {CONTRAINDICATED_CONDITIONS.length}
           </span>
         </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "receptors"}
+          onClick={() => setViewTab("receptors")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "receptors"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Activity className="size-4 shrink-0 text-amber-500" />
+          <span>Receptor Profiler</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "pathways"}
+          onClick={() => setViewTab("pathways")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "pathways"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <GitFork className="size-4 shrink-0 text-teal-500" />
+          <span>Mechanism Pathways</span>
+        </button>
       </div>
 
-      {viewTab === "compounds" ? <CompoundsShelf /> : <ContraindicatedConditionsView />}
+      {viewTab === "compounds" ? (
+        <CompoundsShelf />
+      ) : viewTab === "contraindications" ? (
+        <ContraindicatedConditionsView />
+      ) : viewTab === "receptors" ? (
+        <ReceptorProfiler />
+      ) : (
+        <MechanismPathways />
+      )}
     </div>
   );
 }

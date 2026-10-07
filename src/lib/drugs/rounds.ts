@@ -1489,6 +1489,28 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Digoxin-amiodarone P-gp inhibition · doubled serum concentrations · additive AV block",
   },
+  {
+    id: "r-icu-sildenafil-nitroglycerin-cgmp-shock",
+    title: "The angina episode and the unmentioned blue pill",
+    setting: "ward",
+    stem: "A 62-year-old presents to the emergency department with acute retrosternal chest pain and diaphoresis. The resuscitation team administers sublingual nitroglycerin for suspected acute coronary syndrome. Within minutes, the patient develops profound presyncope, with systolic blood pressure plummeting to 60 mmHg and severe bradycardia refractory to aggressive intravenous crystalloid resuscitation. A companion then reports the patient ingested sildenafil 4 hours prior.",
+    ask: "What synergistic intracellular signaling cascade caused this profound vasodilatory shock, and why are organic nitrates strictly contraindicated with PDE-5 inhibitors?",
+    teach: "Organic nitrates donate nitric oxide (NO) to activate soluble guanylyl cyclase (sGC), generating cyclic guanosine monophosphate (cGMP). Phosphodiesterase type 5 (PDE-5) is the primary enzyme that hydrolyzes cGMP in vascular smooth muscle. Sildenafil inhibits PDE-5, blocking cGMP degradation. When organic nitrates and PDE-5 inhibitors are co-administered, simultaneous stimulation of cGMP synthesis and blockade of cGMP breakdown produce massive, synergistic intracellular cGMP accumulation. This triggers unconstrained protein kinase G (PKG) activation, profound dephosphorylation of myosin light chains, and catastrophic systemic arteriolar and venous vasodilation unresponsive to standard fluid resuscitation. ACC/AHA and FDA labeling strictly contraindicate organic nitrates within 24 hours of sildenafil administration.",
+    drugIds: ["sildenafil", "nitroglycerin"],
+    lane: "clinic",
+    blurb: "Sildenafil-nitroglycerin cGMP accumulation · severe vasodilatory shock · organic nitrate contraindication",
+  },
+  {
+    id: "r-or-rocuronium-sugammadex-chelation",
+    title: "The rapid sequence emergence and the cyclodextrin ring",
+    setting: "ward",
+    stem: "A patient undergoing emergent surgical intervention with rapid sequence induction using rocuronium develops unexpected vocal cord edema and difficult post-extubation mask ventilation, requiring immediate complete neuromuscular blockade reversal. The anesthesia team administers sugammadex for rapid emergence.",
+    ask: "How does cyclodextrin guest-host chelation reverse neuromuscular blockade compared to traditional acetylcholinesterase inhibition?",
+    teach: "Sugammadex is a modified gamma-cyclodextrin designed with a lipophilic cavity and negatively charged side chains that form a tight 1:1 guest-host inclusion complex encapsulating rocuronium directly in plasma. This encapsulation creates a steep concentration gradient that rapidly draws free rocuronium away from neuromuscular junction nicotinic receptors into the intravascular compartment, restoring train-of-four recovery within minutes. Unlike neostigmine, sugammadex does not inhibit acetylcholinesterase, completely avoiding muscarinic receptor stimulation (severe bradycardia, bronchospasm, hypersalivation) and eliminating the need for co-administration of anticholinergic agents like glycopyrrolate or atropine.",
+    drugIds: ["rocuronium", "sugammadex"],
+    lane: "clinic",
+    blurb: "Sugammadex 1:1 cyclodextrin encapsulation · rocuronium chelation · zero muscarinic bradycardia",
+  },
 ];
 
 
