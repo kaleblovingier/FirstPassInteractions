@@ -38,7 +38,8 @@ export type FoundingGateKind =
   | "metabolites"
   | "stacks"
   | "export"
-  | "report";
+  | "report"
+  | "contraindications";
 
 export interface FoundingGateCopy {
   title: string;
@@ -92,6 +93,13 @@ export function foundingGateCopy(kind: FoundingGateKind): FoundingGateCopy {
         blurb:
           "The copyable interaction report, including smoking and metabolizer status, is a licensed surface. The free desk still shows the cards on the tray.",
         reason: `The full interaction report is a founding surface. ${FREE_FOUNDING}`,
+      };
+    case "contraindications":
+      return {
+        title: "Contraindicated conditions need founding",
+        blurb:
+          "Clinical disease states, organ impairment thresholds (e.g. CrCl < 30, Child-Pugh C), black-box warnings, and high-risk drug-condition collisions sit behind founding.",
+        reason: `Contraindicated disease conditions are a founding surface. ${FREE_FOUNDING}`,
       };
   }
 }

@@ -63,6 +63,7 @@ export const PLANS: Plan[] = [
       "Everything on the free desk",
       "Up to eight drugs on the desk",
       "Host factors: metabolizer status, smoking, alcohol pattern, route, age, kidney, pregnancy",
+      "Contraindicated disease & organ conditions matrix",
       "Enzyme atlas",
       "Metabolite maps and stack-load meters",
       "Full copyable interaction report",

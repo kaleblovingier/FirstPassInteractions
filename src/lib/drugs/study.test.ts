@@ -32,9 +32,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 53 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 59 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 53);
+    assert.equal(cards.length, 59);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -66,7 +66,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 53);
+    assert.equal(cards.length, 59);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -103,6 +103,8 @@ describe("study learning tools", () => {
       "r-clinic-dabigatran-capsule-crush-hemorrhage",
       "r-mat-bup-micro-induction-bernese",
       "r-street-xylazine-resuscitation-airway",
+      "r-ward-dasatinib-omeprazole-ph-collapse",
+      "r-clinic-gabapentin-ckd-myoclonic-coma",
     ];
 
     for (const rId of expectedRoundIds) {
@@ -196,7 +198,7 @@ describe("study learning tools", () => {
     }
   });
 
-  it("sub-topic categories cover all 53 clinical cards with balanced distribution", () => {
+  it("sub-topic categories cover all 59 clinical cards with balanced distribution", () => {
     const cards = clinicalCards();
     const topicIds = CLINICAL_TOPICS.map((t) => t.id);
 
@@ -218,6 +220,73 @@ describe("study learning tools", () => {
     for (const cardId of Object.keys(CLINICAL_TOPIC_MAP)) {
       const card = cards.find((c) => c.id === cardId);
       assert.ok(card, `Key ${cardId} in CLINICAL_TOPIC_MAP must exist in clinicalCards()`);
+    }
+  });
+
+  it("new clinical cards and rounds maintain strict educational and non-prescriptive posture", () => {
+    const newCardIds = [
+      "clin-renal-gabapentinoid-myoclonus",
+      "clin-beers-anticholinergic-fall-fracture",
+      "clin-dasatinib-ppi-gastric-ph",
+      "clin-ss-vs-nms-differentials",
+      "clin-hd-dialyzability-factors",
+      "clin-qtc-hypokalemia-herg-blockade",
+    ];
+    const cards = clinicalCards();
+    for (const id of newCardIds) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, `New card '${id}' must exist in clinicalCards()`);
+      assert.ok(card.choices && card.choices.length >= 4, `Card '${id}' must have at least 4 choices`);
+      assert.ok(card.correct, `Card '${id}' must define a correct choice`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card '${id}' correct choice must exist in choices`);
+      assert.ok(card.drugIds.length > 0, `Card '${id}' must reference drugIds`);
+      for (const drugId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[drugId], `Drug '${drugId}' in card '${id}' must exist in catalog`);
+      }
+      assert.equal(card.topic, CLINICAL_TOPIC_MAP[id], `Card '${id}' topic must match CLINICAL_TOPIC_MAP`);
+
+      const text = `${card.prompt} ${card.ask} ${card.answer} ${card.choices?.map((c) => c.label).join(" ") ?? ""}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /clinical decision support/i);
+    }
+
+    // Verify key citations are present in the new cards
+    const gabaCard = cards.find((c) => c.id === "clin-renal-gabapentinoid-myoclonus")!;
+    assert.match(gabaCard.answer, /KDIGO/);
+    assert.match(gabaCard.answer, /FDA labeling/);
+
+    const beersCard = cards.find((c) => c.id === "clin-beers-anticholinergic-fall-fracture")!;
+    assert.match(beersCard.prompt + beersCard.answer, /2023.*Beers/i);
+
+    const dasatCard = cards.find((c) => c.id === "clin-dasatinib-ppi-gastric-ph")!;
+    assert.match(dasatCard.answer, /FDA labeling/);
+
+    const hunterCard = cards.find((c) => c.id === "clin-ss-vs-nms-differentials")!;
+    assert.match(hunterCard.prompt + hunterCard.answer, /Hunter/i);
+
+    const hdCard = cards.find((c) => c.id === "clin-hd-dialyzability-factors")!;
+    assert.match(hdCard.answer, /Molecular Weight/i);
+    assert.match(hdCard.answer, /Protein Binding/i);
+    assert.match(hdCard.answer, /Volume of Distribution/i);
+    assert.match(hdCard.answer, /Water Solubility/i);
+
+    const qtcCard = cards.find((c) => c.id === "clin-qtc-hypokalemia-herg-blockade")!;
+    assert.match(qtcCard.answer, /hERG/i);
+    assert.match(qtcCard.answer, /IKr/);
+
+    const newRoundIds = [
+      "r-ward-dasatinib-omeprazole-ph-collapse",
+      "r-clinic-gabapentin-ckd-myoclonic-coma",
+    ];
+    for (const rId of newRoundIds) {
+      const round = ROUNDS.find((r) => r.id === rId);
+      assert.ok(round, `New round '${rId}' must exist in ROUNDS`);
+      const text = `${round.stem} ${round.ask} ${round.teach}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /clinical decision support/i);
     }
   });
 });

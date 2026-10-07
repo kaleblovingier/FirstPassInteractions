@@ -155,6 +155,104 @@ export function PlansPage() {
         })}
       </ul>
 
+      {/* Accepted Payment Methods */}
+      <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-6">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Direct & instant payment</p>
+            <h2 className="mt-1 font-serif text-xl tracking-tight text-fg">Accepted Payment Methods</h2>
+          </div>
+          <span className="font-mono text-xs text-accent">All payment rails directly on this desk</span>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          All payment methods are supported on the same page to avoid confusion. Choose instant automated card processing or your preferred manual rail below.
+        </p>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Credit / Debit Card */}
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <CreditCard className="size-4 shrink-0 text-accent" />
+                <span className="text-sm font-semibold text-fg">Credit / Debit Card</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Instant automatic key minting & activation via Stripe. No manual waiting required.
+              </p>
+            </div>
+            <div className="mt-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={unlock}
+                className="min-h-[44px] w-full text-xs"
+              >
+                Card Checkout
+              </Button>
+            </div>
+          </div>
+
+          {/* Venmo */}
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-fg">Venmo</span>
+                <span className="font-mono text-xs font-semibold text-accent">@{OPERATOR.venmo}</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Send ${COMMERCE.founding} founding payment to <span className="font-mono text-fg">@{OPERATOR.venmo}</span>. Operator issues signed key after clearing.
+              </p>
+            </div>
+            <div className="mt-3">
+              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs" asChild>
+                <a href={OPERATOR.venmoUrl} target="_blank" rel="noreferrer">
+                  Open Venmo (@{OPERATOR.venmo})
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          {/* Cash App */}
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-fg">Cash App</span>
+                <span className="font-mono text-xs font-semibold text-accent">${OPERATOR.cashApp}</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Send ${COMMERCE.founding} founding payment to <span className="font-mono text-fg">${OPERATOR.cashApp}</span>. Key delivered via text or email.
+              </p>
+            </div>
+            <div className="mt-3">
+              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs" asChild>
+                <a href={OPERATOR.cashAppUrl} target="_blank" rel="noreferrer">
+                  Open Cash App (${OPERATOR.cashApp})
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          {/* PayPal */}
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-fg">PayPal</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Send to <span className="font-mono text-fg break-all">{OPERATOR.paypal}</span>. Key issued to your PayPal email.
+              </p>
+            </div>
+            <div className="mt-3">
+              <Button variant="secondary" size="sm" className="min-h-[44px] w-full text-xs" asChild>
+                <a href={OPERATOR.paypalUrl} target="_blank" rel="noreferrer">
+                  Open PayPal
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-5">
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">How founding unlocks</p>
         <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay, get your key, Redeem</h2>
@@ -197,11 +295,11 @@ export function PlansPage() {
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
           <div className="mx-auto flex max-w-md gap-2">
             {founding ? null : (
-              <Button className="flex-1" onClick={unlock}>
+              <Button className="flex-1 min-h-[44px]" onClick={unlock}>
                 Founding · ${COMMERCE.founding} once
               </Button>
             )}
-            <Button variant="secondary" className={founding ? "flex-1" : "shrink-0"} onClick={redeem}>
+            <Button variant="secondary" className={cn("min-h-[44px]", founding ? "flex-1" : "shrink-0")} onClick={redeem}>
               <KeyRound className="size-4" />
               Redeem key
             </Button>
@@ -316,7 +414,7 @@ export function CheckoutDrawer() {
       <div
         role="dialog"
         aria-labelledby="checkout-title"
-        className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-xl bg-surface p-5 shadow-[var(--shadow-border)] sm:rounded-xl"
+        className="max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-xl bg-surface p-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] shadow-[var(--shadow-border)] sm:max-h-[88dvh] sm:rounded-xl sm:p-6"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -327,11 +425,11 @@ export function CheckoutDrawer() {
           </div>
           <button
             type="button"
-            className="flex size-10 items-center justify-center rounded-sm text-muted hover:bg-bg-sunken hover:text-fg"
+            className="flex size-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-muted hover:bg-bg-sunken hover:text-fg"
             onClick={close}
             aria-label="Close checkout"
           >
-            <X className="size-4" />
+            <X className="size-5" />
           </button>
         </div>
         {checkout.reason ? <p className="mt-3 text-sm leading-relaxed text-muted">{checkout.reason}</p> : null}
@@ -352,93 +450,163 @@ export function CheckoutDrawer() {
           ))}
         </ol>
 
-        <p className="mt-4 text-sm leading-relaxed text-muted">
-          {cardLive
-            ? "Pay with card on Stripe. A signed key is minted only after Stripe confirms payment — there is no fake checkout. Prefer Venmo, Cash App, or PayPal? Use the buttons below, then paste your key when it arrives."
-            : "Card checkout is not live on this desk yet. Pay with Venmo, Cash App, or PayPal below. After payment clears, you get a signed key by email or text — paste it under Redeem. Nothing unlocks until that key verifies."}
+        <p className="mt-4 text-xs leading-relaxed text-muted">
+          All payment pathways are listed below on this same view. Choose instant automated card processing via Stripe or direct rails with Venmo, Cash App, or PayPal.
         </p>
 
-        {cardLive ? (
-          <>
-            <div className="mt-4">
-              <label htmlFor="checkout-email" className="block text-xs font-medium text-muted">
-                Receipt & license key email (optional)
-              </label>
-              <input
-                id="checkout-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@clinic.org"
-                className="mt-1 h-9 w-full rounded-md bg-surface-2 px-3 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
-              />
+        {/* Section A: Instant Card Checkout (Stripe) */}
+        <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-xs font-bold text-accent-fg">
+                A
+              </span>
+              <h3 className="text-sm font-semibold text-fg">
+                Section A · Instant Card Checkout (Stripe)
+              </h3>
             </div>
-            <Button className="mt-3 w-full" onClick={() => void payCard()} disabled={cardBusy}>
-              {cardBusy ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
-              Pay ${amount} with card
-            </Button>
-            {stripeMode === "test" ? (
-              <p className="mt-2 text-xs text-warn">Stripe is in test mode. No live charge.</p>
-            ) : (
-              <p className="mt-2 text-xs text-ok">
-                Stripe mints a signed key only after the charge clears. You land back on this desk.
-              </p>
-            )}
-          </>
-        ) : (
-          <p className="mt-5 rounded-md bg-bg-sunken px-3 py-2 text-xs text-muted">
-            {stripeMode === null
-              ? "Checking card checkout…"
-              : "Card button hidden until Stripe is configured. Use Venmo, Cash App, or PayPal below."}
-          </p>
-        )}
+            <span className="rounded bg-ok-soft px-2 py-0.5 font-mono text-[11px] font-medium text-ok">
+              Auto Key Minting
+            </span>
+          </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {PAY_RAILS.map((rail) => (
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            Instant automatic key minting & activation via Stripe. No manual waiting required.
+          </p>
+
+          {cardLive ? (
+            <div className="mt-3 space-y-3">
+              <div>
+                <label htmlFor="checkout-email" className="block text-xs font-medium text-muted">
+                  Receipt & license key email (optional)
+                </label>
+                <input
+                  id="checkout-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@clinic.org"
+                  className="mt-1 min-h-[44px] w-full rounded-md bg-surface px-3 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                />
+              </div>
+              <Button
+                className="min-h-[44px] w-full"
+                onClick={() => void payCard()}
+                disabled={cardBusy}
+              >
+                {cardBusy ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
+                Pay ${amount} with card · Instant unlock
+              </Button>
+              {stripeMode === "test" ? (
+                <p className="text-xs text-warn">Stripe is in test mode. No live charge.</p>
+              ) : (
+                <p className="text-xs text-ok">
+                  Stripe mints a signed key immediately after the charge clears, landing you back on this desk.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="mt-3 rounded-md bg-bg-sunken px-3 py-2.5 text-xs text-muted">
+              {stripeMode === null
+                ? "Checking card checkout…"
+                : "Card checkout is not live on this desk yet. Use Section B below for direct payment via Venmo, Cash App, or PayPal."}
+            </div>
+          )}
+        </section>
+
+        {/* Section B: Direct Manual Rails (Venmo, Cash App, PayPal) */}
+        <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-xs font-bold text-accent-fg">
+                B
+              </span>
+              <h3 className="text-sm font-semibold text-fg">
+                Section B · Direct Manual Rails (Venmo, Cash App, PayPal)
+              </h3>
+            </div>
+            <span className="font-mono text-xs font-semibold text-fg">
+              ${amount} once
+            </span>
+          </div>
+
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            Send ${amount} directly with your preferred app. After payment clears, the operator issues your signed key by email or text.
+          </p>
+
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {/* Venmo */}
             <Button
-              key={rail.id}
               variant={cardLive ? "secondary" : "default"}
-              className="w-full"
+              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center"
               asChild
             >
-              <a href={rail.href} target="_blank" rel="noreferrer">
-                {rail.label}
+              <a href={OPERATOR.venmoUrl} target="_blank" rel="noreferrer">
+                <span className="text-xs font-semibold">Venmo</span>
+                <span className="font-mono text-[11px] opacity-80">@{OPERATOR.venmo}</span>
               </a>
             </Button>
-          ))}
-        </div>
-        <div className="mt-3 space-y-1.5 rounded-md bg-bg-sunken px-3 py-3 text-sm leading-relaxed text-muted">
-          <p>
-            {life
-              ? cardLive
-                ? `Founding is $${COMMERCE.founding} once. Card is the default; Venmo, Cash App, and PayPal still work.`
-                : `Founding is $${COMMERCE.founding} once. Pay with Venmo, Cash App, or PayPal above, then wait for your key.`
-              : cardLive
-                ? `Pay $${amount} with card, or use Venmo, Cash App, or PayPal.`
-                : `Pay $${amount} with Venmo, Cash App, or PayPal above. Key arrives after it clears.`}
-          </p>
-          <p className="text-xs">
-            Handles: {OPERATOR.payLine}
-          </p>
-          <p className="text-xs">
-            Write: {OPERATOR.email} · {OPERATOR.phone}
-            <span className="mt-0.5 block">{OPERATOR.social.join(" · ")}</span>
-          </p>
-        </div>
 
-        <Button variant="secondary" className="mt-3 w-full" onClick={() => void copyRequest()}>
-          {copied ? "Request copied" : "Copy a license request"}
-        </Button>
+            {/* Cash App */}
+            <Button
+              variant={cardLive ? "secondary" : "default"}
+              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center"
+              asChild
+            >
+              <a href={OPERATOR.cashAppUrl} target="_blank" rel="noreferrer">
+                <span className="text-xs font-semibold">Cash App</span>
+                <span className="font-mono text-[11px] opacity-80">${OPERATOR.cashApp}</span>
+              </a>
+            </Button>
 
-        <div className="mt-5 rounded-lg border border-border px-3 py-3">
-          <label className="block text-xs font-medium text-fg" htmlFor="license-key">
-            Step 3 · Redeem your key
-          </label>
-          <p className="mt-1 text-[11px] leading-relaxed text-muted">
-            Paste the signed key from email or text. Keys look like FP-LIFE-…. Nothing unlocks until
-            Redeem succeeds — the field stays empty until you paste one.
+            {/* PayPal */}
+            <Button
+              variant={cardLive ? "secondary" : "default"}
+              className="h-auto min-h-[48px] w-full flex-col py-2.5 text-center"
+              asChild
+            >
+              <a href={OPERATOR.paypalUrl} target="_blank" rel="noreferrer">
+                <span className="text-xs font-semibold">PayPal</span>
+                <span className="max-w-full truncate font-mono text-[10px] opacity-80">FirstPassInteractions</span>
+              </a>
+            </Button>
+          </div>
+
+          <div className="mt-3 space-y-1 rounded-md bg-surface px-3 py-2.5 text-xs leading-relaxed text-muted">
+            <p className="font-medium text-fg">Clear handles for your payment note:</p>
+            <p className="font-mono text-[11px]">
+              Venmo: @{OPERATOR.venmo} · Cash App: ${OPERATOR.cashApp} · PayPal: {OPERATOR.paypal}
+            </p>
+            <p className="text-[11px]">
+              Operator: {OPERATOR.name} · {OPERATOR.email} · {OPERATOR.phone}
+            </p>
+          </div>
+
+          <Button
+            variant="secondary"
+            className="mt-3 min-h-[44px] w-full text-xs"
+            onClick={() => void copyRequest()}
+          >
+            {copied ? "Request copied to clipboard" : "Copy a license request note"}
+          </Button>
+        </section>
+
+        {/* Section C: Step 3 · Redeem Signed Key */}
+        <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
+          <div className="flex items-center gap-2">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-bold text-bg">
+              C
+            </span>
+            <label className="text-sm font-semibold text-fg" htmlFor="license-key">
+              Step 3 · Redeem Signed Key
+            </label>
+          </div>
+
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            Paste the signed key from your email, text, or receipt. Keys look like <span className="font-mono text-fg">FP-LIFE-…</span>. Nothing unlocks until Redeem succeeds — the field stays empty until you paste one.
           </p>
-          <div className="mt-2.5 flex gap-2">
+
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
             <Input
               id="license-key"
               value={key}
@@ -447,6 +615,7 @@ export function CheckoutDrawer() {
               spellCheck={false}
               placeholder="Paste FP-LIFE-… here"
               aria-invalid={Boolean(err) || undefined}
+              className="min-h-[44px] flex-1 font-mono text-sm"
               onChange={(e) => {
                 setKey(e.target.value);
                 if (err) setErr("");
@@ -456,25 +625,34 @@ export function CheckoutDrawer() {
                 if (e.key === "Enter") void redeem();
               }}
             />
-            <Button onClick={() => void redeem()} disabled={busy || !key.trim()} className="shrink-0">
+            <Button
+              onClick={() => void redeem()}
+              disabled={busy || !key.trim()}
+              className="min-h-[44px] shrink-0 sm:w-28"
+            >
               {busy ? <Loader2 className="size-4 animate-spin" /> : null}
               Redeem
             </Button>
           </div>
+
           {!key.trim() && !err && !ok ? (
             <p className="mt-2 text-[11px] text-muted">
-              Waiting for a key — if you just paid, hang tight for email or text from the operator.
+              Waiting for a key — if you just paid via manual rails, hang tight for email or text from the operator.
             </p>
           ) : null}
-          {err ? <p className="mt-2 text-sm text-danger" role="alert">{err}</p> : null}
-          {ok ? <p className="mt-2 text-sm text-ok" role="status">{ok}</p> : null}
-        </div>
+          {err ? <p className="mt-2 text-xs font-medium text-danger" role="alert">{err}</p> : null}
+          {ok ? <p className="mt-2 text-xs font-medium text-ok" role="status">{ok}</p> : null}
+        </section>
 
         {checkout.plan !== "lab" || checkout.interval === "life" ? (
           previewUsed ? (
-            <p className="mt-3 text-sm text-muted">The 1-day preview was already used on this browser.</p>
+            <p className="mt-4 text-center text-xs text-muted">The 1-day preview was already used on this browser.</p>
           ) : (
-            <button type="button" className="mt-3 h-10 w-full text-sm text-muted hover:text-fg" onClick={startPreview}>
+            <button
+              type="button"
+              className="mt-4 flex min-h-[44px] w-full items-center justify-center text-center text-xs text-muted hover:text-fg"
+              onClick={startPreview}
+            >
               Prefer to look first? Start a 1-day preview
             </button>
           )

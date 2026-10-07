@@ -1440,6 +1440,28 @@ export const ROUNDS: Round[] = [
     lane: "street",
     blurb: "Xylazine alpha-2 sedation · naloxone ceiling · airway and hemodynamic support",
   },
+  {
+    id: "r-ward-dasatinib-omeprazole-ph-collapse",
+    title: "The chronic myeloid leukemia relapse and the daily Prilosec",
+    setting: "ward",
+    stem: "A 54-year-old with chronic myeloid leukemia on maintenance dasatinib therapy develops worsening heartburn and self-initiates over-the-counter omeprazole once daily. Three months later, routine BCR-ABL1 transcript testing shows loss of major molecular response, raising concern for secondary resistance. The patient reports separating the medications by 10 hours daily, believing the time window prevented interaction.",
+    ask: "Why did separating administration times fail to prevent dasatinib therapeutic failure, and what is the pharmacological basis of this interaction?",
+    teach: "Dasatinib requires acidic gastric pH for tablet dissolution. Omeprazole suppresses gastric acid for 24+ hours, reducing dasatinib AUC by >60% and precipitating treatment failure. Separating doses does not resolve the interaction; H2RA or antacids must be used with careful timing. Proton pump inhibitors irreversibly inactivate parietal H+/K+-ATPase pumps, sustaining hypochlorhydria (pH > 4) throughout the entire 24-hour dosing cycle. Because dasatinib aqueous solubility collapses in non-acidic environments, tablet dissolution fails, causing marked under-exposure and disease relapse regardless of dose timing separation. FDA labeling advises avoiding PPIs and H2RAs with dasatinib; if antacids are clinically necessary, short-acting formulations separated by at least 2 hours may be utilized. Open the Onc tab for pH collision rails.",
+    drugIds: ["dasatinib", "omeprazole"],
+    lane: "clinic",
+    blurb: "Dasatinib-omeprazole pH collapse · >60% AUC reduction · 24h PPI acid suppression",
+  },
+  {
+    id: "r-clinic-gabapentin-ckd-myoclonic-coma",
+    title: "The unadjusted gabapentin in diabetic nephropathy",
+    setting: "clinic",
+    stem: "A 68-year-old with diabetic nephropathy and hypertension managed with lisinopril is started on gabapentin for painful diabetic peripheral neuropathy. Over two weeks, as baseline renal function declines to an eGFR of 20 mL/min without medication adjustment, the patient develops profound lethargy, ataxia, asterixis, and multifocal myoclonus, prompting emergency hospital transfer for suspected acute stroke or uremic encephalopathy.",
+    ask: "What pharmacokinetic property of gabapentin caused this acute neurotoxic syndrome in declining eGFR, and how does clearance differ from hepatically metabolized anticonvulsants?",
+    teach: "Gabapentin is cleared 100% renally by glomerular filtration unchanged. In declining eGFR without proportional dose extension, parent drug accumulates massively, precipitating acute myoclonus, asterixis, and lethargy frequently misdiagnosed as stroke or uremic encephalopathy. Unlike anticonvulsants eliminated via hepatic CYP or UGT enzymes, gabapentin exhibits zero hepatic metabolism and negligible protein binding. Systemic clearance is directly proportional to creatinine clearance; elimination half-life extends from ~6 hours to over 30–40 hours in severe renal impairment. In declining kidney function without proportional dose reduction and extended dosing intervals (per KDIGO and FDA labeling), supratherapeutic drug accumulation provokes profound central neurotoxicity. Gabapentin is readily dialyzable if emergent clearance is required. Open the Renal tab for GFR adjustment principles.",
+    drugIds: ["gabapentin", "lisinopril"],
+    lane: "clinic",
+    blurb: "Gabapentin 100% renal elimination · GFR accumulation · neurotoxicity and myoclonus",
+  },
 ];
 
 

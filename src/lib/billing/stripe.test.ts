@@ -92,6 +92,38 @@ describe("stripe billing functionality", () => {
     assert.equal(labVer.lifetime, false);
   });
 
+  it("verifies mintKeyFromPaid and verifyKey for Founding lifetime and Pro licenses with deterministic signatures and plan unlocks", () => {
+    const foundingSession = "cs_live_founding_session_deterministic_789";
+    const proSession = "cs_live_pro_session_deterministic_101";
+
+    // Founding lifetime ("life")
+    const foundingKey1 = mintKeyFromPaid("life", foundingSession);
+    const foundingKey2 = mintKeyFromPaid("life", foundingSession);
+    assert.equal(foundingKey1, foundingKey2, "Founding lifetime key must be deterministic");
+    assert.match(foundingKey1, /^FP-LIFE-[0-9A-F]{8}-[0-9A-F]{8}$/);
+
+    const foundingResult = verifyKey(foundingKey1);
+    assert.equal(foundingResult.ok, true);
+    assert.equal(foundingResult.lifetime, true, "Founding key grants lifetime status");
+    assert.equal(foundingResult.plan, "lab", "Founding key unlocks lab plan features");
+    assert.equal(foundingResult.license, foundingKey1);
+
+    // Pro license ("pro")
+    const proKey1 = mintKeyFromPaid("pro", proSession);
+    const proKey2 = mintKeyFromPaid("pro", proSession);
+    assert.equal(proKey1, proKey2, "Pro key must be deterministic");
+    assert.match(proKey1, /^FP-PRO-[0-9A-F]{8}-[0-9A-F]{8}$/);
+
+    const proResult = verifyKey(proKey1);
+    assert.equal(proResult.ok, true);
+    assert.equal(proResult.lifetime, false, "Pro key is not lifetime");
+    assert.equal(proResult.plan, "pro", "Pro key unlocks pro plan features");
+    assert.equal(proResult.license, proKey1);
+
+    // Distinct sessions and plan keys must differ
+    assert.notEqual(foundingKey1, proKey1);
+  });
+
   it("claimSession rejects invalid or malformed session IDs", async () => {
     // Non-Stripe session ID
     const res1 = await claimSession("invalid_session_id");
