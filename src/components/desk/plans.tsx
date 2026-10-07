@@ -27,6 +27,7 @@ export function PlansPage() {
   const license = useDesk((s) => s.license);
   const lifetime = useDesk((s) => s.lifetime);
   const previewUntil = useDesk((s) => s.previewUntil);
+  const previewUsed = useDesk((s) => s.previewUsed);
   const checkoutOpen = useDesk((s) => s.checkout.open);
   const openCheckout = useDesk((s) => s.openCheckout);
   const startPreview = useDesk((s) => s.startPreview);
@@ -71,13 +72,13 @@ export function PlansPage() {
                 <KeyRound className="size-4" />
                 Have a key? Redeem it
               </Button>
-              {current === "free" ? (
+              {current === "free" && !previewUsed ? (
                 <button
                   type="button"
                   onClick={startPreview}
                   className="h-10 text-sm text-muted underline-offset-4 hover:text-fg hover:underline sm:px-2"
                 >
-                  Or try 7 days free
+                  Or try 1 day free
                 </button>
               ) : null}
             </div>
@@ -88,7 +89,7 @@ export function PlansPage() {
       {current !== "free" ? (
         <p className="rounded-lg bg-ok-soft px-4 py-3 text-sm text-ok">
           {previewing
-            ? "Your 7-day preview is on — host factors and the enzyme atlas are open while it lasts."
+            ? "Your 1-day preview is on — host factors and the enzyme atlas are open while it lasts."
             : founding
               ? "Founding is live — host factors, enzyme atlas, metabolite maps, full report, and export are yours."
               : "Your key is live — host factors and the enzyme atlas are open on this desk."}
@@ -216,6 +217,7 @@ export function CheckoutDrawer() {
   const close = useDesk((s) => s.closeCheckout);
   const activate = useDesk((s) => s.activateLicense);
   const startPreview = useDesk((s) => s.startPreview);
+  const previewUsed = useDesk((s) => s.previewUsed);
   const [busy, setBusy] = useState(false);
   const [cardBusy, setCardBusy] = useState(false);
   const [key, setKey] = useState("");
@@ -469,9 +471,13 @@ export function CheckoutDrawer() {
         </div>
 
         {checkout.plan !== "lab" || checkout.interval === "life" ? (
-          <button type="button" className="mt-3 h-10 w-full text-sm text-muted hover:text-fg" onClick={startPreview}>
-            Prefer to look first? Start a 7-day preview
-          </button>
+          previewUsed ? (
+            <p className="mt-3 text-sm text-muted">The 1-day preview was already used on this browser.</p>
+          ) : (
+            <button type="button" className="mt-3 h-10 w-full text-sm text-muted hover:text-fg" onClick={startPreview}>
+              Prefer to look first? Start a 1-day preview
+            </button>
+          )
         ) : null}
       </div>
     </div>

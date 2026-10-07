@@ -1173,11 +1173,11 @@ function StatsCard({
   cap: number;
 }) {
   const previewing = Boolean(previewUntil && Date.now() < previewUntil && plan === "pro" && !license);
-  const previewDays = previewUntil ? Math.max(0, Math.ceil((previewUntil - Date.now()) / 86_400_000)) : 0;
+  const previewLeft = previewLabel(previewUntil);
   const licenseLabel = lifetime
     ? "Founding"
     : previewing
-      ? `Preview · ${previewDays}d`
+      ? `Preview · ${previewLeft}`
       : PLAN_BY_ID[plan].name;
   return (
     <div className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
@@ -1200,6 +1200,22 @@ function StatsCard({
       </div>
     </div>
   );
+}
+
+function previewLabel(until: number | null) {
+  if (!until) return "";
+  const ms = until - Date.now();
+  if (ms <= 0) return "0m";
+  if (ms >= 24 * 3_600_000) return `${Math.ceil(ms / 86_400_000)}d`;
+  let hours = Math.floor(ms / 3_600_000);
+  let mins = Math.ceil((ms % 3_600_000) / 60_000);
+  if (mins >= 60) {
+    hours += 1;
+    mins = 0;
+  }
+  if (hours >= 1 && mins > 0) return `${hours}h ${mins}m`;
+  if (hours >= 1) return `${hours}h`;
+  return `${Math.max(1, mins)}m`;
 }
 
 function Stat({ k, v }: { k: string; v: string }) {

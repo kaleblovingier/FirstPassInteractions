@@ -25,6 +25,7 @@ export function Paywall({
 }) {
   const openCheckout = useDesk((s) => s.openCheckout);
   const startPreview = useDesk((s) => s.startPreview);
+  const previewUsed = useDesk((s) => s.previewUsed);
   const setView = useDesk((s) => s.setView);
   const copy = foundingGateCopy(gate);
   const heading = title ?? copy.title;
@@ -63,9 +64,11 @@ export function Paywall({
           >
             Plans
           </Button>
-          <Button size="sm" variant="secondary" onClick={startPreview}>
-            Try 7 days free
-          </Button>
+          {previewUsed ? null : (
+            <Button size="sm" variant="secondary" onClick={startPreview}>
+              Try 1 day free
+            </Button>
+          )}
         </div>
         <p className="max-w-xs text-[11px] leading-relaxed text-muted">
           {FOUNDING_PATH_SHORT} · {PAY_RAILS.map((r) => `${r.label} ${r.handle}`).join(" · ")}

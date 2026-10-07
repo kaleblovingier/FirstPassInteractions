@@ -22,12 +22,46 @@ export function Formulary() {
   const plan = usePlan();
   const cap = maxDrugs(plan);
   const [family, setFamily] = useState<FamilyId>("all");
+  const [shelf, setShelf] = useState("");
   const [q, setQ] = useState("");
+
+  const inFamily = useMemo(
+    () => DRUGS.filter((d) => family === "all" || familyOf(d) === family),
+    [family],
+  );
+
+  const shelves = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const d of inFamily) {
+      if (!d.cls) continue;
+      map.set(d.cls, (map.get(d.cls) ?? 0) + 1);
+    }
+    return [...map.entries()]
+      .filter(([, n]) => n > 1)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 14)
+      .map(([cls, n]) => ({ cls, n }));
+  }, [inFamily]);
+
+  const shelfLine = useMemo(() => {
+    if (!shelf) return "";
+    const members = inFamily.filter((d) => d.cls === shelf);
+    const tally = new Map<string, number>();
+    for (const d of members) {
+      for (const e of d.enzymes) {
+        const key = e.kind === "substrate" ? `${e.enzyme} substrate` : `${e.strength} ${e.enzyme} ${e.kind}`;
+        tally.set(key, (tally.get(key) ?? 0) + 1);
+      }
+    }
+    const top = [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+    if (!top || top[1] < 2) return `${members.length} on the ${shelf} shelf. No shared enzyme role on this map. Not a collision.`;
+    return `${top[1]} of ${members.length} on the ${shelf} shelf carry ${top[0]}. Not a collision.`;
+  }, [inFamily, shelf]);
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return DRUGS.filter((d) => {
-      if (family !== "all" && familyOf(d) !== family) return false;
+    return inFamily.filter((d) => {
+      if (shelf && d.cls !== shelf) return false;
       if (!needle) return true;
       return (
         d.name.toLowerCase().includes(needle) ||
@@ -37,7 +71,7 @@ export function Formulary() {
         d.enzymes.some((e) => e.enzyme.toLowerCase().includes(needle.replace(/\s+/g, "")))
       );
     }).sort((a, b) => a.name.localeCompare(b.name));
-  }, [family, q]);
+  }, [inFamily, shelf, q]);
 
   const counts = useMemo(() => {
     const map: Record<string, number> = { all: DRUGS.length };
@@ -48,7 +82,7 @@ export function Formulary() {
     return map;
   }, []);
 
-  const hasFilter = family !== "all" || q.trim().length > 0;
+  const hasFilter = family !== "all" || shelf.length > 0 || q.trim().length > 0;
   const freeCapNote =
     plan === "free"
       ? `Up to ${cap} stay free on the desk.`
@@ -56,11 +90,13 @@ export function Formulary() {
 
   function clearFilter() {
     setQ("");
+    setShelf("");
     setFamily("all");
   }
 
   function browseAll() {
     setQ("");
+    setShelf("");
     setFamily("all");
   }
 
@@ -100,7 +136,10 @@ export function Formulary() {
           <button
             key={f.id}
             type="button"
-            onClick={() => setFamily(f.id)}
+            onClick={() => {
+              setShelf("");
+              setFamily(f.id);
+            }}
             className={cn(
               "h-10 rounded-full px-3 text-xs font-medium",
               family === f.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
@@ -111,6 +150,41 @@ export function Formulary() {
           </button>
         ))}
       </div>
+
+      {shelves.length > 0 ? (
+        <div className="space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">Class shelves</p>
+          <div className="flex flex-wrap gap-1">
+            <button
+              type="button"
+              onClick={() => setShelf("")}
+              aria-pressed={shelf === ""}
+              className={cn(
+                "h-10 rounded-full px-3 text-xs font-medium",
+                shelf === "" ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+              )}
+            >
+              All classes
+            </button>
+            {shelves.map((row) => (
+              <button
+                key={row.cls}
+                type="button"
+                onClick={() => setShelf(row.cls)}
+                aria-pressed={shelf === row.cls}
+                className={cn(
+                  "h-10 rounded-full px-3 text-xs font-medium",
+                  shelf === row.cls ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+                )}
+              >
+                {row.cls}
+                <span className="ml-1.5 font-mono tabular-nums">{row.n}</span>
+              </button>
+            ))}
+          </div>
+          {shelfLine ? <p className="text-xs leading-relaxed text-muted">{shelfLine}</p> : null}
+        </div>
+      ) : null}
 
       <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 bg-bg/95 px-1 py-2 backdrop-blur-sm">
         <p className="text-xs text-muted">
@@ -172,6 +246,7 @@ export function Formulary() {
                   type="button"
                   onClick={() => {
                     setQ("");
+                    setShelf("");
                     setFamily(id);
                   }}
                   className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"

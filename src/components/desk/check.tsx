@@ -1,8 +1,8 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
-import { DRUG_BY_ID } from "@/lib/drugs/catalog";
+import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
-import { clockForFinding } from "@/lib/drugs/cyp-protocol";
+import { clockForFinding, FDA_GRADES } from "@/lib/drugs/cyp-protocol";
 import { conditionLanes, foodBeside, sameShelfGroups } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { maxDrugs } from "@/lib/billing/plans";
@@ -168,10 +168,25 @@ function extraNote(rows: Finding[]) {
   return rest > 0 ? `also ${named} · +${rest}` : `also ${named}`;
 }
 
+function othersOnShelf(ids: string[], cls: string) {
+  const on = new Set(ids);
+  return DRUGS.filter((d) => d.kind === "drug" && d.cls === cls && !on.has(d.id))
+    .map((d) => d.name)
+    .sort((a, b) => a.localeCompare(b));
+}
+
 function gradeOf(f: Finding) {
   const word = f.mechanism.split(" ")[0]?.toLowerCase();
   if (word === "strong" || word === "moderate" || word === "weak") return word;
   return "";
+}
+
+function foldLine(f: Finding) {
+  const grade = gradeOf(f);
+  if (grade !== "strong" && grade !== "moderate" && grade !== "weak") return "";
+  const kind = f.tags.includes("inducer") ? "inducer" : f.tags.includes("inhibitor") ? "inhibitor" : "";
+  if (!kind) return "";
+  return FDA_GRADES[kind][grade].fold;
 }
 
 function sourceOf(f: Finding) {
@@ -424,14 +439,21 @@ export function CheckBoard({
             })
             .filter((cell): cell is NonNullable<typeof cell> => Boolean(cell))
             .slice(0, 4)}
-          shelves={shelfGroups.map((group) => ({
-            key: group.cls,
-            title: group.names.join(" · "),
-            line:
-              group.names.length > 2
-                ? `These are on the ${group.cls} shelf. Not a collision and not a clearance.`
-                : `Both are on the ${group.cls} shelf. Not a collision and not a clearance.`,
-          }))}
+          shelves={shelfGroups.map((group) => {
+            const rest = othersOnShelf(ids, group.cls);
+            const shown = rest.slice(0, 3).join(", ");
+            return {
+              key: group.cls,
+              title: group.names.join(" · "),
+              line:
+                group.names.length > 2
+                  ? `These are on the ${group.cls} shelf. Not a collision and not a clearance.`
+                  : `Both are on the ${group.cls} shelf. Not a collision and not a clearance.`,
+              also: rest.length
+                ? `Also on this shelf, not on the desk: ${shown}${rest.length > 3 ? ` · +${rest.length - 3}` : ""}. Not a suggestion to add one.`
+                : "",
+            };
+          })}
           onOpen={(id) => {
             setTier("all");
             setShowAll(true);
@@ -653,7 +675,7 @@ function PairGrid({
   beside?: GridCell[];
   besideHidden?: number;
   hosts?: GridCell[];
-  shelves?: { key: string; title: string; line: string }[];
+  shelves?: { key: string; title: string; line: string; also?: string }[];
   onOpen: (id: string) => void;
 }) {
   if (hits.length + blanks.length < 2 && beside.length === 0 && hosts.length === 0 && shelves.length === 0) return null;
@@ -694,6 +716,7 @@ function PairGrid({
                 <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">Same shelf</span>
                 <span className="mt-1 block text-xs leading-snug text-fg">{cell.title}</span>
                 <span className="mt-0.5 block text-[11px] leading-snug text-muted">{cell.line}</span>
+                {cell.also ? <span className="mt-1 block text-[11px] leading-snug text-subtle">{cell.also}</span> : null}
               </div>
             ))}
           </div>
@@ -909,6 +932,9 @@ function CheckRow({
             Mechanism: {finding.mechanism}
             {finding.effect ? ` · ${finding.effect}` : ""}
           </p>
+          {foldLine(finding) ? (
+            <p className="text-xs leading-relaxed text-muted">FDA fold: {foldLine(finding)}. Not a milligram.</p>
+          ) : null}
           <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Sources to check</p>
           <div className="flex flex-wrap gap-2">
             {basis.map((b) =>

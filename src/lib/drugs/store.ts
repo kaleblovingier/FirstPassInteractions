@@ -60,6 +60,8 @@ interface DeskState {
   license: string | null;
   lifetime: boolean;
   previewUntil: number | null;
+  /** True after a preview has been started on this browser. Not cleared by returning to free. */
+  previewUsed: boolean;
   justActivated: boolean;
   hcpAck: boolean;
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
@@ -117,6 +119,7 @@ export const useDesk = create<DeskState>()(
       license: null,
       lifetime: false,
       previewUntil: null,
+      previewUsed: false,
       justActivated: false,
       hcpAck: false,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
@@ -311,13 +314,16 @@ export const useDesk = create<DeskState>()(
       },
       closeCheckout: () => set({ checkout: { ...get().checkout, open: false } }),
       setCheckoutInterval: (interval) => set({ checkout: { ...get().checkout, interval } }),
-      startPreview: () =>
+      startPreview: () => {
+        if (get().previewUsed) return;
         set({
-          previewUntil: Date.now() + 7 * 24 * 60 * 60 * 1000,
+          previewUsed: true,
+          previewUntil: Date.now() + 24 * 60 * 60 * 1000,
           checkout: { ...get().checkout, open: false },
           view: "desk",
           justActivated: false,
-        }),
+        });
+      },
       activateLicense: ({ plan, license, lifetime }) =>
         set({
           plan: plan === "lab" ? "lab" : "pro",
@@ -362,6 +368,7 @@ export const useDesk = create<DeskState>()(
           studyMarks: p.studyMarks && typeof p.studyMarks === "object" ? p.studyMarks : {},
           justActivated: false,
           hcpAck: Boolean(p.hcpAck),
+          previewUsed: Boolean(p.previewUsed) || typeof p.previewUntil === "number",
         };
       },
       partialize: (s) => ({
@@ -380,6 +387,7 @@ export const useDesk = create<DeskState>()(
         license: s.license,
         lifetime: s.lifetime,
         previewUntil: s.previewUntil,
+        previewUsed: s.previewUsed,
         hcpAck: s.hcpAck,
       }),
     },
