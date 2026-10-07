@@ -500,6 +500,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-ivabradine-if-hcn-channel": "cardio",
   "clin-sildenafil-nitrate-cgmp-shock": "cardio",
   "clin-sacubitril-neprilysin-angioedema": "cardio",
+  "clin-amiodarone-thyroid-mechanisms": "cardio",
 
   // Endocrine & SGLT2
   "clin-steroid-equiv-potency": "endocrine",
@@ -524,6 +525,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-hd-dialyzability-factors": "electrolytes",
   "clin-lithium-hctz-nsaid-clearance": "electrolytes",
   "clin-sglt2-tubuloglomerular-feedback": "electrolytes",
+  "clin-vd-dialysis-clearance": "electrolytes",
+  "clin-sglt2-ketogenesis-glucagon": "electrolytes",
 
   // Neurology & Sedation
   "clin-acb-threshold": "neuro",
@@ -535,6 +538,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-valproate-carbapenem-crash": "neuro",
   "clin-beers-anticholinergic-fall-fracture": "neuro",
   "clin-vmat2-vesicular-depletion": "neuro",
+  "clin-gaba-a-subtypes-sedation-anxiolysis": "neuro",
 
   // Anticoagulation & DOACs
   "clin-dabigatran-reversal": "anticoag",
@@ -557,6 +561,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-dasatinib-ppi-gastric-ph": "tox",
   "clin-ss-vs-nms-differentials": "tox",
   "clin-linezolid-ssri-maoi": "tox",
+  "clin-aspirin-zero-order-salicylate": "tox",
+  "clin-anticholinergic-hyperthermia": "tox",
 
   // Addiction Medicine & Harm Reduction
   "clin-bup-precip-pharmacology": "addiction",
@@ -572,9 +578,11 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-doac-reversal-mechanisms": "bedside",
   "clin-sugammadex-cyclodextrin-chelation": "bedside",
   "clin-aspirin-platelet-covalent-acetylation": "bedside",
+  "clin-steroid-nuclear-receptor-transactivation": "bedside",
 
   // CYP & Pharmacokinetics
   "clin-warfarin-bactrim-cyp2c9": "cyp",
+  "clin-phenytoin-michaelis-menten": "cyp",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -1958,6 +1966,238 @@ export function clinicalCards(): StudyCard[] {
       correct: "irreversible-ser529-acetylation-anucleate",
       answer: "Aspirin (acetylsalicylic acid) acts through a unique chemical mechanism distinct from reversible NSAIDs: it covalently transfers its acetyl group to the hydroxyl group of Serine 529 situated within the catalytic channel of platelet cyclooxygenase-1 (COX-1). This irreversible covalent modification creates steric hindrance that permanently blocks arachidonic acid from accessing the catalytic pocket, abolishing conversion into prostaglandin H2 and its downstream product, thromboxane A2 (TXA2)—a potent inducer of platelet aggregation and vasoconstriction. Because mature circulating platelets are anucleate cytoplasmic fragments of megakaryocytes lacking cell nuclei and ribosomes, they cannot transcribe or translate new COX-1 enzymes. Consequently, platelet COX-1 remains irreversibly inactivated for the entire 7- to 10-day circulating lifespan of the platelet. Recovery of platelet hemostatic function requires generation of new platelets from bone marrow megakaryocytes (turnover rate ~10% per day). In contrast, traditional NSAIDs (ibuprofen, naproxen) bind competitively and reversibly, allowing platelet function to normalize as soon as systemic drug concentrations drop. ACC/AHA and ASA guidelines base perioperative antiplatelet timelines on this irreversible biology.",
       drugIds: ["aspirin"],
+    },
+    {
+      id: "clin-phenytoin-michaelis-menten",
+      lane: "clinical",
+      kicker: "Pharmacokinetics & Nonlinear Elimination",
+      title: "Phenytoin Michaelis-Menten Kinetics & CYP2C9/2C19 Saturation",
+      prompt: "A patient with focal epilepsy maintained on phenytoin has a steady-state total serum concentration of 11 mcg/mL (therapeutic target 10–20 mcg/mL). Following a modest 10% dosage increase, repeat serum drug levels spike unexpectedly to 26 mcg/mL and the patient develops prominent horizontal nystagmus and cerebellar ataxia.",
+      ask: "What pharmacokinetic property explains why a small dosage increase produces a disproportionate, exponential surge in phenytoin plasma concentrations?",
+      choices: [
+        {
+          id: "michaelis-menten-enzyme-saturation",
+          label: "Phenytoin clearance follows Michaelis-Menten nonlinear kinetics; hepatic CYP2C9 and CYP2C19 metabolizing enzymes become saturated near therapeutic concentrations (Km), causing elimination to shift from first-order to zero-order and plasma levels to rise exponentially",
+        },
+        {
+          id: "first-order-linear-dose-proportionality",
+          label: "Phenytoin exhibits linear first-order elimination where clearance remains constant regardless of plasma concentration, indicating rapid renal autoinduction",
+        },
+        {
+          id: "p-glycoprotein-saturation-intestinal-efflux",
+          label: "Intestinal P-glycoprotein efflux pumps saturate at higher doses, abruptly increasing gastrointestinal bioavailability by 300%",
+        },
+        {
+          id: "albumin-displacement-metabolic-shutdown",
+          label: "Phenytoin displaces endogenous bilirubin, which feedback-inhibits renal tubular secretion of the parent anticonvulsant",
+        },
+      ],
+      correct: "michaelis-menten-enzyme-saturation",
+      answer: "Phenytoin is cleared primarily by hepatic CYP2C9 (~90%) and CYP2C19 (~10%) via parahydroxylation. Unlike drugs governed by linear first-order kinetics (where clearance is constant and serum concentration increases in direct proportion to dose), phenytoin exhibits Michaelis-Menten capacity-limited (nonlinear) elimination. The Michaelis constant (Km, ~4–6 mcg/mL) represents the substrate concentration at half-maximal velocity (Vmax). Because typical therapeutic target concentrations (10–20 mcg/mL) far exceed Km, the hepatic metabolizing enzymes operate near or at saturation (approaching Vmax). Under these zero-order conditions, clearance rate is constant and independent of concentration; any small escalation in daily dosage saturates remaining enzymatic capacity, causing disproportionate, exponential surges in steady-state plasma concentrations and rapid onset of dose-dependent neurotoxicity (nystagmus, cerebellar ataxia, lethargy). Clinical consensus guidelines and therapeutic drug monitoring literature emphasize using Michaelis-Menten dosing equations and conservative, stepwise dosage titrations rather than linear scaling.",
+      drugIds: ["phenytoin"],
+    },
+    {
+      id: "clin-vd-dialysis-clearance",
+      lane: "clinical",
+      kicker: "Extracorporeal Elimination & Toxicology",
+      title: "Volume of Distribution (Vd) and Dialytic Ineffectiveness in Poisoning",
+      prompt: "A patient presents with severe toxicity following an intentional ingestion of digoxin and a tricyclic antidepressant (amitriptyline). Despite both drugs possessing relatively modest molecular weights (<800 Da), emergent intermittent hemodialysis removes less than 2% to 3% of total body drug burden.",
+      ask: "Why does intermittent hemodialysis fail to effectively remove drugs like digoxin, tricyclic antidepressants, and amiodarone despite filter permeability to small molecules?",
+      choices: [
+        {
+          id: "high-vd-tissue-sequestration",
+          label: "These drugs have an enormous apparent volume of distribution (Vd > 3–5 L/kg) due to extensive peripheral tissue binding, leaving less than 1% to 5% of total body drug accessible in the circulating vascular compartment for dialytic removal",
+        },
+        {
+          id: "glomerular-filtration-dependent-dialysis",
+          label: "Extracorporeal dialysis filters only clear substances that are active substrates for proximal tubular organic cation transporters",
+        },
+        {
+          id: "plasma-esterase-rapid-degradation",
+          label: "Circulating dialysate fluid activates plasma carboxylesterases that instantaneously convert both agents into inert dialyzer membrane-fouling polymers",
+        },
+        {
+          id: "charge-exclusion-cellulose-membrane",
+          label: "High lipophilicity induces electrostatic repulsion across standard synthetic polyflux hemodialysis membranes regardless of concentration gradients",
+        },
+      ],
+      correct: "high-vd-tissue-sequestration",
+      answer: "Extracorporeal drug clearance via intermittent hemodialysis (HD) or hemoperfusion requires that the offending toxicant be present in the vascular compartment in sufficient quantity to be cleared across the semipermeable dialyzer membrane. Key determinants of dialyzability include molecular weight (<500 Da favored), plasma protein binding (<80% favored), water solubility, and apparent volume of distribution (Vd). Digoxin (Vd ~5–7 L/kg), tricyclic antidepressants such as amitriptyline (Vd >10–40 L/kg), and amiodarone (Vd >60 L/kg) sequester heavily into myocardial, adipose, and peripheral tissue depots, leaving less than 1% to 3% of the total body drug burden in circulating plasma. Even if a dialyzer achieves 100% extraction efficiency of the arterial blood entering the cartridge, total clearance as a fraction of body burden is negligible (<2% to 5%). Extracorporeal Treatments in Poisoning (EXTRIP) workgroup consensus guidelines emphasize that high Vd (>1–2 L/kg) is a primary contraindication to relying on hemodialysis for enhanced elimination.",
+      drugIds: ["digoxin", "amitriptyline", "amiodarone"],
+    },
+    {
+      id: "clin-steroid-nuclear-receptor-transactivation",
+      lane: "clinical",
+      kicker: "Molecular Pharmacology & Gene Regulation",
+      title: "Glucocorticoid Receptor Transactivation vs Transrepression",
+      prompt: "Synthetic glucocorticoids like dexamethasone and prednisone exert profound, multi-organ anti-inflammatory effects that require hours to develop rather than minutes.",
+      ask: "What intracellular molecular sequence describes how glucocorticoid receptors modulate gene expression and suppress pro-inflammatory cytokine production?",
+      choices: [
+        {
+          id: "hsp90-dissociation-nuclear-transrepression",
+          label: "Ligand binding causes cytosolic glucocorticoid receptor dissociation from chaperone heat shock proteins (Hsp90), homodimerization, nuclear translocation, binding to glucocorticoid response elements (GREs), and transrepression of NF-κB and AP-1 to suppress pro-inflammatory transcription",
+        },
+        {
+          id: "membrane-g-protein-adenylyl-cyclase-activation",
+          label: "Glucocorticoids bind surface GPCRs to stimulate adenylyl cyclase and protein kinase A, which directly phosphorylates and inactivates extracellular cytokines",
+        },
+        {
+          id: "ribosomal-mrna-cleavage-rnase-l",
+          label: "Activated steroid receptors act as cytosolic endoribonucleases that selectively cleave mature interleukin mRNAs before ribosomal translation",
+        },
+        {
+          id: "jak-stat-cross-phosphorylation-suppression",
+          label: "Corticosteroids enter the cell membrane to covalently cross-link JAK1 and STAT3 kinases, preventing cytokine receptor signaling at the plasma membrane",
+        },
+      ],
+      correct: "hsp90-dissociation-nuclear-transrepression",
+      answer: "Glucocorticoids act via intracellular nuclear receptors. In the basal, unbound state, the monomeric glucocorticoid receptor (GR) resides in the cytoplasm stabilized within a multiprotein chaperone complex including heat shock protein 90 (Hsp90), Hsp70, and immunophilins. Lipophilic glucocorticoids (e.g., dexamethasone, prednisone) diffuse freely across the plasma membrane and bind the C-terminal ligand-binding domain of GR, inducing a conformational change that causes dissociation of Hsp90 and other chaperones. The ligand-GR complex undergoes hyperphosphorylation, homodimerizes, and translocates through nuclear pores into the nucleus via nuclear localization signals (NLS). Inside the nucleus, GR regulates gene transcription via two distinct mechanisms: 1) Transactivation: GR homodimers bind specific palindromic DNA sequences known as Glucocorticoid Response Elements (GREs) to upregulate anti-inflammatory proteins (e.g., IκBα, annexin A1/lipocortin-1, MKP-1). 2) Transrepression: GR monomers physically interact with and antagonize pro-inflammatory transcription factors, primarily Nuclear Factor kappa B (NF-κB) and Activator Protein-1 (AP-1), preventing them from driving transcription of cytokines (IL-1, IL-2, IL-6, TNF-alpha), chemokines, and inducible enzymes (COX-2, iNOS). Consensus pharmacology literature emphasizes this genomic mechanism explains the classic lag time (hours to days) between steroid administration and full clinical anti-inflammatory efficacy.",
+      drugIds: ["dexamethasone", "prednisone"],
+    },
+    {
+      id: "clin-aspirin-zero-order-salicylate",
+      lane: "clinical",
+      kicker: "Clinical Toxicology & Elimination Kinetics",
+      title: "Salicylate Clearance Kinetics: Glycine Conjugation Saturation in Overdose",
+      prompt: "At therapeutic antiplatelet and analgesic levels, aspirin has an elimination half-life of 2 to 4 hours. Following an acute salicylate overdose, the patient's serum salicylate elimination half-life dramatically extends to 20 to 30 hours, prolonging toxicity.",
+      ask: "What metabolic bottleneck causes salicylate clearance to transition from first-order to zero-order elimination in overdose?",
+      choices: [
+        {
+          id: "saturation-glycine-glucuronide-conjugation",
+          label: "Hepatic glycine conjugation (forming salicyluric acid) and phenolic glucuronide conjugation pathways become saturated at therapeutic-to-toxic thresholds, shifting elimination from first-order to capacity-limited zero-order kinetics",
+        },
+        {
+          id: "cyp3a4-irreversible-suicide-inactivation",
+          label: "Salicylates act as mechanism-based suicide inhibitors of CYP3A4, halting all cytochrome P450 oxidation in the endoplasmic reticulum",
+        },
+        {
+          id: "renal-sglt2-retrograde-trapping",
+          label: "Salicylates saturate proximal tubular SGLT2 transporters, forcing active retrograde reabsorption into peritubular capillaries",
+        },
+        {
+          id: "enterohepatic-esterase-depletion",
+          label: "Pancreatic and biliary carboxylesterases are completely depleted within 2 hours, preventing systemic gastrointestinal transit",
+        },
+      ],
+      correct: "saturation-glycine-glucuronide-conjugation",
+      answer: "Aspirin (acetylsalicylic acid) is rapidly hydrolyzed in the gut, plasma, and liver by tissue esterases to salicylic acid (salicylate). In low therapeutic dosing, salicylate is eliminated predominantly via hepatic metabolism into two saturable pathways: conjugation with glycine to form salicyluric acid (accounting for ~75% of clearance) and conjugation with glucuronic acid to form salicyl phenolic and acyl glucuronides (~15%). Minor routes include oxidation to gentisic acid (<1%) and renal excretion of unchanged salicylic acid (~10%). The hepatic glycine conjugation pathway has a low capacity and saturates at serum salicylate levels of approximately 15–20 mg/dL. In overdose, both glycine conjugation and glucuronidation pathways rapidly saturate, shifting elimination kinetics from linear first-order (where a constant fraction of drug is cleared per unit time and half-life is 2–4 hours) to capacity-limited zero-order kinetics (where a constant absolute amount is cleared per unit time and apparent half-life extends to 15–30+ hours). As metabolic pathways saturate, the fraction of salicylate dependent on renal excretion expands from 10% to >50% to 80%. Because salicylic acid is a weak acid (pKa 3.0), consensus toxicology guidelines highlight that alkalinizing the urine (raising urine pH to 7.5–8.0 with sodium bicarbonate) ionizes salicylate into lipid-insoluble salicylate anions, blocking renal tubular reabsorption and vastly accelerating renal clearance.",
+      drugIds: ["aspirin"],
+    },
+    {
+      id: "clin-anticholinergic-hyperthermia",
+      lane: "clinical",
+      kicker: "Autonomic Toxicology & Thermoregulation",
+      title: "Anticholinergic Toxindrome: Muscarinic M3 Blockade & Impaired Heat Dissipation",
+      prompt: "A patient with acute diphenhydramine and atropine ingestion presents on a warm day with extreme hyperthermia (temperature 40.8°C / 105.4°F), flushed dry skin, delirium, dilated unreactive pupils, and sinus tachycardia. The resuscitation team notes an absolute absence of axillary and groin perspiration.",
+      ask: "What receptor-level mechanism drives severe life-threatening hyperthermia in acute anticholinergic toxicity?",
+      choices: [
+        {
+          id: "m3-anhidrosis-central-thermoregulatory-block",
+          label: "Antagonism of peripheral postganglionic muscarinic M3 receptors on eccrine sweat glands halts diaphoresis (anhidrosis), abolishing evaporative cooling while central muscarinic blockade disrupts hypothalamic thermoregulatory setpoints",
+        },
+        {
+          id: "ryanodine-receptor-sarcoplasmic-calcium-dump",
+          label: "Direct allosteric activation of skeletal muscle ryanodine (RyR1) receptors triggers continuous calcium efflux and intense uncoupled hypermetabolism",
+        },
+        {
+          id: "brown-adipose-ucp1-uncoupling",
+          label: "Massive sympathetic beta-3 adrenergic stimulation uncouples brown adipose mitochondrial respiration via UCP-1 activation",
+        },
+        {
+          id: "alpha-1-cutaneous-vasodilation-heat-conservation",
+          label: "Alpha-1 adrenergic blockade provokes paradoxical cutaneous vasoconstriction, trapping core arterial blood in skeletal muscle",
+        },
+      ],
+      correct: "m3-anhidrosis-central-thermoregulatory-block",
+      answer: "Eccrine sweat glands are innervated by sympathetic cholinergic postganglionic fibers releasing acetylcholine onto muscarinic M3 receptors. In humans, evaporative heat loss via sweat vaporization is the primary autonomic mechanism for dissipating substantial heat loads. Anticholinergic agents (e.g., diphenhydramine, atropine, scopolamine, belladonna alkaloids) competitively antagonize muscarinic M3 receptors on eccrine glands, completely shutting down sweat production (anhidrosis, 'dry as a bone'). Simultaneously, central antimuscarinic activity impairs preoptic anterior hypothalamic thermoregulation. When coupled with agitation, delirium, motor restlessness, and warm ambient temperatures, metabolic heat generation rapidly outstrips impaired heat dissipation. Core body temperature can surge to dangerous levels (>40°C / 104°F, 'hot as a hare'), precipitating heat stroke, rhabdomyolysis, disseminated intravascular coagulation (DIC), and multiorgan failure. Consensus toxicology management underscores immediate active external cooling (evaporative and convective mist and fan methods) as the cornerstone of therapy, alongside cautious sedation to reduce muscular work.",
+      drugIds: ["atropine", "diphenhydramine"],
+    },
+    {
+      id: "clin-gaba-a-subtypes-sedation-anxiolysis",
+      lane: "clinical",
+      kicker: "Neuropharmacology & Subunit Selectivity",
+      title: "GABA-A Receptor Alpha Subunits: Sedation vs Anxiolysis Profiles",
+      prompt: "A clinical team compares the therapeutic profiles of non-benzodiazepine Z-drugs (such as zolpidem) with classical benzodiazepines (such as diazepam and lorazepam) across sleep architecture and anxiety indications.",
+      ask: "Which GABA-A receptor alpha subunit configuration distinguishes the sedative-hypnotic selectivity of zolpidem from the broad anxiolytic and myorelaxant actions of classical benzodiazepines?",
+      choices: [
+        {
+          id: "alpha-1-sedation-vs-alpha-2-3-anxiolysis",
+          label: "Alpha-1 subunit-containing GABA-A receptors mediate sedation, anterograde amnesia, and ataxia (preferentially targeted by zolpidem), whereas alpha-2 and alpha-3 subunits mediate anxiolysis and muscle relaxation, and alpha-5 mediates cognition",
+        },
+        {
+          id: "alpha-5-anxiolysis-alpha-1-analgesia",
+          label: "Alpha-5 subunits selectively mediate anxiolytic relief and visceral analgesia, whereas alpha-1 subunits control spinal motor reflexes and cardiac rhythm",
+        },
+        {
+          id: "alpha-3-sedation-alpha-4-respiratory-drive",
+          label: "Alpha-3 subunits are localized exclusively to the reticular activating system for hypnotic induction, while alpha-4 subunits protect against central respiratory depression",
+        },
+        {
+          id: "beta-2-sedation-gamma-2-seizure-control",
+          label: "Differences in binding depend entirely on beta-2 vs gamma-2 subunit interfaces, with alpha subunits playing no role in drug selectivity",
+        },
+      ],
+      correct: "alpha-1-sedation-vs-alpha-2-3-anxiolysis",
+      answer: "The GABA-A receptor is a pentameric ligand-gated chloride channel typically assembled from two alpha, two beta, and one gamma subunit (most commonly α1β2γ2). The benzodiazepine allosteric binding pocket is located at the interface between the alpha and gamma-2 subunits. Classical benzodiazepines (e.g., diazepam, lorazepam) bind non-selectively to GABA-A receptors containing α1, α2, α3, or α5 subunits with comparable nanomolar affinity, eliciting a wide pharmacological spectrum: sedation and hypnosis (α1), anxiolysis (α2, α3), muscle relaxation (α2, α3), anticonvulsant activity (α1), and cognitive/memory impairment (α1, α5). In contrast, the imidazopyridine Z-drug zolpidem displays preferential high-affinity selectivity for α1-containing GABA-A receptors over α2, α3, and α5 subtypes. This explains why zolpidem acts predominantly as a sedative-hypnotic agent with rapid onset and minimal native anxiolytic or muscle relaxant activity at therapeutic doses. Neuropharmacology consensus literature confirms that α1 knockout models lose benzodiazepine sedative response while preserving anxiolytic actions mediated by α2/α3.",
+      drugIds: ["zolpidem", "diazepam", "lorazepam"],
+    },
+    {
+      id: "clin-amiodarone-thyroid-mechanisms",
+      lane: "clinical",
+      kicker: "Cardiology & Endocrine Safety",
+      title: "Amiodarone Structural Iodine, Deiodinase Blockade & AIT-1 vs AIT-2",
+      prompt: "Amiodarone is an efficacious class III antiarrhythmic agent whose chronic administration requires rigorous baseline and longitudinal thyroid function monitoring.",
+      ask: "What chemical feature and enzymatic effects explain amiodarone-induced thyroid dysfunction, and what distinguishes Type 1 from Type 2 amiodarone-induced thyrotoxicosis (AIT)?",
+      choices: [
+        {
+          id: "iodine-deiodinase-inhibition-ait1-vs-ait2",
+          label: "Amiodarone is 37% iodine by weight (releasing ~3 mg free iodide per 100 mg dose) and inhibits peripheral 5'-deiodinase (blocking T4 to T3 conversion); AIT-1 is iodine-induced hyperthyroidism in underlying disease (Jod-Basedow) treated with thionamides, while AIT-2 is drug-induced destructive thyroiditis treated with glucocorticoids",
+        },
+        {
+          id: "sulfur-moiety-tsh-receptor-agonism",
+          label: "Amiodarone's central sulfonamide group directly binds and stimulates thyroid-stimulating hormone (TSH) receptors, mimicking Grave's disease in all patients",
+        },
+        {
+          id: "peroxidase-irreversible-covalent-inactivation",
+          label: "Amiodarone permanently poisons thyroid peroxidase, universally precipitating permanent myxedema coma within 90 days",
+        },
+        {
+          id: "direct-thyroglobulin-cleavage-hypercalcemia",
+          label: "Amiodarone acts as a zinc metalloprotease that cleaves colloid thyroglobulin, generating severe hypercalcemia and medullary thyroid carcinoma",
+        },
+      ],
+      correct: "iodine-deiodinase-inhibition-ait1-vs-ait2",
+      answer: "Amiodarone is a benzofuran derivative structurally related to thyroxine (T4) containing two iodine atoms per molecule, comprising ~37.3% iodine by molecular weight. Metabolism of a standard 200 mg maintenance dose releases approximately 6 to 9 mg of inorganic free iodide daily (about 3 mg free iodine per 100 mg dose)—roughly 40 to 60 times the recommended daily dietary iodine intake (~150 mcg). Amiodarone and its active metabolite desethylamiodarone competitively inhibit type 1 and type 2 5'-deiodinases, blocking conversion of T4 to active T3 in peripheral tissues and the pituitary. This commonly causes an acute, benign shift in thyroid panels: elevated free T4, decreased free T3, and elevated reverse T3 (rT3). Beyond this, amiodarone induces overt thyroid disease: hypothyroidism (via failure to escape the Wolff-Chaikoff effect) in ~5% to 15% of patients, and thyrotoxicosis in ~3% to 5%. Amiodarone-induced thyrotoxicosis (AIT) manifests as two distinct pathophysiological entities: Type 1 AIT (AIT-1) is true iodine-induced hyperthyroidism (Jod-Basedow phenomenon) occurring in patients with pre-existing latent Graves' disease or nodular goiter; vascularity is normal or increased on Doppler, and therapy centers on thionamides (methimazole) and potassium perchlorate. Type 2 AIT (AIT-2) is a drug-induced destructive thyroiditis occurring in normal thyroid glands due to direct cytotoxic effects of amiodarone on follicular cells, releasing preformed hormones; Doppler demonstrates absent vascularity, and first-line treatment is oral glucocorticoids (prednisone). Consensus endocrine guidelines (ATA/ETA) emphasize that distinguishing AIT-1 from AIT-2 via thyroid Doppler ultrasound is essential because therapeutic approaches are fundamentally divergent.",
+      drugIds: ["amiodarone"],
+    },
+    {
+      id: "clin-sglt2-ketogenesis-glucagon",
+      lane: "clinical",
+      kicker: "Endocrinology & Metabolic Cascades",
+      title: "SGLT2 Inhibitor Euglycemic DKA: Glucagon-to-Insulin Shift & CPT-1 Ketogenesis",
+      prompt: "A patient with type 2 diabetes managed on empagliflozin develops tachypnea, nausea, abdominal pain, and an anion gap metabolic acidosis (anion gap 22 mEq/L, serum beta-hydroxybutyrate 5.8 mmol/L). Unexpectedly, point-of-care blood glucose is only 158 mg/dL.",
+      ask: "What hormonal and metabolic cascade triggered by SGLT2 inhibition explains the pathogenesis of euglycemic diabetic ketoacidosis (euDKA)?",
+      choices: [
+        {
+          id: "glucosuria-insulin-drop-glucagon-cpt1",
+          label: "Renal glucosuria lowers plasma glucose, prompting reduced endogenous insulin secretion and increased pancreatic alpha-cell glucagon release; this elevated glucagon-to-insulin ratio stimulates lipolysis and activates hepatic carnitine palmitoyltransferase-1 (CPT-1), accelerating ketone synthesis despite near-normal glucose",
+        },
+        {
+          id: "direct-beta-hydroxybutyrate-transporter-blockade",
+          label: "SGLT2 inhibitors directly block proximal tubular ketone clearance transporters (MCT1), causing passive trapping of circulating ketones without altering hepatic lipolysis",
+        },
+        {
+          id: "mitochondrial-complex-iv-poisoning",
+          label: "Empagliflozin irreversibly inhibits mitochondrial complex IV in hepatocytes, forcing total reliance on anaerobic ketone fermentative pathways",
+        },
+        {
+          id: "adrenal-epinephrine-hypersecretion",
+          label: "SGLT2 inhibition induces severe renal cortical ischemia that triggers continuous massive adrenal epinephrine surges, overwhelming peripheral insulin receptors",
+        },
+      ],
+      correct: "glucosuria-insulin-drop-glucagon-cpt1",
+      answer: "Sodium-glucose cotransporter 2 (SGLT2) inhibitors (empagliflozin, dapagliflozin, canagliflozin) promote sustained urinary excretion of glucose by blocking reabsorption in the early proximal renal tubule. This continual glucosuria lowers plasma glucose and decreases daily caloric availability, triggering a physiological reduction in pancreatic beta-cell insulin secretion. Concurrently, removal of paracrine insulin inhibition alongside direct effects on pancreatic alpha-cells stimulates glucagon secretion, markedly elevating the circulating glucagon-to-insulin ratio. This altered hormonal balance exerts powerful metabolic downstream effects: 1) Enhanced peripheral lipolysis in adipose tissue releases free fatty acids (FFAs) into circulation; 2) In the liver, the high glucagon-to-insulin ratio suppresses malonyl-CoA synthesis, which relieves allosteric inhibition of carnitine palmitoyltransferase-1 (CPT-1); 3) CPT-1 rapidly transports fatty acyl-CoA into mitochondrial matrices for beta-oxidation, fueling extensive hepatic synthesis of acetoacetate and beta-hydroxybutyrate. Crucially, because the kidney continues to dump glucose into the urine, systemic blood glucose remains normal or only mildly elevated (<200–250 mg/dL), masking the underlying ketoacidotic crisis ('euglycemic' DKA). ADA, AACE, and FDA safety communications emphasize that diagnosis requires measuring serum beta-hydroxybutyrate and blood gas/anion gap, as normal point-of-care fingerstick glucose frequently leads to delays in recognition and intervention.",
+      drugIds: ["empagliflozin", "dapagliflozin"],
     },
   ];
   return cards.map((c) => ({

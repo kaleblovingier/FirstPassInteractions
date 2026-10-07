@@ -1511,6 +1511,28 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Sugammadex 1:1 cyclodextrin encapsulation · rocuronium chelation · zero muscarinic bradycardia",
   },
+  {
+    id: "r-ward-phenytoin-michaelis-menten-spill",
+    title: "The nonlinear antiepileptic escalation",
+    setting: "ward",
+    stem: "A patient with refractory focal seizures maintained on phenytoin and adjunctive valproate has a baseline steady-state total phenytoin level of 12 mcg/mL. To optimize seizure control, the care team increases the daily dosage by only 10%. Within ten days, the patient develops acute cerebellar ataxia, coarse horizontal nystagmus, dysarthria, and progressive stupor. Repeat serum concentration testing demonstrates a total phenytoin level of 27 mcg/mL.",
+    ask: "What pharmacokinetic property of phenytoin explains why a modest 10% dosage increase caused total plasma levels to more than double exponentially and precipitate acute neurotoxicity?",
+    teach: "Phenytoin elimination is governed by Michaelis-Menten nonlinear zero-order kinetics primarily catalyzed by hepatic CYP2C9 and CYP2C19. Because the therapeutic target range (10–20 mcg/mL) exceeds the Michaelis constant (Km ~4–6 mcg/mL), hepatic clearance enzymes operate near maximal capacity (Vmax). Under near-saturated zero-order conditions, clearance does not remain constant; small dosage escalations saturate remaining metabolic clearance, causing steady-state plasma concentrations to double exponentially rather than rise linearly. Concurrently, valproate displaces phenytoin from plasma albumin and competitively inhibits CYP2C9, compounding free active drug accumulation. Consensus neurology guidelines and therapeutic drug monitoring protocols advise small, conservative dosage titrations with close therapeutic drug monitoring when adjusting phenytoin near therapeutic thresholds. Open the CYP and Kinetics tabs to explore Michaelis-Menten saturation.",
+    drugIds: ["phenytoin", "valproate"],
+    lane: "clinic",
+    blurb: "Phenytoin Michaelis-Menten kinetics · CYP2C9 Vmax saturation · exponential concentration jump",
+  },
+  {
+    id: "r-ed-salicylate-zero-order-acidosis",
+    title: "The acute aspirin saturation and mixed acid-base crisis",
+    setting: "clinic",
+    stem: "An adult presents to the emergency department several hours after an acute ingestion of an entire bottle of aspirin. The patient demonstrates tachypnea, hyperpnea, diaphoresis, tinnitus, and nausea. Laboratory evaluation reveals a classic mixed acid-base crisis: primary respiratory alkalosis from direct medullary respiratory center stimulation alongside high anion gap metabolic acidosis from uncoupled oxidative phosphorylation and accumulation of lactate and ketoacids. Salicylate concentration is severely elevated.",
+    ask: "Why does salicylate elimination transition to zero-order kinetics in acute overdose, and what is the physiological rationale for systemic urine alkalinization with sodium bicarbonate?",
+    teach: "At low therapeutic doses, salicylate elimination follows first-order kinetics with a half-life of 2 to 4 hours, primarily via hepatic glycine conjugation to salicyluric acid and glucuronidation. In acute overdose, these hepatic conjugation pathways become rapidly saturated, shifting clearance to capacity-limited zero-order kinetics and extending apparent half-life up to 15 to 30 hours. As hepatic metabolism plateaus, elimination relies on renal excretion. Because salicylic acid is a weak acid (pKa ~3.0), administering sodium bicarbonate to alkalinize the urine (target urine pH 7.5–8.0) ionizes luminal salicylic acid into lipid-insoluble salicylate anions, preventing passive reabsorption in renal tubules ('ion trapping') and markedly enhancing urinary elimination. Concurrently, systemic alkalinization (maintaining arterial pH 7.45–7.50) keeps salicylate ionized in the vascular space, preventing un-ionized lipid-soluble drug from crossing the blood-brain barrier into the central nervous system. Open the Tox and Electrolytes tabs to examine capacity-limited clearance and ion trapping.",
+    drugIds: ["aspirin", "sodium-bicarbonate"],
+    lane: "clinic",
+    blurb: "Salicylate zero-order kinetics · glycine saturation · sodium bicarbonate urine alkalinization",
+  },
 ];
 
 

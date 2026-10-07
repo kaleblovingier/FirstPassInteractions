@@ -5,14 +5,18 @@ import {
   ArrowRight,
   Check,
   GitFork,
+  Layers,
   Lock,
   Pill,
   Search,
   ShieldAlert,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 import { ReceptorProfiler } from "./receptor-profiler";
 import { MechanismPathways } from "./mechanism-pathways";
+import { MechanismIntersect } from "./mechanism-intersect";
+import { PkTdmMechanisms } from "./pk-tdm-mechanisms";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
 import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
@@ -59,7 +63,7 @@ function foundingGateCopy(kind: "contraindications" | FoundingGateKind) {
 
 export function Formulary() {
   const [viewTab, setViewTab] = useState<
-    "compounds" | "contraindications" | "receptors" | "pathways"
+    "compounds" | "contraindications" | "receptors" | "pathways" | "intersect" | "pk"
   >("compounds");
 
   return (
@@ -139,6 +143,38 @@ export function Formulary() {
           <GitFork className="size-4 shrink-0 text-teal-500" />
           <span>Mechanism Pathways</span>
         </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "intersect"}
+          onClick={() => setViewTab("intersect")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "intersect"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <Layers className="size-4 shrink-0 text-indigo-500" />
+          <span>Mechanism Intersect Engine</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={viewTab === "pk"}
+          onClick={() => setViewTab("pk")}
+          className={cn(
+            "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg px-4 text-xs font-semibold sm:flex-initial sm:text-sm transition-all",
+            viewTab === "pk"
+              ? "bg-surface text-fg shadow-[var(--shadow-border)]"
+              : "text-muted hover:bg-surface/50 hover:text-fg",
+          )}
+        >
+          <TrendingUp className="size-4 shrink-0 text-purple-500" />
+          <span>PK &amp; Nonlinear Kinetics</span>
+        </button>
       </div>
 
       {viewTab === "compounds" ? (
@@ -147,8 +183,12 @@ export function Formulary() {
         <ContraindicatedConditionsView />
       ) : viewTab === "receptors" ? (
         <ReceptorProfiler />
-      ) : (
+      ) : viewTab === "pathways" ? (
         <MechanismPathways />
+      ) : viewTab === "intersect" ? (
+        <MechanismIntersect />
+      ) : (
+        <PkTdmMechanisms />
       )}
     </div>
   );
