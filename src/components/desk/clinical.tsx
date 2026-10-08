@@ -223,8 +223,20 @@ import { AntimicrobialPanel } from "./antimicrobial-station";
 import { antimicrobialOnDesk } from "@/lib/drugs/antimicrobial-stewardship";
 import { PhenytoinPanel } from "./phenytoin-station";
 import { phenytoinOnDesk } from "@/lib/drugs/phenytoin-kinetics";
+import { PregnancyPanel } from "./pregnancy-station";
+import { pregnancyOnDesk } from "@/lib/drugs/pregnancy-lactation";
+import { VasoactivePanel } from "./vasoactive-station";
+import { vasoactiveOnDesk } from "@/lib/drugs/vasoactive-kinetics";
+import { TransplantPanel } from "./transplant-station";
+import { transplantOnDesk } from "@/lib/drugs/transplant-immunosuppression";
+import { NeuropsychPanel } from "./neuropsych-station";
+import { neuropsychOnDesk } from "@/lib/drugs/neuropsych-kinetics";
+import { AnticoagulationPanel } from "./anticoagulation-station";
+import { anticoagulationOnDesk } from "@/lib/drugs/anticoagulation-reversal";
+import { ToxicologyPanel } from "./toxicology-station";
+import { toxicologyOnDesk } from "@/lib/drugs/toxicology-kinetics";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin" | "pregnancy" | "vasoactive" | "transplant" | "neuropsych" | "anticoagulation" | "toxicology";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -259,6 +271,12 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const oncologyOn = useMemo(() => oncologyOnDesk(ids), [ids.join("|")]);
   const antimicrobialOn = useMemo(() => antimicrobialOnDesk(ids), [ids.join("|")]);
   const phenytoinOn = useMemo(() => phenytoinOnDesk(ids), [ids.join("|")]);
+  const pregnancyOn = useMemo(() => pregnancyOnDesk(ids), [ids.join("|")]);
+  const vasoactiveOn = useMemo(() => vasoactiveOnDesk(ids), [ids.join("|")]);
+  const transplantOn = useMemo(() => transplantOnDesk(ids), [ids.join("|")]);
+  const neuropsychOn = useMemo(() => neuropsychOnDesk(ids), [ids.join("|")]);
+  const anticoagOn = useMemo(() => anticoagulationOnDesk(ids), [ids.join("|")]);
+  const toxOn = useMemo(() => toxicologyOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -277,6 +295,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "anc", label: "ANC", on: ancOn },
       { id: "inr", label: "INR", on: Boolean(inr) },
       { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
+      { id: "anticoagulation", label: "Anticoagulation", on: Boolean(anticoagOn.hasAnticoagulant || anticoagOn.hasReversalAgent) },
       { id: "valproate", label: "Valproate", on: valproateOn.hasValproate },
       { id: "potassium", label: "Potassium", on: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent },
       { id: "sglt2", label: "SGLT2", on: sglt2On.hasSglt2 },
@@ -292,11 +311,16 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "oncology", label: "Oncology", on: oncologyOn },
       { id: "antimicrobial", label: "Stewardship", on: Boolean(antimicrobialOn.hasAntimicrobial || antimicrobialOn.matchedInteractingAgents.length > 0) },
       { id: "phenytoin", label: "Phenytoin", on: Boolean(phenytoinOn.hasPhenytoin || phenytoinOn.hasFosphenytoin) },
+      { id: "pregnancy", label: "Obstetrics", on: Boolean(pregnancyOn.hasHighYieldTeratogen || pregnancyOn.hasLactationRisk || pregnancyOn.hasRaasBlocker || pregnancyOn.hasNsaid || pregnancyOn.hasWarfarin || pregnancyOn.hasRetinoid || pregnancyOn.hasImid || pregnancyOn.hasFolateAntagonist) },
+      { id: "vasoactive", label: "Vasoactive", on: Boolean(vasoactiveOn.hasVasoactive || vasoactiveOn.hasBetaBlockers || vasoactiveOn.hasIndirectSympathomimetics || vasoactiveOn.hasInotropes) },
+      { id: "transplant", label: "Transplant", on: Boolean(transplantOn.hasCni || transplantOn.hasAntimetabolite || transplantOn.hasMtorInhibitor || transplantOn.hasTransplant) },
+      { id: "neuropsych", label: "Neuropsych", on: neuropsychOn },
+      { id: "toxicology", label: "Toxicology", on: Boolean(toxOn.hasToxicologyAgent) },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, vasoactiveOn.hasVasoactive, vasoactiveOn.hasBetaBlockers, vasoactiveOn.hasIndirectSympathomimetics, vasoactiveOn.hasInotropes, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -365,6 +389,12 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "oncology" ? <OncologyPanel ids={ids} host={host} /> : null}
         {live === "antimicrobial" ? <AntimicrobialPanel ids={ids} host={host} /> : null}
         {live === "phenytoin" ? <PhenytoinPanel ids={ids} host={host} /> : null}
+        {live === "pregnancy" ? <PregnancyPanel ids={ids} host={host} /> : null}
+        {live === "vasoactive" ? <VasoactivePanel ids={ids} host={host} /> : null}
+        {live === "transplant" ? <TransplantPanel ids={ids} host={host} /> : null}
+        {live === "neuropsych" ? <NeuropsychPanel ids={ids} host={host} /> : null}
+        {live === "anticoagulation" ? <AnticoagulationPanel ids={ids} host={host} /> : null}
+        {live === "toxicology" ? <ToxicologyPanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>

@@ -695,11 +695,21 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-cns-antihistamine-1st-vs-2nd-gen-psa": "neuro",
   "clin-cns-meningitis-tight-junction-permeability": "bedside",
 
-  // High-Yield Oncology, Antimicrobial Stewardship & Pharmacokinetics
+  // High-Yield Oncology, Antimicrobial Stewardship, Obstetrics, Vasoactive & Transplant
   "clin-hdmtx-leucovorin-nomogram": "tox",
   "clin-cefepime-neurotoxicity-gaba": "neuro",
   "clin-daptomycin-statin-myopathy": "tox",
   "clin-phenytoin-michaelis-menten-saturation": "neuro",
+  "clin-teratogenic-critical-windows": "bedside",
+  "clin-epinephrine-hyperlactatemia-type-b": "bedside",
+  "clin-mycophenolate-ehc-flora-csa": "tox",
+  "clin-cni-steroid-taper-cyp3a-rebound": "tox",
+  "clin-anticoagulation-reversal-andexanet-pcc-protamine": "anticoag",
+  "clin-apap-nac-rumack-cyp2e1-glutathione": "tox",
+  "clin-toxic-alcohols-osmolal-gap-fomepizole": "tox",
+  "clin-salicylate-ion-trapping-potassium-rule": "tox",
+  "clin-toxidrome-differential-hunter-nms-anticholinergic": "neuro",
+  "clin-clozapine-tdm-smoking-cyp1a2-cigh": "neuro",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -3127,6 +3137,296 @@ export function clinicalCards(): StudyCard[] {
       correct: "phenytoin-saturation-clearance-collapse-valproate-paradox",
       answer: "Phenytoin exhibits capacity-limited, saturable Michaelis-Menten elimination governed by hepatic CYP2C9 and CYP2C19. The elimination rate follows: R = (Vmax · Css) / (Km + Css), and clearance is concentration-dependent: CL = Vmax / (Km + C). The population mean Michaelis constant Km is ~4 µg/mL (range 2–8 µg/mL), which is well below the target therapeutic range of 10–20 µg/mL! Consequently, at therapeutic concentrations, the metabolizing enzymes are already 70–80% saturated. As steady-state concentration increases, clearance collapses from >80 L/day at subtherapeutic levels to ~25 L/day at 15 µg/mL and <13 L/day at 35 µg/mL. In this zero-order transition zone, clearance cannot increase to match higher intake, so a modest 10–20% dose increase (e.g. 300 mg to 360 mg/day) produces an exponential 200–300% level jump, catapulting the patient into acute neurotoxicity (nystagmus >20 µg/mL, ataxia >30 µg/mL, stupor/coma >40 µg/mL). When valproic acid is co-administered, it delivers a 'Double-Hit': (1) valproate competitively displaces phenytoin from plasma albumin binding sites, expanding the free fraction fu from 10% to 25–35%, and (2) valproate inhibits CYP2C9 metabolism. This creates the classic Clinical Paradox: total serum phenytoin appears deceptively normal or even low (e.g. 9 µg/mL), but active unbound free phenytoin is dangerously elevated (e.g. 2.8 µg/mL, normal 1–2 µg/mL). Clinicians unaware of this paradox risk mistakenly increasing the dose, precipitating fatal toxicity.",
       drugIds: ["phenytoin", "valproate"],
+    },
+    {
+      id: "clin-teratogenic-critical-windows",
+      lane: "clinical",
+      kicker: "Obstetrics & Teratology",
+      title: "Gestational Critical Windows: Organogenesis vs Fetogenesis",
+      prompt: "A patient in early pregnancy presents with questions regarding timing of medication safety and vulnerability to congenital malformations.",
+      ask: "How does embryological vulnerability differ between the pre-implantation, major organogenesis (weeks 3–8 post-conception), and fetogenesis windows?",
+      choices: [
+        {
+          id: "teratogenic-all-or-none-vs-organogenesis-vs-fetogenesis",
+          label: "The pre-implantation period follows an 'all-or-none' rule (embryonic loss vs full regeneration); major organogenesis (weeks 3–8 post-conception / GA 5–10) is peak vulnerability for major structural malformations; fetogenesis (week 9+ post-conception) produces functional, cognitive, or hemodynamic disruptions (e.g. ACEi Potter sequence, NSAID premature ductus closure)",
+        },
+        {
+          id: "identical-risk-across-all-trimesters-constant",
+          label: "All trimesters carry identical risks of limb phocomelia and neural tube closure failure regardless of gestational timing",
+        },
+        {
+          id: "all-or-none-occurs-in-late-third-trimester",
+          label: "The all-or-none period occurs during the 3rd trimester when the placenta reaches maximal surface area",
+        },
+        {
+          id: "organogenesis-begins-at-week-twenty",
+          label: "Major organogenesis begins at week 20 gestational age when fetal kidneys begin contributing to amniotic fluid",
+        },
+      ],
+      correct: "teratogenic-all-or-none-vs-organogenesis-vs-fetogenesis",
+      answer: "Human teratogenesis follows strictly defined embryological critical windows. (1) Pre-implantation (Days 1–14 post-conception / GA Weeks 3–4): Characterized by the 'All-or-None' phenomenon where cytotoxic damage either destroys a critical mass of blastomeres leading to blastocyst loss/spontaneous miscarriage, or surviving totipotent blastomeres fully compensate and regenerate without major structural anatomical dysmorphology. (2) Major Organogenesis (Weeks 3–8 post-conception / GA Weeks 5–10): Peak vulnerability for catastrophic structural anatomical malformations as primary germ layers differentiate and organs close (neural tube days 21–28, cardiac septation days 20–50, limb buds days 24–36, craniofacial fusion days 45–60). Disruptions during this window produce irreversible physical anomalies (e.g. thalidomide phocomelia, isotretinoin retinoic acid embryopathy, valproate spina bifida). (3) Fetogenesis & Functional Maturation (Weeks 9+ post-conception / GA Weeks 11–42): Tissues have differentiated; toxic exposures produce functional, cognitive, microvascular, or growth impairment rather than gross organ agenesis. Classic late perils include RAAS blocker-induced fetal renal anuria and Potter sequence (GA >= 16–20 wk), NSAID-induced oligohydramnios (>= 20 wk) and premature in utero closure of the ductus arteriosus (>= 28–32 wk, contraindicated >= 30 wk), and warfarin-induced microvascular fetal hemorrhage.",
+      drugIds: ["isotretinoin", "thalidomide", "valproate", "lisinopril", "ibuprofen"],
+    },
+    {
+      id: "clin-epinephrine-hyperlactatemia-type-b",
+      lane: "clinical",
+      kicker: "Critical Care Hemodynamics & Metabolism",
+      title: "Epinephrine-Induced Type B Hyperlactatemia vs Tissue Dysoxia",
+      prompt: "A patient in septic shock resuscitated to a MAP > 65 mmHg on norepinephrine and epinephrine has a rising serum lactate (2.1 -> 5.8 mmol/L), but central venous oxygen saturation (ScvO2) is 78%, venous-to-arterial CO2 gap is 4.2 mmHg, urine output is 0.8 mL/kg/h, and extremities are warm.",
+      ask: "What physiological mechanism explains the elevated lactate, and what is the appropriate resuscitation response?",
+      choices: [
+        {
+          id: "epinephrine-beta2-aerobic-glycolysis-benign-type-b",
+          label: "Beta-2 adrenergic stimulation accelerates skeletal muscle aerobic glycolysis beyond mitochondrial pyruvate dehydrogenase capacity (benign Type B2 hyperlactatemia); with preserved ScvO2 and normal CO2 gap, do NOT escalate fluid boluses or declare resuscitation failure",
+        },
+        {
+          id: "epinephrine-causes-diffuse-mesenteric-ischemia-type-a",
+          label: "Epinephrine causes diffuse mesenteric ischemia, producing Type A lactic acidosis that mandates emergent fluid resuscitation and doubling pressor rates",
+        },
+        {
+          id: "epinephrine-blocks-proximal-tubular-lactate-transporters",
+          label: "Epinephrine competitively blocks renal proximal tubular lactate transporters, preventing urinary clearance without cellular overproduction",
+        },
+        {
+          id: "elevated-lactate-indicates-alpha1-myocardial-stunning",
+          label: "Elevated lactate indicates catastrophic alpha-1 myocardial stunning and mandates immediate initiation of high-dose milrinone",
+        },
+      ],
+      correct: "epinephrine-beta2-aerobic-glycolysis-benign-type-b",
+      answer: "Epinephrine stimulates skeletal muscle sarcolemmal beta-2 adrenergic receptors coupled to Gs proteins, activating adenylyl cyclase and protein kinase A (PKA). PKA stimulates glycogenolysis and hyperactivates the membrane Na+/K+-ATPase pump. Elevated intracellular ADP/AMP stimulates phosphofructokinase-1 (PFK-1), massively accelerating aerobic glycolysis. Cytosolic pyruvate is produced at a rate exceeding the oxidative capacity of mitochondrial Pyruvate Dehydrogenase (PDH); the excess pyruvate is converted into lactate by Lactate Dehydrogenase (LDH) to regenerate NAD+. This produces benign Type B2 aerobic hyperlactatemia despite abundant oxygen delivery (DO2) and normal cellular respiration. Crucially, adequate systemic perfusion is verified by ScvO2 >= 70%, venoarterial P(v-a)CO2 gap < 6 mmHg, brisk capillary refill, and adequate urine output (> 0.5 mL/kg/h). Misinterpreting this pharmacodynamic beta-2 signature as worsening septic tissue hypoperfusion (Type A dysoxia) leads to dangerous clinical errors, including unnecessary fluid overloading, unwarranted broad-spectrum antibiotic escalations, and inappropriate pressor weaning.",
+      drugIds: ["epinephrine", "norepinephrine"],
+    },
+    {
+      id: "clin-mycophenolate-ehc-flora-csa",
+      lane: "clinical",
+      kicker: "Transplant Immunosuppression & Transporters",
+      title: "Mycophenolate Enterohepatic Recirculation: The MRP2 & Microbiome Collisions",
+      prompt: "A kidney transplant recipient on tacrolimus and mycophenolate mofetil (MMF) is admitted for a severe bacterial infection and treated with broad-spectrum antibiotics (ciprofloxacin + augmentin). Alternatively, another patient is switched from cyclosporine to tacrolimus without MMF dose adjustments.",
+      ask: "How do biliary MRP2 transport and gut commensal bacterial beta-glucuronidase govern mycophenolic acid (MPA) exposure, and what clinical hazards arise?",
+      choices: [
+        {
+          id: "mycophenolate-mrp2-bacterial-glucuronidase-ehc-cascade",
+          label: "MPAG biliary export via MRP2 and intestinal bacterial beta-glucuronidase cleavage produce a secondary MPA peak (25–35% of AUC); broad-spectrum antibiotics eradicate flora, dropping MPA AUC by 30–50% (rejection risk), while cyclosporine blocks MRP2 (switching CsA to tacrolimus surges MPA AUC by 30–50%, risking leukopenia/CMV)",
+        },
+        {
+          id: "mycophenolate-cleared-entirely-by-renal-oat1-filtration",
+          label: "Mycophenolate is cleared entirely by renal OAT1; antibiotics and cyclosporine inhibit tubular secretion to cause toxic MPA surges",
+        },
+        {
+          id: "intestinal-flora-synthesizes-purines-de-novo",
+          label: "Intestinal flora synthesize mycophenolate de novo from dietary purines; antibiotics cause nutritional deficiency without altering drug pharmacokinetics",
+        },
+        {
+          id: "tacrolimus-induces-ugt1a9-brush-border",
+          label: "Tacrolimus directly induces UGT1A9 in the jejunal brush border, whereas cyclosporine downregulates hepatic esterases",
+        },
+      ],
+      correct: "mycophenolate-mrp2-bacterial-glucuronidase-ehc-cascade",
+      answer: "Mycophenolic acid (MPA) undergoes extensive enterohepatic recirculation (EHC): active MPA is glucuronidated by hepatic UGT1A9 to inactive mycophenolic acid glucuronide (MPAG), which is excreted across the canalicular membrane into bile by Multidrug Resistance-associated Protein 2 (MRP2 / ABCC2). Upon reaching the distal ileum and colon, commensal anaerobic bacteria (Bacteroides, Clostridium) expressing beta-glucuronidase cleave MPAG back into active, lipophilic MPA, which is reabsorbed into the portal circulation. This generates a characteristic Secondary MPA Peak at 6 to 12 hours post-dose that supplies 25% to 35% of the total 24-hour MPA AUC. Two critical collisions disrupt this physiology: (1) Broad-Spectrum Antibiotics (fluoroquinolones, augmentin, cephalosporins) eradicate beta-glucuronidase-producing gut anaerobes, completely eliminating the secondary peak and slashing total MPA AUC by 30% to 50%, sharply increasing the risk of acute cellular and antibody-mediated allograft rejection! (2) Cyclosporine vs Tacrolimus Divergence: Cyclosporine potently inhibits canalicular MRP2, blocking biliary MPAG export and abolishing EHC (reducing MPA AUC by 30–40% compared to tacrolimus). Tacrolimus spares MRP2, leaving EHC intact. The Switch Trap: Converting a patient from cyclosporine to tacrolimus without lowering MMF dose unleashes a 30–50% MPA AUC surge that precipitates severe leukopenia, CMV disease, and diarrhea; converting tacrolimus to cyclosporine drops MPA AUC by 30–40%, precipitating allograft rejection.",
+      drugIds: ["mycophenolate", "cyclosporine", "tacrolimus", "ciprofloxacin"],
+    },
+    {
+      id: "clin-cni-steroid-taper-cyp3a-rebound",
+      lane: "clinical",
+      kicker: "Transplant Pharmacokinetics & TDM",
+      title: "Corticosteroid Taper & Dynamic Calcineurin Inhibitor (CNI) Clearance Rebound",
+      prompt: "A solid organ transplant recipient stabilized on maintenance tacrolimus (trough 8.0 ng/mL) and high-dose prednisone (20 mg daily) undergoes a planned corticosteroid taper down to 5 mg daily over several weeks. Three weeks later, the patient develops acute kidney injury, severe fine hand tremor, and a tacrolimus trough of 14.5 ng/mL.",
+      ask: "What molecular pharmacokinetic mechanism accounts for this delayed, toxic CNI trough surge during steroid dose reduction?",
+      choices: [
+        {
+          id: "steroid-taper-pxr-cyp3a-deinduction-clearance-drop",
+          label: "High-dose prednisone induces CYP3A4 and P-gp via PXR; as the steroid is tapered, enzyme induction wanes, dropping CNI clearance by 30–40% and driving a toxic rebound trough surge unless CNI doses are proactively reduced",
+        },
+        {
+          id: "prednisone-directly-oxidizes-tacrolimus-in-plasma",
+          label: "Prednisone directly oxidizes tacrolimus into an inactive metabolite in the bloodstream, and tapering allows the parent drug to accumulate",
+        },
+        {
+          id: "tapering-steroids-acidifies-urine-causing-reabsorption",
+          label: "Tapering steroids acidifies the urine, causing retrograde proximal tubular reabsorption of tacrolimus via passive non-ionic diffusion",
+        },
+        {
+          id: "low-dose-prednisone-activates-erythropoietin-receptors",
+          label: "Low-dose prednisone activates erythropoietin receptors, expanding red blood cell mass and falsely elevating whole-blood CNI assays without altering plasma levels",
+        },
+      ],
+      correct: "steroid-taper-pxr-cyp3a-deinduction-clearance-drop",
+      answer: "Moderate-to-high dose corticosteroids (prednisone >= 20 mg/day, methylprednisolone) act as ligands for the nuclear Pregnane X Receptor (PXR), driving transcriptional up-regulation and induction of hepatic and intestinal cytochrome P450 3A4 (CYP3A4), CYP3A5, and P-glycoprotein (ABCB1). Under baseline high-dose steroid therapy, CNI (tacrolimus, cyclosporine) clearance is artificially accelerated. As corticosteroids are tapered down post-transplantation (e.g. 20 mg -> 15 mg -> 10 mg -> 5 mg daily), PXR-mediated enzyme and transporter induction progressively resolves over 1 to 3 weeks. Consequently, CNI intrinsic clearance drops by 30% to 40%. If the maintenance CNI dose is kept constant during the steroid taper, steady-state trough concentrations rebound sharply (frequently surging from target 7–9 ng/mL up into toxic ranges > 12–16 ng/mL). The resulting surge triggers acute afferent arteriolar vasoconstriction, acute allograft nephrotoxicity, severe neurotoxicity (tremor, headache, insomnia, PRES), and hyperkalemia. Consensus transplant guidelines mandate proactive therapeutic drug monitoring (TDM) within 3 to 7 days of steroid taper steps with anticipated prospective CNI dose reductions of 20% to 35%.",
+      drugIds: ["tacrolimus", "prednisone", "cyclosporine"],
+    },
+    {
+      id: "clin-anticoagulation-reversal-andexanet-pcc-protamine",
+      lane: "clinical",
+      kicker: "Hemostasis & Anticoagulation Reversal",
+      title: "Targeted Reversal: Andexanet Decoy FXa vs 4F-PCC Kinetics & The Protamine Overdose Paradox",
+      prompt: "A neurointensive care team manages acute life-threatening intracranial hemorrhage across patients receiving apixaban, rivaroxaban, warfarin, or continuous unfractionated heparin (UFH).",
+      ask: "Which pharmacokinetic and molecular hemostatic mechanisms distinguish Andexanet alfa, 4-Factor PCC, and Protamine sulfate reversal strategies?",
+      choices: [
+        {
+          id: "andexanet-decoy-fxa-pcc-vitamin-k-protamine-polycation",
+          label: "Andexanet alfa acts as a catalytically inactive recombinant decoy FXa protein that sequesters direct FXa inhibitors; 4F-PCC replaces depleted factors II, VII, IX, and X but requires concurrent IV Vitamin K (10 mg) to prevent rebound coagulopathy when short-lived FVII (t1/2 ~6h) clears; Protamine sulfate is a basic polycation that neutralizes acidic heparin via salt complexes but causes paradoxical anticoagulation and pulmonary hypertension if overdosed",
+        },
+        {
+          id: "andexanet-alfa-enzymatically-cleaves-apixaban-in-plasma",
+          label: "Andexanet alfa is a catalytic serine protease that hydrolyzes apixaban into inactive peptide fragments within 5 minutes of administration",
+        },
+        {
+          id: "pcc-contains-activated-factor-seven-alone",
+          label: "4F-PCC contains exclusively recombinant activated Factor VII (rFVIIa) and does not require Vitamin K co-administration",
+        },
+        {
+          id: "protamine-fully-reverses-fondaparinux-and-bivalirudin",
+          label: "Protamine sulfate completely neutralizes the anti-Xa activity of fondaparinux and direct thrombin inhibition of bivalirudin",
+        },
+      ],
+      correct: "andexanet-decoy-fxa-pcc-vitamin-k-protamine-polycation",
+      answer: "Acute anticoagulation reversal requires precise mechanistic selection: (1) Andexanet alfa (Andexxa) is a genetically engineered recombinant human Factor Xa decoy protein with an active-site Ser-to-Ala mutation (eliminating catalytic procoagulant activity) and deleted Gla domain (preventing membrane-bound prothrombinase assembly). It binds and sequesters oral direct FXa inhibitors (apixaban, rivaroxaban) with high nanomolar affinity. ANNEXA-4 trial protocols mandate either low-dose (400 mg bolus + 480 mg infusion over 2h) or high-dose (800 mg bolus + 960 mg infusion over 2h) based on agent, dose, and timing. Crucially, Andexanet binds Tissue Factor Pathway Inhibitor (TFPI), causing transient prothrombotic rebound and heparin resistance. (2) 4-Factor Prothrombin Complex Concentrate (4F-PCC / Kcentra) contains unactivated factors II, VII, IX, X, and Protein C/S. Dosing for warfarin reversal is weight- and INR-tiered (25–50 units/kg, max 2500–5000 units). Essential rule: Exogenous Factor VII has a rapid elimination half-life (~6 hours), whereas Factors II and X persist for 40–60 hours. Unless concurrent IV Vitamin K (10 mg slow infusion) is administered to stimulate endogenous hepatic factor synthesis, the patient suffers catastrophic rebound INR prolongation and re-bleeding at 12–24 hours! (3) Protamine Sulfate is a strongly basic, low-molecular-weight polycationic peptide derived from fish sperm. Positively charged protamine binds negatively charged acidic glycosaminoglycans on heparin via electrostatic attraction, forming stable, inactive salt complexes. Protamine dose must be calculated based on time elapsed since heparin discontinuation (1 mg per 100 units UFH if immediate, 0.5 mg if 30–60 min, down to 0.25 mg if >2h; max 50 mg). The Protamine Overdose Paradox: When administered in excess of circulating heparin, free unbound protamine exerts an intrinsic anticoagulant effect by inhibiting thrombin and platelets, worsening coagulopathy! Rapid infusion can trigger fatal pulmonary vasoconstriction, acute right heart failure, and anaphylactoid shock.",
+      drugIds: ["apixaban", "rivaroxaban", "warfarin", "heparin"],
+    },
+    {
+      id: "clin-apap-nac-rumack-cyp2e1-glutathione",
+      lane: "clinical",
+      kicker: "Medical Toxicology & Hepatotoxicity",
+      title: "Acetaminophen Rumack-Matthew Nomogram, CYP2E1 NAPQI Induction & NAC Kinetics",
+      prompt: "A patient presents 6 hours after ingesting 20 grams of acetaminophen. The emergency clinical team plots the serum APAP concentration on the Rumack-Matthew nomogram and initiates IV N-acetylcysteine (NAC).",
+      ask: "What biochemical pathways govern toxic NAPQI generation, hepatocellular glutathione exhaustion, and the antidotal kinetics of N-acetylcysteine?",
+      choices: [
+        {
+          id: "cyp2e1-napqi-glutathione-depletion-nac-sulfhydryl-donor",
+          label: "CYP2E1 bioactivates APAP into toxic electrophilic N-acetyl-p-benzoquinone imine (NAPQI); when hepatic glutathione drops below 30% baseline, NAPQI covalently binds mitochondrial proteins causing Zone 3 centrilobular necrosis; IV NAC serves as a cysteine precursor and direct sulfhydryl donor to regenerate glutathione and detoxify NAPQI",
+        },
+        {
+          id: "apap-direct-hepatocyte-lysis-without-metabolism",
+          label: "Unmetabolized acetaminophen acts as a direct detergent that dissolves hepatocyte cell membranes within 2 hours of ingestion",
+        },
+        {
+          id: "cyp3a4-generates-n-acetyl-cysteine-which-causes-damage",
+          label: "CYP3A4 metabolizes APAP into toxic N-acetylcysteine, and antidotal therapy requires immediate administration of glutathione inhibitors",
+        },
+        {
+          id: "rumack-nomogram-valid-for-chronic-repeated-ingestions",
+          label: "The Rumack-Matthew nomogram is calibrated primarily for chronic repeated supratherapeutic ingestions over several days",
+        },
+      ],
+      correct: "cyp2e1-napqi-glutathione-depletion-nac-sulfhydryl-donor",
+      answer: "Acetaminophen (APAP) at therapeutic doses is predominantly (85–90%) metabolized by hepatic glucuronidation (UGT1A6/UGT1A9) and sulfation (SULT1A1) into non-toxic conjugates. A minor fraction (5–10%) is oxidized by CYP2E1 (and to a lesser degree CYP1A2/2D6/3A4) into the highly reactive, electrophilic intermediate N-acetyl-p-benzoquinone imine (NAPQI). Under normal conditions, NAPQI is instantaneously conjugated with intracellular glutathione (GSH) to non-toxic mercapturic acid and cysteine conjugates excreted in urine. In massive acute overdose, glucuronidation and sulfation pathways saturate, shunting massive amounts of APAP through CYP2E1. Once hepatocellular glutathione reserves are depleted by >= 70% (falling below 30% of normal baseline), free unbound NAPQI covalently binds cellular macromolecules—particularly mitochondrial proteins. This triggers opening of the mitochondrial permeability transition pore (mPTP), collapse of membrane potential, massive ATP depletion, oxidative stress, and extensive centrilobular (Zone 3) hepatocellular necrosis. High-Risk Modifiers: Chronic ethanol consumption strongly induces CYP2E1, accelerating NAPQI generation; malnutrition, fasting, and cachexia deplete baseline glutathione stores. The Rumack-Matthew Nomogram applies strictly to single acute ingestions between 4 and 24 hours (150 µg/mL treatment line at 4 hours). N-Acetylcysteine (NAC) provides exogenous cysteine (the rate-limiting substrate for glutathione synthesis) and acts as a direct sulfhydryl donor to bind NAPQI. Initiating NAC within 8 to 10 hours of acute ingestion virtually eliminates mortality from hepatotoxicity.",
+      drugIds: ["acetaminophen"],
+    },
+    {
+      id: "clin-toxic-alcohols-osmolal-gap-fomepizole",
+      lane: "clinical",
+      kicker: "Toxic Alcohols & Metabolic Acidosis",
+      title: "Methanol vs Ethylene Glycol: Osmolal Gap Dissipation, Formic/Oxalic End-Organ Injury & Fomepizole",
+      prompt: "A patient presents 12 hours after ingesting an unknown industrial fluid with marked high anion gap metabolic acidosis, elevated serum osmolal gap, visual disturbances ('snowfield vision'), and acute kidney injury.",
+      ask: "How do Alcohol Dehydrogenase (ADH) kinetics, metabolite toxicity (formic acid vs calcium oxalate), and Fomepizole competitive inhibition differentiate toxic alcohol management?",
+      choices: [
+        {
+          id: "adh-formic-vs-oxalic-fomepizole-competitive-blockade",
+          label: "ADH bioactivates methanol to formic acid (cytochrome c oxidase inhibitor causing retinal snowfield blindness and putaminal necrosis) and ethylene glycol to glycolic/oxalic acid (calcium oxalate tubule crystals causing acute renal failure); early osmolal gap narrows as parent alcohols convert to toxic anion acids; Fomepizole competitively blocks ADH (Ki ~0.1 µM, 8000x affinity vs ethanol)",
+        },
+        {
+          id: "toxic-alcohols-cause-pure-respiratory-alkalosis",
+          label: "Methanol and ethylene glycol directly stimulate the medullary respiratory center, causing profound respiratory alkalosis without metabolic acidosis",
+        },
+        {
+          id: "fomepizole-is-a-direct-chelator-of-formic-acid",
+          label: "Fomepizole acts as an intravascular chelating agent that directly binds circulating formic and glycolic acids for fecal excretion",
+        },
+        {
+          id: "calcium-oxalate-crystals-protect-renal-tubules",
+          label: "Calcium oxalate crystals form a protective lining along the proximal tubule brush border that accelerates renal recovery",
+        },
+      ],
+      correct: "adh-formic-vs-oxalic-fomepizole-competitive-blockade",
+      answer: "Toxic alcohol poisonings exhibit a classic two-phase kinetic profile: (1) Early phase: Unmetabolized parent alcohols (methanol, ethylene glycol) are low-molecular-weight osmotically active solutes that create a marked elevated Serum Osmolal Gap (Measured Osmolality - Calculated Osmolality > 10–14 mOsm/kg) with minimal initial acidosis. (2) Late phase: As Alcohol Dehydrogenase (ADH) and Aldehyde Dehydrogenase (ALDH) metabolize parent alcohols, the osmolal gap dissipates while an extreme High Anion Gap Metabolic Acidosis (HAGMA) emerges. Divergent End-Organ Toxicities: Methanol -> formaldehyde -> Formic Acid. Formic acid potently inhibits mitochondrial cytochrome c oxidase (Complex IV), causing histotoxic hypoxia. Formate selectively damages the optic nerve and retinal pigmented epithelium (producing blurred vision, photophobia, optic disc hyperemia, and permanent 'snowstorm' blindness) and the basal ganglia (putaminal hemorrhagic necrosis). Co-factor: Leucovorin / Folinic acid (50 mg IV q4h) accelerates tetrahydrofolate-dependent conversion of formate to CO2 and H2O. Ethylene Glycol -> glycolaldehyde -> Glycolic Acid -> glyoxylic acid -> Oxalic Acid. Glycolic acid drives severe acidosis; oxalic acid precipitates with ionized calcium to form calcium oxalate monohydrate needle/envelope crystals in renal tubules, causing acute tubular necrosis, anuria, and severe hypocalcemia. Co-factors: Thiamine (100 mg IV) and Pyridoxine (50 mg IV q6h) shunt glyoxylate into non-toxic alpha-hydroxy-beta-ketoadipate and glycine. Antidote: Fomepizole (4-methylpyrazole) is a potent competitive inhibitor of ADH with a Ki ~ 0.1 µM (8,000-fold higher affinity for ADH than ethanol). Dosing is 15 mg/kg IV loading, followed by 10 mg/kg q12h x 4 doses, then 15 mg/kg q12h (due to CYP auto-induction). Indications for hemodialysis include severe acidemia (pH < 7.25), visual deficits, renal failure, or level >= 50 mg/dL.",
+      drugIds: ["ethanol"],
+    },
+    {
+      id: "clin-salicylate-ion-trapping-potassium-rule",
+      lane: "clinical",
+      kicker: "Salicylate Toxicology & Renal Clearance",
+      title: "Salicylate Toxicity: Uncoupled Oxidative Phosphorylation, Ion-Trapping Alkalinization & The Potassium Mandate",
+      prompt: "An adult patient presents with acute aspirin overdose displaying tachypnea, tinnitus, nausea, mixed respiratory alkalosis and high anion gap metabolic acidosis, and hypokalemia (serum K+ 3.2 mEq/L).",
+      ask: "What physiological mechanism explains why urinary alkalinization (urine pH 7.5–8.0) escalates salicylate clearance up to 20-fold, and why is potassium repletion mandatory before urine can be alkalinized?",
+      choices: [
+        {
+          id: "salicylate-weak-acid-ion-trapping-hk-atpase-potassium-mandate",
+          label: "Salicylic acid is a weak acid (pKa 3.5); raising urine pH to 7.5–8.0 converts it to ionized conjugate base (A-), preventing passive tubular reabsorption ('ion trapping') and increasing clearance 10- to 20-fold; hypokalemia causes renal H+/K+-ATPase to excrete H+ to conserve K+, creating paradoxical aciduria that prevents alkalinization unless K+ is aggressively repleted (>= 4.0–4.5 mEq/L)",
+        },
+        {
+          id: "aspirin-cleared-by-apical-enac-sodium-exchangers",
+          label: "Aspirin is actively transported by apical ENaC sodium channels, and urinary alkalinization forces sodium into cells to sweep aspirin into urine",
+        },
+        {
+          id: "potassium-directly-oxidizes-salicylate-in-tubule-lumen",
+          label: "Potassium ions directly oxidize salicylic acid into gentisic acid inside the collecting duct, neutralizing its toxic properties",
+        },
+        {
+          id: "salicylate-toxicity-causes-isolated-metabolic-alkalosis",
+          label: "Salicylates cause pure metabolic alkalosis by stimulating gastric parietal proton pumps, eliminating the need for bicarbonate infusion",
+        },
+      ],
+      correct: "salicylate-weak-acid-ion-trapping-hk-atpase-potassium-mandate",
+      answer: "Salicylate poisoning causes a classic biphasic, mixed acid-base disturbance: (1) Direct stimulation of the medullary respiratory center induces hyperventilation, producing an early Respiratory Alkalosis. (2) Uncoupling of mitochondrial oxidative phosphorylation disrupts ATP synthesis, forcing anaerobic glycolysis, accelerating fatty acid beta-oxidation, and driving severe lactic acidosis and ketoacidosis that culminates in a High Anion Gap Metabolic Acidosis. Ion-Trapping Renal Clearance: Salicylic acid (HA) is a weak lipid-soluble carboxylic acid with a pKa of approximately 3.5. Under physiological acidic tubular conditions (urine pH 5.5), a substantial fraction of salicylate exists in the uncharged, non-ionized form (HA), which readily diffuses passively across the lipophilic apical tubular epithelium back into peritubular capillaries. Raising urine pH to 7.5–8.0 via IV Sodium Bicarbonate shifts the Henderson-Hasselbalch equilibrium dramatically: at pH 7.5, greater than 99.99% of salicylate is dissociated into the negatively charged, polar conjugate base (A-). Charged salicylate cannot cross the lipophilic membrane, trapping it within the tubular lumen and escalating renal clearance by 10- to 20-fold! The Mandatory Potassium Repletion Rule: In hypokalemia, cortical collecting duct principal cells and intercalated cells activate the apical H+/K+-ATPase to reabsorb potassium from tubular fluid in exchange for secreting protons (H+) into the urine. This generates Paradoxical Aciduria (acidic urine despite systemic alkalemia). The kidney will refuse to excrete bicarbonate or alkalinize the urine until serum potassium is aggressively restored (target serum K+ >= 4.0–4.5 mEq/L). Emergent hemodialysis criteria include salicylate level > 100 mg/dL (acute) or > 60 mg/dL (chronic), altered mental status, cerebral edema, non-cardiogenic pulmonary edema, or refractory acidosis.",
+      drugIds: ["aspirin"],
+    },
+    {
+      id: "clin-toxidrome-differential-hunter-nms-anticholinergic",
+      lane: "clinical",
+      kicker: "Neuropsychiatric Emergencies & Toxidromes",
+      title: "Serotonin Syndrome (Hunter Criteria) vs Neuroleptic Malignant Syndrome vs Anticholinergic Storm",
+      prompt: "A psychiatric emergency patient presents with altered mental status, autonomic instability (tachycardia, hypertension), and severe hyperthermia (temperature 39.2°C / 102.6°F).",
+      ask: "Which clinical exam findings, neuromuscular signatures, and autonomic signs reliably distinguish Serotonin Syndrome, Neuroleptic Malignant Syndrome (NMS), and Anticholinergic Toxicity?",
+      choices: [
+        {
+          id: "hunter-clonus-vs-nms-leadpipe-vs-anticholinergic-anhidrosis",
+          label: "Serotonin Syndrome (rapid onset <24h) is defined by Hunter criteria: clonus (spontaneous/inducible/ocular), tremor, lower-extremity hyperreflexia, and profuse diaphoresis; NMS (insidious onset over days) features dopamine D2 blockade, generalized 'lead-pipe' rigidity, hyporeflexia, extreme CPK (>1000–50,000 IU/L), and diaphoresis; Anticholinergic toxicity is definitively differentiated by anhidrosis (completely dry skin, dry axillae, and dry mucous membranes) alongside mydriasis, urinary retention, and absent bowel sounds",
+        },
+        {
+          id: "serotonin-syndrome-features-dry-skin-and-hyporeflexia",
+          label: "Serotonin syndrome uniquely causes complete cessation of sweating (dry skin) and flaccid hyporeflexia of all muscle groups",
+        },
+        {
+          id: "nms-develops-within-minutes-of-oral-dosing",
+          label: "Neuroleptic Malignant Syndrome develops within 15 minutes of an antipsychotic dose and resolves immediately with acetaminophen",
+        },
+        {
+          id: "anticholinergic-toxicity-presents-with-pinpoint-pupils",
+          label: "Anticholinergic toxidrome is characterized by miosis (pinpoint pupils), copious hypersalivation, and hyperactive bowel sounds",
+        },
+      ],
+      correct: "hunter-clonus-vs-nms-leadpipe-vs-anticholinergic-anhidrosis",
+      answer: "Differentiating life-threatening hyperthermic psychiatric emergencies is essential because targeted antidotal interventions differ completely: (1) Serotonin Syndrome (SS): Driven by excessive 5-HT2A and 5-HT1A receptor stimulation. Onset is rapid (hours, typically <24h post-dose escalation or drug combination). Neuromuscular signature: Hyperkinesia, tremor, akathisia, marked hyperreflexia with lower-extremity predominance, and Clonus (spontaneous, inducible, or ocular). Autonomic signature: Profuse diaphoresis, shivering, dilated pupils, hyperactive bowel sounds, diarrhea. The Hunter Serotonin Toxicity Criteria require exposure to a serotonergic agent PLUS: spontaneous clonus; OR inducible clonus + agitation/diaphoresis; OR ocular clonus + agitation/diaphoresis; OR tremor + hyperreflexia; OR hypertonia + temperature >38°C + ocular/inducible clonus. Antidote: Cyproheptadine (5-HT2A antagonist) and benzodiazepines. (2) Neuroleptic Malignant Syndrome (NMS): Driven by central dopamine D2 receptor antagonism in the striatum and hypothalamus. Onset is insidious (typically evolving over 3 to 9 days). Neuromuscular signature: Hypokinesia, severe generalized 'lead-pipe' rigidity, hyporeflexia (or normal reflexes), bradykinesia. Autonomic signature: Marked hyperthermia, labile blood pressure, profuse diaphoresis. Lab hallmark: Massive creatine kinase (CPK) elevation (frequently >1,000 to >50,000 IU/L) due to persistent severe isometric muscular rigidity and rhabdomyolysis, along with leukocytosis. Antidotes: Bromocriptine (D2 agonist), Dantrolene (RyR1 calcium release blocker), Amantadine. (3) Anticholinergic Toxicity: Driven by competitive muscarinic (M1–M5) blockade. The Pathognomonic Differentiator: ANHIDROSIS (completely dry skin, dry axillae, parched mucous membranes). Both SS and NMS present with profuse sweating (diaphoresis); anticholinergic storm features zero sweat ('dry as a bone, red as a beet, hot as a hare, blind as a bat, mad as a hatter, full as a flask'). Pupils are widely dilated and poorly reactive; bowel sounds are absent/silent (hypomotility/ileus); urinary retention is severe. Antidote: Physostigmine (acetylcholinesterase inhibitor crossing BBB), provided TCA conduction delay is excluded.",
+      drugIds: ["fluoxetine", "haloperidol", "diphenhydramine"],
+    },
+    {
+      id: "clin-clozapine-tdm-smoking-cyp1a2-cigh",
+      lane: "clinical",
+      kicker: "Psychopharmacology & Clozapine Kinetics",
+      title: "Clozapine TDM: The Smoking Cessation CYP1A2 Surge, Neutropenia REMS & Hypomotility Mortality",
+      prompt: "A patient with refractory schizophrenia stabilized on clozapine (450 mg daily, baseline trough 480 ng/mL) is admitted to a smoke-free inpatient psychiatric hospital. Eight days later, the patient develops profound sedation, myoclonic twitches, confusion, and a repeat clozapine trough level of 1,020 ng/mL.",
+      ask: "What molecular hepatic mechanism caused this toxic level surge, and what are the major monitoring mandates regarding absolute neutrophil count (ANC) and gastrointestinal hypomotility (CIGH)?",
+      choices: [
+        {
+          id: "clozapine-smoking-pah-cyp1a2-cessation-surge-rems-cigh",
+          label: "Polycyclic aromatic hydrocarbons (PAHs) in burning tobacco smoke (not nicotine) are potent inducers of CYP1A2; abrupt smoking cessation eliminates induction over 3–7 days, dropping clearance by 50% and doubling clozapine levels (risking seizures and myocarditis); ANC must be monitored under REMS (hold permanently if ANC <500/µL); and Clozapine-Induced Gastrointestinal Hypomotility (CIGH) causes fatal bowel infarction with mortality exceeding agranulocytosis",
+        },
+        {
+          id: "nicotine-directly-inhibits-clozapine-renal-filtration",
+          label: "Nicotine directly stimulates proximal tubular clozapine secretion; stopping smoking causes renal failure without affecting hepatic enzymes",
+        },
+        {
+          id: "clozapine-induces-polycythemia-vera-at-low-doses",
+          label: "Clozapine induces bone marrow hyperplasia that elevates neutrophil counts to dangerous levels requiring phlebotomy",
+        },
+        {
+          id: "smoking-cessation-accelerates-clozapine-glucuronidation",
+          label: "Quitting tobacco smoke massively accelerates UGT glucuronidation, which drives paradoxical accumulation of active toxic metabolites",
+        },
+      ],
+      correct: "clozapine-smoking-pah-cyp1a2-cessation-surge-rems-cigh",
+      answer: "Clozapine is a narrow therapeutic index atypical antipsychotic with extensive hepatic metabolism primarily mediated by Cytochrome P450 1A2 (CYP1A2, contributing ~70% of total clearance), with secondary contributions from CYP2D6, CYP3A4, and CYP2C19. (1) The Smoking Cessation Kinetic Paradox: Polycyclic aromatic hydrocarbons (PAHs) generated by burning tobacco smoke (such as benzo[a]pyrene) bind the Aryl Hydrocarbon Receptor (AhR), driving robust transcriptional induction of CYP1A2. Note: Nicotine itself (patches, gums, vapes) does NOT induce CYP1A2. In active smokers, clozapine clearance is accelerated, requiring 1.5- to 2-fold higher maintenance doses. When a stabilized smoker abruptly stops smoking (e.g. upon hospital admission, incarceration, or acute illness), CYP1A2 induction washes out over 3 to 7 days. Intrinsic clearance plummets by 40% to 60%, resulting in a dramatic 50% to 100% surge in clozapine plasma concentrations on an unchanged oral dose. At levels exceeding 600–1,000 ng/mL, the risk of toxic encephalopathy, seizures (lowers seizure threshold dose-dependently), toxic myocarditis, orthostatic collapse, and fatal aspiration pneumonia escalates exponentially. Proactive recommendation: Reduce clozapine dose by 30% to 50% upon smoking cessation and monitor troughs closely. (2) Clozapine REMS Absolute Neutrophil Count (ANC) Rails: Clozapine carries an FDA Boxed Warning for severe neutropenia / agranulocytosis (<0.8–1% incidence). Baseline ANC must be >= 1,500/µL (or >= 1,000/µL for Benign Ethnic Neutropenia, BEN). ANC is checked weekly for 6 months, every 2 weeks for months 6–12, then monthly indefinitely. If severe neutropenia develops (ANC < 500/µL), clozapine MUST be immediately and permanently discontinued; rechallenge is strictly contraindicated. (3) Clozapine-Induced Gastrointestinal Hypomotility (CIGH): Potent peripheral muscarinic (M1/M3) antagonism and 5-HT3 antagonism severely impair colonic motility, progressing from constipation to fecal impaction, paralytic ileus, toxic megacolon, bowel ischemia, perforation, and fatal septic shock. Recent epidemiological literature confirms that the case-fatality rate of CIGH (15–25%) exceeds the mortality rate of agranulocytosis! Proactive, daily bowel regimens (osmotic laxatives like polyethylene glycol, stimulant laxatives) are mandatory.",
+      drugIds: ["clozapine", "ciprofloxacin", "fluvoxamine"],
     },
   ];
   return cards.map((c) => ({
