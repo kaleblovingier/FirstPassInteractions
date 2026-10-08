@@ -431,7 +431,7 @@ export function DeskApp() {
           pro ? (
             <EnzymeAtlas />
           ) : (
-            <Paywall gate="atlas">
+            <Paywall gate="atlas" pin>
               <EnzymeAtlas />
             </Paywall>
           )
