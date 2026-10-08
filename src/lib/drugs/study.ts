@@ -7,17 +7,20 @@
 import { DRUGS, DRUG_BY_ID } from "./catalog";
 import { FDA_GRADES, TDI } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
+import { isDue, type StudyMark } from "./study-marks";
 import type { Drug, Enzyme, Finding } from "./types";
 import { ENZYMES, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
 import { WASHOUT_OFFSET, washoutOffsetKind } from "./washout-plain";
+
+export type { StudyGrade, StudyMark } from "./study-marks";
+export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
 
 if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
   DRUG_BY_ID["hydrochlorothiazide"] = DRUG_BY_ID["hctz"];
 }
 
 export type StudyLane = "drill" | "boards" | "desk" | "cyp" | "clinical";
-export type StudyMark = "got" | "miss";
 export type StudyPile = "all" | "open" | "miss";
 
 export type ClinicalTopic =
@@ -81,7 +84,7 @@ export const STUDY_LANES: { id: StudyLane; label: string }[] = [
 export const STUDY_PILES: { id: StudyPile; label: string }[] = [
   { id: "all", label: "All" },
   { id: "open", label: "Unseen" },
-  { id: "miss", label: "Missed" },
+  { id: "miss", label: "Due" },
 ];
 
 function hash(s: string) {
@@ -4038,8 +4041,9 @@ export function pileOf(
   cards: StudyCard[],
   pile: StudyPile,
   marks: Record<string, StudyMark | undefined>,
+  now = Date.now(),
 ): StudyCard[] {
   if (pile === "open") return cards.filter((c) => !marks[c.id]);
-  if (pile === "miss") return cards.filter((c) => marks[c.id] === "miss");
+  if (pile === "miss") return cards.filter((c) => isDue(marks[c.id], now));
   return cards;
 }

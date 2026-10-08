@@ -17,6 +17,8 @@ test("eight seeded lab assignments resolve to real samples", () => {
     assert.ok(sample, a.sampleId);
     assert.equal(LAB_BY_ID[a.id]?.id, a.id);
     assert.ok(a.prompt.length > 40);
+    assert.ok(a.key.length > 40, a.id);
+    assert.doesNotMatch(a.key, /\d+\s*mg/i, a.id);
   }
 });
 
