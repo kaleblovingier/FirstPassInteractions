@@ -281,20 +281,20 @@ test("mTOR Inhibitors: FKBP-12 competitive binding, additive nephrotoxicity, and
   const fkbpCollision = collisions.find((c) => c.id === "mtor-cni-fkbp12-nephrotoxicity");
   assert.ok(fkbpCollision, "Must detect FKBP-12 competition collision");
   assert.equal(fkbpCollision?.severity, "high");
-  assert.match(fkbpCollision?.pharmacologicalMechanism!, /FKBP-12/);
-  assert.match(fkbpCollision?.clinicalHazard!, /nephrotoxicity/i);
+  assert.match(fkbpCollision!.pharmacologicalMechanism, /FKBP-12/);
+  assert.match(fkbpCollision!.clinicalHazard, /nephrotoxicity/i);
 
   const woundCollision = collisions.find((c) => c.id === "mtor-surgical-wound-dehiscence");
   assert.ok(woundCollision, "Must detect surgical wound dehiscence collision");
-  assert.match(woundCollision?.pharmacologicalMechanism!, /VEGF/);
-  assert.match(woundCollision?.clinicalHazard!, /bronchial/i);
-  assert.match(woundCollision?.clinicalHazard!, /hepatic artery thrombosis/i);
+  assert.match(woundCollision!.pharmacologicalMechanism, /VEGF/);
+  assert.match(woundCollision!.clinicalHazard, /bronchial/i);
+  assert.match(woundCollision!.clinicalHazard, /hepatic artery thrombosis/i);
 
   const metabolicCollision = collisions.find(
     (c) => c.id === "mtor-proteinuria-hyperlipidemia-rails",
   );
   assert.ok(metabolicCollision, "Must detect hyperlipidemia and proteinuria rails");
-  assert.match(metabolicCollision?.monitoringAndMitigation!, /500-800 mg/);
+  assert.match(metabolicCollision!.monitoringAndMitigation, /500-800 mg/);
 });
 
 test("Corticosteroid Taper Model: Dynamic CNI Rebound Surge due to resolving CYP3A4/P-gp induction", () => {
@@ -330,10 +330,10 @@ test("Fatal Thiopurine Collision: Azathioprine + Xanthine Oxidase Inhibitor trig
   );
   assert.ok(azaAlert, "Must detect Azathioprine + Allopurinol collision");
   assert.equal(azaAlert?.severity, "critical");
-  assert.match(azaAlert?.pharmacologicalMechanism!, /6-mercaptopurine/);
-  assert.match(azaAlert?.pharmacologicalMechanism!, /6-TGN/);
-  assert.match(azaAlert?.clinicalHazard!, /bone marrow aplasia/i);
-  assert.match(azaAlert?.monitoringAndMitigation!, /67% to 75%/);
+  assert.match(azaAlert!.pharmacologicalMechanism, /6-mercaptopurine/);
+  assert.match(azaAlert!.pharmacologicalMechanism, /6-TGN/);
+  assert.match(azaAlert!.clinicalHazard, /bone marrow aplasia/i);
+  assert.match(azaAlert!.monitoringAndMitigation, /67% to 75%/);
 
   const collisionsFebuxostat = detectTransplantCollisions(["imuran", "febuxostat"]);
   assert.ok(
@@ -346,13 +346,13 @@ test("CYP3A4/P-gp Strong Perpetrators: Voriconazole toxicity surge and Rifampin 
   const inhAlert = inhCollisions.find((c) => c.id === "cni-strong-cyp3a-inhibitor-surge");
   assert.ok(inhAlert, "Must detect CNI + Strong CYP3A inhibitor alert");
   assert.equal(inhAlert?.severity, "critical");
-  assert.match(inhAlert?.clinicalHazard!, /acute kidney injury/i);
+  assert.match(inhAlert!.clinicalHazard, /acute kidney injury/i);
 
   const indCollisions = detectTransplantCollisions(["cyclosporine", "rifampin"]);
   const indAlert = indCollisions.find((c) => c.id === "cni-strong-cyp3a-inducer-rejection");
   assert.ok(indAlert, "Must detect CNI + Strong CYP3A inducer rejection alert");
   assert.equal(indAlert?.severity, "critical");
-  assert.match(indAlert?.clinicalHazard!, /allograft rejection/i);
+  assert.match(indAlert!.clinicalHazard, /allograft rejection/i);
 });
 
 test("transplantReportOnDesk: synthesizes complete quad-therapy analysis, host adjustments, and CDS posture", () => {

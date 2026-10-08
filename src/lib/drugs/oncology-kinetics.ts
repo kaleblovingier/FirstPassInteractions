@@ -185,7 +185,7 @@ export function evaluateMtxElimination(
     status = "delayed";
   }
 
-  let normalRange = "3.5–10 hours (terminal phase)";
+  const normalRange = "3.5–10 hours (terminal phase)";
   let patientEstimatedRange = "Expected normal clearance (~3.5–10h)";
 
   if (status === "delayed") {
