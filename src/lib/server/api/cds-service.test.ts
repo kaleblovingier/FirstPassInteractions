@@ -88,9 +88,9 @@ test("ClinicalDecisionService: rejects unprocessable interaction requests with R
 test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics", async () => {
   ClinicalDecisionService.clearCaches();
   const res = await ClinicalDecisionService.evaluateKinetics({
-    drugs: ["methotrexate", "tacrolimus", "phenytoin", "norepinephrine"],
+    drugs: ["methotrexate", "tacrolimus", "phenytoin", "norepinephrine", "digoxin", "furosemide", "propofol"],
     host: { age: 55, scr: 1.8, kidney: "moderate" },
-    modules: ["oncology", "transplant", "phenytoin", "vasoactive"],
+    modules: ["oncology", "transplant", "phenytoin", "vasoactive", "antiarrhythmic", "acidbase", "anesthesia"],
   });
 
   assert.equal(res.success, true);
@@ -99,6 +99,9 @@ test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics"
     assert.ok(res.data.modules.transplant);
     assert.ok(res.data.modules.phenytoin);
     assert.ok(res.data.modules.vasoactive);
+    assert.ok(res.data.modules.antiarrhythmic);
+    assert.ok(res.data.modules.acidbase);
+    assert.ok(res.data.modules.anesthesia);
     assert.ok(res.data.meta.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
   }
 });

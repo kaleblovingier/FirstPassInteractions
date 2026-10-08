@@ -46,6 +46,9 @@ import { transplantOnDesk, transplantReportOnDesk } from "../../drugs/transplant
 import { anticoagulationOnDesk, anticoagulationReportOnDesk } from "../../drugs/anticoagulation-reversal";
 import { toxicologyOnDesk, toxicologyReportOnDesk } from "../../drugs/toxicology-kinetics";
 import { neuropsychOnDesk, neuropsychReportOnDesk } from "../../drugs/neuropsych-kinetics";
+import { antiarrhythmicOnDesk, antiarrhythmicReportOnDesk } from "../../drugs/antiarrhythmic-kinetics";
+import { acidBaseOnDesk, acidBaseReportOnDesk } from "../../drugs/acid-base-kinetics";
+import { anesthesiaOnDesk, anesthesiaReportOnDesk } from "../../drugs/anesthesia-reversal";
 
 export const STATUTORY_CDS_DISCLAIMER =
   "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice.";
@@ -116,6 +119,9 @@ export interface KineticsEvaluationResult {
     anticoagulation?: unknown;
     toxicology?: unknown;
     neuropsych?: unknown;
+    antiarrhythmic?: unknown;
+    acidbase?: unknown;
+    anesthesia?: unknown;
   };
 }
 
@@ -373,6 +379,15 @@ export class ClinicalDecisionService {
     }
     if (runAll || requestedModules.includes("neuropsych")) {
       modObj.neuropsych = neuropsychReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("antiarrhythmic")) {
+      modObj.antiarrhythmic = antiarrhythmicReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("acidbase")) {
+      modObj.acidbase = acidBaseReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("anesthesia")) {
+      modObj.anesthesia = anesthesiaReportOnDesk(resolvedIds, host);
     }
 
     const durationMs = Math.round((performance.now() - startTime) * 100) / 100;
