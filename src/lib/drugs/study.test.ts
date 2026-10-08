@@ -1226,6 +1226,49 @@ describe("study learning tools", () => {
       }
     }
   });
+
+  it("a stored enzyme role asks substrate, inhibitor, or inducer without leaking the role in the prompt", () => {
+    const cards = deskCards(["clarithromycin", "simvastatin"], []);
+    const inhibitor = cards.find((c) => c.id === "role-clarithromycin");
+    const substrate = cards.find((c) => c.id === "role-simvastatin");
+    assert.ok(inhibitor);
+    assert.equal(inhibitor.correct, "inhibitor");
+    assert.equal(inhibitor.choices?.length, 3);
+    assert.equal(inhibitor.prompt.toLowerCase().includes("inhibitor"), false);
+    assert.match(inhibitor.answer, /FDA grade on this desk/);
+    assert.ok(substrate);
+    assert.equal(substrate.correct, "substrate");
+    assert.equal(substrate.prompt.toLowerCase().includes("substrate"), false);
+    assert.match(substrate.answer, /clearance|activation/);
+  });
+
+  it("a stored exposure arrow becomes a direction card and a non-arrow row does not", () => {
+    const up: Finding = {
+      id: "up-row",
+      severity: "major",
+      kind: "pk",
+      enzymes: ["CYP3A4"],
+      effect: "↑ exposure",
+      mechanism: "strong CYP3A4 inhibition of clearance",
+      clinical: "Name the direction.",
+      drugIds: ["clarithromycin", "simvastatin"],
+      headline: "Mapped row",
+      tags: ["pk"],
+    };
+    const plain: Finding = {
+      ...up,
+      id: "plain-row",
+      effect: "Additive effect on this map.",
+      mechanism: "Shared effect.",
+    };
+    const cards = deskCards([], [up, plain]);
+    const arrow = cards.find((c) => c.id === "arrow-up-row");
+    assert.ok(arrow);
+    assert.equal(arrow.correct, "up-parent");
+    assert.equal(arrow.prompt.includes("↑"), false);
+    assert.equal(arrow.choices?.length, 4);
+    assert.equal(cards.some((c) => c.id === "arrow-plain-row"), false);
+  });
 });
 
 

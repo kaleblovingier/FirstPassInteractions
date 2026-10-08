@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.52.0",
+  version: "1.53.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.52.0",
+  buildId: "FP-SW-1.53.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -64,6 +64,7 @@ export const INDICATIONS = [
   "The check contents line names up to three enzyme groups already on the rows, and can open Learn for this desk. Search and the atlas say when a name is already on the desk. A cited paper names which of its drugs are on the desk. Learn asks which teaching bin is stored on a mapped row, using the four existing bins. A watch pin and the medication review can open Learn. None of this is a milligram or a clearance.",
   "Pharmacokinetic math does not emit Avoid together; a named label pin still can. Dual ACE-inhibitor plus ARB is Serious concern unless the pair is the labeled aliskiren pin. Linezolid with a tyramine food is Serious concern; an irreversible MAOI with that food stays Avoid together. A row with no external source says so. The bins are unreviewed engineering defaults. None of this is a milligram or a clearance.",
   "The founding card on the enzyme atlas sits at the top of that page and stays in view while the map scrolls. It does not change what founding unlocks.",
+  "Learn asks the stored role on a name (substrate, inhibitor, or inducer) and the stored direction on a mapped row (exposure up or down, or the active metabolite). The prompt does not give that answer away. None of this is a milligram or a clearance.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

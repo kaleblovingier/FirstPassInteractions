@@ -504,6 +504,37 @@ const KIND_BINS: StudyChoice[] = [
   { id: "clinic", label: "Clinic" },
 ];
 
+const ROLE_CHOICES: StudyChoice[] = [
+  { id: "substrate", label: "Substrate" },
+  { id: "inhibitor", label: "Inhibitor" },
+  { id: "inducer", label: "Inducer" },
+];
+
+const ARROW_CHOICES: StudyChoice[] = [
+  { id: "up-parent", label: "Victim exposure rises" },
+  { id: "down-parent", label: "Victim exposure falls" },
+  { id: "down-active", label: "Active metabolite falls" },
+  { id: "up-active", label: "Active metabolite rises" },
+];
+
+function storedArrow(effect: string): string | null {
+  if (effect.includes("↓ active metabolite")) return "down-active";
+  if (effect.includes("↑ active metabolite")) return "up-active";
+  if (effect.includes("↑ exposure")) return "up-parent";
+  if (effect.includes("↓ exposure")) return "down-parent";
+  return null;
+}
+
+function roleAnswer(name: string, role: Drug["enzymes"][number]): string {
+  if (role.kind === "substrate") {
+    const path = role.pathway === "activation" ? "activation" : "clearance";
+    const nti = role.nti ? " Narrow-index flag is stored on this row." : "";
+    return `${name} is stored as a ${role.sensitivity} ${role.enzyme} substrate (${path}).${nti} Not a milligram.`;
+  }
+  const fold = FDA_GRADES[role.kind][role.strength].fold;
+  return `${name} is stored as a ${role.strength} ${role.enzyme} ${role.kind}. FDA grade on this desk: ${fold}. Not a milligram.`;
+}
+
 function kindBinLabel(kind: string): string | null {
   if (kind === "pk") return "Levels";
   if (kind === "pd") return "Effects";
@@ -543,6 +574,21 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       answer: `Teaching bin: ${SEVERITY_LABEL[f.severity]}. A category from this model, not an individual risk.`,
       drugIds: f.drugIds,
     });
+    const arrow = storedArrow(f.effect);
+    if (arrow) {
+      out.push({
+        id: `arrow-${f.id}`,
+        lane: "desk",
+        kicker: "Direction",
+        title: names,
+        prompt: `${names}.`,
+        ask: "Which direction is stored on this mapped row?",
+        choices: bySeed(ARROW_CHOICES, `arrow-${f.id}`),
+        correct: arrow,
+        answer: `Direction stored: ${f.effect}. ${f.mechanism}. Not a clearance and not a milligram.`,
+        drugIds: f.drugIds,
+      });
+    }
     const kind =
       f.kind === "pk" ? "Pharmacokinetic" : f.kind === "pd" ? "Pharmacodynamic" : f.kind === "geno" ? "Phenotype" : "Clinic";
     const sole = f.enzymes.length === 1 ? f.enzymes[0] : null;
@@ -610,6 +656,22 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       card.correct = first;
     }
     out.push(card);
+    const role =
+      d.enzymes.find((e) => e.kind === "inhibitor" || e.kind === "inducer") ?? d.enzymes[0];
+    if (role) {
+      out.push({
+        id: `role-${id}`,
+        lane: "desk",
+        kicker: "Role",
+        title: d.name,
+        prompt: `${d.name}. ${role.enzyme}.`,
+        ask: "What role is stored for that enzyme: substrate, inhibitor, or inducer?",
+        choices: bySeed(ROLE_CHOICES, `role-${id}`),
+        correct: role.kind,
+        answer: roleAnswer(d.name, role),
+        drugIds: [id],
+      });
+    }
   }
   return out;
 }
