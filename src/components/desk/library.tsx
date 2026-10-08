@@ -430,13 +430,15 @@ function CompoundsShelf() {
     }
     const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
     const top = ranked[0];
+    const count = members.filter((d) => selected.includes(d.id)).length;
+    const onDesk = count > 0 ? ` ${count} already on the desk.` : "";
     if (!top || top[1] < 2)
-      return `${members.length} on the ${shelf} shelf. No shared enzyme role on this map. Not a collision.`;
+      return `${members.length} on the ${shelf} shelf. No shared enzyme role on this map.${onDesk} Not a collision.`;
     const second = ranked[1];
     const next =
       second && second[0] !== top[0] && second[1] >= 2 ? ` Next: ${second[1]} carry ${second[0]}.` : "";
-    return `${top[1]} of ${members.length} on the ${shelf} shelf carry ${top[0]}.${next} Not a collision.`;
-  }, [inFamily, shelf]);
+    return `${top[1]} of ${members.length} on the ${shelf} shelf carry ${top[0]}.${next}${onDesk} Not a collision.`;
+  }, [inFamily, shelf, selected]);
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -644,9 +646,9 @@ function CompoundsShelf() {
           {rows.map((d) => {
             const on = selected.includes(d.id);
             const enzymes = d.enzymes
-              .filter((e) => e.kind !== "substrate")
+              .filter((e): e is Extract<typeof e, { kind: "inhibitor" | "inducer" }> => e.kind !== "substrate")
               .slice(0, 2)
-              .map((e) => `${e.enzyme.replace("CYP", "")} ${e.kind === "inhibitor" ? "inh" : "ind"}`);
+              .map((e) => `${e.strength} ${e.enzyme.replace("CYP", "")} ${e.kind === "inhibitor" ? "inh" : "ind"}`);
             const sub = d.enzymes.find((e) => e.kind === "substrate");
             return (
               <li key={d.id}>
@@ -692,7 +694,7 @@ function CompoundsShelf() {
                         : enzymes.length
                           ? enzymes.join(" · ")
                           : sub
-                            ? `${sub.enzyme.replace("CYP", "")} sub`
+                            ? `${sub.sensitivity} ${sub.enzyme.replace("CYP", "")} sub${sub.pathway === "activation" ? " activation" : ""}`
                             : "PD only"}
                       {!on && hasStahl(d.id) ? " · Stahl" : ""}
                       {!on && hasPgx(d.id) ? " · PGx" : ""}

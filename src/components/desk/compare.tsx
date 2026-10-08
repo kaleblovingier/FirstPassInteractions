@@ -15,6 +15,7 @@ import {
   type Severity,
 } from "@/lib/drugs/types";
 import { SAMPLE_REGIMENS, sampleNeedsPro, type SampleRegimen } from "@/lib/drugs/samples";
+import { FDA_GRADES } from "@/lib/drugs/cyp-protocol";
 import { severitySurface } from "./severity";
 
 interface CaseCompareProps {
@@ -62,6 +63,9 @@ function FindingRow({
   otherSeverity?: Severity;
 }) {
   const severityChanged = shared && otherSeverity !== undefined && finding.severity !== otherSeverity;
+  const gradeWord = finding.mechanism.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+  const grade = gradeWord === "strong" || gradeWord === "moderate" || gradeWord === "weak" ? gradeWord : null;
+  const kind = finding.tags.includes("inducer") ? "inducer" : finding.tags.includes("inhibitor") ? "inhibitor" : null;
 
   return (
     <li className="rounded-lg border border-border bg-surface-2 p-3">
@@ -80,6 +84,14 @@ function FindingRow({
       </div>
       <p className="mt-2 text-sm font-medium leading-snug text-fg">{finding.headline}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{finding.effect}</p>
+      {finding.enzymes.length > 0 ? (
+        <p className="mt-1 font-mono text-[11px] uppercase text-subtle">{finding.enzymes.join(" · ")}</p>
+      ) : null}
+      {grade && kind ? (
+        <p className="mt-1 text-xs leading-relaxed text-muted">
+          FDA fold: {FDA_GRADES[kind][grade].fold}. Not a milligram.
+        </p>
+      ) : null}
     </li>
   );
 }

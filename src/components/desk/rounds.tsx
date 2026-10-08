@@ -171,6 +171,11 @@ export function RoundsPage() {
                 load(r.drugIds, extrasOf(r));
                 setView("desk");
               }}
+              onStudy={() => {
+                setStarted(true);
+                load(r.drugIds, extrasOf(r));
+                setView("study");
+              }}
               gated={plan === "free" && roundNeedsPro(r)}
             />
           ))}
@@ -259,12 +264,14 @@ function RoundCard({
   revealed,
   onReveal,
   onLoad,
+  onStudy,
   gated,
 }: {
   round: Round;
   revealed: boolean;
   onReveal: () => void;
   onLoad: () => void;
+  onStudy: () => void;
   gated: boolean;
 }) {
   return (
@@ -302,6 +309,11 @@ function RoundCard({
             <Button size="sm" onClick={onLoad}>
               {gated ? "Put on desk · Founding" : "Put on desk"}
             </Button>
+            {!gated && round.drugIds.length > 0 ? (
+              <Button size="sm" variant="secondary" onClick={onStudy}>
+                Study these names
+              </Button>
+            ) : null}
             <Button size="sm" variant="secondary" onClick={onReveal} aria-pressed={revealed}>
               {revealed ? "Hide teach" : "Reveal teach"}
             </Button>

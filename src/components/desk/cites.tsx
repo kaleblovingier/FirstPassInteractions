@@ -64,6 +64,15 @@ export function CitesPage() {
 
   const hasFilter = tag !== "all" || q.trim().length > 0;
   const pubmedQuery = q.trim() || "drug interaction CYP";
+  const onDesk =
+    selected.length > 0
+      ? rows.filter((c) => c.drugIds.some((id) => selected.includes(id)))
+      : [];
+  const rest =
+    selected.length > 0
+      ? rows.filter((c) => !c.drugIds.some((id) => selected.includes(id)))
+      : [];
+  const showDeskShelf = onDesk.length > 0;
 
   function clearFilter() {
     setQ("");
@@ -181,6 +190,45 @@ export function CitesPage() {
           }}
           onView={setView}
         />
+      ) : showDeskShelf ? (
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+            Cited for a name on this desk
+          </p>
+          <ul className="mt-2 space-y-2">
+            {onDesk.map((c) => (
+              <CiteCard
+                key={c.pmid}
+                cite={c}
+                selected={selected}
+                onAdd={(id) => {
+                  const ok = add(id);
+                  if (ok) setView("desk");
+                }}
+              />
+            ))}
+          </ul>
+          {rest.length > 0 ? (
+            <>
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+                Rest of this shelf
+              </p>
+              <ul className="mt-2 space-y-2">
+                {rest.map((c) => (
+                  <CiteCard
+                    key={c.pmid}
+                    cite={c}
+                    selected={selected}
+                    onAdd={(id) => {
+                      const ok = add(id);
+                      if (ok) setView("desk");
+                    }}
+                  />
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
       ) : (
         <ul className="space-y-2">
           {rows.map((c) => (

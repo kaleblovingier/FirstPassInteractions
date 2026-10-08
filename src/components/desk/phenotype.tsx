@@ -180,8 +180,18 @@ export function PhenotypeCard({ hideKetamineRoute = false }: { hideKetamineRoute
           const gloss = phenotypeBlurb(phenotypes[enzyme]);
           return (
           <li key={enzyme}>
-            <div className="flex items-baseline justify-between gap-2">
-              <span id={`${uid}-${enzyme}`} className="font-mono text-xs text-fg">{enzyme}</span>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span id={`${uid}-${enzyme}`} className="font-mono text-xs text-fg">{enzyme}</span>
+                <button
+                  type="button"
+                  title={`Open ${enzyme} in the atlas`}
+                  onClick={() => useDesk.getState().setAtlasEnzyme(enzyme)}
+                  className="h-8 shrink-0 rounded-full bg-bg-sunken px-2 text-[10px] font-medium text-muted"
+                >
+                  Atlas
+                </button>
+              </div>
               <span className="truncate text-[10px] text-subtle">{HINT[enzyme]}</span>
             </div>
             <div role="group" aria-labelledby={`${uid}-${enzyme}`} className="mt-1.5 grid grid-cols-4 gap-1">

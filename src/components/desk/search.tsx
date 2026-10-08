@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { searchDrugs } from "@/lib/drugs/catalog";
 import { availableQuickChips } from "@/lib/drugs/quick-chips";
-import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
+import { ITEM_KIND_LABEL, type EnzymeRole } from "@/lib/drugs/types";
 import { isMatDesk } from "@/lib/drugs/window";
 import { plateForDrug } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -167,11 +167,19 @@ export function DrugSearch() {
                   title="Mapped enzyme involvement; see the result details for an explanation."
                 >
                   {drug.enzymes
-                    .filter((e) => e.kind !== "substrate")
+                    .filter(
+                      (e): e is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
+                        e.kind !== "substrate",
+                    )
                     .slice(0, 2)
-                    .map((e) => e.enzyme)
+                    .map((e) => `${e.strength} ${e.enzyme.replace("CYP", "")}`)
                     .join(" ") ||
-                    drug.enzymes[0]?.enzyme ||
+                    (() => {
+                      const first = drug.enzymes[0];
+                      if (!first || first.kind !== "substrate") return first?.enzyme;
+                      const label = `${first.sensitivity} ${first.enzyme.replace("CYP", "")}`;
+                      return first.pathway === "activation" ? `${label} activation` : label;
+                    })() ||
                     ITEM_KIND_LABEL[drug.kind]}
                 </span>
               </button>

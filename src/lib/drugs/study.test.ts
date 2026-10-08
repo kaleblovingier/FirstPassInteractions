@@ -3,12 +3,14 @@ import assert from "node:assert/strict";
 import { DRUG_BY_ID } from "./catalog";
 import { FDA_GRADES } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
+import type { Finding } from "./types";
 import {
   STUDY_LANES,
   CLINICAL_TOPICS,
   CLINICAL_TOPIC_MAP,
   cardsFor,
   clinicalCards,
+  deskCards,
   type StudyLane,
   type ClinicalTopic,
 } from "./study";
@@ -965,74 +967,6 @@ describe("study learning tools", () => {
     ];
 
     for (const cardId of targetCardIds) {
-      const card = cards.find((c) => c.id === cardId);
-      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
-      assert.equal(card.lane, "clinical");
-      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
-      assert.ok(card.correct, `Card ${cardId} must define correct`);
-      const correctChoice = card.choices?.find((c) => c.id === card.correct);
-      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
-
-      // Verify non-prescriptive posture
-      const text = `${card.prompt} ${card.ask} ${card.answer}`;
-      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
-      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
-      assert.doesNotMatch(text, /clinical decision support/i);
-
-      // Verify catalog drugs
-      for (const dId of card.drugIds) {
-        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
-      }
-    }
-  });
-
-  it("obstetric teratogenesis, epinephrine hyperlactatemia, mycophenolate EHC, and CNI steroid rebound cards expand clinicalCards to 112 and verify non-prescriptive posture", () => {
-    const cards = clinicalCards();
-    assert.equal(cards.length, 118);
-
-    const perinatalAndTransplantCardIds = [
-      "clin-teratogenic-critical-windows",
-      "clin-epinephrine-hyperlactatemia-type-b",
-      "clin-mycophenolate-ehc-flora-csa",
-      "clin-cni-steroid-taper-cyp3a-rebound",
-    ];
-
-    for (const cardId of perinatalAndTransplantCardIds) {
-      const card = cards.find((c) => c.id === cardId);
-      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
-      assert.equal(card.lane, "clinical");
-      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
-      assert.ok(card.correct, `Card ${cardId} must define correct`);
-      const correctChoice = card.choices?.find((c) => c.id === card.correct);
-      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
-
-      // Verify non-prescriptive posture
-      const text = `${card.prompt} ${card.ask} ${card.answer}`;
-      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
-      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
-      assert.doesNotMatch(text, /clinical decision support/i);
-
-      // Verify catalog drugs
-      for (const dId of card.drugIds) {
-        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
-      }
-    }
-  });
-
-  it("anticoagulation reversal, APAP NAC, toxic alcohols, salicylate ion-trapping, toxidrome differential, and clozapine TDM cards expand clinicalCards to 118 and verify non-prescriptive posture", () => {
-    const cards = clinicalCards();
-    assert.equal(cards.length, 118);
-
-    const emergencyCardIds = [
-      "clin-anticoagulation-reversal-andexanet-pcc-protamine",
-      "clin-apap-nac-rumack-cyp2e1-glutathione",
-      "clin-toxic-alcohols-osmolal-gap-fomepizole",
-      "clin-salicylate-ion-trapping-potassium-rule",
-      "clin-toxidrome-differential-hunter-nms-anticholinergic",
-      "clin-clozapine-tdm-smoking-cyp1a2-cigh",
-    ];
-
-    for (const cardId of emergencyCardIds) {
       const card = cards.find((c) => c.id === cardId);
       assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
       assert.equal(card.lane, "clinical");

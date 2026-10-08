@@ -464,34 +464,81 @@ function roleLine(d: Drug) {
   return bits;
 }
 
+function deskFoldSentence(f: Finding): string {
+  const grade = f.mechanism.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+  if (grade !== "strong" && grade !== "moderate" && grade !== "weak") return "";
+  if (!f.tags.includes("inhibitor") && !f.tags.includes("inducer")) return "";
+  const kind = f.tags.includes("inducer") ? "inducer" : "inhibitor";
+  return ` FDA fold: ${FDA_GRADES[kind][grade].fold}. Not a milligram.`;
+}
+
+function scrubNamed(text: string, named: string) {
+  return text.split(named).join(" ").replace(/\s+/g, " ").trim();
+}
+
+/** Shelf prompt for a per-drug card. The stem must not name the first enzyme. */
+function monoPrompt(d: Drug): string {
+  const brands = d.brands.slice(0, 3);
+  const shelf = brands.length ? `Brands on this shelf: ${brands.join(", ")}.` : d.cls;
+  const named = d.enzymes[0]?.enzyme;
+  if (!named || !shelf.includes(named)) return shelf;
+  const cls = scrubNamed(d.cls, named);
+  const clean = brands.map((b) => scrubNamed(b, named)).filter((b) => b.length > 0);
+  if (cls && clean.length) return `${cls}. ${clean.join(", ")}.`;
+  if (clean.length) return clean.join(", ");
+  if (cls) return cls;
+  return "Shelf class";
+}
+
 export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
   const out: StudyCard[] = [];
   for (const f of findings.slice(0, 6)) {
     const names = f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" × ");
     const kind =
       f.kind === "pk" ? "Pharmacokinetic" : f.kind === "pd" ? "Pharmacodynamic" : f.kind === "geno" ? "Phenotype" : "Clinic";
-    out.push({
+    const sole = f.enzymes.length === 1 ? f.enzymes[0] : null;
+    const card: StudyCard = {
       id: `desk-${f.id}`,
       lane: "desk",
       kicker: kind,
       title: names || "Collision",
-      prompt: `${names}. Mapped severity: ${f.severity}. Effect: ${f.effect}.`,
-      ask: "Say the mechanism out loud before you reveal. A preceptor wants the enzyme or the receptor, not a milligram.",
-      answer: clip([f.mechanism, f.clinical].filter(Boolean).join(" ")),
+      prompt: sole
+        ? `${names}.`
+        : `${names}. Mapped severity: ${f.severity}. Effect: ${f.effect}.`,
+      ask: sole
+        ? "Which enzyme does this mapped row name?"
+        : "Say the mechanism out loud before you reveal. A preceptor wants the enzyme or the receptor, not a milligram.",
+      answer:
+        clip([f.mechanism, f.clinical].filter(Boolean).join(" ")) +
+        deskFoldSentence(f) +
+        (sole ? ` Teaching bin: ${f.severity}. A category from this model, not an individual risk.` : ""),
       drugIds: f.drugIds,
-    });
+    };
+    if (sole) {
+      const seed = `desk-enzyme-${f.id}`;
+      const distractors = bySeed(
+        ENZYMES.filter((enzyme) => enzyme !== sole).map((enzyme) => ({ id: enzyme, label: enzyme })),
+        seed,
+      ).slice(0, 3);
+      card.choices = bySeed([{ id: sole, label: sole }, ...distractors], `${seed}-order`);
+      card.correct = sole;
+    }
+    out.push(card);
   }
   for (const id of ids) {
     const d = DRUG_BY_ID[id];
     if (!d) continue;
     const roles = roleLine(d);
-    out.push({
+    const first = d.enzymes[0]?.enzyme;
+    const card: StudyCard = {
       id: `mono-${id}`,
       lane: "desk",
       kicker: d.cls,
       title: d.name,
-      prompt: d.brands.length ? `Brands on this shelf: ${d.brands.slice(0, 3).join(", ")}.` : d.cls,
-      ask: "Enzyme roles, then the PD flag. Skip any milligram.",
+      prompt: monoPrompt(d),
+      ask: first
+        ? "Which enzyme is named first on this map?"
+        : "Enzyme roles, then the PD flag. Skip any milligram.",
       answer: clip(
         [
           roles.length ? `Enzymes: ${roles.join("; ")}.` : "No CYP role on this map — absence is not proof it is clean.",
@@ -503,7 +550,17 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
           .join(" "),
       ),
       drugIds: [id],
-    });
+    };
+    if (first) {
+      const seed = `mono-enzyme-${id}`;
+      const distractors = bySeed(
+        ENZYMES.filter((enzyme) => enzyme !== first).map((enzyme) => ({ id: enzyme, label: enzyme })),
+        seed,
+      ).slice(0, 3);
+      card.choices = bySeed([{ id: first, label: first }, ...distractors], `${seed}-order`);
+      card.correct = first;
+    }
+    out.push(card);
   }
   return out;
 }

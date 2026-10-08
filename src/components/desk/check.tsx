@@ -9,7 +9,7 @@ import { maxDrugs } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import type { ReaderBrief } from "@/lib/drugs/readers";
 import type { EnzymeRole, Finding, HostContext, Severity } from "@/lib/drugs/types";
-import { SEVERITY_LABEL } from "@/lib/drugs/types";
+import { ENZYMES, SEVERITY_LABEL } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
 import { DeskReaders } from "./readers";
@@ -57,8 +57,7 @@ function rolesFor(id: string, findings: Finding[]) {
   if (!drug) return [];
   const hit = new Set(findings.flatMap((f) => f.enzymes));
   const relevant = hit.size ? drug.enzymes.filter((e) => hit.has(e.enzyme)) : drug.enzymes;
-  const rows = (relevant.length ? relevant : drug.enzymes).slice(0, 4);
-  return rows.map(roleText);
+  return (relevant.length ? relevant : drug.enzymes).slice(0, 4);
 }
 
 function uniqueIds(f: Finding) {
@@ -95,6 +94,23 @@ function regimenGroups(findings: Finding[]) {
     .map(([key, rows]) => ({ key, title: groupTitle(rows[0]), rows: ordered(rows) }))
     .sort((a, b) => rank(b.rows[0]) - rank(a.rows[0]) || a.title.localeCompare(b.title));
   return { pairs, desk: ordered(desk) };
+}
+
+function rowGroupLabel(f: Finding) {
+  if (f.enzymes[0]) return f.enzymes[0];
+  if (f.kind === "pd") return "Effects";
+  return "Other";
+}
+
+function enzymeRowGroups(findings: Finding[]) {
+  const map = new Map<string, Finding[]>();
+  for (const f of findings) {
+    const label = rowGroupLabel(f);
+    const list = map.get(label) ?? [];
+    list.push(f);
+    map.set(label, list);
+  }
+  return [...map.entries()].map(([label, group]) => ({ label, rows: group }));
 }
 
 function unmappedPairs(ids: string[], hit: Set<string>) {
@@ -278,7 +294,7 @@ export function CheckBoard({
   const shelfGroups = sameShelfGroups(ids);
   const pairKey = ids.join("|");
   const [scope, setScope] = useState(pairKey);
-  const [openId, setOpenId] = useState<string | null>(rows[0]?.id ?? food[0]?.id ?? null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [tier, setTier] = useState<Severity | "all">("all");
   const [showFood, setShowFood] = useState(false);
@@ -287,7 +303,7 @@ export function CheckBoard({
     setShowAll(false);
     setShowFood(false);
     setTier("all");
-    setOpenId(rows[0]?.id ?? food[0]?.id ?? null);
+    setOpenId(null);
   }
   const filtered = tier === "all" ? rows : rows.filter((f) => f.severity === tier);
   const split = regimenGroups(filtered);
@@ -361,6 +377,32 @@ export function CheckBoard({
           </h2>
           {ids.length > 0 ? (
             <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-muted">{contents}</p>
+          ) : null}
+          {ids.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {rows.length > 0 ? (
+                <a
+                  href="#check-rows"
+                  className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                >
+                  Rows
+                </a>
+              ) : null}
+              {food.length > 0 ? (
+                <a
+                  href="#check-food"
+                  className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                >
+                  Food
+                </a>
+              ) : null}
+              <a
+                href="#check-roles"
+                className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+              >
+                Roles
+              </a>
+            </div>
           ) : null}
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
             {foodOutranks
@@ -485,8 +527,6 @@ export function CheckBoard({
         />
       ) : null}
 
-      {!regimen ? <RoleGrid ids={ids} rows={rows} /> : null}
-
       {rows.length === 0 && quietEnzymes ? (
         <p className="text-xs leading-relaxed text-muted">{quietEnzymes}</p>
       ) : filtered.length === 0 && rows.length > 0 ? (
@@ -497,13 +537,17 @@ export function CheckBoard({
           </p>
         </div>
       ) : grouped ? (
-        <div className="space-y-4">
+        <div id="check-rows" className="space-y-4">
           {visibleGroups.map((g) => (
             <div key={g.key} className="space-y-2">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="text-sm font-medium text-fg">{g.title}</p>
                 <p className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
-                  {g.rows.length === 1 ? "1 row" : `${g.rows.length} rows`}
+                  {g.rows[0]?.enzymes[0]
+                    ? `${g.rows[0].enzymes[0]} · ${g.rows.length === 1 ? "1 row" : `${g.rows.length} rows`}`
+                    : g.rows.length === 1
+                      ? "1 row"
+                      : `${g.rows.length} rows`}
                 </p>
               </div>
               <ol className="space-y-2">
@@ -538,16 +582,38 @@ export function CheckBoard({
           ) : null}
         </div>
       ) : rows.length > 0 ? (
-        <ol className="space-y-2">
-          {visible.map((f) => (
-            <CheckRow
-              key={f.id}
-              finding={f}
-              open={openId === f.id}
-              onToggle={() => setOpenId((id) => (id === f.id ? null : f.id))}
-            />
+        <div id="check-rows" className="space-y-4">
+          {enzymeRowGroups(visible).map((g) => (
+            <div key={g.label} className="space-y-2">
+              <div className="flex items-baseline justify-between gap-3">
+                {(ENZYMES as readonly string[]).includes(g.label) ? (
+                  <button
+                    type="button"
+                    onClick={() => useDesk.getState().setAtlasEnzyme(g.label)}
+                    className="text-sm font-medium text-fg"
+                  >
+                    {g.label}
+                  </button>
+                ) : (
+                  <p className="text-sm font-medium text-fg">{g.label}</p>
+                )}
+                <p className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
+                  {g.rows.length === 1 ? "1 row" : `${g.rows.length} rows`}
+                </p>
+              </div>
+              <ol className="space-y-2">
+                {g.rows.map((f) => (
+                  <CheckRow
+                    key={f.id}
+                    finding={f}
+                    open={openId === f.id}
+                    onToggle={() => setOpenId((id) => (id === f.id ? null : f.id))}
+                  />
+                ))}
+              </ol>
+            </div>
           ))}
-        </ol>
+        </div>
       ) : null}
 
       {hidden > 0 ? (
@@ -562,10 +628,10 @@ export function CheckBoard({
 
       {rows.length > 0 && quietEnzymes ? <p className="text-xs leading-relaxed text-muted">{quietEnzymes}</p> : null}
 
-      {regimen ? <RoleGrid ids={ids} rows={rows} /> : null}
+      {ids.length > 0 ? <RoleGrid ids={ids} rows={rows} /> : null}
 
       {food.length > 0 ? (
-        <div className="space-y-2 border-t border-border pt-3">
+        <div id="check-food" className="space-y-2 border-t border-border pt-3">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Food, drink, alcohol</p>
             <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -573,30 +639,52 @@ export function CheckBoard({
               coffee, calcium, and tyramine foods. Add one only if you want it on the desk.
             </p>
           </div>
-          <ol className="space-y-2">
-            {foodShown.map((f) => {
-              const extra = f.drugIds.find((id) => !ids.includes(id) && DRUG_BY_ID[id]);
-              return (
-                <CheckRow
-                  key={f.id}
-                  finding={f}
-                  open={openId === f.id}
-                  onToggle={() => setOpenId((id) => (id === f.id ? null : f.id))}
-                  action={
-                    room && extra ? (
-                      <button
-                        type="button"
-                        onClick={() => add(extra)}
-                        className="h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
-                      >
-                        Add {DRUG_BY_ID[extra]?.name}
-                      </button>
-                    ) : null
-                  }
-                />
-              );
-            })}
-          </ol>
+          <div className="space-y-4">
+            {enzymeRowGroups(foodShown).map((g) => (
+              <div key={g.label} className="space-y-2">
+                <div className="flex items-baseline justify-between gap-3">
+                  {(ENZYMES as readonly string[]).includes(g.label) ? (
+                    <button
+                      type="button"
+                      onClick={() => useDesk.getState().setAtlasEnzyme(g.label)}
+                      className="text-sm font-medium text-fg"
+                    >
+                      {g.label}
+                    </button>
+                  ) : (
+                    <p className="text-sm font-medium text-fg">{g.label}</p>
+                  )}
+                  <p className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
+                    {g.rows.length === 1 ? "1 row" : `${g.rows.length} rows`}
+                  </p>
+                </div>
+                <ol className="space-y-2">
+                  {g.rows.map((f) => {
+                    const extra = f.drugIds.find((id) => !ids.includes(id) && DRUG_BY_ID[id]);
+                    return (
+                      <CheckRow
+                        key={f.id}
+                        finding={f}
+                        open={openId === f.id}
+                        onToggle={() => setOpenId((id) => (id === f.id ? null : f.id))}
+                        action={
+                          room && extra ? (
+                            <button
+                              type="button"
+                              onClick={() => add(extra)}
+                              className="h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+                            >
+                              Add {DRUG_BY_ID[extra]?.name}
+                            </button>
+                          ) : null
+                        }
+                      />
+                    );
+                  })}
+                </ol>
+              </div>
+            ))}
+          </div>
           {food.length > foodShown.length ? (
             <button
               type="button"
@@ -845,7 +933,7 @@ function LeadSources({ finding }: { finding: Finding }) {
 
 function RoleGrid({ ids, rows }: { ids: string[]; rows: Finding[] }) {
   return (
-    <div className="grid gap-2 sm:grid-cols-2">
+    <div id="check-roles" className="grid gap-2 sm:grid-cols-2">
       {ids.map((id) => {
         const drug = DRUG_BY_ID[id];
         if (!drug) return null;
@@ -856,9 +944,16 @@ function RoleGrid({ ids, rows }: { ids: string[]; rows: Finding[] }) {
             <p className="text-[11px] text-muted">{drug.cls}</p>
             {roles.length ? (
               <ul className="mt-1.5 space-y-0.5">
-                {roles.map((r, i) => (
-                  <li key={`${id}-${i}`} className="text-xs leading-relaxed text-fg">
-                    {r}
+                {roles.map((e, i) => (
+                  <li key={`${id}-${i}`}>
+                    <button
+                      type="button"
+                      title={`Open ${e.enzyme} in the atlas`}
+                      onClick={() => useDesk.getState().setAtlasEnzyme(e.enzyme)}
+                      className="text-left text-xs leading-relaxed text-fg underline-offset-2 hover:underline"
+                    >
+                      {roleText(e)}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -922,6 +1017,7 @@ function CheckRow({
   const basis = basisFor(finding).slice(0, 2);
   const setAtlasEnzyme = useDesk((s) => s.setAtlasEnzyme);
   const enzyme = finding.enzymes.length === 1 ? finding.enzymes[0] : "";
+  const fold = foldLine(finding);
   return (
     <li className="rounded-lg bg-bg-sunken">
       <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-start gap-3 px-3 py-3 text-left">
@@ -957,6 +1053,9 @@ function CheckRow({
                 </span>
               );
             })}
+            {fold ? (
+              <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">{fold}</span>
+            ) : null}
           </span>
         </span>
         <ChevronDown className={cn("mt-1 size-4 shrink-0 text-subtle", open && "rotate-180")} />
@@ -969,8 +1068,8 @@ function CheckRow({
             Mechanism: {finding.mechanism}
             {finding.effect ? ` · ${finding.effect}` : ""}
           </p>
-          {foldLine(finding) ? (
-            <p className="text-xs leading-relaxed text-muted">FDA fold: {foldLine(finding)}. Not a milligram.</p>
+          {fold ? (
+            <p className="text-xs leading-relaxed text-muted">FDA fold: {fold}. Not a milligram.</p>
           ) : null}
           {enzyme ? (
             <button
