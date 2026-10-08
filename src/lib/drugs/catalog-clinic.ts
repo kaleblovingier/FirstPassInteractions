@@ -18,7 +18,7 @@ function ind(enzyme: Enzyme, strength: Strength): EnzymeRole {
   return { enzyme, kind: "inducer", strength };
 }
 
-function enz(s: string): EnzymeRole[] {
+export function enz(s: string): EnzymeRole[] {
   if (!s) return [];
   return s.split(";").map((part) => {
     const [k, e, v] = part.split(":") as [string, Enzyme, string];
@@ -26,7 +26,8 @@ function enz(s: string): EnzymeRole[] {
     if (k === "sa") return sub(e, v as SubstrateSensitivity, "activation");
     if (k === "sn") return sub(e, v as SubstrateSensitivity, "clearance", true);
     if (k === "i") return inh(e, v as Strength);
-    return ind(e, v as Strength);
+    if (k === "d") return ind(e, v as Strength);
+    throw new Error(`unknown clinic enzyme code: ${part}`);
   });
 }
 

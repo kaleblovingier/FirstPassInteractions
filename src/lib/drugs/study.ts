@@ -8,7 +8,7 @@ import { DRUGS, DRUG_BY_ID } from "./catalog";
 import { FDA_GRADES, TDI } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
 import type { Drug, Enzyme, Finding } from "./types";
-import { ENZYMES } from "./types";
+import { ENZYMES, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
 
 if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
@@ -490,10 +490,59 @@ function monoPrompt(d: Drug): string {
   return "Shelf class";
 }
 
+const TEACHING_BINS: StudyChoice[] = [
+  { id: "contraindicated", label: SEVERITY_LABEL.contraindicated },
+  { id: "major", label: SEVERITY_LABEL.major },
+  { id: "moderate", label: SEVERITY_LABEL.moderate },
+  { id: "minor", label: SEVERITY_LABEL.minor },
+];
+
+const KIND_BINS: StudyChoice[] = [
+  { id: "pk", label: "Levels" },
+  { id: "pd", label: "Effects" },
+  { id: "geno", label: "Genes" },
+  { id: "clinic", label: "Clinic" },
+];
+
+function kindBinLabel(kind: string): string | null {
+  if (kind === "pk") return "Levels";
+  if (kind === "pd") return "Effects";
+  if (kind === "geno") return "Genes";
+  if (kind === "clinic") return "Clinic";
+  return null;
+}
+
 export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
   const out: StudyCard[] = [];
   for (const f of findings.slice(0, 6)) {
     const names = f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" × ");
+    const label = kindBinLabel(f.kind);
+    if (label) {
+      out.push({
+        id: `kind-${f.id}`,
+        lane: "desk",
+        kicker: "Kind",
+        title: names,
+        prompt: `${names}.`,
+        ask: "Is this mapped row levels, effects, genes, or clinic?",
+        choices: bySeed(KIND_BINS, `kind-${f.id}`),
+        correct: f.kind,
+        answer: `Kind: ${label}. A category from this model, not a clearance.`,
+        drugIds: f.drugIds,
+      });
+    }
+    out.push({
+      id: `bin-${f.id}`,
+      lane: "desk",
+      kicker: "Teaching bin",
+      title: names,
+      prompt: `${names}.`,
+      ask: "Which teaching bin is on this mapped row?",
+      choices: bySeed(TEACHING_BINS, `bin-${f.id}`),
+      correct: f.severity,
+      answer: `Teaching bin: ${SEVERITY_LABEL[f.severity]}. A category from this model, not an individual risk.`,
+      drugIds: f.drugIds,
+    });
     const kind =
       f.kind === "pk" ? "Pharmacokinetic" : f.kind === "pd" ? "Pharmacodynamic" : f.kind === "geno" ? "Phenotype" : "Clinic";
     const sole = f.enzymes.length === 1 ? f.enzymes[0] : null;
@@ -504,7 +553,7 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       title: names || "Collision",
       prompt: sole
         ? `${names}.`
-        : `${names}. Mapped severity: ${f.severity}. Effect: ${f.effect}.`,
+        : `${names}. Effect: ${f.effect}.`,
       ask: sole
         ? "Which enzyme does this mapped row name?"
         : "Say the mechanism out loud before you reveal. A preceptor wants the enzyme or the receptor, not a milligram.",

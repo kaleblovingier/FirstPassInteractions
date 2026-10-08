@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CheckSquare, FileText, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
+import { useDesk } from "@/lib/drugs/store";
 import {
   AGE_LABEL,
   ALCOHOL_LABEL,
@@ -313,6 +314,15 @@ export function MedicationReview({ ids, host, findings, doses, onOpenPacket }: M
         </p>
       ) : null}
 
+      {findings.length > 0 ? (
+        <button
+          type="button"
+          className="mb-3 inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+          onClick={() => useDesk.getState().setView("study")}
+        >
+          Rehearse these rows
+        </button>
+      ) : null}
       <ul className="mt-4 grid gap-2 sm:grid-cols-2">
         {visibleChecks.map((check) => {
           const Icon = checked[check.id] ? CheckSquare : Square;

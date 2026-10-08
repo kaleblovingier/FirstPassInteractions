@@ -346,6 +346,11 @@ function CiteCard({
   selected: string[];
   onAdd: (id: string) => void;
 }) {
+  const names = cite.drugIds
+    .filter((id) => selected.includes(id))
+    .map((id) => DRUG_BY_ID[id]?.name ?? id)
+    .join(", ");
+
   return (
     <li className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -355,6 +360,11 @@ function CiteCard({
         </span>
       </div>
       <h3 className="mt-2 font-serif text-lg leading-snug tracking-tight text-fg">{cite.title}</h3>
+      {names ? (
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-accent">
+          On this desk: {names}
+        </p>
+      ) : null}
       <p className="mt-2 text-sm leading-relaxed text-muted">{cite.why}</p>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {cite.drugIds.map((id) => {

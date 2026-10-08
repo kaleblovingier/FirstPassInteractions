@@ -290,14 +290,20 @@ function RoundCard({
           <h3 className="mt-1 font-serif text-xl tracking-tight text-fg">{round.title}</h3>
           {round.drugIds.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-1">
-              {round.drugIds.map((id) => (
-                <span
-                  key={id}
-                  className="inline-flex items-center rounded-md bg-bg-sunken px-2 py-0.5 font-mono text-[11px] text-muted"
-                >
-                  {DRUG_BY_ID[id]?.name ?? id}
-                </span>
-              ))}
+              {round.drugIds.map((id) => {
+                const drug = DRUG_BY_ID[id];
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex flex-col items-start rounded-md bg-bg-sunken px-2 py-0.5 font-mono text-[11px] text-muted"
+                  >
+                    {drug?.name ?? id}
+                    {drug?.cls ? (
+                      <span className="block text-[10px] text-subtle">{drug.cls}</span>
+                    ) : null}
+                  </span>
+                );
+              })}
             </div>
           ) : null}
           <p className="mt-2 text-sm leading-relaxed text-muted">{round.stem}</p>

@@ -89,7 +89,7 @@ function pkSeverity(
 ): Severity {
   const ntiOrSensitive = nti || sensitivity === "sensitive";
   if (kind === "inhibitor") {
-    if (strength === "strong" && ntiOrSensitive) return "contraindicated";
+    if (strength === "strong" && ntiOrSensitive) return "major";
     if (strength === "strong" && sensitivity === "major") return "major";
     if (strength === "strong") return "moderate";
     if (strength === "moderate" && ntiOrSensitive) return "major";
@@ -104,7 +104,7 @@ function pkSeverity(
     if (strength === "moderate") return "moderate";
     return "minor";
   }
-  if (strength === "strong" && ntiOrSensitive) return "contraindicated";
+  if (strength === "strong" && ntiOrSensitive) return "major";
   if (strength === "strong") return "major";
   if (strength === "moderate" && (ntiOrSensitive || sensitivity === "major")) return "major";
   if (strength === "moderate") return "moderate";
@@ -659,7 +659,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     out.push(
       pdPair(a, b, {
         suffix: "pd-dual-raas",
-        severity: "contraindicated",
+        severity: ali ? "contraindicated" : "major",
         effect: ali ? "hyperkalemia / AKI / hypotension" : "hyperkalemia / AKI without outcome gain",
         mechanism: ali ? "aliskiren × ACEI / ARB" : "ACE inhibitor × ARB",
         clinical: ali
@@ -1537,14 +1537,18 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
   }
 
   if ((has(a, "tyramine") && has(b, "maoi")) || (has(b, "tyramine") && has(a, "maoi"))) {
+    const linezolid = a.id === "linezolid" || b.id === "linezolid";
     out.push(
       pdPair(a, b, {
         suffix: "pd-tyramine-maoi",
-        severity: "contraindicated",
+        severity: linezolid ? "major" : "contraindicated",
         effect: "hypertensive crisis",
         mechanism: "tyramine × MAOI",
         clinical:
-          "MAO-A in gut and liver normally destroys dietary tyramine. An irreversible MAOI lets it into the circulation — aged cheese, cured meat, tap beer, soy. Headache, neck stiffness, and stroke-range blood pressure can follow in minutes.",
+          "MAO-A in gut and liver normally destroys dietary tyramine. An irreversible MAOI lets it into the circulation — aged cheese, cured meat, tap beer, soy. Headache, neck stiffness, and stroke-range blood pressure can follow in minutes." +
+          (linezolid
+            ? " Linezolid is a reversible MAOI on this map, so this cheese-plate row is Serious concern, not the irreversible-MAOI avoid bin."
+            : ""),
         tags: ["food", "maoi", "tyramine"],
       }),
     );

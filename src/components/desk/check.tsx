@@ -18,12 +18,12 @@ import { watchLine } from "@/lib/drugs/window";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
-const KIND_LABEL: Record<Finding["kind"], string> = {
-  pk: "Levels",
-  pd: "Effects",
-  geno: "Genes",
-  clinic: "Clinic",
-};
+function storedKindLabel(kind: string) {
+  if (kind === "pk") return "Levels";
+  if (kind === "pd") return "Effects";
+  if (kind === "geno") return "Genes";
+  return "Clinic";
+}
 
 function rank(f: Finding) {
   const sev = { contraindicated: 40, major: 30, moderate: 20, minor: 10 }[f.severity];
@@ -362,6 +362,12 @@ export function CheckBoard({
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",
+    rows.length > 0
+      ? enzymeRowGroups(rows)
+          .slice(0, 3)
+          .map((g) => `${g.label} ${g.rows.length}`)
+          .join(", ")
+      : "",
   ]
     .filter(Boolean)
     .join(" · ")
@@ -402,6 +408,15 @@ export function CheckBoard({
               >
                 Roles
               </a>
+              {rows.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => useDesk.getState().setView("study")}
+                  className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                >
+                  Study this desk
+                </button>
+              ) : null}
             </div>
           ) : null}
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
@@ -459,6 +474,9 @@ export function CheckBoard({
               </button>
             ))}
           </div>
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            These bins are unreviewed engineering defaults, not a signed clinical tier and not a personal prediction.
+          </p>
         </>
       ) : null}
 
@@ -1018,16 +1036,39 @@ function CheckRow({
   const setAtlasEnzyme = useDesk((s) => s.setAtlasEnzyme);
   const enzyme = finding.enzymes.length === 1 ? finding.enzymes[0] : "";
   const fold = foldLine(finding);
+  const summary = plainLanguageSummary(finding);
+  const kindWord = storedKindLabel(finding.kind);
+  const closedHeader = [
+    SEVERITY_LABEL[finding.severity],
+    a.left,
+    a.verb,
+    a.right,
+    summary,
+    finding.tags.includes("boxed") ? "Boxed warning (label)" : "",
+    ...finding.enzymes.map((e) => {
+      const grade = finding.enzymes.length === 1 ? gradeOf(finding) : "";
+      return grade ? `${grade} ${e}` : e;
+    }),
+    fold,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const showKind = !new RegExp(`\\b${kindWord}\\b`, "i").test(closedHeader);
   return (
     <li className="rounded-lg bg-bg-sunken">
       <button type="button" onClick={onToggle} aria-expanded={open} className="flex w-full items-start gap-3 px-3 py-3 text-left">
-        <span
-          className={cn(
-            "mt-0.5 inline-flex min-w-24 shrink-0 items-center justify-center rounded-sm px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-wider",
-            severitySurface(finding.severity),
-          )}
-        >
-          {SEVERITY_LABEL[finding.severity]}
+        <span className="mt-0.5 inline-flex shrink-0 items-center gap-1.5">
+          <span
+            className={cn(
+              "inline-flex min-w-24 items-center justify-center rounded-sm px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-wider",
+              severitySurface(finding.severity),
+            )}
+          >
+            {SEVERITY_LABEL[finding.severity]}
+          </span>
+          {showKind ? (
+            <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">{kindWord}</span>
+          ) : null}
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium leading-snug text-fg">
@@ -1036,12 +1077,9 @@ function CheckRow({
             {a.right}
           </span>
           <span className="mt-1 block text-xs leading-relaxed text-muted">
-            {plainLanguageSummary(finding)}
+            {summary}
           </span>
           <span className="mt-1 flex flex-wrap gap-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
-              {KIND_LABEL[finding.kind]}
-            </span>
             {finding.tags.includes("boxed") ? (
               <span className="font-mono text-[10px] uppercase tracking-wide text-danger">Boxed warning (label)</span>
             ) : null}

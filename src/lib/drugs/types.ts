@@ -271,7 +271,7 @@ export const SEVERITY_PLAIN: Record<Severity | "none", string> = {
 };
 
 export const SEVERITY_HINT: Record<Severity | "none", string> = {
-  contraindicated: "This checker’s strongest category — often labeled avoid or contraindicated on a PI.",
+  contraindicated: "Avoid together is a teaching bin. On this desk it is kept for a named label pin, not for pharmacokinetic math. It is not an order to stop a medicine.",
   major: "A serious teaching collision. Read the PI; this desk does not dose or decide care.",
   moderate: "Worth a careful look. Context and the official label still govern.",
   minor: "A milder flag. Useful for teaching; not a green light.",

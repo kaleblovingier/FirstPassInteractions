@@ -53,6 +53,13 @@ function findingsFor(sample: SampleRegimen) {
   return analyze(sample.drugIds, hostFor(sample), parseDoses(sample.doses)).findings;
 }
 
+function kindWord(kind: Finding["kind"]): string {
+  if (kind === "pk") return "Levels";
+  if (kind === "pd") return "Effects";
+  if (kind === "geno") return "Genes";
+  return "Clinic";
+}
+
 function FindingRow({
   finding,
   shared,
@@ -72,6 +79,9 @@ function FindingRow({
       <div className="flex flex-wrap items-center gap-2">
         <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${severitySurface(finding.severity)}`}>
           {SEVERITY_LABEL[finding.severity]}
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+          {kindWord(finding.kind)}
         </span>
         <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
           {shared ? "In both cases" : "Only in this case"}

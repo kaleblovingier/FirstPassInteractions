@@ -567,6 +567,15 @@ function CompoundsShelf() {
             ))}
           </div>
           {shelfLine ? <p className="text-xs leading-relaxed text-muted">{shelfLine}</p> : null}
+          {shelf ? (
+            <button
+              type="button"
+              className="h-10 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+              onClick={() => useDesk.getState().setView("study")}
+            >
+              Drill this shelf
+            </button>
+          ) : null}
         </div>
       ) : null}
 

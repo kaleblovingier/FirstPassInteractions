@@ -213,6 +213,16 @@ export function WatchPage() {
                     <Button variant="secondary" size="sm" onClick={() => openOnDesk(id)}>
                       Open on desk
                     </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        load([id]);
+                        setView("study");
+                      }}
+                    >
+                      Study this pin
+                    </Button>
                     <Button variant="secondary" size="sm" onClick={() => void refreshOne(id)}>
                       <RefreshCw className={cn("size-3.5", row?.busy && "animate-spin")} />
                       Refresh

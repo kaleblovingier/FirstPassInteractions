@@ -997,7 +997,7 @@ function StudyCardView({
               {`Open ${atlasEnzyme} in the atlas`}
             </button>
           ) : null}
-          {card.id.startsWith("desk-") ? (
+          {card.id.startsWith("desk-") || card.id.startsWith("bin-") || card.id.startsWith("mono-") || card.id.startsWith("kind-") ? (
             <button
               type="button"
               className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"

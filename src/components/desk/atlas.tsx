@@ -64,6 +64,13 @@ export function EnzymeAtlas() {
             </p>
             <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{ATLAS_ENZYME_PLAIN[enzyme].nickname}</h2>
             <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-muted">{enzyme}</p>
+            <button
+              type="button"
+              className="h-10 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+              onClick={() => useDesk.getState().setView("study")}
+            >
+              Quiz this enzyme
+            </button>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg">{ATLAS_ENZYME_PLAIN[enzyme].blurb}</p>
             <div className="mt-3 max-w-2xl rounded-xl border border-accent/15 bg-accent-soft/30 p-3">
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{ATLAS_COACH.kicker}</p>
@@ -228,7 +235,7 @@ function AtlasColumn({
                     {index ? ` · ${ATLAS_FDA_INDEX.tag}` : ""}
                   </span>
                 </span>
-                <span className="font-mono text-[10px] text-subtle">{copy.tag}</span>
+                <span className="font-mono text-[10px] text-subtle">{on ? "On desk" : copy.tag}</span>
               </button>
             </li>
           );
