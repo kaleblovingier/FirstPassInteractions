@@ -54,9 +54,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 104 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 108 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 104);
+    assert.equal(cards.length, 108);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -88,7 +88,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 104);
+    assert.equal(cards.length, 108);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -336,7 +336,7 @@ describe("study learning tools", () => {
       "clin-methadone-fluconazole-qtc-3a4",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
+    assert.equal(cards.length, 108, "Total clinical cards must be exactly 108");
 
     for (const id of highYieldCardIds) {
       const card = cards.find((c) => c.id === id);
@@ -435,7 +435,7 @@ describe("study learning tools", () => {
       "clin-aspirin-platelet-covalent-acetylation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
+    assert.equal(cards.length, 108, "Total clinical cards must be exactly 108");
 
     for (const id of new7CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -547,7 +547,7 @@ describe("study learning tools", () => {
       "clin-sglt2-ketogenesis-glucagon",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
+    assert.equal(cards.length, 108, "Total clinical cards must be exactly 108");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -683,7 +683,7 @@ describe("study learning tools", () => {
       "clin-pde5-cgmp-smooth-muscle-relaxation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 104, "Total clinical cards must be exactly 104");
+    assert.equal(cards.length, 108, "Total clinical cards must be exactly 108");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -812,7 +812,7 @@ describe("study learning tools", () => {
 
   it("cardiac electrophysiology, toxidrome, and pharmacogenomics cards expand clinicalCards to 96 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 104);
+    assert.equal(cards.length, 108);
 
     const targetCardIds = [
       "clin-cardiac-phase0-ina-nav15-vaughan-williams",
@@ -875,7 +875,7 @@ describe("study learning tools", () => {
 
   it("renal tubular, CYP kinetics TDI, and CNS penetration cards expand clinicalCards to 104 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 104);
+    assert.equal(cards.length, 108);
 
     const targetCardIds = [
       "clin-renal-nkcc2-romk-calcium-wasting",
@@ -950,6 +950,39 @@ describe("study learning tools", () => {
       assert.doesNotMatch(roundText, /prescribe\s+\d+\s*mg/i);
       assert.doesNotMatch(roundText, /dispense\s+\d+\s*mg/i);
       assert.doesNotMatch(roundText, /clinical decision support/i);
+    }
+  });
+
+  it("oncology HDMTX, cefepime neurotoxicity, daptomycin myopathy, and phenytoin saturation cards expand clinicalCards to 108 and verify non-prescriptive regulatory posture", () => {
+    const cards = clinicalCards();
+    assert.equal(cards.length, 108);
+
+    const targetCardIds = [
+      "clin-hdmtx-leucovorin-nomogram",
+      "clin-cefepime-neurotoxicity-gaba",
+      "clin-daptomycin-statin-myopathy",
+      "clin-phenytoin-michaelis-menten-saturation",
+    ];
+
+    for (const cardId of targetCardIds) {
+      const card = cards.find((c) => c.id === cardId);
+      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
+      assert.ok(card.correct, `Card ${cardId} must define correct`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
+
+      // Verify non-prescriptive posture
+      const text = `${card.prompt} ${card.ask} ${card.answer}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /clinical decision support/i);
+
+      // Verify catalog drugs
+      for (const dId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
+      }
     }
   });
 });

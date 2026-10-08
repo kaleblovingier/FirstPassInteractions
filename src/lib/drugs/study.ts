@@ -694,6 +694,12 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   // Blood-Brain Barrier & Neuro / Bedside
   "clin-cns-antihistamine-1st-vs-2nd-gen-psa": "neuro",
   "clin-cns-meningitis-tight-junction-permeability": "bedside",
+
+  // High-Yield Oncology, Antimicrobial Stewardship & Pharmacokinetics
+  "clin-hdmtx-leucovorin-nomogram": "tox",
+  "clin-cefepime-neurotoxicity-gaba": "neuro",
+  "clin-daptomycin-statin-myopathy": "tox",
+  "clin-phenytoin-michaelis-menten-saturation": "neuro",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -3005,6 +3011,122 @@ export function clinicalCards(): StudyCard[] {
       correct: "inflammatory-cytokines-disrupt-tight-junctions-to-allow-paracellular-entry-early-steroids-blunt-subsequent-bacteriolytic-swelling-without-prematurely-blocking-drug-penetration",
       answer: "Under basal healthy conditions, the blood-brain barrier severely excludes hydrophilic, highly polar, or large molecular weight antimicrobials: ceftriaxone CSF penetration is <1–2%, and vancomycin (MW ~1448 Da, high TPSA) achieves negligible CSF concentrations (<1%). However, during acute bacterial meningitis (e.g., Streptococcus pneumoniae, Neisseria meningitidis), bacterial pathogens invade the subarachnoid space and release pathogen-associated molecular patterns (PAMPs like lipopolysaccharide and peptidoglycan). Resident microglia and perivascular macrophages release massive bursts of pro-inflammatory cytokines, specifically tumor necrosis factor-alpha (TNF-alpha), interleukin-1beta (IL-1beta), and matrix metalloproteinases (MMP-9). These mediators disrupt endothelial tight-junction complexes by inducing phosphorylation, internalization, and degradation of claudin-5, occludin, and zonula occludens-1 (ZO-1). The resulting loss of tight-junction integrity creates fenestrated-like paracellular permeability leaks, markedly increasing CSF penetration of hydrophilic beta-lactams and vancomycin (CSF-to-serum ratios rise to 10–20%). However, administering bactericidal antibiotics causes rapid, massive bacterial lysis within hours, releasing huge waves of bacterial cell-wall fragments that trigger an even more destructive secondary inflammatory cascade. This secondary storm drives vasogenic cerebral edema, intracranial hypertension, neuronal apoptosis, and purulent exudate in the cochlear aqueduct causing sensorineural hearing loss. Adjuvant dexamethasone attenuates this disastrous secondary cytokine burst by suppressing NF-kappaB transcription. Pivotal trials and guidelines (such as IDSA and ESCMID guidelines) demonstrate that dexamethasone must be administered prior to or concurrently with the first dose of antibiotics; administering steroids after antibiotics produces zero clinical benefit because the initial bacteriolytic inflammatory cascade has already been triggered. Note: As dexamethasone seals tight junctions over subsequent days, vancomycin CSF penetration may decline, necessitating therapeutic monitoring and high-dose targets.",
       drugIds: ["ceftriaxone", "vancomycin", "dexamethasone"],
+    },
+    {
+      id: "clin-hdmtx-leucovorin-nomogram",
+      lane: "clinical",
+      kicker: "Oncology Pharmacology & Rescue Nomograms",
+      title: "High-Dose Methotrexate (HDMTX) Kinetics & Leucovorin Rescue Safeguards",
+      prompt: "A patient with osteosarcoma receives high-dose methotrexate (HDMTX, 12 g/m²). At 48 hours post-infusion, the serum methotrexate level is 2.5 µmol/L (canonical target ≤ 1.0 µmol/L), indicating delayed elimination.",
+      ask: "What pharmacokinetic and transporter mechanisms govern Leucovorin rescue dose escalation, and why is intravenous administration strictly required for high-dose rescue?",
+      choices: [
+        {
+          id: "leucovorin-rfc1-saturation-iv-requirement",
+          label: "Intestinal mucosal reduced folate carrier (RFC-1) saturates at oral doses > 25 mg; higher rescue doses (e.g., 50–150 mg/m²) must be given intravenously to bypass saturated absorption and restore intracellular 5,10-CH2-THF pools for purine and thymidylate synthesis",
+        },
+        {
+          id: "leucovorin-cleaves-methotrexate-directly-in-blood",
+          label: "Leucovorin acts as a direct chemical neutralizer that covalently hydrolyzes methotrexate in systemic circulation, independent of folate enzyme pathways",
+        },
+        {
+          id: "oral-leucovorin-is-chelated-by-urinary-bicarbonate",
+          label: "Urine alkalinization with sodium bicarbonate inactivates oral leucovorin in the gut lumen, preventing systemic bioavailability",
+        },
+        {
+          id: "leucovorin-reverses-methotrexate-by-inducing-cyp3a4",
+          label: "Leucovorin is a potent CYP3A4 inducer that accelerates methotrexate hepatic clearance into inactive metabolites",
+        },
+      ],
+      correct: "leucovorin-rfc1-saturation-iv-requirement",
+      answer: "Methotrexate is a competitive antagonist of dihydrofolate reductase (DHFR), depleting tetrahydrofolate (THF) pools necessary for purine and thymidylate synthesis, causing cell death. High-dose methotrexate (HDMTX, ≥ 1 g/m²) is followed by Leucovorin (folinic acid / 5-formyl-THF) rescue to salvage non-malignant tissues (gastrointestinal mucosa, bone marrow). Leucovorin bypasses DHFR blockade by converting directly into active folate cofactors without requiring DHFR activity. Intestinal absorption of folinic acid is mediated by the saturable reduced folate carrier 1 (RFC-1 / SLC19A1). At oral doses > 25 mg, RFC-1 becomes completely saturated, and oral bioavailability collapses precipitously. Consequently, whenever delayed elimination requires escalated Leucovorin doses (e.g. 50–150 mg/m² q3–6h), administration MUST be intravenous. Furthermore, rescue must be timed carefully (initiated 24–42h post-infusion); administering Leucovorin < 24h blunts antitumor efficacy, while delaying rescue > 48h results in irreversible systemic toxicity. If extreme delayed clearance (> 2 SD above mean) occurs alongside acute renal injury, Glucarpidase (Voraxaze) must be considered, with the critical rule that Leucovorin must NOT be given within 2 hours before or after Glucarpidase because Glucarpidase also hydrolyzes folinic acid.",
+      drugIds: ["methotrexate"],
+    },
+    {
+      id: "clin-cefepime-neurotoxicity-gaba",
+      lane: "clinical",
+      kicker: "Infectious Disease & Neurotoxicity",
+      title: "Cefepime Neurotoxicity: GABA-A Competitive Antagonism & Dialysis Timing",
+      prompt: "A patient with CKD (eGFR 22 mL/min) receiving IV cefepime 2g q8h for hospital-acquired pneumonia develops confusion, myoclonus, asterixis, and lethargy on day 4 of therapy. An urgent EEG reveals bilateral synchronous Generalized Periodic Discharges (GPDs) with triphasic morphology at 1–2 Hz.",
+      ask: "What is the molecular mechanism of cefepime-induced neurotoxicity, and how does intermittent hemodialysis impact clearance?",
+      choices: [
+        {
+          id: "cefepime-gaba-a-competitive-antagonism-hd-clearance",
+          label: "Cefepime crosses the blood-brain barrier and competitively antagonizes GABA-A receptors, reducing inhibitory chloride influx; unadjusted renal dosing accumulates CSF levels, while intermittent hemodialysis clears ~70% per 3h session (mandating post-HD dosing)",
+        },
+        {
+          id: "cefepime-irreversibly-inhibits-acetylcholinesterase",
+          label: "Cefepime phosphorylates acetylcholinesterase in the neuromuscular junction, triggering acute cholinergic crisis and status epilepticus",
+        },
+        {
+          id: "cefepime-selectively-stimulates-nmda-receptors-via-glutamate-mimicry",
+          label: "Cefepime is a glutamate analogue that directly activates post-synaptic NMDA receptors, causing excitotoxic seizure discharges",
+        },
+        {
+          id: "cefepime-has-no-dialytic-clearance-due-to-99-percent-protein-binding",
+          label: "Cefepime is >99% bound to plasma albumin with a massive volume of distribution (>500 L), precluding clearance by hemodialysis",
+        },
+      ],
+      correct: "cefepime-gaba-a-competitive-antagonism-hd-clearance",
+      answer: "Cefepime has the highest propensity for neurotoxicity among fourth-generation cephalosporins because of its unique physicochemical ability to cross the blood-brain barrier combined with concentration-dependent competitive antagonism of gamma-aminobutyric acid type A (GABA-A) receptors. By blocking GABA-mediated chloride influx, cefepime decreases inhibitory post-synaptic potentials, driving neuronal hyperexcitability that manifests clinically as non-convulsive status epilepticus (NCSE), encephalopathy, myoclonus, asterixis, and coma. Over 80–90% of cefepime is eliminated unchanged via glomerular filtration; in renal impairment (CrCl < 50 mL/min or ESRD on dialysis) without aggressive dose adjustment, serum and CSF trough levels surge 3- to 10-fold. The diagnostic hallmark on continuous EEG is bilateral synchronous generalized periodic discharges (GPDs) or periodic lateralized epileptiform discharges (PLEDs) at 1–2 Hz with triphasic morphology. Cefepime has low molecular weight (480 Da), low plasma protein binding (~20%), and low volume of distribution (0.2–0.3 L/kg), rendering it highly dialyzable: a single 3-hour high-flux intermittent hemodialysis session clears ~68–70% of circulating cefepime. Discontinuing the drug or renal adjustment and emergent hemodialysis yields rapid clinical and electroencephalographic resolution within 48–72 hours.",
+      drugIds: ["cefepime"],
+    },
+    {
+      id: "clin-daptomycin-statin-myopathy",
+      lane: "clinical",
+      kicker: "Antimicrobial Stewardship & Muscle Safety",
+      title: "Daptomycin × HMG-CoA Reductase Inhibitor Collision: Sarcolemmal Toxicity & CPK Rails",
+      prompt: "A patient hospitalized with MRSA bacteremia is initiated on high-dose daptomycin (8–10 mg/kg IV daily) while continuing their outpatient regimen of atorvastatin 80 mg daily.",
+      ask: "What is the clinical rationale for holding statins during daptomycin therapy, and what creatine kinase (CPK) monitoring thresholds govern discontinuation?",
+      choices: [
+        {
+          id: "daptomycin-sarcolemma-statin-synergy-hold-rule",
+          label: "Daptomycin disrupts human skeletal muscle sarcolemma in a calcium-dependent manner; stacking with statins causes synergistic myotoxicity and rhabdomyolysis, requiring routine holding of statin therapy and discontinuing daptomycin if CPK > 1,000 U/L with symptoms or > 2,000 U/L without symptoms",
+        },
+        {
+          id: "statins-inhibit-daptomycin-antibacterial-potency",
+          label: "Statins bind daptomycin in the systemic circulation, preventing its calcium-dependent oligomerization in bacterial cell walls and causing clinical treatment failure",
+        },
+        {
+          id: "daptomycin-competitively-inhibits-hmg-coa-reductase",
+          label: "Daptomycin has intrinsic HMG-CoA reductase inhibitor activity, leading to dangerous systemic cholesterol depletion",
+        },
+        {
+          id: "statins-cause-pulmonary-surfactant-inactivation",
+          label: "Statins inactivate alveolar pulmonary surfactant, preventing daptomycin from clearing hospital-acquired MRSA pneumonia",
+        },
+      ],
+      correct: "daptomycin-sarcolemma-statin-synergy-hold-rule",
+      answer: "Daptomycin is a cyclic lipopeptide that inserts into bacterial cell membranes in the presence of physiological calcium ions, oligomerizing to form ion-permeable channels that cause rapid membrane depolarization and bacterial cell death. However, daptomycin also interacts with mammalian skeletal muscle sarcolemma, causing subclinical or overt myocyte disruption. HMG-CoA reductase inhibitors (statins) independently produce myopathy by depleting intramuscular mevalonate and coenzyme Q10 (ubiquinone) pools, impairing mitochondrial respiration. Combining daptomycin with a statin produces synergistic, additive sarcolemmal injury that sharply increases the risk of severe creatine kinase (CK / CPK) elevation, myopathy, and life-threatening rhabdomyolysis with myoglobinuric acute kidney injury. Major infectious disease guidelines and FDA prescribing information recommend proactively holding all statin therapy for the entire duration of daptomycin treatment. Baseline and weekly CPK monitoring is mandatory (twice-weekly in patients with renal impairment CrCl < 30 mL/min or if statin continuation is clinically unavoidable). Daptomycin must be discontinued if CPK exceeds 1,000 U/L (5× ULN) with unexplained muscle pain, tenderness, or weakness, or if CPK exceeds 2,000 U/L (10× ULN) even in the absence of symptoms. Clinical Pearl: Daptomycin is irreversibly bound and inactivated by pulmonary surfactant, making it completely ineffective for MRSA pneumonia.",
+      drugIds: ["daptomycin", "atorvastatin"],
+    },
+    {
+      id: "clin-phenytoin-michaelis-menten-saturation",
+      lane: "clinical",
+      kicker: "Clinical Pharmacokinetics & Neurology",
+      title: "Phenytoin Michaelis-Menten Saturation Kinetics & The Valproate Double-Hit Paradox",
+      prompt: "A patient with focal epilepsy maintained on phenytoin 300 mg daily has a steady-state level of 12 µg/mL. Due to persistent seizures, the dose is increased by 20% to 360 mg daily. Two weeks later, the patient presents to the emergency department with severe ataxia, coarse horizontal nystagmus, and lethargy, with a total serum level of 28 µg/mL. Furthermore, valproic acid had recently been added.",
+      ask: "What pharmacokinetic principle explains the disproportionate level surge with modest dose titration, and how does valproic acid create a clinical total-level paradox?",
+      choices: [
+        {
+          id: "phenytoin-saturation-clearance-collapse-valproate-paradox",
+          label: "Phenytoin follows nonlinear Michaelis-Menten kinetics where clearance collapses as concentration approaches Km (~4 µg/mL); small dose jumps cause exponential level surges, and valproate displaces phenytoin from albumin while inhibiting CYP2C9, causing toxic free levels despite falsely normal total levels",
+        },
+        {
+          id: "phenytoin-undergoes-irreversible-first-order-autoinduction",
+          label: "Phenytoin autoinduces CYP2C9 metabolism, which paradoxically accelerates absorption and triples bioavailability at higher doses",
+        },
+        {
+          id: "valproate-cleaves-phenytoin-capsules-in-the-stomach",
+          label: "Valproic acid lowers gastric pH, which hydrolyzes the phenytoin capsule and doubles systemic oral bioavailability",
+        },
+        {
+          id: "phenytoin-levels-are-governed-entirely-by-glomerular-filtration",
+          label: "Phenytoin is 100% cleared by renal filtration, and the dose increase caused acute tubular saturation and complete cessation of renal clearance",
+        },
+      ],
+      correct: "phenytoin-saturation-clearance-collapse-valproate-paradox",
+      answer: "Phenytoin exhibits capacity-limited, saturable Michaelis-Menten elimination governed by hepatic CYP2C9 and CYP2C19. The elimination rate follows: R = (Vmax · Css) / (Km + Css), and clearance is concentration-dependent: CL = Vmax / (Km + C). The population mean Michaelis constant Km is ~4 µg/mL (range 2–8 µg/mL), which is well below the target therapeutic range of 10–20 µg/mL! Consequently, at therapeutic concentrations, the metabolizing enzymes are already 70–80% saturated. As steady-state concentration increases, clearance collapses from >80 L/day at subtherapeutic levels to ~25 L/day at 15 µg/mL and <13 L/day at 35 µg/mL. In this zero-order transition zone, clearance cannot increase to match higher intake, so a modest 10–20% dose increase (e.g. 300 mg to 360 mg/day) produces an exponential 200–300% level jump, catapulting the patient into acute neurotoxicity (nystagmus >20 µg/mL, ataxia >30 µg/mL, stupor/coma >40 µg/mL). When valproic acid is co-administered, it delivers a 'Double-Hit': (1) valproate competitively displaces phenytoin from plasma albumin binding sites, expanding the free fraction fu from 10% to 25–35%, and (2) valproate inhibits CYP2C9 metabolism. This creates the classic Clinical Paradox: total serum phenytoin appears deceptively normal or even low (e.g. 9 µg/mL), but active unbound free phenytoin is dangerously elevated (e.g. 2.8 µg/mL, normal 1–2 µg/mL). Clinicians unaware of this paradox risk mistakenly increasing the dose, precipitating fatal toxicity.",
+      drugIds: ["phenytoin", "valproate"],
     },
   ];
   return cards.map((c) => ({

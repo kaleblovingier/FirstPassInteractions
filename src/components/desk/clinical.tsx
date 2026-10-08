@@ -217,8 +217,14 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { OncologyPanel } from "./oncology-station";
+import { oncologyOnDesk } from "@/lib/drugs/oncology-kinetics";
+import { AntimicrobialPanel } from "./antimicrobial-station";
+import { antimicrobialOnDesk } from "@/lib/drugs/antimicrobial-stewardship";
+import { PhenytoinPanel } from "./phenytoin-station";
+import { phenytoinOnDesk } from "@/lib/drugs/phenytoin-kinetics";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -250,6 +256,9 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const phenoBarbiturateOn = useMemo(() => phenobarbitalOnDesk(ids), [ids.join("|")]);
   const agOn = useMemo(() => aminoglycosidesOnDesk(ids), [ids.join("|")]);
   const lithiumOn = useMemo(() => lithiumReportOnDesk(ids).hasLithium, [ids.join("|")]);
+  const oncologyOn = useMemo(() => oncologyOnDesk(ids), [ids.join("|")]);
+  const antimicrobialOn = useMemo(() => antimicrobialOnDesk(ids), [ids.join("|")]);
+  const phenytoinOn = useMemo(() => phenytoinOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -280,11 +289,14 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "phenobarbital", label: "Phenobarb", on: phenoBarbiturateOn },
       { id: "aminoglycosides", label: "Aminoglycosides", on: agOn },
       { id: "lithium", label: "Lithium", on: lithiumOn },
+      { id: "oncology", label: "Oncology", on: oncologyOn },
+      { id: "antimicrobial", label: "Stewardship", on: Boolean(antimicrobialOn.hasAntimicrobial || antimicrobialOn.matchedInteractingAgents.length > 0) },
+      { id: "phenytoin", label: "Phenytoin", on: Boolean(phenytoinOn.hasPhenytoin || phenytoinOn.hasFosphenytoin) },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -350,6 +362,9 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "phenobarbital" && phenoBarbiturateOn ? <PhenobarbitalPanel ids={ids} /> : null}
         {live === "aminoglycosides" && agOn ? <AminoglycosidesPanel ids={ids} /> : null}
         {live === "lithium" && lithiumOn ? <LithiumPanel ids={ids} host={host} /> : null}
+        {live === "oncology" ? <OncologyPanel ids={ids} host={host} /> : null}
+        {live === "antimicrobial" ? <AntimicrobialPanel ids={ids} host={host} /> : null}
+        {live === "phenytoin" ? <PhenytoinPanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>
