@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
-import { clockForFinding, FDA_GRADES } from "@/lib/drugs/cyp-protocol";
+import { clockForFinding, FDA_GRADES, TDI } from "@/lib/drugs/cyp-protocol";
 import { conditionLanes, foodBeside, sameShelfGroups } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { maxDrugs } from "@/lib/billing/plans";
@@ -1020,6 +1020,14 @@ function quietLine(ids: string[], findings: Finding[]) {
   return `Compared, not a clearance: ${parts.join("; ")}.`;
 }
 
+function storedRecoveryLine(finding: Finding, shown: string) {
+  const id = finding.drugIds.find((drugId) => drugId in TDI);
+  if (!id) return "";
+  const resynth = TDI[id].resynth;
+  if (!resynth || shown.includes(resynth)) return "";
+  return `Recovery already stored: ${resynth}. Not a restart date.`;
+}
+
 function CheckRow({
   finding,
   open,
@@ -1038,12 +1046,17 @@ function CheckRow({
   const fold = foldLine(finding);
   const summary = plainLanguageSummary(finding);
   const kindWord = storedKindLabel(finding.kind);
+  const shown = [summary, finding.headline, finding.mechanism, finding.effect, finding.clinical, fold, a.left, a.verb, a.right, ...finding.enzymes]
+    .filter(Boolean)
+    .join(" ");
+  const recovery = storedRecoveryLine(finding, shown);
   const closedHeader = [
     SEVERITY_LABEL[finding.severity],
     a.left,
     a.verb,
     a.right,
     summary,
+    recovery,
     finding.tags.includes("boxed") ? "Boxed warning (label)" : "",
     ...finding.enzymes.map((e) => {
       const grade = finding.enzymes.length === 1 ? gradeOf(finding) : "";
@@ -1079,6 +1092,9 @@ function CheckRow({
           <span className="mt-1 block text-xs leading-relaxed text-muted">
             {summary}
           </span>
+          {recovery ? (
+            <span className="mt-1 block text-xs leading-relaxed text-muted">{recovery}</span>
+          ) : null}
           <span className="mt-1 flex flex-wrap gap-1.5">
             {finding.tags.includes("boxed") ? (
               <span className="font-mono text-[10px] uppercase tracking-wide text-danger">Boxed warning (label)</span>

@@ -10,6 +10,7 @@ import { ROUNDS } from "./rounds";
 import type { Drug, Enzyme, Finding } from "./types";
 import { ENZYMES, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
+import { WASHOUT_OFFSET, washoutOffsetKind } from "./washout-plain";
 
 if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
   DRUG_BY_ID["hydrochlorothiazide"] = DRUG_BY_ID["hctz"];
@@ -510,6 +511,10 @@ const ROLE_CHOICES: StudyChoice[] = [
   { id: "inducer", label: "Inducer" },
 ];
 
+const LINGER_CHOICES: StudyChoice[] = (
+  Object.keys(WASHOUT_OFFSET) as (keyof typeof WASHOUT_OFFSET)[]
+).map((key) => ({ id: key, label: WASHOUT_OFFSET[key].tag }));
+
 const ARROW_CHOICES: StudyChoice[] = [
   { id: "up-parent", label: "Victim exposure rises" },
   { id: "down-parent", label: "Victim exposure falls" },
@@ -669,6 +674,42 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
         choices: bySeed(ROLE_CHOICES, `role-${id}`),
         correct: role.kind,
         answer: roleAnswer(d.name, role),
+        drugIds: [id],
+      });
+    }
+    const note = id in TDI ? TDI[id] : undefined;
+    const named = note?.enzymes[0];
+    if (note && named) {
+      const seed = `tdi-enzyme-${id}`;
+      const distractors = bySeed(
+        ENZYMES.filter((enzyme) => enzyme !== named).map((enzyme) => ({ id: enzyme, label: enzyme })),
+        seed,
+      ).slice(0, 3);
+      out.push({
+        id: `tdi-${id}`,
+        lane: "desk",
+        kicker: "Recovery",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which enzyme does the stored time-dependent note name first?",
+        choices: bySeed([{ id: named, label: named }, ...distractors], `${seed}-order`),
+        correct: named,
+        answer: `${d.name}. Recovery note already stored: ${note.resynth}. ${note.pearl} Not a restart date and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const linger = washoutOffsetKind({ ids: [id], days: 1, label: "" });
+    if (linger) {
+      out.push({
+        id: `linger-${id}`,
+        lane: "desk",
+        kicker: "Linger",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which linger kind is stored after the last dose?",
+        choices: bySeed(LINGER_CHOICES, `linger-${id}`),
+        correct: linger,
+        answer: `${WASHOUT_OFFSET[linger].plain} Not a restart date and not a milligram.`,
         drugIds: [id],
       });
     }

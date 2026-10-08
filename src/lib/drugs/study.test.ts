@@ -1269,6 +1269,25 @@ describe("study learning tools", () => {
     assert.equal(arrow.choices?.length, 4);
     assert.equal(cards.some((c) => c.id === "arrow-plain-row"), false);
   });
+
+  it("a stored time-dependent note asks the first enzyme without naming it in the prompt", () => {
+    const cards = deskCards(["clarithromycin"], []);
+    const card = cards.find((c) => c.id === "tdi-clarithromycin");
+    assert.ok(card);
+    assert.equal(card.correct, "CYP3A4");
+    assert.equal(card.prompt.includes("CYP3A4"), false);
+    assert.equal(card.answer.includes("Not a restart date"), true);
+  });
+
+  it("a stored linger kind is asked after the last dose, and a plain substrate has neither card", () => {
+    const cards = deskCards(["rifampin"], []);
+    const card = cards.find((c) => c.id === "linger-rifampin");
+    assert.ok(card);
+    assert.equal(card.correct, "inducer");
+    assert.equal(card.prompt.includes("booster"), false);
+    const plain = deskCards(["simvastatin"], []);
+    assert.equal(plain.some((c) => c.id.startsWith("tdi-") || c.id.startsWith("linger-")), false);
+  });
 });
 
 
