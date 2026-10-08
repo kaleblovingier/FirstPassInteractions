@@ -737,12 +737,17 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-gaba-a-subtypes-sedation-anxiolysis": "neuro",
   "clin-gq-phospholipase-c-ip3-dag": "neuro",
   "clin-gi-girk-potassium-channel-opioid": "neuro",
+  "clin-esett-trial-noninferiority": "neuro",
+  "clin-status-epilepticus-gaba-internalization": "neuro",
+  "clin-osmotherapy-234-saline-vs-mannitol": "neuro",
 
   // Anticoagulation & DOACs
   "clin-dabigatran-reversal": "anticoag",
   "clin-ganzoni-iron-depot": "anticoag",
   "clin-rivaroxaban-food-bioavailability": "anticoag",
   "clin-dabigatran-capsule-crush-hazard": "anticoag",
+  "clin-hit-4ts-non-heparin-dti": "anticoag",
+  "clin-argatroban-warfarin-crossover-trap": "anticoag",
 
   // Toxicology & TDM
   "clin-vanco-target": "tox",
@@ -765,6 +770,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-tox-anticholinergic-vs-sympathomimetic": "tox",
   "clin-tox-cyanide-hydroxocobalamin-complex-iv": "tox",
   "clin-tox-organophosphate-ache-pralidoxime-aging": "tox",
+  "clin-beta-lactam-extended-infusion-arc": "tox",
 
   // Addiction Medicine & Harm Reduction
   "clin-bup-precip-pharmacology": "addiction",
@@ -782,6 +788,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-aspirin-platelet-covalent-acetylation": "bedside",
   "clin-steroid-nuclear-receptor-transactivation": "bedside",
   "clin-probenecid-oat1-oat3-penicillin": "bedside",
+  "clin-protamine-heparin-decay-stoichiometry": "bedside",
 
   // CYP & Pharmacokinetics
   "clin-warfarin-bactrim-cyp2c9": "cyp",
@@ -3713,6 +3720,209 @@ export function clinicalCards(): StudyCard[] {
       correct: "pris-mitochondrial-fa-oxidation-bradycardia",
       answer: "Propofol is a highly lipophilic intravenous sedative primarily acting via GABA-A receptor positive allosteric modulation. In critically ill patients—especially under systemic catecholamine stress, corticosteroid surges, or carbohydrate starvation—high doses or prolonged infusions trigger Propofol Infusion Syndrome (PRIS). Cellular Mechanism: Propofol impairs the mitochondrial respiratory chain by inhibiting electron transport complexes I, II, and IV, and uncouples oxidative phosphorylation. Simultaneously, it inhibits carnitine palmitoyltransferase-1 (CPT-1), preventing entry of long-chain free fatty acids into mitochondria for beta-oxidation. Deprived of aerobic ATP generation, myocardial and skeletal muscle cells experience cellular necrosis, releasing intracellular potassium, myoglobin, and creatine kinase (CPK > 10,000 U/L). Excess circulating free fatty acids accumulate as severe hypertriglyceridemia and fatty liver infiltration. Cardinal Clinical Features: Severe refractory High Anion Gap Metabolic Acidosis (lactic and ketoacidosis), rhabdomyolysis, acute tubular necrosis, hyperkalemia, and cardiovascular collapse. The hallmark cardiac signature is progressive, catecholamine-refractory bradycardia, right bundle branch block with ST-elevation in V1–V3 (Brugada-like pattern), and fatal asystole. SCCM PADIS Guidelines & Safety Ceilings: Limit continuous propofol infusions to < 4 to 5 mg/kg/h (< 67 to 83 mcg/kg/min) and duration < 48 hours. Serial monitoring of blood lactate, arterial pH, serum triglycerides, and CPK is recommended for infusions exceeding 24–48 hours. At the first sign of unexplained lactic acidosis, rising triglycerides, or bradycardia, immediately discontinue propofol and transition to alternative sedatives (dexmedetomidine, ketamine).",
       drugIds: ["propofol", "dexmedetomidine"],
+    },
+    {
+      id: "clin-esett-trial-noninferiority",
+      lane: "clinical",
+      kicker: "Status Epilepticus & Neurocritical Care",
+      title: "Landmark ESETT Trial: Second-Line Antiseizure Medication Equivalence",
+      prompt: "A 45-year-old patient in convulsive status epilepticus fails two doses of IV lorazepam. The team considers Phase 2 established status epilepticus therapy.",
+      ask: "Based on the landmark Established Status Epilepticus Treatment Trial (ESETT, NEJM 2019), what are the comparative efficacy outcomes of levetiracetam, fosphenytoin, and valproate sodium at 60 minutes?",
+      choices: [
+        {
+          id: "esett-three-drugs-noninferior",
+          label: "All three agents demonstrated statistical non-inferiority with ~45–47% seizure cessation and improved responsiveness at 60 minutes (Levetiracetam 47%, Fosphenytoin 45%, Valproate 46%)",
+        },
+        {
+          id: "esett-fosphenytoin-superior",
+          label: "Fosphenytoin was statistically superior to levetiracetam and valproate with 82% seizure termination",
+        },
+        {
+          id: "esett-valproate-abandoned",
+          label: "Valproate sodium failed to achieve efficacy exceeding 15% and was abandoned",
+        },
+        {
+          id: "esett-levetiracetam-inferior",
+          label: "Levetiracetam was declared inferior due to unacceptable respiratory depression rates",
+        },
+      ],
+      correct: "esett-three-drugs-noninferior",
+      answer: "The landmark Established Status Epilepticus Treatment Trial (ESETT; Kapur et al., N Engl J Med 2019;381:2103-2113) evaluated levetiracetam (60 mg/kg IV, max 4,500 mg), fosphenytoin (20 mg PE/kg IV, max 1,500 mg PE), and valproate sodium (40 mg/kg IV, max 3,000 mg) in children and adults with convulsive status epilepticus persisting after adequate benzodiazepine dosing. Primary outcome: Seizure cessation and neurological recovery at 60 minutes without additional anticonvulsants or life-threatening complications. Results: Levetiracetam 47% (95% CI 39–55%), Fosphenytoin 45% (95% CI 36–54%), and Valproate sodium 46% (95% CI 38–55%). All three agents were declared statistically non-inferior to each other, with comparable safety profiles. Clinical decision-making should be guided by patient-specific contraindications (e.g. cardiac conduction disease or hemodynamic fragility favors levetiracetam; liver disease or POLG mutations contraindicate valproate; severe CKD requires levetiracetam maintenance adjustment).",
+      drugIds: ["levetiracetam", "fosphenytoin", "valproate"],
+    },
+    {
+      id: "clin-status-epilepticus-gaba-internalization",
+      lane: "clinical",
+      kicker: "Synaptic Plasticity & Pharmacoresistance Kinetics",
+      title: "GABA-A Receptor Internalization & The Mechanistic Rationale for Ketamine in RSE",
+      prompt: "A patient continues seizing despite 35 minutes of continuous convulsive status epilepticus. Multiple doses of benzodiazepines fail to terminate clinical activity.",
+      ask: "What cellular synaptic trafficking mechanism explains the progressive loss of benzodiazepine efficacy in prolonged status epilepticus, and why is Ketamine indicated in Phase 3?",
+      choices: [
+        {
+          id: "gaba-internalization-nmda-upregulation",
+          label: "Synaptic GABA-A receptors undergo dephosphorylation and clathrin-dependent endocytosis (up to 20-fold loss of potency), while NMDA/AMPA receptors upregulate; Ketamine acts as an uncompetitive NMDA open-channel blocker to halt excitotoxicity",
+        },
+        {
+          id: "cyp2c19-hypermetabolism",
+          label: "Benzodiazepines are rapidly metabolized by upregulated hepatic CYP2C19 enzymes within 15 minutes of seizure onset",
+        },
+        {
+          id: "gaba-multiplication-hyperpolarization",
+          label: "GABA-A receptors multiply on the postsynaptic membrane causing complete receptor saturation and refractory hyperpolarization",
+        },
+        {
+          id: "ketamine-gaba-transaminase",
+          label: "Ketamine directly activates GABA transaminase to synthesize endogenous inhibitory neurosteroids",
+        },
+      ],
+      correct: "gaba-internalization-nmda-upregulation",
+      answer: "In status epilepticus, time is brain. During continuous unremitting seizures lasting > 15–30 minutes, massive calcium influx activates calcineurin phosphatases, dephosphorylating synaptic GABA-A receptor subunits (beta-2/3 and gamma-2). Dephosphorylated receptors are rapidly sequestered into clathrin-coated pits and internalized via endocytosis into intracellular endosomes, reducing surface synaptic GABA-A receptor density by 75–85% within 60 minutes. This causes up to a 20-fold loss of benzodiazepine potency (Goodkin et al., Naylor et al.). Concomitantly, CaMKII activation drives forward trafficking and exocytosis of excitatory NMDA (GluN1/GluN2B) and AMPA (GluA1/GluA2) receptors to the postsynaptic membrane, surging excitatory receptor density by 250–280%. This explains why repeated benzodiazepines after 20 minutes fail and cause respiratory arrest, and provides the mechanistic rationale for Ketamine: as an uncompetitive open-channel NMDA receptor antagonist, ketamine directly suppresses the newly mobilized, pathologic glutamatergic drive, terminating seizures when GABAergic drugs fail.",
+      drugIds: ["lorazepam", "midazolam", "ketamine"],
+    },
+    {
+      id: "clin-osmotherapy-234-saline-vs-mannitol",
+      lane: "clinical",
+      kicker: "Neurocritical Care & Cerebral Edema",
+      title: "Acute Cerebral Edema Osmotherapy: 23.4% Hypertonic Saline vs Mannitol 20%",
+      prompt: "A patient with severe refractory status epilepticus develops signs of acute transtentorial herniation with elevated ICP. The team evaluates acute hyperosmolar therapy.",
+      ask: "What are the key administration routes, osmolar parameters, and safety rails distinguishing 23.4% hypertonic saline from Mannitol 20%?",
+      choices: [
+        {
+          id: "hts-central-line-mannitol-filter-320",
+          label: "23.4% NaCl (8,008 mOsm/L, 120 mEq Na+) is given as a 30 mL bolus EXCLUSIVELY via central venous line; Mannitol (0.5–1.0 g/kg) requires an in-line 0.22-micron filter and must be held if serum osmolality >= 320 mOsm/kg",
+        },
+        {
+          id: "hts-peripheral-22g",
+          label: "23.4% NaCl is administered via peripheral 22-gauge catheter over 2 hours without central line monitoring",
+        },
+        {
+          id: "mannitol-unlimited-osm",
+          label: "Mannitol is safe to administer at any serum osmolality above 360 mOsm/kg because it does not accumulate in renal tubules",
+        },
+        {
+          id: "both-identical-diuresis",
+          label: "Both agents produce identical renal diuresis and reduce intravascular volume immediately upon infusion",
+        },
+      ],
+      correct: "hts-central-line-mannitol-filter-320",
+      answer: "Acute hyperosmolar therapy for cerebral edema and elevated ICP in neurocritical care: (1) 23.4% Hypertonic Saline: Concentration is 4 mEq/mL (8,008 mOsm/L). Standard emergency bolus is 30 mL (120 mEq Na+ and Cl-) over 10–15 minutes. It creates an immediate transluminal osmotic gradient (sodium reflection coefficient sigma = 1.0) extracting cerebral parenchymal free water. MUST BE ADMINISTERED VIA CENTRAL VENOUS LINE (CVL/PICC); peripheral extravasation causes devastating skin necrosis and compartment syndrome. Target serum sodium 145–155 mEq/L (max ceiling 160 mEq/L); serum osmolality ceiling < 320 mOsm/kg. Safe rate of rise in chronic hyponatremia is <= 8 mEq/L/24h to prevent Osmotic Demyelination Syndrome (ODS). (2) Mannitol 20%: Dose is 0.5 to 1.0 g/kg IV over 20–30 minutes (2.5 to 5.0 mL/kg of 20% solution). Acts triphasically: immediate rheologic blood viscosity reduction, delayed osmotic brain dehydration (sigma = 0.9), and renal osmotic diuresis. In-line 0.22-micron filter is MANDATORY because mannitol precipitates into microscopic crystals at room temperature. Contraindicated if serum osmolality >= 320 mOsm/kg or osmolar gap > 15–20 mOsm/kg (prevents acute osmotic nephrosis and ATN), or in anuria/pulmonary edema.",
+      drugIds: ["hypertonic-saline", "mannitol"],
+    },
+    {
+      id: "clin-hit-4ts-non-heparin-dti",
+      lane: "clinical",
+      kicker: "Hematology & Hemostasis Safety",
+      title: "Heparin-Induced Thrombocytopenia (HIT): 4Ts Scoring & Non-Heparin Direct Thrombin Inhibitor Selection",
+      prompt: "A postoperative cardiac surgery patient develops a 55% drop in platelet count on day 6 of subcutaneous unfractionated heparin, with an ultrasound-confirmed new deep vein thrombosis and no alternative cause.",
+      ask: "What 4Ts score tier is established, what is the mandatory immediate management, and why are platelet transfusions contraindicated?",
+      choices: [
+        {
+          id: "hit-high-probability-stop-heparin-dti-avoid-platelets",
+          label: "Score is 8 points (High Probability tier, ~64% pretest probability); immediate cessation of all heparin products, initiation of a non-heparin direct thrombin inhibitor (argatroban or bivalirudin), and avoidance of prophylactic platelet transfusions",
+        },
+        {
+          id: "hit-low-probability-continue-heparin",
+          label: "Score is 2 points (Low Probability tier); heparin should be continued while awaiting ELISA antibody titers",
+        },
+        {
+          id: "hit-platelet-transfusion-mandatory",
+          label: "Score indicates consumptive marrow failure requiring immediate prophylactic platelet transfusion before any anticoagulation change",
+        },
+        {
+          id: "hit-warfarin-immediate-monotherapy",
+          label: "Heparin should be immediately transitioned to high-dose oral warfarin monotherapy while awaiting hematology consultation",
+        },
+      ],
+      correct: "hit-high-probability-stop-heparin-dti-avoid-platelets",
+      answer: "The Warkentin 4Ts score evaluates: (1) Thrombocytopenia (2 pts: >50% drop and nadir >= 20k), (2) Timing (2 pts: onset days 5–10), (3) Thrombosis (2 pts: proven new thrombosis), (4) oTher causes (2 pts: none apparent), totaling 8 points (High Probability tier, 6–8 pts, pretest probability ~64%). Pathophysiology: Antibodies against platelet factor 4 (PF4)-heparin complexes cross-link platelet Fc-gamma-RIIa receptors, causing massive platelet activation and consumptive hypercoagulability. Mandatory Immediate Protocol: (1) Immediately discontinue ALL heparin exposures, including flushes, LMWH, and heparin-bonded lines; (2) Order PF4/heparin ELISA followed by confirmatory functional assay (Serotonin Release Assay, SRA); (3) Initiate therapeutic non-heparin anticoagulation (Argatroban, Bivalirudin, or Fondaparinux); (4) Avoid prophylactic platelet transfusions, which add fuel to the fire by providing PF4-rich substrates that trigger catastrophic venous gangrene or arterial thrombosis. Transition to Warfarin is contraindicated until platelet count recovers to baseline (>= 150,000/mcL), as early warfarin precipitates microvascular thrombosis and skin necrosis via rapid protein C depletion.",
+      drugIds: ["heparin", "argatroban", "bivalirudin"],
+    },
+    {
+      id: "clin-argatroban-warfarin-crossover-trap",
+      lane: "clinical",
+      kicker: "Anticoagulation Transition & Laboratory Pitfalls",
+      title: "Argatroban-to-Warfarin Transition: Artifactual INR Elevation & The Combined INR > 4.0 Target",
+      prompt: "A patient with confirmed HIT is therapeutically anticoagulated on IV argatroban (target aPTT 1.5–3× baseline). The platelet count has recovered to 175,000/mcL, and the team begins transitioning to oral warfarin.",
+      ask: "Why does argatroban interfere with INR monitoring during warfarin crossover, and what protocol verifies therapeutic INR before stopping argatroban?",
+      choices: [
+        {
+          id: "argatroban-warfarin-combined-inr-target-4-hold-verify",
+          label: "Argatroban directly prolongs PT/INR causing artifactual elevation; maintain co-administration until combined INR > 4.0, then hold argatroban and repeat solitary INR in 4–6 hours to confirm >= 2.0",
+        },
+        {
+          id: "argatroban-warfarin-stop-at-inr-2",
+          label: "Stop argatroban immediately once the combined INR reaches 2.0 to avoid bleeding complications",
+        },
+        {
+          id: "argatroban-warfarin-anti-xa-monitoring",
+          label: "Argatroban has zero effect on INR; monitoring during warfarin transition must use chromogenic anti-factor Xa assays",
+        },
+        {
+          id: "argatroban-warfarin-never-combine",
+          label: "Argatroban and warfarin must never be co-administered; argatroban must be washed out for 48 hours before warfarin initiation",
+        },
+      ],
+      correct: "argatroban-warfarin-combined-inr-target-4-hold-verify",
+      answer: "Argatroban is a small-molecule direct thrombin inhibitor (DTI) that inhibits both free and clot-bound thrombin (factor IIa). Because the prothrombin time (PT) / International Normalized Ratio (INR) assay relies on thrombin generation, argatroban produces a predictable, concentration-dependent artifactual prolongation of the INR (often doubling or tripling the baseline value). Consequently, when warfarin is co-administered, the measured INR reflects combined anticoagulant effects. Clinical Crossover Trap: If argatroban is stopped when the combined INR reaches the traditional 2.0–3.0 range, the solitary warfarin INR drops to subtherapeutic levels (< 1.5), leaving the patient unprotected against recurrent thrombosis. Guidelines (CHEST and package insert) mandate: (1) Maintain argatroban and warfarin co-therapy until the combined INR exceeds > 4.0 for at least 2 consecutive days; (2) Stop the argatroban infusion; (3) Repeat the INR 4 to 6 hours after stopping argatroban (allowing argatroban clearance; half-life ~45 min in normal liver); (4) If solitary INR is in the therapeutic range (2.0–3.0), argatroban remains off; if solitary INR is < 2.0, resume argatroban and adjust warfarin.",
+      drugIds: ["argatroban", "warfarin"],
+    },
+    {
+      id: "clin-protamine-heparin-decay-stoichiometry",
+      lane: "clinical",
+      kicker: "Critical Care Resuscitation & Anticoagulation Reversal",
+      title: "Protamine Sulfate Heparin Reversal: Elimination Decay Stoichiometry & The 50 mg Single-Dose Ceiling",
+      prompt: "A patient undergoing emergency coronary artery bypass surgery receives 30,000 units of IV unfractionated heparin. Two hours after the heparin infusion ended, urgent reversal is requested due to active surgical hemorrhage.",
+      ask: "How is protamine sulfate dosed based on heparin elimination half-life, what is the single-dose ceiling, and what paradoxical risk arises from protamine excess?",
+      choices: [
+        {
+          id: "protamine-decay-titration-50mg-cap-intrinsic-anticoagulation",
+          label: "Dosing decays over time (0.25–0.375 mg per 100u heparin after 2 hours); single doses must not exceed 50 mg because unbound protamine possesses intrinsic anticoagulant properties that worsen bleeding",
+        },
+        {
+          id: "protamine-fixed-100mg-bolus",
+          label: "Protamine is always given as a fixed 100 mg rapid IV bolus regardless of timing or heparin dose",
+        },
+        {
+          id: "protamine-zero-decay-constant-ratio",
+          label: "Heparin has no clearance in blood, requiring a permanent 1:1 ratio (1 mg per 100u) up to 24 hours post-infusion",
+        },
+        {
+          id: "protamine-causes-platelet-hyperaggregation",
+          label: "Excess protamine causes massive platelet aggregation and acute arterial thrombosis",
+        },
+      ],
+      correct: "protamine-decay-titration-50mg-cap-intrinsic-anticoagulation",
+      answer: "Protamine sulfate is a strongly basic polycationic peptide derived from salmon sperm that forms an inactive, stable salt complex with strongly acidic unfractionated heparin (UFH). Stoichiometric neutralization ratio: 1 mg of protamine neutralizes approximately 100 USP units of heparin. Because UFH has a rapid elimination half-life (60–90 minutes), protamine dosing must be stepped down based on elapsed time: (1) < 30 minutes post-heparin: 1.0 to 1.5 mg protamine per 100 units heparin; (2) 30–60 minutes: 0.5 to 0.75 mg per 100 units; (3) 60–120 minutes: 0.375 to 0.5 mg per 100 units; (4) > 120 minutes: 0.25 to 0.375 mg per 100 units. Absolute Single-Dose Ceiling: No single dose should exceed 50 mg. Protamine Paradox: Unbound, free protamine has intrinsic anticoagulant properties—it inhibits platelets, impairs thrombin activity, and prolongs the ACT/aPTT. Administering excess protamine paradoxically worsens coagulopathic bleeding. Furthermore, protamine must be infused slowly (over 10–15 minutes); rapid IV push triggers catastrophic acute pulmonary vasoconstriction, fatal right ventricular failure, and systemic anaphylactoid collapse (elevated risk with prior vasectomy, NPH insulin use, or fish allergy). For low-molecular-weight heparin (enoxaparin), protamine neutralizes ~60% of anti-Xa activity (1 mg protamine per 1 mg enoxaparin within 8 hours).",
+      drugIds: ["protamine", "heparin", "enoxaparin"],
+    },
+    {
+      id: "clin-beta-lactam-extended-infusion-arc",
+      lane: "clinical",
+      kicker: "Infectious Diseases PK/PD & Augmented Renal Clearance",
+      title: "Beta-Lactam Extended Infusions: Pharmacokinetic Optimization in Augmented Renal Clearance (ARC)",
+      prompt: "A 28-year-old polytrauma patient in the surgical ICU with severe Pseudomonas aeruginosa pneumonia has a measured creatinine clearance of 185 mL/min/1.73m² (Augmented Renal Clearance, ARC). Standard intermittent cefepime 2g IV q8h over 30 minutes fails to achieve bactericidal targets.",
+      ask: "What PK/PD index governs beta-lactam efficacy, why does ARC cause therapeutic failure with standard intermittent infusions, and how does extended/continuous infusion resolve it?",
+      choices: [
+        {
+          id: "beta-lactam-ft-mic-extended-infusion-arc-clearance",
+          label: "Beta-lactam efficacy is time-dependent (fT > MIC); hyperdynamic clearance in ARC causes plasma levels to rapidly plummet below MIC, and 3–4 hour extended or continuous infusions maintain concentrations above MIC without increasing daily dose",
+        },
+        {
+          id: "beta-lactam-cmax-mic-concentration-dependent",
+          label: "Beta-lactams are concentration-dependent (Cmax/MIC) killers; ARC requires high-dose rapid 5-minute boluses once daily",
+        },
+        {
+          id: "beta-lactam-auc-mic-trough-only",
+          label: "Beta-lactam activity depends purely on AUC24/MIC; ARC has zero impact on hydrophilic beta-lactam exposure",
+        },
+        {
+          id: "beta-lactam-protein-binding-collapse",
+          label: "ARC causes rapid degradation of plasma albumin, preventing beta-lactams from reaching lung tissue",
+        },
+      ],
+      correct: "beta-lactam-ft-mic-extended-infusion-arc-clearance",
+      answer: "Beta-lactam antibiotics (penicillins, cephalosporins, carbapenems, monobactams) exhibit time-dependent bactericidal activity governed by the PK/PD index fT > MIC (the percentage of the dosing interval that free unbound drug concentration remains above the bacterial minimum inhibitory concentration). Standard bactericidal targets are fT > MIC >= 50% for penicillins, >= 60–70% for cephalosporins, and >= 40% for carbapenems, but in critically ill patients or deep-seated pulmonary infections, consensus guidelines advocate fT > 4–5× MIC for 100% of the interval. Augmented Renal Clearance (ARC; CrCl > 130–160 mL/min/1.73m² common in young trauma, burn, and septic patients) dramatically accelerates renal elimination of hydrophilic beta-lactams, causing serum concentrations to drop below the MIC within 1 to 2 hours of a 30-minute intermittent bolus, resulting in therapeutic failure and emergence of resistance. Prolonging the infusion time to 3 to 4 hours (extended infusion) or administering a 24-hour continuous infusion (after a loading dose) flattens the concentration-time curve, keeping plasma levels continuously above the target threshold without increasing the total daily dose.",
+      drugIds: ["cefepime", "piperacillin-tazobactam", "meropenem"],
     },
   ];
   return cards.map((c) => ({

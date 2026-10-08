@@ -55,6 +55,7 @@ export const KineticsModuleEnum = z.enum([
   "antiarrhythmic",
   "acidbase",
   "anesthesia",
+  "epilepsy",
   "all",
 ]);
 

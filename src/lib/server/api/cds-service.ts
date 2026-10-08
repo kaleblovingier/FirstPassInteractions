@@ -49,6 +49,7 @@ import { neuropsychOnDesk, neuropsychReportOnDesk } from "../../drugs/neuropsych
 import { antiarrhythmicOnDesk, antiarrhythmicReportOnDesk } from "../../drugs/antiarrhythmic-kinetics";
 import { acidBaseOnDesk, acidBaseReportOnDesk } from "../../drugs/acid-base-kinetics";
 import { anesthesiaOnDesk, anesthesiaReportOnDesk } from "../../drugs/anesthesia-reversal";
+import { statusEpilepticusOnDesk, statusEpilepticusReportOnDesk } from "../../drugs/status-epilepticus";
 
 export const STATUTORY_CDS_DISCLAIMER =
   "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice.";
@@ -122,6 +123,7 @@ export interface KineticsEvaluationResult {
     antiarrhythmic?: unknown;
     acidbase?: unknown;
     anesthesia?: unknown;
+    epilepsy?: unknown;
   };
 }
 
@@ -388,6 +390,9 @@ export class ClinicalDecisionService {
     }
     if (runAll || requestedModules.includes("anesthesia")) {
       modObj.anesthesia = anesthesiaReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("epilepsy")) {
+      modObj.epilepsy = statusEpilepticusReportOnDesk(resolvedIds, host);
     }
 
     const durationMs = Math.round((performance.now() - startTime) * 100) / 100;

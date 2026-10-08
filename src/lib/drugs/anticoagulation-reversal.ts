@@ -30,6 +30,20 @@ import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 export const ANTICOAGULATION_CDS_DISCLAIMER =
   "FD&C Act § 520(o)(1)(E) Non-Device Clinical Decision Support: This educational anticoagulation reversal and hemostatic kinetics engine is intended solely for licensed healthcare professionals (hematologists, critical care physicians, emergency physicians, surgeons, anesthesiologists, and clinical pharmacologists) and supervised health-professions students. It displays pharmacological mechanisms, published clinical trial regimens (ANNEXA-4, RE-VERSE AD), weight- and lab-tiered dosing nomograms, kinetic parameters, and coagulation lab sensitivity matrices to enable independent verification of clinical decisions. It does not provide automated diagnostic conclusions, does not generate medical orders or infusion pump directives, and does not replace individualized bedside clinical evaluation, hospital anticoagulation stewardship protocols, or the FDA-approved Prescribing Information.";
 
+export const ANTICOAGULATION_LITERATURE_CITATIONS: readonly string[] = [
+  "Cuker A, et al. American Society of Hematology 2018 guidelines for management of venous thromboembolism: heparin-induced thrombocytopenia. Blood Adv. 2018;2(22):3360-3392.",
+  "Warkentin TE, et al. The 4Ts score for heparin-induced thrombocytopenia. J Thromb Haemost. 2006;4(4):759-765.",
+  "Warkentin TE. Heparin-induced thrombocytopenia: pathogenesis and management. Br J Haematol. 2003;121(4):535-555.",
+  "Connolly SJ, et al. Full study report of andexanet alfa for bleeding associated with factor Xa inhibitors (ANNEXA-4). N Engl J Med. 2019;380(14):1326-1335.",
+  "Pollack CV Jr, et al. Idarucizumab for dabigatran reversal - full cohort analysis (RE-VERSE AD). N Engl J Med. 2017;377(5):431-441.",
+  "Sarode R, et al. Efficacy and safety of a 4-factor prothrombin complex concentrate in patients on vitamin K antagonists presenting with major bleeding. Circulation. 2013;128(11):1234-1243.",
+  "Tomaselli GF, et al. 2020 ACC Expert Consensus Decision Pathway on Management of Bleeding in Patients on Oral Anticoagulants. J Am Coll Cardiol. 2020;76(5):594-622.",
+  "Witt DM, et al. American Society of Hematology 2018 guidelines for management of venous thromboembolism: optimal management of anticoagulation therapy. Blood Adv. 2018;2(22):3257-3291.",
+  "Frontera JA, et al. Guideline for Reversal of Antithrombotics in Intracranial Hemorrhage: A Statement for Healthcare Professionals from the Neurocritical Care Society and Society of Critical Care Medicine. Neurocrit Care. 2016;24(1):6-46.",
+  "Bartholomew JR. Transitioning from argatroban to warfarin in heparin-induced thrombocytopenia: clinical management and avoidance of the INR crossover trap. Chest. 2005;127(5):1656-1663.",
+  "Boer C, et al. 2017 EACTS/EACTA Guidelines on patient blood management for adult cardiac surgery. J Cardiothorac Vasc Anesth. 2018;32(1):88-120.",
+];
+
 // ============================================================================
 // 2. ANTICOAGULANT DRUG TAXONOMY & PHARMACOKINETIC PROFILES
 // ============================================================================
@@ -717,7 +731,416 @@ export const ANTICOAGULANT_PROFILES: Record<string, AnticoagulantProfile> = {
 };
 
 // ============================================================================
-// 3. TARGETED REVERSAL AGENTS & DOSING PROTOCOL ENGINES
+// 3. HEPARIN-INDUCED THROMBOCYTOPENIA (HIT) 4TS SCORING & TRIAGE ENGINE
+// ============================================================================
+
+export type HitProbabilityTier = "Low" | "Intermediate" | "High";
+
+export type HitTimingCategory =
+  | "days_5_10_or_rapid_within_30d"
+  | "day_gt_10_or_rapid_30_100d"
+  | "day_le_4_without_recent_heparin";
+
+export type HitThrombosisCategory =
+  | "proven_new_necrosis_acute_systemic"
+  | "progressive_suspected_erythema"
+  | "none";
+
+export type HitOtherCausesCategory =
+  | "none_apparent"
+  | "possible"
+  | "definite";
+
+export interface Hit4TsInput {
+  thrombocytopeniaScore?: 0 | 1 | 2;
+  timingScore?: 0 | 1 | 2;
+  thrombosisScore?: 0 | 1 | 2;
+  otherCausesScore?: 0 | 1 | 2;
+  // Raw parameters for automated evaluation
+  baselinePlateletCount?: number;
+  nadirPlateletCount?: number;
+  timingCategory?: HitTimingCategory;
+  thrombosisCategory?: HitThrombosisCategory;
+  otherCausesCategory?: HitOtherCausesCategory;
+}
+
+export interface Hit4TsResult {
+  totalScore: number;
+  thrombocytopeniaScore: number;
+  timingScore: number;
+  thrombosisScore: number;
+  otherCausesScore: number;
+  probabilityTier: HitProbabilityTier;
+  preTestProbabilityPct: string;
+  clinicalInterpretation: string;
+  recommendedActions: {
+    cessationOfAllHeparin: boolean;
+    orderPf4Elisa: boolean;
+    orderFunctionalSra: boolean;
+    initiateAlternativeAnticoagulant: boolean;
+    avoidPlateletTransfusions: boolean;
+    recommendedAlternativeAgents: string[];
+    actionSummary: string;
+  };
+  scoringBreakdown: {
+    thrombocytopenia: string;
+    timing: string;
+    thrombosis: string;
+    otherCauses: string;
+  };
+}
+
+/**
+ * Evaluates the Thrombocytopenia component of the 4Ts score based on platelet drop and nadir.
+ * 2 pts: >50% drop and nadir >= 20,000 /mcL
+ * 1 pt: 30%–50% drop or nadir 10,000–19,000 /mcL
+ * 0 pt: <30% drop or nadir < 10,000 /mcL
+ */
+export function evaluateThrombocytopeniaScore(baselinePlatelets: number, nadirPlatelets: number): 0 | 1 | 2 {
+  if (baselinePlatelets <= 0 || nadirPlatelets < 0) return 0;
+  // If inputs are in thousands (e.g. 250, 60) vs absolute counts (250000, 60000)
+  const normBaseline = baselinePlatelets > 1000 ? baselinePlatelets / 1000 : baselinePlatelets;
+  const normNadir = nadirPlatelets > 1000 ? nadirPlatelets / 1000 : nadirPlatelets;
+
+  const dropPct = ((normBaseline - normNadir) / normBaseline) * 100;
+
+  if (dropPct > 50 && normNadir >= 20) {
+    return 2;
+  }
+  if ((dropPct >= 30 && dropPct <= 50) || (normNadir >= 10 && normNadir < 20)) {
+    return 1;
+  }
+  return 0;
+}
+
+/**
+ * Calculates the Heparin-Induced Thrombocytopenia (HIT) 4Ts score (0 to 8 points)
+ * and stratifies pre-test probability according to Warkentin / ASH guidelines.
+ */
+export function calculateHit4TsScore(params: Hit4TsInput): Hit4TsResult {
+  let tScore: 0 | 1 | 2 = params.thrombocytopeniaScore ?? 0;
+  if (
+    params.thrombocytopeniaScore === undefined &&
+    params.baselinePlateletCount !== undefined &&
+    params.nadirPlateletCount !== undefined
+  ) {
+    tScore = evaluateThrombocytopeniaScore(params.baselinePlateletCount, params.nadirPlateletCount);
+  }
+
+  let timingScore: 0 | 1 | 2 = params.timingScore ?? 0;
+  if (params.timingScore === undefined && params.timingCategory) {
+    if (params.timingCategory === "days_5_10_or_rapid_within_30d") timingScore = 2;
+    else if (params.timingCategory === "day_gt_10_or_rapid_30_100d") timingScore = 1;
+    else timingScore = 0;
+  }
+
+  let thrombosisScore: 0 | 1 | 2 = params.thrombosisScore ?? 0;
+  if (params.thrombosisScore === undefined && params.thrombosisCategory) {
+    if (params.thrombosisCategory === "proven_new_necrosis_acute_systemic") thrombosisScore = 2;
+    else if (params.thrombosisCategory === "progressive_suspected_erythema") thrombosisScore = 1;
+    else thrombosisScore = 0;
+  }
+
+  let otherCausesScore: 0 | 1 | 2 = params.otherCausesScore ?? 0;
+  if (params.otherCausesScore === undefined && params.otherCausesCategory) {
+    if (params.otherCausesCategory === "none_apparent") otherCausesScore = 2;
+    else if (params.otherCausesCategory === "possible") otherCausesScore = 1;
+    else otherCausesScore = 0;
+  }
+
+  const totalScore = tScore + timingScore + thrombosisScore + otherCausesScore;
+
+  let probabilityTier: HitProbabilityTier;
+  let preTestProbabilityPct: string;
+  let clinicalInterpretation: string;
+
+  if (totalScore <= 3) {
+    probabilityTier = "Low";
+    preTestProbabilityPct = "< 2%";
+    clinicalInterpretation =
+      "Low pre-test probability (< 2%). High negative predictive value (> 99%). Routine laboratory HIT antibody testing and cessation of heparin are NOT indicated. Continue heparin therapy as indicated, observe platelet counts, and investigate alternative non-HIT etiologies for thrombocytopenia.";
+  } else if (totalScore <= 5) {
+    probabilityTier = "Intermediate";
+    preTestProbabilityPct = "~14%";
+    clinicalInterpretation =
+      "Intermediate pre-test probability (~14%). Moderate risk of clinical HIT. Immediate cessation of all heparin products (including heparin flushes, LMWH, catheter locks, heparin-bonded lines) is required. Order PF4-heparin ELISA immunoassay and confirmatory functional Serotonin Release Assay (SRA). Switch immediately to alternative non-heparin anticoagulation (Argatroban, Bivalirudin, or Fondaparinux). Avoid prophylactic platelet transfusions (risk of paradoxical thrombotic surge).";
+  } else {
+    probabilityTier = "High";
+    preTestProbabilityPct = "~64%";
+    clinicalInterpretation =
+      "High pre-test probability (~64%). Severe risk of life-threatening heparin-induced thrombotic storm. Immediate cessation of all heparin products (flushes, locks, LMWH, UFH). Order PF4-heparin ELISA and confirmatory SRA. Immediately initiate therapeutic non-heparin anticoagulation (Argatroban, Bivalirudin, or Fondaparinux). Prophylactic platelet transfusions are strictly CONTRAINDICATED (paradoxical thrombotic surge). Obtain bilateral lower extremity venous compression duplex ultrasound to screen for occult DVT.";
+  }
+
+  const isIntermediateOrHigh = totalScore >= 4;
+
+  const recommendedActions = {
+    cessationOfAllHeparin: isIntermediateOrHigh,
+    orderPf4Elisa: isIntermediateOrHigh,
+    orderFunctionalSra: isIntermediateOrHigh,
+    initiateAlternativeAnticoagulant: isIntermediateOrHigh,
+    avoidPlateletTransfusions: isIntermediateOrHigh,
+    recommendedAlternativeAgents: isIntermediateOrHigh
+      ? [
+          "Argatroban (preferred in renal impairment)",
+          "Bivalirudin (preferred in hepatic impairment / PCI / cardiac surgery)",
+          "Fondaparinux (if hemodynamically stable and CrCl > 30 mL/min)",
+        ]
+      : [],
+    actionSummary: isIntermediateOrHigh
+      ? "IMMEDIATE CESSATION of all heparin products (unfractionated heparin, LMWH, heparin flushes, catheter locks). Order PF4-heparin ELISA and confirmatory Serotonin Release Assay (SRA). Initiate non-heparin alternative anticoagulant (Argatroban, Bivalirudin, or Fondaparinux). Avoid prophylactic platelet transfusions due to extreme risk of paradoxical arterial/venous thrombotic occlusion."
+      : "Continue heparin if clinically indicated. Observe platelet trends. Do not order PF4 ELISA reflexively due to high false-positive rate of non-pathogenic antibodies in low probability patients.",
+  };
+
+  const scoringBreakdown = {
+    thrombocytopenia:
+      tScore === 2
+        ? "2 pts: Platelet drop > 50% AND nadir >= 20,000 /mcL"
+        : tScore === 1
+        ? "1 pt: Platelet drop 30%–50% OR nadir 10,000–19,000 /mcL"
+        : "0 pts: Platelet drop < 30% OR nadir < 10,000 /mcL",
+    timing:
+      timingScore === 2
+        ? "2 pts: Clear drop between days 5–10, or <= 1 day with heparin exposure within past 30 days"
+        : timingScore === 1
+        ? "1 pt: Consistent with days 5–10 fall (missing counts), onset > day 10, or <= 1 day with heparin 30–100 days ago"
+        : "0 pts: Platelet drop <= day 4 without recent heparin exposure",
+    thrombosis:
+      thrombosisScore === 2
+        ? "2 pts: Proven new thrombosis (venous/arterial), skin necrosis at injection site, or acute systemic reaction post-bolus"
+        : thrombosisScore === 1
+        ? "1 pt: Progressive/recurrent thrombosis, erythematous skin lesions, or suspected thrombosis"
+        : "0 pts: None",
+    otherCauses:
+      otherCausesScore === 2
+        ? "2 pts: None apparent (no alternative etiology identified)"
+        : otherCausesScore === 1
+        ? "1 pt: Possible alternative cause present (sepsis, ICU hemodilution, medications)"
+        : "0 pts: Definite alternative cause present (severe DIC, cardiopulmonary bypass, chemotherapy)",
+  };
+
+  return {
+    totalScore,
+    thrombocytopeniaScore: tScore,
+    timingScore,
+    thrombosisScore,
+    otherCausesScore,
+    probabilityTier,
+    preTestProbabilityPct,
+    clinicalInterpretation,
+    recommendedActions,
+    scoringBreakdown,
+  };
+}
+
+// ============================================================================
+// 4. NON-HEPARIN DIRECT THROMBIN INHIBITOR (DTI) KINETICS & WARFARIN TRANSITION
+// ============================================================================
+
+export interface ArgatrobanKineticsParams {
+  weightKg: number;
+  hepaticImpairment?: "none" | "moderate" | "severe_shock";
+  baselineApttSeconds?: number;
+}
+
+export interface ArgatrobanKineticsResult {
+  agentName: string;
+  molecularWeightDa: number;
+  mechanism: string;
+  primaryClearancePathway: string;
+  isPreferredInRenalImpairment: boolean;
+  hepaticStatus: "normal" | "mild_to_moderate" | "severe_shock";
+  recommendedInitialInfusionRateMcgKgMin: number;
+  calculatedInfusionRateMcgMin: number;
+  calculatedInfusionRateMgHr: number;
+  targetMonitoringParameter: string;
+  eliminationHalfLifeMinutes: string;
+  crossoverTrap: {
+    trapName: string;
+    mechanism: string;
+    crossoverInrTargetOnCombinedTherapy: string;
+    washoutWaitTimeHours: string;
+    postWashoutTherapeuticInrThreshold: number;
+    managementProtocol: string[];
+  };
+}
+
+export function calculateArgatrobanKinetics(params: ArgatrobanKineticsParams): ArgatrobanKineticsResult {
+  const { weightKg, hepaticImpairment = "none", baselineApttSeconds = 30 } = params;
+
+  let initialRateMcgKgMin = 2.0;
+  let halfLifeDesc = "39–51 minutes (mean ~45 min in normal hepatic function)";
+
+  if (hepaticImpairment === "moderate") {
+    initialRateMcgKgMin = 0.5;
+    halfLifeDesc = "Prolonged to ~181 minutes (~3 hours) in Child-Pugh B/C or total bilirubin > 1.5 mg/dL";
+  } else if (hepaticImpairment === "severe_shock") {
+    initialRateMcgKgMin = 0.25;
+    halfLifeDesc = "Severely prolonged (>3–4 hours) in critically ill heart failure / cardiogenic shock / multiorgan failure";
+  }
+
+  const calculatedInfusionRateMcgMin = weightKg * initialRateMcgKgMin;
+  const calculatedInfusionRateMgHr = Number(((calculatedInfusionRateMcgMin * 60) / 1000).toFixed(2));
+
+  return {
+    agentName: "Argatroban",
+    molecularWeightDa: 508.6,
+    mechanism:
+      "Synthetic small-molecule univalent direct, reversible competitive inhibitor of thrombin (Factor IIa), derived from L-arginine. Selectively binds catalytic active site of free and clot-bound thrombin.",
+    primaryClearancePathway:
+      "Hepatic metabolism via CYP3A4/5 hydroxylation and aromatization. Fecal excretion ~65%, urine ~22% (only 16% unchanged drug). Unaffected by renal clearance (<20% renal); PREFERRED anticoagulant in renal impairment, AKI, and ESRD on hemodialysis/CRRT.",
+    isPreferredInRenalImpairment: true,
+    hepaticStatus:
+      hepaticImpairment === "none"
+        ? "normal"
+        : hepaticImpairment === "moderate"
+        ? "mild_to_moderate"
+        : "severe_shock",
+    recommendedInitialInfusionRateMcgKgMin: initialRateMcgKgMin,
+    calculatedInfusionRateMcgMin,
+    calculatedInfusionRateMgHr,
+    targetMonitoringParameter: `Titrate to target aPTT of 1.5 to 3.0 times patient baseline (typically 45–90 seconds; patient baseline: ${baselineApttSeconds}s -> target ${Math.round(baselineApttSeconds * 1.5)}–${Math.round(baselineApttSeconds * 3.0)}s, not to exceed 100s). Re-check aPTT 2 hours after initiation or rate titration.`,
+    eliminationHalfLifeMinutes: halfLifeDesc,
+    crossoverTrap: {
+      trapName: "ARGATROBAN-WARFARIN CROSSOVER TRAP",
+      mechanism:
+        "Argatroban artificially prolongs PT/INR by 2- to 3-fold by directly inhibiting thrombin in the prothrombin time assay reagent. When transitioning to warfarin, co-administration produces supratherapeutic INR readings (often > 4.0 to 5.0) that do NOT reflect true intrinsic warfarin-mediated factor depletion.",
+      crossoverInrTargetOnCombinedTherapy: "> 4.0 on combined therapy for at least 2 consecutive days",
+      washoutWaitTimeHours: "4 to 6 hours after holding/stopping argatroban infusion",
+      postWashoutTherapeuticInrThreshold: 2.0,
+      managementProtocol: [
+        "1. Do NOT discontinue argatroban when the INR reaches standard therapeutic target (2.0–3.0).",
+        "2. Co-administer argatroban and warfarin until the INR on COMBINED therapy exceeds > 4.0 (for target INR 2.0–3.0) on 2 consecutive days.",
+        "3. Hold / discontinue the argatroban infusion.",
+        "4. Re-measure solitary INR in 4 to 6 hours after stopping argatroban (once argatroban has cleared hepatically).",
+        "5. If the true solitary warfarin INR is >= 2.0, warfarin is therapeutic and argatroban remains discontinued. If true INR is < 2.0, resume argatroban immediately and titrate warfarin.",
+      ],
+    },
+  };
+}
+
+export interface BivalirudinKineticsParams {
+  weightKg: number;
+  renalStatus?: "normal" | "moderate_ckd" | "severe_ckd" | "esrd_dialysis";
+  indication?: "hit_treatment" | "pci";
+  baselineApttSeconds?: number;
+}
+
+export interface BivalirudinKineticsResult {
+  agentName: string;
+  molecularWeightDa: number;
+  mechanism: string;
+  primaryClearancePathway: string;
+  isPreferredInHepaticImpairment: boolean;
+  renalStatus: "normal" | "moderate_ckd" | "severe_ckd" | "esrd_dialysis";
+  indication: "hit_treatment" | "pci";
+  recommendedInfusionRateMgKgHr: number;
+  calculatedInfusionRateMgHr: number;
+  eliminationHalfLifeMinutes: string;
+  clinicalPearls: string[];
+}
+
+export function calculateBivalirudinKinetics(params: BivalirudinKineticsParams): BivalirudinKineticsResult {
+  const { weightKg, renalStatus = "normal", indication = "hit_treatment", baselineApttSeconds = 30 } = params;
+
+  let initialRateMgKgHr = 0.15;
+  let halfLifeDesc = "25 minutes (normal renal function)";
+
+  if (indication === "pci") {
+    initialRateMgKgHr = 1.75;
+    halfLifeDesc = "25 minutes (with 0.75 mg/kg initial IV bolus)";
+  } else {
+    // HIT treatment
+    if (renalStatus === "normal") {
+      initialRateMgKgHr = 0.15;
+      halfLifeDesc = "25 minutes";
+    } else if (renalStatus === "moderate_ckd") {
+      initialRateMgKgHr = 0.15;
+      halfLifeDesc = "~35–45 minutes";
+    } else if (renalStatus === "severe_ckd") {
+      initialRateMgKgHr = 0.10;
+      halfLifeDesc = "57 minutes in severe CKD (CrCl < 30 mL/min)";
+    } else {
+      initialRateMgKgHr = 0.05;
+      halfLifeDesc = "Prolonged to ~3.5 hours (up to 210 minutes in ESRD on hemodialysis)";
+    }
+  }
+
+  const calculatedInfusionRateMgHr = Number((weightKg * initialRateMgKgHr).toFixed(2));
+
+  return {
+    agentName: "Bivalirudin",
+    molecularWeightDa: 2180,
+    mechanism:
+      "Synthetic 20-amino acid peptide bivalent direct thrombin inhibitor (binds both catalytic active site and exosite 1). Reversible inhibition as thrombin slowly cleaves the Arg3-Pro4 bond of bivalirudin.",
+    primaryClearancePathway:
+      "Dual clearance: ~80% proteolytic enzymatic cleavage by circulating thrombin and proteases; ~20% renal elimination. PREFERRED in hepatic dysfunction, acute coronary syndrome / PCI, or postcardiac surgery.",
+    isPreferredInHepaticImpairment: true,
+    renalStatus,
+    indication,
+    recommendedInfusionRateMgKgHr: initialRateMgKgHr,
+    calculatedInfusionRateMgHr,
+    eliminationHalfLifeMinutes: halfLifeDesc,
+    clinicalPearls: [
+      "Preferred over argatroban in patients with acute liver failure or severe hepatic impairment because 80% of clearance is non-organ-dependent proteolytic cleavage.",
+      "In HIT treatment without PCI, NO IV bolus is given; initiate continuous infusion directly (0.15–0.20 mg/kg/hr) and titrate to aPTT 1.5–2.5x baseline.",
+      "Minimal confounding of PT/INR compared to argatroban, simplifying transition to oral anticoagulation.",
+      "Ultra-short half-life (25 min in normal kidney function) enables rapid offset within 1–2 hours of discontinuation if bleeding occurs.",
+    ],
+  };
+}
+
+export interface ArgatrobanWarfarinCrossoverEvaluation {
+  currentCombinedInr: number;
+  hasExceededTargetInr4: boolean;
+  canStopArgatrobanNow: boolean;
+  recommendedNextStep: string;
+  recheckInrWindowHours: string;
+  trueWarfarinInrGoal: string;
+  safetyAlert: string;
+}
+
+export function evaluateArgatrobanWarfarinCrossover(params: {
+  combinedInr: number;
+  daysOnCombinedTherapy?: number;
+}): ArgatrobanWarfarinCrossoverEvaluation {
+  const { combinedInr, daysOnCombinedTherapy = 1 } = params;
+
+  const hasExceededTargetInr4 = combinedInr > 4.0;
+  const canStopArgatrobanNow = hasExceededTargetInr4 && daysOnCombinedTherapy >= 2;
+
+  let recommendedNextStep: string;
+  let safetyAlert: string;
+
+  if (combinedInr <= 4.0) {
+    recommendedNextStep =
+      "DO NOT STOP ARGATROBAN! Continue co-administration of argatroban and warfarin. Because argatroban artificially prolongs the INR by 2- to 3-fold, stopping argatroban at an INR <= 4.0 will uncover an unprotective, subtherapeutic solitary warfarin INR (< 2.0). Maintain combined therapy until INR exceeds > 4.0 for at least 2 consecutive days.";
+    safetyAlert =
+      "CRITICAL CROSSOVER TRAP: Stopping argatroban when the INR reaches standard therapeutic target (2.0–3.0) leads to immediate loss of antithrombotic protection and catastrophic recurrent thrombosis in HIT!";
+  } else if (!canStopArgatrobanNow) {
+    recommendedNextStep =
+      `Combined INR is ${combinedInr.toFixed(1)} (> 4.0), but combined therapy has only been maintained for ${daysOnCombinedTherapy} day(s). Confirm therapeutic combined INR > 4.0 on a second consecutive day before holding argatroban to verify steady-state warfarin factor depression.`;
+    safetyAlert =
+      "Combined INR has surpassed 4.0. Ensure two consecutive days of combined INR > 4.0 before holding argatroban.";
+  } else {
+    recommendedNextStep =
+      `Combined INR is ${combinedInr.toFixed(1)} (> 4.0) on consecutive days. HOLD argatroban infusion now. Wait 4 to 6 hours for argatroban washout (hepatic clearance). Re-measure solitary INR. If solitary INR is >= 2.0, warfarin is therapeutic and argatroban remains stopped. If < 2.0, resume argatroban immediately.`;
+    safetyAlert =
+      "Ready for argatroban hold. Hold infusion, wait 4–6 hours for complete hepatic clearance of argatroban, and measure true solitary warfarin INR.";
+  }
+
+  return {
+    currentCombinedInr: combinedInr,
+    hasExceededTargetInr4,
+    canStopArgatrobanNow,
+    recommendedNextStep,
+    recheckInrWindowHours: "4 to 6 hours post-argatroban discontinuation",
+    trueWarfarinInrGoal: ">= 2.0 (target 2.0–3.0)",
+    safetyAlert,
+  };
+}
+
+// ============================================================================
+// 5. TARGETED REVERSAL AGENTS & DOSING PROTOCOL ENGINES
 // ============================================================================
 
 export interface AndexanetAlfaProtocolResult {
@@ -1106,7 +1529,7 @@ export function calculateProtamineDosing(params: {
     hasPriorVasectomy: Boolean(priorVasectomy),
     isHighRiskAnaphylaxis,
     pulmonaryVasoconstrictionWarning:
-      "BOXED ANAPHYLACTOID & HEMODYNAMIC WARNING: Rapid IV injection of protamine triggers massive histamine release, thromboxane-mediated acute pulmonary vasoconstriction, acute right heart failure, profound systemic vasodilation, and cardiovascular collapse. High-risk patients include those with fish/salmon hypersensitivity (protamine derived from salmon sperm), prior Neutral Protamine Hagedorn (NPH) insulin exposure (anti-protamine IgG antibodies), and prior vasectomy (anti-sperm antibodies). Administer slowly over >= 10 minutes (infusion rate <= 5 mg/min) with resuscitation equipment and ephedrine/epinephrine immediately available.",
+      "PROTAMINE HYPERSENSITIVITY & INFUSION DISASTER WARNING: Rapid IV bolus injection of protamine triggers catastrophic acute pulmonary vasoconstriction, acute right ventricular failure, massive histamine release, and profound systemic hypotension. High-risk patients include those with fish/salmon hypersensitivity (protamine is a basic polycation derived from salmon sperm), prior Neutral Protamine Hagedorn (NPH) insulin exposure (anti-protamine IgG antibodies), and prior vasectomy (anti-sperm antibodies). Mandatory administration: slow IV infusion over >= 10–15 minutes (rate <= 5 mg/min) with resuscitation equipment and ephedrine/epinephrine immediately available.",
   };
 
   return {
@@ -1116,7 +1539,7 @@ export function calculateProtamineDosing(params: {
     calculatedProtamineDoseMg: Number(calculatedProtamineDoseMg.toFixed(1)),
     maxDoseCapApplied,
     percentNeutralization,
-    administrationRate: "Slow IV infusion over at least 10 minutes; rate must NOT exceed 5 mg/min.",
+    administrationRate: "Slow IV infusion over at least 10–15 minutes; rate must NOT exceed 5 mg/min.",
     isFondaparinuxZeroReversal,
     clinicalRationale,
     anaphylactoidRiskFlags,
@@ -1124,7 +1547,7 @@ export function calculateProtamineDosing(params: {
 }
 
 // ============================================================================
-// 4. COAGULATION LAB TRAPS & MONITORING MATRIX
+// 6. COAGULATION LAB TRAPS & MONITORING MATRIX
 // ============================================================================
 
 export interface LabTrapItem {
@@ -1184,7 +1607,7 @@ export const COAGULATION_LAB_TRAPS: LabTrapItem[] = [
 ];
 
 // ============================================================================
-// 5. DESK DETECTION & COMPREHENSIVE CLINICAL REPORT GENERATOR
+// 7. DESK DETECTION & COMPREHENSIVE CLINICAL REPORT GENERATOR
 // ============================================================================
 
 export const ALL_ANTICOAGULANT_IDS = new Set([
@@ -1203,6 +1626,7 @@ export const ALL_ANTICOAGULANT_IDS = new Set([
 
 export const DIRECT_FXA_IDS = new Set(["apixaban", "rivaroxaban", "edoxaban"]);
 export const DIRECT_THROMBIN_IDS = new Set(["dabigatran", "argatroban", "bivalirudin"]);
+export const DTI_IDS = new Set(["argatroban", "bivalirudin"]);
 export const VKA_IDS = new Set(["warfarin"]);
 export const HEPARINOID_IDS = new Set(["heparin", "enoxaparin", "dalteparin", "fondaparinux"]);
 
@@ -1217,6 +1641,7 @@ export const ALL_REVERSAL_IDS = new Set([
   "protamine-sulfate",
   "vitamin-k",
   "phytonadione",
+  "phytonadione-vitamin-k",
 ]);
 
 export interface AnticoagulationOnDeskResult {
@@ -1224,6 +1649,7 @@ export interface AnticoagulationOnDeskResult {
   hasDoac: boolean;
   hasDirectFxaInhibitor: boolean;
   hasDirectThrombinInhibitor: boolean;
+  hasDti: boolean;
   hasVka: boolean;
   hasHeparinoid: boolean;
   hasReversalAgent: boolean;
@@ -1244,7 +1670,8 @@ export function anticoagulationOnDesk(drugIds: string[]): AnticoagulationOnDeskR
 
   const hasDirectFxaInhibitor = anticoagulants.some((id) => DIRECT_FXA_IDS.has(id));
   const hasDirectThrombinInhibitor = anticoagulants.some((id) => DIRECT_THROMBIN_IDS.has(id));
-  const hasDoac = hasDirectFxaInhibitor || hasDirectThrombinInhibitor;
+  const hasDti = anticoagulants.some((id) => DTI_IDS.has(id));
+  const hasDoac = hasDirectFxaInhibitor || (hasDirectThrombinInhibitor && anticoagulants.includes("dabigatran"));
   const hasVka = anticoagulants.some((id) => VKA_IDS.has(id));
   const hasHeparinoid = anticoagulants.some((id) => HEPARINOID_IDS.has(id));
 
@@ -1257,6 +1684,7 @@ export function anticoagulationOnDesk(drugIds: string[]): AnticoagulationOnDeskR
     hasDoac,
     hasDirectFxaInhibitor,
     hasDirectThrombinInhibitor,
+    hasDti,
     hasVka,
     hasHeparinoid,
     hasReversalAgent: reversals.length > 0,
@@ -1276,6 +1704,19 @@ export interface AnticoagulationReportOptions {
   fishAllergy?: boolean;
   priorNphInsulin?: boolean;
   priorVasectomy?: boolean;
+  // HIT 4Ts evaluation inputs
+  hit4TsInput?: Hit4TsInput;
+  plateletBaseline?: number;
+  plateletNadir?: number;
+  hitTimingScore?: 0 | 1 | 2;
+  hitThrombosisScore?: 0 | 1 | 2;
+  hitOtherCausesScore?: 0 | 1 | 2;
+  hitThrombocytopeniaScore?: 0 | 1 | 2;
+  // DTI kinetics inputs
+  hepaticImpairment?: "none" | "moderate" | "severe_shock";
+  renalStatus?: "normal" | "moderate_ckd" | "severe_ckd" | "esrd_dialysis";
+  combinedInr?: number;
+  daysOnCombinedTherapy?: number;
 }
 
 export interface AnticoagulationReport {
@@ -1287,6 +1728,10 @@ export interface AnticoagulationReport {
     hoursSinceLastDose: number;
     crClMlMin: number;
   };
+  hit4TsEvaluation?: Hit4TsResult;
+  argatrobanKinetics?: ArgatrobanKineticsResult;
+  bivalirudinKinetics?: BivalirudinKineticsResult;
+  argatrobanWarfarinCrossover?: ArgatrobanWarfarinCrossoverEvaluation;
   andexanetDosing?: AndexanetAlfaProtocolResult;
   idarucizumabProtocol?: IdarucizumabProtocolResult;
   fourFactorPccWarfarinDosing?: FourFactorPccWarfarinDosingResult;
@@ -1299,7 +1744,8 @@ export interface AnticoagulationReport {
 }
 
 /**
- * Comprehensive clinical report generator for anticoagulation reversal and hemostasis on the desk.
+ * Comprehensive clinical report generator for anticoagulation reversal, HIT triage,
+ * and hemostasis on the desk.
  */
 export function anticoagulationReportOnDesk(
   drugIds: string[],
@@ -1314,6 +1760,57 @@ export function anticoagulationReportOnDesk(
   const hoursSinceLastDose = options?.hoursSinceLastDose ?? 4;
   const crClMlMin = options?.crClMlMin ?? (host.kidney === "ckd" ? 25 : 85);
 
+  // 1. HIT 4Ts Evaluation
+  let hit4TsEvaluation: Hit4TsResult | undefined;
+  if (options?.hit4TsInput) {
+    hit4TsEvaluation = calculateHit4TsScore(options.hit4TsInput);
+  } else if (
+    drugIds.includes("heparin") ||
+    drugIds.includes("enoxaparin") ||
+    drugIds.includes("dalteparin") ||
+    options?.plateletNadir !== undefined ||
+    options?.hitThrombocytopeniaScore !== undefined
+  ) {
+    hit4TsEvaluation = calculateHit4TsScore({
+      thrombocytopeniaScore: options?.hitThrombocytopeniaScore,
+      timingScore: options?.hitTimingScore,
+      thrombosisScore: options?.hitThrombosisScore,
+      otherCausesScore: options?.hitOtherCausesScore,
+      baselinePlateletCount: options?.plateletBaseline,
+      nadirPlateletCount: options?.plateletNadir,
+    });
+  }
+
+  // 2. Direct Thrombin Inhibitor Kinetics
+  let argatrobanKinetics: ArgatrobanKineticsResult | undefined;
+  if (drugIds.includes("argatroban") || options?.hepaticImpairment !== undefined) {
+    argatrobanKinetics = calculateArgatrobanKinetics({
+      weightKg,
+      hepaticImpairment: options?.hepaticImpairment,
+    });
+  }
+
+  let bivalirudinKinetics: BivalirudinKineticsResult | undefined;
+  if (drugIds.includes("bivalirudin") || options?.renalStatus !== undefined) {
+    bivalirudinKinetics = calculateBivalirudinKinetics({
+      weightKg,
+      renalStatus: options?.renalStatus,
+    });
+  }
+
+  // 3. Argatroban-Warfarin Crossover Trap
+  let argatrobanWarfarinCrossover: ArgatrobanWarfarinCrossoverEvaluation | undefined;
+  if (
+    (drugIds.includes("argatroban") && drugIds.includes("warfarin")) ||
+    options?.combinedInr !== undefined
+  ) {
+    argatrobanWarfarinCrossover = evaluateArgatrobanWarfarinCrossover({
+      combinedInr: options?.combinedInr ?? baselineInr,
+      daysOnCombinedTherapy: options?.daysOnCombinedTherapy ?? 1,
+    });
+  }
+
+  // 4. Targeted Reversal: Andexanet alfa
   let andexanetDosing: AndexanetAlfaProtocolResult | undefined;
   if (drugIds.includes("apixaban")) {
     andexanetDosing = calculateAndexanetAlfaDosing({
@@ -1329,11 +1826,13 @@ export function anticoagulationReportOnDesk(
     });
   }
 
+  // 5. Targeted Reversal: Idarucizumab
   let idarucizumabProtocol: IdarucizumabProtocolResult | undefined;
   if (drugIds.includes("dabigatran")) {
     idarucizumabProtocol = getIdarucizumabProtocol();
   }
 
+  // 6. Urgent Warfarin Reversal: 4F-PCC + Vitamin K
   let fourFactorPccWarfarinDosing: FourFactorPccWarfarinDosingResult | undefined;
   if (drugIds.includes("warfarin") || baselineInr >= 2.0) {
     fourFactorPccWarfarinDosing = calculate4FPccWarfarinDosing({
@@ -1342,11 +1841,13 @@ export function anticoagulationReportOnDesk(
     });
   }
 
+  // 7. Off-Label DOAC Guidance with 4F-PCC
   let fourFactorPccDoacGuidance: FourFactorPccDoacGuidance | undefined;
   if (onDesk.hasDoac) {
     fourFactorPccDoacGuidance = get4FPccOffLabelDoacGuidance();
   }
 
+  // 8. Protamine Sulfate Heparin Neutralization
   let protamineDosing: ProtamineDosingResult | undefined;
   if (drugIds.includes("heparin")) {
     protamineDosing = calculateProtamineDosing({
@@ -1426,6 +1927,18 @@ export function anticoagulationReportOnDesk(
     );
   }
 
+  if (drugIds.includes("argatroban")) {
+    highYieldClinicalPearls.push(
+      "ARGATROBAN-WARFARIN CROSSOVER TRAP: Argatroban artificially elevates PT/INR 2- to 3-fold. Target combined INR > 4.0 before holding argatroban, then re-check solitary INR in 4–6 hours to ensure true INR >= 2.0.",
+    );
+  }
+
+  if (drugIds.includes("heparin") || drugIds.includes("enoxaparin")) {
+    highYieldClinicalPearls.push(
+      "HIT 4Ts Triage: Intermediate or High probability (score >= 4) mandates immediate cessation of all heparin products (including flushes/locks) and starting alternative non-heparin anticoagulation (Argatroban/Bivalirudin). Avoid prophylactic platelet transfusions (paradoxical thrombotic surge).",
+    );
+  }
+
   return {
     onDesk,
     patientParameters: {
@@ -1435,6 +1948,10 @@ export function anticoagulationReportOnDesk(
       hoursSinceLastDose,
       crClMlMin,
     },
+    hit4TsEvaluation,
+    argatrobanKinetics,
+    bivalirudinKinetics,
+    argatrobanWarfarinCrossover,
     andexanetDosing,
     idarucizumabProtocol,
     fourFactorPccWarfarinDosing,
@@ -1448,7 +1965,7 @@ export function anticoagulationReportOnDesk(
 }
 
 // ============================================================================
-// 6. HELPER ACCESSORS & REVERSAL REGISTRY
+// 8. HELPER ACCESSORS & REVERSAL REGISTRY
 // ============================================================================
 
 export function getAnticoagulantProfile(drugId: string): AnticoagulantProfile | undefined {

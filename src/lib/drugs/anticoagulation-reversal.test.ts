@@ -2,15 +2,22 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   ANTICOAGULATION_CDS_DISCLAIMER,
+  ANTICOAGULATION_LITERATURE_CITATIONS,
   ANTICOAGULANT_PROFILES,
   ALL_ANTICOAGULANT_IDS,
   DIRECT_FXA_IDS,
   DIRECT_THROMBIN_IDS,
+  DTI_IDS,
   VKA_IDS,
   HEPARINOID_IDS,
   COAGULATION_LAB_TRAPS,
   getAnticoagulantProfile,
   getAllAnticoagulantProfiles,
+  calculateHit4TsScore,
+  evaluateThrombocytopeniaScore,
+  calculateArgatrobanKinetics,
+  calculateBivalirudinKinetics,
+  evaluateArgatrobanWarfarinCrossover,
   calculateAndexanetAlfaDosing,
   getIdarucizumabProtocol,
   calculate4FPccWarfarinDosing,
@@ -39,6 +46,14 @@ describe("Anticoagulation Reversal, DOAC Coagulopathy & Hemostatic Kinetics Engi
       assert.ok(ANTICOAGULATION_CDS_DISCLAIMER.includes("does not provide automated diagnostic conclusions"));
       assert.ok(ANTICOAGULATION_CDS_DISCLAIMER.includes("does not generate medical orders or infusion pump directives"));
       assert.ok(ANTICOAGULATION_CDS_DISCLAIMER.includes("does not replace individualized bedside clinical evaluation"));
+    });
+
+    it("exports authoritative peer-reviewed literature citations under FD&C Act § 520(o)(1)(E)", () => {
+      assert.ok(ANTICOAGULATION_LITERATURE_CITATIONS.length >= 8);
+      assert.ok(ANTICOAGULATION_LITERATURE_CITATIONS.some((c) => c.includes("Warkentin")));
+      assert.ok(ANTICOAGULATION_LITERATURE_CITATIONS.some((c) => c.includes("ANNEXA-4")));
+      assert.ok(ANTICOAGULATION_LITERATURE_CITATIONS.some((c) => c.includes("RE-VERSE AD")));
+      assert.ok(ANTICOAGULATION_LITERATURE_CITATIONS.some((c) => c.includes("American Society of Hematology")));
     });
 
     it("report generator embeds statutory disclaimer with NOT_CLEARED and PI_FOOTER", () => {
@@ -167,7 +182,222 @@ describe("Anticoagulation Reversal, DOAC Coagulopathy & Hemostatic Kinetics Engi
   });
 
   // ==========================================================================
-  // 3. ANDEXANET ALFA (ANDEXXA) DOSING ENGINE
+  // 3. HIT 4TS SCORING & TRIAGE PROTOCOL (LOW, INTERMEDIATE, HIGH TIERS)
+  // ==========================================================================
+  describe("Heparin-Induced Thrombocytopenia (HIT) 4Ts Scoring & Triage Engine", () => {
+    it("evaluates thrombocytopenia score accurately from platelet drop and nadir", () => {
+      // 2 points: >50% drop AND nadir >= 20k
+      assert.equal(evaluateThrombocytopeniaScore(200, 50), 2); // 75% drop, nadir 50k
+      assert.equal(evaluateThrombocytopeniaScore(300000, 60000), 2); // 80% drop, nadir 60k
+
+      // 1 point: 30-50% drop OR nadir 10-19k
+      assert.equal(evaluateThrombocytopeniaScore(100, 60), 1); // 40% drop, nadir 60k
+      assert.equal(evaluateThrombocytopeniaScore(200, 15), 1); // nadir 15k is in 10-19k range
+
+      // 0 points: <30% drop OR nadir < 10k
+      assert.equal(evaluateThrombocytopeniaScore(200, 160), 0); // 20% drop
+      assert.equal(evaluateThrombocytopeniaScore(200, 8), 0); // nadir 8k < 10k
+      assert.equal(evaluateThrombocytopeniaScore(0, 0), 0);
+    });
+
+    it("calculates Low Probability Tier (0-3 points, pre-test < 2%)", () => {
+      const lowResult = calculateHit4TsScore({
+        thrombocytopeniaScore: 1, // 30-50% drop
+        timingScore: 0,           // fall <= day 4 without recent heparin
+        thrombosisScore: 0,       // none
+        otherCausesScore: 1,      // possible alternative cause
+      });
+
+      assert.equal(lowResult.totalScore, 2);
+      assert.equal(lowResult.probabilityTier, "Low");
+      assert.equal(lowResult.preTestProbabilityPct, "< 2%");
+      assert.equal(lowResult.recommendedActions.cessationOfAllHeparin, false);
+      assert.equal(lowResult.recommendedActions.orderPf4Elisa, false);
+      assert.equal(lowResult.recommendedActions.orderFunctionalSra, false);
+      assert.equal(lowResult.recommendedActions.initiateAlternativeAnticoagulant, false);
+      assert.ok(lowResult.clinicalInterpretation.includes("Low pre-test probability"));
+      assert.ok(lowResult.clinicalInterpretation.includes("Continue heparin"));
+      assert.ok(lowResult.recommendedActions.actionSummary.includes("Do not order PF4 ELISA reflexively"));
+    });
+
+    it("calculates Intermediate Probability Tier (4-5 points, ~14% probability)", () => {
+      const intResult = calculateHit4TsScore({
+        thrombocytopeniaScore: 2, // >50% drop, nadir >= 20k
+        timingScore: 1,           // > day 10
+        thrombosisScore: 1,       // suspected thrombosis
+        otherCausesScore: 1,      // possible other cause
+      });
+
+      assert.equal(intResult.totalScore, 5);
+      assert.equal(intResult.probabilityTier, "Intermediate");
+      assert.equal(intResult.preTestProbabilityPct, "~14%");
+      assert.equal(intResult.recommendedActions.cessationOfAllHeparin, true);
+      assert.equal(intResult.recommendedActions.orderPf4Elisa, true);
+      assert.equal(intResult.recommendedActions.orderFunctionalSra, true);
+      assert.equal(intResult.recommendedActions.initiateAlternativeAnticoagulant, true);
+      assert.equal(intResult.recommendedActions.avoidPlateletTransfusions, true);
+      assert.ok(intResult.recommendedActions.recommendedAlternativeAgents.some((a) => a.includes("Argatroban")));
+      assert.ok(intResult.recommendedActions.recommendedAlternativeAgents.some((a) => a.includes("Bivalirudin")));
+      assert.ok(intResult.clinicalInterpretation.includes("Immediate cessation of all heparin"));
+      assert.ok(intResult.recommendedActions.actionSummary.includes("paradoxical arterial/venous thrombotic occlusion"));
+    });
+
+    it("calculates High Probability Tier (6-8 points, ~64% probability)", () => {
+      const highResult = calculateHit4TsScore({
+        thrombocytopeniaScore: 2, // >50% drop and nadir >= 20k
+        timingScore: 2,           // clear fall days 5-10
+        thrombosisScore: 2,       // proven new thrombosis
+        otherCausesScore: 2,      // none apparent
+      });
+
+      assert.equal(highResult.totalScore, 8);
+      assert.equal(highResult.probabilityTier, "High");
+      assert.equal(highResult.preTestProbabilityPct, "~64%");
+      assert.equal(highResult.recommendedActions.cessationOfAllHeparin, true);
+      assert.equal(highResult.recommendedActions.orderPf4Elisa, true);
+      assert.equal(highResult.recommendedActions.orderFunctionalSra, true);
+      assert.equal(highResult.recommendedActions.initiateAlternativeAnticoagulant, true);
+      assert.equal(highResult.recommendedActions.avoidPlateletTransfusions, true);
+      assert.ok(highResult.clinicalInterpretation.includes("High pre-test probability"));
+      assert.ok(highResult.clinicalInterpretation.includes("duplex ultrasound"));
+      assert.ok(highResult.scoringBreakdown.thrombocytopenia.includes("2 pts"));
+      assert.ok(highResult.scoringBreakdown.timing.includes("2 pts"));
+      assert.ok(highResult.scoringBreakdown.thrombosis.includes("2 pts"));
+      assert.ok(highResult.scoringBreakdown.otherCauses.includes("2 pts"));
+    });
+
+    it("computes 4Ts score from categorical inputs (timing, thrombosis, and other causes)", () => {
+      const catResult = calculateHit4TsScore({
+        baselinePlateletCount: 250,
+        nadirPlateletCount: 80, // >50% drop (68%), nadir 80k -> 2 pts
+        timingCategory: "days_5_10_or_rapid_within_30d", // 2 pts
+        thrombosisCategory: "proven_new_necrosis_acute_systemic", // 2 pts
+        otherCausesCategory: "possible", // 1 pt
+      });
+
+      assert.equal(catResult.thrombocytopeniaScore, 2);
+      assert.equal(catResult.timingScore, 2);
+      assert.equal(catResult.thrombosisScore, 2);
+      assert.equal(catResult.otherCausesScore, 1);
+      assert.equal(catResult.totalScore, 7);
+      assert.equal(catResult.probabilityTier, "High");
+    });
+  });
+
+  // ==========================================================================
+  // 4. NON-HEPARIN DTI KINETICS & ARGATROBAN-WARFARIN TRANSITION ENGINE
+  // ==========================================================================
+  describe("Non-Heparin DTI Kinetics & Argatroban-Warfarin Transition", () => {
+    it("calculates Argatroban kinetics in normal hepatic function and confirms renal preference", () => {
+      const normalHep = calculateArgatrobanKinetics({
+        weightKg: 70,
+        hepaticImpairment: "none",
+        baselineApttSeconds: 30,
+      });
+
+      assert.equal(normalHep.agentName, "Argatroban");
+      assert.equal(normalHep.molecularWeightDa, 508.6);
+      assert.equal(normalHep.isPreferredInRenalImpairment, true);
+      assert.equal(normalHep.recommendedInitialInfusionRateMcgKgMin, 2.0);
+      assert.equal(normalHep.calculatedInfusionRateMcgMin, 140); // 70 * 2 = 140
+      assert.equal(normalHep.calculatedInfusionRateMgHr, 8.4);   // 140 * 60 / 1000 = 8.4 mg/hr
+      assert.ok(normalHep.eliminationHalfLifeMinutes.includes("39–51 minutes"));
+      assert.ok(normalHep.targetMonitoringParameter.includes("aPTT of 1.5 to 3.0"));
+    });
+
+    it("reduces Argatroban initial infusion rate in hepatic impairment and severe shock", () => {
+      // Child-Pugh B / bilirubin > 1.5 mg/dL -> 0.5 mcg/kg/min
+      const modHep = calculateArgatrobanKinetics({
+        weightKg: 80,
+        hepaticImpairment: "moderate",
+      });
+      assert.equal(modHep.recommendedInitialInfusionRateMcgKgMin, 0.5);
+      assert.equal(modHep.calculatedInfusionRateMcgMin, 40); // 80 * 0.5 = 40
+      assert.equal(modHep.calculatedInfusionRateMgHr, 2.4);  // 40 * 60 / 1000 = 2.4 mg/hr
+      assert.ok(modHep.eliminationHalfLifeMinutes.includes("181 minutes"));
+
+      // Cardiogenic shock / multiorgan failure -> 0.25 mcg/kg/min
+      const shockHep = calculateArgatrobanKinetics({
+        weightKg: 80,
+        hepaticImpairment: "severe_shock",
+      });
+      assert.equal(shockHep.recommendedInitialInfusionRateMcgKgMin, 0.25);
+      assert.equal(shockHep.calculatedInfusionRateMcgMin, 20);
+      assert.equal(shockHep.calculatedInfusionRateMgHr, 1.2);
+    });
+
+    it("calculates Bivalirudin kinetics across renal function tiers and PCI indications", () => {
+      // Normal renal function in HIT treatment (0.15 mg/kg/hr)
+      const normalBiv = calculateBivalirudinKinetics({
+        weightKg: 70,
+        renalStatus: "normal",
+        indication: "hit_treatment",
+      });
+      assert.equal(normalBiv.agentName, "Bivalirudin");
+      assert.equal(normalBiv.molecularWeightDa, 2180);
+      assert.equal(normalBiv.isPreferredInHepaticImpairment, true);
+      assert.equal(normalBiv.recommendedInfusionRateMgKgHr, 0.15);
+      assert.equal(normalBiv.calculatedInfusionRateMgHr, 10.5); // 70 * 0.15 = 10.5 mg/hr
+      assert.ok(normalBiv.eliminationHalfLifeMinutes.includes("25 minutes"));
+      assert.ok(normalBiv.primaryClearancePathway.includes("80% proteolytic"));
+
+      // Severe CKD (CrCl < 30 mL/min) -> 0.10 mg/kg/hr
+      const severeCkd = calculateBivalirudinKinetics({
+        weightKg: 70,
+        renalStatus: "severe_ckd",
+      });
+      assert.equal(severeCkd.recommendedInfusionRateMgKgHr, 0.10);
+      assert.equal(severeCkd.calculatedInfusionRateMgHr, 7.0);
+      assert.ok(severeCkd.eliminationHalfLifeMinutes.includes("57 minutes"));
+
+      // ESRD on Dialysis -> 0.05 mg/kg/hr
+      const esrdBiv = calculateBivalirudinKinetics({
+        weightKg: 80,
+        renalStatus: "esrd_dialysis",
+      });
+      assert.equal(esrdBiv.recommendedInfusionRateMgKgHr, 0.05);
+      assert.equal(esrdBiv.calculatedInfusionRateMgHr, 4.0);
+      assert.ok(esrdBiv.eliminationHalfLifeMinutes.includes("3.5 hours"));
+
+      // PCI Indication -> 1.75 mg/kg/hr
+      const pciBiv = calculateBivalirudinKinetics({
+        weightKg: 80,
+        indication: "pci",
+      });
+      assert.equal(pciBiv.recommendedInfusionRateMgKgHr, 1.75);
+      assert.equal(pciBiv.calculatedInfusionRateMgHr, 140);
+    });
+
+    it("evaluates Argatroban-Warfarin Crossover Trap when combined INR <= 4.0", () => {
+      const trapActive = evaluateArgatrobanWarfarinCrossover({
+        combinedInr: 2.8,
+        daysOnCombinedTherapy: 2,
+      });
+
+      assert.equal(trapActive.hasExceededTargetInr4, false);
+      assert.equal(trapActive.canStopArgatrobanNow, false);
+      assert.ok(trapActive.recommendedNextStep.includes("DO NOT STOP ARGATROBAN"));
+      assert.ok(trapActive.safetyAlert.includes("CRITICAL CROSSOVER TRAP"));
+      assert.ok(trapActive.safetyAlert.includes("catastrophic recurrent thrombosis"));
+    });
+
+    it("evaluates Argatroban-Warfarin Crossover Trap when combined INR > 4.0 for >= 2 days", () => {
+      const readyForHold = evaluateArgatrobanWarfarinCrossover({
+        combinedInr: 4.6,
+        daysOnCombinedTherapy: 2,
+      });
+
+      assert.equal(readyForHold.hasExceededTargetInr4, true);
+      assert.equal(readyForHold.canStopArgatrobanNow, true);
+      assert.ok(readyForHold.recommendedNextStep.includes("HOLD argatroban infusion now"));
+      assert.ok(readyForHold.recommendedNextStep.includes("Wait 4 to 6 hours"));
+      assert.ok(readyForHold.recheckInrWindowHours.includes("4 to 6 hours"));
+      assert.ok(readyForHold.trueWarfarinInrGoal.includes(">= 2.0"));
+    });
+  });
+
+  // ==========================================================================
+  // 5. ANDEXANET ALFA (ANDEXXA) DOSING ENGINE
   // ==========================================================================
   describe("Andexanet Alfa Dosing Protocol (ANNEXA-4 Benchmarks)", () => {
     it("determines Low Dose for Apixaban <= 5 mg within 8 hours", () => {
@@ -539,6 +769,45 @@ describe("Anticoagulation Reversal, DOAC Coagulopathy & Hemostatic Kinetics Engi
       assert.ok(report.onDesk.hasHeparinoid);
       assert.ok(report.protamineDosing);
       assert.equal(report.protamineDosing.anaphylactoidRiskFlags.isHighRiskAnaphylaxis, true);
+    });
+
+    it("detects DTIs (Argatroban, Bivalirudin) on desk with hasDti flag", () => {
+      const desk = anticoagulationOnDesk(["argatroban", "bivalirudin", "kcentra", "protamine"]);
+      assert.equal(desk.hasAnticoagulant, true);
+      assert.equal(desk.hasDirectThrombinInhibitor, true);
+      assert.equal(desk.hasDti, true);
+      assert.equal(desk.hasReversalAgent, true);
+      assert.ok(desk.anticoagulants.includes("argatroban"));
+      assert.ok(desk.anticoagulants.includes("bivalirudin"));
+      assert.ok(desk.reversals.includes("kcentra"));
+      assert.ok(desk.reversals.includes("protamine"));
+    });
+
+    it("generates end-to-end report evaluating HIT 4Ts score and DTI crossover trap", () => {
+      const report = anticoagulationReportOnDesk(["heparin", "argatroban", "warfarin"], DEFAULT_HOST, {
+        plateletBaseline: 240,
+        plateletNadir: 70, // ~71% drop, nadir 70k -> 2 pts
+        hitTimingScore: 2,
+        hitThrombosisScore: 2,
+        hitOtherCausesScore: 2,
+        combinedInr: 4.8,
+        daysOnCombinedTherapy: 2,
+      });
+
+      assert.ok(report.onDesk.hasHeparinoid);
+      assert.ok(report.onDesk.hasDti);
+      assert.ok(report.onDesk.hasVka);
+      assert.ok(report.hit4TsEvaluation);
+      assert.equal(report.hit4TsEvaluation.totalScore, 8);
+      assert.equal(report.hit4TsEvaluation.probabilityTier, "High");
+      assert.equal(report.hit4TsEvaluation.recommendedActions.cessationOfAllHeparin, true);
+      assert.ok(report.argatrobanKinetics);
+      assert.equal(report.argatrobanKinetics.agentName, "Argatroban");
+      assert.ok(report.argatrobanWarfarinCrossover);
+      assert.equal(report.argatrobanWarfarinCrossover.hasExceededTargetInr4, true);
+      assert.equal(report.argatrobanWarfarinCrossover.canStopArgatrobanNow, true);
+      assert.ok(report.highYieldClinicalPearls.some((p) => p.includes("HIT 4Ts Triage")));
+      assert.ok(report.highYieldClinicalPearls.some((p) => p.includes("ARGATROBAN-WARFARIN CROSSOVER TRAP")));
     });
 
     it("generates clean neutral report when no anticoagulants are on the desk", () => {
