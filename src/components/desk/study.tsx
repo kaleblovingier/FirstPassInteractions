@@ -29,6 +29,7 @@ import {
 } from "@/lib/drugs/study";
 import { SAMPLE_REGIMENS } from "@/lib/drugs/samples";
 import { hostFromState, useDesk, usePlan } from "@/lib/drugs/store";
+import { ENZYMES } from "@/lib/drugs/types";
 import { LANE_PLATE } from "@/lib/drugs/visuals";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 import { cn } from "@/lib/utils";
@@ -710,17 +711,27 @@ export function StudyPage() {
       ) : null}
 
       {!card ? (
+        lane === "desk" ? (
+          <StudyEmptyCoach
+            lane={lane}
+            pile={pile}
+            selectedCount={selected.length}
+            onLane={setLane}
+            onPile={setPile}
+            onReset={resetMarks}
+            onView={setView}
+          />
+        ) : (
         <p className="rounded-xl bg-surface px-5 py-8 text-sm text-muted shadow-[var(--shadow-border)]">
           {pile === "miss"
             ? "Nothing missed in this lane. Mark a miss, then come back."
             : pile === "open"
               ? "Nothing unseen here. Switch to All, or reset marks to start over."
-              : lane === "desk"
-                ? "Nothing on the desk yet. Load a lab assignment, a pair, or switch to Rounds, Named pairs, or Enzyme map."
-                : lane === "clinical" && clinicalTopic !== "all"
-                  ? `No cards in ${CLINICAL_TOPICS.find((t) => t.id === clinicalTopic)?.label ?? clinicalTopic} for this pile.`
-                  : "No cards in this lane."}
+              : lane === "clinical" && clinicalTopic !== "all"
+                ? `No cards in ${CLINICAL_TOPICS.find((t) => t.id === clinicalTopic)?.label ?? clinicalTopic} for this pile.`
+                : "No cards in this lane."}
         </p>
+        )
       ) : (
         <StudyCardView
           card={card}
@@ -845,6 +856,19 @@ function StudyEmptyCoach({
             </button>
           </>
         ) : null}
+        {deskEmpty && selectedCount === 0 ? (
+          <button
+            type="button"
+            onClick={() => {
+              useDesk.getState().add("clarithromycin");
+              useDesk.getState().add("simvastatin");
+              useDesk.getState().setView("study");
+            }}
+            className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
+          >
+            Load clarithromycin + simvastatin
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={() => onView("desk")}
@@ -867,6 +891,9 @@ function StudyEmptyCoach({
           Open rounds
         </button>
       </div>
+      {deskEmpty && selectedCount === 0 ? (
+        <p className="mt-3 max-w-xl text-[11px] leading-relaxed text-subtle">A teaching pair already on this map. Not a suggestion to take either.</p>
+      ) : null}
     </div>
   );
 }
@@ -899,6 +926,8 @@ function StudyCardView({
   onLoad: () => void;
 }) {
   const correct = card.choices?.find((c) => c.id === card.correct);
+  const atlasEnzyme =
+    card.correct && (ENZYMES as readonly string[]).includes(card.correct) ? card.correct : null;
   return (
     <article className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -959,6 +988,24 @@ function StudyCardView({
             </p>
           ) : null}
           <p className={cn("text-sm leading-relaxed text-fg", card.choices && correct && "mt-2")}>{card.answer}</p>
+          {atlasEnzyme ? (
+            <button
+              type="button"
+              className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+              onClick={() => useDesk.getState().setAtlasEnzyme(atlasEnzyme)}
+            >
+              {`Open ${atlasEnzyme} in the atlas`}
+            </button>
+          ) : null}
+          {card.id.startsWith("desk-") ? (
+            <button
+              type="button"
+              className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+              onClick={() => useDesk.getState().setView("desk")}
+            >
+              Back to this check
+            </button>
+          ) : null}
           {card.id.startsWith("cyp-shelf-") ? (
             <button
               type="button"

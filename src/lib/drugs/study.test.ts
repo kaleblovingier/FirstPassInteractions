@@ -3,12 +3,14 @@ import assert from "node:assert/strict";
 import { DRUG_BY_ID } from "./catalog";
 import { FDA_GRADES } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
+import type { Finding } from "./types";
 import {
   STUDY_LANES,
   CLINICAL_TOPICS,
   CLINICAL_TOPIC_MAP,
   cardsFor,
   clinicalCards,
+  deskCards,
   type StudyLane,
   type ClinicalTopic,
 } from "./study";
@@ -984,6 +986,65 @@ describe("study learning tools", () => {
         assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
       }
     }
+  });
+
+  it("a single stored enzyme becomes a multiple-choice desk card", () => {
+    const finding: Finding = {
+      id: "solo-cyp3a4",
+      severity: "major",
+      kind: "pk",
+      enzymes: ["CYP3A4"],
+      effect: "Victim exposure rises when clearance is blocked.",
+      mechanism: "One isoform carries the victim drug.",
+      clinical: "Name the enzyme. Not a milligram.",
+      drugIds: ["left-drug", "right-drug"],
+      headline: "Mapped clearance row",
+      tags: ["pk"],
+    };
+    const cards = deskCards([], [finding]);
+    const card = cards.find((c) => c.id === "desk-solo-cyp3a4");
+    assert.ok(card);
+    assert.equal(card.correct, "CYP3A4");
+    assert.ok(card.choices?.some((choice) => choice.id === "CYP3A4" || choice.label === "CYP3A4"));
+    assert.equal(card.prompt.includes("CYP3A4"), false);
+    assert.equal(card.prompt.includes("Teaching bin"), false);
+    assert.equal(card.answer.includes("Teaching bin: major"), true);
+    assert.equal(card.answer.includes("FDA fold:"), false);
+  });
+
+  it("a strong inhibitor finding appends the stored FDA fold on the answer only", () => {
+    const finding: Finding = {
+      id: "strong-cyp3a4-inh",
+      severity: "major",
+      kind: "pk",
+      enzymes: ["CYP3A4"],
+      effect: "Victim exposure rises when clearance is blocked.",
+      mechanism: "Strong CYP3A4 inhibition of a sensitive substrate.",
+      clinical: "Name the enzyme.",
+      drugIds: ["left-drug", "right-drug"],
+      headline: "Mapped clearance row",
+      tags: ["inhibitor"],
+    };
+    const cards = deskCards([], [finding]);
+    const card = cards.find((c) => c.id === "desk-strong-cyp3a4-inh");
+    assert.ok(card);
+    assert.match(card.answer, /FDA fold:/);
+    assert.match(card.answer, /Not a milligram\./);
+    assert.equal(card.prompt.includes("fold"), false);
+  });
+
+  it("a mapped drug with enzymes asks which enzyme is named first", () => {
+    const drug =
+      DRUG_BY_ID.simvastatin?.enzymes.length
+        ? DRUG_BY_ID.simvastatin
+        : Object.values(DRUG_BY_ID).find((row) => row.enzymes.length > 0);
+    assert.ok(drug, "catalog drug with an enzyme role");
+    const enzyme = drug.enzymes[0].enzyme;
+    const cards = deskCards([drug.id], []);
+    const card = cards.find((c) => c.id === `mono-${drug.id}`);
+    assert.ok(card);
+    assert.equal(card.correct, enzyme);
+    assert.equal(card.prompt.includes(enzyme), false);
   });
 });
 

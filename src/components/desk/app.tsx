@@ -32,6 +32,7 @@ import {
   PHENOTYPE_ENZYMES,
   SEVERITY_LABEL,
   type Enzyme,
+  type EnzymeRole,
   type HostContext,
   type Severity,
 } from "@/lib/drugs/types";
@@ -88,6 +89,20 @@ const CitesPage = lazy(() => import("./cites").then((m) => ({ default: m.CitesPa
 const ClinicalPacketDialog = lazy(() =>
   import("./clinical-packet-dialog").then((m) => ({ default: m.ClinicalPacketDialog })),
 );
+
+function chipEnzymeMark(enzymes: EnzymeRole[]): string | null {
+  const perp = enzymes.find(
+    (role): role is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
+      role.kind === "inhibitor" || role.kind === "inducer",
+  );
+  if (perp) return `${perp.strength} ${perp.enzyme.replace("CYP", "")}`;
+  const sub = enzymes.find(
+    (role): role is Extract<EnzymeRole, { kind: "substrate" }> => role.kind === "substrate",
+  );
+  if (!sub) return null;
+  const label = `${sub.sensitivity} ${sub.enzyme.replace("CYP", "")}`;
+  return sub.pathway === "activation" ? `${label} activation` : label;
+}
 
 function DeskFallback({ label = "Loading desk view…" }: { label?: string }) {
   return (
@@ -432,6 +447,7 @@ export function DeskApp() {
                     const drug = DRUG_BY_ID[id];
                     if (!drug) return null;
                     const entered = doses[id];
+                    const enzymeRole = chipEnzymeMark(drug.enzymes);
                     return (
                       <button
                         key={id}
@@ -444,6 +460,11 @@ export function DeskApp() {
                         {drug.kind === "drug" ? (
                           <span className="max-w-28 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
                             {drug.cls}
+                          </span>
+                        ) : null}
+                        {enzymeRole ? (
+                          <span className="max-w-24 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
+                            {enzymeRole}
                           </span>
                         ) : null}
                         {entered ? (

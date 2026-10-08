@@ -59,6 +59,9 @@ export function DeskReaders({ brief }: { brief: ReaderBrief }) {
           {busy ? "Reading…" : notes ? "Ask again" : "Ask the three readers"}
         </button>
       </div>
+      {brief.fold ? (
+        <p className="text-xs leading-relaxed text-muted">{brief.fold} Not a milligram.</p>
+      ) : null}
       {stale ? (
         <p className="text-xs leading-relaxed text-muted">The desk changed. These notes are for the previous list.</p>
       ) : null}

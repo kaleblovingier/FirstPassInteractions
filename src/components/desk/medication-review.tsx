@@ -86,7 +86,7 @@ export function MedicationReview({ ids, host, findings, doses, onOpenPacket }: M
           {
             id: "finding",
             title: "Review the strongest mapped finding",
-            detail: `${SEVERITY_LABEL[highest.severity]} — ${highest.headline}. A category from this model is not an individual risk estimate.`,
+            detail: `${SEVERITY_LABEL[highest.severity]} — ${highest.headline}${highest.enzymes.length ? `. Enzymes on this row: ${highest.enzymes.join(", ")}.` : ""} A category from this model is not an individual risk estimate.`,
           },
         ]
       : [

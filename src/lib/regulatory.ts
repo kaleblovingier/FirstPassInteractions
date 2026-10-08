@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.38.0",
+  version: "1.42.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.38.0",
+  buildId: "FP-SW-1.42.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -57,6 +57,10 @@ export const INDICATIONS = [
   "A same-shelf cell can open that class on the formulary. An open row with one enzyme can open that enzyme in the atlas. Neither jump adds a drug or picks a milligram.",
   "Learn asks the FDA fold already stored for a moderate inhibitor and for a weak inhibitor. A class shelf also names the second-most-common enzyme role when at least two drugs carry it. A revealed shelf card can open that shelf, and a revealed direction card can open the atlas or the formulary. None of these is a milligram.",
   "The check opens with a contents line: mapped rows, same-shelf groups, food beside the desk, and blank pairs. Each name on the desk shows its class. The enzyme map counts how many drugs on the tray touch each enzyme. The counts are not a clearance.",
+  "A two-name check groups its rows by the enzyme already on each row, and those rows start closed. Jump links reach the rows and the food list. Search names the stored inhibitor or inducer strength. A desk study card asks which enzyme that row names, and can return to the check. None of this is a milligram or a clearance.",
+  "An enzyme group header opens that enzyme in the atlas. A closed row shows the FDA fold already stored for that grade. A name on the desk shows one stored enzyme role. Search names a substrate's stored sensitivity. An empty Learn desk can load clarithromycin and simvastatin as a teaching pair, not a suggestion to take either. A class shelf says how many of its drugs are already on the desk. None of this is a milligram or a clearance.",
+  "Food and drink rows group by the enzyme already on each row. Case compare shows that enzyme and the stored FDA fold. Sources pins papers already tied to a name on the desk. A one-drug Learn card asks which enzyme is named first on that drug, and a revealed enzyme answer can open the atlas. A phenotype enzyme can open the atlas. The medication review names the enzymes already on the strongest mapped row. None of this is a milligram or a clearance.",
+  "A role line and a food-group header open that enzyme in the atlas. An ungated case can load its names into Learn. A watch pin shows one stored enzyme role. A single-enzyme Learn card hides the teaching bin until reveal. A shelf card names a substrate's stored sensitivity. None of this is a milligram or a clearance.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",
