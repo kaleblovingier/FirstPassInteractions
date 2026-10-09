@@ -54,6 +54,11 @@ import { obstetricOnDesk, obstetricReportOnDesk } from "../../drugs/obstetric-ki
 import { moudOnDesk, moudReportOnDesk } from "../../drugs/moud-kinetics";
 import { glycemicOnDesk, glycemicReportOnDesk } from "../../drugs/glycemic-kinetics";
 import { pediatricReportOnDesk } from "../../drugs/pediatric-kinetics";
+import { rotationReportOnDesk } from "../../drugs/opioid-rotation";
+import { hepaticReportOnDesk } from "../../drugs/hepatic-clearance";
+import { allergyReportOnDesk } from "../../drugs/drug-allergy";
+import { afReportOnDesk } from "../../drugs/af-stroke-bleed";
+import { diliReportOnDesk } from "../../drugs/dili";
 import { healthcareResourcesFor } from "../../drugs/healthcare-resources";
 
 export const STATUTORY_CDS_DISCLAIMER =
@@ -133,6 +138,11 @@ export interface KineticsEvaluationResult {
     moud?: unknown;
     glycemic?: unknown;
     pediatric?: unknown;
+    rotation?: unknown;
+    hepatic?: unknown;
+    allergy?: unknown;
+    af?: unknown;
+    dili?: unknown;
     resources?: unknown;
   };
 }
@@ -415,6 +425,21 @@ export class ClinicalDecisionService {
     }
     if (runAll || requestedModules.includes("pediatric")) {
       modObj.pediatric = pediatricReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("rotation")) {
+      modObj.rotation = rotationReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("hepatic")) {
+      modObj.hepatic = hepaticReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("allergy")) {
+      modObj.allergy = allergyReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("af")) {
+      modObj.af = afReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("dili")) {
+      modObj.dili = diliReportOnDesk(resolvedIds, host);
     }
     if (runAll || requestedModules.includes("resources")) {
       modObj.resources = healthcareResourcesFor(resolvedIds, host);

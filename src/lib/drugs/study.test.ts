@@ -56,9 +56,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 141 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 151 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -90,7 +90,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -338,7 +338,7 @@ describe("study learning tools", () => {
       "clin-methadone-fluconazole-qtc-3a4",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
+    assert.equal(cards.length, 151, "Total clinical cards must be exactly 151");
 
     for (const id of highYieldCardIds) {
       const card = cards.find((c) => c.id === id);
@@ -437,7 +437,7 @@ describe("study learning tools", () => {
       "clin-aspirin-platelet-covalent-acetylation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
+    assert.equal(cards.length, 151, "Total clinical cards must be exactly 151");
 
     for (const id of new7CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -549,7 +549,7 @@ describe("study learning tools", () => {
       "clin-sglt2-ketogenesis-glucagon",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
+    assert.equal(cards.length, 151, "Total clinical cards must be exactly 151");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -685,7 +685,7 @@ describe("study learning tools", () => {
       "clin-pde5-cgmp-smooth-muscle-relaxation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
+    assert.equal(cards.length, 151, "Total clinical cards must be exactly 151");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -814,7 +814,7 @@ describe("study learning tools", () => {
 
   it("cardiac electrophysiology, toxidrome, and pharmacogenomics cards expand clinicalCards to 96 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const targetCardIds = [
       "clin-cardiac-phase0-ina-nav15-vaughan-williams",
@@ -877,7 +877,7 @@ describe("study learning tools", () => {
 
   it("renal tubular, CYP kinetics TDI, and CNS penetration cards expand clinicalCards to 104 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const targetCardIds = [
       "clin-renal-nkcc2-romk-calcium-wasting",
@@ -957,7 +957,7 @@ describe("study learning tools", () => {
 
   it("oncology HDMTX, cefepime neurotoxicity, daptomycin myopathy, and phenytoin saturation cards expand clinicalCards to 108 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const targetCardIds = [
       "clin-hdmtx-leucovorin-nomogram",
@@ -1094,7 +1094,7 @@ describe("study learning tools", () => {
   });
   it("anticoagulation reversal, APAP NAC, toxic alcohols, salicylate ion-trapping, toxidrome differential, and clozapine TDM cards expand clinicalCards and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const emergencyCardIds = [
       "clin-anticoagulation-reversal-andexanet-pcc-protamine",
@@ -1129,7 +1129,7 @@ describe("study learning tools", () => {
 
   it("digoxin TDM, Vaughan-Williams CAST, Winter's formula, hyponatremia ODS, sugammadex contraceptive collision, and propofol PRIS expand clinicalCards to 124 and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const targetCardIds = [
       "clin-digoxin-tdm-post-dose-lag-digifab",
@@ -1164,7 +1164,7 @@ describe("study learning tools", () => {
 
   it("ESETT trial non-inferiority, GABA-A internalization, and 23.4% hypertonic saline osmotherapy expand clinicalCards to 127 and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const targetCardIds = [
       "clin-esett-trial-noninferiority",
@@ -1196,7 +1196,7 @@ describe("study learning tools", () => {
 
   it("HIT 4Ts, argatroban-warfarin crossover, protamine decay stoichiometry, and beta-lactam extended infusion ARC expand clinicalCards to 131 and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 141);
+    assert.equal(cards.length, 151);
 
     const targetCardIds = [
       "clin-hit-4ts-non-heparin-dti",
@@ -1225,6 +1225,128 @@ describe("study learning tools", () => {
         assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
       }
     }
+  });
+
+  it("opioid rotation, methadone ratio, and hepatic extraction cards expand clinicalCards to 145 and verify non-prescriptive posture", () => {
+    const ids = [
+      "clin-opioid-rotation-cross-tolerance",
+      "clin-methadone-ratio-climbs",
+      "clin-high-extraction-oral-cirrhosis",
+      "clin-low-extraction-free-fraction",
+    ];
+    const cards = clinicalCards();
+    assert.equal(cards.length, 151, "Total clinical cards must be exactly 151");
+    for (const id of ids) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, `Card '${id}' must exist in clinicalCards()`);
+      assert.ok(card.choices && card.choices.length >= 4, `Card '${id}' must have at least 4 choices`);
+      assert.ok(card.choices?.find((c) => c.id === card.correct), `Card '${id}' correct choice must exist`);
+      assert.ok(card.drugIds.length > 0, `Card '${id}' must reference drugIds`);
+      for (const drugId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[drugId], `Drug '${drugId}' in card '${id}' must exist in catalog`);
+      }
+      assert.equal(card.topic, CLINICAL_TOPIC_MAP[id], `Card '${id}' topic must match CLINICAL_TOPIC_MAP`);
+
+      const text = `${card.prompt} ${card.ask} ${card.answer} ${card.choices?.map((c) => c.label).join(" ") ?? ""}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i, `Card '${id}' must not contain prescriptive text`);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i, `Card '${id}' must not contain dispensing text`);
+      assert.doesNotMatch(text, /clinical decision support/i, `Card '${id}' must not claim to be CDS`);
+    }
+
+    const rotation = cards.find((c) => c.id === "clin-opioid-rotation-cross-tolerance")!;
+    assert.equal(rotation.topic, "bedside");
+    assert.match(rotation.answer, /McPherson/);
+    assert.match(rotation.answer, /cross-tolerance/i);
+    assert.match(rotation.answer, /not to be used as conversion/i);
+
+    const methadone = cards.find((c) => c.id === "clin-methadone-ratio-climbs")!;
+    assert.equal(methadone.topic, "addiction");
+    assert.match(methadone.answer, /Ripamonti/);
+    assert.match(methadone.answer, /NMDA/);
+    assert.match(methadone.answer, /ECG/);
+
+    const highE = cards.find((c) => c.id === "clin-high-extraction-oral-cirrhosis")!;
+    assert.equal(highE.topic, "cyp");
+    assert.match(highE.answer, /Wilkinson/);
+    assert.match(highE.answer, /Q·fu·CLint/);
+
+    const lowE = cards.find((c) => c.id === "clin-low-extraction-free-fraction")!;
+    assert.equal(lowE.topic, "cyp");
+    assert.match(lowE.answer, /Benet/);
+    assert.match(lowE.answer, /free phenytoin/i);
+  });
+
+  it("drug allergy, AF risk score, and DILI cards expand clinicalCards to 151 and verify non-prescriptive posture", () => {
+    const ids = [
+      "clin-pen-fast-low-risk-challenge",
+      "clin-r1-side-chain-cross-reactivity",
+      "clin-scar-no-rechallenge-hla",
+      "clin-cha2ds2-vasc-sex-modifier",
+      "clin-has-bled-not-a-veto",
+      "clin-hys-law-r-ratio",
+    ];
+    const cards = clinicalCards();
+    assert.equal(cards.length, 151, "Total clinical cards must be exactly 151");
+    assert.equal(new Set(cards.map((c) => c.id)).size, cards.length, "Clinical card ids must be unique");
+    for (const id of ids) {
+      const card = cards.find((c) => c.id === id);
+      assert.ok(card, `Card '${id}' must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length === 4, `Card '${id}' must have exactly 4 choices`);
+      assert.equal(new Set(card.choices.map((c) => c.id)).size, 4, `Card '${id}' choice ids must be unique`);
+      assert.ok(card.choices?.find((c) => c.id === card.correct), `Card '${id}' correct choice must exist`);
+      assert.ok(card.drugIds.length > 0, `Card '${id}' must reference drugIds`);
+      for (const drugId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[drugId], `Drug '${drugId}' in card '${id}' must exist in catalog`);
+      }
+      assert.ok(CLINICAL_TOPIC_MAP[id], `Card '${id}' must be registered in CLINICAL_TOPIC_MAP`);
+      assert.equal(card.topic, CLINICAL_TOPIC_MAP[id], `Card '${id}' topic must match CLINICAL_TOPIC_MAP`);
+
+      const text = `${card.prompt} ${card.ask} ${card.answer} ${card.choices?.map((c) => c.label).join(" ") ?? ""}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i, `Card '${id}' must not contain prescriptive text`);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i, `Card '${id}' must not contain dispensing text`);
+      assert.doesNotMatch(text, /clinical decision support/i, `Card '${id}' must not claim to be CDS`);
+      assert.doesNotMatch(text, /Hälg/i, `Card '${id}' must not contain Hälg`);
+    }
+
+    const penFast = cards.find((c) => c.id === "clin-pen-fast-low-risk-challenge")!;
+    assert.equal(penFast.topic, "tox");
+    assert.match(penFast.answer, /Trubiano/);
+    assert.match(penFast.answer, /PALACE/);
+    assert.match(penFast.answer, /Copaescu/);
+    assert.deepEqual(penFast.drugIds, ["amoxicillin"]);
+
+    const r1 = cards.find((c) => c.id === "clin-r1-side-chain-cross-reactivity")!;
+    assert.equal(r1.topic, "tox");
+    assert.match(r1.answer, /R1/);
+    assert.match(r1.answer, /Zagursky/);
+    assert.match(r1.answer, /aztreonam/i);
+    assert.ok(r1.drugIds.includes("cefazolin") && r1.drugIds.includes("aztreonam"));
+
+    const scar = cards.find((c) => c.id === "clin-scar-no-rechallenge-hla")!;
+    assert.equal(scar.topic, "cyp");
+    assert.match(scar.answer, /HLA-B\*15:02/);
+    assert.match(scar.answer, /HLA-B\*58:01/);
+    assert.match(scar.answer, /CPIC/);
+    assert.match(scar.answer, /desensitization/i);
+
+    const chads = cards.find((c) => c.id === "clin-cha2ds2-vasc-sex-modifier")!;
+    assert.equal(chads.topic, "anticoag");
+    assert.match(chads.answer, /CHA2DS2-VA\b/);
+    assert.match(chads.answer, /risk modifier/i);
+
+    const hasBled = cards.find((c) => c.id === "clin-has-bled-not-a-veto")!;
+    assert.equal(hasBled.topic, "anticoag");
+    assert.match(hasBled.answer, /AUGUSTUS/);
+    assert.match(hasBled.answer, /Lopes/);
+    assert.match(hasBled.answer, /modifiable/i);
+
+    const hys = cards.find((c) => c.id === "clin-hys-law-r-ratio")!;
+    assert.equal(hys.topic, "tox");
+    assert.match(hys.answer, /Temple/);
+    assert.match(hys.answer, /Chalasani/);
+    assert.match(hys.answer, /R = \(ALT\/ULN\) \/ \(ALP\/ULN\)/);
+    assert.ok(hys.drugIds.includes("amox-clav"));
   });
 });
 

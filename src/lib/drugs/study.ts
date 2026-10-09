@@ -994,6 +994,20 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-hyponatremia-ods-adrogue-madias-hypertonic-saline": "electrolytes",
   "clin-sugammadex-cyclodextrin-contraceptive-collision": "bedside",
   "clin-propofol-pris-fatty-acid-oxidation-failure": "tox",
+
+  // Opioid Rotation & Hepatic Clearance
+  "clin-opioid-rotation-cross-tolerance": "bedside",
+  "clin-methadone-ratio-climbs": "addiction",
+  "clin-high-extraction-oral-cirrhosis": "cyp",
+  "clin-low-extraction-free-fraction": "cyp",
+
+  // Drug Allergy, AF Risk Scores & DILI
+  "clin-pen-fast-low-risk-challenge": "tox",
+  "clin-r1-side-chain-cross-reactivity": "tox",
+  "clin-scar-no-rechallenge-hla": "cyp",
+  "clin-cha2ds2-vasc-sex-modifier": "anticoag",
+  "clin-has-bled-not-a-veto": "anticoag",
+  "clin-hys-law-r-ratio": "tox",
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -4378,6 +4392,296 @@ export function clinicalCards(): StudyCard[] {
       correct: "fqhc-sliding-scale-income-mothertobaby-free-teratogen-specialists",
       answer: "Healthcare safety net navigation connects vulnerable, uninsured, and underinsured patients to verified resources: (1) Federally Qualified Health Centers (FQHCs) & HRSA Health Center Network: Funded under Section 330 of the Public Health Service Act, FQHCs provide comprehensive primary, preventive, prenatal, dental, and behavioral healthcare regardless of insurance status, citizenship, or ability to pay. Services are billed on a sliding-fee discount scale adjusted strictly for household size and income below 200% of the Federal Poverty Level (FPL). Most FQHCs participate in the 340B Drug Pricing Program, providing deeply discounted outpatient pharmaceuticals; (2) MotherToBaby (Organization of Teratology Information Specialists, OTIS): The gold-standard non-profit service providing free, confidential, evidence-based counseling (1-866-626-6847 / text 855-999-3525) by certified teratogen information specialists to patients and healthcare providers concerning medication, vaccine, and chemical exposures during pregnancy and lactation. Connecting patients to these services overcomes financial barriers to prenatal care while addressing real-world teratogen concerns (e.g., immediate discontinuation of ACE inhibitors/statins and transition to pregnancy-compatible antihypertensives and insulin).",
       drugIds: ["lisinopril", "atorvastatin"],
+    },
+    {
+      id: "clin-opioid-rotation-cross-tolerance",
+      lane: "clinical",
+      kicker: "Opioid Rotation & Equianalgesic Arithmetic",
+      title: "Oxycodone to Oral Hydromorphone: The Cross-Tolerance Reduction",
+      prompt: "A patient with cancer pain takes oral oxycodone totaling 40 mg per 24 hours with good analgesia but intolerable sedation. The team plans an opioid rotation to oral hydromorphone and works the equianalgesic arithmetic as a teaching exercise.",
+      ask: "Which worked conversion reflects the standard teaching method for this rotation?",
+      choices: [
+        {
+          id: "rotation-ome-then-reduce-top-of-range",
+          label: "40 mg oxycodone × 30/20 = 60 mg oral morphine equivalents; 60 × 7.5/30 = 15 mg hydromorphone per 24 h; reduce 25–50% for incomplete cross-tolerance, toward 50% because adverse effects drove the switch (about 7.5 mg per 24 h), with breakthrough at 10–20% of the new daily total",
+        },
+        {
+          id: "rotation-no-reduction",
+          label: "Convert straight across to 15 mg hydromorphone per 24 h with no reduction, because the table ratio already accounts for tolerance",
+        },
+        {
+          id: "rotation-cdc-mme-factor",
+          label: "Use the CDC morphine milligram equivalent (MME) conversion factors as the dosing tool for the switch, since MME was designed for opioid rotation",
+        },
+        {
+          id: "rotation-increase-25",
+          label: "Increase the calculated hydromorphone total by 25%, because sedation means the oxycodone was not reaching the receptor",
+        },
+      ],
+      correct: "rotation-ome-then-reduce-top-of-range",
+      answer: "The standard two-step method routes every rotation through a common currency, the oral morphine equivalent (OME). Step 1 (to morphine): equianalgesic tables pair 20 mg oral oxycodone with 30 mg oral morphine, so 40 × 30/20 = 60 mg OME per 24 h. Step 2 (to the target): 7.5 mg oral hydromorphone pairs with 30 mg oral morphine, so 60 × 7.5/30 = 15 mg hydromorphone per 24 h. Step 3 (incomplete cross-tolerance): tolerance to one mu-opioid agonist does not transfer fully to another, because agonists differ in receptor splice-variant affinity, intrinsic efficacy, beta-arrestin signaling bias, and receptor internalization, so a patient is often more sensitive to the new opioid than the table predicts. Teaching references therefore reduce the calculated total by 25–50%, choosing the larger reduction when the switch is driven by adverse effects (here, sedation), in older or frail patients, or with renal or hepatic impairment; that yields roughly 7.5 mg per 24 h split across the dosing interval. Step 4 (breakthrough): rescue doses are commonly taught as 10–20% of the new 24-hour total, followed by reassessment and titration over the next days. Why the distractors fail: a straight conversion ignores cross-tolerance and is the classic route to overdose after rotation; the CDC 2022 Clinical Practice Guideline explicitly states that MME conversion factors are intended to gauge overdose risk and are not to be used as conversion tables for switching opioids; and escalating the dose in response to sedation inverts the safety logic. Equianalgesic ratios are population averages with wide inter-individual variance, so the arithmetic is a starting estimate for clinician review, not a dose order. Sources: McPherson ML. Demystifying Opioid Conversion Calculations: A Guide for Effective Dosing. 2nd ed. ASHP; 2018. Dowell D, et al. CDC Clinical Practice Guideline for Prescribing Opioids for Pain. MMWR Recomm Rep 2022;71(3):1-95.",
+      drugIds: ["oxycodone", "hydromorphone"],
+    },
+    {
+      id: "clin-methadone-ratio-climbs",
+      lane: "clinical",
+      kicker: "Methadone Conversion & Nonlinear Potency",
+      title: "Why the Morphine:Methadone Ratio Climbs With Prior Opioid Exposure",
+      prompt: "A learner notices that published morphine-to-methadone conversion tables use a different ratio depending on how much morphine the patient was taking before the switch, unlike the fixed ratios used for most other opioid rotations.",
+      ask: "What best explains why the morphine:methadone ratio rises as the prior oral morphine equivalent (OME) rises?",
+      choices: [
+        {
+          id: "methadone-nmda-cross-tolerance-long-half-life",
+          label: "Methadone's relative potency grows with prior opioid tolerance (incomplete cross-tolerance plus NMDA receptor antagonism), and its long, variable half-life lets it accumulate for days, so a higher prior OME calls for a proportionally smaller methadone amount",
+        },
+        {
+          id: "methadone-renal-clearance-saturates",
+          label: "Methadone is renally cleared and its excretion saturates at high doses, so the ratio is a renal-function correction",
+        },
+        {
+          id: "methadone-linear-fixed-ratio",
+          label: "The ratio is actually fixed at 1:1 at all doses; the tables vary only because of rounding conventions",
+        },
+        {
+          id: "methadone-short-half-life-more-needed",
+          label: "Methadone has a short half-life of about 2 hours, so patients on high morphine totals need relatively more methadone",
+        },
+      ],
+      correct: "methadone-nmda-cross-tolerance-long-half-life",
+      answer: "Methadone does not behave like a fixed-ratio opioid. Ripamonti et al. (J Clin Oncol 1998;16:3216-3221) showed that the effective morphine:methadone ratio rises with the prior oral morphine dose, and the widely taught tiers are about 4:1 when prior OME is 90 mg/day or less, about 8:1 for 90–300 mg/day, and about 12:1 above 300 mg/day; Ayonrinde and Bridge (Med J Aust 2000;173:536-540) reported a similar dose-dependent pattern. Mechanisms: (1) Incomplete cross-tolerance: a patient highly tolerant to morphine is far less tolerant to methadone's distinct mu-receptor interaction, so methadone looks more potent the more morphine came before it. (2) NMDA receptor antagonism: the d-isomer of racemic methadone is an NMDA antagonist, which can blunt opioid tolerance and opioid-induced hyperalgesia and adds analgesia that morphine tables do not capture. (3) Long, variable elimination: methadone's half-life ranges from about 8 to more than 50 hours (CYP3A4, CYP2B6, and CYP2D6 variability plus extensive tissue binding), so steady state takes roughly 5–7 days and an amount that seems adequate on day 1 can accumulate into respiratory depression on days 3–5. Because of this, the APS/CPDD/Heart Rhythm Society guideline (Chou R, et al. J Pain 2014;15:321-337) advises that when converting from high opioid doses the starting methadone total generally should not exceed 30–40 mg/day, with slow upward titration no more often than every 5–7 days. The same guideline recommends a baseline ECG (and follow-up ECGs) because methadone blocks hERG/IKr and prolongs QTc in a dose-related way. Why the distractors fail: methadone is primarily hepatically metabolized, not renally limited; the ratio is demonstrably nonlinear; and its half-life is long, not short. The tiers are teaching anchors drawn from cohorts, not individualized dose orders.",
+      drugIds: ["methadone", "morphine"],
+    },
+    {
+      id: "clin-high-extraction-oral-cirrhosis",
+      lane: "clinical",
+      kicker: "Hepatic Clearance & The Well-Stirred Model",
+      title: "High-Extraction Drugs in Cirrhosis: Oral Exposure Jumps, IV Moves Modestly",
+      prompt: "A patient with Child-Pugh C cirrhosis, portal hypertension, and varices is started on propranolol. The team compares how cirrhosis would change exposure after an oral dose versus an IV dose of this high-extraction drug (hepatic extraction ratio about 0.75).",
+      ask: "According to the well-stirred hepatic clearance model, why does oral propranolol exposure rise far more than IV exposure in severe cirrhosis?",
+      choices: [
+        {
+          id: "high-e-oral-tracks-clint-and-shunting",
+          label: "IV clearance of a high-extraction drug tracks hepatic blood flow, while oral exposure depends on fu·CLint and first-pass escape; reduced intrinsic clearance plus portosystemic shunting lets oral bioavailability and AUC rise several-fold",
+        },
+        {
+          id: "high-e-iv-tracks-clint",
+          label: "IV exposure tracks intrinsic clearance, so IV AUC rises several-fold while oral AUC is unaffected",
+        },
+        {
+          id: "high-e-protein-binding-only",
+          label: "Only the drop in albumin matters; once protein binding is corrected, oral and IV exposures change identically",
+        },
+        {
+          id: "high-e-renal-compensation",
+          label: "Renal clearance rises to compensate in cirrhosis, so neither oral nor IV exposure changes meaningfully",
+        },
+      ],
+      correct: "high-e-oral-tracks-clint-and-shunting",
+      answer: "The well-stirred model expresses hepatic clearance as CLh = Q·fu·CLint / (Q + fu·CLint), where Q is hepatic blood flow, fu is the unbound fraction in blood, and CLint is intrinsic metabolic clearance. For a high-extraction drug (E above about 0.7, e.g. propranolol, lidocaine, morphine, verapamil), fu·CLint greatly exceeds Q, so CLh approaches Q: systemic (IV) clearance is flow-limited and changes only as much as effective hepatic blood flow changes. After an oral dose, however, the drug must first pass the liver: hepatic bioavailability F = 1 − E, and oral AUC = F·Dose/CLh, which simplifies to Dose/(fu·CLint). Oral exposure therefore tracks fu·CLint, not flow (Wilkinson GR, Shand DG. Clin Pharmacol Ther 1975;18:377-390). Cirrhosis attacks the oral pathway twice: hepatocyte loss lowers CLint, and portosystemic shunting (spontaneous collaterals or a TIPS) lets portal blood bypass hepatocytes entirely, so F can climb from roughly 0.25 toward much higher values. The result is that oral AUC of high-extraction drugs can rise several-fold, while IV clearance falls only modestly. Verbeeck (Eur J Clin Pharmacol 2008;64:1147-1161) reviews this pattern and notes that oral dose reductions for high-extraction drugs in cirrhosis are usually larger than IV adjustments. Teaching corollary: a hepatic dose review should ask both the extraction ratio and the route; an IV regimen that looked safe does not predict oral exposure. Why the distractors fail: IV exposure of high-E drugs is flow-dependent, not CLint-dependent; binding changes alone do not explain the route difference; and renal clearance does not compensate for hepatic first-pass loss.",
+      drugIds: ["propranolol"],
+    },
+    {
+      id: "clin-low-extraction-free-fraction",
+      lane: "clinical",
+      kicker: "Protein Binding & Unbound Exposure",
+      title: "Low-Extraction Drugs and the Free Fraction: The Total Phenytoin Trap in Cirrhosis",
+      prompt: "A patient with cirrhosis and serum albumin of 2.1 g/dL takes phenytoin (low hepatic extraction, normally about 90% protein-bound, fu about 0.1). The total phenytoin level returns low-normal, and a team member suggests raising the dose to bring the total level up into range.",
+      ask: "What is the best pharmacokinetic interpretation before any dose change is considered?",
+      choices: [
+        {
+          id: "low-e-measure-free-level",
+          label: "Hypoalbuminemia raises fu, so the total level understates active drug; for a low-extraction drug, unbound steady-state exposure depends on CLint, not binding, so a measured free phenytoin level should guide interpretation rather than chasing the total",
+        },
+        {
+          id: "low-e-raise-to-total-range",
+          label: "The total level is the gold standard; increase the dose until the total level sits mid-range regardless of albumin",
+        },
+        {
+          id: "low-e-free-fraction-falls",
+          label: "Low albumin lowers the free fraction, so the patient is under-exposed and needs more drug",
+        },
+        {
+          id: "low-e-flow-limited",
+          label: "Phenytoin clearance is flow-limited, so only hepatic blood flow changes matter and binding is irrelevant",
+        },
+      ],
+      correct: "low-e-measure-free-level",
+      answer: "For a low-extraction drug (E below about 0.3, e.g. phenytoin, warfarin, valproate), the well-stirred model reduces to CLh ≈ fu·CLint: total clearance rises when the free fraction rises. When albumin falls, fu increases, more drug is cleared, and the total steady-state concentration (Css,total = dosing rate / (fu·CLint)) drops. But the unbound concentration, Css,unbound = fu·Css,total = dosing rate / CLint, is unchanged by binding: it depends only on the dosing rate and intrinsic clearance. Benet and Hoener (Clin Pharmacol Ther 2002;71:115-121) showed that, for orally dosed drugs and low-extraction IV drugs, changes in plasma protein binding have little clinically relevant effect on unbound exposure; the apparent change is mostly an artifact of measuring total drug. The trap: a total phenytoin level that looks low or normal in hypoalbuminemia may coexist with a normal or high unbound level, and raising the dose to push the total into the usual 10–20 mcg/mL range can produce free-level toxicity (nystagmus, ataxia, sedation), amplified by phenytoin's Michaelis-Menten saturation. The preferred approach is a measured free phenytoin level (usual reference about 1–2 mcg/mL); the Sheiner-Tozer albumin correction is a fallback estimate that is known to perform poorly in critical illness and renal failure. Cirrhosis can also lower CLint itself, which would raise unbound exposure independently of binding. Why the distractors fail: total levels mislead when binding changes; low albumin raises, not lowers, fu; and phenytoin is capacity-limited, not flow-limited.",
+      drugIds: ["phenytoin", "warfarin"],
+    },
+    {
+      id: "clin-pen-fast-low-risk-challenge",
+      lane: "clinical",
+      kicker: "Penicillin Allergy Delabeling",
+      title: "PEN-FAST Below 3: When a Direct Oral Challenge Replaces Skin Testing",
+      prompt: "An adult outpatient carries a penicillin allergy label from a childhood rash more than 10 years ago. There was no angioedema, anaphylaxis, blistering, mucosal involvement, or organ injury, and no treatment was needed for the reaction. A learner scores the history with PEN-FAST as a teaching exercise.",
+      ask: "What does the evidence say about this patient's risk and the delabeling pathway?",
+      choices: [
+        {
+          id: "penfast-low-risk-direct-oral-challenge",
+          label: "PEN-FAST is 0 (reaction more than 5 years ago, no anaphylaxis/angioedema or SCAR, no treatment required), which is low risk (below 3); the PALACE trial found a direct oral amoxicillin challenge noninferior to skin testing followed by challenge in low-risk adults",
+        },
+        {
+          id: "penfast-skin-test-mandatory",
+          label: "Every penicillin label requires skin testing first; a direct oral challenge without skin testing is never supported by trial data",
+        },
+        {
+          id: "penfast-avoid-all-beta-lactams",
+          label: "Any penicillin label means lifelong avoidance of all beta-lactams, including cephalosporins and carbapenems",
+        },
+        {
+          id: "penfast-recent-reaction-lower-risk",
+          label: "A reaction within the last 5 years lowers the PEN-FAST score, so recency makes a challenge safer",
+        },
+      ],
+      correct: "penfast-low-risk-direct-oral-challenge",
+      answer: "About 10% of patients carry a penicillin allergy label, yet more than 90% tolerate penicillins when evaluated, and the label itself is linked to broader-spectrum alternatives, more C. difficile and MRSA/VRE, and more surgical-site infections. PEN-FAST (Trubiano JA, et al. JAMA Intern Med 2020;180:745-752) is a validated point-of-care rule: PEN = a penicillin allergy label; F = Five years or less since the reaction (2 points); A = Anaphylaxis or angioedema, OR S = Severe cutaneous adverse reaction such as SJS/TEN, DRESS, or AGEP (2 points); T = Treatment required for the reaction, including epinephrine or an emergency visit (1 point). A score below 3 is low risk, with a negative predictive value of about 96% for a positive penicillin allergy test in the derivation and validation cohorts; a score of 0 corresponds to well under 1% risk. The PALACE randomized trial (Copaescu AM, et al. JAMA Intern Med 2023;183:944-952) enrolled 382 adults with PEN-FAST below 3 and found that a direct oral amoxicillin challenge was noninferior to the standard skin test followed by oral challenge, with no serious immune-mediated reactions in either arm. Mechanistic framing: remote, benign maculopapular rashes in childhood are often viral exanthems or non-IgE delayed reactions, and IgE sensitization to penicillin wanes over time (roughly 80% lose detectable specific IgE within 10 years), which is why recency raises the score rather than lowers it. Severe cutaneous adverse reactions are T-cell mediated and remain an exclusion from challenge regardless of score. Why the distractors fail: skin testing is no longer required before a challenge in low-risk patients; most penicillin-labeled patients tolerate cephalosporins with dissimilar side chains and carbapenems; and a recent reaction adds points. The challenge itself is performed under observation by a team prepared to treat anaphylaxis; this card teaches the risk logic, not an individual allergy plan. Sources: Trubiano JA, et al. JAMA Intern Med 2020;180:745-752. Copaescu AM, et al. JAMA Intern Med 2023;183:944-952. Khan DA, et al. Drug allergy: a 2022 practice parameter update. J Allergy Clin Immunol 2022;150:1333-1393.",
+      drugIds: ["amoxicillin"],
+    },
+    {
+      id: "clin-r1-side-chain-cross-reactivity",
+      lane: "clinical",
+      kicker: "Beta-Lactam Cross-Reactivity",
+      title: "It Is the R1 Side Chain, Not the Beta-Lactam Ring",
+      prompt: "A patient with a confirmed IgE-mediated amoxicillin allergy (urticaria and wheeze within an hour) needs a beta-lactam. Separately, a second patient has a documented immediate reaction to ceftazidime. A learner reviews which agents share side chains with each culprit.",
+      ask: "Which statement about beta-lactam cross-reactivity is correct?",
+      choices: [
+        {
+          id: "r1-cephalexin-shares-cefazolin-unique-ceftaz-aztreonam",
+          label: "Cephalexin shares the aminobenzyl R1 side chain with amoxicillin and ampicillin, so it carries the higher cross-reactivity risk; cefazolin has a unique R1; and ceftazidime and aztreonam share an identical R1, so aztreonam is the agent of concern after a ceftazidime reaction",
+        },
+        {
+          id: "r1-ring-drives-10-percent",
+          label: "The shared beta-lactam ring causes a fixed 10% cross-reactivity between any penicillin and any cephalosporin, regardless of side chain",
+        },
+        {
+          id: "r1-aztreonam-always-safe",
+          label: "Aztreonam is a monobactam, so it never cross-reacts with any beta-lactam, including ceftazidime",
+        },
+        {
+          id: "r1-cefazolin-highest-risk",
+          label: "Cefazolin is the cephalosporin most likely to cross-react with amoxicillin because it is first generation, like cephalexin",
+        },
+      ],
+      correct: "r1-cephalexin-shares-cefazolin-unique-ceftaz-aztreonam",
+      answer: "Most clinically relevant IgE cross-reactivity among beta-lactams is driven by the R1 side chain (the acyl side chain at position 7 of cephalosporins and position 6 of penicillins), not by the shared beta-lactam ring. After the ring opens, the penicilloyl or cephalosporoyl hapten bound to carrier proteins presents the side chain as the dominant epitope. Penicillin-cephalosporin cross-reactivity is now estimated at about 1-2% overall, far below the older 10% figure, which came from early cephalosporins contaminated with penicillin and from first-generation agents with penicillin-like side chains. Key pairs: (1) Aminobenzyl R1: ampicillin and amoxicillin share it with cephalexin, cefaclor, and cefadroxil, so these cephalosporins carry a several-fold higher risk after a confirmed aminopenicillin reaction than cephalosporins with dissimilar side chains. (2) Cefazolin has a unique R1 (a tetrazolylacetyl side chain) shared with no other marketed beta-lactam, so isolated cefazolin allergy rarely predicts reactions to others, and penicillin-allergic patients usually tolerate cefazolin. (3) Ceftazidime and aztreonam share an identical R1 (an aminothiazole ring with a carboxy-dimethyl oxyimino group); aztreonam otherwise shows negligible cross-reactivity with penicillins and most cephalosporins, but a ceftazidime-allergic patient should be considered at risk with aztreonam (and with cefiderocol, which carries a closely related side chain). The 2022 drug allergy practice parameter (Khan DA, et al. J Allergy Clin Immunol 2022;150:1333-1393) supports using side-chain dissimilarity to select alternatives, and Zagursky RJ and Pichichero ME (Cross-reactivity in beta-lactam allergy. J Allergy Clin Immunol Pract 2018;6:72-81) tabulate identical and similar R1 and R2 side chains. Why the distractors fail: the ring is not the main driver and the 10% figure is outdated; aztreonam is not universally safe because of its ceftazidime side chain; and cefazolin's R1 is unique, unlike cephalexin's. This card teaches structural reasoning; individual allergy decisions belong with the treating team and allergy specialists.",
+      drugIds: ["amoxicillin", "ampicillin", "cephalexin", "cefazolin", "ceftazidime", "aztreonam"],
+    },
+    {
+      id: "clin-scar-no-rechallenge-hla",
+      lane: "clinical",
+      kicker: "Severe Cutaneous Adverse Reactions & HLA",
+      title: "SJS/TEN and DRESS: No Rechallenge, No Desensitization, and HLA Before First Exposure",
+      prompt: "A patient of Han Chinese ancestry developed Stevens-Johnson syndrome two weeks after starting carbamazepine. Years later a new clinician asks whether a graded challenge or desensitization could allow reuse, and separately whether HLA testing matters before allopurinol is started in a relative of Korean ancestry with CKD.",
+      ask: "Which statement reflects the pharmacogenomic and allergy evidence?",
+      choices: [
+        {
+          id: "scar-avoid-forever-hla-b1502-b5801",
+          label: "A SCAR history (SJS/TEN, DRESS) contraindicates rechallenge and desensitization; HLA-B*15:02 strongly predicts carbamazepine SJS/TEN in Southeast Asian ancestry, and HLA-B*58:01 predicts allopurinol SCAR, so CPIC and ACR support testing in higher-prevalence groups before first exposure",
+        },
+        {
+          id: "scar-desensitize-like-ige",
+          label: "Rapid drug desensitization works for SJS/TEN the same way it works for IgE-mediated anaphylaxis, so reuse is reasonable with a 12-step protocol",
+        },
+        {
+          id: "scar-hla-only-after-reaction",
+          label: "HLA typing is useful only after a reaction occurs; it has no role before the first dose",
+        },
+        {
+          id: "scar-b5701-for-carbamazepine",
+          label: "HLA-B*57:01 is the allele to screen before carbamazepine, and HLA-B*15:02 is the allele to screen before abacavir",
+        },
+      ],
+      correct: "scar-avoid-forever-hla-b1502-b5801",
+      answer: "Severe cutaneous adverse reactions (SCARs: SJS/TEN, DRESS/DIHS, AGEP) are delayed, T-cell mediated (type IV) reactions, not IgE-mediated. Cytotoxic T cells recognize drug presented by specific HLA class I molecules (the p-i concept and altered-peptide-repertoire models) and release granulysin, perforin, granzyme B, and Fas ligand, driving keratinocyte apoptosis; mortality runs from roughly 5-10% for SJS to 30% or more for TEN. Because the mechanism is a memory T-cell response, re-exposure can provoke a faster and more severe reaction. Desensitization induces temporary mast-cell tolerance along IgE pathways and does not work for SCAR; the 2022 drug allergy practice parameter (Khan DA, et al. J Allergy Clin Immunol 2022;150:1333-1393) treats SJS/TEN and DRESS as contraindications to drug challenge and desensitization, and the culprit (often with structurally related aromatic anticonvulsants) is avoided permanently. Pharmacogenomics: HLA-B*15:02 is strongly associated with carbamazepine-induced SJS/TEN in Han Chinese, Thai, Malaysian, and other Southeast Asian populations (Chung WH, et al. Nature 2004;428:486); the CPIC guideline for carbamazepine and oxcarbazepine (Phillips EJ, et al. Clin Pharmacol Ther 2018;103:574-581) recommends that carbamazepine-naive carriers avoid it, and the FDA label carries a boxed warning recommending testing in at-risk ancestry. HLA-A*31:01 adds risk for carbamazepine DRESS and other reactions across ancestries, including European. HLA-B*58:01 is associated with allopurinol SJS/TEN and DRESS, with higher carrier rates in Han Chinese, Korean, Thai, and African ancestry populations; CPIC (Hershfield MS, et al. Clin Pharmacol Ther 2013;93:153-158; update Saito Y, et al. Clin Pharmacol Ther 2016;99:36-37) recommends an alternative in carriers, and the 2020 ACR gout guideline (FitzGerald JD, et al. Arthritis Care Res 2020;72:744-760) conditionally recommends testing in patients of Southeast Asian descent and African American patients, with CKD adding risk. A negative HLA test lowers but does not eliminate risk. Why the distractors fail: desensitization is an IgE tool; HLA screening is valuable precisely before first exposure; and HLA-B*57:01 is the abacavir hypersensitivity allele, not the carbamazepine allele. Testing decisions belong with the treating clinician and pharmacogenomics resources; this card teaches the mechanism.",
+      drugIds: ["carbamazepine", "allopurinol"],
+    },
+    {
+      id: "clin-cha2ds2-vasc-sex-modifier",
+      lane: "clinical",
+      kicker: "Atrial Fibrillation Stroke Risk",
+      title: "CHA2DS2-VASc: Female Sex Is a Risk Modifier, Not a Standalone Risk Factor",
+      prompt: "A 58-year-old woman with paroxysmal nonvalvular atrial fibrillation has no hypertension, diabetes, heart failure, vascular disease, or prior stroke. Her CHA2DS2-VASc score is 1, earned entirely from the sex category. A learner asks whether that point alone places her in the anticoagulation range.",
+      ask: "How do current guidelines interpret this score?",
+      choices: [
+        {
+          id: "chads-sex-modifier-thresholds",
+          label: "Female sex amplifies risk only when other factors are present, so a score of 1 from sex alone is low risk (comparable to a man scoring 0); ACC/AHA 2023 recommends anticoagulation at an annual risk equivalent to CHA2DS2-VASc 2 or more in men and 3 or more in women, and ESC 2024 adopted CHA2DS2-VA, dropping sex altogether",
+        },
+        {
+          id: "chads-sex-standalone",
+          label: "Each point is additive and equal, so female sex alone carries the same weight as hypertension and puts her in the recommend-anticoagulation range",
+        },
+        {
+          id: "chads-sex-doubles-threshold",
+          label: "Women need a score of 4 or more before anticoagulation is ever considered, because female sex lowers stroke risk",
+        },
+        {
+          id: "chads-aspirin-for-score-1",
+          label: "Aspirin is the recommended stroke-prevention alternative for any patient scoring 1",
+        },
+      ],
+      correct: "chads-sex-modifier-thresholds",
+      answer: "CHA2DS2-VASc assigns Congestive heart failure 1, Hypertension 1, Age 75 or older 2, Diabetes 1, prior Stroke/TIA/thromboembolism 2, Vascular disease 1, Age 65-74 1, and Sex category (female) 1. Nielsen PB, et al. (Female sex is a risk modifier rather than a risk factor for stroke in atrial fibrillation. Circulation 2018;137:832-840) showed that women with no other risk factors have a stroke rate similar to men with none, while female sex amplifies risk once at least one non-sex factor is present, especially with older age. Accordingly, the 2023 ACC/AHA/ACCP/HRS atrial fibrillation guideline (Joglar JA, et al. Circulation 2024;149:e1-e156) frames thresholds by estimated annual stroke risk: anticoagulation is recommended at an annual risk of 2% or more (CHA2DS2-VASc 2 or more in men, 3 or more in women), is reasonable at 1% to under 2% (score 1 in men, 2 in women), and other risk calculators and modifiers may refine the estimate. The 2024 ESC atrial fibrillation guideline (Van Gelder IC, et al. Eur Heart J 2024;45:3314-3414) went further and adopted CHA2DS2-VA, removing sex from the score so one threshold applies to everyone (anticoagulation recommended at 2 or more and considered at 1), citing the modifier behavior and simplicity for people whose sex category is nonbinary or who receive gender-affirming hormones. When anticoagulation is chosen, DOACs such as apixaban are preferred over warfarin for AF without a mechanical valve or moderate-to-severe mitral stenosis. Why the distractors fail: points do not carry equal effect when sex is the only one; female sex does not lower risk; and aspirin is no longer recommended as a stroke-prevention alternative to anticoagulation in AF because it offers little stroke reduction with comparable major bleeding. Score interpretation is shared decision-making with the treating team; this card teaches the scoring logic only.",
+      drugIds: ["apixaban", "warfarin", "aspirin"],
+    },
+    {
+      id: "clin-has-bled-not-a-veto",
+      lane: "clinical",
+      kicker: "Bleeding Risk Scores",
+      title: "HAS-BLED of 3 or More: A Fix-It List, Not a Veto",
+      prompt: "A 72-year-old man with atrial fibrillation (CHA2DS2-VASc 4) recently received a drug-eluting stent for an acute coronary syndrome. He has poorly controlled blood pressure, drinks about 10 alcoholic drinks per week, takes ibuprofen most days for knee pain, and had a labile INR on warfarin. His HAS-BLED score is 4, and a trainee suggests stopping anticoagulation because of it.",
+      ask: "What is the evidence-based reading of a high HAS-BLED score in this setting?",
+      choices: [
+        {
+          id: "hasbled-modify-not-withhold-augustus",
+          label: "HAS-BLED of 3 or more flags patients for closer follow-up and for correcting modifiable bleeding drivers (uncontrolled blood pressure, labile INR, concomitant NSAID or antiplatelet use, alcohol); it is not by itself a reason to withhold anticoagulation, and AUGUSTUS showed that apixaban plus a P2Y12 inhibitor without aspirin reduced bleeding compared with regimens including aspirin",
+        },
+        {
+          id: "hasbled-veto",
+          label: "Any HAS-BLED of 3 or more is an absolute contraindication to oral anticoagulation, so stroke prevention should be stopped",
+        },
+        {
+          id: "hasbled-triple-indefinite",
+          label: "Indefinite triple therapy with aspirin, clopidogrel, and an anticoagulant is the lowest-bleeding strategy after PCI in AF",
+        },
+        {
+          id: "hasbled-nsaid-neutral",
+          label: "Daily NSAID use does not affect bleeding risk on an anticoagulant because NSAIDs act only on prostaglandins in the joint",
+        },
+      ],
+      correct: "hasbled-modify-not-withhold-augustus",
+      answer: "HAS-BLED (Pisters R, et al. Chest 2010;138:1093-1100) assigns one point each for Hypertension (uncontrolled, systolic above 160 mmHg), Abnormal renal or liver function (1 each), Stroke, Bleeding history or predisposition, Labile INR, Elderly (over 65), and Drugs (antiplatelets or NSAIDs) or alcohol (1 each). A score of 3 or more identifies higher bleeding risk, but many of the same features also predict stroke, so net clinical benefit generally still favors anticoagulation. Both the 2023 ACC/AHA/ACCP/HRS guideline and the 2024 ESC guideline state that bleeding risk scores should not be used on their own to withhold anticoagulation; instead they direct attention to modifiable factors: control blood pressure, stop unnecessary NSAIDs and antiplatelets, address alcohol use, improve INR stability or move from warfarin to a DOAC, and review interacting drugs. Mechanisms: NSAIDs reversibly inhibit platelet COX-1 thromboxane A2 and injure gastric mucosa through loss of protective prostaglandins, while aspirin irreversibly acetylates platelet COX-1 for the platelet's lifespan, so either one layered onto an anticoagulant multiplies gastrointestinal bleeding. AUGUSTUS (Lopes RD, et al. N Engl J Med 2019;380:1509-1524) randomized 4,614 patients with AF after ACS or PCI on a P2Y12 inhibitor (mostly clopidogrel) in a 2x2 design: apixaban caused less major or clinically relevant nonmajor bleeding than a vitamin K antagonist (10.5% vs 14.7%), and aspirin caused more bleeding than placebo (16.1% vs 9.0%), without a significant difference in ischemic events. Current guidance therefore favors a short course of aspirin (often through hospital discharge or up to about 1-4 weeks) followed by dual therapy with an oral anticoagulant plus clopidogrel. Why the distractors fail: high HAS-BLED is not a veto; prolonged triple therapy maximizes bleeding; and NSAIDs act on platelets and gastric mucosa systemically. Regimen choices and durations rest with the treating cardiology team; this card teaches score interpretation.",
+      drugIds: ["apixaban", "clopidogrel", "aspirin", "warfarin"],
+    },
+    {
+      id: "clin-hys-law-r-ratio",
+      lane: "clinical",
+      kicker: "Drug-Induced Liver Injury",
+      title: "The R Ratio and Hy's Law: Patterning DILI and Spotting the Dangerous Case",
+      prompt: "Three weeks after finishing a 10-day course of amoxicillin-clavulanate, a patient presents with jaundice and pruritus. Labs: ALT 180 U/L (ULN 40), ALP 480 U/L (ULN 120), total bilirubin 4.8 mg/dL (ULN 1.2). Viral, autoimmune, biliary obstruction, and alcohol workups are negative. A learner calculates the R ratio and asks whether Hy's law applies.",
+      ask: "Which interpretation is correct?",
+      choices: [
+        {
+          id: "r-ratio-cholestatic-hys-law-excluded",
+          label: "R = (180/40)/(480/120) = 4.5/4.0 ≈ 1.1, a cholestatic pattern (R of 2 or less); Hy's law does not apply because it requires ALT or AST above 3× ULN and bilirubin above 2× ULN without ALP of 2× ULN or more; amox-clav is the leading cause of idiosyncratic DILI in Western series, classically cholestatic or mixed with delayed onset",
+        },
+        {
+          id: "r-ratio-hepatocellular",
+          label: "R ≈ 1.1 indicates a hepatocellular pattern, because R of 2 or less means hepatocellular injury",
+        },
+        {
+          id: "hys-law-any-jaundice",
+          label: "Hy's law applies to any drug-associated jaundice regardless of the ALP level or injury pattern",
+        },
+        {
+          id: "amox-clav-cannot-cause-late",
+          label: "Amoxicillin-clavulanate cannot be the cause because the injury appeared after the course ended",
+        },
+      ],
+      correct: "r-ratio-cholestatic-hys-law-excluded",
+      answer: "The R ratio classifies liver injury at first presentation: R = (ALT/ULN) / (ALP/ULN). R of 5 or more is hepatocellular, R of 2 or less is cholestatic, and values between 2 and 5 are mixed (Chalasani NP, et al. ACG Clinical Guideline: Diagnosis and Management of Idiosyncratic Drug-Induced Liver Injury. Am J Gastroenterol 2021;116:878-898). Here R ≈ 1.1, a cholestatic pattern. Hy's law, named for Hyman Zimmerman's observation and formalized by Temple (Temple R. Hy's law: predicting serious hepatotoxicity. Pharmacoepidemiol Drug Saf 2006;15:241-243) and the FDA Guidance for Industry, Drug-Induced Liver Injury: Premarketing Clinical Evaluation (2009), identifies the dangerous case: ALT or AST above 3× ULN plus total bilirubin above 2× ULN, without initial ALP elevation to 2× ULN or more (a hepatocellular rather than obstructive picture), and with no other explanation such as viral hepatitis or biliary obstruction. The logic: bilirubin rises in hepatocellular injury only when enough hepatocyte mass is lost to impair uptake, conjugation, and excretion, so jaundice signals functional failure, and such cases carry roughly 10% or higher mortality or need for liver transplantation. Cholestatic jaundice instead reflects impaired bile flow (for example, inhibition of canalicular transporters such as BSEP) and tends to carry lower acute mortality but a slower, sometimes prolonged recovery. Amoxicillin-clavulanate is the single most common cause of idiosyncratic DILI in Western registries (the US DILIN and the Spanish DILI Registry); the clavulanate component is implicated, HLA-DRB1*15:01 and HLA-A*02:01 raise risk, injury is often cholestatic or mixed (more hepatocellular in younger patients), and onset is classically delayed, appearing days to several weeks after the course ends. Isoniazid, by contrast, is a classic hepatocellular DILI drug with Hy's-law cases. Management centers on stopping the suspected agent, excluding alternatives, and documenting the reaction, with RUCAM as the structured causality tool. Why the distractors fail: R of 2 or less is cholestatic, not hepatocellular; Hy's law excludes predominantly cholestatic injury; and delayed post-course onset is characteristic of amox-clav. This interpretation is for teaching; diagnosis rests with the treating clinicians.",
+      drugIds: ["amox-clav", "isoniazid"],
     },
   ];
   return cards.map((c) => ({

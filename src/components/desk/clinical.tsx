@@ -254,8 +254,18 @@ import { PediatricPanel } from "./pediatric-station";
 import { pediatricOnDesk } from "@/lib/drugs/pediatric-kinetics";
 import { SeparationPanel } from "./separation-station";
 import { separationOnDesk } from "@/lib/drugs/separation";
+import { RotationPanel } from "./opioid-rotation-station";
+import { rotationOnDesk } from "@/lib/drugs/opioid-rotation";
+import { HepaticPanel } from "./hepatic-station";
+import { hepaticOnDesk } from "@/lib/drugs/hepatic-clearance";
+import { AllergyPanel } from "./allergy-station";
+import { allergyOnDesk } from "@/lib/drugs/drug-allergy";
+import { AfPanel } from "./af-station";
+import { afOnDesk } from "@/lib/drugs/af-stroke-bleed";
+import { DiliPanel } from "./dili-station";
+import { diliOnDesk } from "@/lib/drugs/dili";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin" | "pregnancy" | "obstetrickinetics" | "vasoactive" | "transplant" | "neuropsych" | "anticoagulation" | "toxicology" | "antiarrhythmic" | "acidbase" | "anesthesia" | "epilepsy" | "moud" | "glycemic" | "pediatric" | "resources" | "separation";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin" | "pregnancy" | "obstetrickinetics" | "vasoactive" | "transplant" | "neuropsych" | "anticoagulation" | "toxicology" | "antiarrhythmic" | "acidbase" | "anesthesia" | "epilepsy" | "moud" | "glycemic" | "pediatric" | "resources" | "separation" | "rotation" | "hepatic" | "allergy" | "af" | "dili";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -305,6 +315,11 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const glycemicOn = useMemo(() => glycemicOnDesk(ids), [ids.join("|")]);
   const pediatricOn = useMemo(() => pediatricOnDesk(ids), [ids.join("|")]);
   const separationOn = useMemo(() => separationOnDesk(ids), [ids.join("|")]);
+  const rotationOn = useMemo(() => rotationOnDesk(ids), [ids.join("|")]);
+  const hepaticOn = useMemo(() => hepaticOnDesk(ids), [ids.join("|")]);
+  const allergyOn = useMemo(() => allergyOnDesk(ids), [ids.join("|")]);
+  const afOn = useMemo(() => afOnDesk(ids), [ids.join("|")]);
+  const diliOn = useMemo(() => diliOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -353,12 +368,17 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "glycemic", label: "Glycemic & DKA", on: Boolean(glycemicOn.hasGlycemicAgent) },
       { id: "pediatric", label: "Pediatric & Neonatal", on: Boolean(pediatricOn.hasPediatricTargetDrug) },
       { id: "separation", label: "Separate", on: separationOn },
+      { id: "rotation", label: "Opioid Rotation", on: rotationOn.hasOpioid },
+      { id: "hepatic", label: "Hepatic Clearance", on: hepaticOn.hasHepaticPreset },
+      { id: "allergy", label: "Allergy & ADR", on: allergyOn.hasAllergyRelevant },
+      { id: "af", label: "AF Stroke & Bleed", on: afOn.hasAfRelevant },
+      { id: "dili", label: "Liver Injury", on: diliOn.hasHepatotoxic },
       { id: "resources", label: "Resources", on: true },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, obstetricOn.hasObstetricDrug, vasoactiveOn.hasVasoactive, vasoactiveOn.hasInotrope, vasoactiveOn.hasVasopressor, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent, antiarrhythmicOn.hasAntiarrhythmic, antiarrhythmicOn.hasDigoxin, antiarrhythmicOn.hasPgpInhibitor, acidBaseOn.matchedDrugIds.length, anesthesiaOn.hasNmba, anesthesiaOn.hasReversal, anesthesiaOn.hasSedative, epilepsyOn.hasStatusEpilepticusAgent, moudOn.hasMoud, moudOn.hasFullAgonist, glycemicOn.hasGlycemicAgent, pediatricOn.hasPediatricTargetDrug, separationOn]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, obstetricOn.hasObstetricDrug, vasoactiveOn.hasVasoactive, vasoactiveOn.hasInotrope, vasoactiveOn.hasVasopressor, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent, antiarrhythmicOn.hasAntiarrhythmic, antiarrhythmicOn.hasDigoxin, antiarrhythmicOn.hasPgpInhibitor, acidBaseOn.matchedDrugIds.length, anesthesiaOn.hasNmba, anesthesiaOn.hasReversal, anesthesiaOn.hasSedative, epilepsyOn.hasStatusEpilepticusAgent, moudOn.hasMoud, moudOn.hasFullAgonist, glycemicOn.hasGlycemicAgent, pediatricOn.hasPediatricTargetDrug, separationOn, rotationOn.hasOpioid, hepaticOn.hasHepaticPreset, allergyOn.hasAllergyRelevant, afOn.hasAfRelevant, diliOn.hasHepatotoxic]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -442,6 +462,11 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "glycemic" ? <GlycemicPanel ids={ids} host={host} /> : null}
         {live === "pediatric" ? <PediatricPanel ids={ids} host={host} /> : null}
         {live === "separation" && separationOn ? <SeparationPanel ids={ids} /> : null}
+        {live === "rotation" ? <RotationPanel ids={ids} host={host} /> : null}
+        {live === "hepatic" ? <HepaticPanel ids={ids} host={host} /> : null}
+        {live === "allergy" ? <AllergyPanel ids={ids} host={host} /> : null}
+        {live === "af" ? <AfPanel ids={ids} host={host} /> : null}
+        {live === "dili" ? <DiliPanel ids={ids} host={host} /> : null}
         {live === "resources" ? <ResourcePanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}

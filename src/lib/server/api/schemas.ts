@@ -60,6 +60,11 @@ export const KineticsModuleEnum = z.enum([
   "moud",
   "glycemic",
   "pediatric",
+  "rotation",
+  "hepatic",
+  "allergy",
+  "af",
+  "dili",
   "resources",
   "all",
 ]);
