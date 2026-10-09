@@ -50,6 +50,11 @@ import { antiarrhythmicOnDesk, antiarrhythmicReportOnDesk } from "../../drugs/an
 import { acidBaseOnDesk, acidBaseReportOnDesk } from "../../drugs/acid-base-kinetics";
 import { anesthesiaOnDesk, anesthesiaReportOnDesk } from "../../drugs/anesthesia-reversal";
 import { statusEpilepticusOnDesk, statusEpilepticusReportOnDesk } from "../../drugs/status-epilepticus";
+import { obstetricOnDesk, obstetricReportOnDesk } from "../../drugs/obstetric-kinetics";
+import { moudOnDesk, moudReportOnDesk } from "../../drugs/moud-kinetics";
+import { glycemicOnDesk, glycemicReportOnDesk } from "../../drugs/glycemic-kinetics";
+import { pediatricReportOnDesk } from "../../drugs/pediatric-kinetics";
+import { healthcareResourcesFor } from "../../drugs/healthcare-resources";
 
 export const STATUTORY_CDS_DISCLAIMER =
   "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice.";
@@ -124,6 +129,11 @@ export interface KineticsEvaluationResult {
     acidbase?: unknown;
     anesthesia?: unknown;
     epilepsy?: unknown;
+    obstetric?: unknown;
+    moud?: unknown;
+    glycemic?: unknown;
+    pediatric?: unknown;
+    resources?: unknown;
   };
 }
 
@@ -393,6 +403,21 @@ export class ClinicalDecisionService {
     }
     if (runAll || requestedModules.includes("epilepsy")) {
       modObj.epilepsy = statusEpilepticusReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("obstetric")) {
+      modObj.obstetric = obstetricReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("moud")) {
+      modObj.moud = moudReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("glycemic")) {
+      modObj.glycemic = glycemicReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("pediatric")) {
+      modObj.pediatric = pediatricReportOnDesk(resolvedIds, host);
+    }
+    if (runAll || requestedModules.includes("resources")) {
+      modObj.resources = healthcareResourcesFor(resolvedIds, host);
     }
 
     const durationMs = Math.round((performance.now() - startTime) * 100) / 100;

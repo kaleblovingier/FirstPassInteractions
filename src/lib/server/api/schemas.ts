@@ -47,6 +47,7 @@ export const KineticsModuleEnum = z.enum([
   "antimicrobial",
   "phenytoin",
   "pregnancy",
+  "obstetric",
   "vasoactive",
   "transplant",
   "anticoagulation",
@@ -56,6 +57,10 @@ export const KineticsModuleEnum = z.enum([
   "acidbase",
   "anesthesia",
   "epilepsy",
+  "moud",
+  "glycemic",
+  "pediatric",
+  "resources",
   "all",
 ]);
 

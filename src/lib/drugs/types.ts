@@ -92,6 +92,8 @@ export interface HostContext {
   age?: AgeBand;
   kidney?: KidneyBand;
   preg?: PregBand;
+  egfr?: number;
+  ckdStage?: number;
 }
 
 export const DEFAULT_HOST: HostContext = {

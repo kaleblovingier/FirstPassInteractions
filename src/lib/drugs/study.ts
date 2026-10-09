@@ -696,6 +696,9 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-cardiac-phase0-ina-nav15-vaughan-williams": "cardio",
   "clin-cardiac-phase3-herg-ead-torsades": "cardio",
   "clin-cardiac-phase4-if-dad-digoxin": "cardio",
+  "clin-vasoactive-scai-shock-stages": "cardio",
+  "clin-epinephrine-type-b-lactate-aerobic": "cardio",
+  "clin-milrinone-renal-failure-accumulation": "cardio",
 
   // Endocrine & SGLT2
   "clin-steroid-equiv-potency": "endocrine",
@@ -723,6 +726,7 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-vd-dialysis-clearance": "electrolytes",
   "clin-sglt2-ketogenesis-glucagon": "electrolytes",
   "clin-metformin-oct2-mate1-cimetidine": "electrolytes",
+  "clin-magnesium-preeclampsia-toxicity-milestones": "electrolytes",
 
   // Neurology & Sedation
   "clin-acb-threshold": "neuro",
@@ -771,6 +775,8 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-tox-cyanide-hydroxocobalamin-complex-iv": "tox",
   "clin-tox-organophosphate-ache-pralidoxime-aging": "tox",
   "clin-beta-lactam-extended-infusion-arc": "tox",
+  "clin-tacrolimus-whole-blood-sampling-trap": "tox",
+  "clin-azathioprine-allopurinol-xanthine-oxidase-6tgn": "tox",
 
   // Addiction Medicine & Harm Reduction
   "clin-bup-precip-pharmacology": "addiction",
@@ -789,6 +795,10 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-steroid-nuclear-receptor-transactivation": "bedside",
   "clin-probenecid-oat1-oat3-penicillin": "bedside",
   "clin-protamine-heparin-decay-stoichiometry": "bedside",
+  "clin-pph-uterotonic-contraindications-methergine-hemabate": "bedside",
+  "clin-teratogen-embryonic-critical-windows": "bedside",
+  "clin-mycophenolate-gut-flora-antibiotic-rejection": "bedside",
+  "clin-healthcare-resources-fqhc-mothertobaby": "bedside",
 
   // CYP & Pharmacokinetics
   "clin-warfarin-bactrim-cyp2c9": "cyp",
@@ -3923,6 +3933,296 @@ export function clinicalCards(): StudyCard[] {
       correct: "beta-lactam-ft-mic-extended-infusion-arc-clearance",
       answer: "Beta-lactam antibiotics (penicillins, cephalosporins, carbapenems, monobactams) exhibit time-dependent bactericidal activity governed by the PK/PD index fT > MIC (the percentage of the dosing interval that free unbound drug concentration remains above the bacterial minimum inhibitory concentration). Standard bactericidal targets are fT > MIC >= 50% for penicillins, >= 60–70% for cephalosporins, and >= 40% for carbapenems, but in critically ill patients or deep-seated pulmonary infections, consensus guidelines advocate fT > 4–5× MIC for 100% of the interval. Augmented Renal Clearance (ARC; CrCl > 130–160 mL/min/1.73m² common in young trauma, burn, and septic patients) dramatically accelerates renal elimination of hydrophilic beta-lactams, causing serum concentrations to drop below the MIC within 1 to 2 hours of a 30-minute intermittent bolus, resulting in therapeutic failure and emergence of resistance. Prolonging the infusion time to 3 to 4 hours (extended infusion) or administering a 24-hour continuous infusion (after a loading dose) flattens the concentration-time curve, keeping plasma levels continuously above the target threshold without increasing the total daily dose.",
       drugIds: ["cefepime", "piperacillin-tazobactam", "meropenem"],
+    },
+    {
+      id: "clin-vasoactive-scai-shock-stages",
+      lane: "clinical",
+      kicker: "Critical Care Hemodynamics & Shock Stratification",
+      title: "SCAI Shock Classification: Pyramidal Severity, Escalation & Vasopressor Traps",
+      prompt: "A patient with acute anterior STEMI is admitted to the cardiac ICU. Blood pressure is 82/50 mmHg on norepinephrine 0.15 mcg/kg/min, heart rate 118 bpm, lactate 4.8 mmol/L, with cold clammy extremities and oliguria.",
+      ask: "What SCAI shock stage is established, what defines progression to Stage D vs E, and what is the in-hospital mortality gradient?",
+      choices: [
+        {
+          id: "scai-stage-c-classic-shock-escalating-pressors-d-collapse-e",
+          label: "Stage C (Classic Shock: hypoperfusion requiring inotrope/pressor); Stage D represents deteriorating failure despite initial pressors; Stage E is extremis (cardiac arrest / refractory collapse); mortality climbs from ~2-5% (Stage A) to >50-70% (Stage E)",
+        },
+        {
+          id: "scai-stage-a-at-risk-only",
+          label: "Stage A (At Risk); vasopressors are considered preventive and the patient has zero mortality risk above baseline",
+        },
+        {
+          id: "scai-stage-b-beginning-compensated",
+          label: "Stage B (Beginning); blood pressure < 90 mmHg is fully compensated and does not represent cardiogenic shock if lactate is < 10 mmol/L",
+        },
+        {
+          id: "scai-stage-e-requires-three-inotropes-minimum",
+          label: "Stage E (Extremis); any patient on a single vasopressor is automatically classified as Stage E regardless of lactate or arrest history",
+        },
+      ],
+      correct: "scai-stage-c-classic-shock-escalating-pressors-d-collapse-e",
+      answer: "The Society for Cardiovascular Angiography and Interventions (SCAI) clinical shock staging system standardizes cardiogenic and mixed shock into 5 severity tiers: (1) Stage A (At Risk): Normotensive, preserved perfusion, but possessing a severe acute cardiac event (large MI, acute myocarditis); (2) Stage B (Beginning): Relative hypotension (SBP < 90 or MAP drop > 30) or tachycardia without overt hypoperfusion (lactate normal); (3) Stage C (Classic): Manifest systemic hypoperfusion (elevated lactate >= 2.0 mmol/L, oliguria < 0.5 mL/kg/h, altered mentation) requiring at least one inotrope, vasopressor, or mechanical circulatory support (MCS) device to sustain perfusion; (4) Stage D (Deteriorating / Failure to Respond): Failure to stabilize, requiring escalation to multiple vasopressors/inotropes or addition of MCS devices; (5) Stage E (Extremis): Circulatory collapse, refractory cardiac arrest requiring CPR or VA-ECMO. In-hospital mortality exhibits a steep pyramidal gradient: ~2-5% in Stage A/B, ~12-25% in Stage C, ~40-50% in Stage D, and >50-75% in Stage E.",
+      drugIds: ["norepinephrine", "epinephrine", "dobutamine"],
+    },
+    {
+      id: "clin-epinephrine-type-b-lactate-aerobic",
+      lane: "clinical",
+      kicker: "Resuscitation Biochemistry & Metabolic Traps",
+      title: "Epinephrine-Induced Hyperlactatemia: Beta-2 Aerobic Glycolysis vs Type A Hypoperfusion",
+      prompt: "A patient in septic shock resuscitated to MAP 68 mmHg has ScvO2 74% and urine output 0.8 mL/kg/h. Due to persistent inotropy needs, epinephrine is initiated at 0.08 mcg/kg/min. Two hours later, serum lactate rises from 2.2 to 5.4 mmol/L, but blood gas shows normal pH 7.39 and base deficit 0.",
+      ask: "Why does epinephrine provoke acute hyperlactatemia despite adequate tissue perfusion, and how is Type B hyperlactatemia differentiated from Type A tissue hypoxia?",
+      choices: [
+        {
+          id: "epinephrine-beta2-skeletal-aerobic-glycolysis-type-b",
+          label: "Epinephrine stimulates skeletal muscle beta-2 adrenoceptors, activating adenylyl cyclase, glycogenolysis, and aerobic glycolysis producing pyruvate faster than mitochondria can oxidize it; Type B features preserved arterial pH, ScvO2, and urine output unlike anaerobic Type A debt",
+        },
+        {
+          id: "epinephrine-induces-ischemic-splanchnic-hypoxia-type-a",
+          label: "Epinephrine causes profound mesenteric ischemia via alpha-1 constriction, producing genuine anaerobic Type A tissue death in all patients",
+        },
+        {
+          id: "epinephrine-blocks-hepatic-cyp-metabolism-of-lactate",
+          label: "Epinephrine directly poisons hepatic CYP3A4 enzymes that degrade circulating lactate",
+        },
+        {
+          id: "epinephrine-causes-massive-red-blood-cell-lysis",
+          label: "Epinephrine triggers acute intravascular hemolysis, releasing intracellular erythrocyte lactate pools into plasma",
+        },
+      ],
+      correct: "epinephrine-beta2-skeletal-aerobic-glycolysis-type-b",
+      answer: "Hyperlactatemia is clinically classified into Type A (anaerobic, tissue hypoperfusion/hypoxia) and Type B (aerobic, non-hypoperfusion metabolic alteration). Epinephrine is a potent beta-2 adrenergic agonist. Stimulation of beta-2 adrenoceptors on skeletal muscle sarcolemma activates adenylyl cyclase and cAMP-dependent protein kinase A, which robustly stimulates glycogen phosphorylase (accelerating glycogenolysis) and phosphofructokinase (accelerating glycolysis). Glycolytic flux accelerates so dramatically that pyruvate production vastly exceeds the oxidative capacity of pyruvate dehydrogenase (PDH) and mitochondrial Krebs cycle entry. Simultaneously, beta-2 activation stimulates the sarcolemmal Na+/K+ ATPase pump, consuming ATP and generating cytosolic ADP that further stimulates glycolysis. Excess cytosolic pyruvate is converted by lactate dehydrogenase (LDH) into lactate and extruded into circulation. This is non-ischemic aerobic 'Type B' hyperlactatemia. Clinical Trap: Confusing epinephrine-induced Type B lactate elevation with worsening shock (Type A) often triggers inappropriate fluid over-resuscitation or needless vasopressor escalation. Clinicians differentiate Type B by confirming adequate perfusion markers: normal arterial pH (or mild respiratory alkalosis), absence of severe base deficit, ScvO2 > 70%, warm extremities, and brisk urine output.",
+      drugIds: ["epinephrine", "norepinephrine"],
+    },
+    {
+      id: "clin-milrinone-renal-failure-accumulation",
+      lane: "clinical",
+      kicker: "Heart Failure Inotropes & Elimination Elimination",
+      title: "Milrinone vs Dobutamine: Renal Elimination Fraction & Prolonged Vasoplegia Hazard",
+      prompt: "A patient with acute decompensated heart failure and cardiogenic shock with baseline CrCl 15 mL/min requires inotropic support.",
+      ask: "Why is milrinone hazardous in acute or chronic renal failure compared to dobutamine, and what pharmacokinetic transformation occurs?",
+      choices: [
+        {
+          id: "milrinone-85-percent-renal-half-life-prolongation-to-24-hours",
+          label: "Milrinone is 85% excreted unchanged by the kidneys, and severe renal impairment extends its half-life from 2.4 hours to >24-40 hours causing protracted vasoplegic shock; dobutamine undergoes organ-independent hepatic COMT methylation with constant 2-minute half-life",
+        },
+        {
+          id: "dobutamine-is-exclusively-eliminated-by-hemodialysis",
+          label: "Dobutamine cannot be metabolized without high-flux hemodialysis, making milrinone the only safe option in ESRD",
+        },
+        {
+          id: "both-inotropes-have-identical-renal-clearance",
+          label: "Both milrinone and dobutamine have identical 10-minute half-lives regardless of glomerular filtration rate",
+        },
+        {
+          id: "milrinone-directly-causes-acute-tubular-necrosis",
+          label: "Milrinone crystal nephropathy plugs renal collecting ducts, causing permanent dialysis dependence within 2 hours",
+        },
+      ],
+      correct: "milrinone-85-percent-renal-half-life-prolongation-to-24-hours",
+      answer: "Milrinone is a phosphodiesterase-3 (PDE-3) inhibitor inodilator that increases intracellular cAMP in myocardium (inotropy/lusitropy) and vascular smooth muscle (systemic and pulmonary vasodilation). Pharmacokinetic pitfall: Approximately 85% of milrinone is eliminated unchanged via renal excretion. In patients with normal renal function, elimination half-life is 2.3 to 2.4 hours. In severe renal impairment (CrCl < 30 mL/min) or anuric renal failure, clearance collapses, and half-life extends to 24 to 40+ hours! Consequently, even after discontinuing a milrinone infusion, profound systemic vasodilation, refractory hypotension, and ventricular tachyarrhythmias can persist for days. In contrast, Dobutamine (synthetic catecholamine beta-1 > beta-2/alpha-1 agonist) undergoes rapid organ-independent metabolism via catechol-O-methyltransferase (COMT) and glucuronidation, maintaining an ultra-short half-life of 2 minutes completely unaffected by renal failure or dialysis. Dobutamine is therefore the inotrope of choice in cardiogenic shock with renal insufficiency.",
+      drugIds: ["milrinone", "dobutamine"],
+    },
+    {
+      id: "clin-magnesium-preeclampsia-toxicity-milestones",
+      lane: "clinical",
+      kicker: "Obstetric Emergencies & Magnesium Resuscitation",
+      title: "Magnesium Sulfate in Preeclampsia: Concentration-Dependent Toxicity Milestones & Antidote Mechanics",
+      prompt: "A preeclamptic patient receiving IV magnesium sulfate develops loss of deep tendon patellar reflexes, followed by bradypnea (RR 8/min) and somnolence.",
+      ask: "What serum magnesium concentration thresholds correlate with loss of reflexes, respiratory arrest, and cardiac arrest, and what is the immediate rescue antidote?",
+      choices: [
+        {
+          id: "magnesium-reflex-loss-9-12-resp-12-15-cardiac-15-calcium-gluconate",
+          label: "Loss of patellar reflexes occurs at 9-12 mg/dL (7.5-10 mEq/L); respiratory depression at 12-15 mg/dL; cardiac arrest at >15-20 mg/dL; immediate antidote is Calcium Gluconate 10% 1 g IV over 3-5 minutes",
+        },
+        {
+          id: "magnesium-reflexes-lost-at-therapeutic-window",
+          label: "Loss of reflexes is the normal therapeutic target (4.8-8.4 mg/dL); antidote is sodium bicarbonate infusion",
+        },
+        {
+          id: "magnesium-toxicity-occurs-only-above-30-mgdl",
+          label: "Toxicity never occurs below 30 mg/dL; respiratory depression is unrelated to magnesium and indicates pulmonary embolism",
+        },
+        {
+          id: "antidote-is-neostigmine-and-atropine",
+          label: "Magnesium toxicity is reversed exclusively by neostigmine 5 mg and atropine 1 mg IV",
+        },
+      ],
+      correct: "magnesium-reflex-loss-9-12-resp-12-15-cardiac-15-calcium-gluconate",
+      answer: "Magnesium sulfate is the international gold-standard anticonvulsant for eclampsia prophylaxis (Zuspan IV: 4-6 g load over 20 min, then 1-2 g/h infusion). Therapeutic serum magnesium window: 4.8 to 8.4 mg/dL (2.0 to 3.5 mmol/L or 4.0 to 7.0 mEq/L). Magnesium acts as a physiological calcium antagonist, blocking presynaptic P/Q-type voltage-gated calcium channels at the neuromuscular junction (blocking acetylcholine exocytosis) and blunting postsynaptic endplate sensitivity. Concentration-dependent milestones: (1) Loss of deep tendon patellar reflexes: 9.0 to 12.0 mg/dL (7.5-10 mEq/L) — the first clinical herald of toxicity; (2) Somnolence and respiratory depression (RR < 12): 12.0 to 15.0 mg/dL (10-12.5 mEq/L); (3) Complete respiratory paralysis and high-grade AV block / asystolic cardiac arrest: > 15.0 to 20.0 mg/dL (> 12.5 mEq/L). Emergency Antidote: Calcium gluconate 10% (1 g = 10 mL IV over 3 to 5 minutes) directly overcomes neuromuscular junction calcium blockade. Renal failure warning: Because magnesium is exclusively renally eliminated, serum creatinine >= 1.2 mg/dL or urine output < 30 mL/h mandates reducing infusion rate to 1.0 g/h or holding infusion with serial levels every 2 to 4 hours.",
+      drugIds: ["magnesium-sulfate", "calcium-gluconate"],
+    },
+    {
+      id: "clin-pph-uterotonic-contraindications-methergine-hemabate",
+      lane: "clinical",
+      kicker: "Obstetric Hemorrhage & Uterotonic Safety",
+      title: "Postpartum Hemorrhage Stepped Cascade: Absolute Contraindications for Methergine and Hemabate",
+      prompt: "A patient in the labor and delivery suite develops massive uterine atony and postpartum hemorrhage refractory to oxytocin. The patient has a history of severe persistent asthma and baseline blood pressure 168/104 mmHg.",
+      ask: "Which second-line uterotonics are strictly contraindicated in maternal hypertension and asthma, respectively, and what agent is safe to administer?",
+      choices: [
+        {
+          id: "methergine-contraindicated-hypertension-hemabate-contraindicated-asthma-misoprostol-safe",
+          label: "Methylergonovine (Methergine) is strictly contraindicated in hypertension (alpha-1 vasoconstriction triggers stroke/MI); Carboprost (Hemabate) is strictly contraindicated in asthma (FP-receptor bronchospasm triggers asphyxia); Misoprostol (Cytotec) is safe in both",
+        },
+        {
+          id: "methergine-is-safe-in-hypertension-hemabate-safe-in-asthma",
+          label: "Methergine is first-line for hypertensive mothers; Carboprost is a potent bronchodilator safe in severe asthma",
+        },
+        {
+          id: "all-uterotonics-contraindicated-in-pph",
+          label: "All uterotonics are contraindicated in severe hemorrhage; immediate hysterectomy is mandatory without medications",
+        },
+        {
+          id: "oxytocin-push-bolus-is-the-only-safe-cascade",
+          label: "Rapid IV push of 40 units undiluted oxytocin is the only recommended step; methergine and misoprostol are non-uterotonic",
+        },
+      ],
+      correct: "methergine-contraindicated-hypertension-hemabate-contraindicated-asthma-misoprostol-safe",
+      answer: "Postpartum Hemorrhage (PPH) uterotonic cascade follows a stepped pharmacological algorithm: (1) Oxytocin: First-line. Administer as continuous infusion (not rapid undiluted IV push, which causes profound transient hypotension, peripheral collapse, and reflex tachycardia; prolonged high-dose infusion causes antidiuretic vasopressin-like water intoxication and hyponatremic seizures); (2) Methylergonovine (Methergine, 0.2 mg IM): Potent ergot alkaloid inducing sustained myometrial tetany. ABSOLUTE CONTRAINDICATION: Hypertension, preeclampsia, or coronary disease. Methergine causes intense alpha-adrenergic and 5-HT vascular smooth muscle constriction, provoking hypertensive encephalopathy, intracranial hemorrhage, and coronary vasospasm; (3) Carboprost tromethamine (Hemabate, 250 mcg IM): Prostaglandin F2-alpha analog. ABSOLUTE CONTRAINDICATION: Active asthma or reactive airway disease. Stimulates FP prostaglandin receptors on bronchial smooth muscle, triggering refractory bronchoconstriction, severe hypoxemia, and ventilation failure; (4) Misoprostol (Cytotec, 600-1000 mcg sublingual/buccal/rectal): Synthetic prostaglandin E1 analog. SAFE in both maternal hypertension and asthma. Note: high-dose misoprostol frequently triggers transient shivering, violent rigors, and hyperthermia (temp > 40°C), which must not be confused with chorioamnionitis or septic shock.",
+      drugIds: ["oxytocin", "methylergonovine", "carboprost", "misoprostol"],
+    },
+    {
+      id: "clin-teratogen-embryonic-critical-windows",
+      lane: "clinical",
+      kicker: "Perinatal Pharmacology & Teratology",
+      title: "Embryological Vulnerability Windows: Pre-Implantation All-or-None vs Organogenesis Structural Malformations",
+      prompt: "A patient reports taking an ACE inhibitor during weeks 16-24 of pregnancy, and asks why the risk of structural limb amputation differs from fetal renal dysgenesis.",
+      ask: "How do embryological timing windows dictate teratogenic vulnerability, and what is the distinct mechanism of 2nd/3rd trimester ACEI fetopathy?",
+      choices: [
+        {
+          id: "organogenesis-weeks-3-8-structural-fetal-9-38-functional-acei-potter-sequence",
+          label: "Organogenesis (weeks 3-8 post-conception) is peak structural malformation window; Fetal period (weeks 9-38) involves functional fetopathies; ACEI/ARB exposure in 2nd/3rd trimesters impairs fetal renal perfusion causing tubular dysgenesis, severe oligohydramnios, pulmonary hypoplasia, and Potter sequence",
+        },
+        {
+          id: "preimplantation-is-the-only-vulnerable-period",
+          label: "Pre-implantation (weeks 1-2) is the only period where teratogens cause anatomical defects; weeks 9-38 are completely immune to chemical toxicity",
+        },
+        {
+          id: "ace-inhibitors-only-teratogenic-in-first-trimester",
+          label: "ACE inhibitors cause major neural tube defects exclusively in the first trimester; they are approved and safe in the 2nd and 3rd trimesters",
+        },
+        {
+          id: "thalidomide-acts-exclusively-in-the-third-trimester",
+          label: "Thalidomide limb reduction defects occur strictly in the 3rd trimester (weeks 30-36) via cereblon activation in mature ossification centers",
+        },
+      ],
+      correct: "organogenesis-weeks-3-8-structural-fetal-9-38-functional-acei-potter-sequence",
+      answer: "Embryological development exhibits three distinct pharmacological vulnerability windows: (1) Pre-implantation period (weeks 1-2 post-conception / gestational weeks 3-4): The 'All-or-None' period. Toxic insult either kills the blastocyst (spontaneous abortion) or surviving totipotent cells fully repair without anatomical malformations; (2) Embryonic Organogenesis period (weeks 3-8 post-conception / gestational weeks 5-10): Peak structural teratogenesis window. Major organ systems (neural tube, heart, limbs, craniofacial structures) are actively forming. Insults produce gross anatomical defects: Thalidomide causes phocomelia (days 20-36 post-conception); Valproate causes spina bifida (weeks 3-4); Warfarin causes nasal hypoplasia and stippled epiphyses (weeks 6-9); (3) Fetal period (weeks 9-38 post-conception): Organs have formed; vulnerability shifts to functional defects, growth restriction, and tissue differentiation. ACE Inhibitors and ARBs represent the quintessential 2nd and 3rd trimester fetopathy: the developing fetal kidney relies on angiotensin II-mediated efferent arteriolar constriction to maintain glomerular filtration. Blockade of fetal RAAS in late pregnancy causes fetal renal failure, renal tubular dysgenesis, and anuria. Fetal anuria leads to severe oligohydramnios (loss of amniotic fluid), which produces secondary compression deformities (Potter sequence: pulmonary hypoplasia, clubbed feet, facial flattening) and skull hypocalvaria.",
+      drugIds: ["lisinopril", "losartan", "thalidomide", "valproate"],
+    },
+    {
+      id: "clin-tacrolimus-whole-blood-sampling-trap",
+      lane: "clinical",
+      kicker: "Transplant Immunosuppression & TDM Pitfalls",
+      title: "Tacrolimus Therapeutic Drug Monitoring: Erythrocyte Partitioning & The Whole Blood Mandate",
+      prompt: "A nurse draws a tacrolimus level in a serum separator tube (SST). The clinical laboratory reports a tacrolimus level < 1.0 ng/mL, while the patient presents with acute nephrotoxicity and tremors.",
+      ask: "Why must tacrolimus and cyclosporine TDM be measured strictly from whole blood EDTA tubes rather than serum or plasma?",
+      choices: [
+        {
+          id: "tacrolimus-85-90-percent-erythrocyte-partitioning-serum-falsely-undetectable",
+          label: "Tacrolimus partitions 85-90% into red blood cells (binding intracellular immunophilins FKBP12); centrifuging serum/plasma discards erythrocytes, rendering measured concentrations falsely near zero despite toxic whole blood levels",
+        },
+        {
+          id: "tacrolimus-instantly-degrades-in-serum-proteins",
+          label: "Tacrolimus undergoes immediate enzymatic proteolysis by serum albumin within 5 seconds of clotting",
+        },
+        {
+          id: "edta-chemically-activates-tacrolimus-fluorescence",
+          label: "Tacrolimus cannot fluoresce in clinical immunoassays without EDTA chemical activation",
+        },
+        {
+          id: "serum-levels-are-ten-fold-higher-than-whole-blood",
+          label: "Serum concentrations are 10-fold higher than whole blood, so serum draws falsely trigger panic toxicity flags",
+        },
+      ],
+      correct: "tacrolimus-85-90-percent-erythrocyte-partitioning-serum-falsely-undetectable",
+      answer: "Tacrolimus (Prograf, FK506) and cyclosporine (Neoral) are calcineurin inhibitors (CNIs) characterized by extensive red blood cell partitioning. Because tacrolimus binds with high affinity to intracellular immunophilins (FKBP12) concentrated inside erythrocytes, approximately 85% to 90% of circulating tacrolimus is bound inside red blood cells, with only 10% to 15% in plasma (where it is heavily bound to alpha-1 acid glycoprotein and albumin). Critical Laboratory Trap: If blood is drawn into a serum separator tube (SST) or plain tube and centrifuged to separate serum, the red blood cell pellet containing 85-90% of the drug is discarded. The resulting serum level will be reported as undetectable or misleadingly low (< 1.0 ng/mL). A clinician mistakenly assuming the patient is non-adherent might escalate the dose, precipitating catastrophic nephrotoxicity, neurotoxicity (tremor, seizures, Posterior Reversible Encephalopathy Syndrome PRES), or opportunistic infection. Consensus transplant guidelines (KDIGO and AST) mandate: CNI therapeutic drug monitoring must be performed strictly on WHOLE BLOOD drawn into purple-top potassium EDTA tubes. Furthermore, trough concentrations (C0) must be drawn precisely 12 hours post-dose (immediately prior to the morning dose).",
+      drugIds: ["tacrolimus", "cyclosporine"],
+    },
+    {
+      id: "clin-mycophenolate-gut-flora-antibiotic-rejection",
+      lane: "clinical",
+      kicker: "Transplant Kinetics & Enterohepatic Recirculation",
+      title: "Mycophenolic Acid Enterohepatic Recirculation: Gut Microbiome Beta-Glucuronidase & Broad-Spectrum Antibiotic Rejection Collision",
+      prompt: "A kidney transplant recipient maintained on tacrolimus and mycophenolate mofetil (MMF) is treated with IV piperacillin-tazobactam for pyelonephritis. On day 5 of antibiotic therapy, the patient develops acute allograft tenderness and rising serum creatinine.",
+      ask: "By what pharmacokinetic mechanism do broad-spectrum antibiotics decimate MPA exposure and precipitate acute allograft rejection?",
+      choices: [
+        {
+          id: "antibiotics-eliminate-gut-microbiome-beta-glucuronidase-halting-ehc-35-percent-auc-drop",
+          label: "Broad-spectrum antibiotics eliminate intestinal microflora producing beta-glucuronidase, preventing the hydrolysis of inactive MPAG back into active MPA in the colon, slashing MPA AUC by ~35-50% and causing acute allograft rejection",
+        },
+        {
+          id: "antibiotics-induce-hepatic-cyp3a4-metabolism-of-mpa",
+          label: "Piperacillin-tazobactam is a potent CYP3A4 inducer that accelerates hepatic oxidation of mycophenolate",
+        },
+        {
+          id: "antibiotics-directly-cleave-inosine-monophosphate-dehydrogenase",
+          label: "Beta-lactam antibiotics directly bind and destroy the IMPDH enzyme, causing lymphocyte hyperproliferation",
+        },
+        {
+          id: "antibiotics-block-gastric-absorption-of-mmf-capsules",
+          label: "Antibiotics neutralize stomach acid, preventing oral mycophenolate capsule dissolution in the stomach",
+        },
+      ],
+      correct: "antibiotics-eliminate-gut-microbiome-beta-glucuronidase-halting-ehc-35-percent-auc-drop",
+      answer: "Mycophenolate mofetil (MMF) is a prodrug rapidly hydrolyzed by systemic esterases into active mycophenolic acid (MPA), which selectively inhibits inosine monophosphate dehydrogenase (IMPDH) to block de novo purine synthesis in proliferating T and B lymphocytes. In the liver, MPA undergoes Phase II glucuronidation via UGT1A9 to form inactive mycophenolic acid glucuronide (MPAG), which is secreted via bile into the duodenum. In the colon, commensal gut bacteria (specifically anaerobes like Bacteroides and Clostridia) express beta-glucuronidase enzymes. Microbial beta-glucuronidase cleaves the glucuronide conjugate off MPAG, regenerating free active MPA, which is reabsorbed into the portal circulation. This Enterohepatic Recirculation (EHC) generates a prominent secondary plasma concentration peak 6 to 12 hours after dosing, contributing 10% to 40% of total daily MPA area under the curve (AUC). Clinical Disaster Collision: Co-administration of broad-spectrum oral or intravenous antibiotics (piperacillin-tazobactam, ciprofloxacin, amoxicillin-clavulanate) decimates the intestinal microbiome, wiping out microbial beta-glucuronidase activity. Enterohepatic recirculation is abolished, and unhydrolyzed MPAG is lost in the feces. Total MPA exposure (AUC) drops by 33% to 54%, leaving the transplant recipient profoundly under-immunosuppressed and vulnerable to acute allograft rejection.",
+      drugIds: ["mycophenolate-mofetil", "piperacillin-tazobactam", "ciprofloxacin"],
+    },
+    {
+      id: "clin-azathioprine-allopurinol-xanthine-oxidase-6tgn",
+      lane: "clinical",
+      kicker: "Immunosuppressive Collisions & Lethal Pancytopenia",
+      title: "Azathioprine × Allopurinol / Febuxostat: Xanthine Oxidase Shunt & Mandatory 75% Dose Reduction",
+      prompt: "A patient taking azathioprine 150 mg daily for systemic lupus erythematosus is started on allopurinol 300 mg daily for acute gout without dose adjustment. Two weeks later, the patient presents with febrile neutropenia (ANC 100/mcL) and thrombocytopenia.",
+      ask: "What enzymatic pathway shunt causes fatal myelosuppression when thiopurines are co-administered with xanthine oxidase inhibitors, and what dose reduction is mandatory?",
+      choices: [
+        {
+          id: "allopurinol-inhibits-xanthine-oxidase-shunting-to-6tgn-mandatory-75-percent-reduction",
+          label: "Allopurinol blocks xanthine oxidase (the primary catabolic pathway converting 6-MP to inactive 6-thiouric acid), shunting 6-MP into HGPRT/TPMT pathways and producing massive cytotoxic 6-TGN accumulation; mandatory azathioprine dose reduction is 75% (to 25-33% of baseline dose)",
+        },
+        {
+          id: "allopurinol-induces-thiopurine-methyltransferase-tpmt",
+          label: "Allopurinol hyperinduces TPMT, generating lethal methyl-6-MP metabolites that poison bone marrow stem cells",
+        },
+        {
+          id: "azathioprine-blocks-allopurinol-clearance-causing-toxic-rash",
+          label: "The interaction is mediated purely by allopurinol accumulation, requiring 75% reduction of allopurinol while keeping azathioprine unchanged",
+        },
+        {
+          id: "interaction-is-purely-pharmacodynamic-renal-tubular",
+          label: "Both drugs compete for renal uric acid URAT1 transporters, causing massive hyperuricemic renal failure",
+        },
+      ],
+      correct: "allopurinol-inhibits-xanthine-oxidase-shunting-to-6tgn-mandatory-75-percent-reduction",
+      answer: "Azathioprine is a prodrug non-enzymatically converted to 6-mercaptopurine (6-MP). 6-MP faces three competing enzymatic metabolic pathways: (1) Primary Catabolic Pathway: Xanthine Oxidase (XO) metabolizes 6-MP into inert, inactive 6-thiouric acid (excreted in urine); (2) Competing Pathway: Thiopurine S-methyltransferase (TPMT) converts 6-MP into 6-methylmercaptopurine (6-MMP); (3) Anabolic Cytotoxic Pathway: Hypoxanthine-guanine phosphoribosyltransferase (HGPRT) converts 6-MP through stepped kinases into cytotoxic 6-thioguanine nucleotides (6-TGN), which incorporate into DNA/RNA to arrest lymphocyte replication. Lethal Collision: Allopurinol (and its active metabolite oxypurinol) and febuxostat are potent inhibitors of xanthine oxidase. When XO is blocked, the primary clearance route for 6-MP is completely shut down. Intracellular 6-MP surges and is forcefully shunted into the HGPRT pathway, driving a catastrophic 3- to 5-fold surge in cytotoxic 6-TGN concentrations in bone marrow. This causes profound, life-threatening aplastic anemia, fatal pancytopenia, and sepsis. Prescribing Mandate: Co-administration is generally avoided; if clinically necessary, the azathioprine dose MUST be empirically reduced by 66% to 75% (administering only 25% to 33% of the normal dose), accompanied by weekly CBC and platelet monitoring.",
+      drugIds: ["azathioprine", "allopurinol", "febuxostat"],
+    },
+    {
+      id: "clin-healthcare-resources-fqhc-mothertobaby",
+      lane: "clinical",
+      kicker: "Public Health Safety Nets & Patient Navigation",
+      title: "Healthcare Safety Net Navigation: Sliding-Fee FQHCs & MotherToBaby Teratogen Consultation",
+      prompt: "An uninsured patient with poorly controlled type 2 diabetes and hypertension is newly pregnant (6 weeks gestation) while taking lisinopril and atorvastatin. The patient cannot afford specialty obstetric or primary care visits.",
+      ask: "What federally authorized safety net entities provide comprehensive sliding-fee primary care regardless of ability to pay, and what free service provides expert teratogen risk counseling?",
+      choices: [
+        {
+          id: "fqhc-sliding-scale-income-mothertobaby-free-teratogen-specialists",
+          label: "Federally Qualified Health Centers (FQHCs / Community Health Centers) provide primary and prenatal care with sliding-fee discounts based on income; MotherToBaby (OTIS) provides free, evidence-based live consultation on teratogenic medication exposures",
+        },
+        {
+          id: "commercial-urgent-care-only-option",
+          label: "Commercial urgent care clinics are the only safety net in the US and require upfront full-fee payment before evaluation",
+        },
+        {
+          id: "mothertobaby-is-a-prescription-ordering-service",
+          label: "MotherToBaby is an automated prescription dispenser that mails replacement medications without clinician consultation",
+        },
+        {
+          id: "emergency-departments-provide-comprehensive-prenatal-care",
+          label: "Hospital emergency departments provide routine sliding-scale longitudinal prenatal and diabetes management visits",
+        },
+      ],
+      correct: "fqhc-sliding-scale-income-mothertobaby-free-teratogen-specialists",
+      answer: "Healthcare safety net navigation connects vulnerable, uninsured, and underinsured patients to verified resources: (1) Federally Qualified Health Centers (FQHCs) & HRSA Health Center Network: Funded under Section 330 of the Public Health Service Act, FQHCs provide comprehensive primary, preventive, prenatal, dental, and behavioral healthcare regardless of insurance status, citizenship, or ability to pay. Services are billed on a sliding-fee discount scale adjusted strictly for household size and income below 200% of the Federal Poverty Level (FPL). Most FQHCs participate in the 340B Drug Pricing Program, providing deeply discounted outpatient pharmaceuticals; (2) MotherToBaby (Organization of Teratology Information Specialists, OTIS): The gold-standard non-profit service providing free, confidential, evidence-based counseling (1-866-626-6847 / text 855-999-3525) by certified teratogen information specialists to patients and healthcare providers concerning medication, vaccine, and chemical exposures during pregnancy and lactation. Connecting patients to these services overcomes financial barriers to prenatal care while addressing real-world teratogen concerns (e.g., immediate discontinuation of ACE inhibitors/statins and transition to pregnancy-compatible antihypertensives and insulin).",
+      drugIds: ["lisinopril", "atorvastatin"],
     },
   ];
   return cards.map((c) => ({

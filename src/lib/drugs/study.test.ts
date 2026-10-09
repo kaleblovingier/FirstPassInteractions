@@ -56,9 +56,9 @@ describe("study learning tools", () => {
     assert.ok(laneIds.includes("clinical" as StudyLane));
   });
 
-  it("clinicalCards produces 131 well-formed multiple-choice cards", () => {
+  it("clinicalCards produces 141 well-formed multiple-choice cards", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     for (const card of cards) {
       assert.ok(card.id.startsWith("clin-"));
@@ -90,7 +90,7 @@ describe("study learning tools", () => {
 
   it("cardsFor('clinical') delegates to clinicalCards", () => {
     const cards = cardsFor("clinical", [], []);
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
     assert.equal(cards[0].lane, "clinical");
   });
 
@@ -338,7 +338,7 @@ describe("study learning tools", () => {
       "clin-methadone-fluconazole-qtc-3a4",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 131, "Total clinical cards must be exactly 124");
+    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
 
     for (const id of highYieldCardIds) {
       const card = cards.find((c) => c.id === id);
@@ -437,7 +437,7 @@ describe("study learning tools", () => {
       "clin-aspirin-platelet-covalent-acetylation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 131, "Total clinical cards must be exactly 124");
+    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
 
     for (const id of new7CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -549,7 +549,7 @@ describe("study learning tools", () => {
       "clin-sglt2-ketogenesis-glucagon",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 131, "Total clinical cards must be exactly 124");
+    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -685,7 +685,7 @@ describe("study learning tools", () => {
       "clin-pde5-cgmp-smooth-muscle-relaxation",
     ];
     const cards = clinicalCards();
-    assert.equal(cards.length, 131, "Total clinical cards must be exactly 124");
+    assert.equal(cards.length, 141, "Total clinical cards must be exactly 141");
 
     for (const id of new8CardIds) {
       const card = cards.find((c) => c.id === id);
@@ -814,7 +814,7 @@ describe("study learning tools", () => {
 
   it("cardiac electrophysiology, toxidrome, and pharmacogenomics cards expand clinicalCards to 96 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const targetCardIds = [
       "clin-cardiac-phase0-ina-nav15-vaughan-williams",
@@ -877,7 +877,7 @@ describe("study learning tools", () => {
 
   it("renal tubular, CYP kinetics TDI, and CNS penetration cards expand clinicalCards to 104 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const targetCardIds = [
       "clin-renal-nkcc2-romk-calcium-wasting",
@@ -957,7 +957,7 @@ describe("study learning tools", () => {
 
   it("oncology HDMTX, cefepime neurotoxicity, daptomycin myopathy, and phenytoin saturation cards expand clinicalCards to 108 and verify non-prescriptive regulatory posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const targetCardIds = [
       "clin-hdmtx-leucovorin-nomogram",
@@ -1094,7 +1094,7 @@ describe("study learning tools", () => {
   });
   it("anticoagulation reversal, APAP NAC, toxic alcohols, salicylate ion-trapping, toxidrome differential, and clozapine TDM cards expand clinicalCards and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const emergencyCardIds = [
       "clin-anticoagulation-reversal-andexanet-pcc-protamine",
@@ -1129,7 +1129,7 @@ describe("study learning tools", () => {
 
   it("digoxin TDM, Vaughan-Williams CAST, Winter's formula, hyponatremia ODS, sugammadex contraceptive collision, and propofol PRIS expand clinicalCards to 124 and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const targetCardIds = [
       "clin-digoxin-tdm-post-dose-lag-digifab",
@@ -1164,7 +1164,7 @@ describe("study learning tools", () => {
 
   it("ESETT trial non-inferiority, GABA-A internalization, and 23.4% hypertonic saline osmotherapy expand clinicalCards to 127 and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const targetCardIds = [
       "clin-esett-trial-noninferiority",
@@ -1196,13 +1196,52 @@ describe("study learning tools", () => {
 
   it("HIT 4Ts, argatroban-warfarin crossover, protamine decay stoichiometry, and beta-lactam extended infusion ARC expand clinicalCards to 131 and verify non-prescriptive posture", () => {
     const cards = clinicalCards();
-    assert.equal(cards.length, 131);
+    assert.equal(cards.length, 141);
 
     const targetCardIds = [
       "clin-hit-4ts-non-heparin-dti",
       "clin-argatroban-warfarin-crossover-trap",
       "clin-protamine-heparin-decay-stoichiometry",
       "clin-beta-lactam-extended-infusion-arc",
+    ];
+
+    for (const cardId of targetCardIds) {
+      const card = cards.find((c) => c.id === cardId);
+      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
+      assert.equal(card.lane, "clinical");
+      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
+      assert.ok(card.correct, `Card ${cardId} must define correct`);
+      const correctChoice = card.choices?.find((c) => c.id === card.correct);
+      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
+
+      // Verify non-prescriptive posture
+      const text = `${card.prompt} ${card.ask} ${card.answer}`;
+      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
+      assert.doesNotMatch(text, /clinical decision support/i);
+
+      // Verify catalog drugs
+      for (const dId of card.drugIds) {
+        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
+      }
+    }
+  });
+
+  it("vasoactive shock, obstetric emergencies, transplant kinetics, and healthcare resources expand clinicalCards to 141 and verify non-prescriptive posture", () => {
+    const cards = clinicalCards();
+    assert.equal(cards.length, 141);
+
+    const targetCardIds = [
+      "clin-vasoactive-scai-shock-stages",
+      "clin-epinephrine-type-b-lactate-aerobic",
+      "clin-milrinone-renal-failure-accumulation",
+      "clin-magnesium-preeclampsia-toxicity-milestones",
+      "clin-pph-uterotonic-contraindications-methergine-hemabate",
+      "clin-teratogen-embryonic-critical-windows",
+      "clin-tacrolimus-whole-blood-sampling-trap",
+      "clin-mycophenolate-gut-flora-antibiotic-rejection",
+      "clin-azathioprine-allopurinol-xanthine-oxidase-6tgn",
+      "clin-healthcare-resources-fqhc-mothertobaby",
     ];
 
     for (const cardId of targetCardIds) {

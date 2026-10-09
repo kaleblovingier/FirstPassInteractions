@@ -1,403 +1,747 @@
 import { useMemo, useState } from "react";
-import { Activity, AlertCircle, ArrowDown, ArrowUp, HeartPulse, Minus, ShieldAlert, Sparkles, Zap } from "lucide-react";
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Droplets,
+  Flame,
+  Heart,
+  HeartPulse,
+  Info,
+  Layers,
+  Scale,
+  ShieldAlert,
+  Syringe,
+  Timer,
+  Zap,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
-  evaluateAcidemiaAdrenergicUncoupling,
-  getComparativeReceptorMatrix,
-  VASOACTIVE_CDS_DISCLAIMER,
+  VASOACTIVE_AGENTS,
+  NOT_CLEARED,
+  PI_FOOTER,
+  evaluateScaiShockStage,
+  evaluateEpinephrineLactate,
+  compareInotropeRenalClearance,
+  getPhentolamineExtravasationProtocol,
+  vasoactiveOnDesk,
   vasoactiveReportOnDesk,
-  type HemodynamicDirection,
-  type TargetReceptorId,
+  type VasoactiveAgentDef,
+  type ShockParameters,
 } from "@/lib/drugs/vasoactive-kinetics";
 
-export function VasoactivePanel({ ids, host }: { ids: string[]; host: HostContext }) {
-  // Hemodynamic & Blood Gas inputs
-  const [arterialPh, setArterialPh] = useState<string>("7.40");
-  const [serumLactate, setSerumLactate] = useState<string>("2.0");
-  const [scvO2, setScvO2] = useState<string>("72");
-  const [pvaCo2Gap, setPvaCo2Gap] = useState<string>("5.0");
-  const [hasDynamicLvot, setHasDynamicLvot] = useState<boolean>(false);
+export interface VasoactiveStationProps {
+  ids: string[];
+  host: HostContext;
+}
 
-  const numPh = Math.max(6.8, Math.min(7.6, Number(arterialPh) || 7.4));
-  const numLactate = Math.max(0.5, Math.min(25, Number(serumLactate) || 2.0));
-  const numScvO2 = Math.max(20, Math.min(100, Number(scvO2) || 72));
-  const numGap = Math.max(1, Math.min(20, Number(pvaCo2Gap) || 5.0));
+export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
+  const [selectedAgentId, setSelectedAgentId] = useState<string>("norepinephrine");
+  const [sbp, setSbp] = useState<number>(85);
+  const [map, setMap] = useState<number>(58);
+  const [hr, setHr] = useState<number>(110);
+  const [lactate, setLactate] = useState<number>(3.2);
+  const [scvO2, setScvO2] = useState<number>(62);
+  const [urineOutput, setUrineOutput] = useState<number>(20);
+  const [onMechanicalSupport, setOnMechanicalSupport] = useState<boolean>(false);
+  const [cardiacArrestOrCPR, setCardiacArrestOrCPR] = useState<boolean>(false);
+  const [arterialPh, setArterialPh] = useState<number>(7.32);
+  const [patientCrCl, setPatientCrCl] = useState<number>(host.egfr ?? 25);
+  const [activeTab, setActiveTab] = useState<"scai" | "receptors" | "lactate" | "renal" | "extravasation">("scai");
 
-  const report = useMemo(
+  const detection = useMemo(() => vasoactiveOnDesk(ids), [ids.join("|")]);
+
+  const shockParams: ShockParameters = useMemo(
+    () => ({
+      sbp,
+      map,
+      heartRate: hr,
+      lactate,
+      scvO2,
+      urineOutputMlPerHour: urineOutput,
+      vasoactiveAgentCount: detection.detectedAgents.length > 0 ? detection.detectedAgents.length : 1,
+      onMechanicalSupport,
+      cardiacArrestOrCPR,
+      refractoryAcidosis: arterialPh < 7.2 && lactate >= 8.0,
+    }),
+    [sbp, map, hr, lactate, scvO2, urineOutput, detection.detectedAgents.length, onMechanicalSupport, cardiacArrestOrCPR, arterialPh],
+  );
+
+  const scaiResult = useMemo(() => evaluateScaiShockStage(shockParams), [shockParams]);
+
+  const lactateResult = useMemo(
     () =>
-      vasoactiveReportOnDesk(ids, host, {
-        arterialPh: numPh,
-        lactateMmolL: numLactate,
-        scvO2Pct: numScvO2,
-        pvaCo2GapMmHg: numGap,
-        hasLvotObstructionOrHocm: hasDynamicLvot,
+      evaluateEpinephrineLactate({
+        lactate,
+        epinephrineActive: detection.hasEpinephrine || selectedAgentId === "epinephrine",
+        arterialPh,
+        scvO2,
+        urineOutputAdequate: urineOutput >= 30,
       }),
-    [ids.join("|"), host, numPh, numLactate, numScvO2, numGap, hasDynamicLvot],
+    [lactate, detection.hasEpinephrine, selectedAgentId, arterialPh, scvO2, urineOutput],
   );
 
-  const acidemiaEval = useMemo(
-    () => evaluateAcidemiaAdrenergicUncoupling(numPh, report.onDesk.detectedVasoactiveIds),
-    [numPh, report.onDesk.detectedVasoactiveIds],
-  );
+  const inotropeRenalResult = useMemo(() => compareInotropeRenalClearance(patientCrCl), [patientCrCl]);
+  const extravasationProtocol = useMemo(() => getPhentolamineExtravasationProtocol(), []);
 
-  const receptorMatrix = useMemo(() => getComparativeReceptorMatrix(), []);
-
-  // Directional arrow helper
-  const renderDirection = (dir?: HemodynamicDirection) => {
-    switch (dir) {
-      case "surge":
-        return <ArrowUp className="h-4 w-4 text-accent font-bold" />;
-      case "increase":
-        return <ArrowUp className="h-3.5 w-3.5 text-accent" />;
-      case "neutral":
-        return <Minus className="h-3.5 w-3.5 text-muted" />;
-      case "decrease":
-        return <ArrowDown className="h-3.5 w-3.5 text-ok" />;
-      case "marked-drop":
-        return <div className="flex items-center text-ok font-bold"><ArrowDown className="h-3.5 w-3.5" /><ArrowDown className="h-3.5 w-3.5 -ml-2" /></div>;
-      default:
-        return <Minus className="h-3.5 w-3.5 text-muted" />;
-    }
-  };
-
-  const agg = report.aggregatedHemodynamics;
+  const selectedAgent: VasoactiveAgentDef = VASOACTIVE_AGENTS[selectedAgentId] ?? VASOACTIVE_AGENTS.norepinephrine;
 
   return (
-    <div className="space-y-6 text-xs text-fg">
-      {/* Header Banner */}
-      <div className="rounded-lg bg-surface-sunken p-4 border border-border space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <HeartPulse className="h-4 w-4 text-accent" />
-            <span className="font-serif font-bold text-sm tracking-tight text-fg">
-              Critical Care Vasoactive Kinetics, Inotrope &amp; Adrenergic Hemodynamics Station
-            </span>
+    <div className="space-y-6 text-foreground">
+      {/* Statutory Header */}
+      <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+              <HeartPulse className="size-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-semibold tracking-tight">Vasoactive Hemodynamics & Shock Station</h2>
+                <Badge tone="default" className="text-[10px] font-mono">
+                  SCAI 2022 Consensus
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Inotrope, vasopressor, and inodilator kinetics, quantitative adrenoceptor selectivity, and shock staging
+              </p>
+            </div>
           </div>
-          <Badge
-            tone={acidemiaEval.isAcidemicUncouplingRisk ? "danger" : report.activeDrugs.length > 0 ? "accent" : "default"}
-            className="font-mono uppercase text-[10px]"
-          >
-            {acidemiaEval.isAcidemicUncouplingRisk ? "Severe Acidemia Uncoupling" : `${report.activeDrugs.length} Agents Active`}
-          </Badge>
-        </div>
-        <p className="text-muted leading-relaxed">
-          Quantitative receptor binding affinity matrix (&alpha;1, &alpha;2, &beta;1, &beta;2, V1a, AT1, D1, D2), net hemodynamic vector modeling, acidemia-induced adrenergic uncoupling (pH &lt; 7.20), and Epinephrine Type B aerobic hyperlactatemia differentiation.
-        </p>
-      </div>
 
-      {/* Critical Care Bedside Hemodynamics & Gas Panel */}
-      <div className="rounded-lg border border-border bg-surface p-4 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <span className="font-semibold text-fg text-sm">Shock &amp; Metabolic Gas Parameters</span>
-            <p className="text-muted text-[11px]">
-              Simulate receptor uncoupling and lactic acid kinetics at current arterial pH and perfusion status.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setHasDynamicLvot(!hasDynamicLvot)}
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-semibold border transition-colors",
-              hasDynamicLvot ? "bg-danger text-bg border-danger" : "bg-surface-sunken text-muted border-border hover:text-fg",
+          <div className="flex items-center gap-2">
+            {detection.hasVasoactive ? (
+              <Badge tone="accent" className="gap-1 font-mono text-xs">
+                <Activity className="size-3" />
+                {detection.detectedAgents.length} Active on Tray
+              </Badge>
+            ) : (
+              <Badge tone="default" className="text-xs">
+                Tray: Reference Mode
+              </Badge>
             )}
-          >
-            {hasDynamicLvot ? "Dynamic LVOT Obstruction (HOCM) Active" : "Flag LVOT Obstruction / HOCM"}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div>
-            <label className="text-[11px] text-muted block mb-1">Arterial pH:</label>
-            <Input
-              type="number"
-              step="0.05"
-              min="6.8"
-              max="7.6"
-              value={arterialPh}
-              onChange={(e) => setArterialPh(e.target.value)}
-              className={cn("font-mono text-center font-bold text-xs", numPh < 7.2 ? "text-danger border-danger" : "text-fg")}
-            />
-          </div>
-          <div>
-            <label className="text-[11px] text-muted block mb-1">Serum Lactate (mmol/L):</label>
-            <Input
-              type="number"
-              step="0.5"
-              min="0.5"
-              max="25"
-              value={serumLactate}
-              onChange={(e) => setSerumLactate(e.target.value)}
-              className="font-mono text-center font-bold text-fg text-xs"
-            />
-          </div>
-          <div>
-            <label className="text-[11px] text-muted block mb-1">ScvO2 (%):</label>
-            <Input
-              type="number"
-              step="1"
-              min="20"
-              max="100"
-              value={scvO2}
-              onChange={(e) => setScvO2(e.target.value)}
-              className="font-mono text-center font-bold text-fg text-xs"
-            />
-          </div>
-          <div>
-            <label className="text-[11px] text-muted block mb-1">P(v-a)CO2 Gap (mmHg):</label>
-            <Input
-              type="number"
-              step="0.5"
-              min="1"
-              max="20"
-              value={pvaCo2Gap}
-              onChange={(e) => setPvaCo2Gap(e.target.value)}
-              className="font-mono text-center font-bold text-fg text-xs"
-            />
+            <Badge
+              tone={
+                scaiResult.stage === "E"
+                  ? "danger"
+                  : scaiResult.stage === "D"
+                  ? "danger"
+                  : scaiResult.stage === "C"
+                  ? "warn"
+                  : scaiResult.stage === "B"
+                  ? "info"
+                  : "ok"
+              }
+              className="text-xs font-semibold"
+            >
+              {scaiResult.label}
+            </Badge>
           </div>
         </div>
 
-        {/* Acidemia Uncoupling Advisory Banner */}
-        {acidemiaEval.isAcidemicUncouplingRisk && (
-          <div className="rounded-md border border-danger/40 bg-danger-soft/20 p-3.5 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-danger font-semibold text-xs">
-                <AlertCircle className="h-4 w-4" />
-                <span>Acidemia-Induced Adrenergic Uncoupling Detected (pH {numPh})</span>
-              </div>
-              <Badge tone="danger" className="text-[9px] uppercase font-mono">
-                {acidemiaEval.uncouplingSeverity.replace("-", " ").toUpperCase()}
-              </Badge>
-            </div>
-            <p className="text-fg text-[11px] leading-relaxed">{acidemiaEval.molecularMechanism}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] pt-1">
-              <div className="rounded bg-surface p-2 border border-border">
-                <span className="text-muted block">Catecholamine Responsiveness:</span>
-                <span className="font-mono font-bold text-danger text-xs">{acidemiaEval.estimatedCatecholamineResponsivenessPct}%</span>
-                <p className="text-muted text-[10px] mt-0.5">&alpha;1 and &beta;1 receptor protonation uncouples G-protein signaling.</p>
-              </div>
-              <div className="rounded bg-surface p-2 border border-border">
-                <span className="text-muted block">Vasopressin V1a Responsiveness:</span>
-                <span className="font-mono font-bold text-ok text-xs">{acidemiaEval.estimatedVasopressinResponsivenessPct}%</span>
-                <p className="text-muted text-[10px] mt-0.5">V1a maintains Gq coupling and PKC closes vascular K_ATP channels.</p>
-              </div>
-            </div>
-            <p className="text-fg font-medium text-[11px] pt-1 border-t border-danger/20">
-              <span className="text-danger font-bold">Clinical Action: </span>
-              {acidemiaEval.clinicalAction}
-            </p>
+        {/* FD&C Act Banner */}
+        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+          <ShieldAlert className="size-4 shrink-0 text-amber-400" />
+          <div>
+            <span className="font-medium text-foreground">FD&C Act § 520(o)(1)(E) Non-Device CDS:</span> {NOT_CLEARED}
           </div>
-        )}
-
-        {/* Epinephrine Hyperlactatemia Analysis Banner */}
-        {report.hyperlactatemiaEvaluation && (
-          <div className="rounded-md border border-border bg-surface-sunken p-3.5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-fg text-xs">
-                Epinephrine Metabolic Lactate Analysis ({report.hyperlactatemiaEvaluation.classification.toUpperCase()})
-              </span>
-              <Badge
-                tone={report.hyperlactatemiaEvaluation.isTypeBLactatemia ? "accent" : "danger"}
-                className="text-[10px]"
-              >
-                {report.hyperlactatemiaEvaluation.isTypeBLactatemia ? "Aerobic Glycolysis (Type B)" : "Tissue Dysoxia (Type A)"}
-              </Badge>
-            </div>
-            <p className="text-fg text-[11px] leading-relaxed">{report.hyperlactatemiaEvaluation.biochemicalMechanism}</p>
-            <div className="rounded bg-surface p-2 border border-border text-[11px] space-y-1">
-              <p className="font-medium text-fg">
-                <span className="text-accent font-bold">Clinical Pearl: </span>
-                {report.hyperlactatemiaEvaluation.pearl}
-              </p>
-              <p className="text-muted text-[10px]">
-                ScvO2 &ge; 70% and normal CO2 gap confirm microvascular perfusion adequacy despite elevated blood lactate.
-              </p>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
-      {/* Aggregate Hemodynamic Trajectory Vector */}
-      {agg && (
-        <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
-          <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-accent" />
-            <span className="font-serif font-bold text-sm text-fg">
-              Net Hemodynamic Vector Trajectory
-            </span>
-          </div>
-          <p className="text-muted text-[11px]">
-            {agg.summary}
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-            {[
-              { label: "MAP", dir: agg.netMap, desc: "Mean Arterial Pressure" },
-              { label: "SVR", dir: agg.netSvr, desc: "Systemic Vascular Resistance" },
-              { label: "CO / CI", dir: agg.netCoCi, desc: "Cardiac Output / Index" },
-              { label: "HR", dir: agg.netHr, desc: "Heart Rate" },
-              { label: "PVR", dir: agg.netPvr, desc: "Pulmonary Vascular Resistance" },
-              { label: "MVO2", dir: agg.netMvo2, desc: "Myocardial O2 Demand" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-md border border-border bg-surface-sunken p-2.5 text-center space-y-1">
-                <span className="font-mono font-bold text-fg text-xs block">{item.label}</span>
-                <div className="flex justify-center py-1">{renderDirection(item.dir)}</div>
-                <span className="text-[9px] uppercase font-mono text-muted block">{item.dir?.replace("-", " ")}</span>
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-border/60 pb-3">
+        <Button
+          variant={activeTab === "scai" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setActiveTab("scai")}
+          className="gap-1.5 text-xs"
+        >
+          <Activity className="size-3.5" />
+          SCAI Shock Staging
+        </Button>
+        <Button
+          variant={activeTab === "receptors" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setActiveTab("receptors")}
+          className="gap-1.5 text-xs"
+        >
+          <Layers className="size-3.5" />
+          Receptor Selectivity Matrix
+        </Button>
+        <Button
+          variant={activeTab === "lactate" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setActiveTab("lactate")}
+          className="gap-1.5 text-xs"
+        >
+          <Flame className="size-3.5" />
+          Epi Type B Lactate Evaluator
+        </Button>
+        <Button
+          variant={activeTab === "renal" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setActiveTab("renal")}
+          className="gap-1.5 text-xs"
+        >
+          <Scale className="size-3.5" />
+          Milrinone vs Dobutamine Renal Trap
+        </Button>
+        <Button
+          variant={activeTab === "extravasation" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setActiveTab("extravasation")}
+          className="gap-1.5 text-xs"
+        >
+          <Syringe className="size-3.5" />
+          Phentolamine Extravasation
+        </Button>
+      </div>
+
+      {/* TAB 1: SCAI Shock Staging */}
+      {activeTab === "scai" && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Inputs Column */}
+          <div className="space-y-4 rounded-xl border border-border/80 bg-card p-5 lg:col-span-1">
+            <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+              <Activity className="size-4 text-primary" /> Hemodynamic & Perfusion Inputs
+            </h3>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="text-muted-foreground">Systolic BP (mmHg)</label>
+                <Input
+                  type="number"
+                  value={sbp}
+                  onChange={(e) => setSbp(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
               </div>
-            ))}
+
+              <div>
+                <label className="text-muted-foreground">Mean Arterial Pressure MAP (mmHg)</label>
+                <Input
+                  type="number"
+                  value={map}
+                  onChange={(e) => setMap(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Heart Rate (bpm)</label>
+                <Input
+                  type="number"
+                  value={hr}
+                  onChange={(e) => setHr(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Serum Lactate (mmol/L)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={lactate}
+                  onChange={(e) => setLactate(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Central Venous Oxygen Sat ScvO2 (%)</label>
+                <Input
+                  type="number"
+                  value={scvO2}
+                  onChange={(e) => setScvO2(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Hourly Urine Output (mL/h)</label>
+                <Input
+                  type="number"
+                  value={urineOutput}
+                  onChange={(e) => setUrineOutput(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div className="pt-2">
+                <label className="flex items-center gap-2 text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={onMechanicalSupport}
+                    onChange={(e) => setOnMechanicalSupport(e.target.checked)}
+                    className="size-3.5 rounded border-border"
+                  />
+                  <span>Mechanical Support (IABP / Impella / ECMO)</span>
+                </label>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={cardiacArrestOrCPR}
+                    onChange={(e) => setCardiacArrestOrCPR(e.target.checked)}
+                    className="size-3.5 rounded border-border"
+                  />
+                  <span>Ongoing CPR / Post-Cardiac Arrest</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Results Column */}
+          <div className="space-y-4 lg:col-span-2">
+            <div className="rounded-xl border border-border/80 bg-card p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">{scaiResult.label}</span>
+                  <Badge
+                    tone={
+                      scaiResult.stage === "E"
+                        ? "danger"
+                        : scaiResult.stage === "D"
+                        ? "danger"
+                        : scaiResult.stage === "C"
+                        ? "warn"
+                        : scaiResult.stage === "B"
+                        ? "info"
+                        : "ok"
+                    }
+                  >
+                    Mortality: {scaiResult.mortalityRiskTier}
+                  </Badge>
+                </div>
+              </div>
+
+              <p className="mt-2 text-xs text-muted-foreground">{scaiResult.description}</p>
+
+              {/* Criteria Met */}
+              <div className="mt-4 rounded-lg bg-muted/40 p-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Physiological Criteria Satisfied
+                </h4>
+                <ul className="mt-2 space-y-1.5 text-xs">
+                  {scaiResult.criteriaMet.map((c, i) => (
+                    <li key={i} className="flex items-center gap-2 text-foreground">
+                      <CheckCircle2 className="size-3.5 text-primary" /> {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Recommended Monitoring */}
+              <div className="mt-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Invasive Hemodynamic & Telemetry Recommendations
+                </h4>
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {scaiResult.recommendedMonitoring.map((rec, i) => (
+                    <div key={i} className="rounded-lg border border-border/60 bg-background/50 p-2.5 text-xs">
+                      <p className="font-medium text-foreground">{rec}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Literature Citations */}
+              <div className="mt-5 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
+                <span className="font-medium">Evidence Base:</span> {scaiResult.citations.join(" | ")}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Critical Receptor Clashes & Drug Collisions */}
-      {report.collisions.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 text-danger" />
-            <span className="font-serif font-bold text-sm text-fg">
-              Detected Critical Vasoactive Collisions &amp; Incompatibilities ({report.collisions.length})
-            </span>
-          </div>
-          <div className="space-y-3">
-            {report.collisions.map((col, idx) => (
-              <div
-                key={idx}
-                className={cn(
-                  "rounded-lg border p-4 space-y-2",
-                  col.severity === "contraindicated"
-                    ? "border-danger/50 bg-danger-soft/25"
-                    : col.severity === "major"
-                      ? "border-warn/50 bg-warn-soft/20"
-                      : "border-border bg-surface",
-                )}
+      {/* TAB 2: Receptor Selectivity Matrix */}
+      {activeTab === "receptors" && (
+        <div className="space-y-6">
+          {/* Agent Selector Pills */}
+          <div className="flex flex-wrap gap-2">
+            {Object.values(VASOACTIVE_AGENTS).map((agent) => (
+              <Button
+                key={agent.id}
+                variant={selectedAgentId === agent.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedAgentId(agent.id)}
+                className="gap-1.5 text-xs font-mono"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-semibold text-sm text-fg">{col.headline}</span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge
-                      tone={col.severity === "contraindicated" ? "danger" : "warn"}
-                      className="text-[10px] uppercase font-mono"
-                    >
-                      {col.severity}
-                    </Badge>
-                    <Badge tone="default" className="text-[10px]">
-                      {col.category}
-                    </Badge>
+                {agent.name.split(" ")[0]}
+                <Badge tone="default" className="text-[10px]">
+                  {agent.class}
+                </Badge>
+              </Button>
+            ))}
+          </div>
+
+          {/* Selected Agent Deep Dive */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {/* Receptor Bars */}
+            <div className="rounded-xl border border-border/80 bg-card p-5 lg:col-span-1">
+              <h3 className="text-sm font-semibold tracking-tight">{selectedAgent.name}</h3>
+              <p className="text-xs text-muted-foreground">{selectedAgent.receptorProfile.primaryMechanism}</p>
+
+              <div className="mt-4 space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">α1 (Vasoconstriction / SVR)</span>
+                    <span className="font-mono">{selectedAgent.receptorProfile.alpha1}/4</span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-red-500 transition-all"
+                      style={{ width: `${(selectedAgent.receptorProfile.alpha1 / 4) * 100}%` }}
+                    />
                   </div>
                 </div>
-                <p className="text-fg leading-relaxed">{col.molecularReceptorMechanism}</p>
-                <div className="rounded bg-surface-sunken p-2.5 border border-border text-[11px] space-y-1">
-                  <p className="font-medium text-fg">
-                    <span className="text-danger font-bold">Action / Antidote: </span>
-                    {col.clinicalAction}
-                  </p>
-                  {col.antidoteOrRescueStrategy && (
-                    <p className="text-muted text-[10px]">
-                      <span className="font-medium text-fg">Rescue Protocol: </span>
-                      {col.antidoteOrRescueStrategy}
-                    </p>
-                  )}
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">β1 (Inotropy / HR / MVO2)</span>
+                    <span className="font-mono">{selectedAgent.receptorProfile.beta1}/4</span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-amber-500 transition-all"
+                      style={{ width: `${(selectedAgent.receptorProfile.beta1 / 4) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">β2 (Vasodilation / Bronchodilation)</span>
+                    <span className="font-mono">{selectedAgent.receptorProfile.beta2}/4</span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-blue-500 transition-all"
+                      style={{ width: `${(selectedAgent.receptorProfile.beta2 / 4) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">V1a (Arteriolar Non-Adrenergic)</span>
+                    <span className="font-mono">{selectedAgent.receptorProfile.v1a}/4</span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-purple-500 transition-all"
+                      style={{ width: `${(selectedAgent.receptorProfile.v1a / 4) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">DA1 (Renal / Splanchnic)</span>
+                    <span className="font-mono">{selectedAgent.receptorProfile.da1}/4</span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-emerald-500 transition-all"
+                      style={{ width: `${(selectedAgent.receptorProfile.da1 / 4) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">AT1 (Angiotensin II Gq)</span>
+                    <span className="font-mono">{selectedAgent.receptorProfile.at1}/4</span>
+                  </div>
+                  <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full bg-cyan-500 transition-all"
+                      style={{ width: `${(selectedAgent.receptorProfile.at1 / 4) * 100}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Hemodynamic Profiles & Safety Warnings */}
+            <div className="space-y-4 lg:col-span-2">
+              <div className="rounded-xl border border-border/80 bg-card p-5">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Expected Directional Hemodynamic Response
+                </h4>
+                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">MAP</div>
+                    <div className="mt-1 font-mono text-sm font-semibold capitalize">
+                      {selectedAgent.receptorProfile.hemodynamicEffect.map}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">SVR</div>
+                    <div className="mt-1 font-mono text-sm font-semibold capitalize">
+                      {selectedAgent.receptorProfile.hemodynamicEffect.svr}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">Cardiac Output</div>
+                    <div className="mt-1 font-mono text-sm font-semibold capitalize">
+                      {selectedAgent.receptorProfile.hemodynamicEffect.co}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">Heart Rate</div>
+                    <div className="mt-1 font-mono text-sm font-semibold capitalize">
+                      {selectedAgent.receptorProfile.hemodynamicEffect.hr}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                    <div className="text-[10px] uppercase text-muted-foreground">MVO2 Demand</div>
+                    <div className="mt-1 font-mono text-sm font-semibold capitalize">
+                      {selectedAgent.receptorProfile.hemodynamicEffect.mvo2}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Pharmacokinetic & Clearance Dynamics
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
+                    <div className="rounded-lg bg-muted/30 p-2.5">
+                      <span className="font-medium text-foreground">Onset / Half-Life:</span>{" "}
+                      {selectedAgent.onsetMinutes} min onset · {selectedAgent.halfLifeMinutes} min t1/2
+                    </div>
+                    <div className="rounded-lg bg-muted/30 p-2.5">
+                      <span className="font-medium text-foreground">Renal Elimination Fraction:</span>{" "}
+                      {Math.round(selectedAgent.renalClearanceFraction * 100)}% unchanged
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{selectedAgent.metabolismAndClearance}</p>
+                </div>
+
+                <div className="mt-5 space-y-2">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Critical Safety Alerts
+                  </h4>
+                  {selectedAgent.keySafetyAlerts.map((alert, i) => (
+                    <div key={i} className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-xs text-amber-200">
+                      <AlertTriangle className="size-4 shrink-0 text-amber-400" />
+                      <span>{alert}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Comparative Receptor Binding Heatmap Matrix */}
-      <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Zap className="h-4 w-4 text-accent" />
-          <span className="font-serif font-bold text-sm text-fg">
-            Pharmacodynamic Receptor Affinity Matrix (0 to 4 Scale)
-          </span>
+      {/* TAB 3: Epinephrine Type B Lactate Evaluator */}
+      {activeTab === "lactate" && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="space-y-4 rounded-xl border border-border/80 bg-card p-5">
+            <h3 className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+              <Flame className="size-4 text-amber-400" /> Epinephrine Aerobic Lactate Diagnostic Aid
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Differentiates benign beta-2 stimulated aerobic glycogenolysis from true anaerobic tissue hypoperfusion.
+            </p>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="text-muted-foreground">Serum Lactate (mmol/L)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={lactate}
+                  onChange={(e) => setLactate(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Arterial pH</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={arterialPh}
+                  onChange={(e) => setArterialPh(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Central Venous Oxygen Saturation ScvO2 (%)</label>
+                <Input
+                  type="number"
+                  value={scvO2}
+                  onChange={(e) => setScvO2(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-muted-foreground">Hourly Urine Output (mL/h)</label>
+                <Input
+                  type="number"
+                  value={urineOutput}
+                  onChange={(e) => setUrineOutput(Number(e.target.value))}
+                  className="mt-1 h-8 font-mono text-xs"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 rounded-xl border border-border/80 bg-card p-5">
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-bold">{lactateResult.classification}</span>
+              <Badge tone={lactateResult.isBenignMetabolicArtifact ? "accent" : "danger"}>
+                {lactateResult.isBenignMetabolicArtifact ? "Aerobic Mechanism" : "Tissue Ischemia"}
+              </Badge>
+            </div>
+
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              {lactateResult.physiologicalRationale}
+            </p>
+
+            <div className="rounded-lg border border-border/60 bg-muted/40 p-3 text-xs">
+              <h4 className="font-semibold text-foreground">Clinical Strategy</h4>
+              <p className="mt-1 text-muted-foreground">{lactateResult.clinicalActionSummary}</p>
+            </div>
+          </div>
         </div>
-        <p className="text-muted text-[11px]">
-          Receptor selectivity profiles across adrenergic, vasopressinergic, angiotensin, and dopaminergic targets:
-        </p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-border text-muted font-mono text-[10px]">
-                <th className="py-2 px-2 font-medium">Drug</th>
-                <th className="py-2 px-1 text-center font-medium">&alpha;1</th>
-                <th className="py-2 px-1 text-center font-medium">&alpha;2</th>
-                <th className="py-2 px-1 text-center font-medium">&beta;1</th>
-                <th className="py-2 px-1 text-center font-medium">&beta;2</th>
-                <th className="py-2 px-1 text-center font-medium">V1a</th>
-                <th className="py-2 px-1 text-center font-medium">AT1</th>
-                <th className="py-2 px-1 text-center font-medium">D1</th>
-                <th className="py-2 px-1 text-center font-medium">D2</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40 font-mono">
-              {receptorMatrix.drugs.map((drug) => {
-                const isSelected = ids.some((id) => drug.id.toLowerCase().includes(id.toLowerCase()));
-                return (
-                  <tr
-                    key={drug.id}
-                    className={cn(
-                      "transition-colors",
-                      isSelected ? "bg-accent-soft/25 font-bold" : "hover:bg-surface-sunken/40",
-                    )}
+      )}
+
+      {/* TAB 4: Milrinone vs Dobutamine Renal Failure Trap */}
+      {activeTab === "renal" && (
+        <div className="space-y-6">
+          <div className="rounded-xl border border-border/80 bg-card p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-sm font-semibold tracking-tight">
+                  Inotrope Renal Elimination Dynamics: Milrinone vs Dobutamine
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Severe renal failure extends Milrinone half-life up to 10-fold, creating refractory vasodilation
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">CrCl (mL/min):</span>
+                <Input
+                  type="number"
+                  value={patientCrCl}
+                  onChange={(e) => setPatientCrCl(Number(e.target.value))}
+                  className="h-8 w-24 font-mono text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Milrinone Card */}
+              <div
+                className={cn(
+                  "rounded-lg border p-4 text-xs space-y-2.5",
+                  inotropeRenalResult.milrinone.accumulationRiskTier === "normal"
+                    ? "border-border bg-card"
+                    : "border-red-500/30 bg-red-500/5 text-red-200",
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-foreground">Milrinone (Inodilator)</span>
+                  <Badge
+                    tone={inotropeRenalResult.milrinone.accumulationRiskTier === "normal" ? "ok" : "danger"}
                   >
-                    <td className="py-1.5 px-2 font-sans font-medium text-fg">
-                      {drug.name}
-                      {isSelected && (
-                        <span className="ml-1 text-[9px] text-accent uppercase font-mono font-bold">[ON DESK]</span>
-                      )}
-                    </td>
-                    {(["alpha-1", "alpha-2", "beta-1", "beta-2", "V1a", "AT1", "D1", "D2"] as TargetReceptorId[]).map((recId) => {
-                      const score = drug.affinities[recId];
-                      return (
-                        <td key={recId} className="py-1.5 px-1 text-center">
-                          <span
-                            className={cn(
-                              "inline-block w-5 h-5 leading-5 rounded text-[10px] text-center",
-                              score === 4
-                                ? "bg-danger text-bg font-bold"
-                                : score === 3
-                                  ? "bg-warn text-bg font-bold"
-                                  : score === 2
-                                    ? "bg-accent text-bg"
-                                    : score === 1
-                                      ? "bg-accent-soft/40 text-fg"
-                                      : "text-muted/40",
-                            )}
-                          >
-                            {score}
-                          </span>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    t1/2 ~ {inotropeRenalResult.milrinone.estimatedHalfLifeHours} hrs
+                  </Badge>
+                </div>
+                <p className="text-muted-foreground">
+                  Elimination: 80–85% unchanged renal filtration. Normal t1/2 = 2.4 hours.
+                </p>
+                <p className="font-medium text-foreground">
+                  Status: {inotropeRenalResult.milrinone.accumulationRiskTier}
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {inotropeRenalResult.milrinone.doseAdjustmentRationale}
+                </p>
+              </div>
 
-      {/* High-Yield Clinical Pharmacology Pearls */}
-      <div className="rounded-lg border border-accent/30 bg-accent-soft/20 p-4 space-y-2 text-xs">
-        <div className="flex items-center gap-1.5 text-accent font-semibold text-sm">
-          <Sparkles className="h-4 w-4" />
-          <span>Critical Care Hemodynamic Pearls</span>
+              {/* Dobutamine Card */}
+              <div className="rounded-lg border border-border bg-card p-4 text-xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-foreground">Dobutamine (Inotrope)</span>
+                  <Badge tone="ok">t1/2 ~ 2 min</Badge>
+                </div>
+                <p className="text-muted-foreground">
+                  Elimination: Rapid hepatic COMT metabolism to inactive 3-O-methyldobutamine. Zero renal accumulation.
+                </p>
+                <p className="font-medium text-foreground">
+                  Status: {inotropeRenalResult.dobutamine.accumulationRiskTier}
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {inotropeRenalResult.dobutamine.clinicalRecommendation}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <ul className="space-y-1.5 list-disc list-inside text-fg leading-relaxed">
-          {report.clinicalPearls.map((pearl, idx) => (
-            <li key={idx}>{pearl}</li>
-          ))}
-        </ul>
-      </div>
+      )}
 
-      {/* Statutory Regulatory Disclaimer */}
-      <p className="text-[11px] leading-relaxed text-muted border-t border-border pt-3">
-        {VASOACTIVE_CDS_DISCLAIMER}
-      </p>
+      {/* TAB 5: Extravasation Phentolamine Protocol */}
+      {activeTab === "extravasation" && (
+        <div className="rounded-xl border border-border/80 bg-card p-5">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+              <Syringe className="size-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold tracking-tight">{extravasationProtocol.antidote}</h3>
+              <p className="text-xs text-muted-foreground">
+                Emergency competitive alpha-1 blockade for vasopressor peripheral IV extravasation ischemia
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3 text-xs">
+            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+              <span className="font-semibold text-foreground">Dose & Dilution:</span>{" "}
+              {extravasationProtocol.doseAndPreparation}
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+              <span className="font-semibold text-foreground">Infiltration Technique:</span>{" "}
+              {extravasationProtocol.administrationTechnique}
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+              <span className="font-semibold text-foreground">Therapeutic Window:</span> Administer within{" "}
+              {extravasationProtocol.timeWindowHours} hours of extravasation for maximum tissue salvage.
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+              <span className="font-semibold text-foreground">Topical Alternative:</span>{" "}
+              {extravasationProtocol.alternativeAgent}
+            </div>
+
+            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+              <span className="font-semibold text-foreground">Monitoring:</span>{" "}
+              {extravasationProtocol.monitoringGuidance}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
+export function VasoactivePanel({ ids, host }: VasoactiveStationProps) {
+  return <VasoactiveStation ids={ids} host={host} />;
+}

@@ -90,7 +90,7 @@ test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics"
   const res = await ClinicalDecisionService.evaluateKinetics({
     drugs: ["methotrexate", "tacrolimus", "phenytoin", "norepinephrine", "digoxin", "furosemide", "propofol", "lorazepam"],
     host: { age: 55, scr: 1.8, kidney: "moderate" },
-    modules: ["oncology", "transplant", "phenytoin", "vasoactive", "antiarrhythmic", "acidbase", "anesthesia", "epilepsy"],
+    modules: ["oncology", "transplant", "phenytoin", "vasoactive", "antiarrhythmic", "acidbase", "anesthesia", "epilepsy", "obstetric", "moud", "glycemic", "pediatric", "resources"],
   });
 
   assert.equal(res.success, true);
@@ -103,6 +103,11 @@ test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics"
     assert.ok(res.data.modules.acidbase);
     assert.ok(res.data.modules.anesthesia);
     assert.ok(res.data.modules.epilepsy);
+    assert.ok(res.data.modules.obstetric);
+    assert.ok(res.data.modules.moud);
+    assert.ok(res.data.modules.glycemic);
+    assert.ok(res.data.modules.pediatric);
+    assert.ok(res.data.modules.resources);
     assert.ok(res.data.meta.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
   }
 });

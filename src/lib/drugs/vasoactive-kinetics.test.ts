@@ -1,568 +1,255 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
-  VASOACTIVE_CDS_DISCLAIMER,
-  TARGET_RECEPTORS,
-  VASOACTIVE_DRUG_PROFILES,
-  BETA_BLOCKER_IDS,
-  MAOI_IDS,
-  INDIRECT_SYMPATHOMIMETIC_IDS,
-  INOTROPE_IDS,
-  directionToScore,
-  scoreToDirection,
-  getVasoactiveProfile,
-  getAllVasoactiveProfiles,
-  getReceptorTarget,
-  getAllReceptorTargets,
-  getComparativeReceptorMatrix,
-  evaluateEpinephrineHyperlactatemia,
-  evaluateAcidemiaAdrenergicUncoupling,
-  findVasoactiveCollisions,
+  VASOACTIVE_AGENTS,
+  NOT_CLEARED,
+  PI_FOOTER,
+  evaluateScaiShockStage,
+  evaluateEpinephrineLactate,
+  compareInotropeRenalClearance,
+  getPhentolamineExtravasationProtocol,
   vasoactiveOnDesk,
-  aggregateHemodynamics,
   vasoactiveReportOnDesk,
-  type TargetReceptorId,
-  type VasoactiveDrugId,
 } from "./vasoactive-kinetics";
 import { DEFAULT_HOST } from "./types";
-import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 
-const EXPECTED_RECEPTORS: TargetReceptorId[] = [
-  "alpha-1",
-  "alpha-2",
-  "beta-1",
-  "beta-2",
-  "V1a",
-  "AT1",
-  "D1",
-  "D2",
-];
-
-describe("Critical Care Vasoactive Kinetics & Adrenergic Hemodynamics Engine", () => {
-  // ==========================================================================
-  // 1. STATUTORY CDS COMPLIANCE (FD&C Act § 520(o)(1)(E))
-  // ==========================================================================
-  describe("Regulatory Posture & Non-Device CDS Conformance", () => {
-    it("exports statutory disclaimer explicitly referencing FD&C Act § 520(o)(1)(E)", () => {
-      assert.ok(VASOACTIVE_CDS_DISCLAIMER.includes("FD&C Act § 520(o)(1)(E)"));
-      assert.ok(VASOACTIVE_CDS_DISCLAIMER.includes("Non-Device Clinical Decision Support"));
-      assert.ok(VASOACTIVE_CDS_DISCLAIMER.includes("licensed healthcare professionals"));
-      assert.ok(VASOACTIVE_CDS_DISCLAIMER.includes("independent review"));
-      assert.ok(VASOACTIVE_CDS_DISCLAIMER.includes("Prescribing Information"));
+describe("Vasoactive Hemodynamics & Shock Classification Engine", () => {
+  describe("Regulatory Compliance & FD&C Act § 520(o)(1)(E) Posture", () => {
+    it("exports statutory disclaimer citing FD&C Act § 520(o)(1)(E)", () => {
+      assert.ok(NOT_CLEARED.includes("FD&C Act § 520(o)(1)(E)"));
+      assert.ok(NOT_CLEARED.includes("Not an FDA-cleared medical device"));
     });
 
-    it("verifies disclaimer emphasizes non-prescriptive, educational decision support", () => {
-      assert.ok(
-        VASOACTIVE_CDS_DISCLAIMER.includes("does not provide automated diagnostic conclusions"),
-      );
-      assert.ok(
-        VASOACTIVE_CDS_DISCLAIMER.includes("does not generate infusion pump directives"),
-      );
-      assert.ok(
-        VASOACTIVE_CDS_DISCLAIMER.includes("does not replace individualized bedside clinical evaluation"),
-      );
+    it("verifies non-prescriptive educational decision support language", () => {
+      assert.ok(PI_FOOTER.includes("Calculations reflect peer-reviewed literature"));
+      assert.ok(PI_FOOTER.includes("Real-time clinical judgment"));
     });
 
-    it("report generator includes comprehensive disclaimer with regulatory footer", () => {
-      const report = vasoactiveReportOnDesk(["norepinephrine"], DEFAULT_HOST);
-      assert.ok(report.disclaimer.includes(VASOACTIVE_CDS_DISCLAIMER));
+    it("report generator embeds statutory disclaimer with NOT_CLEARED and PI_FOOTER", () => {
+      const report = vasoactiveReportOnDesk(["norepinephrine"]);
       assert.ok(report.disclaimer.includes(NOT_CLEARED));
       assert.ok(report.disclaimer.includes(PI_FOOTER));
     });
-  });
 
-  // ==========================================================================
-  // 2. RECEPTOR TARGETS REGISTRY & G-PROTEIN COUPLING
-  // ==========================================================================
-  describe("Receptor Targets Registry & Signal Transduction", () => {
-    it("contains all 8 required critical care receptors", () => {
-      const allTargets = getAllReceptorTargets();
-      assert.equal(allTargets.length, 8);
-      for (const id of EXPECTED_RECEPTORS) {
-        const target = getReceptorTarget(id);
-        assert.ok(target, `Target receptor '${id}' must be present`);
-        assert.equal(target?.id, id);
-      }
-    });
-
-    it("verifies accurate G-protein coupling for each receptor", () => {
-      assert.equal(TARGET_RECEPTORS["alpha-1"].gProtein, "Gq");
-      assert.equal(TARGET_RECEPTORS["alpha-2"].gProtein, "Gi");
-      assert.equal(TARGET_RECEPTORS["beta-1"].gProtein, "Gs");
-      assert.equal(TARGET_RECEPTORS["beta-2"].gProtein, "Gs");
-      assert.equal(TARGET_RECEPTORS["V1a"].gProtein, "Gq");
-      assert.equal(TARGET_RECEPTORS["AT1"].gProtein, "Gq");
-      assert.equal(TARGET_RECEPTORS["D1"].gProtein, "Gs");
-      assert.equal(TARGET_RECEPTORS["D2"].gProtein, "Gi");
-    });
-
-    it("validates second-messenger pathways and molecular signaling descriptions", () => {
-      // Alpha-1: Gq / PLC / IP3 / DAG
-      assert.ok(TARGET_RECEPTORS["alpha-1"].secondMessenger.includes("PLC"));
-      assert.ok(TARGET_RECEPTORS["alpha-1"].secondMessenger.includes("IP3"));
-      assert.ok(TARGET_RECEPTORS["alpha-1"].molecularSignaling.includes("MLCK"));
-
-      // Beta-1: Gs / Adenylyl cyclase / cAMP / PKA
-      assert.ok(TARGET_RECEPTORS["beta-1"].secondMessenger.includes("cAMP"));
-      assert.ok(TARGET_RECEPTORS["beta-1"].secondMessenger.includes("PKA"));
-      assert.ok(TARGET_RECEPTORS["beta-1"].molecularSignaling.includes("Cav1.2"));
-
-      // V1a: Gq / PLC / K(ATP) channel closure
-      assert.ok(TARGET_RECEPTORS["V1a"].secondMessenger.includes("PLC"));
-      assert.ok(TARGET_RECEPTORS["V1a"].molecularSignaling.includes("K_ATP"));
-
-      // AT1: Gq / Rho-kinase
-      assert.ok(TARGET_RECEPTORS["AT1"].gProtein === "Gq");
-      assert.ok(TARGET_RECEPTORS["AT1"].molecularSignaling.includes("Rho"));
+    it("surfaces peer-reviewed literature citations including SCAI, Surviving Sepsis, and SOAP II", () => {
+      const report = vasoactiveReportOnDesk(["norepinephrine"]);
+      assert.ok(report.citations.length >= 4);
+      assert.ok(report.citations.some((c) => c.includes("SCAI")));
+      assert.ok(report.citations.some((c) => c.includes("Surviving Sepsis")));
+      assert.ok(report.citations.some((c) => c.includes("SOAP II")));
     });
   });
 
-  // ==========================================================================
-  // 3. MASTER VASOACTIVE DRUG PROFILES & RECEPTOR BINDING MATRIX
-  // ==========================================================================
-  describe("Master Vasoactive Drug Profiles & Binding Matrix", () => {
-    const EXPECTED_DRUG_IDS: VasoactiveDrugId[] = [
-      "norepinephrine",
-      "epinephrine",
-      "phenylephrine",
-      "vasopressin",
-      "dobutamine",
-      "milrinone",
-      "dopamine",
-      "angiotensin-ii",
-    ];
-
-    it("contains profiles for all 8 core critical care vasoactive drugs", () => {
-      const allProfiles = getAllVasoactiveProfiles();
-      assert.equal(allProfiles.length, 8);
-      for (const id of EXPECTED_DRUG_IDS) {
-        const profile = getVasoactiveProfile(id);
-        assert.ok(profile, `Profile for '${id}' must exist`);
-        assert.equal(profile?.id, id);
-      }
+  describe("Receptor Selectivity Profiles", () => {
+    it("accurately models Norepinephrine as predominant alpha-1 with modest beta-1", () => {
+      const agent = VASOACTIVE_AGENTS.norepinephrine;
+      assert.equal(agent.receptorProfile.alpha1, 4);
+      assert.equal(agent.receptorProfile.beta1, 2);
+      assert.equal(agent.receptorProfile.beta2, 1);
+      assert.equal(agent.receptorProfile.v1a, 0);
+      assert.equal(agent.receptorProfile.hemodynamicEffect.svr, "increase");
     });
 
-    it("validates Norepinephrine: potent alpha-1, strong beta-1, weak beta-2", () => {
-      const ne = VASOACTIVE_DRUG_PROFILES.norepinephrine;
-      assert.equal(ne.receptorAffinities["alpha-1"], 4);
-      assert.equal(ne.receptorAffinities["beta-1"], 3);
-      assert.equal(ne.receptorAffinities["beta-2"], 1);
-      assert.equal(ne.receptorAffinities["alpha-2"], 2);
-      assert.equal(ne.receptorAffinities["V1a"], 0);
-      assert.equal(ne.receptorAffinities["AT1"], 0);
-      assert.equal(ne.receptorAffinities["D1"], 0);
-      assert.equal(ne.hemodynamics.map.direction, "surge");
-      assert.equal(ne.hemodynamics.svr.direction, "surge");
-      assert.equal(ne.hemodynamics.coCi.direction, "neutral");
+    it("accurately models Epinephrine as potent alpha and beta agonist with dose-dependent spectrum", () => {
+      const agent = VASOACTIVE_AGENTS.epinephrine;
+      assert.equal(agent.receptorProfile.alpha1, 4);
+      assert.equal(agent.receptorProfile.beta1, 4);
+      assert.equal(agent.receptorProfile.beta2, 3);
+      assert.equal(agent.arrhythmiaRisk, "high");
     });
 
-    it("validates Epinephrine: potent alpha-1, beta-1, beta-2", () => {
-      const epi = VASOACTIVE_DRUG_PROFILES.epinephrine;
-      assert.equal(epi.receptorAffinities["alpha-1"], 4);
-      assert.equal(epi.receptorAffinities["beta-1"], 4);
-      assert.equal(epi.receptorAffinities["beta-2"], 4);
-      assert.equal(epi.receptorAffinities["alpha-2"], 3);
-      assert.equal(epi.receptorAffinities["V1a"], 0);
-      assert.equal(epi.hemodynamics.map.direction, "surge");
-      assert.equal(epi.hemodynamics.coCi.direction, "surge");
-      assert.equal(epi.hemodynamics.hr.direction, "surge");
-      assert.equal(epi.hemodynamics.mvo2.direction, "surge");
+    it("accurately models Vasopressin as selective V1a agonist with zero beta chronotropy", () => {
+      const agent = VASOACTIVE_AGENTS.vasopressin;
+      assert.equal(agent.receptorProfile.v1a, 4);
+      assert.equal(agent.receptorProfile.alpha1, 0);
+      assert.equal(agent.receptorProfile.beta1, 0);
+      assert.equal(agent.receptorProfile.hemodynamicEffect.hr, "neutral");
     });
 
-    it("validates Phenylephrine: pure selective alpha-1 agonist with zero beta activity", () => {
-      const pe = VASOACTIVE_DRUG_PROFILES.phenylephrine;
-      assert.equal(pe.receptorAffinities["alpha-1"], 4);
-      assert.equal(pe.receptorAffinities["beta-1"], 0);
-      assert.equal(pe.receptorAffinities["beta-2"], 0);
-      assert.equal(pe.receptorAffinities["V1a"], 0);
-      assert.equal(pe.hemodynamics.svr.direction, "surge");
-      assert.equal(pe.hemodynamics.coCi.direction, "decrease");
-      assert.equal(pe.hemodynamics.hr.direction, "decrease"); // reflex bradycardia
+    it("accurately models Phenylephrine as pure alpha-1 with reflex bradycardia and CO decrease", () => {
+      const agent = VASOACTIVE_AGENTS.phenylephrine;
+      assert.equal(agent.receptorProfile.alpha1, 4);
+      assert.equal(agent.receptorProfile.beta1, 0);
+      assert.equal(agent.receptorProfile.hemodynamicEffect.hr, "decrease");
+      assert.equal(agent.receptorProfile.hemodynamicEffect.co, "decrease");
     });
 
-    it("validates Vasopressin: selective V1a agonist with zero adrenergic affinity", () => {
-      const avp = VASOACTIVE_DRUG_PROFILES.vasopressin;
-      assert.equal(avp.receptorAffinities["V1a"], 4);
-      assert.equal(avp.receptorAffinities["alpha-1"], 0);
-      assert.equal(avp.receptorAffinities["beta-1"], 0);
-      assert.equal(avp.receptorAffinities["beta-2"], 0);
-      assert.equal(avp.receptorAffinities["AT1"], 0);
-      assert.equal(avp.hemodynamics.svr.direction, "surge");
-      assert.equal(avp.hemodynamics.pvr.direction, "neutral");
+    it("accurately models Dobutamine as beta-1 predominant inotrope with low renal dependence", () => {
+      const agent = VASOACTIVE_AGENTS.dobutamine;
+      assert.equal(agent.receptorProfile.beta1, 4);
+      assert.equal(agent.receptorProfile.beta2, 2);
+      assert.equal(agent.renalClearanceFraction, 0.1);
+      assert.equal(agent.halfLifeMinutes, 2);
     });
 
-    it("validates Dobutamine: potent beta-1 inotrope with beta-2 vasodilation", () => {
-      const dob = VASOACTIVE_DRUG_PROFILES.dobutamine;
-      assert.equal(dob.receptorAffinities["beta-1"], 4);
-      assert.equal(dob.receptorAffinities["beta-2"], 2);
-      assert.equal(dob.receptorAffinities["alpha-1"], 1);
-      assert.equal(dob.receptorAffinities["V1a"], 0);
-      assert.equal(dob.hemodynamics.coCi.direction, "surge");
-      assert.equal(dob.hemodynamics.svr.direction, "decrease");
-      assert.equal(dob.hemodynamics.pvr.direction, "decrease");
+    it("accurately models Milrinone as PDE-3 inhibitor inodilator with 85% renal elimination", () => {
+      const agent = VASOACTIVE_AGENTS.milrinone;
+      assert.equal(agent.receptorProfile.pde3Inhibition, true);
+      assert.equal(agent.renalClearanceFraction, 0.85);
+      assert.equal(agent.class, "inodilator");
+      assert.equal(agent.receptorProfile.hemodynamicEffect.svr, "decrease");
     });
 
-    it("validates Milrinone: selective PDE3 inhibitor with zero direct receptor affinities", () => {
-      const mil = VASOACTIVE_DRUG_PROFILES.milrinone;
-      for (const r of EXPECTED_RECEPTORS) {
-        assert.equal(mil.receptorAffinities[r], 0, `Milrinone direct binding to ${r} must be 0`);
-      }
-      assert.ok(mil.drugClass.includes("PDE3"));
-      assert.equal(mil.hemodynamics.svr.direction, "marked-drop");
-      assert.equal(mil.hemodynamics.pvr.direction, "marked-drop");
-      assert.equal(mil.hemodynamics.coCi.direction, "surge");
-      assert.equal(mil.halfLifeMinutes, 140.0);
-    });
-
-    it("validates Dopamine: dose-dependent D1, D2, beta-1, and alpha-1 engagement", () => {
-      const dopa = VASOACTIVE_DRUG_PROFILES.dopamine;
-      assert.equal(dopa.receptorAffinities["D1"], 4);
-      assert.equal(dopa.receptorAffinities["D2"], 4);
-      assert.equal(dopa.receptorAffinities["beta-1"], 3);
-      assert.equal(dopa.receptorAffinities["alpha-1"], 4);
-      assert.equal(dopa.hemodynamics.coCi.direction, "surge");
-      assert.equal(dopa.hemodynamics.hr.direction, "surge");
-    });
-
-    it("validates Angiotensin II: selective AT1 agonist with zero adrenergic affinity", () => {
-      const at2 = VASOACTIVE_DRUG_PROFILES["angiotensin-ii"];
-      assert.equal(at2.receptorAffinities["AT1"], 4);
-      assert.equal(at2.receptorAffinities["alpha-1"], 0);
-      assert.equal(at2.receptorAffinities["beta-1"], 0);
-      assert.equal(at2.receptorAffinities["V1a"], 0);
-      assert.equal(at2.hemodynamics.map.direction, "surge");
-      assert.equal(at2.hemodynamics.svr.direction, "surge");
-    });
-
-    it("checks comparative matrix utility output", () => {
-      const matrix = getComparativeReceptorMatrix();
-      assert.equal(matrix.receptors.length, 8);
-      assert.equal(matrix.drugs.length, 8);
+    it("accurately models Angiotensin II as pure AT1 agonist with thromboembolism safety warnings", () => {
+      const agent = VASOACTIVE_AGENTS["angiotensin-ii"];
+      assert.equal(agent.receptorProfile.at1, 4);
+      assert.ok(agent.keySafetyAlerts.some((a) => a.toLowerCase().includes("thromboembolism")));
     });
   });
 
-  // ==========================================================================
-  // 4. HEMODYNAMIC DIRECTION UTILITIES & AGGREGATION
-  // ==========================================================================
-  describe("Hemodynamic Trajectory Vectors & Multi-Agent Aggregation", () => {
-    it("converts directions to numerical scores and back accurately", () => {
-      assert.equal(directionToScore("surge"), 2);
-      assert.equal(directionToScore("increase"), 1);
-      assert.equal(directionToScore("neutral"), 0);
-      assert.equal(directionToScore("decrease"), -1);
-      assert.equal(directionToScore("marked-drop"), -2);
-
-      assert.equal(scoreToDirection(2), "surge");
-      assert.equal(scoreToDirection(1.6), "surge");
-      assert.equal(scoreToDirection(1.0), "increase");
-      assert.equal(scoreToDirection(0.0), "neutral");
-      assert.equal(scoreToDirection(-1.0), "decrease");
-      assert.equal(scoreToDirection(-2.0), "marked-drop");
-    });
-
-    it("aggregates dual vasopressor regimen: Norepinephrine + Vasopressin", () => {
-      const ne = VASOACTIVE_DRUG_PROFILES.norepinephrine;
-      const avp = VASOACTIVE_DRUG_PROFILES.vasopressin;
-      const agg = aggregateHemodynamics([ne, avp]);
-
-      assert.equal(agg.netMap, "surge");
-      assert.equal(agg.netSvr, "surge");
-      assert.equal(agg.netCoCi, "neutral");
-      assert.equal(agg.netPvr, "increase");
-      assert.ok(agg.summary.includes("Norepinephrine + Vasopressin"));
-    });
-
-    it("aggregates pressor + inodilator combination: Norepinephrine + Dobutamine", () => {
-      const ne = VASOACTIVE_DRUG_PROFILES.norepinephrine;
-      const dob = VASOACTIVE_DRUG_PROFILES.dobutamine;
-      const agg = aggregateHemodynamics([ne, dob]);
-
-      // NE (+2 MAP, +2 SVR, 0 CO) + Dobutamine (0 MAP, -1 SVR, +2 CO)
-      // avg MAP = 1.0 (increase), avg SVR = 0.5 (increase), avg CO = 1.0 (increase)
-      assert.equal(agg.netMap, "increase");
-      assert.equal(agg.netCoCi, "increase");
-      assert.ok(agg.coCiScore > 0);
-    });
-
-    it("returns neutral trajectory when no drugs are simulated", () => {
-      const empty = aggregateHemodynamics([]);
-      assert.equal(empty.netMap, "neutral");
-      assert.equal(empty.mapScore, 0);
-    });
-  });
-
-  // ==========================================================================
-  // 5. EPINEPHRINE HYPERLACTATEMIA MECHANICS (TYPE B vs TYPE A)
-  // ==========================================================================
-  describe("Epinephrine Hyperlactatemia Mechanics (Type B vs Type A)", () => {
-    it("identifies normal lactate as non-pathologic and non-glycolytic", () => {
-      const res = evaluateEpinephrineHyperlactatemia({
-        epinephrineActive: true,
-        lactateMmolL: 1.4,
+  describe("SCAI Shock Stage Stratification", () => {
+    it("evaluates normotensive patient as Stage A (At Risk)", () => {
+      const result = evaluateScaiShockStage({
+        sbp: 125,
+        map: 82,
+        lactate: 1.1,
       });
-      assert.equal(res.classification, "normal-lactate");
-      assert.equal(res.isTypeBLactatemia, false);
-      assert.equal(res.isTypeAHypoperfusion, false);
+      assert.equal(result.stage, "A");
+      assert.equal(result.mortalityRiskTier, "low (<5%)");
     });
 
-    it("classifies elevated lactate with preserved perfusion on Epinephrine as benign Type B", () => {
-      const res = evaluateEpinephrineHyperlactatemia({
-        epinephrineActive: true,
-        lactateMmolL: 5.2,
-        scvO2Pct: 76,
-        pvaCo2GapMmHg: 4.5,
-        urineOutputMlKgHr: 0.8,
+    it("evaluates isolated relative hypotension or tachycardia with normal lactate as Stage B (Beginning)", () => {
+      const result = evaluateScaiShockStage({
+        sbp: 86,
+        map: 58,
+        heartRate: 112,
+        lactate: 1.4,
       });
-
-      assert.equal(res.classification, "benign-type-b-aerobic-glycolysis");
-      assert.equal(res.isTypeBLactatemia, true);
-      assert.equal(res.isTypeAHypoperfusion, false);
-      assert.ok(res.headline.includes("BENIGN TYPE B"));
-      assert.ok(res.biochemicalMechanism.includes("beta-2"));
-      assert.ok(res.biochemicalMechanism.includes("cAMP"));
-      assert.ok(res.biochemicalMechanism.includes("Pyruvate Dehydrogenase"));
+      assert.equal(result.stage, "B");
+      assert.equal(result.mortalityRiskTier, "moderate (5-15%)");
     });
 
-    it("classifies elevated lactate with impaired perfusion markers as Type A tissue dysoxia", () => {
-      const res = evaluateEpinephrineHyperlactatemia({
-        epinephrineActive: true,
-        lactateMmolL: 6.8,
-        scvO2Pct: 54, // low (<70%)
-        pvaCo2GapMmHg: 8.5, // wide (>=6 mmHg)
-        urineOutputMlKgHr: 0.2, // oliguric
+    it("evaluates hypotension with elevated lactate or oliguria requiring vasopressor as Stage C (Classic)", () => {
+      const result = evaluateScaiShockStage({
+        sbp: 82,
+        map: 54,
+        lactate: 3.2,
+        vasoactiveAgentCount: 1,
+        urineOutputMlPerHour: 18,
       });
+      assert.equal(result.stage, "C");
+      assert.equal(result.mortalityRiskTier, "high (15-30%)");
+      assert.ok(result.recommendedMonitoring.some((m) => m.toLowerCase().includes("arterial line")));
+    });
 
-      assert.equal(res.classification, "type-a-tissue-dysoxia");
-      assert.equal(res.isTypeAHypoperfusion, true);
-      assert.ok(res.headline.includes("TYPE A HYPOPERFUSION"));
+    it("evaluates escalating multiple vasopressors or severe lactate as Stage D (Deteriorating)", () => {
+      const result = evaluateScaiShockStage({
+        sbp: 84,
+        lactate: 4.8,
+        vasoactiveAgentCount: 2,
+      });
+      assert.equal(result.stage, "D");
+      assert.equal(result.mortalityRiskTier, "severe (30-50%)");
+    });
+
+    it("evaluates cardiac arrest with CPR or severe acidosis as Stage E (Extremis)", () => {
+      const result = evaluateScaiShockStage({
+        cardiacArrestOrCPR: true,
+        lactate: 9.5,
+      });
+      assert.equal(result.stage, "E");
+      assert.equal(result.mortalityRiskTier, "catastrophic (>50%)");
+      assert.ok(result.recommendedMonitoring.some((m) => m.toLowerCase().includes("ecmo")));
+    });
+  });
+
+  describe("Epinephrine Type B Hyperlactatemia Differentiation", () => {
+    it("identifies benign Type B aerobic hyperlactatemia when pH, ScvO2, and urine output are preserved", () => {
+      const result = evaluateEpinephrineLactate({
+        lactate: 4.2,
+        epinephrineActive: true,
+        arterialPh: 7.39,
+        scvO2: 74,
+        urineOutputAdequate: true,
+      });
+      assert.equal(result.classification, "Type B (Aerobic Epinephrine-Mediated)");
+      assert.equal(result.isBenignMetabolicArtifact, true);
+      assert.ok(result.clinicalActionSummary.includes("Do NOT mistake"));
+      assert.ok(result.physiologicalRationale.includes("beta-2 adrenergic receptors"));
+    });
+
+    it("differentiates true Type A anaerobic debt when acidemia or depressed ScvO2 is present despite epinephrine", () => {
+      const result = evaluateEpinephrineLactate({
+        lactate: 5.8,
+        epinephrineActive: true,
+        arterialPh: 7.24,
+        scvO2: 52,
+        urineOutputAdequate: false,
+      });
+      assert.equal(result.classification, "Type A (Anaerobic Tissue Hypoperfusion)");
+      assert.equal(result.isBenignMetabolicArtifact, false);
+      assert.ok(result.clinicalActionSummary.includes("Severe tissue hypoperfusion present"));
     });
 
     it("classifies elevated lactate without epinephrine as Type A hypoperfusion", () => {
-      const res = evaluateEpinephrineHyperlactatemia({
+      const result = evaluateEpinephrineLactate({
+        lactate: 3.5,
         epinephrineActive: false,
-        lactateMmolL: 4.5,
       });
+      assert.equal(result.classification, "Type A (Anaerobic Tissue Hypoperfusion)");
+      assert.equal(result.isBenignMetabolicArtifact, false);
+    });
 
-      assert.equal(res.classification, "type-a-tissue-dysoxia");
-      assert.equal(res.isTypeAHypoperfusion, true);
+    it("identifies normal lactate <= 2.0 as Indeterminate / Mixed baseline", () => {
+      const result = evaluateEpinephrineLactate({
+        lactate: 1.2,
+        epinephrineActive: false,
+      });
+      assert.equal(result.classification, "Indeterminate / Mixed");
+      assert.equal(result.isBenignMetabolicArtifact, false);
     });
   });
 
-  // ==========================================================================
-  // 6. ACIDEMIA-INDUCED ADRENERGIC UNCOUPLING & VASOPRESSIN EFFICACY
-  // ==========================================================================
-  describe("Acidemia-Induced Adrenergic Uncoupling & V1a Receptor Preservation", () => {
-    it("maintains 100% responsiveness at normal arterial pH 7.40", () => {
-      const res = evaluateAcidemiaAdrenergicUncoupling(7.40, ["norepinephrine"]);
-      assert.equal(res.isAcidemicUncouplingRisk, false);
-      assert.equal(res.uncouplingSeverity, "none");
-      assert.equal(res.estimatedCatecholamineResponsivenessPct, 100);
-      assert.equal(res.estimatedVasopressinResponsivenessPct, 100);
+  describe("Milrinone vs Dobutamine Renal Clearance Elimination", () => {
+    it("shows normal half-life of milrinone at CrCl 80 mL/min", () => {
+      const comp = compareInotropeRenalClearance(80);
+      assert.equal(comp.milrinone.accumulationRiskTier, "normal");
+      assert.equal(comp.milrinone.estimatedHalfLifeHours, 2.4);
+      assert.equal(comp.dobutamine.estimatedHalfLifeMinutes, 2.0);
     });
 
-    it("detects severe adrenergic uncoupling when arterial pH drops below 7.20", () => {
-      const res = evaluateAcidemiaAdrenergicUncoupling(7.14, ["norepinephrine"]);
-      assert.equal(res.isAcidemicUncouplingRisk, true);
-      assert.equal(res.uncouplingSeverity, "severe-adrenergic-uncoupling");
-      assert.equal(res.estimatedCatecholamineResponsivenessPct, 45);
-      // Vasopressin remains 85% effective
-      assert.equal(res.estimatedVasopressinResponsivenessPct, 85);
-      assert.ok(res.headline.includes("SEVERE ACIDEMIA"));
-      assert.ok(res.clinicalAction.includes("Add non-adrenergic Vasopressin"));
-    });
-
-    it("models critical uncoupling at pH < 7.10 with marked catecholamine resistance", () => {
-      const res = evaluateAcidemiaAdrenergicUncoupling(7.05, ["norepinephrine", "epinephrine"]);
-      assert.equal(res.isAcidemicUncouplingRisk, true);
-      assert.equal(res.estimatedCatecholamineResponsivenessPct, 30);
-      assert.equal(res.estimatedVasopressinResponsivenessPct, 85);
-      assert.ok(res.headline.includes("CRITICAL ACIDEMIA UNCOUPLING"));
-      assert.ok(res.molecularMechanism.includes("K_ATP"));
-      assert.ok(res.molecularMechanism.includes("iNOS"));
-    });
-
-    it("explains scientific rationale for vasopressin V1a resistance to acidosis", () => {
-      const res = evaluateAcidemiaAdrenergicUncoupling(7.12, ["norepinephrine"]);
-      assert.ok(res.scientificRationaleForVasopressin.includes("V1a receptors retain high ligand binding affinity"));
-      assert.ok(res.scientificRationaleForVasopressin.includes("CLOSES open K_ATP channels"));
+    it("identifies severe accumulation and 10-fold half-life surge of milrinone at CrCl 15 mL/min", () => {
+      const comp = compareInotropeRenalClearance(15);
+      assert.equal(comp.milrinone.accumulationRiskTier, "severe accumulation / toxicity trap");
+      assert.ok(comp.milrinone.estimatedHalfLifeHours >= 24);
+      assert.ok(comp.milrinone.doseAdjustmentRationale.includes("CrCl < 30 mL/min"));
+      assert.ok(comp.dobutamine.clinicalRecommendation.includes("Preferred inotrope in AKI"));
     });
   });
 
-  // ==========================================================================
-  // 7. CRITICAL RECEPTOR CLASHES & DRUG COLLISIONS
-  // ==========================================================================
-  describe("Critical Receptor Clashes & Drug Collisions", () => {
-    it("Collision 1: Beta-Blockers x Epinephrine triggers unopposed alpha-1 surge alert", () => {
-      const collisions = findVasoactiveCollisions({
-        drugIds: ["propranolol", "epinephrine"],
-      });
-
-      assert.equal(collisions.length, 1);
-      const c = collisions[0];
-      assert.equal(c.category, "beta-blocker-epinephrine-unopposed-alpha");
-      assert.equal(c.severity, "contraindicated");
-      assert.ok(c.headline.includes("Unopposed Alpha-1"));
-      assert.ok(c.hemodynamicConsequence.includes("reflex vagal bradycardia"));
-      assert.ok(c.antidoteOrRescueStrategy.includes("GLUCAGON"));
-      assert.ok(c.citations.length >= 2);
-    });
-
-    it("Collision 1: Also triggers for cardioselective and mixed beta-blockers (metoprolol, labetalol, atenolol)", () => {
-      for (const bb of ["metoprolol", "labetalol", "atenolol", "carvedilol", "esmolol"]) {
-        const collisions = findVasoactiveCollisions({
-          drugIds: [bb, "epinephrine"],
-        });
-        assert.ok(
-          collisions.some((c) => c.category === "beta-blocker-epinephrine-unopposed-alpha"),
-          `Expected collision for ${bb} + epinephrine`,
-        );
-      }
-    });
-
-    it("Collision 2: MAO Inhibitors x Indirect-acting Sympathomimetics triggers hypertensive crisis alert", () => {
-      const collisions = findVasoactiveCollisions({
-        drugIds: ["phenelzine", "ephedrine"],
-      });
-
-      assert.equal(collisions.length, 1);
-      const c = collisions[0];
-      assert.equal(c.category, "maoi-indirect-sympathomimetic-crisis");
-      assert.equal(c.severity, "contraindicated");
-      assert.ok(c.headline.includes("Vesicular Norepinephrine Flood"));
-      assert.ok(c.molecularReceptorMechanism.includes("VMAT2"));
-      assert.ok(c.antidoteOrRescueStrategy.includes("DIRECT-ACTING VASOPRESSORS"));
-      assert.ok(c.antidoteOrRescueStrategy.includes("Phentolamine"));
-    });
-
-    it("Collision 2: Triggers for Linezolid + Amphetamine and Tranylcypromine + Dopamine", () => {
-      const coll1 = findVasoactiveCollisions({
-        drugIds: ["linezolid", "amphetamine"],
-      });
-      assert.ok(
-        coll1.some((c) => c.category === "maoi-indirect-sympathomimetic-crisis"),
-      );
-
-      const coll2 = findVasoactiveCollisions({
-        drugIds: ["tranylcypromine", "dopamine"],
-      });
-      assert.ok(
-        coll2.some((c) => c.category === "maoi-indirect-sympathomimetic-crisis"),
-      );
-    });
-
-    it("Collision 3: Milrinone PDE3 Accumulation in Renal Impairment triggers major alert", () => {
-      const collisions = findVasoactiveCollisions({
-        drugIds: ["milrinone"],
-        host: { ...DEFAULT_HOST, kidney: "ckd" },
-        crClMlMin: 25,
-      });
-
-      assert.equal(collisions.length, 1);
-      const c = collisions[0];
-      assert.equal(c.category, "milrinone-renal-accumulation");
-      assert.equal(c.severity, "major");
-      assert.ok(c.headline.includes("Milrinone Accumulation in Renal Impairment"));
-      assert.ok(c.molecularReceptorMechanism.includes("80% to 90%"));
-      assert.ok(c.clinicalAction.includes("MANDATORY DOSE REDUCTION"));
-      assert.ok(c.antidoteOrRescueStrategy.includes("Dobutamine"));
-    });
-
-    it("Collision 3: Does NOT trigger for Milrinone when renal function is normal", () => {
-      const collisions = findVasoactiveCollisions({
-        drugIds: ["milrinone"],
-        host: { ...DEFAULT_HOST, kidney: "ok" },
-        crClMlMin: 95,
-      });
-      assert.equal(collisions.length, 0);
-    });
-
-    it("Collision 4: Inotropes in Dynamic LVOT Obstruction (HOCM / SAM) triggers contraindicated alert", () => {
-      const collisions = findVasoactiveCollisions({
-        drugIds: ["dobutamine"],
-        hasLvotObstructionOrHocm: true,
-      });
-
-      assert.equal(collisions.length, 1);
-      const c = collisions[0];
-      assert.equal(c.category, "inotrope-lvot-obstruction-hocm");
-      assert.equal(c.severity, "contraindicated");
-      assert.ok(c.headline.includes("Venturi Collapse"));
-      assert.ok(c.molecularReceptorMechanism.includes("Venturi effect"));
-      assert.ok(c.antidoteOrRescueStrategy.includes("PHENYLEPHRINE"));
-      assert.ok(c.antidoteOrRescueStrategy.includes("Volume expansion"));
-    });
-
-    it("Collision 4: Does NOT trigger for pure alpha-1 Phenylephrine in HOCM (it is the indicated rescue pressor)", () => {
-      const collisions = findVasoactiveCollisions({
-        drugIds: ["phenylephrine"],
-        hasLvotObstructionOrHocm: true,
-      });
-      // Phenylephrine is NOT in INOTROPE_IDS
-      assert.equal(collisions.length, 0);
+  describe("Extravasation Phentolamine Rescue Protocol", () => {
+    it("returns standard phentolamine 5 to 10 mg infiltration protocol within 12h window", () => {
+      const proto = getPhentolamineExtravasationProtocol();
+      assert.ok(proto.antidote.includes("Phentolamine"));
+      assert.ok(proto.doseAndPreparation.includes("5 to 10 mg"));
+      assert.equal(proto.timeWindowHours, 12);
+      assert.ok(proto.alternativeAgent.includes("Nitroglycerin"));
     });
   });
 
-  // ==========================================================================
-  // 8. DESK DETECTION & COMPREHENSIVE REPORT GENERATION
-  // ==========================================================================
-  describe("Desk Detection & Comprehensive Report Generator", () => {
-    it("vasoactiveOnDesk correctly analyzes and categorizes diverse regimens", () => {
-      const result = vasoactiveOnDesk([
-        "norepinephrine",
-        "vasopressin",
-        "metoprolol",
-        "linezolid",
-        "pseudoephedrine",
-      ]);
-
-      assert.equal(result.hasVasoactive, true);
-      assert.equal(result.vasoactiveDrugs.length, 2);
-      assert.equal(result.hasCatecholamines, true);
-      assert.equal(result.hasNonAdrenergicVasopressors, true);
-      assert.equal(result.hasBetaBlockers, true);
-      assert.equal(result.hasMaoisInhibitors, true);
-      assert.equal(result.hasIndirectSympathomimetics, true);
-      assert.equal(result.hasMilrinone, false);
-      assert.ok(result.detectedBetaBlockerIds.includes("metoprolol"));
-      assert.ok(result.detectedMaoiIds.includes("linezolid"));
-      assert.ok(result.detectedIndirectSympathomimeticIds.includes("pseudoephedrine"));
+  describe("Desk Detection & End-to-End Report Generation", () => {
+    it("accurately detects vasoactive agents from drugIds", () => {
+      const det = vasoactiveOnDesk(["norepinephrine", "vasopressin", "lisinopril"]);
+      assert.equal(det.hasVasoactive, true);
+      assert.equal(det.detectedAgents.length, 2);
+      assert.equal(det.hasVasopressor, true);
+      assert.equal(det.isMultiVasoactive, true);
+      assert.equal(det.hasExtravasationRisk, true);
     });
 
-    it("vasoactiveReportOnDesk produces rich critical care report with all sections", () => {
-      const report = vasoactiveReportOnDesk(
-        ["norepinephrine", "epinephrine", "propranolol"],
-        DEFAULT_HOST,
-        {
-          arterialPh: 7.16,
-          lactateMmolL: 5.5,
-          scvO2Pct: 78,
-          pvaCo2GapMmHg: 4.2,
-          hasLvotObstructionOrHocm: false,
-        },
-      );
-
-      assert.equal(report.onDesk.hasVasoactive, true);
-      assert.equal(report.activeDrugs.length, 2);
-      assert.ok(report.aggregatedHemodynamics);
-      assert.ok(report.hyperlactatemiaEvaluation);
-      assert.equal(
-        report.hyperlactatemiaEvaluation?.classification,
-        "benign-type-b-aerobic-glycolysis",
-      );
-      assert.ok(report.acidemiaEvaluation);
-      assert.equal(report.acidemiaEvaluation?.isAcidemicUncouplingRisk, true);
-      assert.ok(report.collisions.length >= 1);
-      assert.equal(report.collisions[0].category, "beta-blocker-epinephrine-unopposed-alpha");
-      assert.ok(report.clinicalPearls.length >= 6);
-      assert.ok(report.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
+    it("generates comprehensive report with alerts for milrinone in renal failure", () => {
+      const report = vasoactiveReportOnDesk(["milrinone", "norepinephrine"], { kidney: "ckd" }, { patientCrCl: 20 });
+      assert.equal(report.detection.hasMilrinone, true);
+      assert.ok(report.safetyAlerts.some((a) => a.includes("Milrinone Renal Clearance Hazard")));
+      assert.ok(report.safetyAlerts.some((a) => a.includes("Concomitant Vasoactive Regimen")));
+      assert.ok(report.safetyAlerts.some((a) => a.includes("High Alpha-1 Extravasation Hazard")));
     });
 
-    it("handles empty drug list gracefully with neutral report", () => {
-      const report = vasoactiveReportOnDesk([], DEFAULT_HOST);
-      assert.equal(report.onDesk.hasVasoactive, false);
-      assert.equal(report.activeDrugs.length, 0);
-      assert.equal(report.collisions.length, 0);
-      assert.ok(report.disclaimer.length > 50);
+    it("generates clean baseline report for non-vasoactive drugs", () => {
+      const report = vasoactiveReportOnDesk(["metformin", "atorvastatin"]);
+      assert.equal(report.detection.hasVasoactive, false);
+      assert.equal(report.activeAgents.length, 0);
+      assert.equal(report.safetyAlerts.length, 0);
     });
   });
 });
