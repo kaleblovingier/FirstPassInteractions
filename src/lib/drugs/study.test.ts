@@ -1348,6 +1348,40 @@ describe("study learning tools", () => {
     assert.match(hys.answer, /R = \(ALT\/ULN\) \/ \(ALP\/ULN\)/);
     assert.ok(hys.drugIds.includes("amox-clav"));
   });
+
+  it("narrow-index cards ask the stored substrate flag without leaking it in the prompt", () => {
+    // catalog.ts: warfarin first substrate is CYP2C9 with nti true; simvastatin first substrate has nti false.
+    const warfarin = deskCards(["warfarin"], []);
+    const index = warfarin.find((c) => c.id === "index-warfarin");
+    assert.ok(index);
+    assert.equal(index.correct, "yes");
+    assert.equal(index.prompt.includes("narrow"), false);
+
+    const statin = deskCards(["simvastatin"], []);
+    const plain = statin.find((c) => c.id === "index-simvastatin");
+    assert.ok(plain);
+    assert.equal(plain.correct, "no");
+  });
+
+  it("sensitivity cards ask the stored substrate sensitivity without leaking it in the prompt", () => {
+    // catalog.ts: clarithromycin first substrate is CYP3A4 with sensitivity "major".
+    const macro = deskCards(["clarithromycin"], []);
+    const sens = macro.find((c) => c.id === "sens-clarithromycin");
+    assert.ok(sens);
+    assert.equal(sens.correct, "major");
+    assert.equal(sens.prompt.includes("major"), false);
+  });
+
+  it("induction clock cards ask the stored start and stop", () => {
+    const cards = cardsFor("cyp", [], []);
+    const start = cards.find((c) => c.id === "cyp-clock-in");
+    const stop = cards.find((c) => c.id === "cyp-clock-out");
+    assert.ok(start);
+    assert.equal(start.correct, "in");
+    assert.equal(start.prompt.includes("Transcriptional"), false);
+    assert.ok(stop);
+    assert.equal(stop.correct, "out");
+  });
 });
 
 

@@ -5,7 +5,7 @@
  */
 
 import { DRUGS, DRUG_BY_ID } from "./catalog";
-import { FDA_GRADES, TDI } from "./cyp-protocol";
+import { FDA_GRADES, INDUCTION, TDI } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
 import { isDue, type StudyMark } from "./study-marks";
 import type { Drug, Enzyme, Finding } from "./types";
@@ -259,6 +259,43 @@ export function cypCards(): StudyCard[] {
       drugIds: [id],
     });
   }
+
+  out.push({
+    id: "cyp-clock-in",
+    lane: "cyp",
+    kicker: "Clock",
+    title: "Induction start",
+    prompt: "Induction has a stored start and a stored stop.",
+    ask: "Which sentence is the stored start?",
+    choices: bySeed(
+      [
+        { id: "in", label: INDUCTION.washIn },
+        { id: "out", label: INDUCTION.washOut },
+      ],
+      "cyp-clock-in",
+    ),
+    correct: "in",
+    answer: `${INDUCTION.washIn} Not a restart date and not a milligram.`,
+    drugIds: [],
+  });
+  out.push({
+    id: "cyp-clock-out",
+    lane: "cyp",
+    kicker: "Clock",
+    title: "Induction stop",
+    prompt: "Induction has a stored start and a stored stop.",
+    ask: "Which sentence is the stored stop?",
+    choices: bySeed(
+      [
+        { id: "in", label: INDUCTION.washIn },
+        { id: "out", label: INDUCTION.washOut },
+      ],
+      "cyp-clock-out",
+    ),
+    correct: "out",
+    answer: `${INDUCTION.washOut} Not a restart date and not a milligram.`,
+    drugIds: [],
+  });
 
   return [...out, ...directionCards(), ...shelfCards()];
 }
@@ -700,6 +737,45 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
         ),
         correct: substrate.pathway,
         answer: `${d.name} is stored as a ${substrate.sensitivity} ${substrate.enzyme} substrate (${substrate.pathway === "activation" ? "activation" : "clearance"}). Not a milligram.`,
+        drugIds: [id],
+      });
+      out.push({
+        id: `index-${id}`,
+        lane: "desk",
+        kicker: "Index",
+        title: d.name,
+        prompt: `${d.name}. ${substrate.enzyme}.`,
+        ask: "Is a narrow-index flag stored on that substrate?",
+        choices: bySeed(
+          [
+            { id: "yes", label: "Yes" },
+            { id: "no", label: "No" },
+          ],
+          `index-${id}`,
+        ),
+        correct: substrate.nti ? "yes" : "no",
+        answer: substrate.nti
+          ? `${d.name} stores a narrow-index flag on ${substrate.enzyme}. Not a milligram.`
+          : `${d.name} does not store a narrow-index flag on ${substrate.enzyme}. Not a clearance.`,
+        drugIds: [id],
+      });
+      out.push({
+        id: `sens-${id}`,
+        lane: "desk",
+        kicker: "Sensitivity",
+        title: d.name,
+        prompt: `${d.name}. ${substrate.enzyme}.`,
+        ask: "Which substrate sensitivity is stored?",
+        choices: bySeed(
+          [
+            { id: "sensitive", label: "Sensitive" },
+            { id: "major", label: "Major" },
+            { id: "minor", label: "Minor" },
+          ],
+          `sens-${id}`,
+        ),
+        correct: substrate.sensitivity,
+        answer: `${d.name} is stored as a ${substrate.sensitivity} ${substrate.enzyme} substrate. Not a milligram.`,
         drugIds: [id],
       });
     }

@@ -1050,6 +1050,17 @@ function CheckRow({
     .filter(Boolean)
     .join(" ");
   const recovery = storedRecoveryLine(finding, shown);
+  const glance = [summary, a.left, a.verb, a.right, fold, ...finding.enzymes].filter(Boolean).join(" ");
+  const narrow =
+    finding.enzymes.length === 1 &&
+    !glance.toLowerCase().includes("narrow") &&
+    finding.drugIds.some((id) =>
+      DRUG_BY_ID[id]?.enzymes.some(
+        (role) => role.kind === "substrate" && role.enzyme === finding.enzymes[0] && role.nti === true,
+      ),
+    )
+      ? "Narrow-index flag is stored on this row."
+      : "";
   const closedHeader = [
     SEVERITY_LABEL[finding.severity],
     a.left,
@@ -1094,6 +1105,9 @@ function CheckRow({
           </span>
           {recovery ? (
             <span className="mt-1 block text-xs leading-relaxed text-muted">{recovery}</span>
+          ) : null}
+          {narrow ? (
+            <span className="mt-1 block text-xs leading-relaxed text-muted">{narrow}</span>
           ) : null}
           <span className="mt-1 flex flex-wrap gap-1.5">
             {finding.tags.includes("boxed") ? (
