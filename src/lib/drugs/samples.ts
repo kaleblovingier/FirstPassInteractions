@@ -1875,4 +1875,27 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     drugIds: ["suzetrigine", "clarithromycin"],
     lane: "clinic",
   },
+  {
+    id: "colchicine-clarithromycin",
+    title: "Colchicine + clarithromycin",
+    blurb:
+      "Sensitive CYP3A4 and P-gp substrate. Strong 3A4/P-gp inhibitors are contraindicated with colchicine when kidney or liver is impaired. The label still caps the dose when organs are fine. This desk does not calculate that cap. Not a milligram.",
+    drugIds: ["colchicine", "clarithromycin"],
+    lane: "clinic",
+  },
+  {
+    id: "colchicine-ritonavir",
+    title: "Colchicine + ritonavir",
+    blurb:
+      "Sensitive CYP3A4 and P-gp substrate. Ritonavir is a strong 3A4 and P-gp inhibitor. The pair is contraindicated when kidney or liver is impaired, and the label still caps the dose when organs are fine. This desk does not calculate that cap. Not a milligram.",
+    drugIds: ["colchicine", "ritonavir"],
+    lane: "clinic",
+  },
+  {
+    id: "sildenafil-nitroglycerin",
+    title: "Sildenafil + nitroglycerin",
+    blurb: "PDE5 plus a nitrate. Catastrophic hypotension. Not a protocol.",
+    drugIds: ["sildenafil", "nitroglycerin"],
+    lane: "clinic",
+  },
 ];

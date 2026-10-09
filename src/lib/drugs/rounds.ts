@@ -1621,6 +1621,30 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Lithium ENaC entry · GSK-3beta inhibition · AQP2 degradation · amiloride pore-block rescue",
   },
+  {
+    id: "r-colchicine-clarithromycin",
+    title: "The gout tablet and the macrolide",
+    setting: "clinic",
+    stem: "Someone with a gout flare is already on clarithromycin. A covering clinician reaches for colchicine. The kidneys and liver are not obviously impaired, and the question becomes how much the label still allows.",
+    ask: "Why is this pair not an ordinary CYP footnote, and why does this desk stop before a dose cap?",
+    teach:
+      "Colchicine is a sensitive CYP3A4 and P-gp substrate. Clarithromycin is a strong inhibitor of both. Strong 3A4/P-gp inhibitors are contraindicated with colchicine when the kidney or liver is impaired. When those organs are fine, the label still caps the dose. This desk does not calculate that cap. Not a milligram.",
+    drugIds: ["colchicine", "clarithromycin"],
+    lane: "clinic",
+    blurb: "Sensitive 3A4 and P-gp. The cap is on the label. Not a milligram.",
+  },
+  {
+    id: "r-colchicine-ritonavir",
+    title: "The gout tablet and the booster",
+    setting: "clinic",
+    stem: "A person stable on a ritonavir-boosted regimen develops a gout flare. Colchicine is the familiar tablet. The booster is still on the list.",
+    ask: "What does ritonavir do to colchicine, and what does this desk refuse to compute?",
+    teach:
+      "Colchicine is a sensitive CYP3A4 and P-gp substrate. Ritonavir is a strong inhibitor of both. The pair is contraindicated when kidney or liver function is impaired. When those organs are fine, the label still caps the dose. This desk does not calculate that cap. Not a milligram.",
+    drugIds: ["colchicine", "ritonavir"],
+    lane: "clinic",
+    blurb: "Ritonavir blocks 3A4 and P-gp. The cap stays on the label. Not a milligram.",
+  },
 ];
 
 

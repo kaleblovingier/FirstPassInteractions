@@ -243,17 +243,8 @@ import { AnesthesiaPanel } from "./anesthesia-station";
 import { anesthesiaOnDesk } from "@/lib/drugs/anesthesia-reversal";
 import { EpilepsyPanel } from "./epilepsy-station";
 import { statusEpilepticusOnDesk } from "@/lib/drugs/status-epilepticus";
-import { ObstetricPanel } from "./obstetric-station";
-import { obstetricOnDesk } from "@/lib/drugs/obstetric-kinetics";
-import { ResourcePanel } from "./resource-navigator";
-import { MoudPanel } from "./moud-station";
-import { moudOnDesk } from "@/lib/drugs/moud-kinetics";
-import { GlycemicPanel } from "./glycemic-station";
-import { glycemicOnDesk } from "@/lib/drugs/glycemic-kinetics";
-import { PediatricPanel } from "./pediatric-station";
-import { pediatricOnDesk } from "@/lib/drugs/pediatric-kinetics";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin" | "pregnancy" | "obstetrickinetics" | "vasoactive" | "transplant" | "neuropsych" | "anticoagulation" | "toxicology" | "antiarrhythmic" | "acidbase" | "anesthesia" | "epilepsy" | "moud" | "glycemic" | "pediatric" | "resources";
+type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin" | "pregnancy" | "vasoactive" | "transplant" | "neuropsych" | "anticoagulation" | "toxicology" | "antiarrhythmic" | "acidbase" | "anesthesia" | "epilepsy";
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -298,10 +289,6 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const acidBaseOn = useMemo(() => acidBaseOnDesk(ids), [ids.join("|")]);
   const anesthesiaOn = useMemo(() => anesthesiaOnDesk(ids), [ids.join("|")]);
   const epilepsyOn = useMemo(() => statusEpilepticusOnDesk(ids), [ids.join("|")]);
-  const obstetricOn = useMemo(() => obstetricOnDesk(ids), [ids.join("|")]);
-  const moudOn = useMemo(() => moudOnDesk(ids), [ids.join("|")]);
-  const glycemicOn = useMemo(() => glycemicOnDesk(ids), [ids.join("|")]);
-  const pediatricOn = useMemo(() => pediatricOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
     const t: { id: Tab; label: string; on: boolean }[] = [
       { id: "otp", label: "OTP", on: otp },
@@ -346,15 +333,11 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
       { id: "acidbase", label: "Acid-Base", on: Boolean(acidBaseOn.matchedDrugIds.length > 0) },
       { id: "anesthesia", label: "Anesthesia & NMB", on: Boolean(anesthesiaOn.hasNmba || anesthesiaOn.hasReversal || anesthesiaOn.hasSedative) },
       { id: "epilepsy", label: "Status Epilepticus", on: Boolean(epilepsyOn.hasStatusEpilepticusAgent) },
-      { id: "moud", label: "MOUD & Harm Reduction", on: Boolean(moudOn.hasMoud || moudOn.hasFullAgonist) },
-      { id: "glycemic", label: "Glycemic & DKA", on: Boolean(glycemicOn.hasGlycemicAgent) },
-      { id: "pediatric", label: "Pediatric & Neonatal", on: Boolean(pediatricOn.hasPediatricTargetDrug) },
-      { id: "resources", label: "Resources", on: true },
       { id: "bedside", label: "Bedside", on: true },
       { id: "alerts", label: "Alerts", on: alerts.length > 0 },
     ];
     return t;
-  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, obstetricOn.hasObstetricDrug, vasoactiveOn.hasVasoactive, vasoactiveOn.hasInotrope, vasoactiveOn.hasVasopressor, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent, antiarrhythmicOn.hasAntiarrhythmic, antiarrhythmicOn.hasDigoxin, antiarrhythmicOn.hasPgpInhibitor, acidBaseOn.matchedDrugIds.length, anesthesiaOn.hasNmba, anesthesiaOn.hasReversal, anesthesiaOn.hasSedative, epilepsyOn.hasStatusEpilepticusAgent, moudOn.hasMoud, moudOn.hasFullAgonist, glycemicOn.hasGlycemicAgent, pediatricOn.hasPediatricTargetDrug]);
+  }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, vasoactiveOn.hasVasoactive, vasoactiveOn.hasBetaBlockers, vasoactiveOn.hasIndirectSympathomimetics, vasoactiveOn.hasInotropes, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent, antiarrhythmicOn.hasAntiarrhythmic, antiarrhythmicOn.hasDigoxin, antiarrhythmicOn.hasPgpInhibitor, acidBaseOn.matchedDrugIds.length, anesthesiaOn.hasNmba, anesthesiaOn.hasReversal, anesthesiaOn.hasSedative, epilepsyOn.hasStatusEpilepticusAgent]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
 
@@ -434,10 +417,6 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "acidbase" ? <AcidBasePanel ids={ids} host={host} /> : null}
         {live === "anesthesia" ? <AnesthesiaPanel ids={ids} host={host} /> : null}
         {live === "epilepsy" ? <EpilepsyPanel ids={ids} host={host} /> : null}
-        {live === "moud" ? <MoudPanel ids={ids} host={host} /> : null}
-        {live === "glycemic" ? <GlycemicPanel ids={ids} host={host} /> : null}
-        {live === "pediatric" ? <PediatricPanel ids={ids} host={host} /> : null}
-        {live === "resources" ? <ResourcePanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>

@@ -7,16 +7,20 @@
 import { DRUGS, DRUG_BY_ID } from "./catalog";
 import { FDA_GRADES, TDI } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
+import { isDue, type StudyMark } from "./study-marks";
 import type { Drug, Enzyme, Finding } from "./types";
 import { ENZYMES, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
+import { WASHOUT_OFFSET, washoutOffsetKind } from "./washout-plain";
+
+export type { StudyGrade, StudyMark } from "./study-marks";
+export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
 
 if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
   DRUG_BY_ID["hydrochlorothiazide"] = DRUG_BY_ID["hctz"];
 }
 
 export type StudyLane = "drill" | "boards" | "desk" | "cyp" | "clinical";
-export type StudyMark = "got" | "miss";
 export type StudyPile = "all" | "open" | "miss";
 
 export type ClinicalTopic =
@@ -80,7 +84,7 @@ export const STUDY_LANES: { id: StudyLane; label: string }[] = [
 export const STUDY_PILES: { id: StudyPile; label: string }[] = [
   { id: "all", label: "All" },
   { id: "open", label: "Unseen" },
-  { id: "miss", label: "Missed" },
+  { id: "miss", label: "Due" },
 ];
 
 function hash(s: string) {
@@ -504,6 +508,41 @@ const KIND_BINS: StudyChoice[] = [
   { id: "clinic", label: "Clinic" },
 ];
 
+const ROLE_CHOICES: StudyChoice[] = [
+  { id: "substrate", label: "Substrate" },
+  { id: "inhibitor", label: "Inhibitor" },
+  { id: "inducer", label: "Inducer" },
+];
+
+const LINGER_CHOICES: StudyChoice[] = (
+  Object.keys(WASHOUT_OFFSET) as (keyof typeof WASHOUT_OFFSET)[]
+).map((key) => ({ id: key, label: WASHOUT_OFFSET[key].tag }));
+
+const ARROW_CHOICES: StudyChoice[] = [
+  { id: "up-parent", label: "Victim exposure rises" },
+  { id: "down-parent", label: "Victim exposure falls" },
+  { id: "down-active", label: "Active metabolite falls" },
+  { id: "up-active", label: "Active metabolite rises" },
+];
+
+function storedArrow(effect: string): string | null {
+  if (effect.includes("↓ active metabolite")) return "down-active";
+  if (effect.includes("↑ active metabolite")) return "up-active";
+  if (effect.includes("↑ exposure")) return "up-parent";
+  if (effect.includes("↓ exposure")) return "down-parent";
+  return null;
+}
+
+function roleAnswer(name: string, role: Drug["enzymes"][number]): string {
+  if (role.kind === "substrate") {
+    const path = role.pathway === "activation" ? "activation" : "clearance";
+    const nti = role.nti ? " Narrow-index flag is stored on this row." : "";
+    return `${name} is stored as a ${role.sensitivity} ${role.enzyme} substrate (${path}).${nti} Not a milligram.`;
+  }
+  const fold = FDA_GRADES[role.kind][role.strength].fold;
+  return `${name} is stored as a ${role.strength} ${role.enzyme} ${role.kind}. FDA grade on this desk: ${fold}. Not a milligram.`;
+}
+
 function kindBinLabel(kind: string): string | null {
   if (kind === "pk") return "Levels";
   if (kind === "pd") return "Effects";
@@ -543,6 +582,21 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       answer: `Teaching bin: ${SEVERITY_LABEL[f.severity]}. A category from this model, not an individual risk.`,
       drugIds: f.drugIds,
     });
+    const arrow = storedArrow(f.effect);
+    if (arrow) {
+      out.push({
+        id: `arrow-${f.id}`,
+        lane: "desk",
+        kicker: "Direction",
+        title: names,
+        prompt: `${names}.`,
+        ask: "Which direction is stored on this mapped row?",
+        choices: bySeed(ARROW_CHOICES, `arrow-${f.id}`),
+        correct: arrow,
+        answer: `Direction stored: ${f.effect}. ${f.mechanism}. Not a clearance and not a milligram.`,
+        drugIds: f.drugIds,
+      });
+    }
     const kind =
       f.kind === "pk" ? "Pharmacokinetic" : f.kind === "pd" ? "Pharmacodynamic" : f.kind === "geno" ? "Phenotype" : "Clinic";
     const sole = f.enzymes.length === 1 ? f.enzymes[0] : null;
@@ -610,6 +664,107 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       card.correct = first;
     }
     out.push(card);
+    const role =
+      d.enzymes.find((e) => e.kind === "inhibitor" || e.kind === "inducer") ?? d.enzymes[0];
+    if (role) {
+      out.push({
+        id: `role-${id}`,
+        lane: "desk",
+        kicker: "Role",
+        title: d.name,
+        prompt: `${d.name}. ${role.enzyme}.`,
+        ask: "What role is stored for that enzyme: substrate, inhibitor, or inducer?",
+        choices: bySeed(ROLE_CHOICES, `role-${id}`),
+        correct: role.kind,
+        answer: roleAnswer(d.name, role),
+        drugIds: [id],
+      });
+    }
+    const substrate = d.enzymes.find(
+      (e): e is Extract<Drug["enzymes"][number], { kind: "substrate" }> => e.kind === "substrate",
+    );
+    if (substrate) {
+      out.push({
+        id: `path-${id}`,
+        lane: "desk",
+        kicker: "Pathway",
+        title: d.name,
+        prompt: `${d.name}. ${substrate.enzyme}.`,
+        ask: "Is that substrate stored as clearance or prodrug activation?",
+        choices: bySeed(
+          [
+            { id: "clearance", label: "Clearance" },
+            { id: "activation", label: "Prodrug activation" },
+          ],
+          `path-${id}`,
+        ),
+        correct: substrate.pathway,
+        answer: `${d.name} is stored as a ${substrate.sensitivity} ${substrate.enzyme} substrate (${substrate.pathway === "activation" ? "activation" : "clearance"}). Not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const perpetrator = d.enzymes.find(
+      (e): e is Extract<Drug["enzymes"][number], { kind: "inhibitor" | "inducer" }> =>
+        e.kind === "inhibitor" || e.kind === "inducer",
+    );
+    if (perpetrator) {
+      const fold = FDA_GRADES[perpetrator.kind][perpetrator.strength].fold;
+      out.push({
+        id: `grade-${id}`,
+        lane: "desk",
+        kicker: "Grade",
+        title: d.name,
+        prompt: `${d.name}. ${perpetrator.enzyme} ${perpetrator.kind}.`,
+        ask: "Which strength is stored for that perpetrator?",
+        choices: bySeed(
+          [
+            { id: "strong", label: "Strong" },
+            { id: "moderate", label: "Moderate" },
+            { id: "weak", label: "Weak" },
+          ],
+          `grade-${id}`,
+        ),
+        correct: perpetrator.strength,
+        answer: `${d.name} is stored as a ${perpetrator.strength} ${perpetrator.enzyme} ${perpetrator.kind}. FDA grade on this desk: ${fold}. Not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const note = id in TDI ? TDI[id] : undefined;
+    const named = note?.enzymes[0];
+    if (note && named) {
+      const seed = `tdi-enzyme-${id}`;
+      const distractors = bySeed(
+        ENZYMES.filter((enzyme) => enzyme !== named).map((enzyme) => ({ id: enzyme, label: enzyme })),
+        seed,
+      ).slice(0, 3);
+      out.push({
+        id: `tdi-${id}`,
+        lane: "desk",
+        kicker: "Recovery",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which enzyme does the stored time-dependent note name first?",
+        choices: bySeed([{ id: named, label: named }, ...distractors], `${seed}-order`),
+        correct: named,
+        answer: `${d.name}. Recovery note already stored: ${note.resynth}. ${note.pearl} Not a restart date and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const linger = washoutOffsetKind({ ids: [id], days: 1, label: "" });
+    if (linger) {
+      out.push({
+        id: `linger-${id}`,
+        lane: "desk",
+        kicker: "Linger",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which linger kind is stored after the last dose?",
+        choices: bySeed(LINGER_CHOICES, `linger-${id}`),
+        correct: linger,
+        answer: `${WASHOUT_OFFSET[linger].plain} Not a restart date and not a milligram.`,
+        drugIds: [id],
+      });
+    }
   }
   return out;
 }
@@ -4235,8 +4390,9 @@ export function pileOf(
   cards: StudyCard[],
   pile: StudyPile,
   marks: Record<string, StudyMark | undefined>,
+  now = Date.now(),
 ): StudyCard[] {
   if (pile === "open") return cards.filter((c) => !marks[c.id]);
-  if (pile === "miss") return cards.filter((c) => marks[c.id] === "miss");
+  if (pile === "miss") return cards.filter((c) => isDue(marks[c.id], now));
   return cards;
 }

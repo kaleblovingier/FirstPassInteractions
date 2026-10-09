@@ -1226,45 +1226,6 @@ describe("study learning tools", () => {
       }
     }
   });
-
-  it("vasoactive shock, obstetric emergencies, transplant kinetics, and healthcare resources expand clinicalCards to 141 and verify non-prescriptive posture", () => {
-    const cards = clinicalCards();
-    assert.equal(cards.length, 141);
-
-    const targetCardIds = [
-      "clin-vasoactive-scai-shock-stages",
-      "clin-epinephrine-type-b-lactate-aerobic",
-      "clin-milrinone-renal-failure-accumulation",
-      "clin-magnesium-preeclampsia-toxicity-milestones",
-      "clin-pph-uterotonic-contraindications-methergine-hemabate",
-      "clin-teratogen-embryonic-critical-windows",
-      "clin-tacrolimus-whole-blood-sampling-trap",
-      "clin-mycophenolate-gut-flora-antibiotic-rejection",
-      "clin-azathioprine-allopurinol-xanthine-oxidase-6tgn",
-      "clin-healthcare-resources-fqhc-mothertobaby",
-    ];
-
-    for (const cardId of targetCardIds) {
-      const card = cards.find((c) => c.id === cardId);
-      assert.ok(card, `Card ${cardId} must exist in clinicalCards()`);
-      assert.equal(card.lane, "clinical");
-      assert.ok(card.choices && card.choices.length === 4, `Card ${cardId} must have 4 choices`);
-      assert.ok(card.correct, `Card ${cardId} must define correct`);
-      const correctChoice = card.choices?.find((c) => c.id === card.correct);
-      assert.ok(correctChoice, `Card ${cardId} correct choice must exist in choices`);
-
-      // Verify non-prescriptive posture
-      const text = `${card.prompt} ${card.ask} ${card.answer}`;
-      assert.doesNotMatch(text, /prescribe\s+\d+\s*mg/i);
-      assert.doesNotMatch(text, /dispense\s+\d+\s*mg/i);
-      assert.doesNotMatch(text, /clinical decision support/i);
-
-      // Verify catalog drugs
-      for (const dId of card.drugIds) {
-        assert.ok(DRUG_BY_ID[dId], `Drug ${dId} on card ${cardId} must exist in DRUG_BY_ID`);
-      }
-    }
-  });
 });
 
 

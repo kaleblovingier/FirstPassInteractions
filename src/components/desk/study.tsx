@@ -21,10 +21,13 @@ import {
   CLINICAL_TOPICS,
   cardsFor,
   clinicalCards,
+  duePhrase,
+  isDue,
   pileOf,
   type ClinicalTopic,
   type StudyCard,
   type StudyLane,
+  type StudyMark,
   type StudyPile,
 } from "@/lib/drugs/study";
 import { SAMPLE_REGIMENS } from "@/lib/drugs/samples";
@@ -73,7 +76,7 @@ const HOW_STEPS = [
   {
     n: "3",
     title: "Mark and drill",
-    body: "Got it or Review — then filter to Review only and run those again.",
+    body: "Review is due now. Got it waits 1 day, then 3, a week, and 3 weeks. That wait is a study rhythm, not a dosing schedule.",
   },
 ] as const;
 
@@ -116,6 +119,7 @@ export function StudyPage() {
   const [labId, setLabId] = useState<string | null>(() => labIdFromSearch() ?? LAB_ASSIGNMENTS[0]?.id ?? null);
   const [labText, setLabText] = useState("");
   const [labSavedAt, setLabSavedAt] = useState<string | null>(null);
+  const [keyOpen, setKeyOpen] = useState(false);
 
   const assignment = useMemo(
     () => LAB_ASSIGNMENTS.find((a) => a.id === labId) ?? LAB_ASSIGNMENTS[0] ?? null,
@@ -128,6 +132,7 @@ export function StudyPage() {
     const row = book[assignment.id];
     setLabText(row?.text ?? "");
     setLabSavedAt(row?.updatedAt ?? null);
+    setKeyOpen(false);
   }, [assignment]);
 
   const findings = useMemo(
@@ -159,8 +164,8 @@ export function StudyPage() {
   const clinicalTopicStats = useMemo(() => {
     return CLINICAL_TOPICS.map((t) => {
       const cards = t.id === "all" ? clinicalAllCards : clinicalAllCards.filter((c) => c.topic === t.id);
-      const got = cards.filter((c) => marks[c.id] === "got").length;
-      const review = cards.filter((c) => marks[c.id] === "miss").length;
+      const got = cards.filter((c) => marks[c.id]?.mark === "got" && !isDue(marks[c.id])).length;
+      const review = cards.filter((c) => isDue(marks[c.id])).length;
       const unseen = cards.length - got - review;
       return { topic: t, got, review, unseen, total: cards.length };
     });
@@ -189,8 +194,8 @@ export function StudyPage() {
   const picked = cursor.key === key ? cursor.picked : null;
 
   const card = deck[Math.min(index, Math.max(deck.length - 1, 0))];
-  const known = source.filter((c) => marks[c.id] === "got").length;
-  const missed = source.filter((c) => marks[c.id] === "miss").length;
+  const known = source.filter((c) => marks[c.id]?.mark === "got" && !isDue(marks[c.id])).length;
+  const missed = source.filter((c) => isDue(marks[c.id])).length;
   const unseen = source.length - known - missed;
   const knownPct = source.length ? Math.round((known / source.length) * 100) : 0;
   const missPct = source.length ? Math.round((missed / source.length) * 100) : 0;
@@ -451,6 +456,27 @@ export function StudyPage() {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
             )}
           />
+          <div className="mt-3">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="min-h-[44px]"
+              aria-expanded={keyOpen}
+              onClick={() => setKeyOpen((open) => !open)}
+            >
+              {keyOpen ? "Hide teaching key" : "Show teaching key"}
+            </Button>
+            {keyOpen ? (
+              <div className="mt-3 rounded-md bg-bg-sunken px-3 py-3">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Teaching key</p>
+                <p className="mt-2 text-sm leading-relaxed text-fg">{assignment.key}</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted">
+                  Compare after you write. This is not a grade and not a dose.
+                </p>
+              </div>
+            ) : null}
+          </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Button size="sm" className="min-h-[44px]" onClick={exportReceipt}>
               <Download className="size-3.5" />
@@ -724,7 +750,7 @@ export function StudyPage() {
         ) : (
         <p className="rounded-xl bg-surface px-5 py-8 text-sm text-muted shadow-[var(--shadow-border)]">
           {pile === "miss"
-            ? "Nothing missed in this lane. Mark a miss, then come back."
+            ? "Nothing is due in this lane. A miss is due now. Got it waits 1 day, then 3, a week, and 3 weeks."
             : pile === "open"
               ? "Nothing unseen here. Switch to All, or reset marks to start over."
               : lane === "clinical" && clinicalTopic !== "all"
@@ -733,6 +759,12 @@ export function StudyPage() {
         </p>
         )
       ) : (
+        <>
+        {lane === "desk" ? (
+          <p className="mb-3 text-xs leading-relaxed text-muted">
+            Substrate: that enzyme clears it, or activates a prodrug, on this map. Inhibitor: blocks that enzyme. Inducer: speeds it up. The card uses only the role and direction already stored. Not a milligram. A time-dependent row keeps the block until new enzyme is made. The recovery note is the one already stored, not a restart date. A substrate is stored as clearance or as prodrug activation. A perpetrator grade is the strong, moderate, or weak already on the map.
+          </p>
+        ) : null}
         <StudyCardView
           card={card}
           n={Math.min(index, deck.length - 1) + 1}
@@ -752,6 +784,7 @@ export function StudyPage() {
             if (card.drugIds.length) load(card.drugIds);
           }}
         />
+        </>
       )}
     </div>
   );
@@ -789,7 +822,7 @@ function StudyEmptyCoach({
         : "No cards in this lane";
 
   const body = missEmpty
-    ? "Mark a miss on a card, then come back to drill only those. Or switch to All to keep going."
+    ? "A miss is due now. Got it waits 1 day, then 3, a week, and 3 weeks. That wait is a study rhythm, not a dosing schedule. Switch to All to keep going."
     : openEmpty
       ? "You have seen everything in this pile. Switch to All, open Review, or reset marks for a fresh pass."
       : deskEmpty
@@ -917,7 +950,7 @@ function StudyCardView({
   total: number;
   revealed: boolean;
   picked: string | null;
-  mark?: "got" | "miss";
+  mark?: StudyMark;
   onReveal: () => void;
   onPick: (id: string) => void;
   onMark: (m: "got" | "miss") => void;
@@ -941,7 +974,7 @@ function StudyCardView({
         </div>
         <p className="font-mono text-[11px] text-muted">
           {n} / {total}
-          {mark ? ` · ${mark === "got" ? "got it" : "review"}` : ""}
+          {mark ? ` · ${mark.mark === "got" ? "got it" : "review"} · ${duePhrase(mark)}` : ""}
         </p>
       </div>
       <h3 className="mt-2 font-serif text-2xl tracking-tight text-fg">{card.title}</h3>
@@ -997,7 +1030,7 @@ function StudyCardView({
               {`Open ${atlasEnzyme} in the atlas`}
             </button>
           ) : null}
-          {card.id.startsWith("desk-") || card.id.startsWith("bin-") || card.id.startsWith("mono-") || card.id.startsWith("kind-") ? (
+          {card.id.startsWith("desk-") || card.id.startsWith("bin-") || card.id.startsWith("mono-") || card.id.startsWith("kind-") || card.id.startsWith("role-") || card.id.startsWith("arrow-") || card.id.startsWith("tdi-") || card.id.startsWith("linger-") || card.id.startsWith("path-") || card.id.startsWith("grade-") ? (
             <button
               type="button"
               className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
@@ -1052,10 +1085,10 @@ function StudyCardView({
         ) : null}
         {revealed && !card.choices ? (
           <>
-            <Button size="sm" variant={mark === "got" ? "default" : "secondary"} className="min-h-[44px]" onClick={() => onMark("got")}>
+            <Button size="sm" variant={mark?.mark === "got" ? "default" : "secondary"} className="min-h-[44px]" onClick={() => onMark("got")}>
               Got it
             </Button>
-            <Button size="sm" variant={mark === "miss" ? "danger" : "secondary"} className="min-h-[44px]" onClick={() => onMark("miss")}>
+            <Button size="sm" variant={mark?.mark === "miss" ? "danger" : "secondary"} className="min-h-[44px]" onClick={() => onMark("miss")}>
               Review
             </Button>
           </>
@@ -1071,7 +1104,11 @@ function StudyCardView({
         <Button size="sm" variant="ghost" className="min-h-[44px]" onClick={onNext} disabled={n >= total}>
           Next
         </Button>
-        {mark ? <Badge tone={mark === "got" ? "ok" : "warn"}>{mark === "got" ? "Got it" : "Review"}</Badge> : null}
+        {mark ? (
+          <Badge tone={mark.mark === "got" && !isDue(mark) ? "ok" : "warn"}>
+            {mark.mark === "got" ? "Got it" : "Review"} · {duePhrase(mark)}
+          </Badge>
+        ) : null}
       </div>
     </article>
   );

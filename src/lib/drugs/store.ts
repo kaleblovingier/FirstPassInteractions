@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DRUG_BY_ID } from "./catalog";
+import { normalizeStudyMarks, scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
@@ -55,7 +56,7 @@ interface DeskState {
   kidney: KidneyBand;
   preg: PregBand;
   doses: Record<string, string>;
-  studyMarks: Record<string, "got" | "miss">;
+  studyMarks: Record<string, StudyMark>;
   plan: PlanId;
   license: string | null;
   lifetime: boolean;
@@ -83,7 +84,7 @@ interface DeskState {
   setKidney: (kidney: KidneyBand) => void;
   setPreg: (preg: PregBand) => void;
   setDose: (id: string, value: string) => void;
-  markStudy: (id: string, mark: "got" | "miss") => void;
+  markStudy: (id: string, grade: StudyGrade) => void;
   clearStudy: () => void;
   resetPhenotypes: () => void;
   openCheckout: (plan: PlanId, reason?: string, interval?: Interval) => void;
@@ -294,7 +295,10 @@ export const useDesk = create<DeskState>()(
         else next[id] = trimmed;
         set({ doses: next });
       },
-      markStudy: (id, mark) => set({ studyMarks: { ...get().studyMarks, [id]: mark } }),
+      markStudy: (id, grade) => {
+        const prev = get().studyMarks[id];
+        set({ studyMarks: { ...get().studyMarks, [id]: scheduleStudyMark(prev, grade) } });
+      },
       clearStudy: () => set({ studyMarks: {} }),
       resetPhenotypes: () =>
         set({
@@ -370,7 +374,7 @@ export const useDesk = create<DeskState>()(
           kidney: p.kidney === "ckd" ? "ckd" : "ok",
           preg: p.preg === "pregnant" || p.preg === "lactating" ? p.preg : "off",
           doses: p.doses && typeof p.doses === "object" ? p.doses : {},
-          studyMarks: p.studyMarks && typeof p.studyMarks === "object" ? p.studyMarks : {},
+          studyMarks: normalizeStudyMarks(p.studyMarks),
           justActivated: false,
           hcpAck: Boolean(p.hcpAck),
           previewUsed: Boolean(p.previewUsed) || typeof p.previewUntil === "number",
