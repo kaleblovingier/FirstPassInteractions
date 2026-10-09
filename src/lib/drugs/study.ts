@@ -680,6 +680,55 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
         drugIds: [id],
       });
     }
+    const substrate = d.enzymes.find(
+      (e): e is Extract<Drug["enzymes"][number], { kind: "substrate" }> => e.kind === "substrate",
+    );
+    if (substrate) {
+      out.push({
+        id: `path-${id}`,
+        lane: "desk",
+        kicker: "Pathway",
+        title: d.name,
+        prompt: `${d.name}. ${substrate.enzyme}.`,
+        ask: "Is that substrate stored as clearance or prodrug activation?",
+        choices: bySeed(
+          [
+            { id: "clearance", label: "Clearance" },
+            { id: "activation", label: "Prodrug activation" },
+          ],
+          `path-${id}`,
+        ),
+        correct: substrate.pathway,
+        answer: `${d.name} is stored as a ${substrate.sensitivity} ${substrate.enzyme} substrate (${substrate.pathway === "activation" ? "activation" : "clearance"}). Not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const perpetrator = d.enzymes.find(
+      (e): e is Extract<Drug["enzymes"][number], { kind: "inhibitor" | "inducer" }> =>
+        e.kind === "inhibitor" || e.kind === "inducer",
+    );
+    if (perpetrator) {
+      const fold = FDA_GRADES[perpetrator.kind][perpetrator.strength].fold;
+      out.push({
+        id: `grade-${id}`,
+        lane: "desk",
+        kicker: "Grade",
+        title: d.name,
+        prompt: `${d.name}. ${perpetrator.enzyme} ${perpetrator.kind}.`,
+        ask: "Which strength is stored for that perpetrator?",
+        choices: bySeed(
+          [
+            { id: "strong", label: "Strong" },
+            { id: "moderate", label: "Moderate" },
+            { id: "weak", label: "Weak" },
+          ],
+          `grade-${id}`,
+        ),
+        correct: perpetrator.strength,
+        answer: `${d.name} is stored as a ${perpetrator.strength} ${perpetrator.enzyme} ${perpetrator.kind}. FDA grade on this desk: ${fold}. Not a milligram.`,
+        drugIds: [id],
+      });
+    }
     const note = id in TDI ? TDI[id] : undefined;
     const named = note?.enzymes[0];
     if (note && named) {

@@ -1288,6 +1288,28 @@ describe("study learning tools", () => {
     const plain = deskCards(["simvastatin"], []);
     assert.equal(plain.some((c) => c.id.startsWith("tdi-") || c.id.startsWith("linger-")), false);
   });
+
+  it("pathway and grade cards ask the stored substrate path and perpetrator strength without leaking the answer", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const path = statin.find((c) => c.id === "path-simvastatin");
+    assert.ok(path);
+    assert.equal(path.correct, "clearance");
+    assert.equal(path.prompt.includes("clearance"), false);
+    assert.equal(statin.some((c) => c.id === "grade-simvastatin"), false);
+
+    const macro = deskCards(["clarithromycin"], []);
+    const grade = macro.find((c) => c.id === "grade-clarithromycin");
+    assert.ok(grade);
+    assert.equal(grade.correct, "strong");
+    assert.equal(grade.prompt.includes("strong"), false);
+
+    // catalog.ts: codeine's first substrate is CYP2D6 with pathway "activation".
+    const prodrug = deskCards(["codeine"], []);
+    const act = prodrug.find((c) => c.id === "path-codeine");
+    assert.ok(act);
+    assert.equal(act.correct, "activation");
+    assert.equal(act.prompt.includes("activation"), false);
+  });
 });
 
 

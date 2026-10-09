@@ -424,7 +424,11 @@ function CompoundsShelf() {
     for (const d of members) {
       for (const e of d.enzymes) {
         const key =
-          e.kind === "substrate" ? `${e.enzyme} substrate` : `${e.strength} ${e.enzyme} ${e.kind}`;
+          e.kind === "substrate"
+            ? e.pathway === "activation"
+              ? `${e.enzyme} substrate · activation`
+              : `${e.enzyme} substrate`
+            : `${e.strength} ${e.enzyme} ${e.kind}`;
         tally.set(key, (tally.get(key) ?? 0) + 1);
       }
     }

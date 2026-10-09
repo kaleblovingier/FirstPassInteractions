@@ -762,7 +762,7 @@ export function StudyPage() {
         <>
         {lane === "desk" ? (
           <p className="mb-3 text-xs leading-relaxed text-muted">
-            Substrate: that enzyme clears it, or activates a prodrug, on this map. Inhibitor: blocks that enzyme. Inducer: speeds it up. The card uses only the role and direction already stored. Not a milligram. A time-dependent row keeps the block until new enzyme is made. The recovery note is the one already stored, not a restart date.
+            Substrate: that enzyme clears it, or activates a prodrug, on this map. Inhibitor: blocks that enzyme. Inducer: speeds it up. The card uses only the role and direction already stored. Not a milligram. A time-dependent row keeps the block until new enzyme is made. The recovery note is the one already stored, not a restart date. A substrate is stored as clearance or as prodrug activation. A perpetrator grade is the strong, moderate, or weak already on the map.
           </p>
         ) : null}
         <StudyCardView
@@ -1030,7 +1030,7 @@ function StudyCardView({
               {`Open ${atlasEnzyme} in the atlas`}
             </button>
           ) : null}
-          {card.id.startsWith("desk-") || card.id.startsWith("bin-") || card.id.startsWith("mono-") || card.id.startsWith("kind-") || card.id.startsWith("role-") || card.id.startsWith("arrow-") || card.id.startsWith("tdi-") || card.id.startsWith("linger-") ? (
+          {card.id.startsWith("desk-") || card.id.startsWith("bin-") || card.id.startsWith("mono-") || card.id.startsWith("kind-") || card.id.startsWith("role-") || card.id.startsWith("arrow-") || card.id.startsWith("tdi-") || card.id.startsWith("linger-") || card.id.startsWith("path-") || card.id.startsWith("grade-") ? (
             <button
               type="button"
               className="mt-3 h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
