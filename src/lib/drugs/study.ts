@@ -9,7 +9,7 @@ import { FDA_GRADES, INDUCTION, TDI } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
 import { isDue, type StudyMark } from "./study-marks";
 import type { Drug, Enzyme, Finding } from "./types";
-import { ENZYMES, SEVERITY_LABEL } from "./types";
+import { ENZYMES, ITEM_KIND_LABEL, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
 import { WASHOUT_OFFSET, washoutOffsetKind } from "./washout-plain";
 
@@ -857,6 +857,48 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       choices: bySeed([{ id: d.cls, label: d.cls }, ...shelfPool], `shelf-${id}-order`),
       correct: d.cls,
       answer: `${d.name} is stored on the ${d.cls} shelf. Same shelf is not a collision and not a clearance.`,
+      drugIds: [id],
+    });
+    const storedBrand = d.brands[0];
+    if (typeof storedBrand === "string" && storedBrand.length > 0) {
+      const brandPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.brands))]
+          .filter((brand) => brand.length > 0 && brand !== storedBrand)
+          .map((brand) => ({ id: brand, label: brand })),
+        `brand-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `brand-${id}`,
+        lane: "desk",
+        kicker: "Brand",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which brand is stored first?",
+        choices: bySeed(
+          [{ id: storedBrand, label: storedBrand }, ...brandPool],
+          `brand-${id}-order`,
+        ),
+        correct: storedBrand,
+        answer: `${d.name} stores ${storedBrand} first. A brand is not a different map and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    out.push({
+      id: `item-${id}`,
+      lane: "desk",
+      kicker: "Kind",
+      title: d.name,
+      prompt: `${d.name}.`,
+      ask: "Which kind is stored?",
+      choices: bySeed(
+        (Object.keys(ITEM_KIND_LABEL) as (keyof typeof ITEM_KIND_LABEL)[]).map((kind) => ({
+          id: kind,
+          label: ITEM_KIND_LABEL[kind],
+        })),
+        `item-${id}`,
+      ),
+      correct: d.kind,
+      answer: `${d.name} is stored as ${ITEM_KIND_LABEL[d.kind]}. Not a clearance.`,
       drugIds: [id],
     });
   }

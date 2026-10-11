@@ -457,6 +457,11 @@ export function DeskApp() {
                         title="Remove from regimen"
                       >
                         <span className="font-medium">{drug.name}</span>
+                        {drug.brands[0] ? (
+                          <span className="max-w-20 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
+                            {drug.brands[0]}
+                          </span>
+                        ) : null}
                         {drug.kind === "drug" ? (
                           <span className="max-w-28 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
                             {drug.cls}

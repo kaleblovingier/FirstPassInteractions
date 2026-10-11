@@ -1401,6 +1401,41 @@ describe("study learning tools", () => {
     assert.equal(macroShelf.choices?.length, 4);
     assert.ok(macroShelf.choices?.some((choice) => choice.id === macroShelf.correct));
   });
+
+  it("brand cards ask the first stored brand and item cards ask the stored kind", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const brand = statin.find((c) => c.id === "brand-simvastatin");
+    assert.ok(brand);
+    assert.equal(brand.correct, "Zocor");
+    assert.equal(brand.prompt, "Simvastatin.");
+    assert.equal(brand.choices?.length, 4);
+    assert.ok(brand.choices?.some((choice) => choice.id === brand.correct));
+    const item = statin.find((c) => c.id === "item-simvastatin");
+    assert.ok(item);
+    assert.equal(item.correct, "drug");
+    assert.equal(item.prompt, "Simvastatin.");
+    assert.equal(item.choices?.length, 4);
+    assert.ok(item.choices?.some((choice) => choice.id === item.correct));
+    assert.equal(
+      statin.findIndex((c) => c.id === "shelf-simvastatin") <
+        statin.findIndex((c) => c.id === "brand-simvastatin"),
+      true,
+    );
+    assert.equal(
+      statin.findIndex((c) => c.id === "brand-simvastatin") <
+        statin.findIndex((c) => c.id === "item-simvastatin"),
+      true,
+    );
+
+    const juice = deskCards(["grapefruit"], []);
+    assert.equal(
+      juice.some((c) => c.id === "brand-grapefruit"),
+      false,
+    );
+    const food = juice.find((c) => c.id === "item-grapefruit");
+    assert.ok(food);
+    assert.equal(food.correct, "food");
+  });
 });
 
 
