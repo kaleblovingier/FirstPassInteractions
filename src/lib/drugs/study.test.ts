@@ -1382,6 +1382,25 @@ describe("study learning tools", () => {
     assert.ok(stop);
     assert.equal(stop.correct, "out");
   });
+
+  it("shelf cards ask the stored class and do not put the class in the prompt", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const statinShelf = statin.find((c) => c.id === "shelf-simvastatin");
+    assert.ok(statinShelf);
+    assert.equal(statinShelf.correct, "Statin");
+    assert.equal(statinShelf.prompt, "Simvastatin.");
+    assert.equal(statinShelf.choices?.length, 4);
+    assert.ok(statinShelf.choices?.some((choice) => choice.id === statinShelf.correct));
+
+    const macro = deskCards(["clarithromycin"], []);
+    const macroShelf = macro.find((c) => c.id === "shelf-clarithromycin");
+    assert.ok(macroShelf);
+    assert.equal(macroShelf.correct, DRUG_BY_ID.clarithromycin.cls);
+    assert.equal(macroShelf.correct, "Macrolide antibiotic");
+    assert.equal(macroShelf.prompt, "Clarithromycin.");
+    assert.equal(macroShelf.choices?.length, 4);
+    assert.ok(macroShelf.choices?.some((choice) => choice.id === macroShelf.correct));
+  });
 });
 
 

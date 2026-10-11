@@ -841,6 +841,24 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
         drugIds: [id],
       });
     }
+    const shelfPool = bySeed(
+      [...new Set(DRUGS.map((row) => row.cls))]
+        .filter((cls) => cls !== d.cls && cls !== "")
+        .map((cls) => ({ id: cls, label: cls })),
+      `shelf-${id}`,
+    ).slice(0, 3);
+    out.push({
+      id: `shelf-${id}`,
+      lane: "desk",
+      kicker: "Shelf",
+      title: d.name,
+      prompt: `${d.name}.`,
+      ask: "Which shelf is this name stored on?",
+      choices: bySeed([{ id: d.cls, label: d.cls }, ...shelfPool], `shelf-${id}-order`),
+      correct: d.cls,
+      answer: `${d.name} is stored on the ${d.cls} shelf. Same shelf is not a collision and not a clearance.`,
+      drugIds: [id],
+    });
   }
   return out;
 }

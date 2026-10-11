@@ -15,6 +15,7 @@ import { severitySurface } from "./severity";
 import { DeskReaders } from "./readers";
 import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
+import { pairSlots } from "@/lib/drugs/fanout";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -357,7 +358,9 @@ export function CheckBoard({
     quiet: quietPairs.map((p) => `${p.title}: ${p.reason}`),
     food: foodPairs.slice(0, 4).map((g) => `${g.title}: ${directionLine(g.rows)}`),
   };
+  const slots = pairSlots(ids.length);
   const contents = [
+    `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
@@ -383,6 +386,11 @@ export function CheckBoard({
           </h2>
           {ids.length > 0 ? (
             <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-muted">{contents}</p>
+          ) : null}
+          {ids.length >= 3 ? (
+            <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-muted">
+              Each pair is checked whole. Enzymes are not separate checks.
+            </p>
           ) : null}
           {ids.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
