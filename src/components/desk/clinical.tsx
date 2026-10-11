@@ -217,6 +217,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { StationPicker } from "./station-picker";
+import type { ClinicalTabId } from "@/lib/drugs/station-groups";
 import { OncologyPanel } from "./oncology-station";
 import { oncologyOnDesk } from "@/lib/drugs/oncology-kinetics";
 import { AntimicrobialPanel } from "./antimicrobial-station";
@@ -265,7 +267,8 @@ import { afOnDesk } from "@/lib/drugs/af-stroke-bleed";
 import { DiliPanel } from "./dili-station";
 import { diliOnDesk } from "@/lib/drugs/dili";
 
-type Tab = "otp" | "hr" | "wards" | "dose" | "cyp" | "qt" | "levels" | "liver" | "pheno" | "reversal" | "mme" | "hunter" | "uds" | "bedside" | "alerts" | "anc" | "inr" | "acb" | "dialysis" | "steroids" | "apap" | "iron" | "digoxin" | "phenobarbital" | "aminoglycosides" | "lithium" | "doac" | "valproate" | "potassium" | "sglt2" | "oncology" | "antimicrobial" | "phenytoin" | "pregnancy" | "obstetrickinetics" | "vasoactive" | "transplant" | "neuropsych" | "anticoagulation" | "toxicology" | "antiarrhythmic" | "acidbase" | "anesthesia" | "epilepsy" | "moud" | "glycemic" | "pediatric" | "resources" | "separation" | "rotation" | "hepatic" | "allergy" | "af" | "dili";
+/** Station ids live in CLINICAL_TAB_IDS (src/lib/drugs/station-groups.ts). Add new ones there and to a group. */
+type Tab = ClinicalTabId;
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
   const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
@@ -386,34 +389,13 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
 
   return (
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
-          <p className="mt-1 text-xs text-muted">
-            QT, TDM, LiverTox, phenoconversion, CYP start/stop clocks, reversal, MME, Hunter, UDS,
-            OTP tools, harm reduction, live PsychonautWiki, Wards collisions, labeled dose rails, ANC, INR, ACB anticholinergic burden, hemodialysis drug clearance, corticosteroids & HPA suppression, APAP overdose & Rumack-Matthew nomogram, parenteral iron & Ganzoni kinetics, digoxin toxicity & DigiFab sizing, phenobarbital kinetics & ion trapping, aminoglycosides & Hartford nomogram, lithium kinetics & EXTRIP hemodialysis, COWS / CIWA, bedside math (QTc, CrCl, Child-Pugh, Vancomycin AUC & Sawchuk-Zaske, Osmolar Gap, Anion Gap, Corrected Sodium, BSA, Calvert, Ganzoni, Digoxin, Hartford, Lithium). Teaching — not a
-            protocol, not a QTc. The PI governs the milligram.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-1">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              aria-pressed={live === t.id}
-              disabled={!t.on}
-              onClick={() => setTab(t.id)}
-              className={cn(
-                "h-10 rounded-full px-3 text-xs font-medium",
-                live === t.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
-                !t.on && "opacity-40",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+      <div>
+        <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
+        <p className="mt-1 text-xs text-muted">
+          Stations open when a matching drug is on the tray. This is teaching, not a protocol, and the PI governs the milligram.
+        </p>
       </div>
+      <StationPicker tabs={tabs} active={live} onSelect={setTab} />
 
       <div className="mt-4">
         {live === "otp" && otp ? <OtpPanel ids={ids} qtPartner={Boolean(qt?.rows.some((r) => r.id !== "methadone"))} /> : null}
