@@ -10,6 +10,7 @@
 
 import { DRUG_BY_ID, DRUGS, searchDrugs } from "../../drugs/catalog";
 import { analyze } from "../../drugs/engine";
+import { FANOUT_STAGES, FANOUT_RULE, pairSlots } from "../../drugs/fanout";
 import {
   DEFAULT_HOST,
   type AgeBand,
@@ -81,6 +82,11 @@ export interface InteractionCheckResult {
     timestamp: string;
     durationMs: number;
     disclaimer: string;
+    fanout: {
+      stages: readonly string[];
+      pairs: [number, number][];
+      rule: string;
+    };
   };
   query: {
     requestedDrugs: string[];
@@ -318,10 +324,15 @@ export class ClinicalDecisionService {
     const result: InteractionCheckResult = {
       meta: {
         engine: "FirstPass Interactions Engine",
-        version: "1.38.0",
+        version: "1.57.0",
         timestamp: new Date().toISOString(),
         durationMs,
         disclaimer: STATUTORY_CDS_DISCLAIMER,
+        fanout: {
+          stages: [...FANOUT_STAGES],
+          pairs: pairSlots(resolvedIds.length),
+          rule: FANOUT_RULE,
+        },
       },
       query: {
         requestedDrugs: drugQueries,

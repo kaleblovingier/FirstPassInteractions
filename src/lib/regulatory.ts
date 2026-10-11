@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.56.0",
+  version: "1.57.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.56.0",
+  buildId: "FP-SW-1.57.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -68,6 +68,7 @@ export const INDICATIONS = [
   "Learn asks which enzyme a stored time-dependent note names, and which linger kind is stored after the last dose. A closed check row shows the recovery note already stored for that name. Not a restart date and not a milligram.",
   "Learn asks whether a stored substrate is clearance or prodrug activation, and which perpetrator strength is already on the map. A class shelf names activation when that pathway is stored. Not a milligram.",
   "Learn asks whether a narrow-index flag is stored, and which substrate sensitivity is stored. The enzyme map asks which sentence is the stored start of induction and which is the stored stop. A one-enzyme row names a stored narrow-index flag when the row does not already say so. Not a milligram and not a restart date.",
+  "A check is planned as resolve, pair, multi, phenotype, host, then reduce. A pair is the unit of work, so one pair is not split across enzymes. Findings are reduced in severity order after every pair returns. This does not change the severity the engine already stored.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",
