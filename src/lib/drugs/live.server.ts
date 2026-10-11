@@ -12,11 +12,11 @@ import type {
   ShortageHit,
 } from "./live";
 import { EMPTY_LIVE } from "./live";
+import { BoundedLRUCache } from "../server/cache";
 
 export type { DailyMedHit, FaersHit, FdaLabel, LiveSources, NdcHit, PubchemCard, RecallHit, RxnormCard, ShortageHit };
 
-const cache = new Map<string, { at: number; value: LiveSources }>();
-const TTL = 30 * 60 * 1000;
+export const liveCache = new BoundedLRUCache<LiveSources>(500, 30 * 60 * 1000);
 const UA = "FirstPass/1.0 (educational CYP desk; kaleblovingier@gmail.com)";
 
 function plain(s: string) {
@@ -273,38 +273,57 @@ export async function lookupLive(id: string, name: string): Promise<LiveSources>
   if (!chem) {
     return { ok: true, query: name, ...EMPTY_LIVE, reason: "No live label for this item." };
   }
-  const hit = cache.get(chem);
-  if (hit && Date.now() - hit.at < TTL) return hit.value;
 
   try {
-    const labeled = Boolean(query);
-    const [label, faers, rxnorm, pubchem, dailymed, shortage, ndc, recalls] = await Promise.all([
-      labeled ? fetchLabel(query) : Promise.resolve(null),
-      labeled ? fetchFaers(query) : Promise.resolve([]),
-      labeled ? fetchRxnorm(query) : fetchRxnorm(chem),
-      fetchPubchem(chem),
-      labeled ? fetchDailyMed(query) : Promise.resolve([]),
-      labeled ? fetchShortage(query) : Promise.resolve([]),
-      labeled ? fetchNdc(query) : Promise.resolve([]),
-      labeled ? fetchRecalls(query) : Promise.resolve([]),
-    ]);
-    const value: LiveSources = {
-      ok: true,
-      query: query || chem,
-      label,
-      faers,
-      rxnorm,
-      pubchem,
-      dailymed,
-      shortage,
-      ndc,
-      recalls,
-      reason: labeled ? undefined : "No FDA label for this item — PubChem still ran.",
-    };
-    cache.set(chem, { at: Date.now(), value });
-    return value;
+    return await liveCache.getOrFetch(chem, async () => {
+      const labeled = Boolean(query);
+      const [
+        labelRes,
+        faersRes,
+        rxnormRes,
+        pubchemRes,
+        dailymedRes,
+        shortageRes,
+        ndcRes,
+        recallsRes,
+      ] = await Promise.allSettled([
+        labeled ? fetchLabel(query) : Promise.resolve(null),
+        labeled ? fetchFaers(query) : Promise.resolve([]),
+        labeled ? fetchRxnorm(query) : fetchRxnorm(chem),
+        fetchPubchem(chem),
+        labeled ? fetchDailyMed(query) : Promise.resolve([]),
+        labeled ? fetchShortage(query) : Promise.resolve([]),
+        labeled ? fetchNdc(query) : Promise.resolve([]),
+        labeled ? fetchRecalls(query) : Promise.resolve([]),
+      ]);
+
+      const label = labelRes.status === "fulfilled" ? labelRes.value : null;
+      const faers = faersRes.status === "fulfilled" ? faersRes.value : [];
+      const rxnorm = rxnormRes.status === "fulfilled" ? rxnormRes.value : null;
+      const pubchem = pubchemRes.status === "fulfilled" ? pubchemRes.value : null;
+      const dailymed = dailymedRes.status === "fulfilled" ? dailymedRes.value : [];
+      const shortage = shortageRes.status === "fulfilled" ? shortageRes.value : [];
+      const ndc = ndcRes.status === "fulfilled" ? ndcRes.value : [];
+      const recalls = recallsRes.status === "fulfilled" ? recallsRes.value : [];
+
+      const value: LiveSources = {
+        ok: true,
+        query: query || chem,
+        label,
+        faers,
+        rxnorm,
+        pubchem,
+        dailymed,
+        shortage,
+        ndc,
+        recalls,
+        reason: labeled ? undefined : "No FDA label for this item — PubChem still ran.",
+      };
+      return value;
+    });
   } catch (err) {
     const reason = err instanceof Error ? (err.name === "AbortError" ? "Timed out." : err.message) : "Unreachable.";
     return { ok: false, query: query || chem, ...EMPTY_LIVE, reason };
   }
 }
+

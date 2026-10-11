@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { CheckSquare, Square } from "lucide-react";
+import { CheckSquare, FileText, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
+import { useDesk } from "@/lib/drugs/store";
 import {
   AGE_LABEL,
   ALCOHOL_LABEL,
@@ -17,15 +18,17 @@ import {
   type HostContext,
 } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface MedicationReviewProps {
   ids: string[];
   host: HostContext;
   findings: Finding[];
   doses: Record<string, string>;
+  onOpenPacket?: () => void;
 }
 
-export function MedicationReview({ ids, host, findings, doses }: MedicationReviewProps) {
+export function MedicationReview({ ids, host, findings, doses, onOpenPacket }: MedicationReviewProps) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [showRemainingOnly, setShowRemainingOnly] = useState(false);
   const highAlertItems = alertsOnDesk(ids);
@@ -84,7 +87,7 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
           {
             id: "finding",
             title: "Review the strongest mapped finding",
-            detail: `${SEVERITY_LABEL[highest.severity]} — ${highest.headline}. A category from this model is not an individual risk estimate.`,
+            detail: `${SEVERITY_LABEL[highest.severity]} — ${highest.headline}${highest.enzymes.length ? `. Enzymes on this row: ${highest.enzymes.join(", ")}.` : ""} A category from this model is not an individual risk estimate.`,
           },
         ]
       : [
@@ -149,7 +152,18 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
             A verification aid, not an order set or patient record. Checkmarks are temporary and reset when the regimen or modeled context changes.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {onOpenPacket ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenPacket}
+              className="h-8 gap-1.5 text-xs font-medium"
+            >
+              <FileText className="size-3.5 text-accent" />
+              Sign-off packet
+            </Button>
+          ) : null}
           <span className="rounded-full bg-bg-sunken px-2.5 py-1 font-mono text-[10px] text-muted" aria-live="polite">
             {completed}/{totalChecks} reviewed
           </span>
@@ -300,6 +314,15 @@ export function MedicationReview({ ids, host, findings, doses }: MedicationRevie
         </p>
       ) : null}
 
+      {findings.length > 0 ? (
+        <button
+          type="button"
+          className="mb-3 inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+          onClick={() => useDesk.getState().setView("study")}
+        >
+          Rehearse these rows
+        </button>
+      ) : null}
       <ul className="mt-4 grid gap-2 sm:grid-cols-2">
         {visibleChecks.map((check) => {
           const Icon = checked[check.id] ? CheckSquare : Square;

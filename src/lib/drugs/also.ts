@@ -98,7 +98,7 @@ export function conditionLanes(ids: string[], host: HostContext, already: Set<st
     .filter((lane) => lane.findings.length > 0);
 }
 
-export function sameShelf(ids: string[]): string | null {
+export function sameShelfGroups(ids: string[]): { cls: string; names: string[] }[] {
   const named = realIds(ids)
     .map((id) => DRUG_BY_ID[id])
     .filter((d): d is Drug => Boolean(d) && d.kind === "drug");
@@ -108,7 +108,11 @@ export function sameShelf(ids: string[]): string | null {
     list.push(d.name);
     by.set(d.cls, list);
   }
-  const dups = [...by.entries()].filter(([, names]) => names.length > 1);
+  return [...by.entries()].filter(([, names]) => names.length > 1).map(([cls, names]) => ({ cls, names }));
+}
+
+export function sameShelf(ids: string[]): string | null {
+  const dups = sameShelfGroups(ids);
   if (!dups.length) return null;
-  return dups.map(([cls, names]) => `${names.join(" and ")} are both on the ${cls} shelf`).join(". ");
+  return dups.map(({ cls, names }) => `${names.join(" and ")} are both on the ${cls} shelf`).join(". ");
 }

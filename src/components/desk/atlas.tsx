@@ -30,6 +30,12 @@ export function EnzymeAtlas() {
     ? (atlasEnzyme as Enzyme)
     : "CYP3A4";
   const bucket = index[enzyme];
+  const strongInhibitors = bucket.inhibitors.filter((drug) =>
+    drug.enzymes.some(
+      (role) => role.enzyme === enzyme && role.kind === "inhibitor" && role.strength === "strong",
+    ),
+  ).length;
+  const atlasMapLine = `On this map: ${bucket.substrates.length} substrates, ${bucket.inhibitors.length} inhibitors, ${bucket.inducers.length} inducers.${strongInhibitors > 0 ? ` ${strongInhibitors} of the inhibitors are strong.` : ""} Not a clearance.`;
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -58,6 +64,13 @@ export function EnzymeAtlas() {
             </p>
             <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{ATLAS_ENZYME_PLAIN[enzyme].nickname}</h2>
             <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-muted">{enzyme}</p>
+            <button
+              type="button"
+              className="h-10 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+              onClick={() => useDesk.getState().setView("study")}
+            >
+              Quiz this enzyme
+            </button>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg">{ATLAS_ENZYME_PLAIN[enzyme].blurb}</p>
             <div className="mt-3 max-w-2xl rounded-xl border border-accent/15 bg-accent-soft/30 p-3">
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">{ATLAS_COACH.kicker}</p>
@@ -147,29 +160,32 @@ export function EnzymeAtlas() {
           </div>
         )
       ) : (
-        <div className="grid gap-3 lg:grid-cols-3">
-          <AtlasColumn
-            role="substrate"
-            drugs={bucket.substrates}
-            selected={selected}
-            onAdd={add}
-            enzyme={enzyme}
-          />
-          <AtlasColumn
-            role="inhibitor"
-            drugs={bucket.inhibitors}
-            selected={selected}
-            onAdd={add}
-            enzyme={enzyme}
-          />
-          <AtlasColumn
-            role="inducer"
-            drugs={bucket.inducers}
-            selected={selected}
-            onAdd={add}
-            enzyme={enzyme}
-          />
-        </div>
+        <>
+          <p className="text-sm leading-relaxed text-muted">{atlasMapLine}</p>
+          <div className="grid gap-3 lg:grid-cols-3">
+            <AtlasColumn
+              role="substrate"
+              drugs={bucket.substrates}
+              selected={selected}
+              onAdd={add}
+              enzyme={enzyme}
+            />
+            <AtlasColumn
+              role="inhibitor"
+              drugs={bucket.inhibitors}
+              selected={selected}
+              onAdd={add}
+              enzyme={enzyme}
+            />
+            <AtlasColumn
+              role="inducer"
+              drugs={bucket.inducers}
+              selected={selected}
+              onAdd={add}
+              enzyme={enzyme}
+            />
+          </div>
+        </>
       )}
       <p className="text-[11px] leading-relaxed text-subtle">{ATLAS_FOOTER}</p>
     </div>
@@ -219,7 +235,7 @@ function AtlasColumn({
                     {index ? ` · ${ATLAS_FDA_INDEX.tag}` : ""}
                   </span>
                 </span>
-                <span className="font-mono text-[10px] text-subtle">{copy.tag}</span>
+                <span className="font-mono text-[10px] text-subtle">{on ? "On desk" : copy.tag}</span>
               </button>
             </li>
           );

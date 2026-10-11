@@ -1,3 +1,4 @@
+import { useDesk } from "@/lib/drugs/store";
 import { ENZYMES, type Drug, type Enzyme } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 
@@ -78,8 +79,16 @@ function Occupancy({
 }
 
 export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set<Enzyme> }) {
+  const setAtlasEnzyme = useDesk((s) => s.setAtlasEnzyme);
+  const setView = useDesk((s) => s.setView);
   const mapped = drugs.filter((d) => d.enzymes.length > 0);
   if (mapped.length === 0) return null;
+
+  const counted = ENZYMES.flatMap((enzyme) => {
+    const count = mapped.filter((d) => d.enzymes.some((role) => role.enzyme === enzyme)).length;
+    return count > 0 ? [{ enzyme, short: enzyme.replace("CYP", ""), count }] : [];
+  });
+  const parts = counted.map(({ short, count }) => `${short} ${count}`).join(" · ");
 
   return (
     <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
@@ -105,6 +114,7 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
       </div>
       <p className="mb-2 text-[11px] leading-relaxed text-muted">
         On narrow screens, scroll the map horizontally to see every enzyme. Drug names stay pinned.
+        Tap an enzyme to open it in the atlas.
       </p>
       <div className="-mx-1 overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0 text-left">
@@ -114,14 +124,21 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
                 Drug
               </th>
               {ENZYMES.map((e) => (
-                <th
-                  key={e}
-                  className={cn(
-                    "px-1 py-2 text-center font-mono text-[10px] font-medium uppercase tracking-wide",
-                    colliding.has(e) ? "text-danger" : "text-muted",
-                  )}
-                >
-                  {e.replace("CYP", "")}
+                <th key={e} className="px-1 py-2 text-center">
+                  <button
+                    type="button"
+                    title={`Open ${e} in the atlas`}
+                    className={cn(
+                      "font-mono text-[10px] font-medium uppercase tracking-wide",
+                      colliding.has(e) ? "text-danger" : "text-muted",
+                    )}
+                    onClick={() => {
+                      setAtlasEnzyme(e);
+                      setView("atlas");
+                    }}
+                  >
+                    {e.replace("CYP", "")}
+                  </button>
                 </th>
               ))}
             </tr>
@@ -152,6 +169,29 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
           </tbody>
         </table>
       </div>
+      {parts ? (
+        <>
+          <p className="mt-2 text-[11px] leading-relaxed text-muted">
+            On this tray: {parts}. A count of drugs here that touch that enzyme. Not a collision by
+            itself.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {counted.map(({ enzyme, short, count }) => (
+              <button
+                key={enzyme}
+                type="button"
+                className="h-10 rounded-full bg-bg-sunken px-3 font-mono text-[10px] uppercase tracking-wide text-muted"
+                onClick={() => {
+                  setAtlasEnzyme(enzyme);
+                  setView("atlas");
+                }}
+              >
+                {short} {count}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
     </section>
   );
 }

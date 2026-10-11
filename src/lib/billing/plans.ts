@@ -14,7 +14,7 @@ export interface Plan {
 
 /**
  * Buyer-facing plans. Plans page shows two: Free and Founding ($79 once).
- * "pro" stays in the list for the 7-day preview and older keys (app labels,
+ * "pro" stays in the list for the 1-day preview and older keys (app labels,
  * Stripe pricing) — it is not sold as a separate tier on the Plans page.
  */
 export const PLANS: Plan[] = [
@@ -38,7 +38,7 @@ export const PLANS: Plan[] = [
   {
     id: "pro",
     name: "Unlocked",
-    tagline: "7-day preview and older keys — founding tools without export.",
+    tagline: "1-day preview and older keys — founding tools without export.",
     monthly: 12,
     yearly: 99,
     lifetime: 79,
@@ -63,6 +63,7 @@ export const PLANS: Plan[] = [
       "Everything on the free desk",
       "Up to eight drugs on the desk",
       "Host factors: metabolizer status, smoking, alcohol pattern, route, age, kidney, pregnancy",
+      "Contraindicated disease & organ conditions matrix",
       "Enzyme atlas",
       "Metabolite maps and stack-load meters",
       "Full copyable interaction report",

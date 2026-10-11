@@ -153,7 +153,7 @@ function FindingCard({ finding }: { finding: Finding }) {
   const [open, setOpen] = useState(
     finding.severity === "contraindicated" || finding.severity === "major",
   );
-  const drugs = finding.drugIds.map((id) => DRUG_BY_ID[id]).filter(Boolean);
+  const drugs = [...new Set(finding.drugIds)].map((id) => DRUG_BY_ID[id]).filter(Boolean);
   const plainSummary = plainLanguageSummary(finding);
   const scan = clinicianScan(finding);
 

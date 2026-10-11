@@ -324,7 +324,7 @@ export function basisFor(finding: Finding): FindingBasis[] {
   if (out.length === 0) {
     out.push({
       kind: "desk",
-      label: "FirstPass map",
+      label: "Curated map — no external source verified",
       detail:
         "Curated CYP / PD map. Independently review the Prescribing Information and primary literature before acting. Absence of an FDA box here is not absence of risk.",
       href: finding.drugIds[0] ? dailymedSearchUrl(DRUG_BY_ID[finding.drugIds[0]]?.name ?? "") : undefined,

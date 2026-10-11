@@ -15,6 +15,7 @@ import {
   type Severity,
 } from "@/lib/drugs/types";
 import { SAMPLE_REGIMENS, sampleNeedsPro, type SampleRegimen } from "@/lib/drugs/samples";
+import { FDA_GRADES } from "@/lib/drugs/cyp-protocol";
 import { severitySurface } from "./severity";
 
 interface CaseCompareProps {
@@ -52,6 +53,13 @@ function findingsFor(sample: SampleRegimen) {
   return analyze(sample.drugIds, hostFor(sample), parseDoses(sample.doses)).findings;
 }
 
+function kindWord(kind: Finding["kind"]): string {
+  if (kind === "pk") return "Levels";
+  if (kind === "pd") return "Effects";
+  if (kind === "geno") return "Genes";
+  return "Clinic";
+}
+
 function FindingRow({
   finding,
   shared,
@@ -62,12 +70,18 @@ function FindingRow({
   otherSeverity?: Severity;
 }) {
   const severityChanged = shared && otherSeverity !== undefined && finding.severity !== otherSeverity;
+  const gradeWord = finding.mechanism.trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+  const grade = gradeWord === "strong" || gradeWord === "moderate" || gradeWord === "weak" ? gradeWord : null;
+  const kind = finding.tags.includes("inducer") ? "inducer" : finding.tags.includes("inhibitor") ? "inhibitor" : null;
 
   return (
     <li className="rounded-lg border border-border bg-surface-2 p-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${severitySurface(finding.severity)}`}>
           {SEVERITY_LABEL[finding.severity]}
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+          {kindWord(finding.kind)}
         </span>
         <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
           {shared ? "In both cases" : "Only in this case"}
@@ -80,6 +94,14 @@ function FindingRow({
       </div>
       <p className="mt-2 text-sm font-medium leading-snug text-fg">{finding.headline}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{finding.effect}</p>
+      {finding.enzymes.length > 0 ? (
+        <p className="mt-1 font-mono text-[11px] uppercase text-subtle">{finding.enzymes.join(" · ")}</p>
+      ) : null}
+      {grade && kind ? (
+        <p className="mt-1 text-xs leading-relaxed text-muted">
+          FDA fold: {FDA_GRADES[kind][grade].fold}. Not a milligram.
+        </p>
+      ) : null}
     </li>
   );
 }

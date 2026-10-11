@@ -481,7 +481,7 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         dr[0],
         dr[1],
         names(dr[0], dr[1]),
-        "contraindicated",
+        ali ? "contraindicated" : "major",
         "danger",
         ali ? "aliskiren × ACEI / ARB — dual RAAS" : "ACE inhibitor × ARB — dual RAAS blockade",
         ali

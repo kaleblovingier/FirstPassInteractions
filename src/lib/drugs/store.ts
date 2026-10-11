@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DRUG_BY_ID } from "./catalog";
+import { normalizeStudyMarks, scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
@@ -30,7 +31,8 @@ type View =
   | "label"
   | "study"
   | "compare"
-  | "watch";
+  | "watch"
+  | "help";
 
 export interface LoadExtras {
   phenotypes?: Partial<PhenotypeMap>;
@@ -54,11 +56,15 @@ interface DeskState {
   kidney: KidneyBand;
   preg: PregBand;
   doses: Record<string, string>;
-  studyMarks: Record<string, "got" | "miss">;
+  studyMarks: Record<string, StudyMark>;
   plan: PlanId;
   license: string | null;
   lifetime: boolean;
   previewUntil: number | null;
+  /** True after a preview has been started on this browser. Not cleared by returning to free. */
+  previewUsed: boolean;
+  /** Class name to open on the formulary. Not saved. */
+  libraryShelf: string;
   justActivated: boolean;
   hcpAck: boolean;
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
@@ -68,6 +74,7 @@ interface DeskState {
   load: (ids: string[], extras?: LoadExtras) => boolean;
   setView: (view: View) => void;
   setAtlasEnzyme: (id: string | null) => void;
+  openShelf: (cls: string) => void;
   setPhenotype: (enzyme: PhenotypeEnzyme, value: Metabolizer) => void;
   setSmoking: (smoking: boolean) => void;
   setKetamineRoute: (route: KetamineRoute) => void;
@@ -77,7 +84,7 @@ interface DeskState {
   setKidney: (kidney: KidneyBand) => void;
   setPreg: (preg: PregBand) => void;
   setDose: (id: string, value: string) => void;
-  markStudy: (id: string, mark: "got" | "miss") => void;
+  markStudy: (id: string, grade: StudyGrade) => void;
   clearStudy: () => void;
   resetPhenotypes: () => void;
   openCheckout: (plan: PlanId, reason?: string, interval?: Interval) => void;
@@ -116,6 +123,8 @@ export const useDesk = create<DeskState>()(
       license: null,
       lifetime: false,
       previewUntil: null,
+      previewUsed: false,
+      libraryShelf: "",
       justActivated: false,
       hcpAck: false,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
@@ -225,6 +234,7 @@ export const useDesk = create<DeskState>()(
         }
         set({ atlasEnzyme, view: "atlas" });
       },
+      openShelf: (cls) => set({ libraryShelf: cls, view: "library" }),
       setPhenotype: (enzyme, value) => {
         if (activePlan(get()) === "free") {
           get().openCheckout("lab", foundingGateCopy("host").reason, "life");
@@ -285,7 +295,10 @@ export const useDesk = create<DeskState>()(
         else next[id] = trimmed;
         set({ doses: next });
       },
-      markStudy: (id, mark) => set({ studyMarks: { ...get().studyMarks, [id]: mark } }),
+      markStudy: (id, grade) => {
+        const prev = get().studyMarks[id];
+        set({ studyMarks: { ...get().studyMarks, [id]: scheduleStudyMark(prev, grade) } });
+      },
       clearStudy: () => set({ studyMarks: {} }),
       resetPhenotypes: () =>
         set({
@@ -310,13 +323,16 @@ export const useDesk = create<DeskState>()(
       },
       closeCheckout: () => set({ checkout: { ...get().checkout, open: false } }),
       setCheckoutInterval: (interval) => set({ checkout: { ...get().checkout, interval } }),
-      startPreview: () =>
+      startPreview: () => {
+        if (get().previewUsed) return;
         set({
-          previewUntil: Date.now() + 7 * 24 * 60 * 60 * 1000,
+          previewUsed: true,
+          previewUntil: Date.now() + 24 * 60 * 60 * 1000,
           checkout: { ...get().checkout, open: false },
           view: "desk",
           justActivated: false,
-        }),
+        });
+      },
       activateLicense: ({ plan, license, lifetime }) =>
         set({
           plan: plan === "lab" ? "lab" : "pro",
@@ -358,9 +374,10 @@ export const useDesk = create<DeskState>()(
           kidney: p.kidney === "ckd" ? "ckd" : "ok",
           preg: p.preg === "pregnant" || p.preg === "lactating" ? p.preg : "off",
           doses: p.doses && typeof p.doses === "object" ? p.doses : {},
-          studyMarks: p.studyMarks && typeof p.studyMarks === "object" ? p.studyMarks : {},
+          studyMarks: normalizeStudyMarks(p.studyMarks),
           justActivated: false,
           hcpAck: Boolean(p.hcpAck),
+          previewUsed: Boolean(p.previewUsed) || typeof p.previewUntil === "number",
         };
       },
       partialize: (s) => ({
@@ -379,6 +396,7 @@ export const useDesk = create<DeskState>()(
         license: s.license,
         lifetime: s.lifetime,
         previewUntil: s.previewUntil,
+        previewUsed: s.previewUsed,
         hcpAck: s.hcpAck,
       }),
     },

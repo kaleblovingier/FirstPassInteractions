@@ -13,18 +13,18 @@
 
 **Denominator:** only (drug, target, role) pairs that FDA's Table 1 actually lists **and** whose drug resolves to a catalog entry. Catalog drugs absent from the FDA table are never counted as disagreements.
 
-- Pairs compared: **277** (from 183 FDA drug names matched to the catalog; 30 FDA names not in catalog)
-- Exact agreement (role + FDA class/grade): **85.2% (236/277)**
-- Role agreement (same role on the target, class/grade ignored): **98.6% (273/277)**
-- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (34/34)**; role: 100% (34/34) (regression gate baseline: 100%)
+- Pairs compared: **280** (from 186 FDA drug names matched to the catalog; 27 FDA names not in catalog)
+- Exact agreement (role + FDA class/grade): **84.6% (237/280)**
+- Role agreement (same role on the target, class/grade ignored): **97.9% (274/280)**
+- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (35/35)**; role: 100% (35/35) (regression gate baseline: 100%)
 
 | Category | Count | In formulary review list? |
 | --- | ---: | --- |
 | direction_mismatch | 0 | yes |
 | strength_mismatch | 37 | yes |
-| missing_in_catalog | 4 | yes |
-| not_in_fda | 50 | no (informational) |
-| drug_not_in_catalog | 30 | no (coverage) |
+| missing_in_catalog | 6 | yes |
+| not_in_fda | 52 | no (informational) |
+| drug_not_in_catalog | 27 | no (coverage) |
 
 Reviewed direction-mismatch allowlist entries: 0.
 
@@ -38,7 +38,7 @@ Reviewed direction-mismatch allowlist entries: 0.
 | CYP2C9 | 21 | 81% | 95.2% | 3 | 0 | 1 |
 | CYP2C19 | 20 | 90% | 95% | 1 | 0 | 1 |
 | CYP2D6 | 34 | 88.2% | 100% | 4 | 0 | 0 |
-| CYP3A4 (FDA "3A") | 121 | 84.3% | 99.2% | 18 | 0 | 1 |
+| CYP3A4 (FDA "3A") | 124 | 83.1% | 97.6% | 18 | 0 | 3 |
 | P-gp | 24 | 100% | 100% | 0 | 0 | 0 |
 
 ## Formulary owner review list
@@ -86,9 +86,11 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 | 36 | strength_mismatch | vardenafil | `vardenafil` | CYP3A4 | substrate (FDA sensitive) | substrate (major) | — |
 | 37 | strength_mismatch | warfarin | `warfarin` | CYP2C9 | substrate (FDA moderate-sensitive) | substrate (sensitive) | fn 19 |
 | 38 | missing_in_catalog | clotrimazole | `clotrimazole` | CYP3A4 | inhibitor (FDA weak) | — | — |
-| 39 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
-| 40 | missing_in_catalog | resmetirom | `resmetirom` | CYP2C8 | substrate (FDA moderate-sensitive) | inhibitor (weak) | — |
-| 41 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
+| 39 | missing_in_catalog | elagolix | `elagolix` | CYP3A4 | inducer (FDA weak) | — | — |
+| 40 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
+| 41 | missing_in_catalog | resmetirom | `resmetirom` | CYP2C8 | substrate (FDA moderate-sensitive) | inhibitor (weak) | — |
+| 42 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
+| 43 | missing_in_catalog | tipranavir | `tipranavir` | CYP3A4 | substrate (FDA sensitive) | — | fn 6 |
 
 <details><summary>FDA footnotes cited above</summary>
 
@@ -109,7 +111,7 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 
 The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target where FDA's table lists none. FDA's table is illustrative, so these are not errors and are not in the review list.
 
-<details><summary>50 catalog assertions</summary>
+<details><summary>52 catalog assertions</summary>
 
 - abiraterone (`abiraterone`) · CYP2C8 · inhibitor (moderate)
 - adagrasib (`adagrasib`) · CYP2D6 · inhibitor (moderate)
@@ -127,6 +129,7 @@ The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target
 - diltiazem (`diltiazem`) · P-gp · inhibitor (moderate)
 - disulfiram (`disulfiram`) · CYP1A2 · inhibitor (weak)
 - dronedarone (`dronedarone`) · CYP2D6 · inhibitor (weak)
+- elagolix (`elagolix`) · CYP2C19 · inhibitor (weak)
 - etravirine (`etravirine`) · CYP2C9 · inhibitor (weak)
 - etravirine (`etravirine`) · CYP2C19 · inhibitor (moderate)
 - fluoxetine (`fluoxetine`) · CYP3A4 · inhibitor (weak)
@@ -161,14 +164,15 @@ The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target
 - St. John’s wort (`st-johns-wort`) · CYP2C19 · inducer (moderate)
 - St. John’s wort (`st-johns-wort`) · P-gp · inducer (strong)
 - St. John’s wort (`st-johns-wort`) · CYP2C9 · inducer (weak)
+- tipranavir (`tipranavir`) · P-gp · inhibitor (weak)
 
 </details>
 
 ## Coverage: FDA drugs not in catalog
 
-<details><summary>30 names</summary>
+<details><summary>27 names</summary>
 
-belumosudil, danicopan, diosmin, elagolix, eliglustat, elvitegravir and ritonavir, fostamatinib, indinavir, indinavir and ritonavir, leniolisib, lomitapide, lorcaserin, methoxsalen, nelfinavir, paritaprevir and ritonavir and (ombitasvir and/or dasabuvir), R-venlafaxine, S-mephenytoin, S-venlafaxine, saquinavir, saquinavir and ritonavir, sevabertinib, taletrectinib, telithromycin, tenofovir, ticlopidine, tipranavir, tipranavir and ritonavir, tobacco (smoking), tolbutamide, trimethoprim
+belumosudil, danicopan, diosmin, eliglustat, elvitegravir and ritonavir, fostamatinib, indinavir, indinavir and ritonavir, leniolisib, lomitapide, lorcaserin, methoxsalen, nelfinavir, paritaprevir and ritonavir and (ombitasvir and/or dasabuvir), R-venlafaxine, S-mephenytoin, S-venlafaxine, saquinavir, saquinavir and ritonavir, sevabertinib, taletrectinib, tenofovir, ticlopidine, tipranavir and ritonavir, tobacco (smoking), tolbutamide, trimethoprim
 
 </details>
 

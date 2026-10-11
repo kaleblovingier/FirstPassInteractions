@@ -64,6 +64,15 @@ export function CitesPage() {
 
   const hasFilter = tag !== "all" || q.trim().length > 0;
   const pubmedQuery = q.trim() || "drug interaction CYP";
+  const onDesk =
+    selected.length > 0
+      ? rows.filter((c) => c.drugIds.some((id) => selected.includes(id)))
+      : [];
+  const rest =
+    selected.length > 0
+      ? rows.filter((c) => !c.drugIds.some((id) => selected.includes(id)))
+      : [];
+  const showDeskShelf = onDesk.length > 0;
 
   function clearFilter() {
     setQ("");
@@ -181,6 +190,45 @@ export function CitesPage() {
           }}
           onView={setView}
         />
+      ) : showDeskShelf ? (
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+            Cited for a name on this desk
+          </p>
+          <ul className="mt-2 space-y-2">
+            {onDesk.map((c) => (
+              <CiteCard
+                key={c.pmid}
+                cite={c}
+                selected={selected}
+                onAdd={(id) => {
+                  const ok = add(id);
+                  if (ok) setView("desk");
+                }}
+              />
+            ))}
+          </ul>
+          {rest.length > 0 ? (
+            <>
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+                Rest of this shelf
+              </p>
+              <ul className="mt-2 space-y-2">
+                {rest.map((c) => (
+                  <CiteCard
+                    key={c.pmid}
+                    cite={c}
+                    selected={selected}
+                    onAdd={(id) => {
+                      const ok = add(id);
+                      if (ok) setView("desk");
+                    }}
+                  />
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
       ) : (
         <ul className="space-y-2">
           {rows.map((c) => (
@@ -298,6 +346,11 @@ function CiteCard({
   selected: string[];
   onAdd: (id: string) => void;
 }) {
+  const names = cite.drugIds
+    .filter((id) => selected.includes(id))
+    .map((id) => DRUG_BY_ID[id]?.name ?? id)
+    .join(", ");
+
   return (
     <li className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -307,6 +360,11 @@ function CiteCard({
         </span>
       </div>
       <h3 className="mt-2 font-serif text-lg leading-snug tracking-tight text-fg">{cite.title}</h3>
+      {names ? (
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-accent">
+          On this desk: {names}
+        </p>
+      ) : null}
       <p className="mt-2 text-sm leading-relaxed text-muted">{cite.why}</p>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {cite.drugIds.map((id) => {

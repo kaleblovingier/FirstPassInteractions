@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { Copy, Check, RotateCcw, Download, Share2 } from "lucide-react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
@@ -32,6 +32,7 @@ import {
   PHENOTYPE_ENZYMES,
   SEVERITY_LABEL,
   type Enzyme,
+  type EnzymeRole,
   type HostContext,
   type Severity,
 } from "@/lib/drugs/types";
@@ -59,8 +60,6 @@ import { MetaboliteCard } from "./metabolites";
 import { Paywall } from "./paywall";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import { CheckoutDrawer, PlansPage } from "./plans";
-import { Foundry } from "./foundry";
-import { RoundsPage } from "./rounds";
 import { HostDelta } from "./delta";
 import { DeskFooter } from "./operator";
 import { severitySurface } from "./severity";
@@ -71,18 +70,48 @@ import { Formulary } from "./library";
 import { WashoutCard } from "./washout";
 import { PkExplorer } from "./pk";
 import { StripeReturn } from "./stripe-return";
-import { Dossier } from "./dossier";
 import { ClinicPanel } from "./clinic";
-import { CitesPage } from "./cites";
 import { WindowBriefing } from "./window";
 import { WindowExtras } from "./tray";
-import { ClinicalBoard } from "./clinical";
-import { StudyPage } from "./study";
-import { CaseCompare } from "./compare";
 import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
-import { LabelPage } from "./label";
 import { PrescribingStrip } from "./pi";
+
+const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
+const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
+const Foundry = lazy(() => import("./foundry").then((m) => ({ default: m.Foundry })));
+const Dossier = lazy(() => import("./dossier").then((m) => ({ default: m.Dossier })));
+const HelpPage = lazy(() => import("./help").then((m) => ({ default: m.HelpPage })));
+const RoundsPage = lazy(() => import("./rounds").then((m) => ({ default: m.RoundsPage })));
+const CaseCompare = lazy(() => import("./compare").then((m) => ({ default: m.CaseCompare })));
+const LabelPage = lazy(() => import("./label").then((m) => ({ default: m.LabelPage })));
+const CitesPage = lazy(() => import("./cites").then((m) => ({ default: m.CitesPage })));
+const ClinicalPacketDialog = lazy(() =>
+  import("./clinical-packet-dialog").then((m) => ({ default: m.ClinicalPacketDialog })),
+);
+
+function chipEnzymeMark(enzymes: EnzymeRole[]): string | null {
+  const perp = enzymes.find(
+    (role): role is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
+      role.kind === "inhibitor" || role.kind === "inducer",
+  );
+  if (perp) return `${perp.strength} ${perp.enzyme.replace("CYP", "")}`;
+  const sub = enzymes.find(
+    (role): role is Extract<EnzymeRole, { kind: "substrate" }> => role.kind === "substrate",
+  );
+  if (!sub) return null;
+  const label = `${sub.sensitivity} ${sub.enzyme.replace("CYP", "")}`;
+  return sub.pathway === "activation" ? `${label} activation` : label;
+}
+
+function DeskFallback({ label = "Loading desk view…" }: { label?: string }) {
+  return (
+    <div role="status" className="py-8 text-center text-xs text-muted">
+      {label}
+    </div>
+  );
+}
+import { AddictionSafetyBanner } from "./safety-banner";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 
 export function DeskApp() {
@@ -90,6 +119,7 @@ export function DeskApp() {
   const setView = useDesk((s) => s.setView);
   const selectedRaw = useDesk((s) => s.selected);
   const [hydrated, setHydrated] = useState(false);
+  const [signOffOpen, setSignOffOpen] = useState(false);
   const [activePackId, setActivePackId] = useState<PackId | null>(null);
   const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
   const permalinkApplied = useRef(false);
@@ -263,8 +293,8 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center gap-2 xl:w-auto">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:flex-nowrap xl:justify-start xl:rounded-full">
+          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:justify-end">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap xl:flex-nowrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:rounded-full">
               {(
                 [
                   ["desk", "Desk"],
@@ -275,6 +305,7 @@ export function DeskApp() {
                   ["rounds", "Cases"],
                   ["compare", "Compare"],
                   ["label", "Safety"],
+                  ["help", "Find help"],
                   ["plans", "Plans"],
                 ] as const
               ).map(([id, label]) => (
@@ -284,7 +315,7 @@ export function DeskApp() {
                   onClick={() => setView(id)}
                   aria-current={view === id ? "page" : undefined}
                   className={cn(
-                    "h-11 shrink-0 rounded-full px-2 text-xs font-medium sm:h-9 sm:px-4 sm:text-sm",
+                    "h-11 shrink-0 whitespace-nowrap rounded-full px-2 text-xs font-medium sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm",
                     view === id ? "bg-surface-2 text-fg shadow-[var(--shadow-border)]" : "text-muted hover:text-fg",
                   )}
                 >
@@ -293,7 +324,7 @@ export function DeskApp() {
               ))}
             </nav>
             {hydrated && !pro ? (
-              <Button size="sm" className="hidden sm:inline-flex" onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
+              <Button size="sm" className="hidden shrink-0 sm:inline-flex" onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
               </Button>
             ) : null}
@@ -302,25 +333,44 @@ export function DeskApp() {
       </header>
 
       {hydrated && !hcpAck ? (
-        <div className="border-b border-border bg-warn-soft">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p className="max-w-3xl text-sm leading-relaxed text-fg">
-              <span className="font-medium">For clinicians and supervised learning.</span> Not for
-              personal treatment, dose changes, or deciding whether to combine substances. This
-              educational checker can miss risks and cannot test what is in a product. If someone is
-              seriously unwell or may be overdosing, contact local emergency services or a poison
-              center now; do not wait for this checker.
-            </p>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <Button variant="secondary" size="sm" onClick={() => setView("label")}>
+        <aside aria-label="Clinical education disclaimer" className="border-b border-border bg-warn-soft/90 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm leading-relaxed text-fg">
+                <strong className="font-semibold text-fg">For clinicians and supervised learning.</strong> Not for
+                personal treatment, dose changes, or deciding whether to combine substances. This
+                educational checker can miss risks and cannot test what is in a product. If someone is
+                seriously unwell or may be overdosing, contact local emergency services or a poison
+                center immediately; do not wait for this checker.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap items-center gap-2 pt-1 md:pt-0">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setView("label")}
+                className="h-8 whitespace-nowrap text-xs font-medium"
+              >
                 Safety notes
               </Button>
-              <Button size="sm" onClick={ackHcp}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setView("help")}
+                className="h-8 whitespace-nowrap text-xs font-medium text-accent hover:text-accent-fg"
+              >
+                Find help
+              </Button>
+              <Button
+                size="sm"
+                onClick={ackHcp}
+                className="h-8 whitespace-nowrap text-xs font-semibold bg-fg text-bg hover:bg-fg/90"
+              >
                 Continue
               </Button>
             </div>
           </div>
-        </div>
+        </aside>
       ) : null}
 
       {justActivated ? (
@@ -346,26 +396,42 @@ export function DeskApp() {
         {view === "plans" ? (
           <PlansPage />
         ) : view === "foundry" ? (
-          <Foundry />
+          <Suspense fallback={<DeskFallback />}>
+            <Foundry />
+          </Suspense>
         ) : view === "rounds" ? (
-          <RoundsPage />
+          <Suspense fallback={<DeskFallback />}>
+            <RoundsPage />
+          </Suspense>
         ) : view === "study" ? (
-          <StudyPage />
+          <Suspense fallback={<DeskFallback />}>
+            <StudyPage />
+          </Suspense>
         ) : view === "compare" ? (
-          <CaseCompare
-            pro={pro}
-            onUnlock={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}
-            onOpenCase={(sample) => loadSample(sample.id, null)}
-          />
+          <Suspense fallback={<DeskFallback />}>
+            <CaseCompare
+              pro={pro}
+              onUnlock={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}
+              onOpenCase={(sample) => loadSample(sample.id, null)}
+            />
+          </Suspense>
         ) : view === "cites" ? (
-          <CitesPage />
+          <Suspense fallback={<DeskFallback />}>
+            <CitesPage />
+          </Suspense>
         ) : view === "label" ? (
-          <LabelPage />
+          <Suspense fallback={<DeskFallback />}>
+            <LabelPage />
+          </Suspense>
+        ) : view === "help" ? (
+          <Suspense fallback={<DeskFallback />}>
+            <HelpPage />
+          </Suspense>
         ) : view === "atlas" ? (
           pro ? (
             <EnzymeAtlas />
           ) : (
-            <Paywall gate="atlas">
+            <Paywall gate="atlas" pin>
               <EnzymeAtlas />
             </Paywall>
           )
@@ -381,6 +447,7 @@ export function DeskApp() {
                     const drug = DRUG_BY_ID[id];
                     if (!drug) return null;
                     const entered = doses[id];
+                    const enzymeRole = chipEnzymeMark(drug.enzymes);
                     return (
                       <button
                         key={id}
@@ -390,6 +457,16 @@ export function DeskApp() {
                         title="Remove from regimen"
                       >
                         <span className="font-medium">{drug.name}</span>
+                        {drug.kind === "drug" ? (
+                          <span className="max-w-28 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
+                            {drug.cls}
+                          </span>
+                        ) : null}
+                        {enzymeRole ? (
+                          <span className="max-w-24 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
+                            {enzymeRole}
+                          </span>
+                        ) : null}
                         {entered ? (
                           <span
                             className="font-mono text-[11px] text-muted"
@@ -442,6 +519,14 @@ export function DeskApp() {
               {selected.length > 0 ? <WindowExtras /> : null}
 
               {selected.length > 0 ? (
+                <AddictionSafetyBanner
+                  selected={selected}
+                  host={host}
+                  onOpenHelp={() => setView("help")}
+                />
+              ) : null}
+
+              {selected.length > 0 ? (
                 <CheckBoard
                   ids={selected}
                   findings={report.findings}
@@ -456,6 +541,7 @@ export function DeskApp() {
                   host={host}
                   findings={report.findings}
                   doses={doses}
+                  onOpenPacket={() => setSignOffOpen(true)}
                 />
               ) : null}
 
@@ -475,11 +561,23 @@ export function DeskApp() {
                   <WindowBriefing ids={selected} host={host} report={report} />
                   <PrescribingStrip ids={selected} />
                   <ClinicPanel ids={selected} host={host} />
-                  <ClinicalBoard ids={selected} host={host} />
-                  <Dossier ids={selected} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+                    <ClinicalBoard ids={selected} host={host} />
+                  </Suspense>
+                  <Suspense fallback={<DeskFallback />}>
+                    <Dossier ids={selected} host={host} />
+                  </Suspense>
                   {report.findings.length > 0 ? (
                     <>
-                      <RiskBanner report={report} selected={selected} host={host} plan={plan} caseId={activeCaseId} packId={activePackId} />
+                      <RiskBanner
+                        report={report}
+                        selected={selected}
+                        host={host}
+                        plan={plan}
+                        caseId={activeCaseId}
+                        packId={activePackId}
+                        onOpenPacket={() => setSignOffOpen(true)}
+                      />
                       {pro ? (
                         <StackMeters stacks={report.stacks} />
                       ) : report.stacks.some((s) => s.score > 0) ? (
@@ -514,11 +612,21 @@ export function DeskApp() {
                 </>
               ) : (
                 <>
-                  <RiskBanner report={report} selected={selected} host={host} plan={plan} caseId={activeCaseId} packId={activePackId} />
+                  <RiskBanner
+                    report={report}
+                    selected={selected}
+                    host={host}
+                    plan={plan}
+                    caseId={activeCaseId}
+                    packId={activePackId}
+                    onOpenPacket={() => setSignOffOpen(true)}
+                  />
                   <WindowBriefing ids={selected} host={host} report={report} />
                   <PrescribingStrip ids={selected} />
                   <ClinicPanel ids={selected} host={host} />
-                  <ClinicalBoard ids={selected} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+                    <ClinicalBoard ids={selected} host={host} />
+                  </Suspense>
                   <button
                     type="button"
                     onClick={() => setView("study")}
@@ -548,7 +656,9 @@ export function DeskApp() {
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
                   )}
-                  <Dossier ids={selected} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+                    <Dossier ids={selected} host={host} />
+                  </Suspense>
                   <PkExplorer drugs={hostDrugs} host={host} />
                   {pro ? (
                     <MetaboliteCard ids={selected} />
@@ -604,6 +714,19 @@ export function DeskApp() {
       </main>
       <DeskFooter />
       <CheckoutDrawer />
+      <Suspense fallback={null}>
+        {signOffOpen ? (
+          <ClinicalPacketDialog
+            open={signOffOpen}
+            onClose={() => setSignOffOpen(false)}
+            selected={selected}
+            host={host}
+            findings={report.findings}
+            doses={doses}
+            onOpenHelp={() => setView("help")}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 }
@@ -916,6 +1039,7 @@ function RiskBanner({
   plan,
   caseId,
   packId,
+  onOpenPacket,
 }: {
   report: ReturnType<typeof analyze>;
   selected: string[];
@@ -923,6 +1047,7 @@ function RiskBanner({
   plan: ReturnType<typeof usePlan>;
   caseId: string | null;
   packId: PackId | null;
+  onOpenPacket?: () => void;
 }) {
   const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
   const openCheckout = useDesk((s) => s.openCheckout);
@@ -1043,6 +1168,17 @@ function RiskBanner({
         {copied === "share" ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
         {copied === "share" ? "Copied" : "Share"}
       </Button>
+      {onOpenPacket ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onOpenPacket}
+          className="h-10 min-w-28 shrink-0 border border-accent/30 text-fg hover:bg-accent-soft"
+        >
+          <FileText className="size-3.5 text-accent" />
+          Clinical packet
+        </Button>
+      ) : null}
       <Button variant="secondary" size="sm" onClick={() => void copySummary()} className="h-10 min-w-24 shrink-0">
         {copied === "full" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
         {copied === "full" ? "Copied" : plan === "free" ? "Full report · Founding" : "Report"}
@@ -1116,11 +1252,11 @@ function StatsCard({
   cap: number;
 }) {
   const previewing = Boolean(previewUntil && Date.now() < previewUntil && plan === "pro" && !license);
-  const previewDays = previewUntil ? Math.max(0, Math.ceil((previewUntil - Date.now()) / 86_400_000)) : 0;
+  const previewLeft = previewLabel(previewUntil);
   const licenseLabel = lifetime
     ? "Founding"
     : previewing
-      ? `Preview · ${previewDays}d`
+      ? `Preview · ${previewLeft}`
       : PLAN_BY_ID[plan].name;
   return (
     <div className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
@@ -1143,6 +1279,22 @@ function StatsCard({
       </div>
     </div>
   );
+}
+
+function previewLabel(until: number | null) {
+  if (!until) return "";
+  const ms = until - Date.now();
+  if (ms <= 0) return "0m";
+  if (ms >= 24 * 3_600_000) return `${Math.ceil(ms / 86_400_000)}d`;
+  let hours = Math.floor(ms / 3_600_000);
+  let mins = Math.ceil((ms % 3_600_000) / 60_000);
+  if (mins >= 60) {
+    hours += 1;
+    mins = 0;
+  }
+  if (hours >= 1 && mins > 0) return `${hours}h ${mins}m`;
+  if (hours >= 1) return `${hours}h`;
+  return `${Math.max(1, mins)}m`;
 }
 
 function Stat({ k, v }: { k: string; v: string }) {

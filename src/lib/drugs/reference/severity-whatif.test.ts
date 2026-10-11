@@ -27,7 +27,7 @@ test("what-if doc is generated from the engine and in sync (fails when stale)", 
   assert.ok(data.pairsScanned > 0);
   assert.equal(data.moved.length + data.labelCitedPkContra, data.pkPerpContraFindings);
   const md = render(data, gold);
-  assert.equal(readFileSync(DOC_PATH, "utf8"), md, "severity-whatif.md is stale; run npx --yes tsx scripts/severity-whatif.ts");
+  assert.equal(readFileSync(DOC_PATH, "utf8").replace(/\r\n/g, "\n"), md.replace(/\r\n/g, "\n"), "severity-whatif.md is stale; run npx --yes tsx scripts/severity-whatif.ts");
   assert.match(md, /This is a preview\. No severity has been changed\./);
   assert.match(md, /No clinician has reviewed this content\./);
   assert.match(md, /#58 and #60/);

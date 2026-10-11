@@ -1,5 +1,6 @@
 import { useMemo, useState, type MouseEvent } from "react";
 import { Copy, Check } from "lucide-react";
+import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { ROUND_SETTINGS, ROUNDS, roundNeedsPro, type Round, type RoundSetting } from "@/lib/drugs/rounds";
 import { ROUNDS_HOST_LINE } from "@/lib/drugs/host-plain";
 import { SAMPLE_REGIMENS } from "@/lib/drugs/samples";
@@ -170,6 +171,11 @@ export function RoundsPage() {
                 load(r.drugIds, extrasOf(r));
                 setView("desk");
               }}
+              onStudy={() => {
+                setStarted(true);
+                load(r.drugIds, extrasOf(r));
+                setView("study");
+              }}
               gated={plan === "free" && roundNeedsPro(r)}
             />
           ))}
@@ -258,12 +264,14 @@ function RoundCard({
   revealed,
   onReveal,
   onLoad,
+  onStudy,
   gated,
 }: {
   round: Round;
   revealed: boolean;
   onReveal: () => void;
   onLoad: () => void;
+  onStudy: () => void;
   gated: boolean;
 }) {
   return (
@@ -271,10 +279,33 @@ function RoundCard({
       <div className="flex gap-0">
         <Plate src={plateForSample(round)} alt="" className="hidden min-h-full w-24 shrink-0 sm:block" />
         <div className="min-w-0 flex-1 px-4 py-4 sm:px-5">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
-            {SETTING_PLAIN[round.setting]}
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
+              {SETTING_PLAIN[round.setting]}
+            </p>
+            {round.blurb ? (
+              <span className="font-mono text-[11px] text-muted">{round.blurb}</span>
+            ) : null}
+          </div>
           <h3 className="mt-1 font-serif text-xl tracking-tight text-fg">{round.title}</h3>
+          {round.drugIds.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {round.drugIds.map((id) => {
+                const drug = DRUG_BY_ID[id];
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex flex-col items-start rounded-md bg-bg-sunken px-2 py-0.5 font-mono text-[11px] text-muted"
+                  >
+                    {drug?.name ?? id}
+                    {drug?.cls ? (
+                      <span className="block text-[10px] text-subtle">{drug.cls}</span>
+                    ) : null}
+                  </span>
+                );
+              })}
+            </div>
+          ) : null}
           <p className="mt-2 text-sm leading-relaxed text-muted">{round.stem}</p>
           <p className="mt-3 text-sm font-medium text-fg">{round.ask}</p>
           {revealed ? (
@@ -284,7 +315,12 @@ function RoundCard({
             <Button size="sm" onClick={onLoad}>
               {gated ? "Put on desk · Founding" : "Put on desk"}
             </Button>
-            <Button size="sm" variant="secondary" onClick={onReveal}>
+            {!gated && round.drugIds.length > 0 ? (
+              <Button size="sm" variant="secondary" onClick={onStudy}>
+                Study these names
+              </Button>
+            ) : null}
+            <Button size="sm" variant="secondary" onClick={onReveal} aria-pressed={revealed}>
               {revealed ? "Hide teach" : "Reveal teach"}
             </Button>
           </div>

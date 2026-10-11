@@ -36,6 +36,23 @@ test("platelet serotonin on a bleed row is bleeding, not serotonin toxicity", ()
   });
   assert.match(result, /bleeding/i);
   assert.doesNotMatch(result, /fever|agitation/);
+  assert.doesNotMatch(result, /FDA calls/);
+});
+
+test("FDA fold is appended only when the mechanism opens on a strong, moderate, or weak grade", () => {
+  const result = plainLanguageSummary({
+    mechanism: "Strong CYP3A4 inhibition of a sensitive substrate",
+  });
+  assert.match(result, /≥5-fold ↑ AUC of a sensitive index substrate/);
+  assert.match(result, /Not a milligram\./);
+
+  const bleed = plainLanguageSummary({
+    headline: "Warfarin × sertraline",
+    effect: "additive bleeding",
+    mechanism: "hemostasis synergy",
+    clinical: "SSRIs add platelet-serotonin depletion and raise bleed risk.",
+  });
+  assert.doesNotMatch(bleed, /FDA calls/);
 });
 
 test("clinician scan is the enzyme and the direction, not a second essay", () => {

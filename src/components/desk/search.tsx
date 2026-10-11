@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { searchDrugs } from "@/lib/drugs/catalog";
 import { availableQuickChips } from "@/lib/drugs/quick-chips";
-import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
+import { ITEM_KIND_LABEL, type EnzymeRole } from "@/lib/drugs/types";
 import { isMatDesk } from "@/lib/drugs/window";
 import { plateForDrug } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -21,10 +21,7 @@ export function DrugSearch() {
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const results = useMemo(
-    () => searchDrugs(q, selected),
-    [q, selected],
-  );
+  const results = useMemo(() => searchDrugs(q), [q]);
 
   useEffect(() => {
     setActive(0);
@@ -91,7 +88,7 @@ export function DrugSearch() {
           } else if (e.key === "Enter") {
             e.preventDefault();
             const hit = results[active];
-            if (hit) pick(hit.id);
+            if (hit && !selected.includes(hit.id)) pick(hit.id);
           } else if (e.key === "Escape") {
             setOpen(false);
             (e.target as HTMLInputElement).blur();
@@ -135,19 +132,26 @@ export function DrugSearch() {
           aria-label="Matching medicines and substances"
           className="absolute z-30 mt-2 max-h-80 w-full overflow-auto rounded-lg bg-surface-2 py-1 shadow-[var(--shadow-border)]"
         >
-          {results.map((drug, i) => (
+          {results.map((drug, i) => {
+            const onDesk = selected.includes(drug.id);
+            return (
             <li key={drug.id}>
               <button
                 id={`drug-option-${drug.id}`}
                 type="button"
                 role="option"
                 aria-selected={i === active}
+                aria-disabled={onDesk ? true : undefined}
+                aria-label={onDesk ? `${drug.name}, already on the desk` : undefined}
                 className={cn(
                   "flex w-full items-start gap-3 px-3 py-2.5 text-left",
                   i === active ? "bg-accent-soft" : "hover:bg-bg-sunken",
                 )}
                 onMouseEnter={() => setActive(i)}
-                onClick={() => pick(drug.id)}
+                onClick={() => {
+                  if (onDesk) return;
+                  pick(drug.id);
+                }}
               >
                 <img
                   src={plateForDrug(drug)}
@@ -162,21 +166,36 @@ export function DrugSearch() {
                     {drug.brands.length ? ` · ${drug.brands.slice(0, 2).join(", ")}` : ""}
                   </span>
                 </span>
+                {onDesk ? (
+                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
+                    On desk
+                  </span>
+                ) : (
                 <span
                   className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle"
                   title="Mapped enzyme involvement; see the result details for an explanation."
                 >
                   {drug.enzymes
-                    .filter((e) => e.kind !== "substrate")
+                    .filter(
+                      (e): e is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
+                        e.kind !== "substrate",
+                    )
                     .slice(0, 2)
-                    .map((e) => e.enzyme)
+                    .map((e) => `${e.strength} ${e.enzyme.replace("CYP", "")}`)
                     .join(" ") ||
-                    drug.enzymes[0]?.enzyme ||
+                    (() => {
+                      const first = drug.enzymes[0];
+                      if (!first || first.kind !== "substrate") return first?.enzyme;
+                      const label = `${first.sensitivity} ${first.enzyme.replace("CYP", "")}`;
+                      return first.pathway === "activation" ? `${label} activation` : label;
+                    })() ||
                     ITEM_KIND_LABEL[drug.kind]}
                 </span>
+                )}
               </button>
             </li>
-          ))}
+            );
+          })}
         </ul>
       ) : null}
         {open && !full && q.trim() && results.length === 0 ? (

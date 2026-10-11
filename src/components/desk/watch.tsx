@@ -11,6 +11,7 @@ import {
   type WatchlistState,
 } from "@/lib/drugs/watchlist";
 import { useDesk, usePlan } from "@/lib/drugs/store";
+import type { EnzymeRole } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,20 @@ type RowStatus = {
   err: string | null;
   pack: LiveSources | null;
 };
+
+function watchEnzymeLine(enzymes: EnzymeRole[]): string | null {
+  const perp = enzymes.find(
+    (role): role is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
+      role.kind === "inhibitor" || role.kind === "inducer",
+  );
+  if (perp) return `${perp.strength} ${perp.enzyme.replace("CYP", "")}`;
+  const sub = enzymes.find(
+    (role): role is Extract<EnzymeRole, { kind: "substrate" }> => role.kind === "substrate",
+  );
+  if (!sub) return null;
+  const label = `${sub.sensitivity} ${sub.enzyme.replace("CYP", "")}`;
+  return sub.pathway === "activation" ? `${label} activation` : label;
+}
 
 export function WatchPage() {
   const plan = usePlan();
@@ -170,6 +185,8 @@ export function WatchPage() {
         <ul className="space-y-3">
           {book.ids.map((id) => {
             const drug = DRUG_BY_ID[id];
+            const enzymes = drug?.enzymes;
+            const enzymeLine = enzymes?.[0] ? watchEnzymeLine(enzymes) : null;
             const row = rows[id];
             const shortage = row?.pack?.shortage ?? [];
             const recall = row?.pack?.recalls?.[0];
@@ -186,10 +203,25 @@ export function WatchPage() {
                     <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wide text-muted">
                       {drug?.cls ?? "unknown"} · {id}
                     </p>
+                    {enzymeLine ? (
+                      <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-subtle">
+                        {enzymeLine}
+                      </p>
+                    ) : null}
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button variant="secondary" size="sm" onClick={() => openOnDesk(id)}>
                       Open on desk
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        load([id]);
+                        setView("study");
+                      }}
+                    >
+                      Study this pin
                     </Button>
                     <Button variant="secondary" size="sm" onClick={() => void refreshOne(id)}>
                       <RefreshCw className={cn("size-3.5", row?.busy && "animate-spin")} />
