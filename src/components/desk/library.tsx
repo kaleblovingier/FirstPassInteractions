@@ -700,6 +700,8 @@ function CompoundsShelf() {
                     <span className="mt-0.5 truncate text-[11px] text-muted">
                       {d.kind !== "drug" ? `${ITEM_KIND_LABEL[d.kind]} · ` : ""}
                       {d.cls}
+                      {d.pd[0] ? ` · ${d.pd[0].replace(/-/g, " ")}` : ""}
+                      {d.aliases[0] ? ` · also ${d.aliases[0]}` : ""}
                     </span>
                     <span className="mt-1 font-mono text-[10px] uppercase tracking-wide text-subtle">
                       {on

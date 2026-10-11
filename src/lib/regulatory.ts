@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.59.0",
+  version: "1.60.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.59.0",
+  buildId: "FP-SW-1.60.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -71,6 +71,7 @@ export const INDICATIONS = [
   "A check is planned as resolve, pair, multi, phenotype, host, then reduce. A pair is the unit of work, so one pair is not split across enzymes. Findings are reduced in severity order after every pair returns. This does not change the severity the engine already stored.",
   "The check says how many pairs were compared. Three or more names say each pair is checked whole. Learn asks which shelf a name is stored on. Same shelf is not a collision and not a clearance.",
   "Learn asks which brand is stored first, and whether the name is a medicine, food, herb, or research peptide. The regimen chip shows that first brand. A brand is not a different map and not a milligram.",
+  "Learn asks which effect flag is stored first, which watch phrase is stored, and which other name is stored. The check counts watch phrases without printing them. Search and the shelf show a stored alias. A flag is not a diagnosis. An alias is not a different map.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

@@ -164,6 +164,7 @@ export function DrugSearch() {
                     {drug.kind !== "drug" ? `${ITEM_KIND_LABEL[drug.kind]} · ` : ""}
                     {drug.cls}
                     {drug.brands.length ? ` · ${drug.brands.slice(0, 2).join(", ")}` : ""}
+                    {drug.aliases[0] ? ` · also ${drug.aliases[0]}` : ""}
                   </span>
                 </span>
                 {onDesk ? (

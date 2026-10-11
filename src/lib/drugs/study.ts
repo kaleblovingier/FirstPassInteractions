@@ -901,6 +901,77 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       answer: `${d.name} is stored as ${ITEM_KIND_LABEL[d.kind]}. Not a clearance.`,
       drugIds: [id],
     });
+    const storedFlag = d.pd[0];
+    if (typeof storedFlag === "string" && storedFlag.length > 0) {
+      const flagPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.pd))]
+          .filter((flag) => flag.length > 0 && flag !== storedFlag)
+          .map((flag) => ({ id: flag, label: flag.replace(/-/g, " ") })),
+        `flag-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `flag-${id}`,
+        lane: "desk",
+        kicker: "Flag",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which effect flag is stored first?",
+        choices: bySeed(
+          [{ id: storedFlag, label: storedFlag.replace(/-/g, " ") }, ...flagPool],
+          `flag-${id}-order`,
+        ),
+        correct: storedFlag,
+        answer: `${d.name} stores ${storedFlag.replace(/-/g, " ")} first. A flag is not a diagnosis and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    if (d.toxicityHint.trim()) {
+      const hintPool = bySeed(
+        [...new Set(DRUGS.map((row) => row.toxicityHint))]
+          .filter((hint) => hint.trim() && hint !== d.toxicityHint)
+          .map((hint) => ({ id: hint, label: hint })),
+        `hint-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `hint-${id}`,
+        lane: "desk",
+        kicker: "Watch",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which watch phrase is stored?",
+        choices: bySeed(
+          [{ id: d.toxicityHint, label: d.toxicityHint }, ...hintPool],
+          `hint-${id}-order`,
+        ),
+        correct: d.toxicityHint,
+        answer: `${d.name}. Watch phrase already stored: ${d.toxicityHint}. Not a diagnosis and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const storedAlias = d.aliases[0];
+    if (typeof storedAlias === "string" && storedAlias.length > 0) {
+      const aliasPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.aliases))]
+          .filter((alias) => alias.length > 0 && alias !== storedAlias)
+          .map((alias) => ({ id: alias, label: alias })),
+        `aka-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `aka-${id}`,
+        lane: "desk",
+        kicker: "Also",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which other name is stored?",
+        choices: bySeed(
+          [{ id: storedAlias, label: storedAlias }, ...aliasPool],
+          `aka-${id}-order`,
+        ),
+        correct: storedAlias,
+        answer: `${d.name} also stores ${storedAlias}. An alias is not a different map.`,
+        drugIds: [id],
+      });
+    }
   }
   return out;
 }

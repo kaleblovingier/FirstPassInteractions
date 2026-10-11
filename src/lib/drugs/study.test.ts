@@ -1436,6 +1436,32 @@ describe("study learning tools", () => {
     assert.ok(food);
     assert.equal(food.correct, "food");
   });
+
+  it("flag, watch, and alias cards ask the first stored row words", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const flag = statin.find((c) => c.id === "flag-simvastatin");
+    assert.ok(flag);
+    assert.equal(flag.correct, "statin");
+    assert.equal(flag.prompt, "Simvastatin.");
+    assert.equal(
+      statin.findIndex((c) => c.id === "item-simvastatin") <
+        statin.findIndex((c) => c.id === "flag-simvastatin"),
+      true,
+    );
+    const hint = statin.find((c) => c.id === "hint-simvastatin");
+    assert.ok(hint);
+    assert.equal(hint.correct, "Myopathy / rhabdomyolysis");
+    assert.equal(
+      statin.some((c) => c.id === "aka-simvastatin"),
+      false,
+    );
+
+    const dissociative = deskCards(["ketamine"], []);
+    const aka = dissociative.find((c) => c.id === "aka-ketamine");
+    assert.ok(aka);
+    assert.equal(aka.correct, "ketalar");
+    assert.equal(aka.prompt, "Ketamine.");
+  });
 });
 
 
