@@ -59,6 +59,37 @@ import {
 } from "./types";
 
 const STRENGTH_RANK: Record<Strength, number> = { strong: 3, moderate: 2, weak: 1 };
+const SENSITIVITY_RANK: Record<SubstrateSensitivity, number> = { sensitive: 3, major: 2, minor: 1 };
+
+/** Default-locale ordering, same as String#localeCompare without arguments, built once. */
+const HEADLINE_ORDER = new Intl.Collator();
+
+const XO_SUBSTRATE = new Set(["azathioprine", "mercaptopurine"]);
+const XO_INHIBITOR = new Set(["allopurinol", "febuxostat"]);
+const CHELATING_CATIONS = new Set(["calcium", "iron", "magnesium", "zinc", "dairy"]);
+const CHELATED = new Set([
+  "ciprofloxacin",
+  "levofloxacin",
+  "moxifloxacin",
+  "doxycycline",
+  "tetracycline",
+  "levothyroxine",
+  "alendronate",
+  "levodopa",
+]);
+const CHARCOAL_VICTIMS = new Set([
+  "levothyroxine",
+  "warfarin",
+  "digoxin",
+  "carbamazepine",
+  "valproate",
+  "lamotrigine",
+  "ethinyl-estradiol",
+  "apixaban",
+  "rivaroxaban",
+]);
+const GUT_BINDERS = new Set(["charcoal", "psyllium"]);
+const NO_DONORS = new Set(["arginine", "citrulline"]);
 
 /** Fruit juices / EGCG that cut OATP uptake. Grapefruit also knocks out gut 3A4 — that is a different row. */
 const OATP_PERP = new Set(["grapefruit", "pomegranate", "starfruit", "oatp-juice", "green-tea"]);
@@ -159,14 +190,17 @@ function pkClinical(victim: Drug, kind: "inhibitor" | "inducer", pathway: "clear
 function pkFindings(a: Drug, b: Drug): Finding[] {
   const out: Finding[] = [];
   for (const enzyme of ENZYMES) {
-    for (const [perp, victim] of [
-      [a, b],
-      [b, a],
+    const aSubs = substratesOf(a, enzyme);
+    const bSubs = substratesOf(b, enzyme);
+    let perpOnEnzyme = false;
+    for (const [perp, victim, subs] of [
+      [a, b, bSubs],
+      [b, a, aSubs],
     ] as const) {
+      if (!subs.length) continue;
       for (const kind of ["inhibitor", "inducer"] as const) {
         const perps = perpetratorsOf(perp, enzyme, kind);
-        const subs = substratesOf(victim, enzyme);
-        if (!perps.length || !subs.length) continue;
+        if (!perps.length) continue;
         // Fruit juice cuts fexofenadine via OATP. Scoring that pair as P-gp inhibition (↑ parent) is the wrong arrow.
         if (
           enzyme === "P-gp" &&
@@ -188,10 +222,9 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
         const strongest = perps.reduce((m, p) =>
           STRENGTH_RANK[p.strength] > STRENGTH_RANK[m.strength] ? p : m,
         );
-        const hottest = subs.reduce((m, s) => {
-          const rank = { sensitive: 3, major: 2, minor: 1 };
-          return rank[s.sensitivity] > rank[m.sensitivity] ? s : m;
-        });
+        const hottest = subs.reduce((m, s) =>
+          SENSITIVITY_RANK[s.sensitivity] > SENSITIVITY_RANK[m.sensitivity] ? s : m,
+        );
         const severity = pkSeverity(
           strongest.strength,
           hottest.sensitivity,
@@ -202,6 +235,7 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
         const verb = kind === "inhibitor" ? "inhibition" : "induction";
         const pathwayWord =
           hottest.pathway === "activation" ? "prodrug activation" : "clearance";
+        perpOnEnzyme = true;
         out.push({
           id: pairId(a.id, b.id, `pk-${enzyme}-${kind}-${perp.id}`),
           severity,
@@ -217,13 +251,6 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
       }
     }
 
-    const aSubs = substratesOf(a, enzyme);
-    const bSubs = substratesOf(b, enzyme);
-    const perpOnEnzyme = out.some(
-      (f) =>
-        f.enzymes.includes(enzyme) &&
-        (f.tags.includes("inhibitor") || f.tags.includes("inducer")),
-    );
     if (!perpOnEnzyme && aSubs.length && bSubs.length) {
       const aHot = aSubs[0];
       const bHot = bSubs[0];
@@ -349,6 +376,14 @@ function has(drug: Drug, flag: Drug["pd"][number]) {
   return drug.pd.includes(flag);
 }
 
+function isPair(a: Drug, b: Drug, x: string, y: string) {
+  return (a.id === x && b.id === y) || (a.id === y && b.id === x);
+}
+
+function qtScore(x: Drug) {
+  return has(x, "qt-known") ? 2 : has(x, "qt-possible") ? 1 : 0;
+}
+
 function pdPair(
   a: Drug,
   b: Drug,
@@ -382,8 +417,7 @@ function pdPair(
  * Quotes are the gold-set strings (label-gold-set.ts at a79b09b).
  */
 function labelFloorFindings(a: Drug, b: Drug): Finding[] {
-  const ids = new Set([a.id, b.id]);
-  if (ids.has("buprenorphine") && ids.has("phenelzine")) {
+  if (isPair(a, b, "buprenorphine", "phenelzine")) {
     return [
       pdPair(a, b, {
         suffix: "pd-buprenorphine-maoi",
@@ -396,7 +430,7 @@ function labelFloorFindings(a: Drug, b: Drug): Finding[] {
       }),
     ];
   }
-  if (ids.has("methadone") && ids.has("zidovudine")) {
+  if (isPair(a, b, "methadone", "zidovudine")) {
     const label = a.id === "methadone" ? a : b;
     const other = label === a ? b : a;
     return [
@@ -415,7 +449,7 @@ function labelFloorFindings(a: Drug, b: Drug): Finding[] {
       },
     ];
   }
-  if (ids.has("esketamine") && ids.has("methylphenidate")) {
+  if (isPair(a, b, "esketamine", "methylphenidate")) {
     return [
       pdPair(a, b, {
         suffix: "pd-esketamine-stim",
@@ -433,6 +467,13 @@ function labelFloorFindings(a: Drug, b: Drug): Finding[] {
 
 function pdFindings(a: Drug, b: Drug): Finding[] {
   const out: Finding[] = [];
+  const carbapenemVpa = isCarbapenemValproate(a.id, b.id);
+  const vancoZosyn = isVancoZosyn(a.id, b.id);
+  const clozapineBenzo = isClozapineBenzo(a.id, b.id);
+  const asaNsaid = isAsaNsaid(a.id, b.id);
+  const lamoVpa = isLamotrigineValproate(a.id, b.id);
+  const dualRaas = isDualRaas(a.id, b.id);
+  const sglt2Loop = isSglt2Loop(a.id, b.id);
 
   const aMaoi = has(a, "maoi");
   const bMaoi = has(b, "maoi");
@@ -452,7 +493,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isCarbapenemValproate(a.id, b.id)) {
+  if (carbapenemVpa) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-carbapenem-vpa",
@@ -466,7 +507,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isVancoZosyn(a.id, b.id)) {
+  if (vancoZosyn) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-vanco-zosyn",
@@ -542,7 +583,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isClozapineBenzo(a.id, b.id)) {
+  if (clozapineBenzo) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-clozapine-benzo",
@@ -556,7 +597,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isAsaNsaid(a.id, b.id)) {
+  if (asaNsaid) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-asa-nsaid",
@@ -570,7 +611,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isLamotrigineValproate(a.id, b.id)) {
+  if (lamoVpa) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-lamo-vpa",
@@ -654,7 +695,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isDualRaas(a.id, b.id)) {
+  if (dualRaas) {
     const ali = a.id === "aliskiren" || b.id === "aliskiren";
     out.push(
       pdPair(a, b, {
@@ -704,7 +745,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (isSglt2Loop(a.id, b.id)) {
+  if (sglt2Loop) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-sglt2-loop",
@@ -846,8 +887,8 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     !(aOp && bOp) &&
     !gabaOp &&
     !((aOp && bBz) || (bOp && aBz)) &&
-    !isClozapineBenzo(a.id, b.id) &&
-    !isLamotrigineValproate(a.id, b.id) &&
+    !clozapineBenzo &&
+    !lamoVpa &&
     ((aOp && bCns) || (bOp && aCns) || (aCns && bCns && a.id !== b.id))
   ) {
     const gabapentinoid =
@@ -878,7 +919,6 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  const qtScore = (x: Drug) => (has(x, "qt-known") ? 2 : has(x, "qt-possible") ? 1 : 0);
   const qt = qtScore(a) + qtScore(b);
   if (qtScore(a) && qtScore(b)) {
     const methadoneQt = a.id === "methadone" || b.id === "methadone";
@@ -917,7 +957,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
         tags: ["bleeding"],
       }),
     );
-  } else if (has(a, "nsaid") && has(b, "nsaid") && !isAsaNsaid(a.id, b.id)) {
+  } else if (has(a, "nsaid") && has(b, "nsaid") && !asaNsaid) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-nsaid",
@@ -1136,7 +1176,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (has(a, "seizure-lowering") && has(b, "seizure-lowering") && !isCarbapenemValproate(a.id, b.id)) {
+  if (has(a, "seizure-lowering") && has(b, "seizure-lowering") && !carbapenemVpa) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-seizure",
@@ -1166,9 +1206,10 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  const xoSub = new Set(["azathioprine", "mercaptopurine"]);
-  const xoInh = new Set(["allopurinol", "febuxostat"]);
-  if ((xoSub.has(a.id) && xoInh.has(b.id)) || (xoSub.has(b.id) && xoInh.has(a.id))) {
+  if (
+    (XO_SUBSTRATE.has(a.id) && XO_INHIBITOR.has(b.id)) ||
+    (XO_SUBSTRATE.has(b.id) && XO_INHIBITOR.has(a.id))
+  ) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-xo-thiopurine",
@@ -1228,18 +1269,10 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  const cations = new Set(["calcium", "iron", "magnesium", "zinc", "dairy"]);
-  const chelated = new Set([
-    "ciprofloxacin",
-    "levofloxacin",
-    "moxifloxacin",
-    "doxycycline",
-    "tetracycline",
-    "levothyroxine",
-    "alendronate",
-    "levodopa",
-  ]);
-  if ((cations.has(a.id) && chelated.has(b.id)) || (cations.has(b.id) && chelated.has(a.id))) {
+  if (
+    (CHELATING_CATIONS.has(a.id) && CHELATED.has(b.id)) ||
+    (CHELATING_CATIONS.has(b.id) && CHELATED.has(a.id))
+  ) {
     const thyroid = a.id === "levothyroxine" || b.id === "levothyroxine";
     const bone = a.id === "alendronate" || b.id === "alendronate";
     const dopa = a.id === "levodopa" || b.id === "levodopa";
@@ -1272,21 +1305,9 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  const charcoalVictims = new Set([
-    "levothyroxine",
-    "warfarin",
-    "digoxin",
-    "carbamazepine",
-    "valproate",
-    "lamotrigine",
-    "ethinyl-estradiol",
-    "apixaban",
-    "rivaroxaban",
-  ]);
-  const gutBinders = new Set(["charcoal", "psyllium"]);
   if (
-    (gutBinders.has(a.id) && charcoalVictims.has(b.id)) ||
-    (gutBinders.has(b.id) && charcoalVictims.has(a.id))
+    (GUT_BINDERS.has(a.id) && CHARCOAL_VICTIMS.has(b.id)) ||
+    (GUT_BINDERS.has(b.id) && CHARCOAL_VICTIMS.has(a.id))
   ) {
     const fiber = a.id === "psyllium" || b.id === "psyllium";
     out.push(
@@ -1317,8 +1338,7 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  const noDonors = new Set(["arginine", "citrulline"]);
-  if ((noDonors.has(a.id) && has(b, "pde5")) || (noDonors.has(b.id) && has(a, "pde5"))) {
+  if ((NO_DONORS.has(a.id) && has(b, "pde5")) || (NO_DONORS.has(b.id) && has(a, "pde5"))) {
     out.push(
       pdPair(a, b, {
         suffix: "pd-arginine-pde5",
@@ -1380,9 +1400,9 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
   if (
     has(a, "nephrotoxic") &&
     has(b, "nephrotoxic") &&
-    !isVancoZosyn(a.id, b.id) &&
-    !isDualRaas(a.id, b.id) &&
-    !isSglt2Loop(a.id, b.id)
+    !vancoZosyn &&
+    !dualRaas &&
+    !sglt2Loop
   ) {
     out.push(
       pdPair(a, b, {
@@ -2060,10 +2080,9 @@ function phenotypeFindings(drugs: Drug[], phenotypes: PhenotypeMap): Finding[] {
     for (const drug of drugs) {
       const subs = substratesOf(drug, enzyme);
       if (!subs.length) continue;
-      const hottest = subs.reduce((m, s) => {
-        const rank = { sensitive: 3, major: 2, minor: 1 };
-        return rank[s.sensitivity] > rank[m.sensitivity] ? s : m;
-      });
+      const hottest = subs.reduce((m, s) =>
+        SENSITIVITY_RANK[s.sensitivity] > SENSITIVITY_RANK[m.sensitivity] ? s : m,
+      );
       const ntiOrSensitive = Boolean(hottest.nti) || hottest.sensitivity === "sensitive";
       let severity: Severity = "minor";
       let effect = "";
@@ -2477,7 +2496,7 @@ export function analyze(
     const d = SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity];
     if (d) return d;
     if (a.kind !== b.kind) return a.kind === "pk" ? -1 : 1;
-    return a.headline.localeCompare(b.headline);
+    return HEADLINE_ORDER.compare(a.headline, b.headline);
   });
   const counts: Record<Severity, number> = {
     contraindicated: 0,
@@ -2495,16 +2514,20 @@ export function analyze(
   return { findings: uniq, burden: burdenFor(drugs), highest, counts, stacks: stackLoad(drugs) };
 }
 
+type EnzymeIndex = Record<Enzyme, { substrates: Drug[]; inhibitors: Drug[]; inducers: Drug[] }>;
+
+let enzymeIndexCache: EnzymeIndex | undefined;
+
+/** Catalog-wide role index. The catalog is static, so it is built once and its lists are frozen. */
 export function enzymeIndex(): Record<
   Enzyme,
   { substrates: Drug[]; inhibitors: Drug[]; inducers: Drug[] }
 > {
+  if (enzymeIndexCache) return enzymeIndexCache;
   const empty = () => ({ substrates: [] as Drug[], inhibitors: [] as Drug[], inducers: [] as Drug[] });
-  const idx = Object.fromEntries(ENZYMES.map((e) => [e, empty()])) as Record<
-    Enzyme,
-    { substrates: Drug[]; inhibitors: Drug[]; inducers: Drug[] }
-  >;
-  for (const drug of Object.values(DRUG_BY_ID)) {
+  const idx = Object.fromEntries(ENZYMES.map((e) => [e, empty()])) as EnzymeIndex;
+  // Alias keys (hydrochlorothiazide → hctz) point at the same entry; index each drug once.
+  for (const drug of new Set(Object.values(DRUG_BY_ID))) {
     const seen = { substrate: new Set<Enzyme>(), inhibitor: new Set<Enzyme>(), inducer: new Set<Enzyme>() };
     for (const role of drug.enzymes) {
       if (seen[role.kind].has(role.enzyme)) continue;
@@ -2515,9 +2538,10 @@ export function enzymeIndex(): Record<
     }
   }
   for (const e of ENZYMES) {
-    idx[e].substrates.sort((a, b) => a.name.localeCompare(b.name));
-    idx[e].inhibitors.sort((a, b) => a.name.localeCompare(b.name));
-    idx[e].inducers.sort((a, b) => a.name.localeCompare(b.name));
+    Object.freeze(idx[e].substrates.sort((a, b) => HEADLINE_ORDER.compare(a.name, b.name)));
+    Object.freeze(idx[e].inhibitors.sort((a, b) => HEADLINE_ORDER.compare(a.name, b.name)));
+    Object.freeze(idx[e].inducers.sort((a, b) => HEADLINE_ORDER.compare(a.name, b.name)));
   }
+  enzymeIndexCache = idx;
   return idx;
 }

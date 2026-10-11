@@ -1,55 +1,47 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DRUG_BY_ID } from "./catalog";
-import { EMPTY_LIVE } from "./live";
+import { EMPTY_LIVE, type LiveSources, type RxnavReport, type TrialResult } from "./live";
+import { CpicInput, DESK_MAX_IDS, IdsInput, LiveInput, SearchInput, checkInput } from "../server/rpc-input";
 
-function readString(input: unknown, key: string) {
-  if (!input || typeof input !== "object") return "";
-  const v = (input as Record<string, unknown>)[key];
-  return typeof v === "string" ? v : "";
-}
-
-function readIds(input: unknown): string[] {
-  if (!input || typeof input !== "object") return [];
-  const v = (input as Record<string, unknown>).ids;
-  if (!Array.isArray(v)) return [];
-  return v.filter((x): x is string => typeof x === "string").slice(0, 8);
-}
-
-function miss(query: string, reason: string, ok = false) {
+function miss(query: string, reason: string, ok = false): LiveSources {
   return { ok, query, ...EMPTY_LIVE, reason };
 }
 
 export const lookupLiveSources = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({ id: readString(input, "id") }))
-  .handler(async ({ data }) => {
-    const drug = DRUG_BY_ID[data.id];
-    if (!drug) return miss(data.id, "Not on this shelf.");
+  .validator((input: unknown) => checkInput("lookupLiveSources", LiveInput, input))
+  .handler(async ({ data }): Promise<LiveSources> => {
+    if (!data.ok) return miss("", "Not on this shelf.");
+    const drug = DRUG_BY_ID[data.value.id]!;
     const { lookupLive } = await import("./live.server");
     return lookupLive(drug.id, drug.name);
   });
 
 export const lookupRxnavInteractions = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({ ids: readIds(input) }))
-  .handler(async ({ data }) => {
+  .validator((input: unknown) => checkInput("lookupRxnavInteractions", IdsInput, input))
+  .handler(async ({ data }): Promise<RxnavReport> => {
+    const ids = data.ok ? data.value.ids.filter((id) => DRUG_BY_ID[id]!.kind === "drug").slice(0, DESK_MAX_IDS) : [];
+    if (ids.length < 2) {
+      return { ok: true, rxcuis: [], pairs: [], classes: [], reason: "Put two labeled drugs on the desk." };
+    }
     const { lookupInteractions } = await import("./rxnav.server");
-    return lookupInteractions(data.ids);
+    return lookupInteractions(ids);
   });
 
 export const searchTrials = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({
-    query: readString(input, "query"),
-    ids: readIds(input),
-  }))
-  .handler(async ({ data }) => {
+  .validator((input: unknown) => checkInput("searchTrials", SearchInput, input))
+  .handler(async ({ data }): Promise<TrialResult> => {
+    if (!data.ok) return { ok: false, query: "", hits: [], reason: "Query too short." };
+    const names = data.value.ids.map((id) => DRUG_BY_ID[id]!.name);
+    const q = data.value.query.trim() || names.slice(0, 2).join(" ");
+    if (q.length < 3) return { ok: false, query: q, hits: [], reason: "Query too short." };
     const { searchLiveTrials } = await import("./trials.server");
-    const names = data.ids.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean);
-    const q = data.query.trim() || names.slice(0, 2).join(" ");
     return searchLiveTrials(q);
   });
 
 export const lookupCpicGuideline = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({ name: readString(input, "name") }))
+  .validator((input: unknown) => checkInput("lookupCpicGuideline", CpicInput, input))
   .handler(async ({ data }) => {
+    if (!data.ok) return { ok: false, query: "", hits: [], reason: "Not on this shelf." };
     const { lookupCpic } = await import("./cpic.server");
-    return lookupCpic(data.name);
+    return lookupCpic(data.value.name);
   });

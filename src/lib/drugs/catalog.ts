@@ -2799,6 +2799,42 @@ function psychRank(drug: Drug): number {
   return 3;
 }
 
+interface SearchEntry {
+  drug: Drug;
+  name: string;
+  id: string;
+  brands: string[];
+  aliases: string[];
+  searchable: string[];
+  cls: string;
+  /** Compact normalized enzyme name per role, in drug.enzymes order. */
+  enzymeKeys: string[];
+}
+
+/** Normalized lookup keys for every catalog entry (built once, on the first scored search). */
+let SEARCH_INDEX: SearchEntry[] | null = null;
+function searchIndex(): SearchEntry[] {
+  if (!SEARCH_INDEX) {
+    SEARCH_INDEX = DRUGS.map((drug) => {
+      const name = normalizeSearchText(drug.name);
+      const id = normalizeSearchText(drug.id);
+      const brands = drug.brands.map(normalizeSearchText);
+      const aliases = drug.aliases.map(normalizeSearchText);
+      return {
+        drug,
+        name,
+        id,
+        brands,
+        aliases,
+        searchable: [name, id, ...brands, ...aliases],
+        cls: drug.cls.toLowerCase(),
+        enzymeKeys: drug.enzymes.map((e) => normalizeSearchText(e.enzyme).replace(/\s/g, "")),
+      };
+    });
+  }
+  return SEARCH_INDEX;
+}
+
 export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   const q = query.trim().toLowerCase();
   const normalizedQuery = normalizeSearchText(q);
@@ -3309,49 +3345,51 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
     return DRUGS.filter((d) => !excluded.has(d.id) && d.kind === "drug" && !d.id.startsWith("__")).slice(0, 16);
   }
   const coreQuery = stripSaltFormTokens(normalizedQuery);
-  const matchQueries =
-    coreQuery !== normalizedQuery ? [normalizedQuery, coreQuery] : [normalizedQuery];
+  const matchQueries = (
+    coreQuery !== normalizedQuery ? [normalizedQuery, coreQuery] : [normalizedQuery]
+  ).map((mq) => {
+    const enzymeKey = compactEnzymeQuery(mq);
+    return {
+      mq,
+      tokens: mq.split(" "),
+      compactQuery: mq.replace(/\s/g, ""),
+      enzymeKey,
+      enzymeDigits: enzymeKey?.replace(/^cyp/, "") ?? "",
+      teach: enzymeKey ? (TEACHING_ENZYME_HITS[enzymeKey] ?? []) : [],
+      // Prefer the plain-generic hit when the user typed a salt/release suffix.
+      saltBonus: mq === coreQuery && mq !== normalizedQuery,
+    };
+  });
 
   const scored: { drug: Drug; score: number }[] = [];
-  for (const drug of DRUGS) {
+  for (const { drug, name, id, brands, aliases, searchable, cls, enzymeKeys } of searchIndex()) {
     if (excluded.has(drug.id)) continue;
-    const name = normalizeSearchText(drug.name);
-    const brands = drug.brands.map(normalizeSearchText);
-    const aliases = drug.aliases.map(normalizeSearchText);
-    const id = normalizeSearchText(drug.id);
-    const cls = drug.cls.toLowerCase();
-    const searchable = [name, id, ...brands, ...aliases];
     let score = 0;
-    for (const mq of matchQueries) {
-      const compactQuery = mq.replace(/\s/g, "");
-      const enzymeKey = compactEnzymeQuery(mq);
-      const enzymeRoles = drug.enzymes.filter((e) => {
-        const en = normalizeSearchText(e.enzyme).replace(/\s/g, "");
-        if (enzymeKey) return en === enzymeKey || en.includes(enzymeKey.replace(/^cyp/, ""));
-        return compactQuery.length >= 3 && en.includes(compactQuery);
-      });
-      const enzymeHit = enzymeRoles.length > 0;
-      const tokenHit =
-        mq.length >= 3 &&
-        mq.split(" ").every((token) => searchable.some((value) => value.includes(token)));
+    for (const { mq, tokens, compactQuery, enzymeKey, enzymeDigits, teach, saltBonus } of matchQueries) {
       let s = 0;
       if (searchable.some((value) => value === mq)) s = 100;
       else if (name.startsWith(mq) || id.startsWith(mq)) s = 80;
       else if (brands.some((b) => b.startsWith(mq)) || aliases.some((a) => a.startsWith(mq))) s = 70;
       else if (name.includes(mq) || id.includes(mq)) s = 60;
       else if (brands.some((b) => b.includes(mq)) || aliases.some((a) => a.includes(mq))) s = 50;
-      else if (tokenHit) s = 45;
+      else if (mq.length >= 3 && tokens.every((token) => searchable.some((value) => value.includes(token))))
+        s = 45;
       else if (cls.includes(q)) s = 35;
-      else if (enzymeHit && enzymeKey) {
-        const teach = TEACHING_ENZYME_HITS[enzymeKey] ?? [];
-        const teachIdx = teach.indexOf(drug.id);
-        if (teachIdx >= 0) s = 68 - teachIdx;
-        else if (enzymeRoles.some((e) => e.kind === "inhibitor" || e.kind === "inducer")) s = 48;
-        else s = 28;
-      } else if (enzymeHit) s = 25;
-      else if (eKindQuery(drug, q)) s = 20;
-      // Prefer the plain-generic hit when the user typed a salt/release suffix.
-      if (mq === coreQuery && mq !== normalizedQuery && s >= 60) s += 5;
+      else {
+        const enzymeRoles = drug.enzymes.filter((_, i) => {
+          const en = enzymeKeys[i];
+          if (enzymeKey) return en === enzymeKey || en.includes(enzymeDigits);
+          return compactQuery.length >= 3 && en.includes(compactQuery);
+        });
+        if (enzymeRoles.length > 0 && enzymeKey) {
+          const teachIdx = teach.indexOf(drug.id);
+          if (teachIdx >= 0) s = 68 - teachIdx;
+          else if (enzymeRoles.some((e) => e.kind === "inhibitor" || e.kind === "inducer")) s = 48;
+          else s = 28;
+        } else if (enzymeRoles.length > 0) s = 25;
+        else if (eKindQuery(drug, q)) s = 20;
+      }
+      if (saltBonus && s >= 60) s += 5;
       if (s > score) score = s;
     }
     if (score > 0) scored.push({ drug, score });

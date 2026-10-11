@@ -245,6 +245,114 @@ describe("BoundedLRUCache - Error handling and retry resilience", () => {
   });
 });
 
+describe("BoundedLRUCache - Invalidation while a fetch is in flight", () => {
+  function deferred<V>() {
+    let resolve!: (value: V) => void;
+    const promise = new Promise<V>((r) => {
+      resolve = r;
+    });
+    return { promise, resolve };
+  }
+
+  it("clear() during an in-flight getOrFetch does not let the old flight write a stale value", async () => {
+    const cache = new BoundedLRUCache<string>(10);
+    const gate = deferred<string>();
+    const stale = cache.getOrFetch("warfarin", () => gate.promise);
+
+    cache.clear();
+    gate.resolve("pre-clear label");
+
+    assert.equal(await stale, "pre-clear label", "the original caller still gets its answer");
+    assert.equal(cache.get("warfarin"), undefined, "the pre-clear answer must not be cached");
+    assert.equal(cache.inFlightSize, 0);
+  });
+
+  it("delete(key) during a flight neither caches the old value nor drops a newer flight", async () => {
+    const cache = new BoundedLRUCache<string>(10);
+    const first = deferred<string>();
+    const second = deferred<string>();
+    let fetches = 0;
+
+    const old = cache.getOrFetch("amiodarone", () => {
+      fetches++;
+      return first.promise;
+    });
+    cache.delete("amiodarone");
+    const fresh = cache.getOrFetch("amiodarone", () => {
+      fetches++;
+      return second.promise;
+    });
+    await Promise.resolve();
+
+    first.resolve("old");
+    assert.equal(await old, "old");
+    assert.equal(cache.get("amiodarone"), undefined, "the deleted flight must not write back");
+    assert.equal(cache.inFlightSize, 1, "the newer flight must still be registered");
+
+    const joined = cache.getOrFetch("amiodarone", async () => {
+      fetches++;
+      return "third";
+    });
+    second.resolve("new");
+    assert.equal(await fresh, "new");
+    assert.equal(await joined, "new", "a later caller joins the newer flight");
+    assert.equal(fetches, 2);
+    assert.equal(cache.get("amiodarone"), "new");
+    assert.equal(cache.inFlightSize, 0);
+  });
+
+  it("a flight started before clear() does not unregister the flight started after it", async () => {
+    const cache = new BoundedLRUCache<string>(10);
+    const first = deferred<string>();
+    const second = deferred<string>();
+
+    const old = cache.getOrFetch("k", () => first.promise);
+    cache.clear();
+    const fresh = cache.getOrFetch("k", () => second.promise);
+    await Promise.resolve();
+
+    first.resolve("old");
+    await old;
+    assert.equal(cache.inFlightSize, 1);
+
+    second.resolve("new");
+    assert.equal(await fresh, "new");
+    assert.equal(cache.get("k"), "new");
+  });
+
+  it("a synchronous throw from fetchFn rejects the caller and leaves nothing in flight", async () => {
+    const cache = new BoundedLRUCache<string>(10);
+    const boom = (): Promise<string> => {
+      throw new Error("sync boom");
+    };
+
+    await assert.rejects(cache.getOrFetch("k", boom), /sync boom/);
+    assert.equal(cache.inFlightSize, 0);
+    assert.equal(await cache.getOrFetch("k", async () => "recovered"), "recovered");
+  });
+});
+
+describe("BoundedLRUCache - Value-dependent TTL", () => {
+  it("lets the fetched value pick its ttl and skips caching when the ttl is <= 0", async () => {
+    const cache = new BoundedLRUCache<{ complete: boolean }>(10, 60_000);
+    const ttl = (value: { complete: boolean }) => (value.complete ? 60_000 : 0);
+
+    await cache.getOrFetch("partial", async () => ({ complete: false }), ttl);
+    await cache.getOrFetch("whole", async () => ({ complete: true }), ttl);
+
+    assert.equal(cache.has("partial"), false);
+    assert.equal(cache.has("whole"), true);
+  });
+
+  it("expires a short value-chosen ttl", async () => {
+    const cache = new BoundedLRUCache<string>(10, 60_000);
+    await cache.getOrFetch("brief", async () => "v", () => 30);
+    assert.equal(cache.get("brief"), "v");
+    await new Promise((r) => setTimeout(r, 50));
+    assert.equal(cache.get("brief"), undefined);
+  });
+});
+
 describe("BoundedLRUCache - Non-prescriptive Regulatory Posture (FD&C Act § 520(o)(1)(E))", () => {
   it("exports official regulatory disclaimer referencing FD&C Act § 520(o)(1)(E)", () => {
     assert.ok(CACHE_REGULATORY_DISCLAIMER.length > 0);

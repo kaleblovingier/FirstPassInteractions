@@ -1,33 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DRUG_BY_ID } from "./catalog";
-
-function readString(input: unknown, key: string) {
-  if (!input || typeof input !== "object") return "";
-  const v = (input as Record<string, unknown>)[key];
-  return typeof v === "string" ? v : "";
-}
-
-function readIds(input: unknown): string[] {
-  if (!input || typeof input !== "object") return [];
-  const v = (input as Record<string, unknown>).ids;
-  if (!Array.isArray(v)) return [];
-  return v.filter((x): x is string => typeof x === "string").slice(0, 8);
-}
+import type { LiveResult } from "./pubmed";
+import { SearchInput, checkInput } from "../server/rpc-input";
 
 export const searchPubmed = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({
-    query: readString(input, "query"),
-    ids: readIds(input),
-  }))
-  .handler(async ({ data }) => {
-    const { searchLive } = await import("./pubmed.server");
-    const names = data.ids.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean);
+  .validator((input: unknown) => checkInput("searchPubmed", SearchInput, input))
+  .handler(async ({ data }): Promise<LiveResult> => {
+    if (!data.ok) return { ok: false, hits: [], reason: "Query too short.", query: "" };
+    const names = data.value.ids.map((id) => DRUG_BY_ID[id]!.name);
     const q =
-      data.query.trim() ||
+      data.value.query.trim() ||
       (names.length >= 2
         ? `${names[0]} AND ${names[1]} AND (drug interaction OR CYP OR cytochrome)`
         : names.length === 1
           ? `${names[0]} AND (drug interaction OR pharmacokinetics OR CYP)`
           : "");
+    if (q.length < 3) return { ok: false, hits: [], reason: "Query too short.", query: q };
+    const { searchLive } = await import("./pubmed.server");
     return searchLive(q);
   });

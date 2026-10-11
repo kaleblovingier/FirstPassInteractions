@@ -18,7 +18,20 @@ export interface ProblemDetails {
   detail: string;
   instance?: string;
   invalidParams?: InvalidParamError[];
+  /** Extension member: quote it when reporting a server-side failure. */
+  correlationId?: string;
   timestamp: string;
+}
+
+/** Carries a finished problem out of nested service code; anything else thrown is a 500. */
+export class ApiProblemError extends Error {
+  readonly problem: ProblemDetails;
+
+  constructor(problem: ProblemDetails) {
+    super(problem.detail);
+    this.name = "ApiProblemError";
+    this.problem = problem;
+  }
 }
 
 export function createProblemDetails(
@@ -29,6 +42,7 @@ export function createProblemDetails(
     type?: string;
     instance?: string;
     invalidParams?: InvalidParamError[];
+    correlationId?: string;
   },
 ): ProblemDetails {
   return {
@@ -38,6 +52,7 @@ export function createProblemDetails(
     detail,
     instance: options?.instance,
     invalidParams: options?.invalidParams,
+    correlationId: options?.correlationId,
     timestamp: new Date().toISOString(),
   };
 }
@@ -54,10 +69,15 @@ export function problemBadRequest(
   });
 }
 
-export function problemNotFound(detail: string, instance?: string): ProblemDetails {
+export function problemNotFound(
+  detail: string,
+  instance?: string,
+  invalidParams?: InvalidParamError[],
+): ProblemDetails {
   return createProblemDetails(404, "Not Found", detail, {
     type: "https://firstpass.app/errors/not-found",
     instance,
+    invalidParams,
   });
 }
 
@@ -73,9 +93,14 @@ export function problemUnprocessable(
   });
 }
 
-export function problemInternal(detail = "An internal server error occurred"): ProblemDetails {
+export function problemInternal(
+  detail = "An internal server error occurred",
+  correlationId?: string,
+): ProblemDetails {
   return createProblemDetails(500, "Internal Server Error", detail, {
     type: "https://firstpass.app/errors/internal-server-error",
+    instance: correlationId ? `urn:uuid:${correlationId}` : undefined,
+    correlationId,
   });
 }
 
@@ -88,4 +113,3 @@ export function toProblemResponse(problem: ProblemDetails): Response {
     },
   });
 }
-

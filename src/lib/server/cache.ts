@@ -13,6 +13,13 @@ export interface CacheEntry<T> {
   expiresAt: number;
 }
 
+/** A fixed ttl, or one chosen from the fetched value; a ttl <= 0 skips caching that value. */
+export type CacheTtl<T> = number | ((value: T) => number);
+
+interface Flight<T> {
+  promise: Promise<T>;
+}
+
 /** Non-prescriptive regulatory disclaimer referencing FD&C Act § 520(o)(1)(E). */
 export const CACHE_REGULATORY_DISCLAIMER =
   "FirstPass server cache operates strictly under FD&C Act § 520(o)(1)(E) non-device clinical decision support principles: caching preserves and retrieves unadulterated reference data for independent review by licensed healthcare professionals and does not inject prescriptive directives or autonomous clinical determinations.";
@@ -21,7 +28,7 @@ export class BoundedLRUCache<T> {
   private readonly maxSize: number;
   private readonly ttlMs: number;
   private readonly cache = new Map<string, CacheEntry<T>>();
-  private readonly inFlight = new Map<string, Promise<T>>();
+  private readonly inFlight = new Map<string, Flight<T>>();
 
   constructor(maxSize: number = 500, ttlMs: number = 30 * 60 * 1000) {
     if (maxSize <= 0) {
@@ -78,34 +85,47 @@ export class BoundedLRUCache<T> {
    * If an in-flight request exists for the key, joins that promise.
    * Otherwise, executes fetchFn, caches the resolved value, and cleans up the inFlight map.
    * If fetchFn rejects, the inFlight map is cleaned up so subsequent calls can retry.
+   * A flight only writes back while it is still the registered flight for its key: after
+   * clear() or delete(key) its value is returned to its callers but not cached, and it never
+   * removes a newer flight for the same key.
    */
-  async getOrFetch(key: string, fetchFn: () => Promise<T>, ttlMs?: number): Promise<T> {
+  async getOrFetch(key: string, fetchFn: () => Promise<T>, ttlMs?: CacheTtl<T>): Promise<T> {
     const cached = this.get(key);
     if (cached !== undefined) {
       return cached;
     }
 
-    const inFlightPromise = this.inFlight.get(key);
-    if (inFlightPromise) {
-      return inFlightPromise;
+    const pending = this.inFlight.get(key);
+    if (pending) {
+      return pending.promise;
     }
 
-    const flightPromise = (async () => {
-      try {
-        const result = await fetchFn();
-        this.set(key, result, ttlMs);
-        return result;
-      } finally {
-        this.inFlight.delete(key);
-      }
-    })();
+    const flight = {} as Flight<T>;
+    // Start fetchFn after registering the flight so a synchronous throw cannot strand it.
+    flight.promise = Promise.resolve()
+      .then(() => fetchFn())
+      .then(
+        (result) => {
+          if (this.inFlight.get(key) === flight) {
+            this.inFlight.delete(key);
+            const ttl = typeof ttlMs === "function" ? ttlMs(result) : ttlMs;
+            if (ttl === undefined || ttl > 0) this.set(key, result, ttl);
+          }
+          return result;
+        },
+        (error: unknown) => {
+          if (this.inFlight.get(key) === flight) this.inFlight.delete(key);
+          throw error;
+        },
+      );
 
-    this.inFlight.set(key, flightPromise);
-    return flightPromise;
+    this.inFlight.set(key, flight);
+    return flight.promise;
   }
 
   /**
    * Clears all cached items and active in-flight promises.
+   * Flights already running still settle for their callers but no longer write back.
    */
   clear(): void {
     this.cache.clear();
@@ -151,6 +171,7 @@ export class BoundedLRUCache<T> {
 
   /**
    * Deletes a specific key from the cache and inFlight tracking.
+   * A flight already running for the key still settles for its callers but no longer writes back.
    */
   delete(key: string): boolean {
     this.inFlight.delete(key);
