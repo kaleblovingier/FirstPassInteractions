@@ -360,10 +360,12 @@ export function CheckBoard({
   };
   const slots = pairSlots(ids.length);
   const watchPhrases = ids.filter((id) => (DRUG_BY_ID[id]?.toxicityHint ?? "").trim().length > 0).length;
+  const storedNotes = ids.filter((id) => (DRUG_BY_ID[id]?.note ?? "").trim().length > 0).length;
   const contents = [
     `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
     watchPhrases > 0 ? `${watchPhrases} watch ${watchPhrases === 1 ? "phrase" : "phrases"}` : "",
+    storedNotes > 0 ? `${storedNotes} stored ${storedNotes === 1 ? "note" : "notes"}` : "",
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",

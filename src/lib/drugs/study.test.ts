@@ -1462,6 +1462,36 @@ describe("study learning tools", () => {
     assert.equal(aka.correct, "ketalar");
     assert.equal(aka.prompt, "Ketamine.");
   });
+
+  it("note, second-brand, and enzyme-row cards ask stored desk words", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const note = statin.find((c) => c.id === "note-simvastatin");
+    assert.ok(note);
+    assert.equal(note.correct, DRUG_BY_ID.simvastatin.note);
+    assert.equal(
+      note.correct,
+      "Sensitive 3A4 substrate. Strong 3A4 inhibitors are contraindicated.",
+    );
+    assert.equal(note.prompt, "Simvastatin.");
+    const rows = statin.find((c) => c.id === "rows-simvastatin");
+    assert.ok(rows);
+    assert.equal(rows.correct, "1");
+    assert.equal(rows.prompt, "Simvastatin.");
+    assert.equal(
+      statin.some((c) => c.id === "brand2-simvastatin"),
+      false,
+    );
+
+    const warfarin = deskCards(["warfarin"], []);
+    const brand2 = warfarin.find((c) => c.id === "brand2-warfarin");
+    assert.ok(brand2);
+    assert.equal(brand2.correct, "Jantoven");
+    assert.equal(brand2.prompt, "Warfarin.");
+    const warRows = warfarin.find((c) => c.id === "rows-warfarin");
+    assert.ok(warRows);
+    assert.equal(warRows.correct, "3");
+    assert.equal(warRows.prompt, "Warfarin.");
+  });
 });
 
 

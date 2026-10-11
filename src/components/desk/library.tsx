@@ -702,6 +702,7 @@ function CompoundsShelf() {
                       {d.cls}
                       {d.pd[0] ? ` · ${d.pd[0].replace(/-/g, " ")}` : ""}
                       {d.aliases[0] ? ` · also ${d.aliases[0]}` : ""}
+                      {d.enzymes.length ? ` · ${d.enzymes.length} enzyme ${d.enzymes.length === 1 ? "row" : "rows"}` : ""}
                     </span>
                     <span className="mt-1 font-mono text-[10px] uppercase tracking-wide text-subtle">
                       {on

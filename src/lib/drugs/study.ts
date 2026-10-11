@@ -972,6 +972,67 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
         drugIds: [id],
       });
     }
+    if (typeof d.note === "string" && d.note.length > 0) {
+      const notePool = bySeed(
+        [...new Set(DRUGS.map((row) => row.note).filter((note): note is string => Boolean(note)))]
+          .filter((note) => note !== d.note)
+          .map((note) => ({ id: note, label: note })),
+        `note-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `note-${id}`,
+        lane: "desk",
+        kicker: "Note",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which note is stored?",
+        choices: bySeed([{ id: d.note, label: d.note }, ...notePool], `note-${id}-order`),
+        correct: d.note,
+        answer: `${d.name}. Note already stored: ${d.note} Not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const secondBrand = d.brands[1];
+    if (typeof secondBrand === "string" && secondBrand.length > 0) {
+      const brandPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.brands))]
+          .filter((brand) => brand.length > 0 && brand !== secondBrand && brand !== d.brands[0])
+          .map((brand) => ({ id: brand, label: brand })),
+        `brand2-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `brand2-${id}`,
+        lane: "desk",
+        kicker: "Second brand",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which second brand is stored?",
+        choices: bySeed(
+          [{ id: secondBrand, label: secondBrand }, ...brandPool],
+          `brand2-${id}-order`,
+        ),
+        correct: secondBrand,
+        answer: `${d.name} stores ${secondBrand} second. A second brand is not a different map.`,
+        drugIds: [id],
+      });
+    }
+    const rowCount = String(d.enzymes.length);
+    const rowPool = ["0", "1", "2", "3", "4", "5", "6"].filter((n) => n !== rowCount).slice(0, 3);
+    out.push({
+      id: `rows-${id}`,
+      lane: "desk",
+      kicker: "Rows",
+      title: d.name,
+      prompt: `${d.name}.`,
+      ask: "How many enzyme rows are stored?",
+      choices: bySeed(
+        [{ id: rowCount, label: rowCount }, ...rowPool.map((n) => ({ id: n, label: n }))],
+        `rows-${id}`,
+      ),
+      correct: rowCount,
+      answer: `${d.name} stores ${d.enzymes.length} enzyme ${d.enzymes.length === 1 ? "row" : "rows"}. A count is not a clearance.`,
+      drugIds: [id],
+    });
   }
   return out;
 }
