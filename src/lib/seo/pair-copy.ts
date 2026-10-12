@@ -34,3 +34,19 @@ export const PAIR_DISCLAIMER =
 export function fillPairTemplate(tpl: string, v: { drugA: string; drugB: string; tier: string }): string {
   return tpl.replaceAll("{drugA}", v.drugA).replaceAll("{drugB}", v.drugB).replaceAll("{tier}", v.tier);
 }
+
+/** Drug hub pages (/drug/<slug>). Placeholder: {drug} the catalog drug name. */
+export const DRUG_HUB_TITLE_TEMPLATE = "{drug} interactions on FDA labels | FirstPass";
+
+export const DRUG_HUB_DESCRIPTION_TEMPLATE =
+  "Drug pairs where an FDA label names an interaction with {drug}, each with the label's own wording and a DailyMed link. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
+
+export const DRUG_HUB_CTA_TEMPLATE = "Open {drug} in the desk";
+
+/** Shown under the disclaimer on every drug hub. */
+export const DRUG_HUB_NOT_LISTED =
+  "A pair that isn't listed here hasn't been cleared as safe; it just isn't on this list.";
+
+export function fillDrugTemplate(tpl: string, drug: string): string {
+  return tpl.replaceAll("{drug}", drug);
+}

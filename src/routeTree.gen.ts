@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
@@ -37,6 +38,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrugSlugRoute = DrugSlugRouteImport.update({
+  id: '/drug/$slug',
+  path: '/drug/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PairSlugRoute = PairSlugRouteImport.update({
   id: '/pair/$slug',
   path: '/pair/$slug',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/drug/$slug': typeof DrugSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/drug/$slug': typeof DrugSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/drug/$slug': typeof DrugSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
+    | '/drug/$slug'
     | '/pair/$slug'
     | '/api/license/recover'
     | '/api/stripe/webhook'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
+    | '/drug/$slug'
     | '/pair/$slug'
     | '/api/license/recover'
     | '/api/stripe/webhook'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
+    | '/drug/$slug'
     | '/pair/$slug'
     | '/api/license/recover'
     | '/api/stripe/webhook'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   PairsRoute: typeof PairsRoute
   RecoverRoute: typeof RecoverRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  DrugSlugRoute: typeof DrugSlugRoute
   PairSlugRoute: typeof PairSlugRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drug/$slug': {
+      id: '/drug/$slug'
+      path: '/drug/$slug'
+      fullPath: '/drug/$slug'
+      preLoaderRoute: typeof DrugSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pair/$slug': {
       id: '/pair/$slug'
       path: '/pair/$slug'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   PairsRoute: PairsRoute,
   RecoverRoute: RecoverRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  DrugSlugRoute: DrugSlugRoute,
   PairSlugRoute: PairSlugRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,

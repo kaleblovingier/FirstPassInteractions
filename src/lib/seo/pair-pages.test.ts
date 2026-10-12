@@ -130,9 +130,10 @@ describe("public pair pages", () => {
     }
   });
 
-  it("sitemap lists /, /pairs and every pair canonical", () => {
+  it("sitemap lists /, /pairs, every pair canonical and every drug hub", () => {
     const xml = sitemapXml();
-    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 2);
+    const hubCount = new Set(pages.flatMap((p) => [p.drugA, p.drugB])).size;
+    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 2 + hubCount);
     for (const p of pages) assert.ok(xml.includes(`<loc>${p.canonical}</loc>`), p.slug);
   });
 });
