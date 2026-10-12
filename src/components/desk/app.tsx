@@ -63,6 +63,7 @@ import { MetaboliteCard } from "./metabolites";
 import { Paywall } from "./paywall";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import { CheckoutDrawer, PlansPage } from "./plans";
+import { LostKeyLink } from "./lost-key";
 import { HostDelta } from "./delta";
 import { DeskFooter } from "./operator";
 import { severitySurface } from "./severity";
@@ -397,7 +398,10 @@ export function DeskApp() {
 
       <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
         {view === "plans" ? (
-          <PlansPage />
+          <>
+            <PlansPage />
+            <LostKeyLink className="mt-4 text-center" />
+          </>
         ) : view === "foundry" ? (
           <Suspense fallback={<DeskFallback />}>
             <Foundry />
