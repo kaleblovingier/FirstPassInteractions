@@ -1,9 +1,11 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { PairPageView } from "@/components/seo/pair-page";
-import { pairPageBySlug } from "@/lib/seo/pair-pages";
+import { legacyPairRedirect, pairPageBySlug } from "@/lib/seo/pair-pages";
 
 export const Route = createFileRoute("/pair/$slug")({
   loader: ({ params }) => {
+    const moved = legacyPairRedirect(params.slug);
+    if (moved) throw redirect({ to: "/pair/$slug", params: { slug: moved }, statusCode: 301 });
     const page = pairPageBySlug(params.slug);
     if (!page) throw notFound();
     return page;

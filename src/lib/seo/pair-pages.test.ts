@@ -136,3 +136,43 @@ describe("public pair pages", () => {
     for (const p of pages) assert.ok(xml.includes(`<loc>${p.canonical}</loc>`), p.slug);
   });
 });
+
+import { legacyPairRedirect as _lr, pairPages as _pp, pairPageBySlug as _pb, sitemapXml as _sx } from "./pair-pages";
+describe("brand slugs for combination products", () => {
+  it("uses Contrave for naltrexone-bupropion pairs", () => {
+    assert.ok(_pb("contrave-bupropion"));
+    assert.ok(_pb("contrave-bupropion-xl"));
+    assert.equal(_pb("naltrexone-bupropion-bupropion"), undefined);
+  });
+  it("301s old slugs to new ones", () => {
+    assert.equal(_lr("naltrexone-bupropion-bupropion"), "contrave-bupropion");
+    assert.equal(_lr("naltrexone-bupropion-bupropion-xl"), "contrave-bupropion-xl");
+    assert.equal(_lr("contrave-bupropion"), undefined);
+  });
+  it("no slug repeats a word and slugs are unique", () => {
+    const slugs = _pp().map((p) => p.slug);
+    assert.equal(new Set(slugs).size, slugs.length);
+    for (const s of slugs) {
+      const t = s.split("-");
+      assert.equal(new Set(t).size, t.length, s);
+    }
+  });
+  it("sitemap lists only new URLs", () => {
+    const xml = _sx();
+    assert.ok(xml.includes("/pair/contrave-bupropion<"));
+    assert.ok(!xml.includes("naltrexone-bupropion-bupropion"));
+  });
+});
+
+import { readFileSync as _rf } from "node:fs";
+describe("vercel.json redirects", () => {
+  it("covers every legacy pair slug with a 301", () => {
+    const cfg = JSON.parse(_rf(new URL("../../../vercel.json", import.meta.url), "utf8"));
+    for (const r of cfg.redirects) {
+      const old = r.source.replace("/pair/", "");
+      assert.equal(r.permanent, true);
+      assert.equal(`/pair/${_lr(old)}`, r.destination);
+    }
+    assert.ok(cfg.redirects.length >= 2);
+  });
+});

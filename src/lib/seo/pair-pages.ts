@@ -41,6 +41,31 @@ function oneLine(s: string) {
   return s.replace(/\s+/g, " ").trim();
 }
 
+const toSlug = (s: string) =>
+  s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+/**
+ * Slug for a pair. When one drug's id shares a slug token with the other's
+ * (e.g. naltrexone-bupropion + bupropion), the combination product is named
+ * by its first brand (contrave-bupropion) so the address doesn't repeat a word.
+ */
+export function pairSlug(a: string, b: string): string {
+  const ta = a.split("-");
+  const tb = b.split("-");
+  if (!ta.some((t) => tb.includes(t))) return `${a}-${b}`;
+  const da = DRUG_BY_ID[a];
+  const db = DRUG_BY_ID[b];
+  const isCombo = (id: string) => /[–/]/.test(DRUG_BY_ID[id]?.name ?? "");
+  let target: "a" | "b";
+  if (isCombo(a) !== isCombo(b)) target = isCombo(a) ? "a" : "b";
+  else target = ta.length >= tb.length ? "a" : "b";
+  const brand = (target === "a" ? da : db)?.brands?.[0];
+  if (!brand) return `${a}-${b}`;
+  const bs = toSlug(brand);
+  const next = target === "a" ? `${bs}-${b}` : `${a}-${bs}`;
+  return next.split("-").some((t, i, arr) => arr.indexOf(t) !== i) ? `${a}-${b}` : next;
+}
+
 function build(): PairPage[] {
   const seen = new Map<string, { a: string; b: string; quote: PairQuote | null }>();
   const key = (a: string, b: string) => [a, b].sort().join("|");
@@ -78,7 +103,9 @@ function build(): PairPage[] {
     const severity: Severity | "none" = top ? top.severity : "none";
     const severityLabel = SEVERITY_LABEL[severity];
     const mechanism = top ? oneLine(`${top.mechanism}${top.effect ? ` (${top.effect})` : ""}`) : "No pair finding on the desk.";
-    const slug = `${a}-${b}`;
+    const slug = pairSlug(a, b);
+    const legacy = `${a}-${b}`;
+    if (legacy !== slug) legacySlugs.set(legacy, slug);
     const v = { drugA: da.name, drugB: db.name, tier: severityLabel };
     pages.push({
       slug,
@@ -100,6 +127,7 @@ function build(): PairPage[] {
   return pages;
 }
 
+const legacySlugs = new Map<string, string>();
 let cache: PairPage[] | null = null;
 export function pairPages(): PairPage[] {
   return (cache ??= build());
@@ -107,6 +135,13 @@ export function pairPages(): PairPage[] {
 
 export function pairPageBySlug(slug: string): PairPage | undefined {
   return pairPages().find((p) => p.slug === slug);
+}
+
+/** Old slug → current slug, for 301s from addresses that were renamed. */
+export function legacyPairRedirect(slug: string): string | undefined {
+  pairPages();
+  const to = legacySlugs.get(slug);
+  return to && !pairPageBySlug(slug) ? to : undefined;
 }
 
 export function sitemapXml(): string {
