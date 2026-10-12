@@ -4,6 +4,7 @@ import { claimStripeCheckout } from "@/lib/billing/stripe";
 import { claimPaypalCheckout } from "@/lib/billing/paypal";
 import { useDesk } from "@/lib/drugs/store";
 import { Button } from "@/components/ui/button";
+import { useModalFocus } from "@/lib/a11y/use-modal-focus";
 
 export interface LicenseActivatedDialogProps {
   license: string;
@@ -18,6 +19,8 @@ export function LicenseActivatedDialog({
   onDismiss,
 }: LicenseActivatedDialogProps) {
   const [copied, setCopied] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useModalFocus(dialogRef, true, onDismiss);
 
   const handleCopy = async () => {
     if (!license) return;
@@ -32,9 +35,13 @@ export function LicenseActivatedDialog({
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="license-activated-title"
+      tabIndex={-1}
+      // Focus lands here on open so the dialog name is read; it is not a control, so no ring.
+      style={{ outline: "none" }}
       className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 p-0 backdrop-blur-xs animate-in fade-in duration-200 sm:items-center sm:p-4"
     >
       <div className="relative max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-border bg-surface p-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] shadow-2xl animate-in zoom-in-95 duration-200 sm:max-h-[88dvh] sm:rounded-2xl sm:p-7">
@@ -99,6 +106,10 @@ export function LicenseActivatedDialog({
                 </>
               )}
             </Button>
+            {/* The button keeps focus when it copies, so announce it (WCAG 4.1.3). */}
+            <span role="status" className="sr-only">
+              {copied ? "License key copied" : ""}
+            </span>
           </div>
         </div>
 
