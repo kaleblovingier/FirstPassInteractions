@@ -79,7 +79,7 @@ function build(): PairPage[] {
     const severityLabel = SEVERITY_LABEL[severity];
     const mechanism = top ? oneLine(`${top.mechanism}${top.effect ? ` (${top.effect})` : ""}`) : "No pair finding on the desk.";
     const slug = `${a}-${b}`;
-    const v = { a: da.name, b: db.name, severity: severityLabel };
+    const v = { drugA: da.name, drugB: db.name, tier: severityLabel };
     pages.push({
       slug,
       drugA: a,

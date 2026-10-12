@@ -16,8 +16,22 @@ export function normalize(s: string) {
     .replace(/&nbsp;|&#160;/g, " ")
     .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
     .replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').replace(/[\u2010-\u2013]/g, "-")
+    .replace(/\s*([®•])\s*/g, "$1")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/** Split on "…"; strip punctuation only at elision edges, never the quote's own final period. */
+export function segments(q: string): string[] {
+  const parts = q.split("…").map((s) => s.trim());
+  return parts
+    .map((s, i) => {
+      let t = s;
+      if (i > 0) t = t.replace(/^[.,;:]\s*/, "");
+      if (i < parts.length - 1) t = t.replace(/\s*[.,;:]$/, "");
+      return t;
+    })
+    .filter(Boolean);
 }
 
 async function spl(setid: string): Promise<string> {
@@ -42,7 +56,7 @@ for (const p of pages) {
   if (!raw.has(setid)) raw.set(setid, normalize(await spl(setid)));
   if (!texts.has(setid)) texts.set(setid, normalize(await spl(setid)).toLowerCase().replace(/\s+/g, ""));
   const hay = texts.get(setid)!;
-  const parts = normalize(p.quote.quote).split("…").map((s) => s.trim().replace(/^[.,;:]\s*|\s*[.,;:]$/g, "").toLowerCase()).filter(Boolean);
+  const parts = segments(normalize(p.quote.quote)).map((s) => s.toLowerCase());
   const miss = parts.filter((s) => !hay.includes(s.replace(/\s+/g, "")));
   if (miss.length) bad.push(`${p.slug} (${p.quote.sourceId}): ${miss[0]!.slice(0, 120)}`);
   else {

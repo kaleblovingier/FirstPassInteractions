@@ -18,7 +18,7 @@ const text = (h: string) => h.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").re
 /** Dose instructions: amounts with units, frequencies, titration verbs. */
 const DOSE = /\b\d+(\.\d+)?\s?(mg|mcg|µg|g|mL|units?|IU)\b|\b(once|twice|three times|four times) (a|per|daily)\b|\bevery \d+\s?(h|hours?)\b|\b(take \d|reduce the dose|increase the dose|titrate|max(imum)? dose)\b/i;
 
-const squash = (s: string) => s.replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').replace(/[\u2010-\u2013]/g, "-").replace(/\s+/g, "");
+const squash = (s: string) => s.replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').replace(/[\u2010-\u2013]/g, "-").replace(/\s*([®•])\s*/g, "$1").replace(/\s+/g, "");
 
 describe("public pair pages", () => {
   it("covers every gold-set and label-pinned catalog pair once, with unique slugs", () => {
@@ -48,13 +48,36 @@ describe("public pair pages", () => {
     for (const p of pages) assert.ok(idx.includes(`${p.nameA} and ${p.nameB}`), p.slug);
   });
 
-  it("the disclaimer says educational reference, not FDA-cleared, no dosing advice, and does not deny CDS status", () => {
-    assert.match(PAIR_DISCLAIMER, /educational reference/i);
-    assert.match(PAIR_DISCLAIMER, /not FDA-cleared/i);
-    assert.match(PAIR_DISCLAIMER, /not a substitute for professional judgment/i);
-    assert.match(PAIR_DISCLAIMER, /no dosing advice/i);
-    // regulatory.ts labels FirstPass as non-device CDS; the pages must not contradict it.
-    assert.doesNotMatch(PAIR_DISCLAIMER, /clinical decision support/i);
+  it("the disclaimer is exactly the agreed wording", () => {
+    assert.equal(PAIR_DISCLAIMER, "Educational reference only. Not FDA-cleared. The Prescribing Information governs.");
+  });
+
+  it("quote matching ignores spacing around ® and •", () => {
+    assert.equal(squash("SPORANOX®."), squash("SPORANOX ®."));
+    assert.equal(squash("•combination"), squash("• combination"));
+  });
+
+  it("titles use the desk's own tier label unchanged", () => {
+    for (const p of pages) {
+      assert.equal(p.severityLabel, SEVERITY_LABEL[p.severity], p.slug);
+      assert.equal(p.title, `${p.nameA} + ${p.nameB} interaction: ${p.severityLabel} | FirstPass`, p.slug);
+      assert.ok(p.description.startsWith(`What the ${p.nameA} and ${p.nameB} labels say`), p.slug);
+    }
+  });
+
+  it("no pair page, index, copy or meta mentions clinical decision support, free, or pricing", () => {
+    const CDS = /clinical[\s-]+decision[\s-]+support|\bCDS\b/i;
+    const PRICE = /\bfree\b|\$\d|\bpric(e|ing)\b/i;
+    const copy = [PAIR_TITLE_TEMPLATE, PAIR_DESCRIPTION_TEMPLATE, PAIRS_INDEX_TITLE, PAIRS_INDEX_DESCRIPTION, PAIRS_INDEX_INTRO, PAIR_CTA, PAIR_DISCLAIMER];
+    for (const c of copy) { assert.doesNotMatch(c, CDS, c); assert.doesNotMatch(c, PRICE, c); }
+    for (const p of pages) {
+      const all = `${html(p)} ${p.title} ${p.description}`;
+      assert.doesNotMatch(all, CDS, p.slug);
+      assert.doesNotMatch(text(all), PRICE, p.slug);
+    }
+    const idx = renderToStaticMarkup(createElement(PairsIndexView, { pages }));
+    assert.doesNotMatch(idx, CDS);
+    assert.doesNotMatch(text(idx), PRICE);
   });
 
   it("no page or copy carries dose instructions or Pro wording", () => {
@@ -99,7 +122,9 @@ describe("public pair pages", () => {
       assert.ok(src, `${p.slug}: no captured label text; run scripts/verify-pair-quotes.ts --write`);
       assert.ok(p.quote.url.includes(src.setid), `${p.slug}: setid`);
       const hay = squash(src.excerpt).toLowerCase();
-      for (const seg of p.quote.quote.split("…").map((s) => s.trim().replace(/^[.,;:]\s*|\s*[.,;:]$/g, "")).filter(Boolean)) {
+      const parts = p.quote.quote.split("…").map((s) => s.trim());
+      const segs = parts.map((s, i) => (i > 0 ? s.replace(/^[.,;:]\s*/, "") : s)).map((s, i) => (i < parts.length - 1 ? s.replace(/\s*[.,;:]$/, "") : s)).filter(Boolean);
+      for (const seg of segs) {
         assert.ok(hay.includes(squash(seg).toLowerCase()), `${p.slug}: "${seg.slice(0, 80)}"`);
       }
     }
