@@ -5,6 +5,7 @@ import type { KetamineRoute } from "./types";
 import { DRUG_BY_ID } from "./catalog";
 import { buildBriefUrl as briefUrlFromIds } from "./brief";
 import { isVirtual } from "./host";
+import { CASE_OF_THE_DAY_PARAM, caseOfTheDay } from "./case-of-the-day";
 
 export type PackId = "clinic-onboard" | "mat-cup" | "pharmd";
 
@@ -135,14 +136,14 @@ function emptyResolved(flip: boolean): PermalinkResolved {
 
 /**
  * Parse desk share params.
- * - `case` (preferred) or legacy `sample`: sample regimen id
+ * - `case` (preferred) or legacy `sample`: sample regimen id; `case=today` is the case of the day
  * - `pack`: clinic-onboard | mat-cup | pharmd
  * - `lab`: PharmD lab-book assignment id (loads sample + Study view)
  * - `brief`: comma-separated catalog ids (loads onto desk; stays on desk view)
  * - `flip=1`: invert ketamine route for first-pass contrast
  * Priority: lab > pack > case > brief > none
  */
-export function parsePermalink(search: string | URLSearchParams): PermalinkResolved {
+export function parsePermalink(search: string | URLSearchParams, now: Date = new Date()): PermalinkResolved {
   const params = typeof search === "string" ? new URLSearchParams(search.startsWith("?") ? search.slice(1) : search) : search;
   const flip = params.get("flip") === "1" || params.get("flip") === "true";
   const labRaw = params.get("lab");
@@ -167,7 +168,8 @@ export function parsePermalink(search: string | URLSearchParams): PermalinkResol
 
   const packRaw = params.get("pack");
   const packId = isPackId(packRaw) ? packRaw : null;
-  const caseRaw = params.get("case") || params.get("sample");
+  const caseParam = params.get("case") || params.get("sample");
+  const caseRaw = caseParam === CASE_OF_THE_DAY_PARAM ? (caseOfTheDay(now)?.id ?? null) : caseParam;
   const empty = emptyResolved(flip);
 
   if (packId) {
