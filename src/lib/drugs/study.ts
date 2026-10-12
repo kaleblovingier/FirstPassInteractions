@@ -72,6 +72,8 @@ import { labelMechanismCard } from "./learn/label-mechanism";
 import { labelDomainCard } from "./learn/label-domain";
 import { labelBasisCard } from "./learn/label-basis";
 import { labelMoreCard } from "./learn/label-more";
+import { labelPinEnzymeCard } from "./learn/label-pin-enzyme";
+import { labelPinKindCard } from "./learn/label-pin-kind";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1212,6 +1214,10 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       if (basis) out.push(basis);
       const more = labelMoreCard(ids[i], ids[j]);
       if (more) out.push(more);
+      const pinEnzyme = labelPinEnzymeCard(ids[i], ids[j]);
+      if (pinEnzyme) out.push(pinEnzyme);
+      const pinKind = labelPinKindCard(ids[i], ids[j]);
+      if (pinKind) out.push(pinKind);
     }
   }
   return out;

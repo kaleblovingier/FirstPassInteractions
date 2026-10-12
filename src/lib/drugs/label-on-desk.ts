@@ -6,6 +6,7 @@
 import { DRUG_BY_ID } from "./catalog";
 import { LABEL_CONTRAINDICATIONS } from "./label-contraindications";
 import { LABEL_GOLD_SET, type LabelClass } from "./reference/label-gold-set";
+import type { Enzyme } from "./types";
 
 export type DeskLabel = {
   drugA: string;
@@ -21,6 +22,10 @@ export type DeskLabel = {
   mechanism: "PK" | "PD" | "PK+PD" | null;
   domain: string | null;
   basis: "named" | "class" | null;
+  /** Enzyme the pin stores. Not a finding. Null when no pin stores one. */
+  pinEnzyme: Enzyme | null;
+  /** Direction the pin stores on that enzyme. Null when the pin omits it. */
+  pinKind: "inhibitor" | "inducer" | null;
   url: string;
   source: "gold" | "pin";
 };
@@ -56,6 +61,8 @@ function index(): Map<string, Row> {
       mechanism: g.mechanism,
       domain: g.domain,
       basis: null,
+      pinEnzyme: null,
+      pinKind: null,
       url: g.url,
       source: "gold",
     });
@@ -79,17 +86,33 @@ function index(): Map<string, Row> {
       mechanism: null,
       domain: null,
       basis: p.basis,
+      pinEnzyme: p.enzyme ?? null,
+      pinKind: p.kind ?? null,
       url: p.url,
       source: "pin",
     };
     const cur = seen.get(key);
+    const held = {
+      pinEnzyme: p.enzyme ?? cur?.pinEnzyme ?? null,
+      pinKind: p.kind ?? cur?.pinKind ?? null,
+    };
     if (!cur) {
-      seen.set(key, pin);
+      seen.set(key, { ...pin, ...held });
       continue;
     }
     if (!cur.quote) {
-      seen.set(key, { ...pin, slug: cur.slug, drugA: cur.drugA, drugB: cur.drugB, nameA: cur.nameA, nameB: cur.nameB });
+      seen.set(key, {
+        ...pin,
+        slug: cur.slug,
+        drugA: cur.drugA,
+        drugB: cur.drugB,
+        nameA: cur.nameA,
+        nameB: cur.nameB,
+        ...held,
+      });
+      continue;
     }
+    seen.set(key, { ...cur, ...held });
   }
   rows = seen;
   return seen;
@@ -128,6 +151,11 @@ export function deskLabelPlain(ids: readonly string[]): string {
     lines.push(`${row.labelDrug}. ${row.labelSection}.`);
     lines.push(row.quote);
     if (row.example) lines.push(`Names: ${row.example}`);
+    if (row.mechanism) lines.push(`Stored mechanism: ${row.mechanism}.`);
+    if (row.domain) lines.push(`Stored domain: ${row.domain}.`);
+    if (row.pinEnzyme && row.pinKind) {
+      lines.push(`The pin stores ${row.pinEnzyme} as an ${row.pinKind}. That enzyme is not a new finding.`);
+    }
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -155,6 +183,10 @@ export function labelExamplePool(): string[] {
 
 export function labelDomainPool(): string[] {
   return unique([...index().values()].map((row) => row.domain ?? ""));
+}
+
+export function labelPinEnzymePool(): string[] {
+  return unique([...index().values()].map((row) => row.pinEnzyme ?? ""));
 }
 
 /** Other quoted lines on the same label. Not filtered by the desk. */

@@ -44,6 +44,17 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
             {row.example ? (
               <p className="mt-1 min-w-0 break-words text-[11px] leading-relaxed text-muted">Names: {row.example}</p>
             ) : null}
+            {row.mechanism ? (
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">Stored mechanism: {row.mechanism}.</p>
+            ) : null}
+            {row.domain ? (
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">Stored domain: {row.domain}.</p>
+            ) : null}
+            {row.pinEnzyme && row.pinKind ? (
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">
+                The pin stores {row.pinEnzyme} as an {row.pinKind}. That enzyme is not a new finding.
+              </p>
+            ) : null}
             <div className="mt-1 flex flex-wrap gap-2">
               <a
                 href={row.url}

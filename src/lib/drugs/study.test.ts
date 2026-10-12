@@ -1627,6 +1627,25 @@ describe("study learning tools", () => {
     assert.equal(war.some((c) => c.id.startsWith("mech-")), false);
     assert.equal(war.some((c) => c.id.startsWith("more-")), false);
   });
+
+  it("a stored label also asks the pin enzyme and the pin direction", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(pair.find((c) => c.id === "penz-clarithromycin|simvastatin")?.correct, "CYP3A4");
+    assert.equal(pair.find((c) => c.id === "pkind-clarithromycin|simvastatin")?.correct, "inhibitor");
+    assert.equal(pair.find((c) => c.id === "penz-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(String(pair.find((c) => c.id === "penz-clarithromycin|simvastatin")?.prompt).includes("CYP3A4"), false);
+    const inducer = deskCards(["lurasidone", "rifampin"], []);
+    assert.equal(inducer.find((c) => c.id === "pkind-lurasidone|rifampin")?.correct, "inducer");
+    const pin = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(pin.find((c) => c.id === "penz-phenobarbital|ranolazine")?.correct, "CYP3A4");
+    assert.equal(pin.find((c) => c.id === "pkind-phenobarbital|ranolazine")?.correct, "inducer");
+    const none = deskCards(["darunavir", "grazoprevir-elbasvir"], []);
+    assert.equal(none.some((c) => c.id.startsWith("penz-")), false);
+    assert.equal(none.some((c) => c.id.startsWith("pkind-")), false);
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("penz-")), false);
+    assert.equal(war.some((c) => c.id.startsWith("pkind-")), false);
+  });
 });
 
 
