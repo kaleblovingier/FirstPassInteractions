@@ -8,6 +8,8 @@ import {
   LABEL_CONTRAINDICATED_TAG,
   LABEL_CONTRAINDICATIONS,
   labelContraindicationFor,
+  labelContraindicationById,
+  labelPinSentence,
 } from "./label-contraindications";
 
 const RANK: Record<Severity, number> = { contraindicated: 4, major: 3, moderate: 2, minor: 1 };
@@ -425,6 +427,42 @@ const EXPECTED_PINS = [
   "dofetilide+hctz",
   "thioridazine+pindolol",
   "sildenafil-pah+riociguat",
+  // wave 9
+  "sertraline+linezolid",
+  "sertraline+methylene-blue",
+  "paroxetine+linezolid",
+  "paroxetine+methylene-blue",
+  "fluvoxamine+linezolid",
+  "fluvoxamine+methylene-blue",
+  "venlafaxine+linezolid",
+  "venlafaxine+methylene-blue",
+  "desvenlafaxine+linezolid",
+  "desvenlafaxine+methylene-blue",
+  "duloxetine+linezolid",
+  "duloxetine+methylene-blue",
+  "vortioxetine+linezolid",
+  "vortioxetine+methylene-blue",
+  "mirtazapine+linezolid",
+  "mirtazapine+methylene-blue",
+  "trazodone+linezolid",
+  "trazodone+methylene-blue",
+  "clomipramine+linezolid",
+  "clomipramine+methylene-blue",
+  "buspirone+linezolid",
+  "buspirone+methylene-blue",
+  "amphetamine+linezolid",
+  "amphetamine+methylene-blue",
+  "lisdexamfetamine+linezolid",
+  "lisdexamfetamine+methylene-blue",
+  "rasagiline+meperidine",
+  "rasagiline+tramadol",
+  "rasagiline+methadone",
+  "rasagiline+cyclobenzaprine",
+  "tranylcypromine+buspirone",
+  "tranylcypromine+tapentadol",
+  "tranylcypromine+cyclobenzaprine",
+  "tranylcypromine+milnacipran",
+  "tranylcypromine+rasagiline",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -433,7 +471,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 47);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 82);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
   for (const r of LABEL_CONTRAINDICATIONS) {
@@ -658,5 +696,14 @@ test("Recorlev holds the existing CYP3A4 finding, adds no CYP grade, and stays n
   for (const other of ["methadone-soluble", "quinidine-gluconate"]) {
     if (!DRUG_BY_ID[other]) continue;
     assert.equal(labelContraindicationFor("levoketoconazole", other), undefined, other);
+  }
+});
+
+test("bupropion/Contrave + linezolid or IV methylene blue pins say don't start, one direction", () => {
+  for (const id of ["bupropion+linezolid", "bupropion+methylene-blue", "naltrexone-bupropion+linezolid", "naltrexone-bupropion+methylene-blue"]) {
+    const r = labelContraindicationById(id)!;
+    const s = labelPinSentence(r);
+    assert.match(s, /don't start (bupropion|Contrave) in a patient being treated with linezolid or intravenous methylene blue/);
+    assert.equal((s.match(/intravenous/g) ?? []).length, 1);
   }
 });
