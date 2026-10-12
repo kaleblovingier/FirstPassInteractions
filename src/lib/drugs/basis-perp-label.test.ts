@@ -255,3 +255,22 @@ test('Orladeyo and Bixlenvo cite their own CYP role lines', () => {
   assert.ok(has('berotralstat', 'desipramine', 'Orladeyo'), 'berotralstat CYP2D6');
   assert.ok(has('bictegravir-lenacapavir', 'midazolam', 'Bixlenvo'), 'bixlenvo CYP3A4');
 });
+
+test('wave of strong perpetrators cite their own labels', () => {
+  const has = (a: string, b: string, brand: string) => pkBasis(a, b).some((x) => x.label.startsWith(brand));
+  for (const [perp, victim, brand] of [
+    ['encorafenib', 'midazolam', 'Braftovi'],
+    ['relacorilant', 'midazolam', 'Lifyorli'],
+    ['lonafarnib', 'triazolam', 'Zokinvy'],
+    ['lonafarnib', 'omeprazole', 'Zokinvy'],
+    ['camizestrant', 'warfarin', 'Etcamah'],
+    ['camizestrant', 'omeprazole', 'Etcamah'],
+  ] as const) assert.ok(has(perp, victim, brand), perp);
+});
+
+test('Zokinvy quotes midazolam and the statins as contraindicated, not an unnamed CYP3A substrate', () => {
+  const line = /The Zokinvy label calls this combination contraindicated/;
+  const d = (b: string) => pkBasis('lonafarnib', b).map((x) => x.detail).join('\n');
+  assert.match(d('simvastatin'), line);
+  assert.doesNotMatch(d('triazolam'), line);
+});
