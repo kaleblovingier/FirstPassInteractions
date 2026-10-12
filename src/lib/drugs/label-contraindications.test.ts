@@ -381,6 +381,50 @@ const EXPECTED_PINS = [
   "eletriptan+ritonavir",
   "sofosbuvir-velpatasvir-voxilaprevir+rifampin",
   "bictegravir-lenacapavir+dofetilide",
+  "lonafarnib+midazolam",
+  "lonafarnib+lovastatin",
+  "lonafarnib+simvastatin",
+  "lonafarnib+atorvastatin",
+  "pimozide+erythromycin",
+  "pimozide+azithromycin",
+  "pimozide+citalopram",
+  "pimozide+escitalopram",
+  "pimozide+sertraline",
+  "pimozide+nefazodone",
+  "triazolam+nefazodone",
+  "carbamazepine+nefazodone",
+  "ranolazine+clarithromycin",
+  "ranolazine+st-johns-wort",
+  "ergotamine+erythromycin",
+  "ergotamine+ketoconazole",
+  "dihydroergotamine+erythromycin",
+  "dihydroergotamine+ketoconazole",
+  "lurasidone+voriconazole",
+  "lurasidone+st-johns-wort",
+  "lurasidone+phenytoin",
+  "lurasidone+carbamazepine",
+  "eplerenone+nefazodone",
+  "eplerenone+clarithromycin",
+  "eplerenone+ritonavir",
+  "dronedarone+voriconazole",
+  "dronedarone+telithromycin",
+  "dronedarone+clarithromycin",
+  "dronedarone+nefazodone",
+  "dronedarone+erythromycin",
+  "naloxegol+clarithromycin",
+  "naloxegol+ketoconazole",
+  "bupropion+linezolid",
+  "bupropion+methylene-blue",
+  "naltrexone-bupropion+methadone",
+  "naltrexone-bupropion+buprenorphine",
+  "naltrexone-bupropion+bupropion",
+  "naltrexone-bupropion+bupropion-xl",
+  "naltrexone-bupropion+linezolid",
+  "naltrexone-bupropion+methylene-blue",
+  "dofetilide+tmp-smx",
+  "dofetilide+hctz",
+  "thioridazine+pindolol",
+  "sildenafil-pah+riociguat",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -388,10 +432,10 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 32);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 40);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 47);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 16);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
