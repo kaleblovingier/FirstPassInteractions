@@ -7,18 +7,19 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 307 |
+| Pairs (each tied to a verified FDA label statement) | 321 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
 | Wave 4 (label contraindications: clarithromycin, Sporanox, Noxafil, Norvir, Paxlovid, Kaletra) | 109 |
 | Wave 5 (label contraindications: Geodon) | 25 |
-| Label says contraindicated | 272 |
+| Wave 6 (label contraindications: Recorlev) | 14 |
+| Label says contraindicated | 286 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 307 / 307 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 272 / 272 |
+| Engine at or above label-supported floor | 321 / 321 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 286 / 286 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -62,6 +63,15 @@
 | Pairs | 25 |
 | Engine at or above contraindicated ("Avoid together") | 25 / 25 |
 | Label contraindicated and engine contraindicated ("Avoid together") | 25 / 25 |
+| Under-calls | 0 |
+
+### Wave 6: Recorlev contraindications
+
+| Measure | Count |
+|---|---|
+| Pairs | 14 |
+| Engine at or above contraindicated ("Avoid together") | 14 / 14 |
+| Label contraindicated and engine contraindicated ("Avoid together") | 14 / 14 |
 | Under-calls | 0 |
 
 ## Under-calls (for formulary owner, Grok Bot 5)
@@ -387,22 +397,39 @@ None.
 | 305 | 5 | ziprasidone | selegiline | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
 | 306 | 5 | ziprasidone | safinamide | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
 | 307 | 5 | ziprasidone | rasagiline | [Geodon (ziprasidone)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37) | 4.3 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)" |
+| 308 | 6 | levoketoconazole | bosutinib | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "Bosutinib" |
+| 309 | 6 | levoketoconazole | clarithromycin | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "clarithromycin" |
+| 310 | 6 | levoketoconazole | cobimetinib | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "cobimetinib" |
+| 311 | 6 | levoketoconazole | crizotinib | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "crizotinib" |
+| 312 | 6 | levoketoconazole | disopyramide | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "disopyramide" |
+| 313 | 6 | levoketoconazole | dofetilide | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "dofetilide" |
+| 314 | 6 | levoketoconazole | dronedarone | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "dronedarone" |
+| 315 | 6 | levoketoconazole | ivabradine | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "ivabradine" |
+| 316 | 6 | levoketoconazole | methadone | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "methadone" |
+| 317 | 6 | levoketoconazole | midostaurin | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "midostaurin" |
+| 318 | 6 | levoketoconazole | nicardipine | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "nicardipine" |
+| 319 | 6 | levoketoconazole | pimozide | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "pimozide" |
+| 320 | 6 | levoketoconazole | quinidine | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "quinidine" |
+| 321 | 6 | levoketoconazole | ranolazine | [Recorlev (levoketoconazole)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc) | 7.1 Effect of RECORLEV on Other Drugs (Table 6) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated" · e.g. "ranolazine" |
 
 ## Method
 
-1. Candidate pairs were drawn from the desk's teaching domains (psychiatry, MAOI/opioid, sleep, statins, antiarrhythmics/cardiology, antithrombotics, antimicrobials); wave 2 adds the MAT / ketamine-clinic drugs (methadone, buprenorphine and buprenorphine/naloxone, naltrexone, ketamine, esketamine). Wave 3 adds label-stated contraindications for Korlym (mifepristone) and the HIV protease inhibitors Prezista (darunavir), Prezcobix (darunavir/cobicistat), Reyataz (atazanavir), and Evotaz (atazanavir/cobicistat). Wave 4 adds label-stated contraindications for clarithromycin tablets, Sporanox (itraconazole), Noxafil (posaconazole), Norvir (ritonavir), Paxlovid (nirmatrelvir/ritonavir), and Kaletra (lopinavir/ritonavir). Wave 5 adds label-stated contraindications from the current Geodon (ziprasidone) label.
-2. Each statement was checked on the current DailyMed SPL for the named label (waves 1–2 retrieved 2026-09-27; waves 3–4 retrieved 2026-10-02 from the DailyMed v2 SPL; wave 5 retrieved 2026-10-03 from the current Geodon SPL). Quotes are verbatim substrings of that SPL text ("…" marks an elided span), no longer than 25 words, and carry no dose amounts.
+1. Candidate pairs were drawn from the desk's teaching domains (psychiatry, MAOI/opioid, sleep, statins, antiarrhythmics/cardiology, antithrombotics, antimicrobials); wave 2 adds the MAT / ketamine-clinic drugs (methadone, buprenorphine and buprenorphine/naloxone, naltrexone, ketamine, esketamine). Wave 3 adds label-stated contraindications for Korlym (mifepristone) and the HIV protease inhibitors Prezista (darunavir), Prezcobix (darunavir/cobicistat), Reyataz (atazanavir), and Evotaz (atazanavir/cobicistat). Wave 4 adds label-stated contraindications for clarithromycin tablets, Sporanox (itraconazole), Noxafil (posaconazole), Norvir (ritonavir), Paxlovid (nirmatrelvir/ritonavir), and Kaletra (lopinavir/ritonavir). Wave 5 adds label-stated contraindications from the current Geodon (ziprasidone) label. Wave 6 adds label-stated contraindications from the current Recorlev (levoketoconazole) label.
+2. Each statement was checked on the current DailyMed SPL for the named label (waves 1–2 retrieved 2026-09-27; waves 3–4 retrieved 2026-10-02 from the DailyMed v2 SPL; wave 5 retrieved 2026-10-03 from the current Geodon SPL; wave 6 retrieved 2026-10-05 from the current Recorlev SPL). Quotes are verbatim substrings of that SPL text ("…" marks an elided span), no longer than 25 words, and carry no dose amounts.
 3. Inclusion, wave 1: the label must say contraindicated, or explicitly avoid / not recommended / should not be used. Monitoring-only language does not qualify.
    Inclusion, wave 2 (MAT / ketamine clinic): the label (Boxed Warning, Contraindications, Warnings and Precautions, or Drug Interactions) must carry an explicit interaction statement naming the drug or its class. Only drugs the desk's catalog carries are used.
    Inclusion, wave 3: section 4 must say contraindicated and name the drug (or a fixed combination the catalog carries). Combo catalog rows for Prezcobix and Evotaz are included. Renal/hepatic-only lines, and Reyataz lines qualified only with ritonavir, are skipped. Pairs already in waves 1–2 are not repeated.
    Inclusion, wave 4: the contraindications section must name the drug unconditionally. Colchicine, venetoclax, and voriconazole are skipped where the line is conditional (renal or hepatic impairment, or dose-dependent). Oral ketoconazole is not a source. Pairs already in waves 1–3 are not repeated. Only catalog drugs are paired.
    Inclusion, wave 5: Geodon section 4 must contraindicate the pair. Named drugs are preferred. Class Ia and III anti-arrhythmics and MAOIs are included only when the catalog row clearly belongs. Renal, hepatic, dose, and metabolizer conditions are not used. Pairs already in waves 1–4 are not repeated. The wave stops at 25 pairs.
+   Inclusion, wave 6: Recorlev Table 6 (section 7.1, the table section 4 points to) must say use with the drug is contraindicated and name it. The sensitive-substrate row says "contraindicated or not recommended" without saying which, so it is not used. The metabolizer-conditional eliglustat line is not used. Only catalog drugs are paired.
 4. Each pair's drugs are resolved to catalog ids with the desk's own search (`searchDrugs`), and a test asserts the typed query resolves to that id.
 5. The two-drug regimen is run through `analyze(ids, DEFAULT_HOST)` as the desk does (no doses entered). The pair's severity is the highest finding that involves **both** drugs; findings on one drug alone are excluded.
 6. Floor: wave 1 requires at least `major` ("Serious concern") for both label classes. Wave 2 sets the floor to the minimum severity the label text supports: the naltrexone + labeled-opioid contraindicated labels -> `contraindicated` ("Avoid together"); avoid and Boxed Warning statements -> `major`; a Warnings / Drug Interactions statement that names overdose or death -> `major`; monitor / dose-change language -> `moderate` ("Use care"). For contraindicated labels the stricter expectation is `contraindicated` ("Avoid together"), reported separately as exact matches. Wave 5 sets the floor to `contraindicated` because a label pin holds the engine there. The pin lifts an existing pharmacodynamic card, or stands alone when there is no finding. It does not assign a CYP grade.
 
 ## Dropped candidates
 
+- **wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)**: Recorlev Table 6 says use with these is "contraindicated or not recommended" and does not say which. Section 4 says "certain" sensitive substrates. Not pinned as contraindicated. Ebastine, lomitapide, saquinavir, and tipranavir are not in the catalog.
+- **wave 6: levoketoconazole + strong CYP3A4 inhibitors or inducers (Table 7)**: Recorlev Table 7 says "not recommended", not contraindicated.
 - **methadone / buprenorphine / fentanyl + strong CYP3A4 inhibitor or inducer**: Wave 1: labels use monitor/consider-dose-change language, not contraindicated/avoid, so they failed the wave-1 rule. Wave 2 adds methadone and buprenorphine pairs under 'boxed-warning' / 'warning' with a label-supported floor; fentanyl not curated.
 - **colchicine + clarithromycin**: Biaxin: contraindicated only 'in patients with renal or hepatic impairment'. Not cleanly expressible as a two-drug regimen on the default host.
 - **ketamine + any**: Wave 1: Ketalar 4 CONTRAINDICATIONS lists no drug-interaction contraindication. Wave 2 anchors ketamine pairs on Ketalar 7.1 / 7.3 under 'warning'.
@@ -445,10 +472,10 @@ None.
 ## Not in catalog
 
 - **flibanserin**: Not in catalog. Paxlovid section 4 names it. Not curated.
-- **eliglustat**: Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups.
+- **eliglustat**: Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition.
 - **astemizole**: Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label.
 - **terfenadine**: Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label.
-- **cisapride**: Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists.
+- **cisapride**: Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row.
 - **aminophylline**: Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead.
 - **buprenorphine/naloxone**: No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.
 - **lomitapide**: Named on the Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox, Norvir, Paxlovid, and Kaletra contraindication lists. Not in the catalog.

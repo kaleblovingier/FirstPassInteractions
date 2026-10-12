@@ -12,6 +12,7 @@ import {
   WAVE_3_COUNT,
   WAVE_4_COUNT,
   WAVE_5_COUNT,
+  WAVE_6_COUNT,
 } from "./label-gold-set";
 import { evaluatePair } from "./label-gold-set-eval";
 
@@ -23,7 +24,8 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
   assert.ok(WAVE_3_COUNT >= 90 && WAVE_3_COUNT <= 110, `wave 3 size ${WAVE_3_COUNT}`);
   assert.ok(WAVE_4_COUNT >= 100 && WAVE_4_COUNT <= 120, `wave 4 size ${WAVE_4_COUNT}`);
   assert.ok(WAVE_5_COUNT >= 5 && WAVE_5_COUNT <= 25, `wave 5 size ${WAVE_5_COUNT}`);
-  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT + WAVE_4_COUNT + WAVE_5_COUNT);
+  assert.ok(WAVE_6_COUNT >= 5 && WAVE_6_COUNT <= 25, `wave 6 size ${WAVE_6_COUNT}`);
+  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT + WAVE_4_COUNT + WAVE_5_COUNT + WAVE_6_COUNT);
   assert.equal(byId.size, LABEL_GOLD_SET.length, "pair ids are unique");
   const unordered = new Set(LABEL_GOLD_SET.map((p) => [p.drugA, p.drugB].sort().join("+")));
   assert.equal(unordered.size, LABEL_GOLD_SET.length, "no pair listed twice in either order");
@@ -31,7 +33,7 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
     assert.ok(DRUG_BY_ID[p.drugA], `${p.drugA} in catalog`);
     assert.ok(DRUG_BY_ID[p.drugB], `${p.drugB} in catalog`);
     assert.notEqual(p.drugA, p.drugB);
-    const retrieved = p.wave === 5 ? "2026-10-03" : p.wave >= 3 ? "2026-10-02" : "2026-09-27";
+    const retrieved = p.wave === 6 ? "2026-10-05" : p.wave === 5 ? "2026-10-03" : p.wave >= 3 ? "2026-10-02" : "2026-09-27";
     assert.equal(p.retrieved, retrieved);
     assert.match(p.url, /^https:\/\/(dailymed\.nlm\.nih\.gov|www\.accessdata\.fda\.gov)\//);
     assert.ok(p.labelSection.trim().length > 0);
@@ -42,9 +44,9 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
     } else if (p.wave === 3 || p.wave === 4) {
       assert.equal(p.expectedFloor, "major", `${p.id}: floor`);
       assert.equal(p.labelClass, "contraindicated", `${p.id}: wave ${p.wave} class`);
-    } else if (p.wave === 5) {
+    } else if (p.wave === 5 || p.wave === 6) {
       assert.equal(p.expectedFloor, "contraindicated", `${p.id}: floor`);
-      assert.equal(p.labelClass, "contraindicated", `${p.id}: wave 5 class`);
+      assert.equal(p.labelClass, "contraindicated", `${p.id}: wave ${p.wave} class`);
     } else {
       assert.equal(p.wave, 2);
       // avoid / boxed-warning stay at major. The naltrexone opioid labels
