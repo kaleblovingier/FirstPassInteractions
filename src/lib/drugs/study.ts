@@ -68,6 +68,10 @@ import { labelSectionCard } from "./learn/label-section";
 import { labelOwnerCard } from "./learn/label-owner";
 import { labelExampleCard } from "./learn/label-example";
 import { labelClassCard } from "./learn/label-class";
+import { labelMechanismCard } from "./learn/label-mechanism";
+import { labelDomainCard } from "./learn/label-domain";
+import { labelBasisCard } from "./learn/label-basis";
+import { labelMoreCard } from "./learn/label-more";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1200,6 +1204,14 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       if (example) out.push(example);
       const labelClass = labelClassCard(ids[i], ids[j]);
       if (labelClass) out.push(labelClass);
+      const mechanism = labelMechanismCard(ids[i], ids[j]);
+      if (mechanism) out.push(mechanism);
+      const domain = labelDomainCard(ids[i], ids[j]);
+      if (domain) out.push(domain);
+      const basis = labelBasisCard(ids[i], ids[j]);
+      if (basis) out.push(basis);
+      const more = labelMoreCard(ids[i], ids[j]);
+      if (more) out.push(more);
     }
   }
   return out;
