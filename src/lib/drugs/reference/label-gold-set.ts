@@ -106,7 +106,7 @@ export interface GoldPair {
   domain: GoldDomain;
   note?: string;
   /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9;
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -194,6 +194,13 @@ export const LABEL_SETIDS = {
   "bupropion-ir": "334e5635-e4cc-cf2a-e063-6294a90ae1e1",
   contrave: "485ff360-32c8-11df-928b-0002a5d5c51b",
   revatio: "3bb9363e-b28d-4019-8aae-539233dca214",
+  // wave 10, DailyMed v2 SPL retrieved 2026-10-12.
+  celexa: "4259d9b1-de34-43a4-85a8-41dd214e9177",
+  lexapro: "13bb8267-1cab-43e5-acae-55a4d957630a",
+  viibryd: "4c55ccfb-c4cf-11df-851a-0800200c9a66",
+  fetzima: "f371258d-91b3-4b6a-ac99-434a1964c3af",
+  savella: "16a4a314-f97e-4e91-95e9-576a3773d284",
+  marplan: "95fde749-44ad-4668-86c4-0ff17bca0074",
   // wave 9, DailyMed v2 SPL retrieved 2026-10-12.
   zoloft: "fda754f6-d0f3-4dce-a17a-927d64f912f7",
   paxil: "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
@@ -3444,12 +3451,194 @@ const WAVE_9: GoldPair[] = [
   }),
 ];
 
+/**
+ * Wave 10 (DailyMed v2 SPL retrieved 2026-10-12): Nardil Contraindications pairings
+ * (each quoted from Nardil's own label), Parnate Table 1 "Other antidepressants"
+ * (from Parnate's own label), Marplan and Zyvox named partners, and Celexa,
+ * Lexapro, Viibryd, Fetzima and Savella with linezolid / IV methylene blue.
+ */
+function row10(r: Row): GoldPair {
+  return { ...row7(r), wave: 10 };
+}
+
+const WAVE_10: GoldPair[] = [
+  row10({
+    drugA: "phenelzine", drugB: "fluvoxamine", queries: ["nardil", "fluvoxamine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … fluvoxamine … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "fluvoxamine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "paroxetine", queries: ["nardil", "paroxetine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … paroxetine … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "paroxetine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "sertraline", queries: ["nardil", "sertraline"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … sertraline … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "sertraline",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "citalopram", queries: ["nardil", "citalopram"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … citalopram … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "citalopram",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "venlafaxine", queries: ["nardil", "venlafaxine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … venlafaxine … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "venlafaxine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "buspirone", queries: ["nardil", "buspirone"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "NARDIL should also not be used in combination with buspirone HCl", labelExample: "buspirone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "amphetamine", queries: ["nardil", "amphetamine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … amphetamines", labelExample: "amphetamines",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "cocaine", queries: ["nardil", "cocaine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … cocaine", labelExample: "cocaine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "methylphenidate", queries: ["nardil", "methylphenidate"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … methylphenidate", labelExample: "methylphenidate",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "isocarboxazid", queries: ["nardil", "isocarboxazid"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors … isocarboxazid", labelExample: "isocarboxazid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "tranylcypromine", queries: ["nardil", "tranylcypromine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors … tranylcypromine", labelExample: "tranylcypromine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "trazodone", queries: ["parnate", "trazodone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … trazodone", labelExample: "trazodone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "nefazodone", queries: ["parnate", "nefazodone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … nefazodone", labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "vilazodone", queries: ["parnate", "vilazodone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … vilazodone", labelExample: "vilazodone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "vortioxetine", queries: ["parnate", "vortioxetine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … vortioxetine", labelExample: "vortioxetine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "isocarboxazid", drugB: "buspirone", queries: ["marplan", "buspirone"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … buspirone", labelExample: "buspirone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "isocarboxazid", drugB: "dextromethorphan", queries: ["marplan", "dextromethorphan"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … dextromethorphan", labelExample: "dextromethorphan",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "linezolid", drugB: "isocarboxazid", queries: ["zyvox", "isocarboxazid"],
+    labelDrug: "Zyvox (linezolid)", label: "zyvox", labelSection: "4.2 Monoamine Oxidase Inhibitors",
+    quote: "Linezolid should not be used in patients taking any medicinal product which inhibits monoamine oxidases A or B (e.g., phenelzine, isocarboxazid)", labelExample: "isocarboxazid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "antimicrobial",
+  }),
+  row10({
+    drugA: "citalopram", drugB: "linezolid", queries: ["celexa", "linezolid"],
+    labelDrug: "Celexa (citalopram)", label: "celexa", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "citalopram", drugB: "methylene-blue", queries: ["celexa", "methylene blue"],
+    labelDrug: "Celexa (citalopram)", label: "celexa", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "escitalopram", drugB: "linezolid", queries: ["lexapro", "linezolid"],
+    labelDrug: "Lexapro (escitalopram)", label: "lexapro", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Lexapro in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "escitalopram", drugB: "methylene-blue", queries: ["lexapro", "methylene blue"],
+    labelDrug: "Lexapro (escitalopram)", label: "lexapro", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Lexapro in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "vilazodone", drugB: "linezolid", queries: ["viibryd", "linezolid"],
+    labelDrug: "Viibryd (vilazodone)", label: "viibryd", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "vilazodone", drugB: "methylene-blue", queries: ["viibryd", "methylene blue"],
+    labelDrug: "Viibryd (vilazodone)", label: "viibryd", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "levomilnacipran", drugB: "linezolid", queries: ["fetzima", "linezolid"],
+    labelDrug: "Fetzima (levomilnacipran)", label: "fetzima", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "levomilnacipran", drugB: "methylene-blue", queries: ["fetzima", "methylene blue"],
+    labelDrug: "Fetzima (levomilnacipran)", label: "fetzima", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "milnacipran", drugB: "linezolid", queries: ["savella", "linezolid"],
+    labelDrug: "Savella (milnacipran)", label: "savella", labelSection: "4.1 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "milnacipran", drugB: "methylene-blue", queries: ["savella", "methylene blue"],
+    labelDrug: "Savella (milnacipran)", label: "savella", labelSection: "4.1 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
 export const WAVE_9_COUNT = WAVE_9.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9];
+export const WAVE_10_COUNT = WAVE_10.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -3857,14 +4046,32 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   },
   {
     pair: "wave 9: Parnate + bupropion, trazodone, nefazodone, vilazodone, vortioxetine",
-    reason: "Named as examples of 'Other antidepressants' in Parnate Table 1. Deferred to the next wave to keep this wave within 40 pairs.",
+    reason: "Deferred from wave 9. Trazodone, nefazodone, vilazodone and vortioxetine were added in wave 10; bupropion is dropped (see wave 10).",
   },
+
   {
-    pair: "wave 9: Nardil + SSRIs, venlafaxine, bupropion, buspirone, sympathomimetics",
-    reason: "Nardil's Contraindications text is an older unnumbered section mixing 'should not be used' with case reports. Deferred until each line can be checked for explicit contraindication wording.",
+    pair: "wave 9: Nardil",
+    reason: "Deferred from wave 9. Reviewed line by line in wave 10.",
   },
+
   {
     pair: "wave 9: Inspra + spironolactone, amiloride, triamterene; Multaq + cyclosporine",
     reason: "Out of scope for this wave (psychiatric, MAT and ketamine focus). Candidates for a cardiology wave.",
+  },
+  {
+    pair: "wave 10: Parnate + bupropion; Nardil + bupropion; Marplan + bupropion",
+    reason: "Each label names bupropion. The only pair cards are washout cards (major), not a serotonin or hypertensive card, so a pin would raise a washout card to Avoid together. Not pinned without a matching card (the Parnate + carbamazepine rule).",
+  },
+  {
+    pair: "wave 10: Nardil + levodopa, methyldopa, alcohol; Nardil + guanethidine",
+    reason: "Named in Nardil's Contraindications section. Levodopa, methyldopa and alcohol have only a washout card. Guanethidine is not in the catalog.",
+  },
+  {
+    pair: "wave 10: Nardil + fluoxetine, meperidine, dextromethorphan; Zyvox + phenelzine",
+    reason: "Already in the gold set. One row per pair.",
+  },
+  {
+    pair: "wave 10: Marplan + amphetamines, narcotics, alcohol, antihypertensives",
+    reason: "Marplan names these as classes, not individual drugs.",
   },
 ];

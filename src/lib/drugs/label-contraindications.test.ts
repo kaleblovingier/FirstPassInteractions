@@ -463,6 +463,35 @@ const EXPECTED_PINS = [
   "tranylcypromine+cyclobenzaprine",
   "tranylcypromine+milnacipran",
   "tranylcypromine+rasagiline",
+  // wave 10
+  "phenelzine+fluvoxamine",
+  "phenelzine+paroxetine",
+  "phenelzine+sertraline",
+  "phenelzine+citalopram",
+  "phenelzine+venlafaxine",
+  "phenelzine+buspirone",
+  "phenelzine+amphetamine",
+  "phenelzine+cocaine",
+  "phenelzine+methylphenidate",
+  "phenelzine+isocarboxazid",
+  "phenelzine+tranylcypromine",
+  "tranylcypromine+trazodone",
+  "tranylcypromine+nefazodone",
+  "tranylcypromine+vilazodone",
+  "tranylcypromine+vortioxetine",
+  "isocarboxazid+buspirone",
+  "isocarboxazid+dextromethorphan",
+  "linezolid+isocarboxazid",
+  "citalopram+linezolid",
+  "citalopram+methylene-blue",
+  "escitalopram+linezolid",
+  "escitalopram+methylene-blue",
+  "vilazodone+linezolid",
+  "vilazodone+methylene-blue",
+  "levomilnacipran+linezolid",
+  "levomilnacipran+methylene-blue",
+  "milnacipran+linezolid",
+  "milnacipran+methylene-blue",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -471,7 +500,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 82);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 110);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
   for (const r of LABEL_CONTRAINDICATIONS) {
