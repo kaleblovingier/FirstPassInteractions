@@ -35,7 +35,8 @@ import { RenalMechanisms } from "./renal-mechanisms";
 import { CypKinetics } from "./cyp-kinetics";
 import { hasClinic } from "@/lib/drugs/clinic";
 import { DRUGS, FAMILIES, familyOf, type FamilyId } from "@/lib/drugs/catalog";
-import { ITEM_KIND_LABEL } from "@/lib/drugs/types";
+import { ENZYMES, ITEM_KIND_LABEL, type Enzyme } from "@/lib/drugs/types";
+import { enzymeShelfCounts, type ShelfRole } from "@/lib/drugs/enzyme-shelf";
 import { hasCite } from "@/lib/drugs/pubmed";
 import { hasPgx } from "@/lib/drugs/pgx";
 import { hasStahl } from "@/lib/drugs/stahl";
@@ -379,6 +380,8 @@ function CompoundsShelf() {
   const [family, setFamily] = useState<FamilyId>("all");
   const [shelf, setShelf] = useState("");
   const [q, setQ] = useState("");
+  const [enzyme, setEnzyme] = useState<Enzyme | "">("");
+  const [enzymeRole, setEnzymeRole] = useState<ShelfRole>("any");
   const libraryShelf = useDesk((s) => s.libraryShelf);
   useEffect(() => {
     if (!libraryShelf) return;
@@ -444,11 +447,16 @@ function CompoundsShelf() {
     return `${top[1]} of ${members.length} on the ${shelf} shelf carry ${top[0]}.${next}${onDesk} Not a collision.`;
   }, [inFamily, shelf, selected]);
 
+  const shelfCounts = useMemo(() => enzymeShelfCounts(), []);
+
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return inFamily
       .filter((d) => {
         if (shelf && d.cls !== shelf) return false;
+        if (enzyme && !d.enzymes.some((e) => e.enzyme === enzyme && (enzymeRole === "any" || e.kind === enzymeRole))) {
+          return false;
+        }
         if (!needle) return true;
         return (
           d.name.toLowerCase().includes(needle) ||
@@ -459,7 +467,7 @@ function CompoundsShelf() {
         );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [inFamily, shelf, q]);
+  }, [inFamily, shelf, q, enzyme, enzymeRole]);
 
   const counts = useMemo(() => {
     const map: Record<string, number> = { all: DRUGS.length };
@@ -470,7 +478,7 @@ function CompoundsShelf() {
     return map;
   }, []);
 
-  const hasFilter = family !== "all" || shelf.length > 0 || q.trim().length > 0;
+  const hasFilter = family !== "all" || shelf.length > 0 || q.trim().length > 0 || enzyme !== "";
   const freeCapNote =
     plan === "free"
       ? `Up to ${cap} stay free on the desk.`
@@ -480,12 +488,16 @@ function CompoundsShelf() {
     setQ("");
     setShelf("");
     setFamily("all");
+    setEnzyme("");
+    setEnzymeRole("any");
   }
 
   function browseAll() {
     setQ("");
     setShelf("");
     setFamily("all");
+    setEnzyme("");
+    setEnzymeRole("any");
   }
 
   return (
@@ -582,6 +594,72 @@ function CompoundsShelf() {
           ) : null}
         </div>
       ) : null}
+
+      <div className="space-y-2">
+        <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">Enzyme role</p>
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => {
+              setEnzyme("");
+              setEnzymeRole("any");
+            }}
+            aria-pressed={enzyme === ""}
+            className={cn(
+              "min-h-[44px] rounded-full px-3 text-xs font-medium transition-colors",
+              enzyme === "" ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+            )}
+          >
+            All enzymes
+          </button>
+          {ENZYMES.map((name) => {
+            const count = shelfCounts.find((row) => row.enzyme === name);
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => setEnzyme(name)}
+                aria-pressed={enzyme === name}
+                className={cn(
+                  "min-h-[44px] rounded-full px-3 text-xs font-medium transition-colors",
+                  enzyme === name ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+                )}
+              >
+                {name}
+                <span className="ml-1.5 font-mono tabular-nums">{count?.any ?? 0}</span>
+              </button>
+            );
+          })}
+        </div>
+        {enzyme ? (
+          <>
+            <div className="flex flex-wrap gap-1.5">
+              {(["any", "substrate", "inhibitor", "inducer"] as const).map((role) => {
+                const count = shelfCounts.find((row) => row.enzyme === enzyme);
+                const n = count ? count[role] : 0;
+                return (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => setEnzymeRole(role)}
+                    aria-pressed={enzymeRole === role}
+                    className={cn(
+                      "min-h-[44px] rounded-full px-3 text-xs font-medium transition-colors",
+                      enzymeRole === role ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+                    )}
+                  >
+                    {role === "any" ? "Any role" : role}
+                    <span className="ml-1.5 font-mono tabular-nums">{n}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs leading-relaxed text-muted">
+              A role count is how many names already store that row. Not a collision and not a clearance.
+            </p>
+          </>
+        ) : null}
+      </div>
 
       <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 bg-bg/95 px-1 py-2 backdrop-blur-sm">
         <p className="text-xs text-muted">

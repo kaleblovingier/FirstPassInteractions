@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.64.0",
+  version: "1.65.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.64.0",
+  buildId: "FP-SW-1.65.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -76,6 +76,7 @@ export const INDICATIONS = [
   "Learn asks which enzyme is stored second, which effect flag is stored second, and how many brands, flags, and other names are stored. The check counts names that have a second enzyme. The shelf shows the second flag. A count is not a diagnosis.",
   "Learn asks the third stored enzyme, the role on the second enzyme row, the third effect flag, and the second other name. It asks the second substrate, that substrate's pathway and sensitivity, and the strength on the second perpetrator. It counts substrate rows and perpetrator rows, and asks the role on the first enzyme row even when a later row is a perpetrator. The check counts third enzymes and second perpetrators. The shelf names the second row's role. None of this is a milligram or a clearance.",
   "The check lists every stored enzyme row on the desk and names an enzyme only when two names store it. Same enzyme is not a collision. Learn asks the fourth enzyme, the third-row and fourth-row roles, the fourth and fifth effect flags, the third other name, and the third brand. It asks the third and fourth substrates, their pathway and sensitivity, and the strength on the third and fourth perpetrators. The shelf names the third row's role and a stored narrow index. None of this is a milligram or a clearance.",
+  "When two names store one enzyme, the check says whether a perpetrator meets a substrate, or only substrates, or only perpetrators. That line is not a new finding. The pair check is still the severity. Narrow-index names are listed. The stored rows can be copied. The shelf can show one enzyme and one role, counted from the catalog. Learn asks the fifth, sixth, and seventh enzyme, the fifth-row role, the later perpetrator grades, and the later brand and other name. None of this is a milligram or a clearance.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

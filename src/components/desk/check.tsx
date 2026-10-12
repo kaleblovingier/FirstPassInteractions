@@ -16,7 +16,7 @@ import { DeskReaders } from "./readers";
 import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
 import { pairSlots } from "@/lib/drugs/fanout";
-import { countFourthEnzymes, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
+import { countFourthEnzymes, countMeetings, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
 import { EnzymeLedger } from "./ledger";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
@@ -372,6 +372,7 @@ export function CheckBoard({
   const fourthEnzymes = countFourthEnzymes(ids);
   const thirdSubstrates = countThirdSubstrates(ids);
   const narrowIndex = countNarrowIndex(ids);
+  const meetings = countMeetings(ids);
   const contents = [
     `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
@@ -383,6 +384,7 @@ export function CheckBoard({
     fourthEnzymes > 0 ? `${fourthEnzymes} with a fourth enzyme` : "",
     thirdSubstrates > 0 ? `${thirdSubstrates} with a third substrate` : "",
     narrowIndex > 0 ? `${narrowIndex} with a narrow index` : "",
+    meetings > 0 ? `${meetings} where a perpetrator meets a substrate` : "",
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",

@@ -1553,6 +1553,29 @@ describe("study learning tools", () => {
     assert.equal(statin.some((c) => c.id === "sub4-simvastatin"), false);
     assert.equal(statin.some((c) => c.id === "grade4-simvastatin"), false);
   });
+
+  it("later stored rows ask the seventh enzyme, sixth brand, and fifth alias", () => {
+    const rifampin = deskCards(["rifampin"], []);
+    assert.equal(rifampin.find((c) => c.id === "enz5-rifampin")?.correct, "CYP1A2");
+    assert.equal(rifampin.find((c) => c.id === "enz6-rifampin")?.correct, "CYP2C8");
+    assert.equal(rifampin.find((c) => c.id === "enz7-rifampin")?.correct, "P-gp");
+    assert.equal(rifampin.find((c) => c.id === "role5-rifampin")?.correct, "inducer");
+    assert.equal(rifampin.find((c) => c.id === "grade5-rifampin")?.correct, "moderate");
+    assert.equal(rifampin.find((c) => c.id === "grade7-rifampin")?.correct, "strong");
+    assert.equal(rifampin.find((c) => c.id === "enz7-rifampin")?.prompt, "Rifampin.");
+
+    const bupe = deskCards(["buprenorphine"], []);
+    assert.equal(bupe.find((c) => c.id === "brand4-buprenorphine")?.correct, "Sublocade");
+    assert.equal(bupe.find((c) => c.id === "brand5-buprenorphine")?.correct, "Zubsolv");
+    assert.equal(bupe.find((c) => c.id === "brand6-buprenorphine")?.correct, "Brixadi");
+    assert.equal(bupe.find((c) => c.id === "aka4-buprenorphine")?.correct, "bunavail");
+    assert.equal(bupe.find((c) => c.id === "aka5-buprenorphine")?.correct, "belbuca");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "enz7-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "grade7-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "brand6-simvastatin"), false);
+  });
 });
 
 
