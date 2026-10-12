@@ -19,6 +19,8 @@ import { pairSlots } from "@/lib/drugs/fanout";
 import { countFourthEnzymes, countMeetings, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
 import { EnzymeLedger } from "./ledger";
 import { StoredNameCard } from "./name-card";
+import { StoredLabelLine } from "./label-line";
+import { deskLabels } from "@/lib/drugs/label-on-desk";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -374,6 +376,7 @@ export function CheckBoard({
   const thirdSubstrates = countThirdSubstrates(ids);
   const narrowIndex = countNarrowIndex(ids);
   const meetings = countMeetings(ids);
+  const labelLines = deskLabels(ids).length;
   const contents = [
     `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
@@ -386,6 +389,7 @@ export function CheckBoard({
     thirdSubstrates > 0 ? `${thirdSubstrates} with a third substrate` : "",
     narrowIndex > 0 ? `${narrowIndex} with a narrow index` : "",
     meetings > 0 ? `${meetings} where a perpetrator meets a substrate` : "",
+    labelLines > 0 ? `${labelLines} stored label ${labelLines === 1 ? "line" : "lines"}` : "",
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",
@@ -418,6 +422,7 @@ export function CheckBoard({
           ) : null}
           {ids.length > 0 ? <EnzymeLedger ids={ids} /> : null}
           {ids.length > 0 ? <StoredNameCard ids={ids} /> : null}
+          {ids.length > 0 ? <StoredLabelLine ids={ids} /> : null}
           {ids.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {rows.length > 0 ? (

@@ -64,6 +64,10 @@ import { ninthAliasCard } from "./learn/ninth-alias";
 import { tenthAliasCard } from "./learn/tenth-alias";
 import { eleventhAliasCard } from "./learn/eleventh-alias";
 import { twelfthAliasCard } from "./learn/twelfth-alias";
+import { labelSectionCard } from "./learn/label-section";
+import { labelOwnerCard } from "./learn/label-owner";
+import { labelExampleCard } from "./learn/label-example";
+import { labelClassCard } from "./learn/label-class";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1181,6 +1185,22 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
     if (aka11) out.push(aka11);
     const aka12 = twelfthAliasCard(d);
     if (aka12) out.push(aka12);
+  }
+  const seenPairs = new Set<string>();
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) {
+      const key = [ids[i], ids[j]].sort().join("|");
+      if (seenPairs.has(key)) continue;
+      seenPairs.add(key);
+      const section = labelSectionCard(ids[i], ids[j]);
+      if (section) out.push(section);
+      const owner = labelOwnerCard(ids[i], ids[j]);
+      if (owner) out.push(owner);
+      const example = labelExampleCard(ids[i], ids[j]);
+      if (example) out.push(example);
+      const labelClass = labelClassCard(ids[i], ids[j]);
+      if (labelClass) out.push(labelClass);
+    }
   }
   return out;
 }

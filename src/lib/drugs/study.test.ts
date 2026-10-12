@@ -1601,6 +1601,18 @@ describe("study learning tools", () => {
     assert.equal(statin.some((c) => c.id === "role7-simvastatin"), false);
     assert.equal(statin.some((c) => c.id === "aka6-simvastatin"), false);
   });
+
+  it("a stored label line asks the section, the label, the naming line, and the class", () => {
+    const pair = deskCards(["clarithromycin", "simvastatin"], []);
+    assert.equal(pair.find((c) => c.id === "sect-clarithromycin|simvastatin")?.correct, "4 CONTRAINDICATIONS");
+    assert.equal(pair.find((c) => c.id === "own-clarithromycin|simvastatin")?.correct, "Zocor (simvastatin)");
+    assert.match(String(pair.find((c) => c.id === "ex-clarithromycin|simvastatin")?.correct), /clarithromycin/);
+    assert.equal(pair.find((c) => c.id === "lcls-clarithromycin|simvastatin")?.correct, "contraindicated");
+    assert.equal(pair.find((c) => c.id === "sect-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("sect-")), false);
+    assert.equal(war.some((c) => c.id.startsWith("lcls-")), false);
+  });
 });
 
 
