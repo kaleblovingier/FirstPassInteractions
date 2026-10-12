@@ -1414,6 +1414,10 @@ const ROWS: Row[] = [
   ["camizestrant", "Camizestrant", ["Etcamah"], "Estrogen receptor antagonist", "i:CYP2C9:strong;i:CYP2C19:strong", ["qt-possible"], "Strong CYP2C9 and CYP2C19 inhibitor. QT with CDK4/6 partners.", ["etcamah"]],
   ["tipranavir", "Tipranavir", ["Aptivus"], "HIV protease inhibitor", "i:P-gp:weak", ["hepatotoxic"], "Weak P-gp inhibitor. Liver injury warning on the label.", ["aptivus"]],
   ["telithromycin", "Telithromycin", ["Ketek"], "Ketolide antibiotic", "i:CYP3A4:strong", ["hepatotoxic"], "Strong CYP3A4 inhibitor.", ["ketek"]],
+  ["berotralstat", "Berotralstat", ["Orladeyo"], "Plasma kallikrein inhibitor", "i:CYP2D6:moderate;i:CYP3A4:moderate;i:CYP2C9:weak;i:CYP2C19:weak", [], "Moderate CYP2D6 and CYP3A4 inhibitor. Weak CYP2C9 and CYP2C19 inhibitor. HAE prophylaxis.", ["orladeyo"]],
+  ["fexinidazole", "Fexinidazole", [], "Nitroimidazole antiprotozoal", "d:CYP3A4:moderate", ["qt-possible"], "Moderate CYP3A4 inducer. Can lower hormonal contraceptive levels.", []],
+  ["glycerol-phenylbutyrate", "Glycerol phenylbutyrate", ["Ravicti"], "Nitrogen-binding agent (urea cycle)", "d:CYP3A4:weak", [], "Weak CYP3A4 inducer. Watch narrow-index CYP3A4 substrates.", ["ravicti"]],
+  ["bictegravir-lenacapavir", "Bictegravir–lenacapavir", ["Bixlenvo"], "HIV combo tablet", "i:CYP3A4:moderate", [], "Lenacapavir part is a moderate CYP3A inhibitor.", ["bixlenvo"]],
 ];
 
 export const CLINIC_FORMULARY: Drug[] = ROWS.map(row);
