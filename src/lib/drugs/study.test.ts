@@ -1646,6 +1646,23 @@ describe("study learning tools", () => {
     assert.equal(war.some((c) => c.id.startsWith("penz-")), false);
     assert.equal(war.some((c) => c.id.startsWith("pkind-")), false);
   });
+
+  it("a stored label asks the pin contraindications sentence when it is not the quote", () => {
+    const pair = deskCards(["tizanidine", "fluvoxamine"], []);
+    const card = pair.find((c) => c.id === "csen-fluvoxamine|tizanidine");
+    assert.equal(card?.correct, "Zanaflex is contraindicated in patients taking strong CYP1A2 inhibitors");
+    assert.equal(card?.prompt, "Tizanidine × Fluvoxamine.");
+    assert.equal(String(card?.prompt).includes(String(card?.correct)), false);
+    const simva = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(simva.some((c) => c.id.startsWith("csen-")), false);
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("csen-")), false);
+    const rano = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(
+      rano.find((c) => c.id === "csen-phenobarbital|ranolazine")?.correct,
+      "RANEXA is contraindicated in patients: … Taking inducers of CYP3A",
+    );
+  });
 });
 
 

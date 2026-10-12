@@ -26,6 +26,8 @@ export type DeskLabel = {
   pinEnzyme: Enzyme | null;
   /** Direction the pin stores on that enzyme. Null when the pin omits it. */
   pinKind: "inhibitor" | "inducer" | null;
+  /** Contraindications sentence stored on the pin. Null when the pin has none. */
+  pinSentence: string | null;
   url: string;
   source: "gold" | "pin";
 };
@@ -63,6 +65,7 @@ function index(): Map<string, Row> {
       basis: null,
       pinEnzyme: null,
       pinKind: null,
+      pinSentence: null,
       url: g.url,
       source: "gold",
     });
@@ -88,6 +91,7 @@ function index(): Map<string, Row> {
       basis: p.basis,
       pinEnzyme: p.enzyme ?? null,
       pinKind: p.kind ?? null,
+      pinSentence: sentenceOf(p.contraindicationsSentence),
       url: p.url,
       source: "pin",
     };
@@ -95,6 +99,7 @@ function index(): Map<string, Row> {
     const held = {
       pinEnzyme: p.enzyme ?? cur?.pinEnzyme ?? null,
       pinKind: p.kind ?? cur?.pinKind ?? null,
+      pinSentence: sentenceOf(p.contraindicationsSentence) ?? cur?.pinSentence ?? null,
     };
     if (!cur) {
       seen.set(key, { ...pin, ...held });
@@ -156,6 +161,12 @@ export function deskLabelPlain(ids: readonly string[]): string {
     if (row.pinEnzyme && row.pinKind) {
       lines.push(`The pin stores ${row.pinEnzyme} as an ${row.pinKind}. That enzyme is not a new finding.`);
     }
+    const sentence = pinSentenceOf(row);
+    if (sentence) {
+      lines.push(
+        `The pin also stores this contraindications sentence: ${sentence}. That sentence is not a new finding.`,
+      );
+    }
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -163,6 +174,18 @@ export function deskLabelPlain(ids: readonly string[]): string {
     );
   }
   return lines.join("\n");
+}
+
+function sentenceOf(value: string | undefined | null): string | null {
+  const sentence = (value ?? "").trim();
+  return sentence || null;
+}
+
+/** Pin sentence only when it is stored and is not the quote already shown. */
+export function pinSentenceOf(row: DeskLabel): string | null {
+  const sentence = sentenceOf(row.pinSentence);
+  if (!sentence || sentence === row.quote.trim()) return null;
+  return sentence;
 }
 
 function unique(values: string[]) {
@@ -187,6 +210,10 @@ export function labelDomainPool(): string[] {
 
 export function labelPinEnzymePool(): string[] {
   return unique([...index().values()].map((row) => row.pinEnzyme ?? ""));
+}
+
+export function labelPinSentencePool(): string[] {
+  return unique([...index().values()].map((row) => pinSentenceOf(row) ?? ""));
 }
 
 /** Other quoted lines on the same label. Not filtered by the desk. */

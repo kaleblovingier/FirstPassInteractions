@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { deskLabelPlain, deskLabels, alsoOnLabel } from "@/lib/drugs/label-on-desk";
+import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf } from "@/lib/drugs/label-on-desk";
 
 export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
   const labels = deskLabels(ids);
@@ -53,6 +53,12 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
             {row.pinEnzyme && row.pinKind ? (
               <p className="mt-1 text-[11px] leading-relaxed text-muted">
                 The pin stores {row.pinEnzyme} as an {row.pinKind}. That enzyme is not a new finding.
+              </p>
+            ) : null}
+            {pinSentenceOf(row) ? (
+              <p className="mt-1 min-w-0 break-words text-[11px] leading-relaxed text-muted">
+                The pin also stores this contraindications sentence: {pinSentenceOf(row)}. That sentence is not a new
+                finding.
               </p>
             ) : null}
             <div className="mt-1 flex flex-wrap gap-2">
