@@ -132,7 +132,7 @@ describe("public pair pages", () => {
 
   it("sitemap lists /, /pairs, every pair canonical and every drug hub", () => {
     const xml = sitemapXml();
-    const hubCount = new Set(pages.flatMap((p) => [p.drugA, p.drugB])).size;
+    const hubCount = new Set(pages.flatMap((p) => [p.drugA, p.drugB])).size; // one hub per drug
     assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 2 + hubCount);
     for (const p of pages) assert.ok(xml.includes(`<loc>${p.canonical}</loc>`), p.slug);
   });
@@ -169,7 +169,7 @@ import { readFileSync as _rf } from "node:fs";
 describe("vercel.json redirects", () => {
   it("covers every legacy pair slug with a 301", () => {
     const cfg = JSON.parse(_rf(new URL("../../../vercel.json", import.meta.url), "utf8"));
-    for (const r of cfg.redirects) {
+    for (const r of cfg.redirects.filter((x: { source: string }) => x.source.startsWith("/pair/"))) {
       const old = r.source.replace("/pair/", "");
       assert.equal(r.permanent, true);
       assert.equal(`/pair/${_lr(old)}`, r.destination);

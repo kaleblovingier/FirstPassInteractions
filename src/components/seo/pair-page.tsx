@@ -1,5 +1,5 @@
 import type { PairPage } from "@/lib/seo/pair-pages";
-import { DRUG_HUB_NOT_LISTED, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
+import { DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
 
 export function PairDisclaimer() {
@@ -88,6 +88,9 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
         <a href="/pairs" className="underline">All pairs</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
+      <p data-testid="drug-hub-intro" className="mt-3 text-sm text-muted">
+        {fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
+      </p>
       <p className="mt-6">
         <a href={hub.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">
           {hub.cta}
@@ -108,9 +111,6 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
         </section>
       ))}
       <PairDisclaimer />
-      <p data-testid="drug-hub-not-listed" className="mt-2 text-xs text-muted">
-        {DRUG_HUB_NOT_LISTED}
-      </p>
     </main>
   );
 }

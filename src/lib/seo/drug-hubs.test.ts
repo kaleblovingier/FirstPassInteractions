@@ -4,8 +4,9 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { DrugHubView, PairPageView, PairsIndexView } from "@/components/seo/pair-page";
 import { pairPages, sitemapXml } from "./pair-pages";
-import { drugHubBySlug, drugHubs, drugHubPath } from "./drug-hubs";
-import { DRUG_HUB_NOT_LISTED, PAIR_DISCLAIMER } from "./pair-copy";
+import { drugHubBySlug, drugHubs, drugHubPath, legacyDrugHubRedirect } from "./drug-hubs";
+import { readFileSync } from "node:fs";
+import { PAIR_DISCLAIMER } from "./pair-copy";
 import { SEVERITY_LABEL } from "@/lib/drugs/types";
 
 const hubs = drugHubs();
@@ -42,14 +43,14 @@ describe("drug hub pages", () => {
     const labels = new Set(Object.values(SEVERITY_LABEL));
     for (const h of hubs) {
       assert.equal(h.title, `${h.name} interactions on FDA labels | FirstPass`);
-      assert.equal(h.description, `Drug pairs where an FDA label names an interaction with ${h.name}, each with the label's own wording and a DailyMed link. Educational reference only. Not FDA-cleared. The Prescribing Information governs.`);
+      assert.equal(h.description, `Drug pairs with ${h.name} where an FDA label names a specific interaction, each with the label's wording and a DailyMed link. Educational reference only. Not FDA-cleared. The Prescribing Information governs.`);
       const t = text(html(h));
       assert.ok(t.includes(`Open ${h.name} in the desk`), h.slug);
       assert.ok(html(h).includes(`href="${h.deskUrl}"`) && h.deskUrl.endsWith(`brief=${h.drugId}`), h.slug);
-      assert.ok(t.includes(PAIR_DISCLAIMER) && t.includes(DRUG_HUB_NOT_LISTED), h.slug);
+      assert.ok(t.includes(PAIR_DISCLAIMER) && t.includes(`These are pairs with ${h.name} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with ${h.name}; it just isn't on this list. Open any pair in the desk to check it alongside a full regimen.`), h.slug);
       for (const g of h.groups) assert.ok(labels.has(g.label) && g.label === SEVERITY_LABEL[g.severity]);
     }
-    assert.equal(DRUG_HUB_NOT_LISTED, "A pair that isn't listed here hasn't been cleared as safe; it just isn't on this list.");
+    assert.equal(PAIR_DISCLAIMER, "Educational reference only. Not FDA-cleared. The Prescribing Information governs.");
     assert.equal(new Set(hubs.map((h) => h.title)).size, hubs.length);
   });
 
@@ -67,5 +68,27 @@ describe("drug hub pages", () => {
   it("sitemap lists every hub", () => {
     const xml = sitemapXml();
     for (const h of hubs) assert.ok(xml.includes(`<loc>${h.canonical}</loc>`), h.slug);
+  });
+
+  it("combination products use the brand slug and name, with 301s from the id", () => {
+    const c = hubs.find((h) => h.drugId === "naltrexone-bupropion")!;
+    assert.equal(c.slug, "contrave");
+    assert.equal(c.name, "Contrave (naltrexone–bupropion)");
+    assert.equal(c.title, "Contrave (naltrexone–bupropion) interactions on FDA labels | FirstPass");
+    assert.ok(text(html(c)).includes("These are pairs with Contrave (naltrexone–bupropion) where"));
+    assert.ok(html(c).includes(">Contrave (naltrexone–bupropion) interactions on FDA labels</h1>"));
+    assert.equal(legacyDrugHubRedirect("naltrexone-bupropion"), "contrave");
+    assert.equal(legacyDrugHubRedirect("contrave"), undefined);
+    assert.equal(hubs.find((h) => h.drugId === "paxlovid")!.slug, "paxlovid");
+    const xml = sitemapXml();
+    assert.ok(xml.includes("/drug/contrave<") && !xml.includes("/drug/naltrexone-bupropion<"));
+    const cfg = JSON.parse(readFileSync(new URL("../../../vercel.json", import.meta.url), "utf8"));
+    const drugRedirects = cfg.redirects.filter((r: { source: string }) => r.source.startsWith("/drug/"));
+    const moved = hubs.filter((h) => h.slug !== h.drugId);
+    assert.equal(drugRedirects.length, moved.length);
+    for (const r of drugRedirects) {
+      assert.equal(r.permanent, true);
+      assert.equal(`/drug/${legacyDrugHubRedirect(r.source.replace("/drug/", ""))}`, r.destination);
+    }
   });
 });
