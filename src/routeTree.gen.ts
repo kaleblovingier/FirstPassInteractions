@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as RecoverRouteImport } from './routes/recover'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 
@@ -19,9 +22,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PairsRoute = PairsRouteImport.update({
+  id: '/pairs',
+  path: '/pairs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecoverRoute = RecoverRouteImport.update({
   id: '/recover',
   path: '/recover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PairSlugRoute = PairSlugRouteImport.update({
+  id: '/pair/$slug',
+  path: '/pair/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiLicenseRecoverRoute = ApiLicenseRecoverRouteImport.update({
@@ -37,39 +55,68 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/pair/$slug': typeof PairSlugRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/pair/$slug': typeof PairSlugRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/pair/$slug': typeof PairSlugRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/recover' | '/api/license/recover' | '/api/stripe/webhook'
+  fullPaths:
+    | '/'
+    | '/pairs'
+    | '/recover'
+    | '/sitemap.xml'
+    | '/pair/$slug'
+    | '/api/license/recover'
+    | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/recover' | '/api/license/recover' | '/api/stripe/webhook'
+  to:
+    | '/'
+    | '/pairs'
+    | '/recover'
+    | '/sitemap.xml'
+    | '/pair/$slug'
+    | '/api/license/recover'
+    | '/api/stripe/webhook'
   id:
     | '__root__'
     | '/'
+    | '/pairs'
     | '/recover'
+    | '/sitemap.xml'
+    | '/pair/$slug'
     | '/api/license/recover'
     | '/api/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PairsRoute: typeof PairsRoute
   RecoverRoute: typeof RecoverRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  PairSlugRoute: typeof PairSlugRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
@@ -83,11 +130,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pairs': {
+      id: '/pairs'
+      path: '/pairs'
+      fullPath: '/pairs'
+      preLoaderRoute: typeof PairsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recover': {
       id: '/recover'
       path: '/recover'
       fullPath: '/recover'
       preLoaderRoute: typeof RecoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pair/$slug': {
+      id: '/pair/$slug'
+      path: '/pair/$slug'
+      fullPath: '/pair/$slug'
+      preLoaderRoute: typeof PairSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/license/recover': {
@@ -109,7 +177,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PairsRoute: PairsRoute,
   RecoverRoute: RecoverRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  PairSlugRoute: PairSlugRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
