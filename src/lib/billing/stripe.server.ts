@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { getRequest } from "@tanstack/react-start/server";
-import { OPERATOR, fulfillKey } from "@/lib/billing/commerce";
+import { mailConfigured, sendLicenseMail } from "@/lib/billing/license-mail.server";
 import { env } from "@/lib/env.server";
 import { priceFor, type Interval, type PlanId } from "@/lib/billing/plans";
 import { mintKeyFromPaid, verifyKey, type IssuedPlan } from "@/lib/billing/license.server";
@@ -25,8 +25,10 @@ function secret() {
 export function stripeMode(): StripeMode {
   const key = secret();
   if (!key) return "off";
-  if (key.startsWith("sk_test_")) return "test";
-  return "live";
+  if (/^(sk|rk)_test_/.test(key)) return "test";
+  if (/^(sk|rk)_live_/.test(key)) return "live";
+  // Not a Stripe secret or restricted key: treat card checkout as off rather than show a dead button.
+  return "off";
 }
 
 function client(): Stripe | null {
@@ -116,6 +118,25 @@ export function validatePaidSession(
   return { ok: true, plan, interval, issued };
 }
 
+/**
+ * The price we expect for a session, in cents, from its own metadata. Compared to
+ * the pre-discount subtotal so a promo code Kaleb made still works, but a session
+ * that was created for a different price never mints a Founding key.
+ */
+export function checkListPrice(session: any): { ok: true } | { ok: false; reason: string } {
+  const plan = session?.metadata?.plan;
+  const interval = session?.metadata?.interval;
+  if ((plan !== "pro" && plan !== "lab") || (interval !== "month" && interval !== "year" && interval !== "life")) {
+    return { ok: false, reason: "Invalid plan in session metadata." };
+  }
+  const expected = priceFor(plan, interval) * 100;
+  const paid = typeof session.amount_subtotal === "number" ? session.amount_subtotal : session.amount_total;
+  if (paid !== expected) {
+    return { ok: false, reason: `Amount mismatch: expected ${expected} cents, got ${paid}.` };
+  }
+  return { ok: true };
+}
+
 function asPlan(plan: string): Exclude<PlanId, "free"> {
   return plan === "lab" ? "lab" : "pro";
 }
@@ -145,33 +166,8 @@ function paymentIntentId(session: Stripe.Checkout.Session) {
   return typeof pi === "string" ? pi : pi.id;
 }
 
-async function sendLicenseMail(opts: { to: string; key: string; soldTo?: string }) {
-  const apiKey = env("RESEND_API_KEY");
-  if (!apiKey || !opts.to) return false;
-  const from = env("LICENSE_FROM") ?? "FirstPass <onboarding@resend.dev>";
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: [opts.to],
-        bcc: [OPERATOR.email],
-        subject: "Your FirstPass founding license",
-        text: fulfillKey({ key: opts.key, soldTo: opts.soldTo || opts.to }),
-      }),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
 /** Mint, stamp Stripe, receipt-email. Safe to call twice — same key, no double mail. */
-async function fulfillPaidSession(
+export async function fulfillPaidSession(
   stripe: Stripe,
   session: Stripe.Checkout.Session,
   expectedPriceCents?: number,
@@ -179,6 +175,10 @@ async function fulfillPaidSession(
   const valid = validatePaidSession(session, expectedPriceCents);
   if (!valid.ok) {
     return { ok: false as const, reason: valid.reason };
+  }
+  const price = checkListPrice(session);
+  if (!price.ok) {
+    return { ok: false as const, reason: price.reason };
   }
   const issued = issuedFor(valid.plan, valid.interval);
   const tagged = (session.metadata?.issued as IssuedPlan | undefined) ?? issued;
@@ -211,7 +211,12 @@ async function fulfillPaidSession(
   }
 
   if (email && !mailed) {
-    mailed = await sendLicenseMail({ to: email, key, soldTo: name || email });
+    mailed = await sendLicenseMail({
+      to: email,
+      key,
+      soldTo: name || email,
+      idempotencyKey: `fp-license-${session.id}`,
+    });
     if (mailed) meta.license_mailed = "1";
   }
 
@@ -346,7 +351,7 @@ export async function listPaidSessions(): Promise<
       });
       for (const session of list.data) {
         const valid = validatePaidSession(session);
-        if (!valid.ok) continue;
+        if (!valid.ok || !checkListPrice(session).ok) continue;
         const issued = issuedFor(valid.plan, valid.interval);
         const tagged = (session.metadata?.issued as IssuedPlan | undefined) ?? issued;
         const key = session.metadata?.license_key || mintKeyFromPaid(tagged, session.id);
@@ -397,7 +402,11 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
         session = await stripe.checkout.sessions.retrieve(session.id, { expand: ["payment_intent"] });
         const valid = validatePaidSession(session);
         if (valid.ok) {
-          await fulfillPaidSession(stripe, session);
+          const done = await fulfillPaidSession(stripe, session);
+          // Key is minted, but the email did not go out: ask Stripe to retry so the buyer still gets it.
+          if (done.ok && done.email && !done.mailed && mailConfigured()) {
+            return Response.json({ ok: false, reason: "license email failed" }, { status: 500 });
+          }
         }
       } catch {
         /* Stripe will retry the webhook */

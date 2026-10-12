@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, Copy, CreditCard, KeyRound, Loader2, X } from "lucide-react";
 import {
+  AUTO_UNLOCK_STEPS,
   COMMERCE,
   FOUNDING_UNLOCKS,
   MANUAL_UNLOCK_STEPS,
@@ -11,6 +12,7 @@ import {
 } from "@/lib/billing/commerce";
 import { redeemLicense } from "@/lib/billing/license";
 import { startStripeCheckout, stripeStatus } from "@/lib/billing/stripe";
+import { paypalStatus, startPaypalCheckout } from "@/lib/billing/paypal";
 import { PLAN_BY_ID, PLAN_TIERS, priceFor } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
@@ -22,7 +24,45 @@ import { OperatorCard } from "./operator";
 const REDEEM_REASON = "Paste the signed key you were sent. Nothing unlocks until Redeem succeeds.";
 const FOUNDING_REASON = `Founding is $${COMMERCE.founding} once — host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export.`;
 
+type CardMode = "off" | "test" | "live";
+type PaypalRailMode = "off" | "sandbox" | "live";
+
+/**
+ * Which automatic rails the server has switched on. Until it answers, `ready` is
+ * false and the page makes no claim about how fast a key arrives.
+ */
+function useRails(active: boolean) {
+  const [card, setCard] = useState<CardMode | null>(null);
+  const [paypal, setPaypal] = useState<PaypalRailMode | null>(null);
+  useEffect(() => {
+    if (!active) return;
+    let live = true;
+    void stripeStatus()
+      .then((s) => live && setCard(s.mode))
+      .catch(() => live && setCard("off"));
+    void paypalStatus()
+      .then((s) => live && setPaypal(s.mode))
+      .catch(() => live && setPaypal("off"));
+    return () => {
+      live = false;
+    };
+  }, [active]);
+  const ready = card !== null && paypal !== null;
+  const cardLive = card === "live" || card === "test";
+  const paypalLive = paypal === "live" || paypal === "sandbox";
+  return {
+    ready,
+    card: card ?? "off",
+    paypal: paypal ?? "off",
+    cardLive,
+    paypalLive,
+    auto: ready && (cardLive || paypalLive),
+    manualOnly: ready && !cardLive && !paypalLive,
+  };
+}
+
 export function PlansPage() {
+  const rails = useRails(true);
   const current = usePlan();
   const license = useDesk((s) => s.license);
   const lifetime = useDesk((s) => s.lifetime);
@@ -145,27 +185,43 @@ export function PlansPage() {
                   </Button>
                 ) : (
                   <>
-                    {/* Prominent accepted payment badges directly on Founding card */}
-                    {id === "lab" ? (
+                    {/* Accepted payment badges directly on Founding card */}
+                    {id === "lab" && rails.ready ? (
                       <div className="mb-3 space-y-1.5">
                         <p className="font-mono text-[10px] uppercase tracking-wider text-muted font-semibold">
-                          Accepted Payment Rails
+                          {rails.auto ? "Pay online" : "Manual payment (fallback)"}
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
-                            <CreditCard className="size-3 text-accent shrink-0" />
-                            Card / Stripe (Instant Key)
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
-                            Venmo (@{OPERATOR.venmo})
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
-                            Cash App (${OPERATOR.cashApp})
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
-                            PayPal ({OPERATOR.paypal})
-                          </span>
+                          {rails.cardLive ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                              <CreditCard className="size-3 text-accent shrink-0" />
+                              Card · key arrives instantly
+                            </span>
+                          ) : null}
+                          {rails.paypalLive ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                              PayPal · key arrives instantly
+                            </span>
+                          ) : null}
+                          {rails.manualOnly ? (
+                            <>
+                              <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                                Venmo (@{OPERATOR.venmo})
+                              </span>
+                              <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                                Cash App (${OPERATOR.cashApp})
+                              </span>
+                              <span className="inline-flex items-center gap-1 rounded-md bg-bg-sunken px-2.5 py-1 font-mono text-[11px] font-medium text-fg border border-border/70">
+                                PayPal ({OPERATOR.paypal})
+                              </span>
+                            </>
+                          ) : null}
                         </div>
+                        {rails.manualOnly ? (
+                          <p className="text-[11px] leading-relaxed text-muted">
+                            Card checkout is not live yet. Manual payments are keyed by hand after they clear, so your key is not instant.
+                          </p>
+                        ) : null}
                       </div>
                     ) : null}
 
@@ -199,30 +255,35 @@ export function PlansPage() {
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-6">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted font-semibold">Direct & instant payment</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted font-semibold">
+              {rails.auto ? "Instant key" : "Manual payment"}
+            </p>
             <h2 className="mt-1 font-serif text-xl tracking-tight text-fg">Accepted Payment Methods</h2>
           </div>
-          <span className="font-mono text-xs text-accent font-medium">All payment rails directly on this desk</span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          All payment methods are supported on the same page to avoid confusion. Choose instant automated card processing or your preferred manual rail below.
+          {!rails.ready
+            ? "Checking payment options…"
+            : rails.auto
+              ? `Pay online and your key appears on this desk right away. It is also emailed to you. Trouble paying? Write ${OPERATOR.email}.`
+              : "Card checkout is not live on this desk yet. Until it is, pay with one of the apps below and your key is sent by hand after the payment clears, so it can take a while."}
         </p>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Credit / Debit Card */}
+          {rails.cardLive ? (
           <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
               <div className="flex items-center justify-between gap-1.5">
                 <div className="flex items-center gap-2">
                   <CreditCard className="size-4 shrink-0 text-accent" />
-                  <span className="text-sm font-semibold text-fg">Card / Stripe</span>
+                  <span className="text-sm font-semibold text-fg">Card</span>
                 </div>
                 <span className="rounded bg-ok-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold text-ok">
-                  Instant Key
+                  Instant key
                 </span>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted">
-                Instant automatic key minting & activation via Stripe. No manual waiting required.
+                Your key appears on this desk the moment the payment clears, and is emailed to you. No waiting on a person.
               </p>
             </div>
             <div className="mt-3">
@@ -232,11 +293,42 @@ export function PlansPage() {
                 onClick={unlock}
                 className="min-h-[44px] w-full text-xs font-semibold cursor-pointer"
               >
-                Card Checkout · Instant
+                Pay by card
               </Button>
             </div>
           </div>
+          ) : null}
 
+          {rails.paypalLive ? (
+          <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
+            <div>
+              <div className="flex items-center justify-between gap-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-fg">PayPal</span>
+                </div>
+                <span className="rounded bg-ok-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold text-ok">
+                  Instant key
+                </span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Your key appears on this desk the moment the payment clears, and is emailed to you. No waiting on a person.
+              </p>
+            </div>
+            <div className="mt-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={unlock}
+                className="min-h-[44px] w-full text-xs font-semibold cursor-pointer"
+              >
+                Pay with PayPal
+              </Button>
+            </div>
+          </div>
+          ) : null}
+
+          {rails.manualOnly ? (
+            <>
           {/* Venmo */}
           <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
@@ -356,15 +448,19 @@ export function PlansPage() {
               </button>
             </div>
           </div>
+            </>
+          ) : null}
         </div>
       </section>
 
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-5">
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">How founding unlocks</p>
-        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">Pay, get your key, Redeem</h2>
+        <h2 className="mt-2 font-serif text-xl tracking-tight text-fg">
+          {rails.auto ? "Pay, and your key appears" : "Pay, get your key, Redeem"}
+        </h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
-          {MANUAL_UNLOCK_STEPS.map((step) => (
+          {(rails.auto ? AUTO_UNLOCK_STEPS : MANUAL_UNLOCK_STEPS).map((step) => (
             <li key={step.n} className="rounded-md bg-bg-sunken px-3 py-3">
               <p className="font-mono text-[11px] uppercase tracking-wide text-accent font-semibold">
                 Step {step.n} · {step.title}
@@ -430,27 +526,14 @@ export function CheckoutDrawer() {
   const [ok, setOk] = useState("");
   const [copied, setCopied] = useState(false);
   const [copiedHandle, setCopiedHandle] = useState<string | null>(null);
-  const [stripeMode, setStripeMode] = useState<"off" | "test" | "live" | null>(null);
-
-  useEffect(() => {
-    if (!checkout.open) return;
-    let live = true;
-    void stripeStatus()
-      .then((s) => {
-        if (live) setStripeMode(s.mode);
-      })
-      .catch(() => {
-        if (live) setStripeMode("off");
-      });
-    return () => {
-      live = false;
-    };
-  }, [checkout.open]);
+  const [ppBusy, setPpBusy] = useState(false);
+  const rails = useRails(checkout.open);
+  const stripeMode = rails.card;
 
   if (!checkout.open) return null;
   const amount = priceFor(checkout.plan === "free" ? "pro" : checkout.plan, checkout.interval);
   const name = "Founding";
-  const cardLive = stripeMode === "live" || stripeMode === "test";
+  const cardLive = rails.cardLive;
 
   async function redeem() {
     const trimmed = key.trim();
@@ -504,6 +587,23 @@ export function CheckoutDrawer() {
       setErr("Could not open Stripe.");
     } finally {
       setCardBusy(false);
+    }
+  }
+
+  async function payPaypal() {
+    setPpBusy(true);
+    setErr("");
+    try {
+      const res = await startPaypalCheckout();
+      if (!res.ok) {
+        setErr(res.reason);
+        return;
+      }
+      window.location.assign(res.url);
+    } catch {
+      setErr("Could not open PayPal.");
+    } finally {
+      setPpBusy(false);
     }
   }
 
@@ -572,75 +672,77 @@ export function CheckoutDrawer() {
           All payment pathways are listed below on this same view. Choose instant automated card processing via Stripe or direct rails with Venmo, Cash App, or PayPal.
         </p>
 
-        {/* Section A: Instant Card Checkout (Stripe) */}
-        <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-xs font-bold text-accent-fg">
-                A
+        {/* Automatic rails: card and PayPal. Shown first, and only when the server has them on. */}
+        {!rails.ready ? (
+          <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
+            <p className="text-xs text-muted">Checking payment options…</p>
+          </section>
+        ) : null}
+        {rails.auto ? (
+          <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-fg">Pay online</h3>
+              <span className="rounded bg-ok-soft px-2 py-0.5 font-mono text-[11px] font-medium text-ok">
+                Key arrives instantly
               </span>
-              <h3 className="text-sm font-semibold text-fg">
-                Section A · Instant Card Checkout (Stripe)
-              </h3>
             </div>
-            <span className="rounded bg-ok-soft px-2 py-0.5 font-mono text-[11px] font-medium text-ok">
-              Auto Key Minting
-            </span>
-          </div>
-
-          <p className="mt-2 text-xs leading-relaxed text-muted">
-            Instant automatic key minting & activation via Stripe. No manual waiting required.
-          </p>
-
-          {cardLive ? (
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              Your signed key appears on this desk as soon as the payment clears, and a copy is emailed to you.
+            </p>
             <div className="mt-3 space-y-3">
-              <div>
-                <label htmlFor="checkout-email" className="block text-xs font-medium text-muted">
-                  Receipt & license key email (optional)
-                </label>
-                <input
-                  id="checkout-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@clinic.org"
-                  className="mt-1 min-h-[44px] w-full rounded-md bg-surface px-3 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
-                />
-              </div>
-              <Button
-                className="min-h-[44px] w-full cursor-pointer font-semibold"
-                onClick={() => void payCard()}
-                disabled={cardBusy}
-              >
-                {cardBusy ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
-                Pay ${amount} with card · Instant unlock
-              </Button>
-              {stripeMode === "test" ? (
-                <p className="text-xs text-warn">Stripe is in test mode. No live charge.</p>
-              ) : (
-                <p className="text-xs text-ok">
-                  Stripe mints a signed key immediately after the charge clears, landing you back on this desk.
-                </p>
-              )}
+              {cardLive ? (
+                <div>
+                  <label htmlFor="checkout-email" className="block text-xs font-medium text-muted">
+                    Receipt & license key email (optional)
+                  </label>
+                  <input
+                    id="checkout-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@clinic.org"
+                    className="mt-1 min-h-[44px] w-full rounded-md bg-surface px-3 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                  />
+                </div>
+              ) : null}
+              {cardLive ? (
+                <Button
+                  className="min-h-[44px] w-full cursor-pointer font-semibold"
+                  onClick={() => void payCard()}
+                  disabled={cardBusy}
+                >
+                  {cardBusy ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
+                  Pay ${amount} with card
+                </Button>
+              ) : null}
+              {rails.paypalLive ? (
+                <Button
+                  variant={cardLive ? "secondary" : "default"}
+                  className="min-h-[44px] w-full cursor-pointer font-semibold"
+                  onClick={() => void payPaypal()}
+                  disabled={ppBusy}
+                >
+                  {ppBusy ? <Loader2 className="size-4 animate-spin" /> : null}
+                  Pay ${amount} with PayPal
+                </Button>
+              ) : null}
+              {stripeMode === "test" || rails.paypal === "sandbox" ? (
+                <p className="text-xs text-warn">A test payment rail is on. No live charge, and keys from test payments are for checking only.</p>
+              ) : null}
+              <p className="text-xs leading-relaxed text-muted">
+                Trouble paying? Write {OPERATOR.email}.
+              </p>
             </div>
-          ) : (
-            <div className="mt-3 rounded-md bg-bg-sunken px-3 py-2.5 text-xs text-muted">
-              {stripeMode === null
-                ? "Checking card checkout…"
-                : "Card checkout is not live on this desk yet. Use Section B below for direct payment via Venmo, Cash App, or PayPal."}
-            </div>
-          )}
-        </section>
+          </section>
+        ) : null}
 
-        {/* Section B: Direct Manual Rails (Venmo, Cash App, PayPal) */}
+        {/* Manual fallback: only when no automatic rail is on. Keys here are issued by hand. */}
+        {rails.manualOnly ? (
         <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-xs font-bold text-accent-fg">
-                B
-              </span>
               <h3 className="text-sm font-semibold text-fg">
-                Section B · Direct Manual Rails (Venmo, Cash App, PayPal)
+                Manual payment (fallback) · Venmo, Cash App, PayPal
               </h3>
             </div>
             <span className="rounded bg-accent/15 px-2 py-0.5 font-mono text-xs font-semibold text-accent">
@@ -649,7 +751,7 @@ export function CheckoutDrawer() {
           </div>
 
           <p className="mt-2 text-xs leading-relaxed text-muted">
-            Send ${amount} directly with your preferred app. After payment clears, the operator issues your signed key by email or text.
+            Card checkout is not live on this desk yet. Send ${amount} with one of these apps. Your key is issued by hand after the payment clears and sent by email or text, so it is not instant.
           </p>
 
           <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -743,16 +845,14 @@ export function CheckoutDrawer() {
             {copied ? "Request copied to clipboard" : "Copy a license request note"}
           </Button>
         </section>
+        ) : null}
 
         {/* Section C: Step 3 · Redeem Signed Key */}
         <section className="mt-4 rounded-xl border border-border bg-bg-sunken/40 p-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-bold text-bg">
-                C
-              </span>
               <label className="text-sm font-semibold text-fg" htmlFor="license-key">
-                Step 3 · Redeem Signed Key
+                Have a key? Redeem it
               </label>
             </div>
             <span className="rounded bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accent">
@@ -795,7 +895,9 @@ export function CheckoutDrawer() {
 
           {!key.trim() && !err && !ok ? (
             <p className="mt-2 text-[11px] text-muted">
-              Waiting for a key — if you just paid via manual rails, hang tight for email or text from the operator.
+              {rails.auto
+                ? "Paid online? Your key appears on this desk by itself and is emailed to you. Paste it here only to restore Founding on another browser."
+                : "Waiting for a key. If you just paid by hand, your key comes by email or text once the payment clears."}
             </p>
           ) : null}
           {err ? <p className="mt-2 text-xs font-medium text-danger" role="alert">{err}</p> : null}
