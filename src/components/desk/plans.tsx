@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Copy, CreditCard, KeyRound, Loader2, X } from "lucide-react";
 import {
   AUTO_UNLOCK_STEPS,
@@ -16,6 +16,7 @@ import { paypalStatus, startPaypalCheckout } from "@/lib/billing/paypal";
 import { PLAN_BY_ID, PLAN_TIERS, priceFor } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
+import { useModalFocus } from "@/lib/a11y/use-modal-focus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plate } from "./plate";
@@ -329,6 +330,16 @@ export function PlansPage() {
 
           {rails.manualOnly ? (
             <>
+          {/* The chips keep focus when they copy, so announce it (WCAG 4.1.3). */}
+          <span role="status" className="sr-only">
+            {copiedText === "venmo"
+              ? `Copied Venmo handle @${OPERATOR.venmo}`
+              : copiedText === "cashapp"
+                ? `Copied Cash App handle $${OPERATOR.cashApp}`
+                : copiedText === "paypal"
+                  ? `Copied PayPal email ${OPERATOR.paypal}`
+                  : ""}
+          </span>
           {/* Venmo */}
           <div className="flex flex-col justify-between rounded-lg bg-bg-sunken p-4 border border-border/50">
             <div>
@@ -531,6 +542,8 @@ export function CheckoutDrawer() {
   const [ppBusy, setPpBusy] = useState(false);
   const rails = useRails(checkout.open);
   const stripeMode = rails.card;
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useModalFocus(dialogRef, checkout.open, close);
 
   if (!checkout.open) return null;
   const amount = priceFor(checkout.plan === "free" ? "pro" : checkout.plan, checkout.interval);
@@ -634,8 +647,13 @@ export function CheckoutDrawer() {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-4">
       <div
+        ref={dialogRef}
         role="dialog"
+        aria-modal="true"
         aria-labelledby="checkout-title"
+        tabIndex={-1}
+        // Focus lands here on open so the dialog name is read; it is not a control, so no ring.
+        style={{ outline: "none" }}
         className="max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-xl bg-surface p-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] shadow-[var(--shadow-border)] sm:max-h-[88dvh] sm:rounded-xl sm:p-6"
       >
         <div className="flex items-start justify-between gap-3">
@@ -654,6 +672,16 @@ export function CheckoutDrawer() {
             <X className="size-5" />
           </button>
         </div>
+        {/* Copy buttons keep focus, so announce the result (WCAG 4.1.3). */}
+        <span role="status" className="sr-only">
+          {copiedHandle === "drawer-venmo"
+            ? `Copied Venmo handle @${OPERATOR.venmo}`
+            : copiedHandle === "drawer-cashapp"
+              ? `Copied Cash App handle $${OPERATOR.cashApp}`
+              : copiedHandle === "drawer-paypal"
+                ? `Copied PayPal email ${OPERATOR.paypal}`
+                : ""}
+        </span>
         {checkout.reason ? <p className="mt-3 text-sm leading-relaxed text-muted">{checkout.reason}</p> : null}
 
         <p className="mt-3 text-sm leading-relaxed text-muted">{FOUNDING_UNLOCKS}</p>
@@ -855,6 +883,9 @@ export function CheckoutDrawer() {
           >
             {copied ? "Request copied to clipboard" : "Copy a license request note"}
           </Button>
+          <span role="status" className="sr-only">
+            {copied ? "License request note copied" : ""}
+          </span>
         </section>
         ) : null}
 
