@@ -39,13 +39,13 @@ export function fillPairTemplate(tpl: string, v: { drugA: string; drugB: string;
 export const DRUG_HUB_TITLE_TEMPLATE = "{drug} interactions on FDA labels | FirstPass";
 
 export const DRUG_HUB_DESCRIPTION_TEMPLATE =
-  "Drug pairs where an FDA label names an interaction with {drug}, each with the label's own wording and a DailyMed link. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
+  "Drug pairs with {drug} where an FDA label names a specific interaction, each with the label's wording and a DailyMed link. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
 
 export const DRUG_HUB_CTA_TEMPLATE = "Open {drug} in the desk";
 
-/** Shown under the disclaimer on every drug hub. */
-export const DRUG_HUB_NOT_LISTED =
-  "A pair that isn't listed here hasn't been cleared as safe; it just isn't on this list.";
+/** Intro paragraph under the h1 on every drug hub. */
+export const DRUG_HUB_INTRO_TEMPLATE =
+  "These are pairs with {drug} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with {drug}; it just isn't on this list. Open any pair in the desk to check it alongside a full regimen.";
 
 export function fillDrugTemplate(tpl: string, drug: string): string {
   return tpl.replaceAll("{drug}", drug);

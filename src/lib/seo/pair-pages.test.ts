@@ -169,7 +169,7 @@ import { readFileSync as _rf } from "node:fs";
 describe("vercel.json redirects", () => {
   it("covers every legacy pair slug with a 301", () => {
     const cfg = JSON.parse(_rf(new URL("../../../vercel.json", import.meta.url), "utf8"));
-    for (const r of cfg.redirects) {
+    for (const r of cfg.redirects.filter((x: { source: string }) => x.source.startsWith("/pair/"))) {
       const old = r.source.replace("/pair/", "");
       assert.equal(r.permanent, true);
       assert.equal(`/pair/${_lr(old)}`, r.destination);
