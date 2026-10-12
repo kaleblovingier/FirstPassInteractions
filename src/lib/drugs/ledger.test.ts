@@ -2,9 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   countFourthEnzymes,
+  countMeetings,
   countNarrowIndex,
   countThirdSubstrates,
   ledgerFor,
+  ledgerPlain,
+  meetingOf,
+  narrowIndexNames,
   sharedEnzymes,
 } from "./ledger";
 
@@ -52,4 +56,21 @@ test("desk counts use stored rows only", () => {
   assert.equal(countFourthEnzymes(["rifampin", "warfarin"]), 1);
   assert.equal(countThirdSubstrates(["methadone", "simvastatin"]), 1);
   assert.equal(countNarrowIndex(["warfarin", "simvastatin"]), 1);
+  assert.deepEqual(narrowIndexNames(["warfarin", "simvastatin"]), ["Warfarin"]);
+});
+
+test("a shared enzyme says when a perpetrator meets a substrate", () => {
+  const shared = sharedEnzymes(["warfarin", "clarithromycin"]);
+  const cyp = shared.find((row) => row.enzyme === "CYP3A4");
+  assert.ok(cyp);
+  assert.equal(meetingOf(cyp.seats), "perpetrator-substrate");
+  assert.equal(countMeetings(["warfarin", "clarithromycin"]), 1);
+  assert.equal(countMeetings(["warfarin", "simvastatin"]), 0);
+  const statin = sharedEnzymes(["warfarin", "simvastatin"]).find((row) => row.enzyme === "CYP3A4");
+  assert.ok(statin);
+  assert.equal(meetingOf(statin.seats), "substrates-only");
+  const plain = ledgerPlain(["warfarin", "clarithromycin"]);
+  assert.match(plain, /Perpetrator meets substrate/);
+  assert.match(plain, /Narrow index stored: Warfarin/);
+  assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
 });

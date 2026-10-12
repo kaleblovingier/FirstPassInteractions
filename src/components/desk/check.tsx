@@ -9,15 +9,16 @@ import { maxDrugs } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import type { ReaderBrief } from "@/lib/drugs/readers";
 import type { EnzymeRole, Finding, HostContext, Severity } from "@/lib/drugs/types";
-import { ENZYMES, SEVERITY_LABEL } from "@/lib/drugs/types";
+import { ENZYMES, ITEM_KIND_LABEL, SEVERITY_LABEL } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
 import { DeskReaders } from "./readers";
 import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
 import { pairSlots } from "@/lib/drugs/fanout";
-import { countFourthEnzymes, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
+import { countFourthEnzymes, countMeetings, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
 import { EnzymeLedger } from "./ledger";
+import { StoredNameCard } from "./name-card";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -60,7 +61,7 @@ function rolesFor(id: string, findings: Finding[]) {
   if (!drug) return [];
   const hit = new Set(findings.flatMap((f) => f.enzymes));
   const relevant = hit.size ? drug.enzymes.filter((e) => hit.has(e.enzyme)) : drug.enzymes;
-  return (relevant.length ? relevant : drug.enzymes).slice(0, 4);
+  return relevant.length ? relevant : drug.enzymes;
 }
 
 function uniqueIds(f: Finding) {
@@ -372,6 +373,7 @@ export function CheckBoard({
   const fourthEnzymes = countFourthEnzymes(ids);
   const thirdSubstrates = countThirdSubstrates(ids);
   const narrowIndex = countNarrowIndex(ids);
+  const meetings = countMeetings(ids);
   const contents = [
     `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
@@ -383,6 +385,7 @@ export function CheckBoard({
     fourthEnzymes > 0 ? `${fourthEnzymes} with a fourth enzyme` : "",
     thirdSubstrates > 0 ? `${thirdSubstrates} with a third substrate` : "",
     narrowIndex > 0 ? `${narrowIndex} with a narrow index` : "",
+    meetings > 0 ? `${meetings} where a perpetrator meets a substrate` : "",
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",
@@ -414,6 +417,7 @@ export function CheckBoard({
             </p>
           ) : null}
           {ids.length > 0 ? <EnzymeLedger ids={ids} /> : null}
+          {ids.length > 0 ? <StoredNameCard ids={ids} /> : null}
           {ids.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {rows.length > 0 ? (
@@ -989,7 +993,7 @@ function RoleGrid({ ids, rows }: { ids: string[]; rows: Finding[] }) {
         return (
           <div key={id} className="rounded-md bg-bg-sunken px-3 py-2.5">
             <p className="text-sm font-medium text-fg">{drug.name}</p>
-            <p className="text-[11px] text-muted">{drug.cls}</p>
+            <p className="text-[11px] text-muted">{ITEM_KIND_LABEL[drug.kind]}. {drug.cls}.</p>
             {roles.length ? (
               <ul className="mt-1.5 space-y-0.5">
                 {roles.map((e, i) => (

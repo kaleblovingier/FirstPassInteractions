@@ -86,7 +86,72 @@ export function countThirdSubstrates(ids: readonly string[]) {
 }
 
 export function countNarrowIndex(ids: readonly string[]) {
-  return resolved(ids).filter((drug) =>
-    drug.enzymes.some((role) => role.kind === "substrate" && role.nti),
-  ).length;
+  return narrowIndexNames(ids).length;
+}
+
+export type Meeting = "perpetrator-substrate" | "substrates-only" | "perpetrators-only";
+
+/** Two different names, one a substrate and one a perpetrator. Not a severity. */
+export function meetingOf(seats: readonly SharedSeat[]): Meeting {
+  const substrates = new Set(seats.filter((seat) => seat.kind === "substrate").map((seat) => seat.id));
+  const perpetrators = new Set(seats.filter((seat) => seat.kind !== "substrate").map((seat) => seat.id));
+  for (const substrateId of substrates) {
+    for (const perpetratorId of perpetrators) {
+      if (substrateId !== perpetratorId) return "perpetrator-substrate";
+    }
+  }
+  if (substrates.size > 0) return "substrates-only";
+  return "perpetrators-only";
+}
+
+export function meetingLine(meeting: Meeting): string {
+  if (meeting === "perpetrator-substrate") {
+    return "Perpetrator meets substrate. The pair check is the severity. Not a new finding.";
+  }
+  if (meeting === "substrates-only") {
+    return "Shared substrate. No perpetrator stored on this enzyme.";
+  }
+  return "Shared perpetrator. No substrate stored on this enzyme.";
+}
+
+export function countMeetings(ids: readonly string[]) {
+  return sharedEnzymes(ids).filter((row) => meetingOf(row.seats) === "perpetrator-substrate").length;
+}
+
+export function narrowIndexNames(ids: readonly string[]): string[] {
+  return resolved(ids)
+    .filter((drug) => drug.enzymes.some((role) => role.kind === "substrate" && role.nti))
+    .map((drug) => drug.name);
+}
+
+/** Plain text of the stored rows. Not a chart note and not a milligram. */
+export function ledgerPlain(ids: readonly string[]): string {
+  const drugs = ledgerFor(ids);
+  const lines = [
+    "Stored enzyme ledger. Not a clearance and not a milligram.",
+  ];
+  for (const drug of drugs) {
+    lines.push(drug.name);
+    if (drug.seats.length === 0) {
+      lines.push("No enzyme row stored.");
+      continue;
+    }
+    for (const seat of drug.seats) {
+      lines.push(`${seat.enzyme} · ${seat.kind} · ${seat.detail}`);
+    }
+  }
+  const shared = sharedEnzymes(ids);
+  if (shared.length > 0) {
+    lines.push("Shared on this desk");
+    for (const row of shared) {
+      const seats = row.seats.map((seat) => `${seat.name} ${seat.kind} ${seat.detail}`).join(" · ");
+      lines.push(`${row.enzyme} · ${seats}`);
+      lines.push(meetingLine(meetingOf(row.seats)));
+    }
+  }
+  const narrow = narrowIndexNames(ids);
+  if (narrow.length > 0) {
+    lines.push(`Narrow index stored: ${narrow.join(", ")}. A flag is not a clearance.`);
+  }
+  return lines.join("\n");
 }
