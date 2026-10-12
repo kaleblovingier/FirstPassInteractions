@@ -72,8 +72,8 @@
  * - Wave 7 rows (retrieved 2026-10-12) copy quote, labelSection, labelExample
  *   and the DailyMed link byte-for-byte from the wave-7 gold rows. Every quote
  *   is section 4 (Contraindications) text from Tikosyn, Tracleer, Adempas,
- *   Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax or
- *   Vosevi, and each partner is named there. Origin "wave7" holds the CYP
+ *   Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax,
+ *   Vosevi or Bixlenvo, and each partner is named there. Origin "wave7" holds the CYP
  *   finding the pair already produces (inducer or inhibitor, either
  *   orientation). Pairs with a pharmacodynamic card use "pd"; pairs with no
  *   finding use "no-enzyme". No new CYP grade.
@@ -4742,6 +4742,19 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "pd",
     retrieved: "2026-10-12",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=17ffc094-8ca7-45d2-80d8-fd043bc9a221",
+  },
+  {
+    id: "bictegravir-lenacapavir+dofetilide",
+    labelDrugId: "bictegravir-lenacapavir",
+    otherId: "dofetilide",
+    labelDrug: "Bixlenvo (bictegravir/lenacapavir)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant administration of BIXLENVO is contraindicated with: dofetilide",
+    labelExample: "dofetilide",
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-12",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=072a3c7e-33fb-4a87-ba21-3d8dad3f5c48",
   },
 ];
 

@@ -185,6 +185,7 @@ export const LABEL_SETIDS = {
   apokyn: "3235535d-9ef9-4657-8b2a-176a807d091c",
   relpax: "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
   vosevi: "17ffc094-8ca7-45d2-80d8-fd043bc9a221",
+  bixlenvo: "072a3c7e-33fb-4a87-ba21-3d8dad3f5c48",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -2668,6 +2669,7 @@ const W7_QUOTES = {
   "apokyn": "APOKYN is contraindicated in patients: Using concomitant drugs of the 5HT 3 antagonist class including antiemetics (e.g., ondansetron, granisetron, dolasetron, palonosetron) and alosetron",
   "relpax": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir",
   "vosevi": "VOSEVI is contraindicated with rifampin",
+  "bixlenvo": "Concomitant administration of BIXLENVO is contraindicated with: dofetilide",
 } as const;
 
 function row7(r: Row): GoldPair {
@@ -2907,6 +2909,12 @@ const WAVE_7: GoldPair[] = [
     quote: W7_QUOTES["vosevi"], labelExample: "rifampin",
     labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
   }),
+  row7({
+    drugA: "bictegravir-lenacapavir", drugB: "dofetilide", queries: ["bixlenvo", "dofetilide"],
+    labelDrug: "Bixlenvo (bictegravir/lenacapavir)", label: "bixlenvo", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["bixlenvo"], labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
 ];
 
 export const WAVE_4_COUNT = WAVE_4.length;
@@ -2988,6 +2996,15 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
 
 /** Candidate pairs considered and dropped, with the reason. */
 export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
+  {
+    pair: "wave 7: Bixlenvo (bictegravir/lenacapavir) + strong CYP3A inducers",
+    reason: "Section 4 names the class only, with no drug named. Not expanded.",
+  },
+  {
+    pair: "wave 7: Orladeyo, Ravicti, fexinidazole",
+    reason:
+      "Orladeyo section 4 is 'None'. Ravicti section 4 is hypersensitivity only. Fexinidazole names metronidazole and tinidazole only as nitroimidazole hypersensitivity, not coadministration.",
+  },
   {
     pair: "wave 7: riociguat + sildenafil / tadalafil / vardenafil",
     reason:

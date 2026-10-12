@@ -7,20 +7,20 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 358 |
+| Pairs (each tied to a verified FDA label statement) | 359 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
 | Wave 4 (label contraindications: clarithromycin, Sporanox, Noxafil, Norvir, Paxlovid, Kaletra) | 109 |
 | Wave 5 (label contraindications: Geodon) | 25 |
 | Wave 6 (label contraindications: Recorlev) | 14 |
-| Wave 7 (label contraindications: Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi) | 37 |
-| Label says contraindicated | 323 |
+| Wave 7 (label contraindications: Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi, Bixlenvo) | 38 |
+| Label says contraindicated | 324 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 358 / 358 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 323 / 323 |
+| Engine at or above label-supported floor | 359 / 359 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 324 / 324 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -79,9 +79,9 @@
 
 | Measure | Count |
 |---|---|
-| Pairs | 37 |
-| Engine at or above contraindicated ("Avoid together") | 37 / 37 |
-| Label contraindicated and engine contraindicated ("Avoid together") | 37 / 37 |
+| Pairs | 38 |
+| Engine at or above contraindicated ("Avoid together") | 38 / 38 |
+| Label contraindicated and engine contraindicated ("Avoid together") | 38 / 38 |
 | Under-calls | 0 |
 
 ## Under-calls (for formulary owner, Grok Bot 5)
@@ -458,6 +458,7 @@ None.
 | 356 | 7 | eletriptan | clarithromycin | [Relpax (eletriptan)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir" · e.g. "clarithromycin" |
 | 357 | 7 | eletriptan | ritonavir | [Relpax (eletriptan)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir" · e.g. "ritonavir" |
 | 358 | 7 | sofosbuvir-velpatasvir-voxilaprevir | rifampin | [Vosevi (sofosbuvir/velpatasvir/voxilaprevir)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=17ffc094-8ca7-45d2-80d8-fd043bc9a221) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "VOSEVI is contraindicated with rifampin" · e.g. "rifampin" |
+| 359 | 7 | bictegravir-lenacapavir | dofetilide | [Bixlenvo (bictegravir/lenacapavir)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=072a3c7e-33fb-4a87-ba21-3d8dad3f5c48) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant administration of BIXLENVO is contraindicated with: dofetilide" · e.g. "dofetilide" |
 
 ## Method
 
@@ -475,6 +476,8 @@ None.
 
 ## Dropped candidates
 
+- **wave 7: Bixlenvo (bictegravir/lenacapavir) + strong CYP3A inducers**: Section 4 names the class only, with no drug named. Not expanded.
+- **wave 7: Orladeyo, Ravicti, fexinidazole**: Orladeyo section 4 is 'None'. Ravicti section 4 is hypersensitivity only. Fexinidazole names metronidazole and tinidazole only as nitroimidazole hypersensitivity, not coadministration.
 - **wave 7: riociguat + sildenafil / tadalafil / vardenafil**: Adempas section 4.3 names them as contraindicated. The only pair card is a minor CYP3A4 substrate card with no inhibitor or inducer role, and there is no pharmacodynamic card. A no-enzyme card would say there is no CYP finding, which is false (the Geodon + tacrolimus rule). Not pinned.
 - **wave 7: riociguat + nitrates (nitroglycerin, isosorbide mononitrate, isosorbide dinitrate)**: Adempas section 4.2 names a class ('nitrates or nitric oxide donors') and only amyl nitrite as an example. No catalog nitrate is named.
 - **wave 7: dofetilide + prochlorperazine / dolutegravir / megestrol (Tikosyn)**: Tikosyn says these 'should not be used', not 'contraindicated'. dolutegravir + dofetilide is carried by the Tivicay section 4 sentence instead. Trimethoprim, megestrol and hydrochlorothiazide are not catalog rows.
