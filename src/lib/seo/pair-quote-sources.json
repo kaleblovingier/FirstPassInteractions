@@ -298,6 +298,14 @@
    "setid": "8d409411-aa9f-4f3a-a52c-fbcb0c3ec053",
    "excerpt": "Coadministration of carbamazepine with nefazodone is contraindicated."
   },
+  "citalopram+linezolid": {
+   "setid": "4259d9b1-de34-43a4-85a8-41dd214e9177",
+   "excerpt": "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
+  },
+  "citalopram+methylene-blue": {
+   "setid": "4259d9b1-de34-43a4-85a8-41dd214e9177",
+   "excerpt": "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
+  },
   "clarithromycin+dihydroergotamine": {
    "setid": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
    "excerpt": "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated"
@@ -606,6 +614,14 @@
    "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
    "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity"
   },
+  "escitalopram+linezolid": {
+   "setid": "13bb8267-1cab-43e5-acae-55a4d957630a",
+   "excerpt": "Starting Lexapro in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "escitalopram+methylene-blue": {
+   "setid": "13bb8267-1cab-43e5-acae-55a4d957630a",
+   "excerpt": "Starting Lexapro in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
   "esketamine+alprazolam": {
    "setid": "d81a6a79-a74a-44b7-822c-0dfa3036eaed",
    "excerpt": "Concomitant use with CNS depressants (e.g., benzodiazepines, opioids, alcohol) may increase sedation [see Warnings and Precautions (5.1) ] . Closely monitor for sedation with concomitant use of SPRAVATO with CNS depressants."
@@ -645,6 +661,14 @@
   "glecaprevir-pibrentasvir+rifampin": {
    "setid": "7bf99777-0401-9095-8645-16c6e907fcc0",
    "excerpt": "MAVYRET is contraindicated with atazanavir or rifampin"
+  },
+  "isocarboxazid+buspirone": {
+   "setid": "95fde749-44ad-4668-86c4-0ff17bca0074",
+   "excerpt": "Marplan (isocarboxazid) should not be administered in combination with any of the following: MAO inhibitors or dibenzazepine derivatives; sympathomimetics (including amphetamines); some central nervous system depressants (including narcotics and alcohol); antihypertensive, diuretic, antihistaminic, sedative or anesthetic drugs, buproprion HCL, buspirone"
+  },
+  "isocarboxazid+dextromethorphan": {
+   "setid": "95fde749-44ad-4668-86c4-0ff17bca0074",
+   "excerpt": "Marplan (isocarboxazid) should not be administered in combination with any of the following: MAO inhibitors or dibenzazepine derivatives; sympathomimetics (including amphetamines); some central nervous system depressants (including narcotics and alcohol); antihypertensive, diuretic, antihistaminic, sedative or anesthetic drugs, buproprion HCL, buspirone HCL, dextromethorphan"
   },
   "itraconazole+avanafil": {
    "setid": "a4d555fa-787c-40fb-bb7d-b0d4f7318fd0",
@@ -821,6 +845,18 @@
   "levoketoconazole+ranolazine": {
    "setid": "d4c5fead-bc4a-fb02-e053-2a95a90ae4fc",
    "excerpt": "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated"
+  },
+  "levomilnacipran+linezolid": {
+   "setid": "f371258d-91b3-4b6a-ac99-434a1964c3af",
+   "excerpt": "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "levomilnacipran+methylene-blue": {
+   "setid": "f371258d-91b3-4b6a-ac99-434a1964c3af",
+   "excerpt": "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "linezolid+isocarboxazid": {
+   "setid": "3e5e9975-6f36-42e4-ab46-0e75dda83592",
+   "excerpt": "Linezolid should not be used in patients taking any medicinal product which inhibits monoamine oxidases A or B (e.g., phenelzine, isocarboxazid)"
   },
   "linezolid+phenelzine": {
    "setid": "3e5e9975-6f36-42e4-ab46-0e75dda83592",
@@ -1034,6 +1070,14 @@
    "setid": "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9",
    "excerpt": "KORLYM is contraindicated in: Pregnancy [See Dosage and Administration ( 2.1 ), Use in Specific Populations ( 8.1 , 8.3 )] Patients taking drugs metabolized by CYP3A such as simvastatin, lovastatin"
   },
+  "milnacipran+linezolid": {
+   "setid": "16a4a314-f97e-4e91-95e9-576a3773d284",
+   "excerpt": "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "milnacipran+methylene-blue": {
+   "setid": "16a4a314-f97e-4e91-95e9-576a3773d284",
+   "excerpt": "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
   "mirtazapine+linezolid": {
    "setid": "98ad1917-a094-44f5-a28f-a64a8cfcd887",
    "excerpt": "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
@@ -1246,6 +1290,22 @@
    "setid": "8a99d6d6-fd9e-45bb-b1bf-48c7f761232a",
    "excerpt": "PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A"
   },
+  "phenelzine+amphetamine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines"
+  },
+  "phenelzine+buspirone": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "NARDIL should also not be used in combination with buspirone HCl"
+  },
+  "phenelzine+citalopram": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "serotoninergic drugs (e.g., dexfenfluramine, fluoxetine, fluvoxamine, paroxetine, sertraline, citalopram, venlafaxine) have been combined with an MAO inhibitor. Therefore, the concomitant use of NARDIL with serotoninergic agents is contraindicated"
+  },
+  "phenelzine+cocaine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine"
+  },
   "phenelzine+dextromethorphan": {
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
    "excerpt": "NARDIL should not be used in combination with dextromethorphan or with CNS depressants such as alcohol and certain narcotics."
@@ -1253,6 +1313,14 @@
   "phenelzine+fluoxetine": {
    "setid": "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
    "excerpt": "The use of MAOIs intended to treat psychiatric disorders with PROZAC or within 5 weeks of stopping treatment with PROZAC is contraindicated"
+  },
+  "phenelzine+fluvoxamine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "serotoninergic drugs (e.g., dexfenfluramine, fluoxetine, fluvoxamine, paroxetine, sertraline, citalopram, venlafaxine) have been combined with an MAO inhibitor. Therefore, the concomitant use of NARDIL with serotoninergic agents is contraindicated"
+  },
+  "phenelzine+isocarboxazid": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors because HYPERTENSIVE CRISES and convulsive seizures, fever, marked sweating, excitation, delirium, tremor, coma, and circulatory collapse may occur. Concomitant use with meperidine is contraindicated (see WARNINGS ). A List of MAO Inhibitors by Generic Name Follows: pargyline hydrochloride pargyline hydrochloride and methylclothiazide furazolidone isocarboxazid"
   },
   "phenelzine+meperidine": {
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
@@ -1262,9 +1330,29 @@
    "setid": "540edd43-165d-4257-b989-3bccc8f54afb",
    "excerpt": "The use of methadone hydrochloride tablets is not recommended for patients taking MAOIs or within 14 days of stopping such treatment."
   },
+  "phenelzine+methylphenidate": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate"
+  },
+  "phenelzine+paroxetine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "serotoninergic drugs (e.g., dexfenfluramine, fluoxetine, fluvoxamine, paroxetine, sertraline, citalopram, venlafaxine) have been combined with an MAO inhibitor. Therefore, the concomitant use of NARDIL with serotoninergic agents is contraindicated"
+  },
+  "phenelzine+sertraline": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "serotoninergic drugs (e.g., dexfenfluramine, fluoxetine, fluvoxamine, paroxetine, sertraline, citalopram, venlafaxine) have been combined with an MAO inhibitor. Therefore, the concomitant use of NARDIL with serotoninergic agents is contraindicated"
+  },
   "phenelzine+tramadol": {
    "setid": "5c2ac7cb-3a38-2174-e063-6394a90a95cc",
    "excerpt": "Tramadol hydrochloride tablets are also contraindicated in patients with: Significant respiratory depression [see Warnings and Precautions (5.2) ] . Acute or severe bronchial asthma in an unmonitored setting or in the absence of resuscitative equipment [see Warnings and Precautions (5.12) ] . Known or suspected gastrointestinal obstruction, including paralytic ileus [see Warnings and Precautions (5.16) ] . Hypersensitivity to tramadol, any other component of this product or opioids [see Warnings and Precautions (5.17) ] . Concurrent use of monoamine oxidase inhibitors (MAOIs) or use within the last 14 days"
+  },
+  "phenelzine+tranylcypromine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors because HYPERTENSIVE CRISES and convulsive seizures, fever, marked sweating, excitation, delirium, tremor, coma, and circulatory collapse may occur. Concomitant use with meperidine is contraindicated (see WARNINGS ). A List of MAO Inhibitors by Generic Name Follows: pargyline hydrochloride pargyline hydrochloride and methylclothiazide furazolidone isocarboxazid procarbazine tranylcypromine"
+  },
+  "phenelzine+venlafaxine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "serotoninergic drugs (e.g., dexfenfluramine, fluoxetine, fluvoxamine, paroxetine, sertraline, citalopram, venlafaxine) have been combined with an MAO inhibitor. Therefore, the concomitant use of NARDIL with serotoninergic agents is contraindicated"
   },
   "pimozide+azithromycin": {
    "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
@@ -1638,6 +1726,10 @@
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran"
   },
+  "tranylcypromine+nefazodone": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone"
+  },
   "tranylcypromine+rasagiline": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran tryptophan dopamine rasagiline"
@@ -1645,6 +1737,18 @@
   "tranylcypromine+tapentadol": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol"
+  },
+  "tranylcypromine+trazodone": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone"
+  },
+  "tranylcypromine+vilazodone": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone"
+  },
+  "tranylcypromine+vortioxetine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine"
   },
   "trazodone+linezolid": {
    "setid": "4006d439-e2de-4590-82e9-fc9d56e3ec1b",
@@ -1669,6 +1773,14 @@
   "venlafaxine+methylene-blue": {
    "setid": "c848a5d8-ba94-4c84-80e3-0bf35fb8e32e",
    "excerpt": "Effexor XR is contraindicated in patients:•with known hypersensitivity to venlafaxine hydrochloride, desvenlafaxine succinate or to any excipients in the formulation [see Adverse Reactions (6.2) ] .•taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
+  },
+  "vilazodone+linezolid": {
+   "setid": "4c55ccfb-c4cf-11df-851a-0800200c9a66",
+   "excerpt": "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue"
+  },
+  "vilazodone+methylene-blue": {
+   "setid": "4c55ccfb-c4cf-11df-851a-0800200c9a66",
+   "excerpt": "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue"
   },
   "voriconazole+rifampin": {
    "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
