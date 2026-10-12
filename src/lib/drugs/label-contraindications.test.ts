@@ -473,6 +473,9 @@ const EXPECTED_PINS = [
   "phenelzine+amphetamine",
   "phenelzine+cocaine",
   "phenelzine+methylphenidate",
+  "phenelzine+dopamine",
+  "phenelzine+epinephrine",
+  "phenelzine+norepinephrine",
   "phenelzine+isocarboxazid",
   "phenelzine+tranylcypromine",
   "tranylcypromine+trazodone",
@@ -500,7 +503,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 110);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 113);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
   for (const r of LABEL_CONTRAINDICATIONS) {

@@ -1310,6 +1310,14 @@
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
    "excerpt": "NARDIL should not be used in combination with dextromethorphan or with CNS depressants such as alcohol and certain narcotics."
   },
+  "phenelzine+dopamine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate, dopamine"
+  },
+  "phenelzine+epinephrine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate, dopamine, epinephrine"
+  },
   "phenelzine+fluoxetine": {
    "setid": "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
    "excerpt": "The use of MAOIs intended to treat psychiatric disorders with PROZAC or within 5 weeks of stopping treatment with PROZAC is contraindicated"
@@ -1333,6 +1341,10 @@
   "phenelzine+methylphenidate": {
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
    "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate"
+  },
+  "phenelzine+norepinephrine": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate, dopamine, epinephrine, and norepinephrine"
   },
   "phenelzine+paroxetine": {
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
