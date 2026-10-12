@@ -347,6 +347,9 @@ const EXPECTED_PINS = [
   "bosentan+glyburide",
   "riociguat+dipyridamole",
   "riociguat+theophylline",
+  "riociguat+sildenafil",
+  "riociguat+tadalafil",
+  "riociguat+vardenafil",
   "tetrabenazine+deutetrabenazine",
   "tetrabenazine+valbenazine",
   "deutetrabenazine+valbenazine",
@@ -385,7 +388,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 31);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 37);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 40);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 16);
   for (const r of LABEL_CONTRAINDICATIONS) {

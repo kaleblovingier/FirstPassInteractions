@@ -10,11 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecoverRouteImport } from './routes/recover'
+import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoverRoute = RecoverRouteImport.update({
+  id: '/recover',
+  path: '/recover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLicenseRecoverRoute = ApiLicenseRecoverRouteImport.update({
+  id: '/api/license/recover',
+  path: '/api/license/recover',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
@@ -25,27 +37,40 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/recover': typeof RecoverRoute
+  '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/recover': typeof RecoverRoute
+  '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/recover': typeof RecoverRoute
+  '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/stripe/webhook'
+  fullPaths: '/' | '/recover' | '/api/license/recover' | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/stripe/webhook'
-  id: '__root__' | '/' | '/api/stripe/webhook'
+  to: '/' | '/recover' | '/api/license/recover' | '/api/stripe/webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/recover'
+    | '/api/license/recover'
+    | '/api/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  RecoverRoute: typeof RecoverRoute
+  ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
@@ -56,6 +81,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recover': {
+      id: '/recover'
+      path: '/recover'
+      fullPath: '/recover'
+      preLoaderRoute: typeof RecoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/license/recover': {
+      id: '/api/license/recover'
+      path: '/api/license/recover'
+      fullPath: '/api/license/recover'
+      preLoaderRoute: typeof ApiLicenseRecoverRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/stripe/webhook': {
@@ -70,6 +109,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  RecoverRoute: RecoverRoute,
+  ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport

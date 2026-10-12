@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -18,6 +18,7 @@ import { buildClinicalPacket, type ClinicalPacketData } from "@/lib/drugs/clinic
 import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
 import type { Finding, HostContext } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
+import { useModalFocus } from "@/lib/a11y/use-modal-focus";
 import { Button } from "@/components/ui/button";
 
 interface ClinicalPacketDialogProps {
@@ -64,15 +65,9 @@ export function ClinicalPacketDialog({
     return buildClinicalPacket(selected, host, findings, doses);
   }, [selected.join("|"), JSON.stringify(host), findings, JSON.stringify(doses)]);
 
-  // Close on Escape key
-  useEffect(() => {
-    if (!open) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  // Focus moves in on open, Tab stays inside, Escape closes, focus returns to the opener.
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useModalFocus(dialogRef, open, onClose);
 
   if (!open) return null;
 
@@ -96,6 +91,10 @@ export function ClinicalPacketDialog({
 
   return (
     <div
+      ref={dialogRef}
+      tabIndex={-1}
+      // Focus lands here on open so the dialog name is read; it is not a control, so no ring.
+      style={{ outline: "none" }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="packet-dialog-title"
@@ -675,6 +674,7 @@ export function ClinicalPacketDialog({
                   <button
                     key={item.id}
                     type="button"
+                    aria-pressed={isChecked}
                     onClick={() => toggleCheck(item.id)}
                     className={cn(
                       "flex items-start gap-2.5 rounded-lg border p-2.5 text-left transition-colors",
