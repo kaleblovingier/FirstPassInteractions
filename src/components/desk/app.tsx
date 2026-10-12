@@ -793,7 +793,16 @@ function EmptyState({
               {daily.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")} · fits the free five-drug desk
             </p>
             <div className="mt-3">
-              <Button size="sm" disabled={!ready} onClick={() => onLoadSample(daily.id)} className="min-h-[44px] sm:min-h-0">
+              <Button
+                size="sm"
+                disabled={!ready}
+                onClick={() => {
+                  onLoadSample(daily.id);
+                  // This button unmounts when the case loads; keep keyboard focus in the page instead of dropping it to <body>.
+                  document.getElementById("main")?.focus();
+                }}
+                className="min-h-[44px] sm:min-h-0"
+              >
                 Open today&rsquo;s case
               </Button>
             </div>
@@ -1618,17 +1627,23 @@ function CopyCaseLink({
     }
   }
   return (
-    <button
-      type="button"
-      onClick={(e) => void copy(e)}
-      className={cn(
-        "inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent hover:bg-accent hover:text-accent-fg",
-        className,
-      )}
-      title={`Copy ${SITE.url} link`}
-    >
-      {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-      {copied ? "Copied" : label}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={(e) => void copy(e)}
+        className={cn(
+          "inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent hover:bg-accent hover:text-accent-fg",
+          className,
+        )}
+        title={`Copy ${SITE.url} link`}
+      >
+        {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+        {copied ? "Copied" : label}
+      </button>
+      {/* Focus stays on the button, so announce the state change (WCAG 4.1.3). */}
+      <span role="status" className="sr-only">
+        {copied ? "Link copied" : ""}
+      </span>
+    </>
   );
 }
