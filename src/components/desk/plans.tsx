@@ -523,6 +523,8 @@ export function CheckoutDrawer() {
   const [key, setKey] = useState("");
   const [email, setEmail] = useState("");
   const [err, setErr] = useState("");
+  // Payment-start failures belong next to the pay buttons, not on the key field.
+  const [payErr, setPayErr] = useState("");
   const [ok, setOk] = useState("");
   const [copied, setCopied] = useState(false);
   const [copiedHandle, setCopiedHandle] = useState<string | null>(null);
@@ -568,8 +570,9 @@ export function CheckoutDrawer() {
   }
 
   async function payCard() {
+    if (cardBusy) return;
     setCardBusy(true);
-    setErr("");
+    setPayErr("");
     try {
       const res = await startStripeCheckout({
         data: {
@@ -579,29 +582,30 @@ export function CheckoutDrawer() {
         },
       });
       if (!res.ok) {
-        setErr(res.reason);
+        setPayErr(res.reason);
         return;
       }
       window.location.assign(res.url);
     } catch {
-      setErr("Could not open Stripe.");
+      setPayErr("Could not open Stripe.");
     } finally {
       setCardBusy(false);
     }
   }
 
   async function payPaypal() {
+    if (ppBusy) return;
     setPpBusy(true);
-    setErr("");
+    setPayErr("");
     try {
       const res = await startPaypalCheckout();
       if (!res.ok) {
-        setErr(res.reason);
+        setPayErr(res.reason);
         return;
       }
       window.location.assign(res.url);
     } catch {
-      setErr("Could not open PayPal.");
+      setPayErr("Could not open PayPal.");
     } finally {
       setPpBusy(false);
     }
@@ -707,9 +711,10 @@ export function CheckoutDrawer() {
               ) : null}
               {cardLive ? (
                 <Button
-                  className="min-h-[44px] w-full cursor-pointer font-semibold"
+                  className="min-h-[44px] w-full cursor-pointer font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-40"
                   onClick={() => void payCard()}
-                  disabled={cardBusy}
+                  aria-disabled={cardBusy || undefined}
+                  aria-busy={cardBusy || undefined}
                 >
                   {cardBusy ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
                   Pay ${amount} with card
@@ -718,13 +723,19 @@ export function CheckoutDrawer() {
               {rails.paypalLive ? (
                 <Button
                   variant={cardLive ? "secondary" : "default"}
-                  className="min-h-[44px] w-full cursor-pointer font-semibold"
+                  className="min-h-[44px] w-full cursor-pointer font-semibold aria-disabled:pointer-events-none aria-disabled:opacity-40"
                   onClick={() => void payPaypal()}
-                  disabled={ppBusy}
+                  aria-disabled={ppBusy || undefined}
+                  aria-busy={ppBusy || undefined}
                 >
                   {ppBusy ? <Loader2 className="size-4 animate-spin" /> : null}
                   Pay ${amount} with PayPal
                 </Button>
+              ) : null}
+              {payErr ? (
+                <p className="text-xs font-medium text-danger" role="alert">
+                  {payErr}
+                </p>
               ) : null}
               {stripeMode === "test" || rails.paypal === "sandbox" ? (
                 <p className="text-xs text-warn">A test payment rail is on. No live charge, and keys from test payments are for checking only.</p>
