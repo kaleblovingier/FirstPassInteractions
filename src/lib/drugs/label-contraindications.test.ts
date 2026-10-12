@@ -668,6 +668,6 @@ test("bupropion/Contrave + linezolid or IV methylene blue pins say don't start, 
     const r = labelContraindicationById(id)!;
     const s = labelPinSentence(r);
     assert.match(s, /don't start (bupropion|Contrave) in a patient being treated with linezolid or intravenous methylene blue/);
-    assert.equal(/label specifies intravenous/.test(s), r.otherId === "methylene-blue");
+    assert.equal((s.match(/intravenous/g) ?? []).length, 1);
   }
 });

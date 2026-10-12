@@ -5457,13 +5457,12 @@ const START_ONLY_LABEL_DRUGS: Record<string, string> = { bupropion: "bupropion",
 function startOnlySentence(r: LabelContraindication): string | undefined {
   const drug = START_ONLY_LABEL_DRUGS[r.labelDrugId];
   if (!drug || (r.otherId !== "linezolid" && r.otherId !== "methylene-blue")) return undefined;
-  const route = r.otherId === "methylene-blue" ? " (label specifies intravenous)" : "";
   const tail = r.origin === "pd"
     ? " The pharmacodynamic finding is held at that level. This is not a CYP grade."
     : !r.enzyme
       ? " This pair has no CYP finding; the label is the reason."
       : "";
-  return `The ${r.labelDrug} label lists this under Contraindications in one direction: don't start ${drug} in a patient being treated with linezolid or intravenous methylene blue${route}. This desk shows the pair as Avoid together.${tail}`;
+  return `The ${r.labelDrug} label lists this under Contraindications in one direction: don't start ${drug} in a patient being treated with linezolid or intravenous methylene blue. This desk shows the pair as Avoid together.${tail}`;
 }
 
 /** Plain sentence appended to the pinned finding's clinical text. */
