@@ -411,9 +411,12 @@ export function DeskApp() {
             <RoundsPage />
           </Suspense>
         ) : view === "study" ? (
-          <Suspense fallback={<DeskFallback />}>
-            <StudyPage />
-          </Suspense>
+          <>
+            <h1 className="sr-only">Learn how drug interactions work</h1>
+            <Suspense fallback={<DeskFallback />}>
+              <StudyPage />
+            </Suspense>
+          </>
         ) : view === "compare" ? (
           <Suspense fallback={<DeskFallback />}>
             <CaseCompare
@@ -435,13 +438,16 @@ export function DeskApp() {
             <HelpPage />
           </Suspense>
         ) : view === "atlas" ? (
-          pro ? (
-            <EnzymeAtlas />
-          ) : (
-            <Paywall gate="atlas" pin>
+          <>
+            <h1 className="sr-only">How drugs share liver enzymes</h1>
+            {pro ? (
               <EnzymeAtlas />
-            </Paywall>
-          )
+            ) : (
+              <Paywall gate="atlas" pin>
+                <EnzymeAtlas />
+              </Paywall>
+            )}
+          </>
         ) : view === "library" ? (
           <Formulary />
         ) : (
