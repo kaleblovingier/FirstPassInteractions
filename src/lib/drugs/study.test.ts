@@ -1492,6 +1492,37 @@ describe("study learning tools", () => {
     assert.equal(warRows.correct, "3");
     assert.equal(warRows.prompt, "Warfarin.");
   });
+
+  it("next-row cards restate the third enzyme, second substrate, and first-row role", () => {
+    const warfarin = deskCards(["warfarin"], []);
+    const enz3 = warfarin.find((c) => c.id === "enz3-warfarin");
+    assert.ok(enz3);
+    assert.equal(enz3.correct, "CYP1A2");
+    assert.equal(enz3.prompt, "Warfarin.");
+    const sub2 = warfarin.find((c) => c.id === "sub2-warfarin");
+    assert.ok(sub2);
+    assert.equal(sub2.correct, "CYP3A4");
+    const nsub = warfarin.find((c) => c.id === "nsub-warfarin");
+    assert.ok(nsub);
+    assert.equal(nsub.correct, "3");
+    const row0 = warfarin.find((c) => c.id === "row0-warfarin");
+    assert.ok(row0);
+    assert.equal(row0.correct, "substrate");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "enz3-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "grade2-simvastatin"), false);
+    const nperp = statin.find((c) => c.id === "nperp-simvastatin");
+    assert.ok(nperp);
+    assert.equal(nperp.correct, "0");
+    assert.equal(statin.find((c) => c.id === "row0-simvastatin")?.correct, "substrate");
+
+    const macro = deskCards(["clarithromycin"], []);
+    assert.equal(macro.find((c) => c.id === "role2-clarithromycin")?.correct, "inhibitor");
+    assert.equal(macro.find((c) => c.id === "row0-clarithromycin")?.correct, "substrate");
+    assert.equal(macro.find((c) => c.id === "grade2-clarithromycin")?.correct, "moderate");
+    assert.equal(macro.find((c) => c.id === "enz3-clarithromycin")?.correct, "P-gp");
+  });
 });
 
 
