@@ -12,6 +12,11 @@ import type { Drug, Enzyme, Finding } from "./types";
 import { ENZYMES, ITEM_KIND_LABEL, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
 import { WASHOUT_OFFSET, washoutOffsetKind } from "./washout-plain";
+import { secondEnzymeCard } from "./learn/second-enzyme";
+import { secondFlagCard } from "./learn/second-flag";
+import { brandCountCard } from "./learn/brand-count";
+import { flagCountCard } from "./learn/flag-count";
+import { aliasCountCard } from "./learn/alias-count";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1033,6 +1038,11 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       answer: `${d.name} stores ${d.enzymes.length} enzyme ${d.enzymes.length === 1 ? "row" : "rows"}. A count is not a clearance.`,
       drugIds: [id],
     });
+    const enz2 = secondEnzymeCard(d);
+    if (enz2) out.push(enz2);
+    const flag2 = secondFlagCard(d);
+    if (flag2) out.push(flag2);
+    out.push(brandCountCard(d), flagCountCard(d), aliasCountCard(d));
   }
   return out;
 }
