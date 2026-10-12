@@ -18,6 +18,9 @@ export type DeskLabel = {
   quote: string;
   example: string;
   labelClass: LabelClass | null;
+  mechanism: "PK" | "PD" | "PK+PD" | null;
+  domain: string | null;
+  basis: "named" | "class" | null;
   url: string;
   source: "gold" | "pin";
 };
@@ -50,6 +53,9 @@ function index(): Map<string, Row> {
       quote: g.paraphrased ? "" : g.quote.trim(),
       example: (g.labelExample ?? "").trim(),
       labelClass: g.labelClass,
+      mechanism: g.mechanism,
+      domain: g.domain,
+      basis: null,
       url: g.url,
       source: "gold",
     });
@@ -70,6 +76,9 @@ function index(): Map<string, Row> {
       quote: p.quote.trim(),
       example: (p.labelExample ?? "").trim(),
       labelClass: null,
+      mechanism: null,
+      domain: null,
+      basis: p.basis,
       url: p.url,
       source: "pin",
     };
@@ -120,6 +129,11 @@ export function deskLabelPlain(ids: readonly string[]): string {
     lines.push(row.quote);
     if (row.example) lines.push(`Names: ${row.example}`);
   }
+  for (const extra of alsoOnLabel(ids)) {
+    lines.push(
+      `Also stored on ${extra.labelDrug}, not on this desk: ${extra.names.join(", ")}. Not a suggestion to add them.`,
+    );
+  }
   return lines.join("\n");
 }
 
@@ -137,4 +151,41 @@ export function labelOwnerPool(): string[] {
 
 export function labelExamplePool(): string[] {
   return unique([...index().values()].map((row) => row.example));
+}
+
+export function labelDomainPool(): string[] {
+  return unique([...index().values()].map((row) => row.domain ?? ""));
+}
+
+/** Other quoted lines on the same label. Not filtered by the desk. */
+export function otherLineCount(a: string, b: string): number | null {
+  const row = labelFor(a, b);
+  if (!row) return null;
+  let count = 0;
+  for (const other of index().values()) {
+    if (!other.quote || other.labelDrug !== row.labelDrug) continue;
+    if (other.drugA === row.drugA && other.drugB === row.drugB) continue;
+    count += 1;
+  }
+  return count;
+}
+
+/** Names on that label that are not already on the desk. Not a suggestion to add them. */
+export function alsoOnLabel(ids: readonly string[]): { labelDrug: string; names: string[] }[] {
+  const on = new Set(ids.filter((id) => DRUG_BY_ID[id]));
+  const out: { labelDrug: string; names: string[] }[] = [];
+  const seen = new Set<string>();
+  for (const row of deskLabels(ids)) {
+    if (seen.has(row.labelDrug)) continue;
+    seen.add(row.labelDrug);
+    const names = new Set<string>();
+    for (const other of index().values()) {
+      if (!other.quote || other.labelDrug !== row.labelDrug) continue;
+      if (!on.has(other.drugA)) names.add(other.nameA);
+      if (!on.has(other.drugB)) names.add(other.nameB);
+    }
+    const list = [...names].sort((a, b) => a.localeCompare(b));
+    if (list.length) out.push({ labelDrug: row.labelDrug, names: list });
+  }
+  return out;
 }

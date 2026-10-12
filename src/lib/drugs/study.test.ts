@@ -1613,6 +1613,20 @@ describe("study learning tools", () => {
     assert.equal(war.some((c) => c.id.startsWith("sect-")), false);
     assert.equal(war.some((c) => c.id.startsWith("lcls-")), false);
   });
+
+  it("a stored label also asks the mechanism, domain, and other-line count", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(pair.find((c) => c.id === "mech-clarithromycin|simvastatin")?.correct, "PK");
+    assert.equal(pair.find((c) => c.id === "dom-clarithromycin|simvastatin")?.correct, "statins");
+    assert.equal(pair.find((c) => c.id === "more-clarithromycin|simvastatin")?.correct, "2");
+    assert.equal(pair.find((c) => c.id === "mech-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(pair.some((c) => c.id.startsWith("bas-")), false);
+    const pin = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(pin.find((c) => c.id === "bas-phenobarbital|ranolazine")?.correct, "named");
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("mech-")), false);
+    assert.equal(war.some((c) => c.id.startsWith("more-")), false);
+  });
 });
 
 

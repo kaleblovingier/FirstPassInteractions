@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { deskLabelPlain, deskLabels } from "@/lib/drugs/label-on-desk";
+import { deskLabelPlain, deskLabels, alsoOnLabel } from "@/lib/drugs/label-on-desk";
 
 export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
   const labels = deskLabels(ids);
   const [copied, setCopied] = useState<"ok" | "hand" | "idle">("idle");
   if (labels.length === 0) return null;
   const plain = deskLabelPlain(ids);
+  const extras = alsoOnLabel(ids);
   async function copyLine() {
     try {
       await navigator.clipboard.writeText(plain);
@@ -63,6 +64,11 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
           </div>
         ))}
       </div>
+      {extras.map((extra) => (
+        <p key={extra.labelDrug} className="min-w-0 break-words text-[11px] leading-relaxed text-muted">
+          Also stored on {extra.labelDrug}, not on this desk: {extra.names.join(", ")}. Not a suggestion to add them.
+        </p>
+      ))}
       {copied === "hand" ? (
         <pre className="max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-lg bg-bg-sunken p-3 font-mono text-[11px] text-muted">
           {plain}
