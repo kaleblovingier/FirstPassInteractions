@@ -55,6 +55,15 @@ import { fifthBrandCard } from "./learn/fifth-brand";
 import { sixthBrandCard } from "./learn/sixth-brand";
 import { fourthAliasCard } from "./learn/fourth-alias";
 import { fifthAliasCard } from "./learn/fifth-alias";
+import { sixthRoleCard } from "./learn/sixth-role";
+import { seventhRoleCard } from "./learn/seventh-role";
+import { sixthAliasCard } from "./learn/sixth-alias";
+import { seventhAliasCard } from "./learn/seventh-alias";
+import { eighthAliasCard } from "./learn/eighth-alias";
+import { ninthAliasCard } from "./learn/ninth-alias";
+import { tenthAliasCard } from "./learn/tenth-alias";
+import { eleventhAliasCard } from "./learn/eleventh-alias";
+import { twelfthAliasCard } from "./learn/twelfth-alias";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1154,6 +1163,24 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
     if (aka4) out.push(aka4);
     const aka5 = fifthAliasCard(d);
     if (aka5) out.push(aka5);
+    const role6 = sixthRoleCard(d);
+    if (role6) out.push(role6);
+    const role7 = seventhRoleCard(d);
+    if (role7) out.push(role7);
+    const aka6 = sixthAliasCard(d);
+    if (aka6) out.push(aka6);
+    const aka7 = seventhAliasCard(d);
+    if (aka7) out.push(aka7);
+    const aka8 = eighthAliasCard(d);
+    if (aka8) out.push(aka8);
+    const aka9 = ninthAliasCard(d);
+    if (aka9) out.push(aka9);
+    const aka10 = tenthAliasCard(d);
+    if (aka10) out.push(aka10);
+    const aka11 = eleventhAliasCard(d);
+    if (aka11) out.push(aka11);
+    const aka12 = twelfthAliasCard(d);
+    if (aka12) out.push(aka12);
   }
   return out;
 }
