@@ -24,7 +24,9 @@ test('every perpetrator and named victim id is a real catalog row', () => {
 test('mifepristone + simvastatin quotes the Korlym contraindication', () => {
   const b = pkBasis('mifepristone', 'simvastatin').find((x) => x.label.startsWith('Korlym'));
   assert.ok(b);
-  assert.match(b.detail, /calls this combination contraindicated/);
+  // Now a label pin: the finding quotes the Contraindications section and says the label lists the pair.
+  assert.match(b.detail, /lists this combination under Contraindications/);
+  assert.match(b.detail, /KORLYM is contraindicated in/);
 });
 
 test('mifepristone + an unnamed CYP3A substrate cites the role only and says the tier is the desk rule', () => {
@@ -62,7 +64,9 @@ test('a pinned pair does not also get a role line claiming the label is silent',
 
 test('a gold-set quote on the same label page is kept, and the row still says contraindicated', () => {
   const mid = pkBasis('paxlovid', 'midazolam').map((x) => x.detail).join('\n');
-  assert.match(mid, /calls this combination contraindicated/);
+  // Now a label pin: the quote is kept and the row says the label lists the pair under Contraindications.
+  assert.match(mid, /lists this combination under Contraindications/);
+  assert.match(mid, /PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A/);
   assert.doesNotMatch(mid, /desk's rule/);
 });
 
