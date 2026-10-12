@@ -662,7 +662,7 @@ function CompoundsShelf() {
       </div>
 
       <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 bg-bg/95 px-1 py-2 backdrop-blur-sm">
-        <p className="text-xs text-muted">
+        <p className="text-xs text-muted" role="status" aria-atomic="true">
           <span className="font-mono tabular-nums">{rows.length}</span> shown
           {selected.length ? (
             <>
