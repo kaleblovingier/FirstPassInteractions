@@ -90,6 +90,32 @@ export function missingPayRails(text) {
     .map(([name]) => name);
 }
 
+/**
+ * Plans must show a way to pay. Either an automatic checkout button is shown
+ * (card, or PayPal checkout; the manual apps are then hidden on purpose), or all
+ * three manual rails are listed. Neither present is a failure.
+ * Returns { pass, mode: "auto" | "manual" | "none", detail }.
+ */
+export function payPathStatus(text) {
+  const t = String(text ?? "");
+  const auto =
+    /\bpay by card\b/i.test(t) ||
+    /\bpay with paypal\b/i.test(t) ||
+    /\bcard\b[^\n]*\bkey arrives instantly\b/i.test(t);
+  if (auto) {
+    return { pass: true, mode: "auto", detail: "automatic checkout button shown (manual rails hidden is fine)" };
+  }
+  const missing = missingPayRails(t);
+  if (missing.length === 0) {
+    return { pass: true, mode: "manual", detail: "no card button; all three manual rails listed" };
+  }
+  return {
+    pass: false,
+    mode: "none",
+    detail: `no card or PayPal checkout button, and manual rails missing: ${missing.join(", ")}`,
+  };
+}
+
 export function hasNotFdaCleared(text) {
   return /\bnot\s+FDA[-\s]cleared\b/i.test(String(text ?? ""));
 }

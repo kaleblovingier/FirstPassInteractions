@@ -56,7 +56,7 @@ failed, `2` for a bad argument.
 | 3   | Plans shows only Free and Founding         | Plans has a Free card and a Founding card, and no other tier card (Pro, Team, Clinic, …), no Monthly/Yearly toggle, and no `$N/mo`-style price.                                                        |
 | 4   | Founding is $79 once / lifetime            | Plans shows `$79` and "once" or "lifetime".                                                                                                                                                            |
 | 5   | Five-drug free limit stated                | Plans says "five drugs" / "five medicines" (or "five-drug").                                                                                                                                           |
-| 6   | Venmo, Cash App, PayPal listed             | All three pay rails appear on Plans.                                                                                                                                                                   |
+| 6   | A way to pay is shown                      | Plans shows the card (or PayPal) checkout button, in which case the manual apps are hidden on purpose, OR all three of Venmo, Cash App, and PayPal are listed. Fails if neither. |
 | 7   | Fake key rejected                          | After Redeem, the server returns `ok: false` (when readable), an error is shown, and nothing says "unlocked".                                                                                          |
 | 8   | Exact audience line (post-merge)           | The exact WHO_FOR sentence appears: "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision." |
 | 9   | Educational reference wording (post-merge) | "Educational interaction reference" appears (full line: "Educational interaction reference, not a substitute for clinical judgment.").                                                                 |
@@ -77,7 +77,7 @@ failed, `2` for a bad argument.
    - **3 Tiers:** Plans is showing a tier we do not sell (for example the old Pro
      card or a Monthly/Yearly toggle). Find the PR that restored it, or confirm
      live is still on an older build. Do not share Plans links until fixed.
-   - **4–6 Price, limit, rails:** buyers cannot see what they pay, what is free,
+   - **4–6 Price, limit, pay options:** buyers cannot see what they pay, what is free,
      or how to pay. Fix the Plans copy (`src/lib/billing/commerce.ts`,
      `src/lib/billing/plans.ts`, `src/components/desk/plans.tsx`) and redeploy.
    - **7 Fake key rejected:** **highest priority.** If the fake key unlocks
