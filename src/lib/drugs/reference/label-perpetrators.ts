@@ -619,4 +619,22 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-07-08",
     retrieved: "2026-10-05",
   },
+  {
+    perpIds: ["fluoxetine"],
+    brand: "Prozac",
+    enzyme: "CYP2D6",
+    role: "inhibitor",
+    section: "7.7 Potential for PROZAC to affect Other Drugs",
+    roleQuote: "Fluoxetine inhibits the activity of CYP2D6",
+    contraindicatedGroups: [
+      {
+        victimIds: ["pimozide", "thioridazine"],
+        section: "7.8 Drugs that Prolong the QT Interval",
+        quote: "Do not use PROZAC in combination with thioridazine or pimozide.",
+      },
+    ],
+    url: DM("c88f33ed-6dfb-4c5e-bc01-d8e36dd97299"),
+    labelEffective: "2026-01-08",
+    retrieved: "2026-10-05",
+  },
 ];
