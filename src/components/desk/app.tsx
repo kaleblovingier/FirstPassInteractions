@@ -411,9 +411,12 @@ export function DeskApp() {
             <RoundsPage />
           </Suspense>
         ) : view === "study" ? (
-          <Suspense fallback={<DeskFallback />}>
-            <StudyPage />
-          </Suspense>
+          <>
+            <h1 className="sr-only">Learn how drug interactions work</h1>
+            <Suspense fallback={<DeskFallback />}>
+              <StudyPage />
+            </Suspense>
+          </>
         ) : view === "compare" ? (
           <Suspense fallback={<DeskFallback />}>
             <CaseCompare
@@ -435,13 +438,16 @@ export function DeskApp() {
             <HelpPage />
           </Suspense>
         ) : view === "atlas" ? (
-          pro ? (
-            <EnzymeAtlas />
-          ) : (
-            <Paywall gate="atlas" pin>
+          <>
+            <h1 className="sr-only">How drugs share liver enzymes</h1>
+            {pro ? (
               <EnzymeAtlas />
-            </Paywall>
-          )
+            ) : (
+              <Paywall gate="atlas" pin>
+                <EnzymeAtlas />
+              </Paywall>
+            )}
+          </>
         ) : view === "library" ? (
           <Formulary />
         ) : (
@@ -460,7 +466,7 @@ export function DeskApp() {
                         key={id}
                         type="button"
                         onClick={() => remove(id)}
-                        className="group flex h-10 items-center gap-2 rounded-full bg-surface pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft"
+                        className="group flex min-h-10 max-w-full flex-wrap items-center gap-x-2 rounded-full py-1 bg-surface pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft"
                         title="Remove from regimen"
                       >
                         <span className="font-medium">{drug.name}</span>

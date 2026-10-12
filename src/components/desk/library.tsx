@@ -509,9 +509,9 @@ function CompoundsShelf() {
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
               Browse the shelf
             </p>
-            <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">
+            <h1 className="mt-2 font-serif text-2xl tracking-tight text-fg">
               {DRUGS.length} compounds on the shelf
-            </h2>
+            </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
               Pick a family or search, then tap a row to add it to the desk. {freeCapNote} Host
               factors and the liver enzyme map come with founding ($79 once).

@@ -409,9 +409,9 @@ export function CheckBoard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Interaction check</p>
-          <h2 className="mt-1 font-serif text-2xl tracking-tight text-fg">
+          <h1 className="mt-1 font-serif text-2xl tracking-tight text-fg">
             {lead ? verdictTitle(lead) : "No interaction found in this map."}
-          </h2>
+          </h1>
           {ids.length > 0 ? (
             <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-muted">{contents}</p>
           ) : null}
