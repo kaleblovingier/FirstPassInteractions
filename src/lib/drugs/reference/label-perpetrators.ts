@@ -637,4 +637,27 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-01-08",
     retrieved: "2026-10-05",
   },
+  {
+    perpIds: ["ketoconazole"],
+    brand: "Ketoconazole tablets",
+    enzyme: "CYP3A4",
+    role: "inhibitor",
+    section: "Precautions: Drug Interactions",
+    roleQuote: "Ketoconazole is a potent CYP3A4 inhibitor and a P-glycoprotein inhibitor.",
+    contraindicatedGroups: [
+      { victimIds: ["dofetilide", "quinidine", "quinidine-gluconate", "pimozide"], section: "Contraindications", quote: "Coadministration of a number of CYP3A4 substrates such as dofetilide, quinidine cisapride and pimozide is contraindicated with ketoconazole tablets." },
+      {
+        victimIds: [
+          "methadone", "disopyramide", "dronedarone", "dihydroergotamine", "ergotamine", "methylergonovine", "irinotecan",
+          "lurasidone", "midazolam", "alprazolam", "triazolam", "felodipine", "nisoldipine", "ranolazine", "tolvaptan",
+          "eplerenone", "lovastatin", "simvastatin", "simvastatin-ezetimibe", "colchicine",
+        ],
+        section: "Contraindications",
+        quote: "Additionally, the following other drugs are contraindicated with ketoconazole tablets: methadone, disopyramide, dronedarone, ergot alkaloids such as dihydroergotamine, ergometrine, ergotamine, methylergometrine, irinotecan, lurasidone, oral midazolam, alprazolam, triazolam, felodipine, nisoldipine, ranolazine, tolvaptan, eplerenone, lovastatin, simvastatin and colchicine.",
+      },
+    ],
+    url: DM("1d598696-c6f3-4b7c-ad73-949d2089df35"),
+    labelEffective: "2026-08-10",
+    retrieved: "2026-10-12",
+  },
 ];

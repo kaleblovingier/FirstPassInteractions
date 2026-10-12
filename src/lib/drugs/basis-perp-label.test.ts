@@ -240,3 +240,11 @@ test('Prozac quotes thioridazine, and not an unnamed CYP2D6 substrate', () => {
   const met = pkBasis('fluoxetine', 'metoprolol').map((x) => x.detail).join('\n');
   assert.doesNotMatch(met, line);
 });
+
+test('ketoconazole quotes its named contraindications, and not an unnamed CYP3A4 substrate', () => {
+  const line = /The Ketoconazole tablets label calls this combination contraindicated/;
+  const d = (a: string, b: string) => pkBasis(a, b).map((x) => x.detail).join('\n');
+  assert.match(d('ketoconazole', 'alprazolam'), line);
+  assert.match(d('ketoconazole', 'midazolam'), line);
+  assert.doesNotMatch(d('ketoconazole', 'amlodipine'), line);
+});
