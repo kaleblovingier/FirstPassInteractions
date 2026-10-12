@@ -248,3 +248,10 @@ test('ketoconazole quotes its named contraindications, and not an unnamed CYP3A4
   assert.match(d('ketoconazole', 'midazolam'), line);
   assert.doesNotMatch(d('ketoconazole', 'amlodipine'), line);
 });
+
+test('Orladeyo and Bixlenvo cite their own CYP role lines', () => {
+  const has = (a: string, b: string, brand: string) => pkBasis(a, b).some((x) => x.label.startsWith(brand));
+  assert.ok(has('berotralstat', 'midazolam', 'Orladeyo'), 'berotralstat CYP3A4');
+  assert.ok(has('berotralstat', 'desipramine', 'Orladeyo'), 'berotralstat CYP2D6');
+  assert.ok(has('bictegravir-lenacapavir', 'midazolam', 'Bixlenvo'), 'bixlenvo CYP3A4');
+});
