@@ -53,6 +53,17 @@
  *   hydrocodone only. Wave 5 Geodon pairs use the same path when a
  *   pharmacodynamic card already exists, and the no-enzyme path when none
  *   does. Other naltrexone + opioid pairs are not pinned.
+ * - Rows with origin "wave6" are Recorlev (levoketoconazole) pairs from the
+ *   current DailyMed SPL (setid d4c5fead-bc4a-fb02-e053-2a95a90ae4fc,
+ *   retrieved 2026-10-05). Section 4 contraindicates drugs that cause QT
+ *   prolongation associated with ventricular arrhythmias. Table 6 (section
+ *   7.1) says that use is contraindicated and names the drugs. Only catalog
+ *   drugs named there are pinned. The pair has no pharmacodynamic card, so
+ *   the pin holds the CYP3A4 finding the pair already produces, with
+ *   levoketoconazole as the perpetrator (the wave-3 Korlym orientation). No
+ *   new CYP grade. Dofetilide has no finding and uses the no-enzyme path.
+ *   Table 6's sensitive-substrate row says "contraindicated or not
+ *   recommended" without saying which, so those drugs are not pinned.
  *
  * Educational reference, not FDA-cleared. No doses.
  */
@@ -87,16 +98,25 @@ export interface LabelContraindication {
    * does not name it.
    */
   basis: "named" | "class";
-  /** Why the pin was added: gold-set pair from PR #65 (including leftover wave-1 pairs pinned later), restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, a #86 wave-4 pair whose existing enzyme finding is held at contraindicated, a pair with no enzyme finding to hold, or a pharmacodynamic finding held at contraindicated (naltrexone with a labeled opioid). */
-  origin: "gold-set" | "restored-after-58" | "wave3" | "wave4" | "no-enzyme" | "pd";
+  /** Why the pin was added: gold-set pair from PR #65 (including leftover wave-1 pairs pinned later), restored after PR #58 grade changes, a #75 wave-3 pair that still read below contraindicated, a #86 wave-4 pair whose existing enzyme finding is held at contraindicated, a pair with no enzyme finding to hold, a pharmacodynamic finding held at contraindicated (naltrexone with a labeled opioid), or a Recorlev Table 6 QT pair whose existing CYP3A4 finding is held at contraindicated (wave 6). */
+  origin: "gold-set" | "restored-after-58" | "wave3" | "wave4" | "no-enzyme" | "pd" | "wave6";
   /**
    * DailyMed retrieval date for this quote when it is not
-   * `LABEL_CONTRAINDICATIONS_RETRIEVED` (wave 3 is 2026-10-02).
+   * `LABEL_CONTRAINDICATIONS_RETRIEVED` (wave 3 is 2026-10-02; Recorlev is 2026-10-05).
    */
-  retrieved?: "2026-10-02" | "2026-10-03";
+  retrieved?: "2026-10-02" | "2026-10-03" | "2026-10-05";
 }
 
 export const LABEL_CONTRAINDICATIONS_RETRIEVED = "2026-09-27";
+
+// Recorlev (levoketoconazole) tablets. DailyMed SPL version 13, effective 2026-03-10, published 2026-06-26.
+const RECORLEV_URL = "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d4c5fead-bc4a-fb02-e053-2a95a90ae4fc";
+/** Table 6 (section 7.1), row "CYP3A4 or CYP3A4 and P-gp Substrates That May Prolong QT". */
+const RECORLEV_QT =
+  "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated";
+/** Section 4, verbatim; "…" elides the first (hepatic) item of the list. */
+const RECORLEV_CI_QT =
+  "RECORLEV is contraindicated in patients: … Taking drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes";
 
 export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
   {
@@ -2608,6 +2628,229 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "no-enzyme",
     retrieved: "2026-10-03",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8326928a-2cb6-4f7f-9712-03a425a14c37",
+  },
+  // Recorlev (levoketoconazole), retrieved 2026-10-05. Table 6 QT row, named drugs only.
+  {
+    id: "levoketoconazole+bosutinib",
+    labelDrugId: "levoketoconazole",
+    otherId: "bosutinib",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "Bosutinib",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+clarithromycin",
+    labelDrugId: "levoketoconazole",
+    otherId: "clarithromycin",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "clarithromycin",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+cobimetinib",
+    labelDrugId: "levoketoconazole",
+    otherId: "cobimetinib",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "cobimetinib",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+crizotinib",
+    labelDrugId: "levoketoconazole",
+    otherId: "crizotinib",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "crizotinib",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+disopyramide",
+    labelDrugId: "levoketoconazole",
+    otherId: "disopyramide",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "disopyramide",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+dofetilide",
+    labelDrugId: "levoketoconazole",
+    otherId: "dofetilide",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "dofetilide",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "no-enzyme",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+dronedarone",
+    labelDrugId: "levoketoconazole",
+    otherId: "dronedarone",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "dronedarone",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+ivabradine",
+    labelDrugId: "levoketoconazole",
+    otherId: "ivabradine",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "ivabradine",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+methadone",
+    labelDrugId: "levoketoconazole",
+    otherId: "methadone",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "methadone",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+midostaurin",
+    labelDrugId: "levoketoconazole",
+    otherId: "midostaurin",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "midostaurin",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+nicardipine",
+    labelDrugId: "levoketoconazole",
+    otherId: "nicardipine",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "nicardipine",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+pimozide",
+    labelDrugId: "levoketoconazole",
+    otherId: "pimozide",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "pimozide",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+quinidine",
+    labelDrugId: "levoketoconazole",
+    otherId: "quinidine",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "quinidine",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
+  },
+  {
+    id: "levoketoconazole+ranolazine",
+    labelDrugId: "levoketoconazole",
+    otherId: "ranolazine",
+    enzyme: "CYP3A4",
+    kind: "inhibitor",
+    labelDrug: "Recorlev (levoketoconazole)",
+    labelSection: "7.1 Effect of RECORLEV on Other Drugs (Table 6)",
+    quote: RECORLEV_QT,
+    labelExample: "ranolazine",
+    contraindicationsSentence: RECORLEV_CI_QT,
+    basis: "named",
+    origin: "wave6",
+    retrieved: "2026-10-05",
+    url: RECORLEV_URL,
   },
 ];
 

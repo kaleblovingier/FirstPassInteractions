@@ -16,20 +16,20 @@
 | Measure | Count |
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,831 / 1,675,365 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 129 (129 CYP, 0 P-gp) on 129 pairs (129 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 129 |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 142 (142 CYP, 0 P-gp) on 142 pairs (142 by display name, as #66 counts) |
+| … of which carry a label citation (kept at contraindicated) | 142 |
 | **Findings that move contraindicated → major** | **0** on **0** pairs |
 | **Pairs whose overall severity changes** | **0** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 181 / 272 → **181 / 272** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 195 / 286 → **195 / 286** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **129 findings on 129 pairs keyed by display name**: **differs**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **142 findings on 142 pairs keyed by display name**: **differs**.
 
-129 carry a label citation and are kept at contraindicated, so 0 are capped.
+142 carry a label citation and are kept at contraindicated, so 0 are capped.
 
 ## Moved findings by rule / enzyme
 
@@ -52,7 +52,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 307 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 321 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 
@@ -166,7 +166,7 @@ Also below the label and also unaffected: the label-contraindicated entries in `
 
 Audience catalog ids: `buprenorphine`, `buprenorphine-implant`, `buprenorphine-patch`, `buprenorphine-weekly`, `esketamine`, `ketamine`, `ketamine-iv`, `methadone`, `methadone-soluble`, `naltrexone`, `naltrexone-bupropion`.
 
-None. No finding involving these drugs is a CYP/P-gp contraindicated finding on main, so the what-if does not move any of them. (44 pairs with an audience drug are contraindicated today; all of them come from class/PD rules such as MAOI or oxybate stacks, which this what-if leaves alone.)
+None. No finding involving these drugs is a CYP/P-gp contraindicated finding on main, so the what-if does not move any of them. (45 pairs with an audience drug are contraindicated today; all of them come from class/PD rules such as MAOI or oxybate stacks, which this what-if leaves alone.)
 
 ## Informational: sodium oxybate × non-hypnotic CNS depressants (not part of this what-if)
 
