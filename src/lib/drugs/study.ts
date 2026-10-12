@@ -17,6 +17,17 @@ import { secondFlagCard } from "./learn/second-flag";
 import { brandCountCard } from "./learn/brand-count";
 import { flagCountCard } from "./learn/flag-count";
 import { aliasCountCard } from "./learn/alias-count";
+import { thirdEnzymeCard } from "./learn/third-enzyme";
+import { secondRoleCard } from "./learn/second-role";
+import { thirdFlagCard } from "./learn/third-flag";
+import { secondAliasCard } from "./learn/second-alias";
+import { secondSubstrateCard } from "./learn/second-substrate";
+import { secondPathCard } from "./learn/second-path";
+import { secondSensCard } from "./learn/second-sens";
+import { secondGradeCard } from "./learn/second-grade";
+import { substrateCountCard } from "./learn/substrate-count";
+import { perpetratorCountCard } from "./learn/perpetrator-count";
+import { firstRowRoleCard } from "./learn/first-row-role";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1043,6 +1054,25 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
     const flag2 = secondFlagCard(d);
     if (flag2) out.push(flag2);
     out.push(brandCountCard(d), flagCountCard(d), aliasCountCard(d));
+    const enz3 = thirdEnzymeCard(d);
+    if (enz3) out.push(enz3);
+    const role2 = secondRoleCard(d);
+    if (role2) out.push(role2);
+    const flag3 = thirdFlagCard(d);
+    if (flag3) out.push(flag3);
+    const aka2 = secondAliasCard(d);
+    if (aka2) out.push(aka2);
+    const sub2 = secondSubstrateCard(d);
+    if (sub2) out.push(sub2);
+    const path2 = secondPathCard(d);
+    if (path2) out.push(path2);
+    const sens2 = secondSensCard(d);
+    if (sens2) out.push(sens2);
+    const grade2 = secondGradeCard(d);
+    if (grade2) out.push(grade2);
+    out.push(substrateCountCard(d), perpetratorCountCard(d));
+    const row0 = firstRowRoleCard(d);
+    if (row0) out.push(row0);
   }
   return out;
 }

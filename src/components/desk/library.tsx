@@ -655,7 +655,7 @@ function CompoundsShelf() {
           </div>
         </div>
       ) : (
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((d) => {
             const on = selected.includes(d.id);
             const enzymes = d.enzymes
@@ -703,6 +703,7 @@ function CompoundsShelf() {
                       {d.pd[0] ? ` · ${d.pd[0].replace(/-/g, " ")}` : ""}
                       {d.aliases[0] ? ` · also ${d.aliases[0]}` : ""}
                       {d.enzymes.length ? ` · ${d.enzymes.length} enzyme ${d.enzymes.length === 1 ? "row" : "rows"}` : ""}
+                      {d.enzymes[1] ? ` · second ${d.enzymes[1].kind}` : ""}
                       {d.pd[1] ? ` · also ${d.pd[1].replace(/-/g, " ")}` : ""}
                     </span>
                     <span className="mt-1 font-mono text-[10px] uppercase tracking-wide text-subtle">

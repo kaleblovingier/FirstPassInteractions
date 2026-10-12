@@ -231,3 +231,12 @@ test('paroxetine quotes pimozide and thioridazine, and not an unnamed CYP2D6 sub
   const met = pkBasis('paroxetine', 'metoprolol').map((x) => x.detail).join('\n');
   assert.doesNotMatch(met, line);
 });
+
+test('Prozac quotes thioridazine, and not an unnamed CYP2D6 substrate', () => {
+  const line = /The Prozac label calls this combination contraindicated/;
+  const thio = pkBasis('fluoxetine', 'thioridazine').map((x) => x.detail).join('\n');
+  assert.match(thio, line);
+  assert.match(thio, /thioridazine or pimozide/);
+  const met = pkBasis('fluoxetine', 'metoprolol').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(met, line);
+});

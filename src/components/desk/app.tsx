@@ -273,11 +273,11 @@ export function DeskApp() {
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
             <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
               <HemeMark className="size-8" />
             </button>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-serif text-lg leading-none tracking-tight">FirstPass</span>
                 {hydrated && plan !== "free" ? (
@@ -286,7 +286,7 @@ export function DeskApp() {
                   </span>
                 ) : null}
               </div>
-              <div className="mt-1 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+              <div className="mt-1 font-mono text-[10px] sm:whitespace-nowrap uppercase tracking-[0.12em] text-muted">
                 Liver enzymes (CYP) · not FDA-cleared
               </div>
             </div>
