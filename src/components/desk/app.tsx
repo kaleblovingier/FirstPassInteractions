@@ -455,7 +455,7 @@ export function DeskApp() {
             <div className="space-y-4">
               <DrugSearch />
               {selected.length > 0 ? (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2" aria-live="polite" aria-relevant="additions removals">
                   {selected.map((id) => {
                     const drug = DRUG_BY_ID[id];
                     if (!drug) return null;
@@ -465,7 +465,17 @@ export function DeskApp() {
                       <button
                         key={id}
                         type="button"
-                        onClick={() => remove(id)}
+                        onClick={(e) => {
+                          // The chip unmounts on remove; hand focus to the next chip, else the search box.
+                          const next =
+                            (e.currentTarget.nextElementSibling ?? e.currentTarget.previousElementSibling) as HTMLElement | null;
+                          remove(id);
+                          requestAnimationFrame(() => {
+                            const target =
+                              next && next.isConnected ? next : document.getElementById("drug-search");
+                            target?.focus();
+                          });
+                        }}
                         className="group flex min-h-10 max-w-full flex-wrap items-center gap-x-2 rounded-full py-1 bg-surface pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft"
                         title="Remove from regimen"
                       >
