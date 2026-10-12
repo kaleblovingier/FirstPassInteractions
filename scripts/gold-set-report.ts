@@ -65,7 +65,7 @@ L.push(`| Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz,
 L.push(`| Wave 4 (label contraindications: clarithromycin, Sporanox, Noxafil, Norvir, Paxlovid, Kaletra) | ${w4.length} |`);
 L.push(`| Wave 5 (label contraindications: Geodon) | ${w5.length} |`);
 L.push(`| Wave 6 (label contraindications: Recorlev) | ${w6.length} |`);
-L.push(`| Wave 7 (label contraindications: Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi) | ${w7.length} |`);
+L.push(`| Wave 7 (label contraindications: Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi, Bixlenvo) | ${w7.length} |`);
 L.push(`| Label says contraindicated | ${ciPairs.length} |`);
 L.push(`| Label says avoid / not recommended | ${avoidPairs.length} |`);
 L.push(`| Label Boxed Warning names the interaction (wave 2) | ${boxedPairs.length} |`);
