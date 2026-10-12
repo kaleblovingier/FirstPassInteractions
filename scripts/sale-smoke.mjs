@@ -28,7 +28,7 @@ import {
   hasFiveDrugLimit,
   hasFoundingPrice,
   hasNotFdaCleared,
-  missingPayRails,
+  payPathStatus,
   parseSaleSmokeArgs,
   serverFnOk,
   statusFor,
@@ -133,6 +133,11 @@ try {
 let plansOpened = false;
 try {
   plans = await openView("Plans");
+  // Plans asks the server which rails are on; wait for that before judging pay options.
+  for (let i = 0; i < 20 && /checking payment options/i.test(plans); i += 1) {
+    await page.waitForTimeout(500);
+    plans = await bodyText();
+  }
   plansOpened = /founding/i.test(plans);
 } catch {
   plans = "";
@@ -159,12 +164,12 @@ record(
   hasFiveDrugLimit(plans) ? "found" : "no 'five drugs/medicines' wording on Plans",
 );
 {
-  const missing = missingPayRails(plans);
+  const status = payPathStatus(plans);
   record(
     "pay-rails",
-    "Venmo, Cash App, PayPal listed",
-    missing.length === 0,
-    missing.length ? `missing: ${missing.join(", ")}` : "all three",
+    "A way to pay is shown: card button, or Venmo, Cash App, PayPal",
+    status.pass,
+    status.detail,
   );
 }
 

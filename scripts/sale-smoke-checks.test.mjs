@@ -15,6 +15,7 @@ import {
   hasFoundingPrice,
   hasNotFdaCleared,
   missingPayRails,
+  payPathStatus,
   parseSaleSmokeArgs,
   serverFnOk,
   statusFor,
@@ -138,4 +139,29 @@ test("parseSaleSmokeArgs", () => {
   );
   assert.match(parseSaleSmokeArgs(["file:///etc/passwd"]).error, /http\/https/);
   assert.match(parseSaleSmokeArgs(["--nope"]).error, /unknown flag/);
+});
+
+test("payPathStatus: passes with the card button even when manual rails are hidden", () => {
+  const cardOn = "FOUNDING\nPay online\nCard · key arrives instantly\nPay by card\nTrouble paying? Write us.";
+  assert.deepEqual(payPathStatus(cardOn).pass, true);
+  assert.equal(payPathStatus(cardOn).mode, "auto");
+  assert.equal(payPathStatus("Pay with PayPal\nPayPal · key arrives instantly").mode, "auto");
+});
+
+test("payPathStatus: passes with all three manual rails when card is off", () => {
+  const manual =
+    "Card checkout is not live yet.\nVenmo (@x)\nCash App ($x)\nPayPal (x@y.com)\nManual payment (fallback)";
+  const r = payPathStatus(manual);
+  assert.equal(r.pass, true);
+  assert.equal(r.mode, "manual");
+});
+
+test("payPathStatus: fails when neither a checkout button nor all three rails are present", () => {
+  assert.equal(payPathStatus("").pass, false);
+  assert.equal(payPathStatus("Checking payment options…").pass, false);
+  // Card-off notice alone is not a card button.
+  assert.equal(payPathStatus("Card checkout is not live yet.").pass, false);
+  const partial = payPathStatus("Venmo (@x)\nPayPal (x@y.com)");
+  assert.equal(partial.pass, false);
+  assert.match(partial.detail, /Cash App/);
 });
