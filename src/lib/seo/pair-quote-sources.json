@@ -6,6 +6,14 @@
    "setid": "35cbb9d5-639b-207a-e054-00144ff88e88",
    "excerpt": "Concomitant administration of LOTRONEX with fluvoxamine is contraindicated."
   },
+  "amphetamine+linezolid": {
+   "setid": "aff45863-ffe1-4d4f-8acf-c7081512a6c0",
+   "excerpt": "ADDERALL XR administration is contraindicated in patients: known to be hypersensitive to amphetamine, or other components of ADDERALL XR. Hypersensitivity reactions such as angioedema and anaphylactic reactions have been reported in patients treated with other amphetamine products [see Adverse Reactions ( 6.2 )] . taking monoamine oxidase inhibitors (MAOIs), or within 14 days of stopping MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
+  },
+  "amphetamine+methylene-blue": {
+   "setid": "aff45863-ffe1-4d4f-8acf-c7081512a6c0",
+   "excerpt": "ADDERALL XR administration is contraindicated in patients: known to be hypersensitive to amphetamine, or other components of ADDERALL XR. Hypersensitivity reactions such as angioedema and anaphylactic reactions have been reported in patients treated with other amphetamine products [see Adverse Reactions ( 6.2 )] . taking monoamine oxidase inhibitors (MAOIs), or within 14 days of stopping MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
+  },
   "apixaban+rifampin": {
    "setid": "41a133ef-e461-48ad-8221-b735bdd0ec25",
    "excerpt": "Avoid concomitant use of ELIQUIS with combined P-gp and strong CYP3A4 inducers (e.g., rifampin, carbamazepine, phenytoin"
@@ -278,6 +286,14 @@
    "setid": "334e5635-e4cc-cf2a-e063-6294a90ae1e1",
    "excerpt": "Starting bupropion hydrochloride tablets in a patient treated with reversible MAOIs such as linezolid or intravenous methylene blue is contraindicated"
   },
+  "buspirone+linezolid": {
+   "setid": "7c9eafb9-9ce1-4b28-900c-8fcb4b23424e",
+   "excerpt": "Starting buspirone in a patient who is being treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "buspirone+methylene-blue": {
+   "setid": "7c9eafb9-9ce1-4b28-900c-8fcb4b23424e",
+   "excerpt": "Starting buspirone in a patient who is being treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
   "carbamazepine+nefazodone": {
    "setid": "8d409411-aa9f-4f3a-a52c-fbcb0c3ec053",
    "excerpt": "Coadministration of carbamazepine with nefazodone is contraindicated."
@@ -293,6 +309,14 @@
   "clarithromycin+lurasidone": {
    "setid": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
    "excerpt": "and lurasidone is contraindicated since it may result in an increase in lurasidone exposure"
+  },
+  "clomipramine+linezolid": {
+   "setid": "4074b555-7635-41a9-809d-fae3b3610059",
+   "excerpt": "Starting Anafranil in a patient who is being treated with linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "clomipramine+methylene-blue": {
+   "setid": "4074b555-7635-41a9-809d-fae3b3610059",
+   "excerpt": "Starting Anafranil in a patient who is being treated with linezolid or intravenous methylene blue is also contraindicated"
   },
   "clopidogrel+esomeprazole": {
    "setid": "de8b0b67-eb25-4684-83b5-7ad785314227",
@@ -458,6 +482,14 @@
    "setid": "814301f9-c990-46a5-b481-2879a521a16f",
    "excerpt": "Examples of these drugs and other contraindicated drugs (which may lead to reduced efficacy of darunavir) are listed below"
   },
+  "desvenlafaxine+linezolid": {
+   "setid": "0f43610c-f290-46ea-d186-4f998ed99fce",
+   "excerpt": "Starting PRISTIQ in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "desvenlafaxine+methylene-blue": {
+   "setid": "0f43610c-f290-46ea-d186-4f998ed99fce",
+   "excerpt": "Starting PRISTIQ in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
   "deutetrabenazine+valbenazine": {
    "setid": "7ea3c60a-45c7-44cc-afc2-d87fa53993c0",
    "excerpt": "AUSTEDO XR and AUSTEDO are contraindicated in patients who are suicidal, and in patients with untreated or inadequately treated depression [see Contraindications ( 4 ) and Warnings and Precautions ( 5.1 )]. WARNING: DEPRESSION AND SUICIDALITY IN PATIENTS WITH HUNTINGTON'S DISEASE See full prescribing information for complete boxed warning. Increases the risk of depression and suicidal thoughts and behavior (suicidality) in patients with Huntington's disease ( 5.1 ) Balance risks of depression and suicidality with the clinical need for treatment of chorea when considering the use of AUSTEDO XR or AUSTEDO ( 5.1 ) Monitor patients for the emergence or worsening of depression, suicidality, or unusual changes in behavior ( 5.1 ) Inform patients, caregivers, and families of the risk of depression and suicidality and instruct to report behaviors of concern promptly to the treating physician ( 5.1 ) Exercise caution when treating patients with a history of depression or prior suicide attempts or ideation ( 5.1 ) AUSTEDO XR and AUSTEDO are contraindicated in patients who are suicidal, and in patients with untreated or inadequately treated depression ( 4 , 5.1 ) 1 INDICATIONS AND USAGE AUSTEDO XR®and AUSTEDO®are indicated in adults for the treatment of: chorea associated with Huntington's disease [see Clinical Studies ( 14.1 )] tardive dyskinesia [see Clinical Studies ( 14.2 )] AUSTEDO XR and AUSTEDO are vesicular monoamine transporter 2 (VMAT2) inhibitors indicated in adults for the treatment of: Chorea associated with Huntington's disease ( 1 ) Tardive dyskinesia ( 1 ) 2 DOSAGE AND ADMINISTRATION AUSTEDO XR AUSTEDO Recommended Starting Dosage 12 mg once daily (12 mg per day) 6 mg twice daily (12 mg per day) Titrate at weekly intervals by 6 mg per day based on reduction of chorea or tardive dyskinesia, and tolerability, up to a maximum recommended daily dosage of 48 mg ( 2.1 ) Administer AUSTEDO XR with or without food in once-daily doses ( 2.1 ) Administer AUSTEDO with food and administer total daily dosages of 12 mg or above in two divided doses ( 2.1 ) Swallow tablets whole; do not chew, crush, or break ( 2.1 ) If switching patients from tetrabenazine, discontinue tetrabenazine and initiate AUSTEDO XR or AUSTEDO the following day. See full prescribing information for recommended conversion table ( 2.2 ) Maximum recommended dosage of AUSTEDO XR or AUSTEDO in poor CYP2D6 metabolizers is 36 mg per day ( 2.4 , 8.7 ) 2.1 Dosing Information The dose of AUSTEDO XR and AUSTEDO is determined individually for each patient based on reduction of chorea or tardive dyskinesia and tolerability. Table 1 displays the recommended dosage and important administration instructions of AUSTEDO XR and AUSTEDO when first prescribed to patients who are not being switched from tetrabenazine (a related VMAT2 inhibitor). Table 1: Recommended Dosage and Important Administration Instructions for AUSTEDO XR and AUSTEDO AUSTEDO XR extended-release tablet AUSTEDO tablet Recommended Starting Dosage 12 mg once daily (12 mg per day) 6 mg twice daily (12 mg per day) Recommended Dose Titration The dosage of AUSTEDO XR or AUSTEDO may be increased at weekly intervals in increments of 6 mg per day based on reduction of chorea or tardive dyskinesia, and tolerability, up to a maximum recommended daily dosage of 48 mg [see Clinical Trials ( 14.1 , 14.2 )] . Important Administration Instructions Administer AUSTEDO XR with or without food [see Clinical Pharmacology ( 12.3 )] . Swallow AUSTEDO XR whole. Do not chew, crush, or break tablets. Administer AUSTEDO XR once daily. Administer AUSTEDO with food [see Clinical Pharmacology ( 12.3 )] . Swallow AUSTEDO whole. Do not chew, crush, or break tablets. Administer AUSTEDO total daily dosages of 12 mg or above in two divided doses. Switching Between AUSTEDO and AUSTEDO XR When switching between AUSTEDO tablets (twice daily) and AUSTEDO XR extended-release tablets (once daily), switch to the same total daily dosage. 2.2 Switching Patients from Tetrabenazine to AUSTEDO XR or AUSTEDO Discontinue tetrabenazine and initiate AUSTEDO XR or AUSTEDO the following day. The recommended initial dosing regimen of AUSTEDO XR or AUSTEDO in patients switching from tetrabenazine to AUSTEDO XR or AUSTEDO is shown in Table 2. Table 2: Recommended Initial Dosing Regimen when Switching from Tetrabenazine to AUSTEDO XR or AUSTEDO Current tetrabenazine daily dosage Initial regimen of AUSTEDO XR extended-release tablet Initial regimen of AUSTEDO tablet 12.5 mg 6 mg once daily 6 mg once daily 25 mg 12 mg once daily 6 mg twice daily 37.5 mg 18 mg once daily 9 mg twice daily 50 mg 24 mg once daily 12 mg twice daily 62.5 mg 30 mg once daily 15 mg twice daily 75 mg 36 mg once daily 18 mg twice daily 87.5 mg 42 mg once daily 21 mg twice daily 100 mg 48 mg once daily 24 mg twice daily After patients are switched to AUSTEDO XR or AUSTEDO, the dose may be adjusted at weekly intervals [see Dosage and Administration ( 2.1 )] . 2.3 Dosage Adjustment with Strong CYP2D6 Inhibitors In patients receiving strong CYP2D6 inhibitors, the total daily dosage of AUSTEDO XR or AUSTEDO should not exceed 36 mg [see Drug Interactions ( 7.1 ) and Clinical Pharmacology ( 12.3 )] . 2.4 Dosage Adjustment in Poor CYP2D6 Metabolizers In patients who are poor CYP2D6 metabolizers, the total daily dosage of AUSTEDO XR or AUSTEDO should not exceed 36 mg [see Use in Specific Populations ( 8.7 )]. 2.5 Discontinuation and Interruption of Treatment Treatment with AUSTEDO XR or AUSTEDO can be discontinued without tapering. Following treatment interruption of greater than one week, AUSTEDO XR or AUSTEDO therapy should be re-titrated when resumed. For treatment interruption of less than one week, treatment can be resumed at the previous maintenance dose without titration. 3 DOSAGE FORMS AND STRENGTHS AUSTEDO XR extended-release tablets are available in the following strengths: The 6 mg extended-release tablets are round, grey-coated tablets, with \"Q6\" printed in black ink on one side. The 12 mg extended-release tablets are round, blue-coated tablets, with \"Q12\" printed in black ink on one side. The 18 mg extended-release tablets are round, light grey-coated tablets, with \"Q18\" printed in black ink on one side. The 24 mg extended-release tablets are round, purple-coated tablets, with \"Q24\" printed in black ink on one side. The 30 mg extended-release tablets are round, light orange-coated tablets, with \"Q30\" printed in black ink on one side. The 36 mg extended-release tablets are round, light purple-coated tablets, with \"Q36\" printed in black ink on one side. The 42 mg extended-release tablets are round, orange-coated tablets, with \"Q42\" printed in black ink on one side. The 48 mg extended-release tablets are round, pink-coated tablets, with \"Q48\" printed in black ink on one side. AUSTEDO tablets are available in the following strengths: The 6 mg tablets are round, purple-coated tablets, with \"SD\" over \"6\" printed in black ink on one side. The 9 mg tablets are round, blue-coated tablets, with \"SD\" over \"9\" printed in black ink on one side. The 12 mg tablets are round, beige-coated tablets, with \"SD\" over \"12\" printed in black ink on one side. Extended-release tablets: 6 mg, 12 mg, 18 mg, 24 mg, 30 mg, 36 mg, 42 mg, and 48 mg ( 3 ) Tablets: 6 mg, 9 mg, and 12 mg ( 3 ) 4 CONTRAINDICATIONS AUSTEDO XR and AUSTEDO are contraindicated in patients: With Huntington's disease who are suicidal, or have untreated or inadequately treated depression [see Warnings and Precautions ( 5.1 )] . With hepatic impairment [see Use in Specific Populations ( 8.6 ), Clinical Pharmacology ( 12.3 )] . Taking reserpine. At least 20 days should elapse after stopping reserpine before starting AUSTEDO XR or AUSTEDO [see Drug Interactions ( 7.2 )] . Taking monoamine oxidase inhibitors (MAOIs). AUSTEDO XR and AUSTEDO should not be used in combination with an MAOI, or within 14 days of discontinuing therapy with an MAOI [see Drug Interactions ( 7.3 )] . Taking tetrabenazine or valbenazine"
@@ -517,6 +549,14 @@
   "dronedarone+voriconazole": {
    "setid": "3bd4006a-8bad-4909-ac6d-b6d84390155c",
    "excerpt": "Concomitant use of strong CYP3A inhibitors, such as ketoconazole, itraconazole, voriconazole, cyclosporine, telithromycin, clarithromycin, nefazodone, and ritonavir"
+  },
+  "duloxetine+linezolid": {
+   "setid": "00acd9e9-b26a-4626-949e-112ecd2f27e6",
+   "excerpt": "Starting CYMBALTA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "duloxetine+methylene-blue": {
+   "setid": "00acd9e9-b26a-4626-949e-112ecd2f27e6",
+   "excerpt": "Starting CYMBALTA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
   },
   "eletriptan+clarithromycin": {
    "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
@@ -593,6 +633,14 @@
   "fluoxetine+methylene-blue": {
    "setid": "4f6848e5-35ed-4046-b13c-3032b5ba3232",
    "excerpt": "Avoid concomitant use of PROVAYBLUE with selective serotonin reuptake inhibitors (SSRIs), serotonin norepinephrine reuptake inhibitors (SNRIs), monoamine oxidase inhibitors (MAOIs) and opioids."
+  },
+  "fluvoxamine+linezolid": {
+   "setid": "6eeb14df-6fcf-a737-5359-5744eb4accea",
+   "excerpt": "Starting Fluvoxamine Maleate Tablets in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "fluvoxamine+methylene-blue": {
+   "setid": "6eeb14df-6fcf-a737-5359-5744eb4accea",
+   "excerpt": "Starting Fluvoxamine Maleate Tablets in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
   },
   "glecaprevir-pibrentasvir+rifampin": {
    "setid": "7bf99777-0401-9095-8645-16c6e907fcc0",
@@ -777,6 +825,14 @@
   "linezolid+phenelzine": {
    "setid": "3e5e9975-6f36-42e4-ab46-0e75dda83592",
    "excerpt": "Linezolid should not be used in patients taking any medicinal product which inhibits monoamine oxidases A or B (e.g., phenelzine, isocarboxazid)"
+  },
+  "lisdexamfetamine+linezolid": {
+   "setid": "704e4378-ca83-445c-8b45-3cfa51c1ecad",
+   "excerpt": "VYVANSE is contraindicated in patients with: Known hypersensitivity to amphetamine products or other ingredients of VYVANSE. Anaphylactic reactions, Stevens-Johnson Syndrome, angioedema, and urticaria have been observed in postmarketing reports [see Adverse Reactions (6.2) ] . Patients taking monoamine oxidase inhibitors (MAOIs), or within 14 days of stopping MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
+  },
+  "lisdexamfetamine+methylene-blue": {
+   "setid": "704e4378-ca83-445c-8b45-3cfa51c1ecad",
+   "excerpt": "VYVANSE is contraindicated in patients with: Known hypersensitivity to amphetamine products or other ingredients of VYVANSE. Anaphylactic reactions, Stevens-Johnson Syndrome, angioedema, and urticaria have been observed in postmarketing reports [see Adverse Reactions (6.2) ] . Patients taking monoamine oxidase inhibitors (MAOIs), or within 14 days of stopping MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
   },
   "lonafarnib+atorvastatin": {
    "setid": "97391d0c-943e-4c5a-8423-68e163aa7f50",
@@ -978,6 +1034,14 @@
    "setid": "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9",
    "excerpt": "KORLYM is contraindicated in: Pregnancy [See Dosage and Administration ( 2.1 ), Use in Specific Populations ( 8.1 , 8.3 )] Patients taking drugs metabolized by CYP3A such as simvastatin, lovastatin"
   },
+  "mirtazapine+linezolid": {
+   "setid": "98ad1917-a094-44f5-a28f-a64a8cfcd887",
+   "excerpt": "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
+  },
+  "mirtazapine+methylene-blue": {
+   "setid": "98ad1917-a094-44f5-a28f-a64a8cfcd887",
+   "excerpt": "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
+  },
   "naloxegol+clarithromycin": {
    "setid": "28596788-b73f-4247-85fc-3105f51fff5a",
    "excerpt": "MOVANTIK is contraindicated in: Patients with known or suspected gastrointestinal obstruction and patients at risk of recurrent obstruction, due to the potential for gastrointestinal perforation [see Warnings and Precautions (5.3) ] . Patients concomitantly using strong CYP3A4 inhibitors (e.g., clarithromycin, ketoconazole)"
@@ -1025,6 +1089,14 @@
   "naltrexone+oxycodone": {
    "setid": "06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
    "excerpt": "Naltrexone hydrochloride is contraindicated in: 1. Patients receiving opioid analgesics."
+  },
+  "paroxetine+linezolid": {
+   "setid": "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
+   "excerpt": "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
+  },
+  "paroxetine+methylene-blue": {
+   "setid": "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
+   "excerpt": "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
   },
   "paxlovid+alfuzosin": {
    "setid": "8a99d6d6-fd9e-45bb-b1bf-48c7f761232a",
@@ -1298,6 +1370,22 @@
    "setid": "00979fb3-d70f-493d-94ca-2914cbadaa9d",
    "excerpt": "Ranolazine is contraindicated in patients: Taking strong inhibitors of CYP3A [see Drug Interactions (7.1) ] Taking inducers of CYP3A [see Drug Interactions (7.1) ] With liver cirrhosis [see Use in Specific Populations (8.6) ] Strong CYP3A inhibitors (e.g., ketoconazole, clarithromycin, nelfinavir) ( 4 , 7.1 ) CYP3A inducers (e.g., rifampin, phenobarbital, St. John's wort)"
   },
+  "rasagiline+cyclobenzaprine": {
+   "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
+   "excerpt": "AZILECT is contraindicated for use with St. John's wort and with cyclobenzaprine"
+  },
+  "rasagiline+meperidine": {
+   "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
+   "excerpt": "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)"
+  },
+  "rasagiline+methadone": {
+   "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
+   "excerpt": "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)"
+  },
+  "rasagiline+tramadol": {
+   "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
+   "excerpt": "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)"
+  },
   "rifampin+atazanavir": {
    "setid": "1b074c23-dd35-43c9-820c-0e603481fdd3",
    "excerpt": "Rifampin is contraindicated in patients who are also receiving atazanavir, darunavir, fosamprenavir, saquinavir, tipranavir"
@@ -1450,6 +1538,14 @@
    "setid": "1924db3d-6a16-4496-cfd0-6903be146925",
    "excerpt": "Selegiline is contraindicated for use with meperidine"
   },
+  "sertraline+linezolid": {
+   "setid": "fda754f6-d0f3-4dce-a17a-927d64f912f7",
+   "excerpt": "ZOLOFT is contraindicated in patients:•Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezolid and intravenous methylene blue)"
+  },
+  "sertraline+methylene-blue": {
+   "setid": "fda754f6-d0f3-4dce-a17a-927d64f912f7",
+   "excerpt": "ZOLOFT is contraindicated in patients:•Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezolid and intravenous methylene blue)"
+  },
   "sildenafil-pah+riociguat": {
    "setid": "3bb9363e-b28d-4019-8aae-539233dca214",
    "excerpt": "REVATIO is contraindicated in patients with:•Concomitant use of organic nitrates in any form, either regularly or intermittently, because of the greater risk of hypotension [see Warnings and Precautions (5.1) ] .•Concomitant use of riociguat, a guanylate cyclase stimulator."
@@ -1526,9 +1622,37 @@
    "setid": "60c27d35-7349-4fc6-86ad-70fffdbe3e08",
    "excerpt": "Concomitant use of Zanaflex with strong cytochrome P450 1A2 (CYP1A2) inhibitors (e.g., fluvoxamine, ciprofloxacin) is contraindicated."
   },
+  "tranylcypromine+buspirone": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone"
+  },
+  "tranylcypromine+cyclobenzaprine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine"
+  },
   "tranylcypromine+meperidine": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated."
+  },
+  "tranylcypromine+milnacipran": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran"
+  },
+  "tranylcypromine+rasagiline": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran tryptophan dopamine rasagiline"
+  },
+  "tranylcypromine+tapentadol": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol"
+  },
+  "trazodone+linezolid": {
+   "setid": "4006d439-e2de-4590-82e9-fc9d56e3ec1b",
+   "excerpt": "Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue"
+  },
+  "trazodone+methylene-blue": {
+   "setid": "4006d439-e2de-4590-82e9-fc9d56e3ec1b",
+   "excerpt": "Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue"
   },
   "triazolam+ketoconazole": {
    "setid": "5add318e-11b9-42f8-b052-0d8cebb32fcf",
@@ -1538,9 +1662,25 @@
    "setid": "5add318e-11b9-42f8-b052-0d8cebb32fcf",
    "excerpt": "Triazolam is contraindicated in:•Patients with known hypersensitivity to triazolam, any of component of triazolam, or other benzodiazepines. Reactions consistent with angioedema (involving the tongue, glottis, or larynx), dyspnea, and throat closing have been reported and may be fatal.•Concomitant administration of strong cytochrome P450 (CYP 3A) enzyme inhibitors (e.g., ketoconazole, itraconazole, nefazodone, lopinavir, ritonavir)"
   },
+  "venlafaxine+linezolid": {
+   "setid": "c848a5d8-ba94-4c84-80e3-0bf35fb8e32e",
+   "excerpt": "Effexor XR is contraindicated in patients:•with known hypersensitivity to venlafaxine hydrochloride, desvenlafaxine succinate or to any excipients in the formulation [see Adverse Reactions (6.2) ] .•taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
+  },
+  "venlafaxine+methylene-blue": {
+   "setid": "c848a5d8-ba94-4c84-80e3-0bf35fb8e32e",
+   "excerpt": "Effexor XR is contraindicated in patients:•with known hypersensitivity to venlafaxine hydrochloride, desvenlafaxine succinate or to any excipients in the formulation [see Adverse Reactions (6.2) ] .•taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
+  },
   "voriconazole+rifampin": {
    "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
    "excerpt": "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 and for which significantly reduced voriconazole plasma concentrations may be associated with loss of efficacy [see Drug Interactions (7) ]:•Carbamazepine•Efavirenz Concomitant use with efavirenz dosages of 400 mg every 24 hours or higher is contraindicated [see Clinical Pharmacology (12.3) ] .•Long-acting barbiturates•Rifabutin•Rifampin"
+  },
+  "vortioxetine+linezolid": {
+   "setid": "1a5b68e2-14d0-419d-9ec6-1ca97145e838",
+   "excerpt": "Starting TRINTELLIX in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
+  },
+  "vortioxetine+methylene-blue": {
+   "setid": "1a5b68e2-14d0-419d-9ec6-1ca97145e838",
+   "excerpt": "Starting TRINTELLIX in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated"
   },
   "ziprasidone+amiodarone": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",

@@ -106,7 +106,7 @@ export interface GoldPair {
   domain: GoldDomain;
   note?: string;
   /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -194,6 +194,20 @@ export const LABEL_SETIDS = {
   "bupropion-ir": "334e5635-e4cc-cf2a-e063-6294a90ae1e1",
   contrave: "485ff360-32c8-11df-928b-0002a5d5c51b",
   revatio: "3bb9363e-b28d-4019-8aae-539233dca214",
+  // wave 9, DailyMed v2 SPL retrieved 2026-10-12.
+  zoloft: "fda754f6-d0f3-4dce-a17a-927d64f912f7",
+  paxil: "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
+  "effexor-xr": "c848a5d8-ba94-4c84-80e3-0bf35fb8e32e",
+  pristiq: "0f43610c-f290-46ea-d186-4f998ed99fce",
+  cymbalta: "00acd9e9-b26a-4626-949e-112ecd2f27e6",
+  trintellix: "1a5b68e2-14d0-419d-9ec6-1ca97145e838",
+  remeron: "98ad1917-a094-44f5-a28f-a64a8cfcd887",
+  trazodone: "4006d439-e2de-4590-82e9-fc9d56e3ec1b",
+  anafranil: "4074b555-7635-41a9-809d-fae3b3610059",
+  buspirone: "7c9eafb9-9ce1-4b28-900c-8fcb4b23424e",
+  "adderall-xr": "aff45863-ffe1-4d4f-8acf-c7081512a6c0",
+  vyvanse: "704e4378-ca83-445c-8b45-3cfa51c1ecad",
+  azilect: "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -3207,11 +3221,235 @@ const WAVE_7: GoldPair[] = [
   }),
 ];
 
+/**
+ * Wave 9 (DailyMed v2 SPL retrieved 2026-10-12): MAOI-class Contraindications that
+ * name linezolid and intravenous methylene blue (SSRIs, SNRIs, mirtazapine,
+ * trazodone, clomipramine, buspirone, amphetamines), plus partners named on
+ * Azilect and in Parnate Table 1. Wave 8 (#154) was filed under wave 7.
+ */
+function row9(r: Row): GoldPair {
+  return { ...row7(r), wave: 9 };
+}
+
+const WAVE_9: GoldPair[] = [
+  row9({
+    drugA: "sertraline", drugB: "linezolid", queries: ["zoloft", "linezolid"],
+    labelDrug: "Zoloft (sertraline)", label: "zoloft", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOLOFT is contraindicated in patients: … Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "sertraline", drugB: "methylene-blue", queries: ["zoloft", "methylene blue"],
+    labelDrug: "Zoloft (sertraline)", label: "zoloft", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOLOFT is contraindicated in patients: … Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "paroxetine", drugB: "linezolid", queries: ["paxil", "linezolid"],
+    labelDrug: "Paxil (paroxetine)", label: "paxil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "paroxetine", drugB: "methylene-blue", queries: ["paxil", "methylene blue"],
+    labelDrug: "Paxil (paroxetine)", label: "paxil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "fluvoxamine", drugB: "linezolid", queries: ["fluvoxamine", "linezolid"],
+    labelDrug: "Fluvoxamine maleate tablets", label: "fluvoxamine", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Fluvoxamine Maleate Tablets in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "fluvoxamine", drugB: "methylene-blue", queries: ["fluvoxamine", "methylene blue"],
+    labelDrug: "Fluvoxamine maleate tablets", label: "fluvoxamine", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Fluvoxamine Maleate Tablets in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "venlafaxine", drugB: "linezolid", queries: ["effexor", "linezolid"],
+    labelDrug: "Effexor XR (venlafaxine)", label: "effexor-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Effexor XR is contraindicated in patients: … taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "venlafaxine", drugB: "methylene-blue", queries: ["effexor", "methylene blue"],
+    labelDrug: "Effexor XR (venlafaxine)", label: "effexor-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Effexor XR is contraindicated in patients: … taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "desvenlafaxine", drugB: "linezolid", queries: ["pristiq", "linezolid"],
+    labelDrug: "Pristiq (desvenlafaxine)", label: "pristiq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting PRISTIQ in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "desvenlafaxine", drugB: "methylene-blue", queries: ["pristiq", "methylene blue"],
+    labelDrug: "Pristiq (desvenlafaxine)", label: "pristiq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting PRISTIQ in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "duloxetine", drugB: "linezolid", queries: ["cymbalta", "linezolid"],
+    labelDrug: "Cymbalta (duloxetine)", label: "cymbalta", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting CYMBALTA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "duloxetine", drugB: "methylene-blue", queries: ["cymbalta", "methylene blue"],
+    labelDrug: "Cymbalta (duloxetine)", label: "cymbalta", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting CYMBALTA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "vortioxetine", drugB: "linezolid", queries: ["trintellix", "linezolid"],
+    labelDrug: "Trintellix (vortioxetine)", label: "trintellix", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting TRINTELLIX in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "vortioxetine", drugB: "methylene-blue", queries: ["trintellix", "methylene blue"],
+    labelDrug: "Trintellix (vortioxetine)", label: "trintellix", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting TRINTELLIX in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "mirtazapine", drugB: "linezolid", queries: ["remeron", "linezolid"],
+    labelDrug: "Remeron (mirtazapine)", label: "remeron", labelSection: "4 CONTRAINDICATIONS",
+    quote: "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "mirtazapine", drugB: "methylene-blue", queries: ["remeron", "methylene blue"],
+    labelDrug: "Remeron (mirtazapine)", label: "remeron", labelSection: "4 CONTRAINDICATIONS",
+    quote: "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "trazodone", drugB: "linezolid", queries: ["trazodone", "linezolid"],
+    labelDrug: "Trazodone hydrochloride tablets", label: "trazodone", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "trazodone", drugB: "methylene-blue", queries: ["trazodone", "methylene blue"],
+    labelDrug: "Trazodone hydrochloride tablets", label: "trazodone", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "clomipramine", drugB: "linezolid", queries: ["anafranil", "linezolid"],
+    labelDrug: "Anafranil (clomipramine)", label: "anafranil", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting Anafranil in a patient who is being treated with linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "clomipramine", drugB: "methylene-blue", queries: ["anafranil", "methylene blue"],
+    labelDrug: "Anafranil (clomipramine)", label: "anafranil", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting Anafranil in a patient who is being treated with linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "buspirone", drugB: "linezolid", queries: ["buspirone", "linezolid"],
+    labelDrug: "Buspirone hydrochloride tablets", label: "buspirone", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting buspirone in a patient who is being treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "buspirone", drugB: "methylene-blue", queries: ["buspirone", "methylene blue"],
+    labelDrug: "Buspirone hydrochloride tablets", label: "buspirone", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting buspirone in a patient who is being treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "amphetamine", drugB: "linezolid", queries: ["adderall", "linezolid"],
+    labelDrug: "Adderall XR (mixed amphetamine salts)", label: "adderall-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ADDERALL XR administration is contraindicated in patients: … taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "amphetamine", drugB: "methylene-blue", queries: ["adderall", "methylene blue"],
+    labelDrug: "Adderall XR (mixed amphetamine salts)", label: "adderall-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ADDERALL XR administration is contraindicated in patients: … taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "lisdexamfetamine", drugB: "linezolid", queries: ["vyvanse", "linezolid"],
+    labelDrug: "Vyvanse (lisdexamfetamine)", label: "vyvanse", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VYVANSE is contraindicated in patients with: … Patients taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "lisdexamfetamine", drugB: "methylene-blue", queries: ["vyvanse", "methylene blue"],
+    labelDrug: "Vyvanse (lisdexamfetamine)", label: "vyvanse", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VYVANSE is contraindicated in patients with: … Patients taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "meperidine", queries: ["azilect", "meperidine"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)", labelExample: "meperidine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "tramadol", queries: ["azilect", "tramadol"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)", labelExample: "tramadol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "methadone", queries: ["azilect", "methadone"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)", labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "mat",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "cyclobenzaprine", queries: ["azilect", "cyclobenzaprine"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with St. John’s wort and with cyclobenzaprine", labelExample: "cyclobenzaprine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "muscle-relaxant",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "buspirone", queries: ["parnate", "buspirone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … buspirone", labelExample: "buspirone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "tapentadol", queries: ["parnate", "tapentadol"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … tapentadol", labelExample: "tapentadol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "cyclobenzaprine", queries: ["parnate", "cyclobenzaprine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … cyclobenzaprine", labelExample: "cyclobenzaprine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "muscle-relaxant",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "milnacipran", queries: ["parnate", "milnacipran"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … milnacipran", labelExample: "milnacipran",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "rasagiline", queries: ["parnate", "rasagiline"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … rasagiline", labelExample: "rasagiline",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7];
+export const WAVE_9_COUNT = WAVE_9.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -3604,5 +3842,29 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
     pair: "wave 7: Zoloft oral solution + disulfiram",
     reason:
       "Contraindicated for the oral solution only (it contains alcohol). The catalog sertraline row is not formulation-specific.",
+  },
+  {
+    pair: "wave 9: Parnate + carbamazepine",
+    reason: "Named in Parnate Table 1. The only pair cards are washout cards, not the hypertensive or serotonin reaction the label describes. Not pinned without a matching card.",
+  },
+  {
+    pair: "wave 9: Azilect + dextromethorphan",
+    reason: "Named on Azilect section 4 for psychosis or bizarre behavior. The pair card is a serotonin card. Not pinned without a matching card.",
+  },
+  {
+    pair: "wave 9: Emsam (selegiline transdermal) + SSRIs, SNRIs, clomipramine, imipramine, meperidine, tramadol, methadone, dextromethorphan, carbamazepine",
+    reason: "Contraindicated on the transdermal system label. The catalog selegiline row is not formulation-specific (the Zoloft oral solution rule).",
+  },
+  {
+    pair: "wave 9: Parnate + bupropion, trazodone, nefazodone, vilazodone, vortioxetine",
+    reason: "Named as examples of 'Other antidepressants' in Parnate Table 1. Deferred to the next wave to keep this wave within 40 pairs.",
+  },
+  {
+    pair: "wave 9: Nardil + SSRIs, venlafaxine, bupropion, buspirone, sympathomimetics",
+    reason: "Nardil's Contraindications text is an older unnumbered section mixing 'should not be used' with case reports. Deferred until each line can be checked for explicit contraindication wording.",
+  },
+  {
+    pair: "wave 9: Inspra + spironolactone, amiloride, triamterene; Multaq + cyclosporine",
+    reason: "Out of scope for this wave (psychiatric, MAT and ketamine focus). Candidates for a cardiology wave.",
   },
 ];

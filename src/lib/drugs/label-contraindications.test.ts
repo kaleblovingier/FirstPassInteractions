@@ -427,6 +427,42 @@ const EXPECTED_PINS = [
   "dofetilide+hctz",
   "thioridazine+pindolol",
   "sildenafil-pah+riociguat",
+  // wave 9
+  "sertraline+linezolid",
+  "sertraline+methylene-blue",
+  "paroxetine+linezolid",
+  "paroxetine+methylene-blue",
+  "fluvoxamine+linezolid",
+  "fluvoxamine+methylene-blue",
+  "venlafaxine+linezolid",
+  "venlafaxine+methylene-blue",
+  "desvenlafaxine+linezolid",
+  "desvenlafaxine+methylene-blue",
+  "duloxetine+linezolid",
+  "duloxetine+methylene-blue",
+  "vortioxetine+linezolid",
+  "vortioxetine+methylene-blue",
+  "mirtazapine+linezolid",
+  "mirtazapine+methylene-blue",
+  "trazodone+linezolid",
+  "trazodone+methylene-blue",
+  "clomipramine+linezolid",
+  "clomipramine+methylene-blue",
+  "buspirone+linezolid",
+  "buspirone+methylene-blue",
+  "amphetamine+linezolid",
+  "amphetamine+methylene-blue",
+  "lisdexamfetamine+linezolid",
+  "lisdexamfetamine+methylene-blue",
+  "rasagiline+meperidine",
+  "rasagiline+tramadol",
+  "rasagiline+methadone",
+  "rasagiline+cyclobenzaprine",
+  "tranylcypromine+buspirone",
+  "tranylcypromine+tapentadol",
+  "tranylcypromine+cyclobenzaprine",
+  "tranylcypromine+milnacipran",
+  "tranylcypromine+rasagiline",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -435,7 +471,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 47);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 82);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
   for (const r of LABEL_CONTRAINDICATIONS) {
