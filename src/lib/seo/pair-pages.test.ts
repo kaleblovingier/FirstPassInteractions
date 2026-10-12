@@ -48,10 +48,13 @@ describe("public pair pages", () => {
     for (const p of pages) assert.ok(idx.includes(`${p.nameA} and ${p.nameB}`), p.slug);
   });
 
-  it("the disclaimer says educational reference, not FDA-cleared, not clinical decision support", () => {
+  it("the disclaimer says educational reference, not FDA-cleared, no dosing advice, and does not deny CDS status", () => {
     assert.match(PAIR_DISCLAIMER, /educational reference/i);
     assert.match(PAIR_DISCLAIMER, /not FDA-cleared/i);
-    assert.match(PAIR_DISCLAIMER, /not clinical decision support/i);
+    assert.match(PAIR_DISCLAIMER, /not a substitute for professional judgment/i);
+    assert.match(PAIR_DISCLAIMER, /no dosing advice/i);
+    // regulatory.ts labels FirstPass as non-device CDS; the pages must not contradict it.
+    assert.doesNotMatch(PAIR_DISCLAIMER, /clinical decision support/i);
   });
 
   it("no page or copy carries dose instructions or Pro wording", () => {

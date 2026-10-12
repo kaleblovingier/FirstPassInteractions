@@ -29,7 +29,7 @@ export const PAIR_CTA = "Open this pair on the desk";
 
 /** Shown on every pair page and the index. */
 export const PAIR_DISCLAIMER =
-  "FirstPass is an educational reference. It is not FDA-cleared and it is not clinical decision support. It does not give dosing advice. Confirm against the FDA-approved Prescribing Information and ask a pharmacist or prescriber before changing any medicine.";
+  "Educational reference only. Not FDA-cleared. Not a substitute for professional judgment; no dosing advice.";
 
 export function fillPairTemplate(tpl: string, v: { a: string; b: string; severity: string }): string {
   return tpl.replaceAll("{a}", v.a).replaceAll("{b}", v.b).replaceAll("{severity}", v.severity);
