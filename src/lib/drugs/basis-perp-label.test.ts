@@ -269,8 +269,10 @@ test('wave of strong perpetrators cite their own labels', () => {
 });
 
 test('Zokinvy quotes midazolam and the statins as contraindicated, not an unnamed CYP3A substrate', () => {
-  const line = /The Zokinvy label calls this combination contraindicated/;
+  // Simvastatin is now a label pin (#154): the finding quotes the Contraindications section.
+  const line = /The Zokinvy label calls this combination contraindicated|Zokinvy \(lonafarnib\) label lists this combination under Contraindications/;
   const d = (b: string) => pkBasis('lonafarnib', b).map((x) => x.detail).join('\n');
   assert.match(d('simvastatin'), line);
+  assert.match(d('simvastatin'), /ZOKINVY is contraindicated in patients taking/);
   assert.doesNotMatch(d('triazolam'), line);
 });

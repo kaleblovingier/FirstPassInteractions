@@ -5306,7 +5306,7 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     otherId: "methadone",
     labelDrug: "Contrave (naltrexone/bupropion)",
     labelSection: "4 CONTRAINDICATIONS",
-    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use",
+    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use, or acute opiate withdrawal",
     labelExample: "methadone",
     basis: "named",
     origin: "no-enzyme",
@@ -5319,7 +5319,7 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     otherId: "buprenorphine",
     labelDrug: "Contrave (naltrexone/bupropion)",
     labelSection: "4 CONTRAINDICATIONS",
-    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use",
+    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use, or acute opiate withdrawal",
     labelExample: "buprenorphine",
     basis: "named",
     origin: "no-enzyme",
@@ -5448,8 +5448,28 @@ export function labelContraindicationById(id: string): LabelContraindication | u
   return LABEL_CONTRAINDICATIONS.find((r) => r.id === id);
 }
 
+/**
+ * Bupropion and Contrave labels contraindicate STARTING the drug in a patient
+ * being treated with linezolid or intravenous methylene blue (one direction only),
+ * so those pins say that instead of a flat "avoid together".
+ */
+const START_ONLY_LABEL_DRUGS: Record<string, string> = { bupropion: "bupropion", "naltrexone-bupropion": "Contrave" };
+function startOnlySentence(r: LabelContraindication): string | undefined {
+  const drug = START_ONLY_LABEL_DRUGS[r.labelDrugId];
+  if (!drug || (r.otherId !== "linezolid" && r.otherId !== "methylene-blue")) return undefined;
+  const route = r.otherId === "methylene-blue" ? " (label specifies intravenous)" : "";
+  const tail = r.origin === "pd"
+    ? " The pharmacodynamic finding is held at that level. This is not a CYP grade."
+    : !r.enzyme
+      ? " This pair has no CYP finding; the label is the reason."
+      : "";
+  return `The ${r.labelDrug} label lists this under Contraindications in one direction: don't start ${drug} in a patient being treated with linezolid or intravenous methylene blue${route}. This desk shows the pair as Avoid together.${tail}`;
+}
+
 /** Plain sentence appended to the pinned finding's clinical text. */
 export function labelPinSentence(r: LabelContraindication): string {
+  const startOnly = startOnlySentence(r);
+  if (startOnly) return startOnly;
   if (r.origin === "pd") {
     return `The ${r.labelDrug} label lists this combination under Contraindications, so this desk shows it as Avoid together. The pharmacodynamic finding is held at that level. This is not a CYP grade.`;
   }

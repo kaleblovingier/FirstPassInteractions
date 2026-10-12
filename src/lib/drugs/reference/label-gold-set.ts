@@ -3148,13 +3148,13 @@ const WAVE_7: GoldPair[] = [
   row7({
     drugA: "naltrexone-bupropion", drugB: "methadone", queries: ["naltrexone–bupropion", "dolophine"],
     labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
-    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use", labelExample: "methadone",
+    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use, or acute opiate withdrawal", labelExample: "methadone",
     labelClass: "contraindicated", mechanism: "PD", domain: "mat",
   }),
   row7({
     drugA: "naltrexone-bupropion", drugB: "buprenorphine", queries: ["naltrexone–bupropion", "suboxone"],
     labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
-    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use", labelExample: "buprenorphine",
+    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use, or acute opiate withdrawal", labelExample: "buprenorphine",
     labelClass: "contraindicated", mechanism: "PD", domain: "mat",
   }),
   row7({

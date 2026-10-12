@@ -8,6 +8,8 @@ import {
   LABEL_CONTRAINDICATED_TAG,
   LABEL_CONTRAINDICATIONS,
   labelContraindicationFor,
+  labelContraindicationById,
+  labelPinSentence,
 } from "./label-contraindications";
 
 const RANK: Record<Severity, number> = { contraindicated: 4, major: 3, moderate: 2, minor: 1 };
@@ -658,5 +660,14 @@ test("Recorlev holds the existing CYP3A4 finding, adds no CYP grade, and stays n
   for (const other of ["methadone-soluble", "quinidine-gluconate"]) {
     if (!DRUG_BY_ID[other]) continue;
     assert.equal(labelContraindicationFor("levoketoconazole", other), undefined, other);
+  }
+});
+
+test("bupropion/Contrave + linezolid or IV methylene blue pins say don't start, one direction", () => {
+  for (const id of ["bupropion+linezolid", "bupropion+methylene-blue", "naltrexone-bupropion+linezolid", "naltrexone-bupropion+methylene-blue"]) {
+    const r = labelContraindicationById(id)!;
+    const s = labelPinSentence(r);
+    assert.match(s, /don't start (bupropion|Contrave) in a patient being treated with linezolid or intravenous methylene blue/);
+    assert.equal(/label specifies intravenous/.test(s), r.otherId === "methylene-blue");
   }
 });
