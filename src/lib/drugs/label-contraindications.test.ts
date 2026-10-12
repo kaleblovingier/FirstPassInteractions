@@ -340,6 +340,43 @@ const EXPECTED_PINS = [
   "levoketoconazole+pimozide",
   "levoketoconazole+quinidine",
   "levoketoconazole+ranolazine",
+  "dofetilide+verapamil",
+  "dofetilide+cimetidine",
+  "dofetilide+ketoconazole",
+  "bosentan+cyclosporine",
+  "bosentan+glyburide",
+  "riociguat+dipyridamole",
+  "riociguat+theophylline",
+  "tetrabenazine+deutetrabenazine",
+  "tetrabenazine+valbenazine",
+  "deutetrabenazine+valbenazine",
+  "glecaprevir-pibrentasvir+rifampin",
+  "rilpivirine+carbamazepine",
+  "rilpivirine+oxcarbazepine",
+  "rilpivirine+phenobarbital",
+  "rilpivirine+phenytoin",
+  "rilpivirine+rifampin",
+  "rilpivirine+rifapentine",
+  "rilpivirine+st-johns-wort",
+  "rilpivirine+esomeprazole",
+  "rilpivirine+lansoprazole",
+  "rilpivirine+omeprazole",
+  "rilpivirine+pantoprazole",
+  "rilpivirine+rabeprazole",
+  "bictegravir+dofetilide",
+  "bictegravir+rifampin",
+  "dolutegravir+dofetilide",
+  "apomorphine+ondansetron",
+  "apomorphine+granisetron",
+  "apomorphine+dolasetron",
+  "apomorphine+palonosetron",
+  "apomorphine+alosetron",
+  "eletriptan+ketoconazole",
+  "eletriptan+itraconazole",
+  "eletriptan+nefazodone",
+  "eletriptan+clarithromycin",
+  "eletriptan+ritonavir",
+  "sofosbuvir-velpatasvir-voxilaprevir+rifampin",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -347,9 +384,10 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 24);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 23);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 31);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 37);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 16);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);

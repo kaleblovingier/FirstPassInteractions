@@ -96,7 +96,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05";
+  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -105,8 +105,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -171,6 +171,20 @@ export const LABEL_SETIDS = {
   // wave 6, DailyMed v2 SPL retrieved 2026-10-05.
   // Recorlev (levoketoconazole) tablets. SPL version 13, effective 2026-03-10, published 2026-06-26.
   recorlev: "d4c5fead-bc4a-fb02-e053-2a95a90ae4fc",
+
+// wave 7, DailyMed v2 SPL retrieved 2026-10-12. Section 4 (Contraindications) text only.
+  tikosyn: "02438044-d6a3-49e9-a1ac-3aad21ef2c8c",
+  tracleer: "749e42fb-2fe0-45dd-9268-b43bb3f4081c",
+  adempas: "7b57509a-3d5d-41d4-8fed-1471e26372a3",
+  xenazine: "ac768bab-8afa-4446-bc7f-caeeffec0cda",
+  austedo: "7ea3c60a-45c7-44cc-afc2-d87fa53993c0",
+  mavyret: "7bf99777-0401-9095-8645-16c6e907fcc0",
+  edurant: "03880372-2c68-45c6-a53a-f420c49541d6",
+  biktarvy: "664cb8f0-1f65-441b-b0d9-ba3d798be309",
+  tivicay: "63df5af3-b8ac-4e76-9830-2dbb340af922",
+  apokyn: "3235535d-9ef9-4657-8b2a-176a807d091c",
+  relpax: "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
+  vosevi: "17ffc094-8ca7-45d2-80d8-fd043bc9a221",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -2639,10 +2653,267 @@ const WAVE_6: GoldPair[] = [
   }),
 ];
 
+const W7_QUOTES = {
+  "tikosyn": "The concomitant use of verapamil or the cation transport system inhibitors cimetidine, trimethoprim (alone or in combination with sulfamethoxazole), or ketoconazole with TIKOSYN is contraindicated",
+  "tracleer-c": "concomitant use of TRACLEER and cyclosporine A is contraindicated",
+  "tracleer-g": "co-administration of glyburide and TRACLEER is contraindicated",
+  "adempas": "Concomitant administration of Adempas with specific PDE-5 inhibitors (such as sildenafil, tadalafil, or vardenafil) or nonspecific PDE-5 inhibitors (such as dipyridamole or theophylline) is contraindicated",
+  "xenazine": "XENAZINE is contraindicated in patients: … Taking deutetrabenazine or valbenazine",
+  "austedo": "AUSTEDO XR and AUSTEDO are contraindicated in patients: … Taking tetrabenazine or valbenazine",
+  "mavyret": "MAVYRET is contraindicated with atazanavir or rifampin",
+  "edurant": "EDURANT and EDURANT PED are contraindicated for coadministration with the drugs in Table 2",
+  "biktarvy-d": "BIKTARVY is contraindicated to be co-administered with: dofetilide",
+  "biktarvy-r": "BIKTARVY is contraindicated to be co-administered with: … rifampin due to decreased BIC plasma concentrations",
+  "tivicay": "TIVICAY and TIVICAY PD are contraindicated in patients: … receiving dofetilide",
+  "apokyn": "APOKYN is contraindicated in patients: Using concomitant drugs of the 5HT 3 antagonist class including antiemetics (e.g., ondansetron, granisetron, dolasetron, palonosetron) and alosetron",
+  "relpax": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir",
+  "vosevi": "VOSEVI is contraindicated with rifampin",
+} as const;
+
+function row7(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-12",
+    expectedFloor: "contraindicated",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 7,
+  };
+}
+
+const WAVE_7: GoldPair[] = [
+  row7({
+    drugA: "dofetilide", drugB: "verapamil", queries: ["tikosyn", "verapamil"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: W7_QUOTES["tikosyn"], labelExample: "verapamil",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dofetilide", drugB: "cimetidine", queries: ["tikosyn", "cimetidine"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: W7_QUOTES["tikosyn"], labelExample: "cimetidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dofetilide", drugB: "ketoconazole", queries: ["tikosyn", "ketoconazole"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: W7_QUOTES["tikosyn"], labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "bosentan", drugB: "cyclosporine", queries: ["tracleer", "cyclosporine"],
+    labelDrug: "Tracleer (bosentan)", label: "tracleer", labelSection: "4.2 Use with Cyclosporine A",
+    quote: W7_QUOTES["tracleer-c"], labelExample: "cyclosporine A",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "bosentan", drugB: "glyburide", queries: ["tracleer", "glyburide"],
+    labelDrug: "Tracleer (bosentan)", label: "tracleer", labelSection: "4.3 Use with Glyburide",
+    quote: W7_QUOTES["tracleer-g"], labelExample: "glyburide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "dipyridamole", queries: ["adempas", "dipyridamole"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "dipyridamole",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "theophylline", queries: ["adempas", "theophylline"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "theophylline",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "tetrabenazine", drugB: "deutetrabenazine", queries: ["xenazine", "deutetrabenazine"],
+    labelDrug: "Xenazine (tetrabenazine)", label: "xenazine", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["xenazine"], labelExample: "deutetrabenazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "tetrabenazine", drugB: "valbenazine", queries: ["xenazine", "valbenazine"],
+    labelDrug: "Xenazine (tetrabenazine)", label: "xenazine", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["xenazine"], labelExample: "valbenazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "deutetrabenazine", drugB: "valbenazine", queries: ["austedo", "valbenazine"],
+    labelDrug: "Austedo (deutetrabenazine)", label: "austedo", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["austedo"], labelExample: "valbenazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "glecaprevir-pibrentasvir", drugB: "rifampin", queries: ["mavyret", "rifampin"],
+    labelDrug: "Mavyret (glecaprevir/pibrentasvir)", label: "mavyret", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["mavyret"], labelExample: "rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "carbamazepine", queries: ["edurant", "carbamazepine"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Carbamazepine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "oxcarbazepine", queries: ["edurant", "oxcarbazepine"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Oxcarbazepine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "phenobarbital", queries: ["edurant", "phenobarbital"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Phenobarbital",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "phenytoin", queries: ["edurant", "phenytoin"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "rifampin", queries: ["edurant", "rifampin"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "rifapentine", queries: ["edurant", "rifapentine"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Rifapentine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "st-johns-wort", queries: ["edurant", "st. john's wort"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "St. John's wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "esomeprazole", queries: ["edurant", "esomeprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Esomeprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "lansoprazole", queries: ["edurant", "lansoprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Lansoprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "omeprazole", queries: ["edurant", "omeprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Omeprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "pantoprazole", queries: ["edurant", "pantoprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Pantoprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "rabeprazole", queries: ["edurant", "rabeprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Rabeprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "bictegravir", drugB: "dofetilide", queries: ["biktarvy", "dofetilide"],
+    labelDrug: "Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide)", label: "biktarvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["biktarvy-d"], labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "bictegravir", drugB: "rifampin", queries: ["biktarvy", "rifampin"],
+    labelDrug: "Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide)", label: "biktarvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["biktarvy-r"], labelExample: "rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "dolutegravir", drugB: "dofetilide", queries: ["tivicay", "dofetilide"],
+    labelDrug: "Tivicay (dolutegravir)", label: "tivicay", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["tivicay"], labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "ondansetron", queries: ["apokyn", "ondansetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "ondansetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "granisetron", queries: ["apokyn", "granisetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "granisetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "dolasetron", queries: ["apokyn", "dolasetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "dolasetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "palonosetron", queries: ["apokyn", "palonosetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "palonosetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "alosetron", queries: ["apokyn", "alosetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "alosetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "ketoconazole", queries: ["relpax", "ketoconazole"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "itraconazole", queries: ["relpax", "itraconazole"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "itraconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "nefazodone", queries: ["relpax", "nefazodone"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "clarithromycin", queries: ["relpax", "clarithromycin"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "ritonavir", queries: ["relpax", "ritonavir"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "ritonavir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "sofosbuvir-velpatasvir-voxilaprevir", drugB: "rifampin", queries: ["vosevi", "rifampin"],
+    labelDrug: "Vosevi (sofosbuvir/velpatasvir/voxilaprevir)", label: "vosevi", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["vosevi"], labelExample: "rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6];
+export const WAVE_7_COUNT = WAVE_7.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -2717,6 +2988,36 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
 
 /** Candidate pairs considered and dropped, with the reason. */
 export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
+  {
+    pair: "wave 7: riociguat + sildenafil / tadalafil / vardenafil",
+    reason:
+      "Adempas section 4.3 names them as contraindicated. The only pair card is a minor CYP3A4 substrate card with no inhibitor or inducer role, and there is no pharmacodynamic card. A no-enzyme card would say there is no CYP finding, which is false (the Geodon + tacrolimus rule). Not pinned.",
+  },
+  {
+    pair: "wave 7: riociguat + nitrates (nitroglycerin, isosorbide mononitrate, isosorbide dinitrate)",
+    reason: "Adempas section 4.2 names a class ('nitrates or nitric oxide donors') and only amyl nitrite as an example. No catalog nitrate is named.",
+  },
+  {
+    pair: "wave 7: dofetilide + prochlorperazine / dolutegravir / megestrol (Tikosyn)",
+    reason:
+      "Tikosyn says these 'should not be used', not 'contraindicated'. dolutegravir + dofetilide is carried by the Tivicay section 4 sentence instead. Trimethoprim, megestrol and hydrochlorothiazide are not catalog rows.",
+  },
+  {
+    pair: "wave 7: rilpivirine + dexamethasone (Edurant Table 2)",
+    reason: "Contraindicated only for more than a single-dose treatment. Not an unconditional pair.",
+  },
+  {
+    pair: "wave 7: metronidazole + disulfiram (Flagyl)",
+    reason: "The Flagyl Contraindications section says 'Do not administer' within two weeks of disulfiram, not 'contraindicated'. Skipped as ambiguous wording.",
+  },
+  {
+    pair: "wave 7: tetrabenazine / deutetrabenazine + MAOIs or reserpine",
+    reason: "MAOIs are a class (not expanded); reserpine is not a catalog row.",
+  },
+  {
+    pair: "wave 7: eletriptan + troleandomycin / nelfinavir; Mavyret + atazanavir",
+    reason: "Troleandomycin and nelfinavir are not catalog rows. Mavyret + atazanavir is already in the gold set.",
+  },
   {
     pair: "wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)",
     reason:
