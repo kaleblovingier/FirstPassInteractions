@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -20,6 +20,16 @@ export function LostKeyRecovery() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [done, setDone] = useState(0);
+  const statusRef = useRef<HTMLParagraphElement>(null);
+  const alertRef = useRef<HTMLParagraphElement>(null);
+
+  // After a submit settles, move focus to the message so keyboard and
+  // screen-reader users land on the result instead of a disabled button.
+  useEffect(() => {
+    if (!done) return;
+    (err ? alertRef : statusRef).current?.focus();
+  }, [done, err]);
 
   async function submit() {
     setBusy(true);
@@ -39,6 +49,7 @@ export function LostKeyRecovery() {
       setErr("Could not reach the desk. Check your connection and try again.");
     } finally {
       setBusy(false);
+      setDone((n) => n + 1);
     }
   }
 
@@ -51,6 +62,7 @@ export function LostKeyRecovery() {
       </p>
       <form
         className="mt-4 flex flex-col gap-2 sm:flex-row"
+        aria-busy={busy}
         onSubmit={(e) => {
           e.preventDefault();
           if (!busy && email.trim()) void submit();
@@ -64,27 +76,43 @@ export function LostKeyRecovery() {
           type="email"
           autoComplete="email"
           required
+          aria-invalid={err ? true : undefined}
+          aria-describedby={err ? "recover-error" : msg ? "recover-status" : undefined}
           value={email}
           placeholder="you@example.com"
           className="min-h-[44px] flex-1"
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Button type="submit" disabled={busy || !email.trim()} className="min-h-[44px] shrink-0">
+        <Button
+          type="submit"
+          aria-disabled={busy || !email.trim()}
+          aria-busy={busy}
+          className="min-h-[44px] shrink-0 aria-disabled:cursor-not-allowed aria-disabled:opacity-40"
+        >
           {busy ? "Sending…" : "Email my key"}
         </Button>
       </form>
-      {msg ? (
-        <p role="status" className="mt-3 text-sm text-fg">
-          {msg}
-        </p>
-      ) : null}
-      {err ? (
-        <p role="alert" className="mt-3 text-sm text-red-600">
-          {err}
-        </p>
-      ) : null}
+      <p
+        id="recover-status"
+        ref={statusRef}
+        tabIndex={-1}
+        role="status"
+        aria-live="polite"
+        className={msg ? "mt-3 text-sm text-fg focus:outline-none" : "sr-only"}
+      >
+        {busy ? "Sending…" : msg}
+      </p>
+      <p
+        id="recover-error"
+        ref={alertRef}
+        tabIndex={-1}
+        role="alert"
+        className={err ? "mt-3 text-sm text-red-600 focus:outline-none" : "sr-only"}
+      >
+        {err}
+      </p>
       <p className="mt-4 text-xs text-muted">
-        <a href="/" className="text-accent hover:underline">
+        <a href="/" className="rounded-sm text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
           Back to the desk
         </a>
       </p>
