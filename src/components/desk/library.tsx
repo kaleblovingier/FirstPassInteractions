@@ -704,6 +704,8 @@ function CompoundsShelf() {
                       {d.aliases[0] ? ` · also ${d.aliases[0]}` : ""}
                       {d.enzymes.length ? ` · ${d.enzymes.length} enzyme ${d.enzymes.length === 1 ? "row" : "rows"}` : ""}
                       {d.enzymes[1] ? ` · second ${d.enzymes[1].kind}` : ""}
+                      {d.enzymes[2] ? ` · third ${d.enzymes[2].kind}` : ""}
+                      {d.enzymes.some((e) => e.kind === "substrate" && e.nti) ? " · narrow index" : ""}
                       {d.pd[1] ? ` · also ${d.pd[1].replace(/-/g, " ")}` : ""}
                     </span>
                     <span className="mt-1 font-mono text-[10px] uppercase tracking-wide text-subtle">

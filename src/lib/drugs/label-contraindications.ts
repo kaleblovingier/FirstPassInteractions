@@ -76,7 +76,9 @@
  *   Vosevi or Bixlenvo, and each partner is named there. Origin "wave7" holds the CYP
  *   finding the pair already produces (inducer or inhibitor, either
  *   orientation). Pairs with a pharmacodynamic card use "pd"; pairs with no
- *   finding use "no-enzyme". No new CYP grade.
+ *   finding use "no-enzyme". No new CYP grade. Adempas with sildenafil,
+ *   tadalafil and vardenafil use "pd": the engine adds a riociguat x PDE5
+ *   hypotension card, and the pin holds it at contraindicated.
  *
  * Educational reference, not FDA-cleared. No doses.
  */
@@ -4322,6 +4324,45 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     labelExample: "theophylline",
     basis: "named",
     origin: "no-enzyme",
+    retrieved: "2026-10-12",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7b57509a-3d5d-41d4-8fed-1471e26372a3",
+  },
+  {
+    id: "riociguat+sildenafil",
+    labelDrugId: "riociguat",
+    otherId: "sildenafil",
+    labelDrug: "Adempas (riociguat)",
+    labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: "Concomitant administration of Adempas with specific PDE-5 inhibitors (such as sildenafil, tadalafil, or vardenafil) or nonspecific PDE-5 inhibitors (such as dipyridamole or theophylline) is contraindicated",
+    labelExample: "sildenafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-12",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7b57509a-3d5d-41d4-8fed-1471e26372a3",
+  },
+  {
+    id: "riociguat+tadalafil",
+    labelDrugId: "riociguat",
+    otherId: "tadalafil",
+    labelDrug: "Adempas (riociguat)",
+    labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: "Concomitant administration of Adempas with specific PDE-5 inhibitors (such as sildenafil, tadalafil, or vardenafil) or nonspecific PDE-5 inhibitors (such as dipyridamole or theophylline) is contraindicated",
+    labelExample: "tadalafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-12",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7b57509a-3d5d-41d4-8fed-1471e26372a3",
+  },
+  {
+    id: "riociguat+vardenafil",
+    labelDrugId: "riociguat",
+    otherId: "vardenafil",
+    labelDrug: "Adempas (riociguat)",
+    labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: "Concomitant administration of Adempas with specific PDE-5 inhibitors (such as sildenafil, tadalafil, or vardenafil) or nonspecific PDE-5 inhibitors (such as dipyridamole or theophylline) is contraindicated",
+    labelExample: "vardenafil",
+    basis: "named",
+    origin: "pd",
     retrieved: "2026-10-12",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7b57509a-3d5d-41d4-8fed-1471e26372a3",
   },

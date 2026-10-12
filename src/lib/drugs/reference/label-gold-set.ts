@@ -2730,6 +2730,24 @@ const WAVE_7: GoldPair[] = [
     labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
   }),
   row7({
+    drugA: "riociguat", drugB: "sildenafil", queries: ["adempas", "sildenafil"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "sildenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "tadalafil", queries: ["adempas", "tadalafil"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "tadalafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "vardenafil", queries: ["adempas", "vardenafil"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "vardenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
     drugA: "tetrabenazine", drugB: "deutetrabenazine", queries: ["xenazine", "deutetrabenazine"],
     labelDrug: "Xenazine (tetrabenazine)", label: "xenazine", labelSection: "4 CONTRAINDICATIONS",
     quote: W7_QUOTES["xenazine"], labelExample: "deutetrabenazine",
@@ -3004,11 +3022,6 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
     pair: "wave 7: Orladeyo, Ravicti, fexinidazole",
     reason:
       "Orladeyo section 4 is 'None'. Ravicti section 4 is hypersensitivity only. Fexinidazole names metronidazole and tinidazole only as nitroimidazole hypersensitivity, not coadministration.",
-  },
-  {
-    pair: "wave 7: riociguat + sildenafil / tadalafil / vardenafil",
-    reason:
-      "Adempas section 4.3 names them as contraindicated. The only pair card is a minor CYP3A4 substrate card with no inhibitor or inducer role, and there is no pharmacodynamic card. A no-enzyme card would say there is no CYP finding, which is false (the Geodon + tacrolimus rule). Not pinned.",
   },
   {
     pair: "wave 7: riociguat + nitrates (nitroglycerin, isosorbide mononitrate, isosorbide dinitrate)",

@@ -45,6 +45,28 @@ URL: `https://firstpass-desk.vercel.app/api/stripe/webhook`
 Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`.
 PayPal needs no webhook (capture on return).
 
+## Lost-key recovery (self-serve)
+
+Buyers who lose their key go to `/recover` (linked under the Plans page as "Lost your
+Founding key?"). They enter their purchase email and the desk `POST`s it to
+`/api/license/recover` (`src/lib/billing/recover.server.ts`).
+
+- **Lookup.** Stripe `checkout.sessions.list` (status `complete`, filtered by
+  `customer_details.email`, exact match after lowercasing). Only sessions that pass the
+  same checks as fulfillment (paid, USD, `firstpass`, list price) and are Founding
+  (`issued = life`) count.
+- **Key.** The key stamped on the session, or `mintKeyFromPaid("life", session.id)`,
+  which is the same `LICENSE_PEPPER` derivation as the webhook. Nothing new is minted
+  or stored.
+- **Send.** Resend, to the typed email only (it must equal the purchase email), with
+  `Idempotency-Key: fp-recover-<session>-<day>` so repeats within a day send once.
+- **Same answer always.** Match, no match, Stripe error and Resend error all return 200
+  with "If a Founding purchase matches that email, we've emailed the key to it."
+- **Rate limits.** In-memory sliding windows: 5 requests per IP per 15 minutes and 3 per
+  email per hour (429 with a friendly message).
+- **Unconfigured.** Without a valid `STRIPE_SECRET_KEY` or `RESEND_API_KEY` the endpoint
+  answers 503 with a friendly "not switched on yet" message.
+
 ## Known limits
 
 - Keys are not revoked on refund or dispute. Handle those by hand.
@@ -52,3 +74,7 @@ PayPal needs no webhook (capture on return).
   only emailed (needs Resend) or re-claimable by the operator. A PayPal webhook would
   close this gap; it is not built.
 - The PayPal rail has been tested against mocked responses only, not the PayPal sandbox.
+- Recovery rate limits are in memory, so they reset on a cold start and are per Vercel
+  instance, not global. Good enough to stop casual abuse; use a shared store (KV) if it
+  is ever hammered.
+- Recovery covers card (Stripe) purchases only, not PayPal or manual Venmo sales.

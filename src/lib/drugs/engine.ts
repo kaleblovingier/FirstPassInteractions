@@ -1346,6 +1346,22 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
+  // Adempas section 4.3 names sildenafil, tadalafil and vardenafil. The label
+  // pin (origin "pd") holds this card at contraindicated for those three.
+  if ((a.id === "riociguat" && has(b, "pde5")) || (b.id === "riociguat" && has(a, "pde5"))) {
+    out.push(
+      pdPair(a, b, {
+        suffix: "pd-riociguat-pde5",
+        severity: "major",
+        effect: "additive hypotension",
+        mechanism: "sGC stimulator × PDE5 inhibitor",
+        clinical:
+          "Riociguat raises cGMP by stimulating soluble guanylate cyclase. A PDE5 inhibitor blocks cGMP breakdown. Together they stack the vasodilation and can cause symptomatic hypotension.",
+        tags: ["hypotension"],
+      }),
+    );
+  }
+
   if ((a.id === "icariin" && has(b, "pde5")) || (b.id === "icariin" && has(a, "pde5"))) {
     out.push(
       pdPair(a, b, {

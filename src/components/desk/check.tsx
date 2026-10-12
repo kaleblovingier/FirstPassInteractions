@@ -16,6 +16,8 @@ import { DeskReaders } from "./readers";
 import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
 import { pairSlots } from "@/lib/drugs/fanout";
+import { countFourthEnzymes, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
+import { EnzymeLedger } from "./ledger";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -367,6 +369,9 @@ export function CheckBoard({
     const rows = DRUG_BY_ID[id]?.enzymes ?? [];
     return rows.filter((e) => e.kind === "inhibitor" || e.kind === "inducer").length > 1;
   }).length;
+  const fourthEnzymes = countFourthEnzymes(ids);
+  const thirdSubstrates = countThirdSubstrates(ids);
+  const narrowIndex = countNarrowIndex(ids);
   const contents = [
     `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
@@ -375,6 +380,9 @@ export function CheckBoard({
     secondEnzymes > 0 ? `${secondEnzymes} with a second enzyme` : "",
     thirdEnzymes > 0 ? `${thirdEnzymes} with a third enzyme` : "",
     secondPerps > 0 ? `${secondPerps} with a second perpetrator` : "",
+    fourthEnzymes > 0 ? `${fourthEnzymes} with a fourth enzyme` : "",
+    thirdSubstrates > 0 ? `${thirdSubstrates} with a third substrate` : "",
+    narrowIndex > 0 ? `${narrowIndex} with a narrow index` : "",
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",
@@ -405,6 +413,7 @@ export function CheckBoard({
               Each pair is checked whole. Enzymes are not separate checks.
             </p>
           ) : null}
+          {ids.length > 0 ? <EnzymeLedger ids={ids} /> : null}
           {ids.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {rows.length > 0 ? (

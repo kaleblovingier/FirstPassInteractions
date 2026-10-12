@@ -1523,6 +1523,36 @@ describe("study learning tools", () => {
     assert.equal(macro.find((c) => c.id === "grade2-clarithromycin")?.correct, "moderate");
     assert.equal(macro.find((c) => c.id === "enz3-clarithromycin")?.correct, "P-gp");
   });
+
+  it("deeper stored rows ask the fourth enzyme, third substrate, and later flags", () => {
+    const rifampin = deskCards(["rifampin"], []);
+    assert.equal(rifampin.find((c) => c.id === "enz4-rifampin")?.correct, "CYP2B6");
+    assert.equal(rifampin.find((c) => c.id === "role4-rifampin")?.correct, "inducer");
+    assert.equal(rifampin.find((c) => c.id === "grade3-rifampin")?.correct, "strong");
+    assert.equal(rifampin.find((c) => c.id === "grade4-rifampin")?.correct, "moderate");
+    assert.equal(rifampin.find((c) => c.id === "enz4-rifampin")?.prompt, "Rifampin.");
+
+    const methadone = deskCards(["methadone"], []);
+    assert.equal(methadone.find((c) => c.id === "sub3-methadone")?.correct, "CYP2C19");
+    assert.equal(methadone.find((c) => c.id === "path3-methadone")?.correct, "clearance");
+    assert.equal(methadone.find((c) => c.id === "sens3-methadone")?.correct, "minor");
+    assert.equal(methadone.find((c) => c.id === "sub4-methadone")?.correct, "CYP1A2");
+    assert.equal(methadone.find((c) => c.id === "sens4-methadone")?.correct, "minor");
+
+    const ami = deskCards(["amitriptyline"], []);
+    assert.equal(ami.find((c) => c.id === "flag4-amitriptyline")?.correct, "qt-possible");
+    assert.equal(ami.find((c) => c.id === "flag5-amitriptyline")?.correct, "seizure-lowering");
+
+    const bupe = deskCards(["buprenorphine"], []);
+    assert.equal(bupe.find((c) => c.id === "aka3-buprenorphine")?.correct, "zubsolv");
+    assert.equal(bupe.find((c) => c.id === "brand3-buprenorphine")?.correct, "Butrans");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "enz4-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "role3-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "sub4-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "grade4-simvastatin"), false);
+  });
 });
 
 
