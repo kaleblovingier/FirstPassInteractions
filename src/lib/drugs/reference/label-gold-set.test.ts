@@ -26,7 +26,7 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
   assert.ok(WAVE_4_COUNT >= 100 && WAVE_4_COUNT <= 120, `wave 4 size ${WAVE_4_COUNT}`);
   assert.ok(WAVE_5_COUNT >= 5 && WAVE_5_COUNT <= 25, `wave 5 size ${WAVE_5_COUNT}`);
   assert.ok(WAVE_6_COUNT >= 5 && WAVE_6_COUNT <= 25, `wave 6 size ${WAVE_6_COUNT}`);
-  assert.ok(WAVE_7_COUNT >= 10 && WAVE_7_COUNT <= 50, `wave 7 size ${WAVE_7_COUNT}`);
+  assert.ok(WAVE_7_COUNT >= 10 && WAVE_7_COUNT <= 100, `wave 7 size ${WAVE_7_COUNT}`);
   assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT + WAVE_4_COUNT + WAVE_5_COUNT + WAVE_6_COUNT + WAVE_7_COUNT);
   assert.equal(byId.size, LABEL_GOLD_SET.length, "pair ids are unique");
   const unordered = new Set(LABEL_GOLD_SET.map((p) => [p.drugA, p.drugB].sort().join("+")));
