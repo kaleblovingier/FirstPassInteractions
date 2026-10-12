@@ -23,7 +23,7 @@ export const PAIRS_INDEX_DESCRIPTION =
   "Drug pairs the FirstPass desk checks against FDA label text: each page shows the desk's tier, the mechanism and the exact label quote with its DailyMed source.";
 
 export const PAIRS_INDEX_INTRO =
-  "Drug pairs where an FDA label names a specific interaction, each with the label's own wording and a link to the source. Open any pair in the desk to check it alongside the rest of a regimen. Educational reference only. Not FDA-cleared. The Prescribing Information governs. A pair that isn't listed here hasn't been cleared as safe; it just isn't on this list.";
+  "Drug pairs where an FDA label names a specific interaction, each with the label's own wording and a link to the source. Open any pair in the desk to see it alongside other drugs. Educational reference only. Not FDA-cleared. The Prescribing Information governs. A pair that isn't listed here hasn't been cleared as safe; it just isn't on this list.";
 
 export const PAIR_CTA = "Open this pair in the desk";
 
@@ -45,7 +45,7 @@ export const DRUG_HUB_CTA_TEMPLATE = "Open {drug} in the desk";
 
 /** Intro paragraph under the h1 on every drug hub. */
 export const DRUG_HUB_INTRO_TEMPLATE =
-  "These are pairs with {drug} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with {drug}; it just isn't on this list. Open any pair in the desk to check it alongside a full regimen.";
+  "These are pairs with {drug} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with {drug}; it just isn't on this list. Open any pair in the desk to see it alongside other drugs.";
 
 export function fillDrugTemplate(tpl: string, drug: string): string {
   return tpl.replaceAll("{drug}", drug);
