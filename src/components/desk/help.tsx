@@ -241,9 +241,9 @@ export function HelpPage() {
       {/* Header section */}
       <section className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6">
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Crisis & Addiction Support</p>
-        <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg sm:text-3xl">
+        <h1 className="mt-2 font-serif text-2xl tracking-tight text-fg sm:text-3xl">
           Addiction help near you. Free, confidential, no sign-up.
-        </h2>
+        </h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
           For people who use substances, family members and loved ones, and healthcare providers preparing
           discharge or after-care plans. Reaching out does not require a commitment to stop using.
@@ -417,10 +417,11 @@ export function HelpPage() {
       </section>
 
       {/* Navigation tabs for Directory, Medication Guide, and Safety Protocol */}
-      <div className="flex border-b border-border">
+      <div className="flex flex-wrap border-b border-border">
         <button
           type="button"
           onClick={() => setActiveTab("directory")}
+          aria-pressed={activeTab === "directory"}
           className={cn(
             "flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
             activeTab === "directory"
@@ -434,6 +435,7 @@ export function HelpPage() {
         <button
           type="button"
           onClick={() => setActiveTab("medications")}
+          aria-pressed={activeTab === "medications"}
           className={cn(
             "flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
             activeTab === "medications"
@@ -447,6 +449,7 @@ export function HelpPage() {
         <button
           type="button"
           onClick={() => setActiveTab("safety")}
+          aria-pressed={activeTab === "safety"}
           className={cn(
             "flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
             activeTab === "safety"

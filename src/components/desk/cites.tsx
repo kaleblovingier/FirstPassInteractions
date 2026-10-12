@@ -86,9 +86,9 @@ export function CitesPage() {
           <Plate src="/plates/heme.jpg" alt="" className="h-36 w-full min-h-36 sm:h-full" />
           <div className="px-5 py-5 sm:px-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Sources coach</p>
-            <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">
+            <h1 className="mt-2 font-serif text-2xl tracking-tight text-fg">
               {CITES.length} papers this desk actually cites
-            </h2>
+            </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
               A curated shelf for the collisions on this formulary — food and herb stories, gene guides,
               clinic classics, and enzyme reviews. Filter by topic or search, then open PubMed for the
