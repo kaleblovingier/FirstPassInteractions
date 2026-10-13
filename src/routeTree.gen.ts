@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ForProgramsRouteImport } from './routes/for-programs'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -21,6 +22,11 @@ import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhoo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForProgramsRoute = ForProgramsRouteImport.update({
+  id: '/for-programs',
+  path: '/for-programs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PairsRoute = PairsRouteImport.update({
@@ -61,6 +67,7 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/for-programs'
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/for-programs'
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/for-programs'
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ForProgramsRoute: typeof ForProgramsRoute
   PairsRoute: typeof PairsRoute
   RecoverRoute: typeof RecoverRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-programs': {
+      id: '/for-programs'
+      path: '/for-programs'
+      fullPath: '/for-programs'
+      preLoaderRoute: typeof ForProgramsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pairs': {
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ForProgramsRoute: ForProgramsRoute,
   PairsRoute: PairsRoute,
   RecoverRoute: RecoverRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

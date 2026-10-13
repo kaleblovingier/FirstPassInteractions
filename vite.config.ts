@@ -173,9 +173,9 @@ export default defineConfig(({ command, isPreview }) => ({
       prerender: {
         enabled: true,
         crawlLinks: true,
-        filter: ({ path }) => path === "/pairs" || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
+        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
       },
-      pages: [{ path: "/pairs" }, { path: "/sitemap.xml" }],
+      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/sitemap.xml" }],
     }),
     ...(command === "build" || isPreview
       ? [
