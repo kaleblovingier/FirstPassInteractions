@@ -18,6 +18,7 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.equal(row.pinKind, "inhibitor");
   assert.equal(row.pinSentence, null);
   assert.equal(row.pinBasis, "named");
+  assert.equal(row.retrieved, "2026-09-27");
   assert.equal(row.source, "gold");
   assert.equal(otherLineCount("simvastatin", "clarithromycin"), 2);
   assert.match(row.quote, /^Concomitant use of strong CYP3A4 inhibitors/);
@@ -37,6 +38,7 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.match(plain, /The pin stores CYP3A4 as an inhibitor\. That enzyme is not a new finding\./);
   assert.equal(plain.includes("contraindications sentence"), false);
   assert.match(plain, /The pin stores this pair as named\. The label names the drug\. Not a new finding\./);
+  assert.match(plain, /Retrieved 2026-09-27\. That date is not a new finding\./);
   assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
   assert.equal(deskLabels(["simvastatin", "clarithromycin", "warfarin"]).length, 1);
   const others = alsoOnLabel(["simvastatin", "clarithromycin"]);

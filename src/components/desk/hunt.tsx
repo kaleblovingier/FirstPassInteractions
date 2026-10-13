@@ -153,7 +153,7 @@ export function HuntDesk() {
             <p className="mt-1 text-sm text-muted">Researched public shops. Add the ones you will actually DM.</p>
           </div>
           <div className="flex flex-wrap gap-1">
-            {(["all", "clinic", "mat", "school", "harm", "assoc"] as const).map((id) => (
+            {(["all", "clinic", "mat", "pharmacy", "school", "harm", "assoc"] as const).map((id) => (
               <button
                 key={id}
                 type="button"

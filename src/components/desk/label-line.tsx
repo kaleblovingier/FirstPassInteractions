@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf, pinBasisLine } from "@/lib/drugs/label-on-desk";
+import { drugHubPath } from "@/lib/seo/drug-hubs";
 
 export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
   const labels = deskLabels(ids);
@@ -64,6 +65,11 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
             {pinBasisLine(row) ? (
               <p className="mt-1 text-[11px] leading-relaxed text-muted">{pinBasisLine(row)}</p>
             ) : null}
+            {row.retrieved ? (
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">
+                Retrieved {row.retrieved}. That date is not a new finding.
+              </p>
+            ) : null}
             <div className="mt-1 flex flex-wrap gap-2">
               <a
                 href={row.url}
@@ -79,6 +85,18 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
                 className="inline-flex min-h-[44px] items-center text-xs font-medium text-accent underline-offset-2 hover:underline"
               >
                 Public pair page
+              </a>
+              <a
+                href={drugHubPath(row.drugA)}
+                className="inline-flex min-h-[44px] items-center text-xs font-medium text-accent underline-offset-2 hover:underline"
+              >
+                Stored page: {row.nameA}
+              </a>
+              <a
+                href={drugHubPath(row.drugB)}
+                className="inline-flex min-h-[44px] items-center text-xs font-medium text-accent underline-offset-2 hover:underline"
+              >
+                Stored page: {row.nameB}
               </a>
             </div>
           </div>

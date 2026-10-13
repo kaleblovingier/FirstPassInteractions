@@ -1678,6 +1678,19 @@ describe("study learning tools", () => {
     const war = deskCards(["warfarin", "clarithromycin"], []);
     assert.equal(war.some((c) => c.id.startsWith("pbas-")), false);
   });
+
+  it("a stored label asks the day the line was retrieved", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    const card = pair.find((c) => c.id === "ret-clarithromycin|simvastatin");
+    assert.equal(card?.correct, "2026-09-27");
+    assert.equal(card?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(String(card?.prompt).includes("2026"), false);
+    const later = deskCards(["dofetilide", "verapamil"], []);
+    assert.equal(later.find((c) => c.id === "ret-dofetilide|verapamil")?.correct, "2026-10-12");
+    assert.equal(later.find((c) => c.id === "ret-dofetilide|verapamil")?.prompt, "Dofetilide × Verapamil.");
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("ret-")), false);
+  });
 });
 
 

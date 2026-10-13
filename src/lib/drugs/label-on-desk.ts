@@ -4,7 +4,7 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
-import { LABEL_CONTRAINDICATIONS } from "./label-contraindications";
+import { LABEL_CONTRAINDICATIONS, LABEL_CONTRAINDICATIONS_RETRIEVED } from "./label-contraindications";
 import { LABEL_GOLD_SET, type LabelClass } from "./reference/label-gold-set";
 import type { Enzyme } from "./types";
 
@@ -30,6 +30,8 @@ export type DeskLabel = {
   pinSentence: string | null;
   /** Named or class on the pin. Kept even when a gold quote owns the line. */
   pinBasis: "named" | "class" | null;
+  /** Day this quote was stored from the label. Not a severity. */
+  retrieved: string;
   url: string;
   source: "gold" | "pin";
 };
@@ -69,6 +71,7 @@ function index(): Map<string, Row> {
       pinKind: null,
       pinSentence: null,
       pinBasis: null,
+      retrieved: g.retrieved,
       url: g.url,
       source: "gold",
     });
@@ -96,6 +99,7 @@ function index(): Map<string, Row> {
       pinKind: p.kind ?? null,
       pinSentence: sentenceOf(p.contraindicationsSentence),
       pinBasis: p.basis,
+      retrieved: p.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED,
       url: p.url,
       source: "pin",
     };
@@ -174,6 +178,7 @@ export function deskLabelPlain(ids: readonly string[]): string {
     }
     const basisLine = pinBasisLine(row);
     if (basisLine) lines.push(basisLine);
+    if (row.retrieved) lines.push(`Retrieved ${row.retrieved}. That date is not a new finding.`);
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -232,6 +237,10 @@ export function labelPinEnzymePool(): string[] {
 
 export function labelPinSentencePool(): string[] {
   return unique([...index().values()].map((row) => pinSentenceOf(row) ?? ""));
+}
+
+export function labelRetrievedPool(): string[] {
+  return unique([...index().values()].filter((row) => row.quote).map((row) => row.retrieved));
 }
 
 /** Other quoted lines on the same label. Not filtered by the desk. */
