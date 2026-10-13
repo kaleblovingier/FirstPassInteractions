@@ -74,6 +74,15 @@ import { allergyReportOnDesk } from "../../drugs/drug-allergy";
 import { afReportOnDesk } from "../../drugs/af-stroke-bleed";
 import { diliReportOnDesk } from "../../drugs/dili";
 import { healthcareResourcesFor } from "../../drugs/healthcare-resources";
+import { thyroidReportOnDesk } from "../../drugs/thyroid";
+import { dialysisOnDesk } from "../../drugs/dialysis";
+import { lithiumReportOnDesk } from "../../drugs/lithium";
+import { digoxinReportOnDesk } from "../../drugs/digoxin";
+import { valproateReportOnDesk } from "../../drugs/valproate";
+import { vancomycinReportOnDesk } from "../../drugs/vancomycin";
+import { aminoglycosideReportOnDesk } from "../../drugs/aminoglycosides";
+import { detectToxidromesOnTray } from "../../drugs/toxidromes";
+import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
 
 export const STATUTORY_CDS_DISCLAIMER =
   "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice.";
@@ -235,6 +244,15 @@ const KINETICS_MODULES: Record<KineticsModuleName, KineticsModuleRunner> = {
   af: afReportOnDesk,
   dili: diliReportOnDesk,
   resources: healthcareResourcesFor,
+  thyroid: (drugIds, host) => thyroidReportOnDesk(drugIds, host),
+  dialysis: (drugIds) => dialysisOnDesk(drugIds),
+  lithium: (drugIds) => lithiumReportOnDesk(drugIds),
+  digoxin: (drugIds) => digoxinReportOnDesk(drugIds),
+  valproate: (drugIds, host) => valproateReportOnDesk(drugIds, host),
+  vancomycin: (drugIds) => vancomycinReportOnDesk(drugIds),
+  aminoglycosides: (drugIds) => aminoglycosideReportOnDesk(drugIds),
+  toxidromes: (drugIds) => detectToxidromesOnTray(drugIds),
+  arrhythmia: (drugIds) => detectArrhythmiaCollisions(drugIds),
 };
 
 const ALL_MODULES = Object.keys(KINETICS_MODULES) as KineticsModuleName[];

@@ -1,4 +1,4 @@
-import { SEVERITY_RANK, type Finding } from "./types";
+import { SEVERITY_RANK, type Finding, type Severity } from "./types";
 
 export const FANOUT_STAGES = ["resolve", "pair", "multi", "phenotype", "host", "reduce"] as const;
 
@@ -15,6 +15,11 @@ export function pairSlots(n: number): [number, number][] {
     }
   }
   return slots;
+}
+
+/** Given an array of drug identifiers, returns all pairwise comparisons in pairSlots order. */
+export function fanoutPairs(drugIds: readonly string[]): Array<[string, string]> {
+  return pairSlots(drugIds.length).map(([i, j]) => [drugIds[i], drugIds[j]]);
 }
 
 /** PK and PD for one pair travel together. */
@@ -46,3 +51,34 @@ export function reduceFindings(shards: Finding[][]): Finding[] {
     return a.headline.localeCompare(b.headline);
   });
 }
+
+export interface PairwiseSummary {
+  pair: [string, string];
+  totalFindings: number;
+  highestSeverity: Severity | "none";
+}
+
+/** Summarize findings attributed to each pair slot. */
+export function summarizePairs(
+  drugIds: readonly string[],
+  findings: readonly Finding[],
+): PairwiseSummary[] {
+  const pairs = fanoutPairs(drugIds);
+  return pairs.map(([a, b]) => {
+    const matching = findings.filter(
+      (f) => f.drugIds.includes(a) && f.drugIds.includes(b),
+    );
+    let highest: Severity | "none" = "none";
+    for (const f of matching) {
+      if (highest === "none" || SEVERITY_RANK[f.severity] > SEVERITY_RANK[highest]) {
+        highest = f.severity;
+      }
+    }
+    return {
+      pair: [a, b],
+      totalFindings: matching.length,
+      highestSeverity: highest,
+    };
+  });
+}
+

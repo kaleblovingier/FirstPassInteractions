@@ -131,6 +131,15 @@ test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics"
       "allergy",
       "af",
       "dili",
+      "thyroid",
+      "dialysis",
+      "lithium",
+      "digoxin",
+      "valproate",
+      "vancomycin",
+      "aminoglycosides",
+      "toxidromes",
+      "arrhythmia",
     ],
   });
 
@@ -154,6 +163,14 @@ test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics"
     assert.ok(res.data.modules.af);
     assert.ok(res.data.modules.dili);
     assert.ok(res.data.modules.resources);
+    assert.ok(res.data.modules.thyroid);
+    assert.ok(res.data.modules.lithium !== undefined);
+    assert.ok(res.data.modules.digoxin !== undefined);
+    assert.ok(res.data.modules.valproate !== undefined);
+    assert.ok(res.data.modules.vancomycin !== undefined);
+    assert.ok(res.data.modules.aminoglycosides !== undefined);
+    assert.ok(res.data.modules.toxidromes !== undefined);
+    assert.ok(res.data.modules.arrhythmia !== undefined);
     assert.ok(res.data.meta.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
   }
 });
@@ -503,7 +520,7 @@ test("ClinicalDecisionService: cache keys use resolved ids and the full host con
   assert.ok(allExplicit.success && allImplicit.success);
   assert.equal(allExplicit.data.meta.cached, false);
   assert.equal(allImplicit.data.meta.cached, true);
-  assert.equal(allImplicit.data.query.modules.length, 23);
+  assert.equal(allImplicit.data.query.modules.length, 32);
 });
 
 test("ClinicalDecisionService: evaluateKinetics lists unresolved drugs and 404s when none resolve", async () => {

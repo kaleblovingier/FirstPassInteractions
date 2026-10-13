@@ -137,6 +137,15 @@ export const KineticsModuleEnum = z.enum([
   "af",
   "dili",
   "resources",
+  "thyroid",
+  "dialysis",
+  "lithium",
+  "digoxin",
+  "valproate",
+  "vancomycin",
+  "aminoglycosides",
+  "toxidromes",
+  "arrhythmia",
   "all",
 ]);
 
