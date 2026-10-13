@@ -148,6 +148,7 @@ export function sitemapXml(): string {
   const urls = [
     `${SITE_URL}/`,
     `${SITE_URL}/pairs`,
+    `${SITE_URL}/for-programs`,
     ...pairPages().map((p) => p.canonical),
     ...hubUrls(),
   ];

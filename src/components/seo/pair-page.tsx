@@ -76,6 +76,9 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
           </li>
         ))}
       </ul>
+      <p className="mt-8 text-sm" data-testid="for-programs-link">
+        Teaching or running a program? <a href="/for-programs" className="underline">Group and site licenses</a>.
+      </p>
       <PairDisclaimer />
     </main>
   );
