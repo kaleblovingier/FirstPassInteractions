@@ -17,6 +17,7 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.equal(row.pinEnzyme, "CYP3A4");
   assert.equal(row.pinKind, "inhibitor");
   assert.equal(row.pinSentence, null);
+  assert.equal(row.pinBasis, "named");
   assert.equal(row.source, "gold");
   assert.equal(otherLineCount("simvastatin", "clarithromycin"), 2);
   assert.match(row.quote, /^Concomitant use of strong CYP3A4 inhibitors/);
@@ -35,6 +36,7 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.match(plain, /Stored domain: statins\./);
   assert.match(plain, /The pin stores CYP3A4 as an inhibitor\. That enzyme is not a new finding\./);
   assert.equal(plain.includes("contraindications sentence"), false);
+  assert.match(plain, /The pin stores this pair as named\. The label names the drug\. Not a new finding\./);
   assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
   assert.equal(deskLabels(["simvastatin", "clarithromycin", "warfarin"]).length, 1);
   const others = alsoOnLabel(["simvastatin", "clarithromycin"]);
@@ -62,6 +64,7 @@ test("a pin-only line keeps its stored basis and no gold mechanism", () => {
   assert.equal(named.domain, null);
   assert.equal(named.pinEnzyme, "CYP3A4");
   assert.equal(named.pinKind, "inducer");
+  assert.equal(named.pinBasis, "named");
   assert.equal(
     named.pinSentence,
     "RANEXA is contraindicated in patients: … Taking inducers of CYP3A",
@@ -75,6 +78,7 @@ test("a pin-only line keeps its stored basis and no gold mechanism", () => {
   const klass = labelFor("ranolazine", "primidone");
   assert.ok(klass);
   assert.equal(klass.basis, "class");
+  assert.equal(klass.pinBasis, "class");
   const bare = labelFor("darunavir", "grazoprevir-elbasvir");
   assert.ok(bare);
   assert.equal(bare.pinEnzyme, null);

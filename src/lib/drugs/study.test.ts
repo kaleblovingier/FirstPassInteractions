@@ -1663,6 +1663,21 @@ describe("study learning tools", () => {
       "RANEXA is contraindicated in patients: … Taking inducers of CYP3A",
     );
   });
+
+  it("a gold line asks the pin basis when the gold line hid it", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    const card = pair.find((c) => c.id === "pbas-clarithromycin|simvastatin");
+    assert.equal(card?.correct, "named");
+    assert.equal(card?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(String(card?.prompt).includes("named"), false);
+    const pin = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(pin.some((c) => c.id.startsWith("pbas-")), false);
+    assert.equal(pin.some((c) => c.id.startsWith("bas-")), true);
+    const klass = deskCards(["ranolazine", "primidone"], []);
+    assert.equal(klass.some((c) => c.id.startsWith("pbas-")), false);
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("pbas-")), false);
+  });
 });
 
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf } from "@/lib/drugs/label-on-desk";
+import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf, pinBasisLine } from "@/lib/drugs/label-on-desk";
 
 export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
   const labels = deskLabels(ids);
@@ -60,6 +60,9 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
                 The pin also stores this contraindications sentence: {pinSentenceOf(row)}. That sentence is not a new
                 finding.
               </p>
+            ) : null}
+            {pinBasisLine(row) ? (
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">{pinBasisLine(row)}</p>
             ) : null}
             <div className="mt-1 flex flex-wrap gap-2">
               <a

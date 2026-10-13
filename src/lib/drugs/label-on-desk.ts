@@ -28,6 +28,8 @@ export type DeskLabel = {
   pinKind: "inhibitor" | "inducer" | null;
   /** Contraindications sentence stored on the pin. Null when the pin has none. */
   pinSentence: string | null;
+  /** Named or class on the pin. Kept even when a gold quote owns the line. */
+  pinBasis: "named" | "class" | null;
   url: string;
   source: "gold" | "pin";
 };
@@ -66,6 +68,7 @@ function index(): Map<string, Row> {
       pinEnzyme: null,
       pinKind: null,
       pinSentence: null,
+      pinBasis: null,
       url: g.url,
       source: "gold",
     });
@@ -92,6 +95,7 @@ function index(): Map<string, Row> {
       pinEnzyme: p.enzyme ?? null,
       pinKind: p.kind ?? null,
       pinSentence: sentenceOf(p.contraindicationsSentence),
+      pinBasis: p.basis,
       url: p.url,
       source: "pin",
     };
@@ -100,6 +104,7 @@ function index(): Map<string, Row> {
       pinEnzyme: p.enzyme ?? cur?.pinEnzyme ?? null,
       pinKind: p.kind ?? cur?.pinKind ?? null,
       pinSentence: sentenceOf(p.contraindicationsSentence) ?? cur?.pinSentence ?? null,
+      pinBasis: p.basis ?? cur?.pinBasis ?? null,
     };
     if (!cur) {
       seen.set(key, { ...pin, ...held });
@@ -167,6 +172,8 @@ export function deskLabelPlain(ids: readonly string[]): string {
         `The pin also stores this contraindications sentence: ${sentence}. That sentence is not a new finding.`,
       );
     }
+    const basisLine = pinBasisLine(row);
+    if (basisLine) lines.push(basisLine);
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -186,6 +193,17 @@ export function pinSentenceOf(row: DeskLabel): string | null {
   const sentence = sentenceOf(row.pinSentence);
   if (!sentence || sentence === row.quote.trim()) return null;
   return sentence;
+}
+
+/** Named or class already stored on the pin. Not a severity. */
+export function pinBasisLine(row: DeskLabel): string | null {
+  if (row.pinBasis === "named") {
+    return "The pin stores this pair as named. The label names the drug. Not a new finding.";
+  }
+  if (row.pinBasis === "class") {
+    return "The pin stores this pair as class. The label names a class. Not a new finding.";
+  }
+  return null;
 }
 
 function unique(values: string[]) {
