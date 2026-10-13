@@ -61,6 +61,10 @@ test("ClinicalDecisionService: checkInteractions detects severe and contraindica
     assert.ok(res.data.summary.contraindicatedCount > 0 || res.data.summary.majorCount > 0);
     assert.ok(res.data.meta.disclaimer.includes("21 U.S.C. § 360j(o)(1)(E)"));
     assert.ok(res.data.meta.durationMs >= 0);
+    assert.equal(res.data.meta.fanout.stages[0], "resolve");
+    assert.equal(res.data.meta.fanout.stages.at(-1), "reduce");
+    assert.equal(res.data.meta.fanout.pairs.length, 1);
+    assert.ok(res.data.meta.fanout.rule.includes("Do not split"));
   }
 
   // Cached retrieval is instant

@@ -17,6 +17,7 @@ import {
 } from "../../drugs/catalog";
 import { analyze } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
+import { FANOUT_STAGES, FANOUT_RULE, pairSlots } from "../../drugs/fanout";
 import {
   DEFAULT_HOST,
   type Drug,
@@ -123,6 +124,11 @@ export interface ApiResponseMeta {
   /** True when the clinical payload came from the cache. The envelope is always built per request. */
   cached: boolean;
   disclaimer: string;
+  fanout?: {
+    stages: readonly string[];
+    pairs: [number, number][];
+    rule: string;
+  };
 }
 
 export interface ApiFinding {
@@ -167,7 +173,13 @@ export interface ResolvedQuery {
 
 /** `summary` and `findings` are shared, frozen cache entries; copy before mutating. */
 export interface InteractionCheckResult {
-  meta: ApiResponseMeta;
+  meta: ApiResponseMeta & {
+    fanout: {
+      stages: readonly string[];
+      pairs: [number, number][];
+      rule: string;
+    };
+  };
   query: ResolvedQuery;
   warnings: ApiWarning[];
   summary: Readonly<InteractionSummary>;
@@ -730,7 +742,14 @@ export class ClinicalDecisionService {
       return {
         success: true,
         data: {
-          meta: responseMeta(INTERACTIONS_ENGINE, startedAt, hit !== undefined),
+          meta: {
+            ...responseMeta(INTERACTIONS_ENGINE, startedAt, hit !== undefined),
+            fanout: {
+              stages: [...FANOUT_STAGES],
+              pairs: pairSlots(drugs.ids.length),
+              rule: FANOUT_RULE,
+            },
+          },
           query: { ...drugs.query, host },
           warnings: [...unresolvedWarnings(drugs.query), ...warnings],
           summary: payload.summary,
