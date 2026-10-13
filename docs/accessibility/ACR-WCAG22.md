@@ -1,146 +1,156 @@
-# DRAFT - NEEDS KALEB TO VERIFY
-
 # FirstPass Accessibility Conformance Report
-## WCAG 2.2 Edition (based on VPAT® Version 2.5 Rev)
 
-> **DRAFT - NEEDS KALEB TO VERIFY.** This report is based only on automated scans and scripted keyboard tests. No manual screen-reader testing (NVDA, JAWS, VoiceOver, TalkBack) has been done. Do not send it to a customer until Kaleb has reviewed it.
+> **DRAFT - NEEDS KALEB TO VERIFY.** Do not send this to a buyer until Kaleb has reviewed every row. Several rows rest on automated or scripted checks only. No one has tested FirstPass with a screen reader yet.
 
-**Name of Product/Version:** FirstPass desk (web app), `main` as of 2026-10-12 (includes PRs #94–#161 listed below)
-**Report Date:** 2026-10-12 (draft)
-**Product Description:** Educational drug-interaction desk and public label-sourced pair and drug pages, used in a web browser.
-**Contact Information:** Kaleb Lovingier, kaleblovingier@gmail.com
-**Notes:** Scope is the desk at `/` (all header views), `/recover`, Stripe-return cancel view, `/pairs`, `/pair/*` and `/drug/*`. Third-party checkout (Stripe, PayPal) is out of scope.
-**Evaluation Methods Used:**
-- **axe-core** (via `@axe-core/playwright`, Chrome) with tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`, at 320px and 1280px. Script: `/workspace/a11y19-test/audit.mjs` (results `before.json`, `after.json`, `after20.json`, `pr152.json`, `pr155.json`, `pr159.json`). Latest result: **0 violations** on every scanned view and page. Scanned views: desk home, a loaded pair, Library, Sources, Enzyme map, Learn, Cases, Compare, Safety, Find help, Plans, Unlock, Metabolizer status, `/recover`, Stripe-return cancel, `/pairs`, about 50 pair pages and 20 `/drug` hubs.
-- **Lighthouse** (accessibility, best practices, SEO), mobile and desktop, on `/`, `/recover`, `/pairs` and 5 pair pages. Latest scores were 100 for accessibility, 77 for best practices and 100 for SEO on every page tested (`lh20-after-*.json`).
-- **Scripted keyboard journeys:** `scripts/keyboard-journeys.mjs` (Playwright, keyboard only). Latest result was 36/36 checks passing.
-- **Scripted checks** for headings and titles, reflow at 320/640/1280 CSS px, `prefers-reduced-motion` and forced-colors emulation (#158).
-- **Not used:** manual screen-reader testing, testing with users with disabilities, mobile assistive technology.
+**Based on:** VPAT® Version 2.5 Rev (WCAG 2.2 edition)
 
-## Applicable Standards/Guidelines
-
-| Standard/Guideline | Included In Report |
+| | |
 | --- | --- |
-| Web Content Accessibility Guidelines 2.2 | Level A (Yes), Level AA (Yes), Level AAA (No) |
+| **Product** | FirstPass desk (web app) and its public pair, pair index and drug hub pages |
+| **Version** | `main` as of 2026-10-12, after PR #161 |
+| **Report date** | 2026-10-12 (draft) |
+| **Contact** | Kaleb Lovingier, kaleblovingier@gmail.com |
+| **Standard** | WCAG 2.2, Level A and Level AA |
+| **Not covered** | WCAG Level AAA, Revised Section 508 chapters 3 to 6, EN 301 549 |
+
+## Evaluation methods
+
+Every row below is based only on the evidence listed here. Where none of it applies, the row says **Not tested**.
+
+1. **axe-core 4.x through Playwright and Chrome**
+   - Rule tags: `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`.
+   - Widths: 320 CSS px and 1280 CSS px.
+   - Script: `/workspace/a11y19-test/audit.mjs`. Results are in `before.json`, `after.json`, `after20.json`, `pr155.json` and `pr159.json`.
+   - Views scanned:
+     - The desk's home screen, a loaded pair (`?sample=`), and the Library, Sources, Enzyme map, Learn, Cases, Compare, Safety, Find help, Plans, Unlock and Metabolizer status views.
+     - `/recover` and the Stripe return screen after a cancelled payment (`?fp_cancel=1`).
+     - `/pairs`, a sample of pair pages, and a sample of `/drug/*` hub pages.
+   - Before PR #153 the scan found 24 serious issues. Since then it has found **0 violations at any severity**.
+2. **Lighthouse**
+   - Categories: accessibility, best practices and SEO, mobile and desktop presets.
+   - Pages: `/`, `/recover`, `/pairs` and 5 pair pages.
+   - Scores: accessibility **100** on every page (`/` was 97 before PR #153), SEO **100**, best practices **77**. See the known gaps.
+3. **Keyboard journey script**: `scripts/keyboard-journeys.mjs`, added in PR #161, 36 of 36 checks pass. It uses only Tab, Shift+Tab, Enter, Space, Escape and the arrow keys to:
+   - search for drugs and add two
+   - open a pair result
+   - switch between all nine desk views
+   - open the Unlock dialog, then close it with Escape and check that focus returns to the button
+   - use the Library filters and the host-factor toggles
+   - use `/recover`
+   - go from `/pairs` to a pair page to "Open this pair in the desk"
+4. **Other scripted checks** (PR #158 and the earlier `docs/accessibility/wcag-conformance.md`):
+   - reflow at 320, 640 and 1280 CSS px
+   - one h1 and a unique title per route
+   - forced-colors (high contrast) emulation for focus rings and toggle states
+   - reduced-motion emulation
+   - text spacing on the start screen
+5. **Unit test** `src/lib/a11y/contrast.test.ts`: fails if any text color drops below 4.5:1 on any background color the app uses.
+6. **Source review**: targeted code searches, for example for video and audio elements, drag handlers and the `/` shortcut.
+7. **Merged accessibility pull requests**: #94, #98, #104, #108, #113, #126, #146, #149, #153, #158 and #161. All are merged, as confirmed with `gh`.
+
+**Not done:**
+- manual testing with a screen reader (NVDA, JAWS, VoiceOver or TalkBack)
+- testing with speech recognition or switch access
+- browser testing beyond Chrome
+- a manual expert audit
 
 ## Terms
 
-- **Supports:** automated or scripted evidence listed in the row shows the criterion is met for the scope tested, and no known failures exist.
-- **Partially Supports:** some functionality is known not to meet the criterion, or only part was tested and gaps are known.
-- **Does Not Support:** most functionality does not meet the criterion. *(No row currently uses this.)*
-- **Not Applicable:** the criterion does not apply to the product.
-- **Not tested:** there is no evidence yet. This is the VPAT "Not Evaluated" term, used here even for Level A/AA, which VPAT normally discourages. These rows must be tested before the report is final.
-
-## WCAG 2.2 Report
-
-### Table 1: Success Criteria, Level A
-
-| Criteria | Conformance Level | Remarks and Explanations |
-| --- | --- | --- |
-| 1.1.1 Non-text Content | Not tested | axe `image-alt`, `svg-img-alt` and `button-name` pass on every scanned view (0 violations; `after.json`, `after20.json`). Decorative plates use `alt=""`. Whether each text alternative is *meaningful* has not been reviewed by a person. |
-| 1.2.1 Audio-only and Video-only (Prerecorded) | Not applicable | The product has no audio or video (no `<audio>`, `<video>` or embedded media in `src/`). |
-| 1.2.2 Captions (Prerecorded) | Not applicable | No video content. |
-| 1.2.3 Audio Description or Media Alternative (Prerecorded) | Not applicable | No video content. |
-| 1.3.1 Info and Relationships | Supports | axe structure rules (`list`, `listitem`, `dlitem`, `label`, `aria-*`, `heading-order` family) report 0 violations. #126 labels host-factor toggle groups (`role=group` + `aria-labelledby`); #153 fixed `<dt>/<dd>` without `<dl>` on Compare; #158 gives each page/view one h1; /drug hub grade groups use h2 + lists. Not verified with a screen reader. |
-| 1.3.2 Meaningful Sequence | Not tested | Keyboard order follows visual order in the scripted journeys (`scripts/keyboard-journeys.mjs`), but reading order has not been checked with a screen reader. |
-| 1.3.3 Sensory Characteristics | Not tested | No review of instructions for shape/position-only references. |
-| 1.4.1 Use of Color | Supports | #108 underlines links that relied on accent color alone; #98 gives medication-review toggles a visible edge; #104 stops empty enzyme cells looking like substrate dots; severity is always labelled with text (`docs/accessibility/wcag-conformance.md`). #158 keeps pressed/selected toggles distinguishable in forced-colors mode. |
-| 1.4.2 Audio Control | Not applicable | No audio. |
-| 2.1.1 Keyboard | Supports | `scripts/keyboard-journeys.mjs` (36/36 checks, keyboard only): search and add drugs, open a pair result, switch all nine views, Unlock dialog, Plans, Library filters, host-factor toggles, /recover, /pairs → pair page → desk. #161 fixed search Escape and chip removal focus. Scope limit: the many specialty stations (e.g. renal, oncology, pregnancy) were not individually walked. |
-| 2.1.2 No Keyboard Trap | Supports | Journey script and earlier tab walks (84/170/218 stops) found no trap; the only containment is the open Unlock/clinical packet dialog, which releases on Escape (#146). |
-| 2.1.4 Character Key Shortcuts | Not tested | The search box shows a `/` hint. Whether a single-character shortcut exists and can be turned off or remapped was not tested. |
-| 2.2.1 Timing Adjustable | Not tested | No session timeouts were found in the tested journeys, but this was not systematically reviewed (e.g. checkout handoff). |
-| 2.2.2 Pause, Stop, Hide | Not tested | No auto-playing or auto-updating content was seen in scanned views, and a global `prefers-reduced-motion` override exists, but not formally reviewed. |
-| 2.3.1 Three Flashes or Below Threshold | Not tested | No flashing content observed; not formally tested. |
-| 2.4.1 Bypass Blocks | Supports | #113 adds a Skip to content link as the first focusable control, moving focus to `main`. axe `bypass` passes. |
-| 2.4.2 Page Titled | Supports | Every route has a `<title>` (axe `document-title` passes). /pairs, pair pages and /drug hubs have unique descriptive titles (0 duplicates in the #159 scan); #158 gave /recover its own title. Note: in-app desk views (Library, Learn, etc.) are views of one page and share the title "FirstPass". |
-| 2.4.3 Focus Order | Supports | Journey script: focus stays on the control after view switches and filter toggles, moves into dialogs and returns to the opener on close (#146), lands on the result after /recover submit (#149), and moves to the next chip or search box after removing a drug (#161). |
-| 2.4.4 Link Purpose (In Context) | Not tested | axe `link-name` passes; purpose of each link in context was not reviewed by a person. |
-| 2.5.1 Pointer Gestures | Not tested | No multipoint/path gestures known, not formally reviewed. |
-| 2.5.2 Pointer Cancellation | Not tested | Controls are native buttons/links (activate on up-event by default); not formally tested. |
-| 2.5.3 Label in Name | Not tested | Not reviewed (requires comparing visible labels with accessible names, e.g. chips and `aria-label` overrides). |
-| 2.5.4 Motion Actuation | Not applicable | No device-motion features. |
-| 3.1.1 Language of Page | Supports | `<html lang="en">` in `src/routes/__root.tsx`; axe `html-has-lang` / `html-lang-valid` pass. |
-| 3.2.1 On Focus | Not tested | No context changes on focus seen in the journey script; not formally tested across all stations. |
-| 3.2.2 On Input | Not tested | Not formally tested. |
-| 3.2.6 Consistent Help | Not tested | The desk header has "Find help" in the same place on every view; static /pairs, pair and /drug pages were not checked for a help mechanism. |
-| 3.3.1 Error Identification | Partially Supports | #149: /recover marks the email field `aria-invalid` and links it to the error text, which is announced. Other forms (checkout handoff, key redeem, dose entry) were not tested. |
-| 3.3.2 Labels or Instructions | Partially Supports | axe `label` passes; the drug search and /recover email have programmatic labels. Other forms not manually reviewed. |
-| 3.3.7 Redundant Entry | Not tested | Not tested. |
-| 4.1.1 Parsing | Not applicable | Obsolete and removed in WCAG 2.2. |
-| 4.1.2 Name, Role, Value | Supports | axe `button-name`, `aria-*`, `nested-interactive`, `aria-hidden-focus` pass (0 violations). Toggles expose `aria-pressed`, nav exposes `aria-current`, search is a combobox with `aria-activedescendant`; #153 made the locked preview `inert`. Not verified with NVDA/JAWS/VoiceOver. |
-
-### Table 2: Success Criteria, Level AA
-
-| Criteria | Conformance Level | Remarks and Explanations |
-| --- | --- | --- |
-| 1.2.4 Captions (Live) | Not applicable | No live media. |
-| 1.2.5 Audio Description (Prerecorded) | Not applicable | No video. |
-| 1.3.4 Orientation | Not tested | Layouts tested at 320px and 1280px widths, not by rotating a device. |
-| 1.3.5 Identify Input Purpose | Not tested | `autocomplete` on email fields not reviewed. |
-| 1.4.3 Contrast (Minimum) | Supports | axe `color-contrast` 0 violations on all scanned views; `src/lib/a11y/contrast.test.ts` fails the build if any text token drops below 4.5:1 (see `wcag-conformance.md`). |
-| 1.4.4 Resize Text | Supports | 200% zoom checked as 640 CSS px on desk home, a loaded pair, /pairs, a pair page and the desk views: no horizontal scroll (#141, #158). Text-only zoom in a browser setting was not separately tested. |
-| 1.4.5 Images of Text | Not tested | Not reviewed. |
-| 1.4.10 Reflow | Supports | At 320 CSS px (400% of 1280) no view scrolls sideways (#141, #158 checks on all desk views, /recover, /pairs and pair pages). Data tables scroll inside their own container, which the exception allows. |
-| 1.4.11 Non-text Contrast | Supports | Focus outline ≥5.6:1, text-field boundaries in the subtle text color (≥4.5:1), medication-review toggles given an edge (#98), enzyme empty cells fixed (#104). |
-| 1.4.12 Text Spacing | Not tested | Only the start screen was checked with WCAG text-spacing values (no sideways scroll); other views and overlap were not checked. |
-| 1.4.13 Content on Hover or Focus | Not tested | Some controls use `title` tooltips; dismissible/hoverable behavior not tested. |
-| 2.4.5 Multiple Ways | Not tested | Navigation, search, /pairs index, /drug hubs and sitemap exist, but this was not assessed as a criterion. |
-| 2.4.6 Headings and Labels | Supports | #158 promoted each view's main heading to h1 and added screen-reader-only h1s for Enzyme map and Learn; hub grade groups use descriptive h2s. axe `empty-heading` and `label` pass. |
-| 2.4.7 Focus Visible | Supports | Global `:focus-visible` 2px accent outline; the journey script fails any focused element without an outline/ring and passed; #158 adds a forced-colors focus ring. |
-| 2.4.11 Focus Not Obscured (Minimum) | Not tested | Sticky elements (e.g. Library's sticky count bar) were not checked for covering focused items. |
-| 2.5.7 Dragging Movements | Not tested | No drag interactions known; not formally reviewed. |
-| 2.5.8 Target Size (Minimum) | Supports | axe `target-size` (wcag22aa tag) passes on all scanned views at 320px and 1280px. |
-| 3.1.2 Language of Parts | Not tested | Not reviewed. |
-| 3.2.3 Consistent Navigation | Not tested | The desk header is the same on every desk view; consistency with static SEO pages not assessed. |
-| 3.2.4 Consistent Identification | Not tested | Not reviewed. |
-| 3.3.3 Error Suggestion | Not tested | Only /recover reviewed (#149); not assessed product-wide. |
-| 3.3.4 Error Prevention (Legal, Financial, Data) | Not tested | Payment is handed to Stripe/PayPal-hosted checkout, which was out of scope and not tested. |
-| 3.3.8 Accessible Authentication (Minimum) | Not tested | License-key redeem and the operator PIN screen not tested (e.g. whether paste and password managers work). |
-| 4.1.3 Status Messages | Partially Supports | Announced: /recover success/error (#149), Library "N shown" count (#161), host-factor result text (#126), search no-match, drugs added to the desk (#161). Gap: removing a drug relies on `aria-relevant="removals"`, which several screen readers ignore, so removal may be silent. Not verified with a screen reader. |
-
-### Table 3: Success Criteria, Level AAA
-
-Not evaluated.
+| Term | Meaning |
+| --- | --- |
+| **Supports** | Evidence above shows the criterion is met for the content we tested. |
+| **Partially Supports** | Some functionality does not meet the criterion. The gap is described in the row. |
+| **Not tested** | We have no evidence strong enough to claim support, even if automated checks pass. |
+| **Not Applicable** | The product has no content of this kind. |
 
 ## Summary
 
-| Conformance level | Count (A + AA, 56 criteria) |
-| --- | --- |
-| Supports | 16 |
-| Partially Supports | 3 |
-| Does Not Support | 0 |
-| Not tested | 29 |
-| Not applicable | 8 |
+| Level | Supports | Partially Supports | Not tested | Not Applicable |
+| --- | --- | --- | --- | --- |
+| A (32 rows) | 8 | 1 | 16 | 7 |
+| AA (24 rows) | 7 | 2 | 13 | 2 |
+| **Total (56 rows)** | **15** | **3** | **29** | **9** |
 
-## Known gaps and open items
+The 56 rows include 4.1.1, which WCAG 2.2 removed. Its row is marked Not Applicable.
 
-1. **No manual screen-reader testing.** Nothing in this report has been checked with NVDA, JAWS, VoiceOver or TalkBack. That pass is needed for 1.3.1, 1.3.2, 4.1.2 and 4.1.3.
-2. **Removing a drug may not be announced.** The chip row uses `aria-live="polite"` with `aria-relevant="additions removals"` (#161). Many screen readers ignore removals, so a guaranteed "removed" message would need new screen-reader-only wording.
-3. **Lighthouse best practices scores 77.** Both failures (third-party cookies and DevTools issues) come from the hosting platform's preview script `https://grok.com/grok-app-builder/extensions.js`, which `scripts/grok-pwa-shared.mjs` injects. That is not app code, and it has not been checked whether production loads it.
-4. **Desk views share one title.** The desk's views are in-app states of one page, so they all share the title "FirstPass".
-5. **Specialty stations were not keyboard-walked one by one** (renal, oncology, pregnancy, hepatic and so on). They are covered only by axe scans of the views they appear in.
-6. **Out of scope:** Stripe and PayPal hosted checkout, and the emails Resend sends (key and recovery emails).
-7. **Rows still marked "Not tested"** need a manual pass before this report is given to a buyer.
+## Table 1: Success Criteria, Level A
 
-## Evidence index (merged PRs)
-
-| PR | Merged (PT) | Change |
+| Criteria | Conformance level | Remarks and evidence |
 | --- | --- | --- |
-| #94 | 2026-10-02 | Focus test updated for the tab-bar breakpoint |
-| #98 | 2026-10-02 | Medication review toggles get a visible edge (1.4.11, 1.4.1) |
-| #104 | 2026-10-03 | Empty enzyme cells no longer look like a substrate dot (1.4.1) |
-| #108 | 2026-10-03 | Underline links that relied on accent color alone (1.4.1) |
-| #113 | 2026-10-03 | Skip to content (2.4.1) |
-| #126 | 2026-10-05 | Labelled host-factor toggle groups; result text announced (1.3.1, 4.1.3) |
-| #141 | 2026-10-12 | No horizontal scroll at 320px (1.4.10) |
-| #146 | 2026-10-12 | Clinical packet dialog focus trap and return (2.1.2, 2.4.3) |
-| #149 | 2026-10-12 | /recover: announced status, focus, `aria-invalid` (3.3.1, 4.1.3) |
-| #153 | 2026-10-12 | Locked preview is `inert`; Compare `<dl>` fix (4.1.2, 1.3.1) |
-| #158 | 2026-10-12 | One h1 per view, /recover title, 320px reflow, forced colors (2.4.2, 2.4.6, 1.4.10) |
-| #161 | 2026-10-12 | Keyboard flow fixes; announcements; journey script (2.1.1, 2.4.3, 4.1.3) |
+| 1.1.1 Non-text Content | Not tested | axe `image-alt` and related rules pass. Decorative plates use `alt=""`. No person has reviewed whether the alt text is meaningful. |
+| 1.2.1 Audio-only and Video-only (Prerecorded) | Not Applicable | Source search found no audio or video content. |
+| 1.2.2 Captions (Prerecorded) | Not Applicable | No video. |
+| 1.2.3 Audio Description or Media Alternative (Prerecorded) | Not Applicable | No video. |
+| 1.3.1 Info and Relationships | Not tested | axe passes. Fixes so far: real `<dl>` lists (#153), headings (#158), labelled toggle groups (#126) and a labelled search combobox. No screen reader pass yet. |
+| 1.3.2 Meaningful Sequence | Not tested | Tab order in the journey script follows the visual order. Reading order has not been checked with a screen reader. |
+| 1.3.3 Sensory Characteristics | Not tested | No review of the instructions text. |
+| 1.4.1 Use of Color | Supports | Severity always has a text label. Links that relied on color alone are underlined (#108). Toggle states have a visible edge (#98), and empty enzyme cells no longer look like substrate dots (#104). |
+| 1.4.2 Audio Control | Not Applicable | No audio. |
+| 2.1.1 Keyboard | Supports | Keyboard journey script, 36 of 36 checks pass, covering the core journeys listed above. The specialty stations (for example oncology, renal and pregnancy) are not covered by the script. |
+| 2.1.2 No Keyboard Trap | Supports | The script and earlier tabbing runs (84, 170 and 218 tab stops) found no traps. Dialogs keep focus inside only while open and release it on Escape (#146, #161). |
+| 2.1.4 Character Key Shortcuts | Partially Supports | Pressing `/` outside a text field jumps to the search box (`search.tsx`). The shortcut can't be turned off or remapped. |
+| 2.2.1 Timing Adjustable | Not tested | No time limits were found in the journeys. There has been no formal review. |
+| 2.2.2 Pause, Stop, Hide | Not tested | A global reduced-motion rule turns off animations and transitions (0 elements animate under emulation). Auto-moving content has not been reviewed for users who don't set reduced motion. |
+| 2.3.1 Three Flashes or Below Threshold | Not tested | Not reviewed. |
+| 2.4.1 Bypass Blocks | Supports | "Skip to content" is the first focusable control and moves focus to `#main` (#113). |
+| 2.4.2 Page Titled | Supports | Every route has a unique, descriptive `<title>`: pair pages, `/pairs`, the `/drug/*` hubs and `/recover` (#158). The desk's in-app views share the route title "FirstPass"; see the known gaps. |
+| 2.4.3 Focus Order | Supports | The journey script checks that focus order is logical. Focus is restored after the dialog closes (#146), after a chip is removed (#161), after the /recover form is submitted (#149) and after Escape in search (#161). |
+| 2.4.4 Link Purpose (In Context) | Not tested | axe `link-name` passes. Repeated "Copy link" buttons have not been reviewed by a person. |
+| 2.5.1 Pointer Gestures | Not Applicable | Source search found no multipoint or path-based gestures. |
+| 2.5.2 Pointer Cancellation | Not tested | The app uses native buttons, but this has not been verified. |
+| 2.5.3 Label in Name | Not tested | Not reviewed by a person. |
+| 2.5.4 Motion Actuation | Not Applicable | Source search found no device-motion handlers. |
+| 3.1.1 Language of Page | Supports | `<html lang="en">`. axe `html-has-lang` passes. |
+| 3.2.1 On Focus | Supports | Scripted tabbing across all views found no change of context on focus. |
+| 3.2.2 On Input | Not tested | Not reviewed. |
+| 3.2.6 Consistent Help | Not tested | "Find help" sits in the shell navigation on every desk view. This has not been formally checked against the public pages. |
+| 3.3.1 Error Identification | Not tested | The `/recover` error is linked to the field and marked invalid (#149). Other forms, such as the Plans email field and key redemption, have not been tested. |
+| 3.3.2 Labels or Instructions | Not tested | axe `label` passes. The search field and the `/recover` email field have labels. Not reviewed by a person. |
+| 3.3.7 Redundant Entry | Not tested | Not reviewed. |
+| 4.1.1 Parsing | Not Applicable | Removed in WCAG 2.2. |
+| 4.1.2 Name, Role, Value | Not tested | axe passes. Fixes so far: `aria-pressed` on toggles and Find help tabs, `aria-current` on the navigation, and the search combobox and listbox pattern. No screen reader pass yet. |
 
-Earlier contrast-token work is described in `docs/accessibility/wcag-conformance.md`.
+## Table 2: Success Criteria, Level AA
 
----
-*DRAFT - NEEDS KALEB TO VERIFY. "VPAT" is a registered trademark of the Information Technology Industry Council (ITI).*
+| Criteria | Conformance level | Remarks and evidence |
+| --- | --- | --- |
+| 1.2.4 Captions (Live) | Not Applicable | No live media. |
+| 1.2.5 Audio Description (Prerecorded) | Not tested | No video was found. This row is left Not tested until Kaleb confirms there is no video anywhere, including linked pages. |
+| 1.3.4 Orientation | Not tested | No orientation lock was found in source. Not tested on a device. |
+| 1.3.5 Identify Input Purpose | Partially Supports | `/recover` email uses `autocomplete="email"`. The Plans "Receipt & license key email" field has no `autocomplete` attribute. |
+| 1.4.3 Contrast (Minimum) | Supports | axe `color-contrast` passes, and the `contrast.test.ts` unit test enforces 4.5:1 for text tokens. |
+| 1.4.4 Resize Text | Supports | No horizontal scroll at 640 CSS px (200% of 1280) on any scanned view (#158). A person has not visually confirmed that nothing is clipped. |
+| 1.4.5 Images of Text | Not tested | Not reviewed. |
+| 1.4.10 Reflow | Supports | No horizontal scroll at 320 CSS px on the desk views, `/pairs`, pair pages, the hubs and `/recover`. Drug chips and the Find help tabs were fixed to wrap (#158). |
+| 1.4.11 Non-text Contrast | Supports | The focus outline is at least 5.6:1. Text fields have a 1px border in the subtle text color, at least 4.5:1. Toggles have visible edges (#98). |
+| 1.4.12 Text Spacing | Not tested | Only the start screen was checked, with no sideways scroll. The full pass still needs a person. |
+| 1.4.13 Content on Hover or Focus | Not tested | Not reviewed. |
+| 2.4.5 Multiple Ways | Supports | Desk navigation, drug search, the `/pairs` index, `/drug/*` hubs and `sitemap.xml`. |
+| 2.4.6 Headings and Labels | Not tested | Every view has one h1 (#158; Enzyme map and Learn have screen-reader-only h1s). Whether the headings are descriptive has not been reviewed by a person. |
+| 2.4.7 Focus Visible | Supports | The journey script checks for a painted indicator at every stop. Under forced colors the ring uses CanvasText (#158). See also #94 and #113. |
+| 2.4.11 Focus Not Obscured (Minimum) | Not tested | Sticky bars, such as the Library count bar, have not been checked against focused controls. |
+| 2.5.7 Dragging Movements | Not Applicable | Source search found no drag interactions. Images set `draggable={false}`. |
+| 2.5.8 Target Size (Minimum) | Supports | The axe `target-size` rule (in the `wcag22aa` tag) passes on every scanned view at both widths. |
+| 3.1.2 Language of Parts | Not tested | Not reviewed. |
+| 3.2.3 Consistent Navigation | Not tested | The shell navigation is shared across the desk. Not formally reviewed. |
+| 3.2.4 Consistent Identification | Not tested | Not reviewed. |
+| 3.3.3 Error Suggestion | Not tested | Not reviewed. |
+| 3.3.4 Error Prevention (Legal, Financial, Data) | Not tested | Payment happens on Stripe's hosted checkout, which we don't control. The in-app steps before payment have not been reviewed. |
+| 3.3.8 Accessible Authentication (Minimum) | Not tested | Key redemption and sign-in have not been reviewed. |
+| 4.1.3 Status Messages | Partially Supports | Live regions announce the `/recover` result (#149), host-factor result text (#126), drug additions and the Library "shown" count (#161). Drug removals depend on `aria-relevant="removals"`, which many screen readers ignore. |
+
+
+## Known gaps and planned fixes
+
+1. **Drug removal announcement (4.1.3).** Removing a drug chip moves focus correctly, but the announcement relies on `aria-relevant="removals"`, which many screen readers don't support. A reliable fix needs a short screen-reader-only message such as "Removed X". That is new wording and needs Kaleb's approval.
+2. **`/` shortcut (2.1.4).** The single-key shortcut to the search box can't be turned off. Possible fixes: add a modifier key, or only listen when no other control has focus plus add a setting.
+3. **Plans email autocomplete (1.3.5).** The "Receipt & license key email" field needs `autocomplete="email"`. This is a one-attribute fix.
+4. **Desk view titles (2.4.2, note).** Desk views share the route title "FirstPass". Each route has a unique title, so this row is marked Supports. Per-view titles would need new wording.
+5. **Lighthouse best practices: 77.** Both failing audits (third-party cookies and DevTools issues) come from the hosting platform's injected `grok.com/grok-app-builder/extensions.js` (`scripts/grok-pwa-shared.mjs`), not from app code. This doesn't affect WCAG, but buyers' security reviewers may ask about it.
+6. **No assistive technology testing.** Nobody has tested with NVDA, JAWS, VoiceOver or TalkBack, or with speech or switch input. Most of the Not tested rows depend on that.
+7. **Script coverage.** The keyboard journeys cover the core flows only. The specialty stations and the operator-only screen are not covered.
+8. **Browser coverage.** Only Chrome on Linux (headless) was tested.
+
+## Legal disclaimer
+
+This report describes FirstPass as tested on the date above, using the methods listed. It is a draft and not a guarantee of conformance. FirstPass is an educational tool. Third-party services, such as Stripe Checkout and email delivery, are outside its scope.
