@@ -22,7 +22,7 @@ The question was whether a CYP or P-gp finding should read contraindicated ("Avo
 | **Pairs whose overall severity changes** | **0** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 437 / 437 → **437 / 437** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 446 / 446 → **446 / 446** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
@@ -52,7 +52,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 472 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 481 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 

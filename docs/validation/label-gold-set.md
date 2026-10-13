@@ -7,7 +7,7 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 472 |
+| Pairs (each tied to a verified FDA label statement) | 481 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
@@ -17,12 +17,13 @@
 | Wave 7 (label contraindications: Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi, Bixlenvo) | 85 |
 | Wave 9 (MAOI-class contraindications naming linezolid / IV methylene blue; Azilect; Parnate Table 1) | 35 |
 | Wave 10 (Nardil, Parnate other antidepressants, Marplan, Zyvox; Celexa, Lexapro, Viibryd, Fetzima, Savella + linezolid / IV methylene blue) | 31 |
-| Label says contraindicated | 437 |
+| Wave 11 (inducer-naming contraindications: Xadago, Azilect + St. John's wort; Xadago named partners) | 9 |
+| Label says contraindicated | 446 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 472 / 472 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 437 / 437 |
+| Engine at or above label-supported floor | 481 / 481 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 446 / 446 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -574,6 +575,15 @@ None.
 | 470 | 10 | levomilnacipran | methylene-blue | [Fetzima (levomilnacipran)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f371258d-91b3-4b6a-ac99-434a1964c3af) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated" · e.g. "intravenous methylene blue" |
 | 471 | 10 | milnacipran | linezolid | [Savella (milnacipran)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=16a4a314-f97e-4e91-95e9-576a3773d284) | 4.1 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated" · e.g. "linezolid" |
 | 472 | 10 | milnacipran | methylene-blue | [Savella (milnacipran)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=16a4a314-f97e-4e91-95e9-576a3773d284) | 4.1 Monoamine Oxidase Inhibitors (MAOIs) | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated" · e.g. "intravenous methylene blue" |
+| 473 | 11 | safinamide | linezolid | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class … including linezolid" · e.g. "linezolid" |
+| 474 | 11 | safinamide | meperidine | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)" · e.g. "meperidine" |
+| 475 | 11 | safinamide | methadone | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)" · e.g. "methadone" |
+| 476 | 11 | safinamide | tramadol | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)" · e.g. "tramadol" |
+| 477 | 11 | safinamide | cyclobenzaprine | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … cyclobenzaprine" · e.g. "cyclobenzaprine" |
+| 478 | 11 | safinamide | methylphenidate | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … methylphenidate, amphetamine, and their derivatives" · e.g. "methylphenidate" |
+| 479 | 11 | safinamide | amphetamine | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … methylphenidate, amphetamine, and their derivatives" · e.g. "amphetamine" |
+| 480 | 11 | safinamide | st-johns-wort | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … St John's wort" · e.g. "St John's wort" |
+| 481 | 11 | rasagiline | st-johns-wort | [Azilect (rasagiline)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a40d0e73-3f9f-4b01-979d-402c9cdaeb60) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "AZILECT is contraindicated for use with St. John’s wort and with cyclobenzaprine" · e.g. "St. John’s wort" |
 
 ## Method
 
@@ -688,6 +698,14 @@ None.
 - **wave 11 (severity-change candidates for Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Coartem + rifampin, carbamazepine, phenytoin, St. John's wort; Biltricide (praziquantel) + rifampin**: Each section 4 names these drugs as strong CYP3A4 inducers. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.
 - **wave 11: Vocabria (cabotegravir) + carbamazepine, oxcarbazepine, phenobarbital, phenytoin, rifampin, rifapentine, rifabutin; Tybost (cobicistat) + carbamazepine, phenobarbital, phenytoin, rifampin, St. John's wort, nevirapine**: Named in section 4, but the catalog has no matching inducer card (washout card only, or no card) for cabotegravir (UGT1A1 induction) or for cobicistat as a standalone row. Pinning would add a new contraindicated card. Not pinned.
 - **wave 11: Juluca, Odefsey, Edurant + dexamethasone**: Juluca and Odefsey are combination products whose catalog rows (dolutegravir, emtricitabine) do not carry the rilpivirine contraindication. Dexamethasone is contraindicated only beyond a single dose, so it is conditional.
+- **wave 11: Xadago + dextromethorphan**: Named on Xadago section 4 for psychosis or abnormal behavior. The pair card is a serotonin card. Not pinned without a matching card (the Azilect + dextromethorphan rule).
+- **wave 11 severity-change candidates (Kaleb): Pifeltro (doravirine) + rifampin, rifapentine, carbamazepine, oxcarbazepine, phenobarbital, phenytoin, enzalutamide, mitotane, St. John's wort**: Named in Pifeltro section 4. Each pair's only PK card is a CYP3A4 inducer card at major (Serious concern). A pin would raise it to Avoid together, so not pinned under this wave's rule.
+- **wave 11 severity-change candidates (Kaleb): Rukobia (fostemsavir) + rifampin, carbamazepine, phenytoin, enzalutamide, mitotane, St. John's wort**: Named in Rukobia section 4. CYP3A4 inducer cards read major. A pin would change severity.
+- **wave 11 severity-change candidates (Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Biltricide (praziquantel) + rifampin**: Named in section 4. CYP3A4 inducer cards read major. A pin would change severity.
+- **wave 11 severity-change candidates (Kaleb): Vfend (voriconazole) + rifabutin, carbamazepine, St. John's wort**: Named in Vfend section 4. CYP3A4/CYP2C19 inducer and inhibitor cards read major. A pin would change severity. Vfend + efavirenz is conditional on the efavirenz dose and is not a candidate.
+- **wave 11 severity-change candidates (Kaleb): Tybost (cobicistat) + carbamazepine, nevirapine (CYP3A4 card at major); + rifampin, phenobarbital, phenytoin, St. John's wort (washout card only or no card)**: Named in Tybost section 4 (some lines apply only with atazanavir). No card reads Avoid together, so a pin would change severity or add a standalone finding.
+- **wave 11: Genvoya / Stribild (elvitegravir) + rifampin, carbamazepine, phenobarbital, phenytoin, St. John's wort; Symtuza / Prezcobix (darunavir) + carbamazepine, phenobarbital, phenytoin; Cabenuva + rifampin, rifabutin, carbamazepine and others**: Contraindicated on cobicistat- or rilpivirine-containing combination products. The catalog rows (elvitegravir, darunavir, cabotegravir) are single agents, and the inducer cards read major. Not pinned (formulation rule); severity-change candidates if the catalog adds the combination products.
+- **wave 11: Edurant / Odefsey / Complera / Juluca + dexamethasone**: Contraindicated only for more than a single dose. Conditional; not pinned.
 
 ## Not in catalog
 
