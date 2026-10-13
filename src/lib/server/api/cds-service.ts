@@ -17,7 +17,13 @@ import {
 } from "../../drugs/catalog";
 import { analyze } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
-import { FANOUT_STAGES, FANOUT_RULE, pairSlots } from "../../drugs/fanout";
+import {
+  FANOUT_STAGES,
+  FANOUT_RULE,
+  pairSlots,
+  summarizePairs,
+  type PairwiseSummary,
+} from "../../drugs/fanout";
 import {
   DEFAULT_HOST,
   type Drug,
@@ -137,6 +143,7 @@ export interface ApiResponseMeta {
     stages: readonly string[];
     pairs: [number, number][];
     rule: string;
+    pairwise?: PairwiseSummary[];
   };
 }
 
@@ -187,6 +194,7 @@ export interface InteractionCheckResult {
       stages: readonly string[];
       pairs: [number, number][];
       rule: string;
+      pairwise: PairwiseSummary[];
     };
   };
   query: ResolvedQuery;
@@ -766,6 +774,10 @@ export class ClinicalDecisionService {
               stages: [...FANOUT_STAGES],
               pairs: pairSlots(drugs.ids.length),
               rule: FANOUT_RULE,
+              pairwise: summarizePairs(
+                drugs.ids,
+                payload.findings.map((f) => ({ ...f, drugIds: f.drugs.map((d) => d.id) } as any)),
+              ),
             },
           },
           query: { ...drugs.query, host },

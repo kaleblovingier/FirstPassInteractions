@@ -13,6 +13,7 @@ import {
 import { ApiProblemError } from "./problem";
 import { analyze } from "../../drugs/engine";
 import { DEFAULT_HOST } from "../../drugs/types";
+import { pairSlots } from "../../drugs/fanout";
 import { SOFTWARE } from "../../regulatory";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -64,6 +65,7 @@ test("ClinicalDecisionService: checkInteractions detects severe and contraindica
     assert.equal(res.data.meta.fanout.stages[0], "resolve");
     assert.equal(res.data.meta.fanout.stages.at(-1), "reduce");
     assert.equal(res.data.meta.fanout.pairs.length, 1);
+    assert.equal(res.data.meta.fanout.pairwise.length, pairSlots(2).length);
     assert.ok(res.data.meta.fanout.rule.includes("Do not split"));
   }
 
@@ -498,6 +500,25 @@ test("ClinicalDecisionService: the summary uses the engine's own severity counts
     res.data.findings.map((f) => f.severity),
     report.findings.map((f) => f.severity),
   );
+  assert.equal(
+    res.data.meta.fanout.pairwise.length,
+    pairSlots(drugs.length).length,
+  );
+});
+
+test("ClinicalDecisionService: pairwise breakdown length matches pairSlots and attributes findings to pairs", async () => {
+  ClinicalDecisionService.clearCaches();
+  const drugs = ["sertraline", "tramadol", "linezolid", "fluoxetine"];
+  const res = await ClinicalDecisionService.checkInteractions({ drugs });
+  assert.ok(res.success);
+  const resolvedIds = res.data.query.resolvedDrugs.map((d) => d.id);
+  assert.equal(res.data.meta.fanout.pairwise.length, pairSlots(resolvedIds.length).length);
+  assert.equal(res.data.meta.fanout.pairwise.length, pairSlots(drugs.length).length);
+  for (const pw of res.data.meta.fanout.pairwise) {
+    assert.equal(pw.pair.length, 2);
+    assert.ok(resolvedIds.includes(pw.pair[0]));
+    assert.ok(resolvedIds.includes(pw.pair[1]));
+  }
 });
 
 test("ClinicalDecisionService: cache keys use resolved ids and the full host context", async () => {
