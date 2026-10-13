@@ -4136,4 +4136,36 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
     pair: "wave 11: Paxlovid, Latuda, Ranexa, Xtandi, Biktarvy, Mavyret, Vosevi, Edurant (other inducers), Korlym, Corlanor, Multaq, Inspra, Brilinta, Eliquis, Xarelto and others",
     reason: "Checked. Inducer pairs named in their section 4 are already pinned or in the gold set, or the label does not contraindicate an inducer (Eliquis, Xarelto, Brilinta: warnings only).",
   },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Pifeltro (doravirine) + carbamazepine, oxcarbazepine, phenobarbital, phenytoin, enzalutamide, rifampin, rifapentine, mitotane, St. John's wort",
+    reason: "Pifeltro section 4 names each drug as a strong CYP3A inducer it is contraindicated with. The existing CYP3A4 inducer card reads Serious concern (major), so a pin would raise it to Avoid together. Not pinned without Kaleb's approval.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Rukobia (fostemsavir) + enzalutamide, carbamazepine, phenytoin, rifampin, mitotane, St. John's wort",
+    reason: "Rukobia section 4 names each drug. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Genvoya (elvitegravir) + carbamazepine, phenobarbital, phenytoin, rifampin, St. John's wort",
+    reason: "Genvoya section 4 names each drug. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Prezcobix (darunavir) + carbamazepine, phenobarbital, phenytoin",
+    reason: "Prezcobix section 4 names each anticonvulsant. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Vfend (voriconazole) + carbamazepine, rifabutin",
+    reason: "Vfend section 4 names both. The existing CYP3A4/CYP2C19 inducer cards read major. A pin would change severity. Not pinned. Vfend + efavirenz is contraindicated only at standard doses, so it is conditional and dropped.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Coartem + rifampin, carbamazepine, phenytoin, St. John's wort; Biltricide (praziquantel) + rifampin",
+    reason: "Each section 4 names these drugs as strong CYP3A4 inducers. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11: Vocabria (cabotegravir) + carbamazepine, oxcarbazepine, phenobarbital, phenytoin, rifampin, rifapentine, rifabutin; Tybost (cobicistat) + carbamazepine, phenobarbital, phenytoin, rifampin, St. John's wort, nevirapine",
+    reason: "Named in section 4, but the catalog has no matching inducer card (washout card only, or no card) for cabotegravir (UGT1A1 induction) or for cobicistat as a standalone row. Pinning would add a new contraindicated card. Not pinned.",
+  },
+  {
+    pair: "wave 11: Juluca, Odefsey, Edurant + dexamethasone",
+    reason: "Juluca and Odefsey are combination products whose catalog rows (dolutegravir, emtricitabine) do not carry the rilpivirine contraindication. Dexamethasone is contraindicated only beyond a single dose, so it is conditional.",
+  },
 ];
