@@ -24,7 +24,9 @@ test('every perpetrator and named victim id is a real catalog row', () => {
 test('mifepristone + simvastatin quotes the Korlym contraindication', () => {
   const b = pkBasis('mifepristone', 'simvastatin').find((x) => x.label.startsWith('Korlym'));
   assert.ok(b);
-  assert.match(b.detail, /calls this combination contraindicated/);
+  // Now a label pin: the finding quotes the Contraindications section and says the label lists the pair.
+  assert.match(b.detail, /lists this combination under Contraindications/);
+  assert.match(b.detail, /KORLYM is contraindicated in/);
 });
 
 test('mifepristone + an unnamed CYP3A substrate cites the role only and says the tier is the desk rule', () => {
@@ -62,7 +64,9 @@ test('a pinned pair does not also get a role line claiming the label is silent',
 
 test('a gold-set quote on the same label page is kept, and the row still says contraindicated', () => {
   const mid = pkBasis('paxlovid', 'midazolam').map((x) => x.detail).join('\n');
-  assert.match(mid, /calls this combination contraindicated/);
+  // Now a label pin: the quote is kept and the row says the label lists the pair under Contraindications.
+  assert.match(mid, /lists this combination under Contraindications/);
+  assert.match(mid, /PAXLOVID is contraindicated with drugs that are primarily metabolized by CYP3A/);
   assert.doesNotMatch(mid, /desk's rule/);
 });
 
@@ -226,4 +230,49 @@ test('paroxetine quotes pimozide and thioridazine, and not an unnamed CYP2D6 sub
   }
   const met = pkBasis('paroxetine', 'metoprolol').map((x) => x.detail).join('\n');
   assert.doesNotMatch(met, line);
+});
+
+test('Prozac quotes thioridazine, and not an unnamed CYP2D6 substrate', () => {
+  const line = /The Prozac label calls this combination contraindicated/;
+  const thio = pkBasis('fluoxetine', 'thioridazine').map((x) => x.detail).join('\n');
+  assert.match(thio, line);
+  assert.match(thio, /thioridazine or pimozide/);
+  const met = pkBasis('fluoxetine', 'metoprolol').map((x) => x.detail).join('\n');
+  assert.doesNotMatch(met, line);
+});
+
+test('ketoconazole quotes its named contraindications, and not an unnamed CYP3A4 substrate', () => {
+  const line = /The Ketoconazole tablets label calls this combination contraindicated/;
+  const d = (a: string, b: string) => pkBasis(a, b).map((x) => x.detail).join('\n');
+  assert.match(d('ketoconazole', 'alprazolam'), line);
+  assert.match(d('ketoconazole', 'midazolam'), line);
+  assert.doesNotMatch(d('ketoconazole', 'amlodipine'), line);
+});
+
+test('Orladeyo and Bixlenvo cite their own CYP role lines', () => {
+  const has = (a: string, b: string, brand: string) => pkBasis(a, b).some((x) => x.label.startsWith(brand));
+  assert.ok(has('berotralstat', 'midazolam', 'Orladeyo'), 'berotralstat CYP3A4');
+  assert.ok(has('berotralstat', 'desipramine', 'Orladeyo'), 'berotralstat CYP2D6');
+  assert.ok(has('bictegravir-lenacapavir', 'midazolam', 'Bixlenvo'), 'bixlenvo CYP3A4');
+});
+
+test('wave of strong perpetrators cite their own labels', () => {
+  const has = (a: string, b: string, brand: string) => pkBasis(a, b).some((x) => x.label.startsWith(brand));
+  for (const [perp, victim, brand] of [
+    ['encorafenib', 'midazolam', 'Braftovi'],
+    ['relacorilant', 'midazolam', 'Lifyorli'],
+    ['lonafarnib', 'triazolam', 'Zokinvy'],
+    ['lonafarnib', 'omeprazole', 'Zokinvy'],
+    ['camizestrant', 'warfarin', 'Etcamah'],
+    ['camizestrant', 'omeprazole', 'Etcamah'],
+  ] as const) assert.ok(has(perp, victim, brand), perp);
+});
+
+test('Zokinvy quotes midazolam and the statins as contraindicated, not an unnamed CYP3A substrate', () => {
+  // Simvastatin is now a label pin (#154): the finding quotes the Contraindications section.
+  const line = /The Zokinvy label calls this combination contraindicated|Zokinvy \(lonafarnib\) label lists this combination under Contraindications/;
+  const d = (b: string) => pkBasis('lonafarnib', b).map((x) => x.detail).join('\n');
+  assert.match(d('simvastatin'), line);
+  assert.match(d('simvastatin'), /ZOKINVY is contraindicated in patients taking/);
+  assert.doesNotMatch(d('triazolam'), line);
 });

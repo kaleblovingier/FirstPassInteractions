@@ -42,6 +42,25 @@ export const MANUAL_UNLOCK_STEPS = [
   },
 ] as const;
 
+/** Buyer-facing path when card or PayPal checkout is live. */
+export const AUTO_UNLOCK_STEPS = [
+  {
+    n: "1",
+    title: "Pay $79 once",
+    detail: "Pay by card (or PayPal when it is offered) on this page. One payment, no subscription.",
+  },
+  {
+    n: "2",
+    title: "Your key appears",
+    detail: "The desk shows your signed key (FP-LIFE-…) as soon as the payment clears, and emails a copy.",
+  },
+  {
+    n: "3",
+    title: "Founding is on",
+    detail: "Your desk unlocks on its own. Keep the key; paste it under Redeem to restore Founding on another browser.",
+  },
+] as const;
+
 /** Soft unlock note — no clinical claims; PI / Safety page still govern. */
 export const FOUNDING_UNLOCKS =
   "Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.";

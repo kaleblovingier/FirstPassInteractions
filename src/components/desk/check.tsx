@@ -9,13 +9,18 @@ import { maxDrugs } from "@/lib/billing/plans";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import type { ReaderBrief } from "@/lib/drugs/readers";
 import type { EnzymeRole, Finding, HostContext, Severity } from "@/lib/drugs/types";
-import { ENZYMES, SEVERITY_LABEL } from "@/lib/drugs/types";
+import { ENZYMES, ITEM_KIND_LABEL, SEVERITY_LABEL } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
 import { DeskReaders } from "./readers";
 import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
 import { pairSlots } from "@/lib/drugs/fanout";
+import { countFourthEnzymes, countMeetings, countNarrowIndex, countThirdSubstrates } from "@/lib/drugs/ledger";
+import { EnzymeLedger } from "./ledger";
+import { StoredNameCard } from "./name-card";
+import { StoredLabelLine } from "./label-line";
+import { deskLabels } from "@/lib/drugs/label-on-desk";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -58,7 +63,7 @@ function rolesFor(id: string, findings: Finding[]) {
   if (!drug) return [];
   const hit = new Set(findings.flatMap((f) => f.enzymes));
   const relevant = hit.size ? drug.enzymes.filter((e) => hit.has(e.enzyme)) : drug.enzymes;
-  return (relevant.length ? relevant : drug.enzymes).slice(0, 4);
+  return relevant.length ? relevant : drug.enzymes;
 }
 
 function uniqueIds(f: Finding) {
@@ -359,9 +364,32 @@ export function CheckBoard({
     food: foodPairs.slice(0, 4).map((g) => `${g.title}: ${directionLine(g.rows)}`),
   };
   const slots = pairSlots(ids.length);
+  const watchPhrases = ids.filter((id) => (DRUG_BY_ID[id]?.toxicityHint ?? "").trim().length > 0).length;
+  const storedNotes = ids.filter((id) => (DRUG_BY_ID[id]?.note ?? "").trim().length > 0).length;
+  const secondEnzymes = ids.filter((id) => (DRUG_BY_ID[id]?.enzymes.length ?? 0) > 1).length;
+  const thirdEnzymes = ids.filter((id) => (DRUG_BY_ID[id]?.enzymes.length ?? 0) > 2).length;
+  const secondPerps = ids.filter((id) => {
+    const rows = DRUG_BY_ID[id]?.enzymes ?? [];
+    return rows.filter((e) => e.kind === "inhibitor" || e.kind === "inducer").length > 1;
+  }).length;
+  const fourthEnzymes = countFourthEnzymes(ids);
+  const thirdSubstrates = countThirdSubstrates(ids);
+  const narrowIndex = countNarrowIndex(ids);
+  const meetings = countMeetings(ids);
+  const labelLines = deskLabels(ids).length;
   const contents = [
     `${slots.length} ${slots.length === 1 ? "pair" : "pairs"} compared`,
     `${rows.length} mapped ${rows.length === 1 ? "row" : "rows"}`,
+    watchPhrases > 0 ? `${watchPhrases} watch ${watchPhrases === 1 ? "phrase" : "phrases"}` : "",
+    storedNotes > 0 ? `${storedNotes} stored ${storedNotes === 1 ? "note" : "notes"}` : "",
+    secondEnzymes > 0 ? `${secondEnzymes} with a second enzyme` : "",
+    thirdEnzymes > 0 ? `${thirdEnzymes} with a third enzyme` : "",
+    secondPerps > 0 ? `${secondPerps} with a second perpetrator` : "",
+    fourthEnzymes > 0 ? `${fourthEnzymes} with a fourth enzyme` : "",
+    thirdSubstrates > 0 ? `${thirdSubstrates} with a third substrate` : "",
+    narrowIndex > 0 ? `${narrowIndex} with a narrow index` : "",
+    meetings > 0 ? `${meetings} where a perpetrator meets a substrate` : "",
+    labelLines > 0 ? `${labelLines} stored label ${labelLines === 1 ? "line" : "lines"}` : "",
     shelfGroups.length ? `${shelfGroups.length} same shelf` : "",
     food.length ? `${food.length} food beside` : "",
     quietPairs.length ? `${quietPairs.length} blank ${quietPairs.length === 1 ? "pair" : "pairs"}` : "",
@@ -381,9 +409,9 @@ export function CheckBoard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Interaction check</p>
-          <h2 className="mt-1 font-serif text-2xl tracking-tight text-fg">
+          <h1 className="mt-1 font-serif text-2xl tracking-tight text-fg">
             {lead ? verdictTitle(lead) : "No interaction found in this map."}
-          </h2>
+          </h1>
           {ids.length > 0 ? (
             <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-muted">{contents}</p>
           ) : null}
@@ -392,6 +420,9 @@ export function CheckBoard({
               Each pair is checked whole. Enzymes are not separate checks.
             </p>
           ) : null}
+          {ids.length > 0 ? <EnzymeLedger ids={ids} /> : null}
+          {ids.length > 0 ? <StoredNameCard ids={ids} /> : null}
+          {ids.length > 0 ? <StoredLabelLine ids={ids} /> : null}
           {ids.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {rows.length > 0 ? (
@@ -967,7 +998,7 @@ function RoleGrid({ ids, rows }: { ids: string[]; rows: Finding[] }) {
         return (
           <div key={id} className="rounded-md bg-bg-sunken px-3 py-2.5">
             <p className="text-sm font-medium text-fg">{drug.name}</p>
-            <p className="text-[11px] text-muted">{drug.cls}</p>
+            <p className="text-[11px] text-muted">{ITEM_KIND_LABEL[drug.kind]}. {drug.cls}.</p>
             {roles.length ? (
               <ul className="mt-1.5 space-y-0.5">
                 {roles.map((e, i) => (

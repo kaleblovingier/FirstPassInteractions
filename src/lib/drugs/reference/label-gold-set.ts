@@ -42,6 +42,17 @@
  * 1–4 are not repeated. The floor is contraindicated ("Avoid together")
  * because a label pin holds the engine there. No new CYP grade.
  *
+ * Wave 6 is label-stated contraindications from the current Recorlev
+ * (levoketoconazole) SPL, retrieved 2026-10-05. Section 4 contraindicates
+ * drugs that cause QT prolongation associated with ventricular arrhythmias,
+ * and certain sensitive CYP3A4 or CYP3A4 and P-gp substrates (see 7.1).
+ * Table 6 in 7.1 says use with the QT row's drugs "is contraindicated" and
+ * names them; only catalog drugs named there are pairs. Table 6's
+ * sensitive-substrate row says "contraindicated or not recommended" without
+ * saying which drug is which, so it is not used. The metabolizer-conditional
+ * eliglustat line is not used. The floor is contraindicated ("Avoid
+ * together") because a label pin holds the engine there. No new CYP grade.
+ *
  * Quotes are verbatim substrings of the SPL text retrieved on `retrieved`; a
  * "…" marks an elided span. `labelExample` (also verbatim) is used when the
  * governing sentence names a class and a nearby sentence names the drug.
@@ -85,7 +96,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03";
+  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -94,8 +105,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon. */
-  wave: 1 | 2 | 3 | 4 | 5;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -157,6 +168,53 @@ export const LABEL_SETIDS = {
   // wave 5, DailyMed v2 SPL retrieved 2026-10-03.
   // Geodon capsules and injection. Effective time 2025-01-13. Published 2026-09-18.
   geodon: "8326928a-2cb6-4f7f-9712-03a425a14c37",
+  // wave 6, DailyMed v2 SPL retrieved 2026-10-05.
+  // Recorlev (levoketoconazole) tablets. SPL version 13, effective 2026-03-10, published 2026-06-26.
+  recorlev: "d4c5fead-bc4a-fb02-e053-2a95a90ae4fc",
+
+// wave 7, DailyMed v2 SPL retrieved 2026-10-12. Section 4 (Contraindications) text only.
+  tikosyn: "02438044-d6a3-49e9-a1ac-3aad21ef2c8c",
+  tracleer: "749e42fb-2fe0-45dd-9268-b43bb3f4081c",
+  adempas: "7b57509a-3d5d-41d4-8fed-1471e26372a3",
+  xenazine: "ac768bab-8afa-4446-bc7f-caeeffec0cda",
+  austedo: "7ea3c60a-45c7-44cc-afc2-d87fa53993c0",
+  mavyret: "7bf99777-0401-9095-8645-16c6e907fcc0",
+  edurant: "03880372-2c68-45c6-a53a-f420c49541d6",
+  biktarvy: "664cb8f0-1f65-441b-b0d9-ba3d798be309",
+  tivicay: "63df5af3-b8ac-4e76-9830-2dbb340af922",
+  apokyn: "3235535d-9ef9-4657-8b2a-176a807d091c",
+  relpax: "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
+  vosevi: "17ffc094-8ca7-45d2-80d8-fd043bc9a221",
+  bixlenvo: "072a3c7e-33fb-4a87-ba21-3d8dad3f5c48",
+  zokinvy: "97391d0c-943e-4c5a-8423-68e163aa7f50",
+  tegretol: "8d409411-aa9f-4f3a-a52c-fbcb0c3ec053",
+  "ranolazine-er": "00979fb3-d70f-493d-94ca-2914cbadaa9d",
+  "dhe-injection": "07a9112c-8c04-4849-8cb3-9463f58731d2",
+  movantik: "28596788-b73f-4247-85fc-3105f51fff5a",
+  "bupropion-ir": "334e5635-e4cc-cf2a-e063-6294a90ae1e1",
+  contrave: "485ff360-32c8-11df-928b-0002a5d5c51b",
+  revatio: "3bb9363e-b28d-4019-8aae-539233dca214",
+  // wave 10, DailyMed v2 SPL retrieved 2026-10-12.
+  celexa: "4259d9b1-de34-43a4-85a8-41dd214e9177",
+  lexapro: "13bb8267-1cab-43e5-acae-55a4d957630a",
+  viibryd: "4c55ccfb-c4cf-11df-851a-0800200c9a66",
+  fetzima: "f371258d-91b3-4b6a-ac99-434a1964c3af",
+  savella: "16a4a314-f97e-4e91-95e9-576a3773d284",
+  marplan: "95fde749-44ad-4668-86c4-0ff17bca0074",
+  // wave 9, DailyMed v2 SPL retrieved 2026-10-12.
+  zoloft: "fda754f6-d0f3-4dce-a17a-927d64f912f7",
+  paxil: "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
+  "effexor-xr": "c848a5d8-ba94-4c84-80e3-0bf35fb8e32e",
+  pristiq: "0f43610c-f290-46ea-d186-4f998ed99fce",
+  cymbalta: "00acd9e9-b26a-4626-949e-112ecd2f27e6",
+  trintellix: "1a5b68e2-14d0-419d-9ec6-1ca97145e838",
+  remeron: "98ad1917-a094-44f5-a28f-a64a8cfcd887",
+  trazodone: "4006d439-e2de-4590-82e9-fc9d56e3ec1b",
+  anafranil: "4074b555-7635-41a9-809d-fae3b3610059",
+  buspirone: "7c9eafb9-9ce1-4b28-900c-8fcb4b23424e",
+  "adderall-xr": "aff45863-ffe1-4d4f-8acf-c7081512a6c0",
+  vyvanse: "704e4378-ca83-445c-8b45-3cfa51c1ecad",
+  azilect: "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -2502,9 +2560,1103 @@ const WAVE_5: GoldPair[] = [
   }),
 ];
 
+/** Wave 6 row: Recorlev. The label says contraindicated and the pin holds the engine there. */
+function row6(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-05",
+    expectedFloor: "contraindicated",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 6,
+  };
+}
+
+const RECORLEV_SECTION = "7.1 Effect of RECORLEV on Other Drugs (Table 6)";
+const RECORLEV_QT =
+  "Concomitant use of RECORLEV with other drugs that cause QT prolongation associated with ventricular arrhythmias, including torsades de pointes, is contraindicated";
+const RECORLEV_NOTE =
+  "Table 6 row: CYP3A4 or CYP3A4 and P-gp substrates that may prolong QT. Section 4 contraindicates drugs that cause QT prolongation associated with ventricular arrhythmias.";
+
+const WAVE_6: GoldPair[] = [
+  // ── Recorlev Table 6: named QT drugs, use is contraindicated ──
+  row6({
+    drugA: "levoketoconazole", drugB: "bosutinib", queries: ["recorlev", "bosutinib"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "Bosutinib",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "clarithromycin", queries: ["recorlev", "clarithromycin"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "cobimetinib", queries: ["recorlev", "cobimetinib"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "cobimetinib",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "crizotinib", queries: ["recorlev", "crizotinib"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "crizotinib",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "disopyramide", queries: ["recorlev", "disopyramide"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "disopyramide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "dofetilide", queries: ["recorlev", "dofetilide"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "dronedarone", queries: ["recorlev", "dronedarone"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "dronedarone",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "ivabradine", queries: ["recorlev", "ivabradine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "ivabradine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "methadone", queries: ["recorlev", "methadone"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "midostaurin", queries: ["recorlev", "midostaurin"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "midostaurin",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "nicardipine", queries: ["recorlev", "nicardipine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "nicardipine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "pimozide", queries: ["recorlev", "pimozide"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "pimozide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "quinidine", queries: ["recorlev", "quinidine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "quinidine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+  row6({
+    drugA: "levoketoconazole", drugB: "ranolazine", queries: ["recorlev", "ranolazine"],
+    labelDrug: "Recorlev (levoketoconazole)", label: "recorlev", labelSection: RECORLEV_SECTION,
+    quote: RECORLEV_QT, labelExample: "ranolazine",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "endocrine",
+    note: RECORLEV_NOTE,
+  }),
+];
+
+const W7_QUOTES = {
+  "tikosyn": "The concomitant use of verapamil or the cation transport system inhibitors cimetidine, trimethoprim (alone or in combination with sulfamethoxazole), or ketoconazole with TIKOSYN is contraindicated",
+  "tracleer-c": "concomitant use of TRACLEER and cyclosporine A is contraindicated",
+  "tracleer-g": "co-administration of glyburide and TRACLEER is contraindicated",
+  "adempas": "Concomitant administration of Adempas with specific PDE-5 inhibitors (such as sildenafil, tadalafil, or vardenafil) or nonspecific PDE-5 inhibitors (such as dipyridamole or theophylline) is contraindicated",
+  "xenazine": "XENAZINE is contraindicated in patients: … Taking deutetrabenazine or valbenazine",
+  "austedo": "AUSTEDO XR and AUSTEDO are contraindicated in patients: … Taking tetrabenazine or valbenazine",
+  "mavyret": "MAVYRET is contraindicated with atazanavir or rifampin",
+  "edurant": "EDURANT and EDURANT PED are contraindicated for coadministration with the drugs in Table 2",
+  "biktarvy-d": "BIKTARVY is contraindicated to be co-administered with: dofetilide",
+  "biktarvy-r": "BIKTARVY is contraindicated to be co-administered with: … rifampin due to decreased BIC plasma concentrations",
+  "tivicay": "TIVICAY and TIVICAY PD are contraindicated in patients: … receiving dofetilide",
+  "apokyn": "APOKYN is contraindicated in patients: Using concomitant drugs of the 5HT 3 antagonist class including antiemetics (e.g., ondansetron, granisetron, dolasetron, palonosetron) and alosetron",
+  "relpax": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir",
+  "vosevi": "VOSEVI is contraindicated with rifampin",
+  "bixlenvo": "Concomitant administration of BIXLENVO is contraindicated with: dofetilide",
+} as const;
+
+function row7(r: Row): GoldPair {
+  const { label, paraphrased, ...rest } = r;
+  return {
+    id: `${r.drugA}+${r.drugB}`,
+    ...rest,
+    paraphrased: paraphrased ?? false,
+    url: DM(LABEL_SETIDS[label]),
+    retrieved: "2026-10-12",
+    expectedFloor: "contraindicated",
+    expectContraindicated: r.labelClass === "contraindicated",
+    wave: 7,
+  };
+}
+
+const WAVE_7: GoldPair[] = [
+  row7({
+    drugA: "dofetilide", drugB: "verapamil", queries: ["tikosyn", "verapamil"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: W7_QUOTES["tikosyn"], labelExample: "verapamil",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dofetilide", drugB: "cimetidine", queries: ["tikosyn", "cimetidine"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: W7_QUOTES["tikosyn"], labelExample: "cimetidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dofetilide", drugB: "ketoconazole", queries: ["tikosyn", "ketoconazole"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: W7_QUOTES["tikosyn"], labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "bosentan", drugB: "cyclosporine", queries: ["tracleer", "cyclosporine"],
+    labelDrug: "Tracleer (bosentan)", label: "tracleer", labelSection: "4.2 Use with Cyclosporine A",
+    quote: W7_QUOTES["tracleer-c"], labelExample: "cyclosporine A",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "bosentan", drugB: "glyburide", queries: ["tracleer", "glyburide"],
+    labelDrug: "Tracleer (bosentan)", label: "tracleer", labelSection: "4.3 Use with Glyburide",
+    quote: W7_QUOTES["tracleer-g"], labelExample: "glyburide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "dipyridamole", queries: ["adempas", "dipyridamole"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "dipyridamole",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "theophylline", queries: ["adempas", "theophylline"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "theophylline",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "sildenafil", queries: ["adempas", "sildenafil"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "sildenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "tadalafil", queries: ["adempas", "tadalafil"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "tadalafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "riociguat", drugB: "vardenafil", queries: ["adempas", "vardenafil"],
+    labelDrug: "Adempas (riociguat)", label: "adempas", labelSection: "4.3 Phosphodiesterase Inhibitors",
+    quote: W7_QUOTES["adempas"], labelExample: "vardenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "tetrabenazine", drugB: "deutetrabenazine", queries: ["xenazine", "deutetrabenazine"],
+    labelDrug: "Xenazine (tetrabenazine)", label: "xenazine", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["xenazine"], labelExample: "deutetrabenazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "tetrabenazine", drugB: "valbenazine", queries: ["xenazine", "valbenazine"],
+    labelDrug: "Xenazine (tetrabenazine)", label: "xenazine", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["xenazine"], labelExample: "valbenazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "deutetrabenazine", drugB: "valbenazine", queries: ["austedo", "valbenazine"],
+    labelDrug: "Austedo (deutetrabenazine)", label: "austedo", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["austedo"], labelExample: "valbenazine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "glecaprevir-pibrentasvir", drugB: "rifampin", queries: ["mavyret", "rifampin"],
+    labelDrug: "Mavyret (glecaprevir/pibrentasvir)", label: "mavyret", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["mavyret"], labelExample: "rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "carbamazepine", queries: ["edurant", "carbamazepine"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Carbamazepine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "oxcarbazepine", queries: ["edurant", "oxcarbazepine"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Oxcarbazepine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "phenobarbital", queries: ["edurant", "phenobarbital"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Phenobarbital",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "phenytoin", queries: ["edurant", "phenytoin"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "rifampin", queries: ["edurant", "rifampin"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "rifapentine", queries: ["edurant", "rifapentine"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Rifapentine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "st-johns-wort", queries: ["edurant", "st. john's wort"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "St. John's wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "esomeprazole", queries: ["edurant", "esomeprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Esomeprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "lansoprazole", queries: ["edurant", "lansoprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Lansoprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "omeprazole", queries: ["edurant", "omeprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Omeprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "pantoprazole", queries: ["edurant", "pantoprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Pantoprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "rilpivirine", drugB: "rabeprazole", queries: ["edurant", "rabeprazole"],
+    labelDrug: "Edurant (rilpivirine)", label: "edurant", labelSection: "4 CONTRAINDICATIONS (Table 2)",
+    quote: W7_QUOTES["edurant"], labelExample: "Rabeprazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "bictegravir", drugB: "dofetilide", queries: ["biktarvy", "dofetilide"],
+    labelDrug: "Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide)", label: "biktarvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["biktarvy-d"], labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "bictegravir", drugB: "rifampin", queries: ["biktarvy", "rifampin"],
+    labelDrug: "Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide)", label: "biktarvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["biktarvy-r"], labelExample: "rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "dolutegravir", drugB: "dofetilide", queries: ["tivicay", "dofetilide"],
+    labelDrug: "Tivicay (dolutegravir)", label: "tivicay", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["tivicay"], labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "ondansetron", queries: ["apokyn", "ondansetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "ondansetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "granisetron", queries: ["apokyn", "granisetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "granisetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "dolasetron", queries: ["apokyn", "dolasetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "dolasetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "palonosetron", queries: ["apokyn", "palonosetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "palonosetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "apomorphine", drugB: "alosetron", queries: ["apokyn", "alosetron"],
+    labelDrug: "Apokyn (apomorphine)", label: "apokyn", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["apokyn"], labelExample: "alosetron",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "ketoconazole", queries: ["relpax", "ketoconazole"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "itraconazole", queries: ["relpax", "itraconazole"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "itraconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "nefazodone", queries: ["relpax", "nefazodone"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "clarithromycin", queries: ["relpax", "clarithromycin"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eletriptan", drugB: "ritonavir", queries: ["relpax", "ritonavir"],
+    labelDrug: "Relpax (eletriptan)", label: "relpax", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["relpax"], labelExample: "ritonavir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "sofosbuvir-velpatasvir-voxilaprevir", drugB: "rifampin", queries: ["vosevi", "rifampin"],
+    labelDrug: "Vosevi (sofosbuvir/velpatasvir/voxilaprevir)", label: "vosevi", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["vosevi"], labelExample: "rifampin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row7({
+    drugA: "bictegravir-lenacapavir", drugB: "dofetilide", queries: ["bixlenvo", "dofetilide"],
+    labelDrug: "Bixlenvo (bictegravir/lenacapavir)", label: "bixlenvo", labelSection: "4 CONTRAINDICATIONS",
+    quote: W7_QUOTES["bixlenvo"], labelExample: "dofetilide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "hiv",
+  }),
+  row7({
+    drugA: "lonafarnib", drugB: "midazolam", queries: ["zokinvy", "versed"],
+    labelDrug: "Zokinvy (lonafarnib)", label: "zokinvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOKINVY is contraindicated in patients taking: … Midazolam", labelExample: "Midazolam",
+    labelClass: "contraindicated", mechanism: "PK", domain: "sleep",
+  }),
+  row7({
+    drugA: "lonafarnib", drugB: "lovastatin", queries: ["zokinvy", "mevacor"],
+    labelDrug: "Zokinvy (lonafarnib)", label: "zokinvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOKINVY is contraindicated in patients taking: … Lovastatin, simvastatin, or atorvastatin", labelExample: "Lovastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row7({
+    drugA: "lonafarnib", drugB: "simvastatin", queries: ["zokinvy", "zocor"],
+    labelDrug: "Zokinvy (lonafarnib)", label: "zokinvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOKINVY is contraindicated in patients taking: … Lovastatin, simvastatin, or atorvastatin", labelExample: "simvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row7({
+    drugA: "lonafarnib", drugB: "atorvastatin", queries: ["zokinvy", "lipitor"],
+    labelDrug: "Zokinvy (lonafarnib)", label: "zokinvy", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOKINVY is contraindicated in patients taking: … Lovastatin, simvastatin, or atorvastatin", labelExample: "atorvastatin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row7({
+    drugA: "pimozide", drugB: "erythromycin", queries: ["pimozide", "ery-tab"],
+    labelDrug: "Pimozide", label: "pimozide", labelSection: "CONTRAINDICATIONS",
+    quote: "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin", labelExample: "erythromycin",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "pimozide", drugB: "azithromycin", queries: ["pimozide", "zithromax"],
+    labelDrug: "Pimozide", label: "pimozide", labelSection: "CONTRAINDICATIONS",
+    quote: "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin", labelExample: "azithromycin",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "pimozide", drugB: "citalopram", queries: ["pimozide", "celexa"],
+    labelDrug: "Pimozide", label: "pimozide", labelSection: "CONTRAINDICATIONS",
+    quote: "Concomitant use in patients taking Celexa or Lexapro is contraindicated", labelExample: "Celexa",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "pimozide", drugB: "escitalopram", queries: ["pimozide", "lexapro"],
+    labelDrug: "Pimozide", label: "pimozide", labelSection: "CONTRAINDICATIONS",
+    quote: "Concomitant use in patients taking Celexa or Lexapro is contraindicated", labelExample: "Lexapro",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "pimozide", drugB: "sertraline", queries: ["pimozide", "zoloft"],
+    labelDrug: "Pimozide", label: "pimozide", labelSection: "CONTRAINDICATIONS",
+    quote: "Concomitant use of pimozide in patients taking sertraline is contraindicated", labelExample: "sertraline",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "pimozide", drugB: "nefazodone", queries: ["pimozide", "serzone"],
+    labelDrug: "Pimozide", label: "pimozide", labelSection: "CONTRAINDICATIONS",
+    quote: "Nefazodone is a potent inhibitor of CYP 3A4, and its concomitant use with pimozide is also contraindicated", labelExample: "Nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "triazolam", drugB: "nefazodone", queries: ["triazolam", "serzone"],
+    labelDrug: "Triazolam", label: "triazolam", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Triazolam is contraindicated in: … Concomitant administration of strong cytochrome P450 (CYP 3A) enzyme inhibitors (e.g., ketoconazole, itraconazole, nefazodone, lopinavir, ritonavir)", labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "sleep",
+  }),
+  row7({
+    drugA: "carbamazepine", drugB: "nefazodone", queries: ["tegretol", "serzone"],
+    labelDrug: "Tegretol (carbamazepine)", label: "tegretol", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of carbamazepine with nefazodone is contraindicated.", labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "ranolazine", drugB: "clarithromycin", queries: ["ranolazine", "biaxin"],
+    labelDrug: "Ranolazine extended-release", label: "ranolazine-er", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Ranolazine is contraindicated in patients: Taking strong inhibitors of CYP3A … Strong CYP3A inhibitors (e.g., ketoconazole, clarithromycin, nelfinavir)", labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "ranolazine", drugB: "st-johns-wort", queries: ["ranolazine", "st. john's wort"],
+    labelDrug: "Ranolazine extended-release", label: "ranolazine-er", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Ranolazine is contraindicated in patients: … Taking inducers of CYP3A … CYP3A inducers (e.g., rifampin, phenobarbital, St. John's wort)", labelExample: "St. John's wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "ergotamine", drugB: "erythromycin", queries: ["cafergot", "ery-tab"],
+    labelDrug: "Cafergot (ergotamine/caffeine)", label: "cafergot", labelSection: "CONTRAINDICATIONS",
+    quote: "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) … ergotamine use is contraindicated with these drugs", labelExample: "erythromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "ergotamine", drugB: "ketoconazole", queries: ["cafergot", "nizoral"],
+    labelDrug: "Cafergot (ergotamine/caffeine)", label: "cafergot", labelSection: "CONTRAINDICATIONS",
+    quote: "ergotamine use is contraindicated with these drugs and other potent inhibitors of CYP 3A4 (e.g., ketoconazole, itraconazole)", labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dihydroergotamine", drugB: "erythromycin", queries: ["dihydroergotamine", "ery-tab"],
+    labelDrug: "Dihydroergotamine mesylate injection", label: "dhe-injection", labelSection: "CONTRAINDICATIONS",
+    quote: "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated", labelExample: "erythromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dihydroergotamine", drugB: "ketoconazole", queries: ["dihydroergotamine", "nizoral"],
+    labelDrug: "Dihydroergotamine mesylate injection", label: "dhe-injection", labelSection: "CONTRAINDICATIONS",
+    quote: "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated", labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "lurasidone", drugB: "voriconazole", queries: ["latuda", "vfend"],
+    labelDrug: "Latuda (lurasidone)", label: "latuda", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Strong CYP3A4 inhibitors (e.g., ketoconazole, clarithromycin, ritonavir, voriconazole, mibefradil, etc.)", labelExample: "voriconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "lurasidone", drugB: "st-johns-wort", queries: ["latuda", "st. john's wort"],
+    labelDrug: "Latuda (lurasidone)", label: "latuda", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Strong CYP3A4 inducers (e.g., rifampin, avasimibe, St. John's wort, phenytoin, carbamazepine, etc.)", labelExample: "St. John's wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "lurasidone", drugB: "phenytoin", queries: ["latuda", "dilantin"],
+    labelDrug: "Latuda (lurasidone)", label: "latuda", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Strong CYP3A4 inducers (e.g., rifampin, avasimibe, St. John's wort, phenytoin, carbamazepine, etc.)", labelExample: "phenytoin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "lurasidone", drugB: "carbamazepine", queries: ["latuda", "tegretol"],
+    labelDrug: "Latuda (lurasidone)", label: "latuda", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Strong CYP3A4 inducers (e.g., rifampin, avasimibe, St. John's wort, phenytoin, carbamazepine, etc.)", labelExample: "carbamazepine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "eplerenone", drugB: "nefazodone", queries: ["inspra", "serzone"],
+    labelDrug: "Inspra (eplerenone)", label: "inspra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "INSPRA is contraindicated in all patients with: … concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)", labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "eplerenone", drugB: "clarithromycin", queries: ["inspra", "biaxin"],
+    labelDrug: "Inspra (eplerenone)", label: "inspra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "INSPRA is contraindicated in all patients with: … concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)", labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "eplerenone", drugB: "ritonavir", queries: ["inspra", "norvir"],
+    labelDrug: "Inspra (eplerenone)", label: "inspra", labelSection: "4 CONTRAINDICATIONS",
+    quote: "INSPRA is contraindicated in all patients with: … concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)", labelExample: "ritonavir",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dronedarone", drugB: "voriconazole", queries: ["multaq", "vfend"],
+    labelDrug: "Multaq (dronedarone)", label: "multaq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant use of strong CYP3A inhibitors, such as ketoconazole, itraconazole, voriconazole, cyclosporine, telithromycin, clarithromycin, nefazodone, and ritonavir", labelExample: "voriconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dronedarone", drugB: "telithromycin", queries: ["multaq", "ketek"],
+    labelDrug: "Multaq (dronedarone)", label: "multaq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant use of strong CYP3A inhibitors, such as ketoconazole, itraconazole, voriconazole, cyclosporine, telithromycin, clarithromycin, nefazodone, and ritonavir", labelExample: "telithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dronedarone", drugB: "clarithromycin", queries: ["multaq", "biaxin"],
+    labelDrug: "Multaq (dronedarone)", label: "multaq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant use of strong CYP3A inhibitors, such as ketoconazole, itraconazole, voriconazole, cyclosporine, telithromycin, clarithromycin, nefazodone, and ritonavir", labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dronedarone", drugB: "nefazodone", queries: ["multaq", "serzone"],
+    labelDrug: "Multaq (dronedarone)", label: "multaq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Concomitant use of strong CYP3A inhibitors, such as ketoconazole, itraconazole, voriconazole, cyclosporine, telithromycin, clarithromycin, nefazodone, and ritonavir", labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dronedarone", drugB: "erythromycin", queries: ["multaq", "ery-tab"],
+    labelDrug: "Multaq (dronedarone)", label: "multaq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "MULTAQ is contraindicated in patients with: … Concomitant use of erythromycin", labelExample: "erythromycin",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "naloxegol", drugB: "clarithromycin", queries: ["movantik", "biaxin"],
+    labelDrug: "Movantik (naloxegol)", label: "movantik", labelSection: "4 CONTRAINDICATIONS",
+    quote: "MOVANTIK is contraindicated in: … Patients concomitantly using strong CYP3A4 inhibitors (e.g., clarithromycin, ketoconazole)", labelExample: "clarithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "gi",
+  }),
+  row7({
+    drugA: "naloxegol", drugB: "ketoconazole", queries: ["movantik", "nizoral"],
+    labelDrug: "Movantik (naloxegol)", label: "movantik", labelSection: "4 CONTRAINDICATIONS",
+    quote: "MOVANTIK is contraindicated in: … Patients concomitantly using strong CYP3A4 inhibitors (e.g., clarithromycin, ketoconazole)", labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "gi",
+  }),
+  row7({
+    drugA: "bupropion", drugB: "linezolid", queries: ["bupropion", "zyvox"],
+    labelDrug: "Bupropion hydrochloride tablets", label: "bupropion-ir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting bupropion hydrochloride tablets in a patient treated with reversible MAOIs such as linezolid or intravenous methylene blue is contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "bupropion", drugB: "methylene-blue", queries: ["bupropion", "methylene blue"],
+    labelDrug: "Bupropion hydrochloride tablets", label: "bupropion-ir", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting bupropion hydrochloride tablets in a patient treated with reversible MAOIs such as linezolid or intravenous methylene blue is contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "naltrexone-bupropion", drugB: "methadone", queries: ["naltrexone–bupropion", "dolophine"],
+    labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use, or acute opiate withdrawal", labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "mat",
+  }),
+  row7({
+    drugA: "naltrexone-bupropion", drugB: "buprenorphine", queries: ["naltrexone–bupropion", "suboxone"],
+    labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CONTRAVE is contraindicated in … Chronic opioid or opiate agonist (e.g., methadone) or partial agonists (e.g., buprenorphine) use, or acute opiate withdrawal", labelExample: "buprenorphine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "mat",
+  }),
+  row7({
+    drugA: "naltrexone-bupropion", drugB: "bupropion", queries: ["naltrexone–bupropion", "bupropion"],
+    labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CONTRAVE is contraindicated in … Use of other bupropion-containing products (including, but not limited to, WELLBUTRIN, WELLBUTRIN SR, WELLBUTRIN XL, APLENZIN and ZYBAN)", labelExample: "WELLBUTRIN",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "naltrexone-bupropion", drugB: "bupropion-xl", queries: ["naltrexone–bupropion", "forfivo"],
+    labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CONTRAVE is contraindicated in … Use of other bupropion-containing products (including, but not limited to, WELLBUTRIN, WELLBUTRIN SR, WELLBUTRIN XL, APLENZIN and ZYBAN)", labelExample: "WELLBUTRIN XL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "naltrexone-bupropion", drugB: "linezolid", queries: ["naltrexone–bupropion", "zyvox"],
+    labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting CONTRAVE in a patient treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "naltrexone-bupropion", drugB: "methylene-blue", queries: ["naltrexone–bupropion", "methylene blue"],
+    labelDrug: "Contrave (naltrexone/bupropion)", label: "contrave", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting CONTRAVE in a patient treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "dofetilide", drugB: "tmp-smx", queries: ["tikosyn", "bactrim"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: "The concomitant use of verapamil or the cation transport system inhibitors cimetidine, trimethoprim (alone or in combination with sulfamethoxazole), or ketoconazole with TIKOSYN is contraindicated", labelExample: "trimethoprim (alone or in combination with sulfamethoxazole)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "cardiology",
+  }),
+  row7({
+    drugA: "dofetilide", drugB: "hctz", queries: ["tikosyn", "hydrochlorothiazide"],
+    labelDrug: "Tikosyn (dofetilide)", label: "tikosyn", labelSection: "CONTRAINDICATIONS",
+    quote: "The concomitant use of hydrochlorothiazide (alone or in combinations such as with triamterene) with TIKOSYN is contraindicated", labelExample: "hydrochlorothiazide",
+    labelClass: "contraindicated", mechanism: "PK+PD", domain: "cardiology",
+  }),
+  row7({
+    drugA: "thioridazine", drugB: "pindolol", queries: ["thioridazine", "visken"],
+    labelDrug: "Thioridazine", label: "thioridazine", labelSection: "CONTRAINDICATIONS",
+    quote: "certain other drugs (e.g., fluvoxamine, propranolol, and pindolol) appear to appreciably inhibit the metabolism of thioridazine. … Therefore, thioridazine is contraindicated with these drugs", labelExample: "pindolol",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row7({
+    drugA: "sildenafil-pah", drugB: "riociguat", queries: ["sildenafil (pah)", "adempas"],
+    labelDrug: "Revatio (sildenafil)", label: "revatio", labelSection: "4 CONTRAINDICATIONS",
+    quote: "REVATIO is contraindicated in patients with: … Concomitant use of riociguat, a guanylate cyclase stimulator.", labelExample: "riociguat",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+];
+
+/**
+ * Wave 9 (DailyMed v2 SPL retrieved 2026-10-12): MAOI-class Contraindications that
+ * name linezolid and intravenous methylene blue (SSRIs, SNRIs, mirtazapine,
+ * trazodone, clomipramine, buspirone, amphetamines), plus partners named on
+ * Azilect and in Parnate Table 1. Wave 8 (#154) was filed under wave 7.
+ */
+function row9(r: Row): GoldPair {
+  return { ...row7(r), wave: 9 };
+}
+
+const WAVE_9: GoldPair[] = [
+  row9({
+    drugA: "sertraline", drugB: "linezolid", queries: ["zoloft", "linezolid"],
+    labelDrug: "Zoloft (sertraline)", label: "zoloft", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOLOFT is contraindicated in patients: … Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "sertraline", drugB: "methylene-blue", queries: ["zoloft", "methylene blue"],
+    labelDrug: "Zoloft (sertraline)", label: "zoloft", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ZOLOFT is contraindicated in patients: … Taking, or within 14 days of stopping, MAOIs, (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "paroxetine", drugB: "linezolid", queries: ["paxil", "linezolid"],
+    labelDrug: "Paxil (paroxetine)", label: "paxil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "paroxetine", drugB: "methylene-blue", queries: ["paxil", "methylene blue"],
+    labelDrug: "Paxil (paroxetine)", label: "paxil", labelSection: "4 CONTRAINDICATIONS",
+    quote: "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "fluvoxamine", drugB: "linezolid", queries: ["fluvoxamine", "linezolid"],
+    labelDrug: "Fluvoxamine maleate tablets", label: "fluvoxamine", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Fluvoxamine Maleate Tablets in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "fluvoxamine", drugB: "methylene-blue", queries: ["fluvoxamine", "methylene blue"],
+    labelDrug: "Fluvoxamine maleate tablets", label: "fluvoxamine", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Fluvoxamine Maleate Tablets in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "venlafaxine", drugB: "linezolid", queries: ["effexor", "linezolid"],
+    labelDrug: "Effexor XR (venlafaxine)", label: "effexor-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Effexor XR is contraindicated in patients: … taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "venlafaxine", drugB: "methylene-blue", queries: ["effexor", "methylene blue"],
+    labelDrug: "Effexor XR (venlafaxine)", label: "effexor-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Effexor XR is contraindicated in patients: … taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "desvenlafaxine", drugB: "linezolid", queries: ["pristiq", "linezolid"],
+    labelDrug: "Pristiq (desvenlafaxine)", label: "pristiq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting PRISTIQ in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "desvenlafaxine", drugB: "methylene-blue", queries: ["pristiq", "methylene blue"],
+    labelDrug: "Pristiq (desvenlafaxine)", label: "pristiq", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting PRISTIQ in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "duloxetine", drugB: "linezolid", queries: ["cymbalta", "linezolid"],
+    labelDrug: "Cymbalta (duloxetine)", label: "cymbalta", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting CYMBALTA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "duloxetine", drugB: "methylene-blue", queries: ["cymbalta", "methylene blue"],
+    labelDrug: "Cymbalta (duloxetine)", label: "cymbalta", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting CYMBALTA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "vortioxetine", drugB: "linezolid", queries: ["trintellix", "linezolid"],
+    labelDrug: "Trintellix (vortioxetine)", label: "trintellix", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting TRINTELLIX in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "vortioxetine", drugB: "methylene-blue", queries: ["trintellix", "methylene blue"],
+    labelDrug: "Trintellix (vortioxetine)", label: "trintellix", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting TRINTELLIX in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "mirtazapine", drugB: "linezolid", queries: ["remeron", "linezolid"],
+    labelDrug: "Remeron (mirtazapine)", label: "remeron", labelSection: "4 CONTRAINDICATIONS",
+    quote: "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "mirtazapine", drugB: "methylene-blue", queries: ["remeron", "methylene blue"],
+    labelDrug: "Remeron (mirtazapine)", label: "remeron", labelSection: "4 CONTRAINDICATIONS",
+    quote: "REMERON/REMERONSolTab is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "trazodone", drugB: "linezolid", queries: ["trazodone", "linezolid"],
+    labelDrug: "Trazodone hydrochloride tablets", label: "trazodone", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "trazodone", drugB: "methylene-blue", queries: ["trazodone", "methylene blue"],
+    labelDrug: "Trazodone hydrochloride tablets", label: "trazodone", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "clomipramine", drugB: "linezolid", queries: ["anafranil", "linezolid"],
+    labelDrug: "Anafranil (clomipramine)", label: "anafranil", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting Anafranil in a patient who is being treated with linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "clomipramine", drugB: "methylene-blue", queries: ["anafranil", "methylene blue"],
+    labelDrug: "Anafranil (clomipramine)", label: "anafranil", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting Anafranil in a patient who is being treated with linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "buspirone", drugB: "linezolid", queries: ["buspirone", "linezolid"],
+    labelDrug: "Buspirone hydrochloride tablets", label: "buspirone", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting buspirone in a patient who is being treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "buspirone", drugB: "methylene-blue", queries: ["buspirone", "methylene blue"],
+    labelDrug: "Buspirone hydrochloride tablets", label: "buspirone", labelSection: "CONTRAINDICATIONS",
+    quote: "Starting buspirone in a patient who is being treated with reversible MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "amphetamine", drugB: "linezolid", queries: ["adderall", "linezolid"],
+    labelDrug: "Adderall XR (mixed amphetamine salts)", label: "adderall-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ADDERALL XR administration is contraindicated in patients: … taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "amphetamine", drugB: "methylene-blue", queries: ["adderall", "methylene blue"],
+    labelDrug: "Adderall XR (mixed amphetamine salts)", label: "adderall-xr", labelSection: "4 CONTRAINDICATIONS",
+    quote: "ADDERALL XR administration is contraindicated in patients: … taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "lisdexamfetamine", drugB: "linezolid", queries: ["vyvanse", "linezolid"],
+    labelDrug: "Vyvanse (lisdexamfetamine)", label: "vyvanse", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VYVANSE is contraindicated in patients with: … Patients taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "lisdexamfetamine", drugB: "methylene-blue", queries: ["vyvanse", "methylene blue"],
+    labelDrug: "Vyvanse (lisdexamfetamine)", label: "vyvanse", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VYVANSE is contraindicated in patients with: … Patients taking monoamine oxidase inhibitors (MAOIs) … (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "meperidine", queries: ["azilect", "meperidine"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)", labelExample: "meperidine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "tramadol", queries: ["azilect", "tramadol"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)", labelExample: "tramadol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "methadone", queries: ["azilect", "methadone"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)", labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "mat",
+  }),
+  row9({
+    drugA: "rasagiline", drugB: "cyclobenzaprine", queries: ["azilect", "cyclobenzaprine"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with St. John’s wort and with cyclobenzaprine", labelExample: "cyclobenzaprine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "muscle-relaxant",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "buspirone", queries: ["parnate", "buspirone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … buspirone", labelExample: "buspirone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "tapentadol", queries: ["parnate", "tapentadol"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … tapentadol", labelExample: "tapentadol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "cyclobenzaprine", queries: ["parnate", "cyclobenzaprine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … cyclobenzaprine", labelExample: "cyclobenzaprine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "muscle-relaxant",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "milnacipran", queries: ["parnate", "milnacipran"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … milnacipran", labelExample: "milnacipran",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row9({
+    drugA: "tranylcypromine", drugB: "rasagiline", queries: ["parnate", "rasagiline"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … rasagiline", labelExample: "rasagiline",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
+/**
+ * Wave 10 (DailyMed v2 SPL retrieved 2026-10-12): Nardil Contraindications pairings
+ * (each quoted from Nardil's own label), Parnate Table 1 "Other antidepressants"
+ * (from Parnate's own label), Marplan and Zyvox named partners, and Celexa,
+ * Lexapro, Viibryd, Fetzima and Savella with linezolid / IV methylene blue.
+ */
+function row10(r: Row): GoldPair {
+  return { ...row7(r), wave: 10 };
+}
+
+const WAVE_10: GoldPair[] = [
+  row10({
+    drugA: "phenelzine", drugB: "fluvoxamine", queries: ["nardil", "fluvoxamine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … fluvoxamine … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "fluvoxamine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "paroxetine", queries: ["nardil", "paroxetine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … paroxetine … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "paroxetine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "sertraline", queries: ["nardil", "sertraline"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … sertraline … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "sertraline",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "citalopram", queries: ["nardil", "citalopram"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … citalopram … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "citalopram",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "venlafaxine", queries: ["nardil", "venlafaxine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "serotoninergic drugs (e.g., … venlafaxine … the concomitant use of NARDIL with serotoninergic agents is contraindicated", labelExample: "venlafaxine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "buspirone", queries: ["nardil", "buspirone"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "NARDIL should also not be used in combination with buspirone HCl", labelExample: "buspirone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "amphetamine", queries: ["nardil", "amphetamine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … amphetamines", labelExample: "amphetamines",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "cocaine", queries: ["nardil", "cocaine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … cocaine", labelExample: "cocaine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "methylphenidate", queries: ["nardil", "methylphenidate"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … methylphenidate", labelExample: "methylphenidate",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),  row10({
+    drugA: "phenelzine", drugB: "dopamine", queries: ["nardil", "dopamine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … dopamine", labelExample: "dopamine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "epinephrine", queries: ["nardil", "epinephrine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … epinephrine", labelExample: "epinephrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "norepinephrine", queries: ["nardil", "norepinephrine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … norepinephrine", labelExample: "norepinephrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+
+  row10({
+    drugA: "phenelzine", drugB: "isocarboxazid", queries: ["nardil", "isocarboxazid"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors … isocarboxazid", labelExample: "isocarboxazid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "tranylcypromine", queries: ["nardil", "tranylcypromine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors … tranylcypromine", labelExample: "tranylcypromine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "trazodone", queries: ["parnate", "trazodone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … trazodone", labelExample: "trazodone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "nefazodone", queries: ["parnate", "nefazodone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … nefazodone", labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "vilazodone", queries: ["parnate", "vilazodone"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … vilazodone", labelExample: "vilazodone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "tranylcypromine", drugB: "vortioxetine", queries: ["parnate", "vortioxetine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., … vortioxetine", labelExample: "vortioxetine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "isocarboxazid", drugB: "buspirone", queries: ["marplan", "buspirone"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … buspirone", labelExample: "buspirone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "isocarboxazid", drugB: "dextromethorphan", queries: ["marplan", "dextromethorphan"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … dextromethorphan", labelExample: "dextromethorphan",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "linezolid", drugB: "isocarboxazid", queries: ["zyvox", "isocarboxazid"],
+    labelDrug: "Zyvox (linezolid)", label: "zyvox", labelSection: "4.2 Monoamine Oxidase Inhibitors",
+    quote: "Linezolid should not be used in patients taking any medicinal product which inhibits monoamine oxidases A or B (e.g., phenelzine, isocarboxazid)", labelExample: "isocarboxazid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "antimicrobial",
+  }),
+  row10({
+    drugA: "citalopram", drugB: "linezolid", queries: ["celexa", "linezolid"],
+    labelDrug: "Celexa (citalopram)", label: "celexa", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "citalopram", drugB: "methylene-blue", queries: ["celexa", "methylene blue"],
+    labelDrug: "Celexa (citalopram)", label: "celexa", labelSection: "4 CONTRAINDICATIONS",
+    quote: "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "escitalopram", drugB: "linezolid", queries: ["lexapro", "linezolid"],
+    labelDrug: "Lexapro (escitalopram)", label: "lexapro", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Lexapro in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "escitalopram", drugB: "methylene-blue", queries: ["lexapro", "methylene blue"],
+    labelDrug: "Lexapro (escitalopram)", label: "lexapro", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting Lexapro in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "vilazodone", drugB: "linezolid", queries: ["viibryd", "linezolid"],
+    labelDrug: "Viibryd (vilazodone)", label: "viibryd", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "vilazodone", drugB: "methylene-blue", queries: ["viibryd", "methylene blue"],
+    labelDrug: "Viibryd (vilazodone)", label: "viibryd", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "levomilnacipran", drugB: "linezolid", queries: ["fetzima", "linezolid"],
+    labelDrug: "Fetzima (levomilnacipran)", label: "fetzima", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "levomilnacipran", drugB: "methylene-blue", queries: ["fetzima", "methylene blue"],
+    labelDrug: "Fetzima (levomilnacipran)", label: "fetzima", labelSection: "4 CONTRAINDICATIONS",
+    quote: "Starting FETZIMA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "milnacipran", drugB: "linezolid", queries: ["savella", "linezolid"],
+    labelDrug: "Savella (milnacipran)", label: "savella", labelSection: "4.1 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "milnacipran", drugB: "methylene-blue", queries: ["savella", "methylene blue"],
+    labelDrug: "Savella (milnacipran)", label: "savella", labelSection: "4.1 Monoamine Oxidase Inhibitors (MAOIs)",
+    quote: "Starting SAVELLA in a patient who is being treated with MAOIs such as linezolid or intravenous methylene blue is also contraindicated", labelExample: "intravenous methylene blue",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
 export const WAVE_5_COUNT = WAVE_5.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5];
+export const WAVE_6_COUNT = WAVE_6.length;
+export const WAVE_7_COUNT = WAVE_7.length;
+export const WAVE_9_COUNT = WAVE_9.length;
+export const WAVE_10_COUNT = WAVE_10.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -2545,108 +3697,22 @@ export const KNOWN_UNDERCALLS: readonly string[] = [
  * Pinned by a test so the list is pruned when the engine changes.
  */
 export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
-  // Pairs where label says contraindicated, but engine PK math stops at major
-  // ("Serious concern") for strong 3A4 inhibition with sensitive substrate.
-  "atazanavir+alfuzosin",
-  "atazanavir+lovastatin",
-  "atazanavir+midazolam",
-  "atazanavir+pimozide",
-  "atazanavir+simvastatin",
-  "atazanavir+triazolam",
-  "atazanavir-cobicistat+alfuzosin",
-  "atazanavir-cobicistat+lovastatin",
-  "atazanavir-cobicistat+lurasidone",
-  "atazanavir-cobicistat+midazolam",
-  "atazanavir-cobicistat+pimozide",
-  "atazanavir-cobicistat+ranolazine",
-  "atazanavir-cobicistat+simvastatin",
-  "atazanavir-cobicistat+triazolam",
-  "clarithromycin+lurasidone",
-  "darunavir+alfuzosin",
-  "darunavir+ivabradine",
-  "darunavir+lovastatin",
-  "darunavir+lurasidone",
-  "darunavir+midazolam",
-  "darunavir+naloxegol",
-  "darunavir+pimozide",
-  "darunavir+ranolazine",
-  "darunavir+simvastatin",
-  "darunavir+triazolam",
-  "darunavir-cobicistat+alfuzosin",
-  "darunavir-cobicistat+ivabradine",
-  "darunavir-cobicistat+lovastatin",
-  "darunavir-cobicistat+lurasidone",
-  "darunavir-cobicistat+midazolam",
-  "darunavir-cobicistat+naloxegol",
-  "darunavir-cobicistat+pimozide",
-  "darunavir-cobicistat+ranolazine",
-  "darunavir-cobicistat+simvastatin",
-  "darunavir-cobicistat+triazolam",
-  "itraconazole+eplerenone",
-  "itraconazole+felodipine",
-  "itraconazole+finerenone",
-  "itraconazole+ivabradine",
-  "itraconazole+lovastatin",
-  "itraconazole+lurasidone",
-  "itraconazole+midazolam",
-  "itraconazole+naloxegol",
-  "itraconazole+nisoldipine",
-  "itraconazole+pimozide",
-  "itraconazole+ranolazine",
-  "itraconazole+triazolam",
-  "itraconazole+voclosporin",
-  "lopinavir+alfuzosin",
-  "lopinavir+lovastatin",
-  "lopinavir+lurasidone",
-  "lopinavir+midazolam",
-  "lopinavir+pimozide",
-  "lopinavir+ranolazine",
-  "lopinavir+simvastatin",
-  "lopinavir+triazolam",
-  "mifepristone+cyclosporine",
-  "mifepristone+fentanyl",
-  "mifepristone+lovastatin",
-  "mifepristone+pimozide",
-  "mifepristone+simvastatin",
-  "mifepristone+sirolimus",
-  "mifepristone+tacrolimus",
-  "paxlovid+alfuzosin",
-  "paxlovid+eletriptan",
-  "paxlovid+eplerenone",
-  "paxlovid+finerenone",
-  "paxlovid+ivabradine",
-  "paxlovid+lovastatin",
-  "paxlovid+lurasidone",
-  "paxlovid+midazolam",
-  "paxlovid+naloxegol",
-  "paxlovid+pimozide",
-  "paxlovid+ranolazine",
-  "paxlovid+silodosin",
-  "paxlovid+simvastatin",
-  "paxlovid+tolvaptan",
-  "paxlovid+triazolam",
-  "paxlovid+ubrogepant",
-  "paxlovid+voclosporin",
-  "posaconazole+lovastatin",
-  "posaconazole+pimozide",
-  "posaconazole+simvastatin",
-  "posaconazole+sirolimus",
-  "ritonavir+alfuzosin",
-  "ritonavir+lovastatin",
-  "ritonavir+lurasidone",
-  "ritonavir+midazolam",
-  "ritonavir+pimozide",
-  "ritonavir+ranolazine",
-  "ritonavir+triazolam",
+  // Empty. 91 pairs (41 wave 3, 50 wave 4) fell to major ("Serious concern") when
+  // Ship 1.51 (7bdfa95) capped pkSeverity() at major for a strong inhibitor with a
+  // sensitive substrate. They had no label pin, because the enzyme rule had been
+  // holding them at contraindicated. 5bdbcd5 listed them here. Kaleb approved
+  // pinning them, and each now has a wave-3 or wave-4 pin in
+  // label-contraindications.ts that holds the existing CYP3A4 finding at
+  // contraindicated. The gaps were closed by pins, not by an engine change.
 ];
 
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
 export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
   { drug: "flibanserin", reason: "Not in catalog. Paxlovid section 4 names it. Not curated." },
-  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups." },
+  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition." },
   { drug: "astemizole", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
   { drug: "terfenadine", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
-  { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists." },
+  { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row." },
   { drug: "aminophylline", reason: "Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead." },
   {
     drug: "buprenorphine/naloxone",
@@ -2665,6 +3731,49 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
 
 /** Candidate pairs considered and dropped, with the reason. */
 export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
+  {
+    pair: "wave 7: Bixlenvo (bictegravir/lenacapavir) + strong CYP3A inducers",
+    reason: "Section 4 names the class only, with no drug named. Not expanded.",
+  },
+  {
+    pair: "wave 7: Orladeyo, Ravicti, fexinidazole",
+    reason:
+      "Orladeyo section 4 is 'None'. Ravicti section 4 is hypersensitivity only. Fexinidazole names metronidazole and tinidazole only as nitroimidazole hypersensitivity, not coadministration.",
+  },
+  {
+    pair: "wave 7: riociguat + nitrates (nitroglycerin, isosorbide mononitrate, isosorbide dinitrate)",
+    reason: "Adempas section 4.2 names a class ('nitrates or nitric oxide donors') and only amyl nitrite as an example. No catalog nitrate is named.",
+  },
+  {
+    pair: "wave 7: dofetilide + prochlorperazine / dolutegravir / megestrol (Tikosyn)",
+    reason:
+      "Tikosyn says these 'should not be used', not 'contraindicated'. dolutegravir + dofetilide is carried by the Tivicay section 4 sentence instead. Trimethoprim, megestrol and hydrochlorothiazide are not catalog rows.",
+  },
+  {
+    pair: "wave 7: rilpivirine + dexamethasone (Edurant Table 2)",
+    reason: "Contraindicated only for more than a single-dose treatment. Not an unconditional pair.",
+  },
+  {
+    pair: "wave 7: metronidazole + disulfiram (Flagyl)",
+    reason: "The Flagyl Contraindications section says 'Do not administer' within two weeks of disulfiram, not 'contraindicated'. Skipped as ambiguous wording.",
+  },
+  {
+    pair: "wave 7: tetrabenazine / deutetrabenazine + MAOIs or reserpine",
+    reason: "MAOIs are a class (not expanded); reserpine is not a catalog row.",
+  },
+  {
+    pair: "wave 7: eletriptan + troleandomycin / nelfinavir; Mavyret + atazanavir",
+    reason: "Troleandomycin and nelfinavir are not catalog rows. Mavyret + atazanavir is already in the gold set.",
+  },
+  {
+    pair: "wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)",
+    reason:
+      "Recorlev Table 6 says use with these is \"contraindicated or not recommended\" and does not say which. Section 4 says \"certain\" sensitive substrates. Not pinned as contraindicated. Ebastine, lomitapide, saquinavir, and tipranavir are not in the catalog.",
+  },
+  {
+    pair: "wave 6: levoketoconazole + strong CYP3A4 inhibitors or inducers (Table 7)",
+    reason: "Recorlev Table 7 says \"not recommended\", not contraindicated.",
+  },
   {
     pair: "methadone / buprenorphine / fentanyl + strong CYP3A4 inhibitor or inducer",
     reason:
@@ -2840,5 +3949,223 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
     pair: "Geodon + harmaline / ozanimod / tedizolid",
     reason:
       "Section 4.3 says MAOIs and names linezolid and intravenous methylene blue. Harmaline is a plant beta-carboline, ozanimod is an S1P modulator, and tedizolid is not the named oxazolidinone. Not included.",
+  },
+  {
+    pair: "wave 7: Zokinvy + strong CYP3A inhibitors / strong or moderate CYP3A inducers",
+    reason:
+      "Zokinvy section 4 states both as classes and names no drug. Only the named midazolam and lovastatin / simvastatin / atorvastatin lines are pinned.",
+  },
+  {
+    pair: "wave 7: Braftovi (encorafenib) section 4",
+    reason:
+      "The current label (setid 235dfc38-0f0b-4037-b501-7a9f4294740c) lists no contraindications. Nothing to pin.",
+  },
+  {
+    pair: "wave 7: Lifyorli (relacorilant) + systemic glucocorticoids",
+    reason:
+      "Section 4 is conditional (glucocorticoids given for lifesaving purposes) and names no catalog drug. Not pinned.",
+  },
+  {
+    pair: "wave 7: Etcamah (camizestrant) section 4",
+    reason:
+      "The current label (setid c54223d3-f3c7-4186-afa0-429d84805826) lists no contraindications. Nothing to pin.",
+  },
+  {
+    pair: "wave 7: Contrave + bupropion SR (Wellbutrin SR)",
+    reason:
+      "Contrave section 4 names WELLBUTRIN SR, but no user query resolves to the bupropion-sr row first ('wellbutrin sr' returns bupropion). Bupropion and bupropion XL are pinned. Search is out of scope here.",
+  },
+  {
+    pair: "wave 7: Multaq + cyclosporine",
+    reason:
+      "Section 4 lists cyclosporine as a strong CYP3A inhibitor. The only CYP card is dronedarone raising cyclosporine, the opposite direction. Pinning it would tell the wrong story. Not pinned.",
+  },
+  {
+    pair: "wave 7: Multaq + amiodarone",
+    reason:
+      "Section 4 is about liver or lung toxicity from previous amiodarone use, not co-use. Not a pair contraindication.",
+  },
+  {
+    pair: "wave 7: thioridazine + propranolol",
+    reason:
+      "Named on the thioridazine contraindication. The only card is thioridazine inhibiting propranolol's CYP2D6 clearance, the opposite direction, and a no-enzyme card would say there is no CYP finding. Not pinned. Pindolol has no card and is pinned.",
+  },
+  {
+    pair: "wave 7: pimozide + methylphenidate / amphetamines",
+    reason:
+      "Pimozide says not to use until the tic-causing drug is withdrawn to sort out the cause of tics. Diagnostic, not an unconditional contraindication.",
+  },
+  {
+    pair: "wave 7: pimozide + zileuton / fluvoxamine",
+    reason:
+      "The pimozide label says 'should also be avoided', not contraindicated.",
+  },
+  {
+    pair: "wave 7: nefazodone + triazolam (nefazodone label)",
+    reason:
+      "The nefazodone label says 'should be avoided'. The pair is pinned from the triazolam label section 4, which names nefazodone.",
+  },
+  {
+    pair: "wave 7: Tikosyn + prochlorperazine / megestrol / triamterene alone",
+    reason:
+      "Tikosyn says prochlorperazine, dolutegravir and megestrol 'should not be used', not contraindicated. Megestrol is not in the catalog. Triamterene is named only as a partner in hydrochlorothiazide combinations.",
+  },
+  {
+    pair: "wave 7: Inspra + amiloride / spironolactone / triamterene",
+    reason:
+      "Contraindicated only when Inspra treats hypertension. Not unconditional.",
+  },
+  {
+    pair: "wave 7: Tegretol + tricyclics",
+    reason:
+      "Section 4 names amitriptyline, desipramine, imipramine, protriptyline and nortriptyline only as a hypersensitivity cross-reaction, not co-use.",
+  },
+  {
+    pair: "wave 7: disulfiram + metronidazole",
+    reason:
+      "Disulfiram and Flagyl name each other. The only pair card is a seizure-threshold card, not the psychotic reaction the labels describe. Not pinned (the Geodon + tacrolimus rule).",
+  },
+  {
+    pair: "wave 7: triptans (Imitrex, Maxalt, Zomig, Amerge, almotriptan, frovatriptan, Relpax) + ergotamine / dihydroergotamine",
+    reason:
+      "Section 4 names ergotamine and dihydroergotamine within 24 hours. The only pair card is a serotonin card, not the vasospasm the labels describe. Not pinned without a matching card.",
+  },
+  {
+    pair: "wave 7: Lybalvi + opioids",
+    reason:
+      "Section 4 says 'patients using opioids' and names no drug.",
+  },
+  {
+    pair: "wave 7: Movantik, Inspra, Latuda, Multaq + nelfinavir / indinavir / troleandomycin / mibefradil / avasimibe / saquinavir",
+    reason:
+      "Named on these labels. Not in the catalog.",
+  },
+  {
+    pair: "wave 7: Lexapro / Celexa + pimozide; Zoloft + pimozide; Tegretol + nefazodone",
+    reason:
+      "Same pair as the pimozide-label and nefazodone rows. One row per pair.",
+  },
+  {
+    pair: "wave 7: Zoloft oral solution + disulfiram",
+    reason:
+      "Contraindicated for the oral solution only (it contains alcohol). The catalog sertraline row is not formulation-specific.",
+  },
+  {
+    pair: "wave 9: Parnate + carbamazepine",
+    reason: "Named in Parnate Table 1. The only pair cards are washout cards, not the hypertensive or serotonin reaction the label describes. Not pinned without a matching card.",
+  },
+  {
+    pair: "wave 9: Azilect + dextromethorphan",
+    reason: "Named on Azilect section 4 for psychosis or bizarre behavior. The pair card is a serotonin card. Not pinned without a matching card.",
+  },
+  {
+    pair: "wave 9: Emsam (selegiline transdermal) + SSRIs, SNRIs, clomipramine, imipramine, meperidine, tramadol, methadone, dextromethorphan, carbamazepine",
+    reason: "Contraindicated on the transdermal system label. The catalog selegiline row is not formulation-specific (the Zoloft oral solution rule).",
+  },
+  {
+    pair: "wave 9: Parnate + bupropion, trazodone, nefazodone, vilazodone, vortioxetine",
+    reason: "Deferred from wave 9. Trazodone, nefazodone, vilazodone and vortioxetine were added in wave 10; bupropion is dropped (see wave 10).",
+  },
+
+  {
+    pair: "wave 9: Nardil",
+    reason: "Deferred from wave 9. Reviewed line by line in wave 10.",
+  },
+
+  {
+    pair: "wave 9: Inspra + spironolactone, amiloride, triamterene; Multaq + cyclosporine",
+    reason: "Out of scope for this wave (psychiatric, MAT and ketamine focus). Candidates for a cardiology wave.",
+  },
+  {
+    pair: "wave 10: Parnate + bupropion; Nardil + bupropion; Marplan + bupropion",
+    reason: "Each label names bupropion. The only pair cards are washout cards (major), not a serotonin or hypertensive card, so a pin would raise a washout card to Avoid together. Not pinned without a matching card (the Parnate + carbamazepine rule).",
+  },
+  {
+    pair: "wave 10: Nardil + levodopa, methyldopa, alcohol; Nardil + guanethidine",
+    reason: "Named in Nardil's Contraindications section. Levodopa, methyldopa and alcohol have only a washout card. Guanethidine is not in the catalog.",
+  },
+  {
+    pair: "wave 10: Nardil + fluoxetine, meperidine, dextromethorphan; Zyvox + phenelzine",
+    reason: "Already in the gold set. One row per pair.",
+  },
+  {
+    pair: "wave 10: Marplan + amphetamines, narcotics, alcohol, antihypertensives",
+    reason: "Marplan names these as classes, not individual drugs.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Pifeltro (doravirine) + rifampin, rifapentine, carbamazepine, oxcarbazepine, phenobarbital, phenytoin, enzalutamide, mitotane, St. John's wort",
+    reason: "Pifeltro section 4 names each as a strong CYP3A inducer it is contraindicated with. Each pair's card is a CYP3A4 inducer card at Serious concern (major), not contraindicated. Pinning would raise 9 pairs to Avoid together. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Rukobia (fostemsavir) + rifampin, carbamazepine, phenytoin, enzalutamide, mitotane, St. John's wort",
+    reason: "Named in Rukobia section 4 (strong CYP3A inducers). CYP3A4 inducer cards read major. Pinning would raise 6 pairs. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Genvoya (elvitegravir/cobicistat) + rifampin, carbamazepine, phenobarbital, phenytoin, St. John's wort",
+    reason: "Named in Genvoya section 4. CYP3A4 inducer cards read major. Pinning would raise 5 pairs. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Prezcobix (darunavir/cobicistat) + carbamazepine, phenobarbital, phenytoin",
+    reason: "Named in Prezcobix section 4. CYP3A4 inducer cards read major. Pinning would raise 3 pairs. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Cresemba (isavuconazonium) + rifampin, carbamazepine, St. John's wort",
+    reason: "Named in Cresemba section 4 (strong CYP3A4 inducers). CYP3A4 inducer cards read major. Pinning would raise 3 pairs. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Vfend (voriconazole) + carbamazepine, efavirenz, rifabutin, St. John's wort",
+    reason: "Named in Vfend section 4. CYP3A4 / CYP2C19 inducer cards read major. Pinning would raise 4 pairs. The efavirenz line is dose-conditional on the label. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Edurant (rilpivirine) + dexamethasone; Biltricide (praziquantel) + rifampin",
+    reason: "Named in each label's section 4 (Edurant: systemic dexamethasone, more than a single-dose treatment; Biltricide: strong CYP3A inducers such as rifampin). CYP3A4 inducer cards read major. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity change, for Kaleb): Coartem (artemether/lumefantrine) + rifampin, carbamazepine, phenytoin, St. John's wort",
+    reason: "Listed under section 4 'Strong CYP3A4 Inducers', but the sentence says coadministration 'can result in decreased concentrations' rather than 'contraindicated'. Inducer cards read major. Not pinned.",
+  },
+  {
+    pair: "wave 11: Cabenuva (cabotegravir/rilpivirine) + carbamazepine, oxcarbazepine, phenobarbital, phenytoin, rifabutin, rifampin, rifapentine, dexamethasone, St. John's wort",
+    reason: "Named in Cabenuva section 4. The catalog cabotegravir row has no inducer card for these (washout card only, or no card), so there is nothing contraindicated to hold. Needs a catalog change before any pin.",
+  },
+  {
+    pair: "wave 11: Tybost (cobicistat) + rifampin, carbamazepine, phenobarbital, phenytoin, nevirapine, St. John's wort",
+    reason: "Named in Tybost section 4. Cards are washout cards, a cobicistat inhibitor card (major), or none. No contraindicated inducer card to hold. Not pinned.",
+  },
+  {
+    pair: "wave 11: Paxlovid, Latuda, Ranexa, Xtandi, Biktarvy, Mavyret, Vosevi, Edurant (other inducers), Korlym, Corlanor, Multaq, Inspra, Brilinta, Eliquis, Xarelto and others",
+    reason: "Checked. Inducer pairs named in their section 4 are already pinned or in the gold set, or the label does not contraindicate an inducer (Eliquis, Xarelto, Brilinta: warnings only).",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Pifeltro (doravirine) + carbamazepine, oxcarbazepine, phenobarbital, phenytoin, enzalutamide, rifampin, rifapentine, mitotane, St. John's wort",
+    reason: "Pifeltro section 4 names each drug as a strong CYP3A inducer it is contraindicated with. The existing CYP3A4 inducer card reads Serious concern (major), so a pin would raise it to Avoid together. Not pinned without Kaleb's approval.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Rukobia (fostemsavir) + enzalutamide, carbamazepine, phenytoin, rifampin, mitotane, St. John's wort",
+    reason: "Rukobia section 4 names each drug. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Genvoya (elvitegravir) + carbamazepine, phenobarbital, phenytoin, rifampin, St. John's wort",
+    reason: "Genvoya section 4 names each drug. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Prezcobix (darunavir) + carbamazepine, phenobarbital, phenytoin",
+    reason: "Prezcobix section 4 names each anticonvulsant. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Vfend (voriconazole) + carbamazepine, rifabutin",
+    reason: "Vfend section 4 names both. The existing CYP3A4/CYP2C19 inducer cards read major. A pin would change severity. Not pinned. Vfend + efavirenz is contraindicated only at standard doses, so it is conditional and dropped.",
+  },
+  {
+    pair: "wave 11 (severity-change candidates for Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Coartem + rifampin, carbamazepine, phenytoin, St. John's wort; Biltricide (praziquantel) + rifampin",
+    reason: "Each section 4 names these drugs as strong CYP3A4 inducers. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
+  },
+  {
+    pair: "wave 11: Vocabria (cabotegravir) + carbamazepine, oxcarbazepine, phenobarbital, phenytoin, rifampin, rifapentine, rifabutin; Tybost (cobicistat) + carbamazepine, phenobarbital, phenytoin, rifampin, St. John's wort, nevirapine",
+    reason: "Named in section 4, but the catalog has no matching inducer card (washout card only, or no card) for cabotegravir (UGT1A1 induction) or for cobicistat as a standalone row. Pinning would add a new contraindicated card. Not pinned.",
+  },
+  {
+    pair: "wave 11: Juluca, Odefsey, Edurant + dexamethasone",
+    reason: "Juluca and Odefsey are combination products whose catalog rows (dolutegravir, emtricitabine) do not carry the rilpivirine contraindication. Dexamethasone is contraindicated only beyond a single dose, so it is conditional.",
   },
 ];

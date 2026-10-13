@@ -1401,6 +1401,283 @@ describe("study learning tools", () => {
     assert.equal(macroShelf.choices?.length, 4);
     assert.ok(macroShelf.choices?.some((choice) => choice.id === macroShelf.correct));
   });
+
+  it("brand cards ask the first stored brand and item cards ask the stored kind", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const brand = statin.find((c) => c.id === "brand-simvastatin");
+    assert.ok(brand);
+    assert.equal(brand.correct, "Zocor");
+    assert.equal(brand.prompt, "Simvastatin.");
+    assert.equal(brand.choices?.length, 4);
+    assert.ok(brand.choices?.some((choice) => choice.id === brand.correct));
+    const item = statin.find((c) => c.id === "item-simvastatin");
+    assert.ok(item);
+    assert.equal(item.correct, "drug");
+    assert.equal(item.prompt, "Simvastatin.");
+    assert.equal(item.choices?.length, 4);
+    assert.ok(item.choices?.some((choice) => choice.id === item.correct));
+    assert.equal(
+      statin.findIndex((c) => c.id === "shelf-simvastatin") <
+        statin.findIndex((c) => c.id === "brand-simvastatin"),
+      true,
+    );
+    assert.equal(
+      statin.findIndex((c) => c.id === "brand-simvastatin") <
+        statin.findIndex((c) => c.id === "item-simvastatin"),
+      true,
+    );
+
+    const juice = deskCards(["grapefruit"], []);
+    assert.equal(
+      juice.some((c) => c.id === "brand-grapefruit"),
+      false,
+    );
+    const food = juice.find((c) => c.id === "item-grapefruit");
+    assert.ok(food);
+    assert.equal(food.correct, "food");
+  });
+
+  it("flag, watch, and alias cards ask the first stored row words", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const flag = statin.find((c) => c.id === "flag-simvastatin");
+    assert.ok(flag);
+    assert.equal(flag.correct, "statin");
+    assert.equal(flag.prompt, "Simvastatin.");
+    assert.equal(
+      statin.findIndex((c) => c.id === "item-simvastatin") <
+        statin.findIndex((c) => c.id === "flag-simvastatin"),
+      true,
+    );
+    const hint = statin.find((c) => c.id === "hint-simvastatin");
+    assert.ok(hint);
+    assert.equal(hint.correct, "Myopathy / rhabdomyolysis");
+    assert.equal(
+      statin.some((c) => c.id === "aka-simvastatin"),
+      false,
+    );
+
+    const dissociative = deskCards(["ketamine"], []);
+    const aka = dissociative.find((c) => c.id === "aka-ketamine");
+    assert.ok(aka);
+    assert.equal(aka.correct, "ketalar");
+    assert.equal(aka.prompt, "Ketamine.");
+  });
+
+  it("note, second-brand, and enzyme-row cards ask stored desk words", () => {
+    const statin = deskCards(["simvastatin"], []);
+    const note = statin.find((c) => c.id === "note-simvastatin");
+    assert.ok(note);
+    assert.equal(note.correct, DRUG_BY_ID.simvastatin.note);
+    assert.equal(
+      note.correct,
+      "Sensitive 3A4 substrate. Strong 3A4 inhibitors are contraindicated.",
+    );
+    assert.equal(note.prompt, "Simvastatin.");
+    const rows = statin.find((c) => c.id === "rows-simvastatin");
+    assert.ok(rows);
+    assert.equal(rows.correct, "1");
+    assert.equal(rows.prompt, "Simvastatin.");
+    assert.equal(
+      statin.some((c) => c.id === "brand2-simvastatin"),
+      false,
+    );
+
+    const warfarin = deskCards(["warfarin"], []);
+    const brand2 = warfarin.find((c) => c.id === "brand2-warfarin");
+    assert.ok(brand2);
+    assert.equal(brand2.correct, "Jantoven");
+    assert.equal(brand2.prompt, "Warfarin.");
+    const warRows = warfarin.find((c) => c.id === "rows-warfarin");
+    assert.ok(warRows);
+    assert.equal(warRows.correct, "3");
+    assert.equal(warRows.prompt, "Warfarin.");
+  });
+
+  it("next-row cards restate the third enzyme, second substrate, and first-row role", () => {
+    const warfarin = deskCards(["warfarin"], []);
+    const enz3 = warfarin.find((c) => c.id === "enz3-warfarin");
+    assert.ok(enz3);
+    assert.equal(enz3.correct, "CYP1A2");
+    assert.equal(enz3.prompt, "Warfarin.");
+    const sub2 = warfarin.find((c) => c.id === "sub2-warfarin");
+    assert.ok(sub2);
+    assert.equal(sub2.correct, "CYP3A4");
+    const nsub = warfarin.find((c) => c.id === "nsub-warfarin");
+    assert.ok(nsub);
+    assert.equal(nsub.correct, "3");
+    const row0 = warfarin.find((c) => c.id === "row0-warfarin");
+    assert.ok(row0);
+    assert.equal(row0.correct, "substrate");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "enz3-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "grade2-simvastatin"), false);
+    const nperp = statin.find((c) => c.id === "nperp-simvastatin");
+    assert.ok(nperp);
+    assert.equal(nperp.correct, "0");
+    assert.equal(statin.find((c) => c.id === "row0-simvastatin")?.correct, "substrate");
+
+    const macro = deskCards(["clarithromycin"], []);
+    assert.equal(macro.find((c) => c.id === "role2-clarithromycin")?.correct, "inhibitor");
+    assert.equal(macro.find((c) => c.id === "row0-clarithromycin")?.correct, "substrate");
+    assert.equal(macro.find((c) => c.id === "grade2-clarithromycin")?.correct, "moderate");
+    assert.equal(macro.find((c) => c.id === "enz3-clarithromycin")?.correct, "P-gp");
+  });
+
+  it("deeper stored rows ask the fourth enzyme, third substrate, and later flags", () => {
+    const rifampin = deskCards(["rifampin"], []);
+    assert.equal(rifampin.find((c) => c.id === "enz4-rifampin")?.correct, "CYP2B6");
+    assert.equal(rifampin.find((c) => c.id === "role4-rifampin")?.correct, "inducer");
+    assert.equal(rifampin.find((c) => c.id === "grade3-rifampin")?.correct, "strong");
+    assert.equal(rifampin.find((c) => c.id === "grade4-rifampin")?.correct, "moderate");
+    assert.equal(rifampin.find((c) => c.id === "enz4-rifampin")?.prompt, "Rifampin.");
+
+    const methadone = deskCards(["methadone"], []);
+    assert.equal(methadone.find((c) => c.id === "sub3-methadone")?.correct, "CYP2C19");
+    assert.equal(methadone.find((c) => c.id === "path3-methadone")?.correct, "clearance");
+    assert.equal(methadone.find((c) => c.id === "sens3-methadone")?.correct, "minor");
+    assert.equal(methadone.find((c) => c.id === "sub4-methadone")?.correct, "CYP1A2");
+    assert.equal(methadone.find((c) => c.id === "sens4-methadone")?.correct, "minor");
+
+    const ami = deskCards(["amitriptyline"], []);
+    assert.equal(ami.find((c) => c.id === "flag4-amitriptyline")?.correct, "qt-possible");
+    assert.equal(ami.find((c) => c.id === "flag5-amitriptyline")?.correct, "seizure-lowering");
+
+    const bupe = deskCards(["buprenorphine"], []);
+    assert.equal(bupe.find((c) => c.id === "aka3-buprenorphine")?.correct, "zubsolv");
+    assert.equal(bupe.find((c) => c.id === "brand3-buprenorphine")?.correct, "Butrans");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "enz4-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "role3-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "sub4-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "grade4-simvastatin"), false);
+  });
+
+  it("later stored rows ask the seventh enzyme, sixth brand, and fifth alias", () => {
+    const rifampin = deskCards(["rifampin"], []);
+    assert.equal(rifampin.find((c) => c.id === "enz5-rifampin")?.correct, "CYP1A2");
+    assert.equal(rifampin.find((c) => c.id === "enz6-rifampin")?.correct, "CYP2C8");
+    assert.equal(rifampin.find((c) => c.id === "enz7-rifampin")?.correct, "P-gp");
+    assert.equal(rifampin.find((c) => c.id === "role5-rifampin")?.correct, "inducer");
+    assert.equal(rifampin.find((c) => c.id === "grade5-rifampin")?.correct, "moderate");
+    assert.equal(rifampin.find((c) => c.id === "grade7-rifampin")?.correct, "strong");
+    assert.equal(rifampin.find((c) => c.id === "enz7-rifampin")?.prompt, "Rifampin.");
+
+    const bupe = deskCards(["buprenorphine"], []);
+    assert.equal(bupe.find((c) => c.id === "brand4-buprenorphine")?.correct, "Sublocade");
+    assert.equal(bupe.find((c) => c.id === "brand5-buprenorphine")?.correct, "Zubsolv");
+    assert.equal(bupe.find((c) => c.id === "brand6-buprenorphine")?.correct, "Brixadi");
+    assert.equal(bupe.find((c) => c.id === "aka4-buprenorphine")?.correct, "bunavail");
+    assert.equal(bupe.find((c) => c.id === "aka5-buprenorphine")?.correct, "belbuca");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "enz7-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "grade7-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "brand6-simvastatin"), false);
+  });
+
+  it("later rows ask the seventh role and the twelfth other name", () => {
+    const rifampin = deskCards(["rifampin"], []);
+    assert.equal(rifampin.find((c) => c.id === "role6-rifampin")?.correct, "inducer");
+    assert.equal(rifampin.find((c) => c.id === "role7-rifampin")?.correct, "inducer");
+    assert.equal(rifampin.find((c) => c.id === "role6-rifampin")?.prompt, "Rifampin.");
+    assert.equal(rifampin.some((c) => c.id === "aka12-rifampin"), false);
+
+    const bupe = deskCards(["buprenorphine"], []);
+    assert.equal(bupe.find((c) => c.id === "aka6-buprenorphine")?.correct, "buprenex");
+    assert.equal(bupe.find((c) => c.id === "aka7-buprenorphine")?.correct, "brixadi");
+    assert.equal(bupe.some((c) => c.id === "aka8-buprenorphine"), false);
+
+    const pressed = deskCards(["dirty-30"], []);
+    assert.equal(pressed.find((c) => c.id === "aka8-dirty-30")?.correct, "m30");
+    assert.equal(pressed.find((c) => c.id === "aka9-dirty-30")?.correct, "m 30");
+    assert.equal(pressed.find((c) => c.id === "aka10-dirty-30")?.correct, "fake perc 30");
+    assert.equal(pressed.find((c) => c.id === "aka11-dirty-30")?.correct, "pressed perc");
+    assert.equal(pressed.find((c) => c.id === "aka12-dirty-30")?.correct, "pressed oxy");
+    assert.equal(pressed.find((c) => c.id === "aka12-dirty-30")?.prompt, "Dirty 30 (pressed M30).");
+
+    const statin = deskCards(["simvastatin"], []);
+    assert.equal(statin.some((c) => c.id === "role7-simvastatin"), false);
+    assert.equal(statin.some((c) => c.id === "aka6-simvastatin"), false);
+  });
+
+  it("a stored label line asks the section, the label, the naming line, and the class", () => {
+    const pair = deskCards(["clarithromycin", "simvastatin"], []);
+    assert.equal(pair.find((c) => c.id === "sect-clarithromycin|simvastatin")?.correct, "4 CONTRAINDICATIONS");
+    assert.equal(pair.find((c) => c.id === "own-clarithromycin|simvastatin")?.correct, "Zocor (simvastatin)");
+    assert.match(String(pair.find((c) => c.id === "ex-clarithromycin|simvastatin")?.correct), /clarithromycin/);
+    assert.equal(pair.find((c) => c.id === "lcls-clarithromycin|simvastatin")?.correct, "contraindicated");
+    assert.equal(pair.find((c) => c.id === "sect-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("sect-")), false);
+    assert.equal(war.some((c) => c.id.startsWith("lcls-")), false);
+  });
+
+  it("a stored label also asks the mechanism, domain, and other-line count", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(pair.find((c) => c.id === "mech-clarithromycin|simvastatin")?.correct, "PK");
+    assert.equal(pair.find((c) => c.id === "dom-clarithromycin|simvastatin")?.correct, "statins");
+    assert.equal(pair.find((c) => c.id === "more-clarithromycin|simvastatin")?.correct, "2");
+    assert.equal(pair.find((c) => c.id === "mech-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(pair.some((c) => c.id.startsWith("bas-")), false);
+    const pin = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(pin.find((c) => c.id === "bas-phenobarbital|ranolazine")?.correct, "named");
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("mech-")), false);
+    assert.equal(war.some((c) => c.id.startsWith("more-")), false);
+  });
+
+  it("a stored label also asks the pin enzyme and the pin direction", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(pair.find((c) => c.id === "penz-clarithromycin|simvastatin")?.correct, "CYP3A4");
+    assert.equal(pair.find((c) => c.id === "pkind-clarithromycin|simvastatin")?.correct, "inhibitor");
+    assert.equal(pair.find((c) => c.id === "penz-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(String(pair.find((c) => c.id === "penz-clarithromycin|simvastatin")?.prompt).includes("CYP3A4"), false);
+    const inducer = deskCards(["lurasidone", "rifampin"], []);
+    assert.equal(inducer.find((c) => c.id === "pkind-lurasidone|rifampin")?.correct, "inducer");
+    const pin = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(pin.find((c) => c.id === "penz-phenobarbital|ranolazine")?.correct, "CYP3A4");
+    assert.equal(pin.find((c) => c.id === "pkind-phenobarbital|ranolazine")?.correct, "inducer");
+    const none = deskCards(["darunavir", "grazoprevir-elbasvir"], []);
+    assert.equal(none.some((c) => c.id.startsWith("penz-")), false);
+    assert.equal(none.some((c) => c.id.startsWith("pkind-")), false);
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("penz-")), false);
+    assert.equal(war.some((c) => c.id.startsWith("pkind-")), false);
+  });
+
+  it("a stored label asks the pin contraindications sentence when it is not the quote", () => {
+    const pair = deskCards(["tizanidine", "fluvoxamine"], []);
+    const card = pair.find((c) => c.id === "csen-fluvoxamine|tizanidine");
+    assert.equal(card?.correct, "Zanaflex is contraindicated in patients taking strong CYP1A2 inhibitors");
+    assert.equal(card?.prompt, "Tizanidine × Fluvoxamine.");
+    assert.equal(String(card?.prompt).includes(String(card?.correct)), false);
+    const simva = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(simva.some((c) => c.id.startsWith("csen-")), false);
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("csen-")), false);
+    const rano = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(
+      rano.find((c) => c.id === "csen-phenobarbital|ranolazine")?.correct,
+      "RANEXA is contraindicated in patients: … Taking inducers of CYP3A",
+    );
+  });
+
+  it("a gold line asks the pin basis when the gold line hid it", () => {
+    const pair = deskCards(["simvastatin", "clarithromycin"], []);
+    const card = pair.find((c) => c.id === "pbas-clarithromycin|simvastatin");
+    assert.equal(card?.correct, "named");
+    assert.equal(card?.prompt, "Simvastatin × Clarithromycin.");
+    assert.equal(String(card?.prompt).includes("named"), false);
+    const pin = deskCards(["ranolazine", "phenobarbital"], []);
+    assert.equal(pin.some((c) => c.id.startsWith("pbas-")), false);
+    assert.equal(pin.some((c) => c.id.startsWith("bas-")), true);
+    const klass = deskCards(["ranolazine", "primidone"], []);
+    assert.equal(klass.some((c) => c.id.startsWith("pbas-")), false);
+    const war = deskCards(["warfarin", "clarithromycin"], []);
+    assert.equal(war.some((c) => c.id.startsWith("pbas-")), false);
+  });
 });
 
 

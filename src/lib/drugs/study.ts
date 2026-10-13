@@ -9,9 +9,73 @@ import { FDA_GRADES, INDUCTION, TDI } from "./cyp-protocol";
 import { ROUNDS } from "./rounds";
 import { isDue, type StudyMark } from "./study-marks";
 import type { Drug, Enzyme, Finding } from "./types";
-import { ENZYMES, SEVERITY_LABEL } from "./types";
+import { ENZYMES, ITEM_KIND_LABEL, SEVERITY_LABEL } from "./types";
 import { safetyOnDesk } from "./safety";
 import { WASHOUT_OFFSET, washoutOffsetKind } from "./washout-plain";
+import { secondEnzymeCard } from "./learn/second-enzyme";
+import { secondFlagCard } from "./learn/second-flag";
+import { brandCountCard } from "./learn/brand-count";
+import { flagCountCard } from "./learn/flag-count";
+import { aliasCountCard } from "./learn/alias-count";
+import { thirdEnzymeCard } from "./learn/third-enzyme";
+import { secondRoleCard } from "./learn/second-role";
+import { thirdFlagCard } from "./learn/third-flag";
+import { secondAliasCard } from "./learn/second-alias";
+import { secondSubstrateCard } from "./learn/second-substrate";
+import { secondPathCard } from "./learn/second-path";
+import { secondSensCard } from "./learn/second-sens";
+import { secondGradeCard } from "./learn/second-grade";
+import { substrateCountCard } from "./learn/substrate-count";
+import { perpetratorCountCard } from "./learn/perpetrator-count";
+import { firstRowRoleCard } from "./learn/first-row-role";
+import { fourthEnzymeCard } from "./learn/fourth-enzyme";
+import { thirdRoleCard } from "./learn/third-role";
+import { fourthRoleCard } from "./learn/fourth-role";
+import { fourthFlagCard } from "./learn/fourth-flag";
+import { fifthFlagCard } from "./learn/fifth-flag";
+import { thirdAliasCard } from "./learn/third-alias";
+import { thirdBrandCard } from "./learn/third-brand";
+import { thirdSubstrateCard } from "./learn/third-substrate";
+import { thirdPathCard } from "./learn/third-path";
+import { thirdSensCard } from "./learn/third-sens";
+import { thirdGradeCard } from "./learn/third-grade";
+import { fourthSubstrateCard } from "./learn/fourth-substrate";
+import { fourthPathCard } from "./learn/fourth-path";
+import { fourthSensCard } from "./learn/fourth-sens";
+import { fourthGradeCard } from "./learn/fourth-grade";
+import { fifthEnzymeCard } from "./learn/fifth-enzyme";
+import { sixthEnzymeCard } from "./learn/sixth-enzyme";
+import { seventhEnzymeCard } from "./learn/seventh-enzyme";
+import { fifthRoleCard } from "./learn/fifth-role";
+import { fifthGradeCard } from "./learn/fifth-grade";
+import { sixthGradeCard } from "./learn/sixth-grade";
+import { seventhGradeCard } from "./learn/seventh-grade";
+import { fourthBrandCard } from "./learn/fourth-brand";
+import { fifthBrandCard } from "./learn/fifth-brand";
+import { sixthBrandCard } from "./learn/sixth-brand";
+import { fourthAliasCard } from "./learn/fourth-alias";
+import { fifthAliasCard } from "./learn/fifth-alias";
+import { sixthRoleCard } from "./learn/sixth-role";
+import { seventhRoleCard } from "./learn/seventh-role";
+import { sixthAliasCard } from "./learn/sixth-alias";
+import { seventhAliasCard } from "./learn/seventh-alias";
+import { eighthAliasCard } from "./learn/eighth-alias";
+import { ninthAliasCard } from "./learn/ninth-alias";
+import { tenthAliasCard } from "./learn/tenth-alias";
+import { eleventhAliasCard } from "./learn/eleventh-alias";
+import { twelfthAliasCard } from "./learn/twelfth-alias";
+import { labelSectionCard } from "./learn/label-section";
+import { labelOwnerCard } from "./learn/label-owner";
+import { labelExampleCard } from "./learn/label-example";
+import { labelClassCard } from "./learn/label-class";
+import { labelMechanismCard } from "./learn/label-mechanism";
+import { labelDomainCard } from "./learn/label-domain";
+import { labelBasisCard } from "./learn/label-basis";
+import { labelMoreCard } from "./learn/label-more";
+import { labelPinEnzymeCard } from "./learn/label-pin-enzyme";
+import { labelPinKindCard } from "./learn/label-pin-kind";
+import { labelPinSentenceCard } from "./learn/label-pin-sentence";
+import { labelPinBasisCard } from "./learn/label-pin-basis";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -859,6 +923,308 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       answer: `${d.name} is stored on the ${d.cls} shelf. Same shelf is not a collision and not a clearance.`,
       drugIds: [id],
     });
+    const storedBrand = d.brands[0];
+    if (typeof storedBrand === "string" && storedBrand.length > 0) {
+      const brandPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.brands))]
+          .filter((brand) => brand.length > 0 && brand !== storedBrand)
+          .map((brand) => ({ id: brand, label: brand })),
+        `brand-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `brand-${id}`,
+        lane: "desk",
+        kicker: "Brand",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which brand is stored first?",
+        choices: bySeed(
+          [{ id: storedBrand, label: storedBrand }, ...brandPool],
+          `brand-${id}-order`,
+        ),
+        correct: storedBrand,
+        answer: `${d.name} stores ${storedBrand} first. A brand is not a different map and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    out.push({
+      id: `item-${id}`,
+      lane: "desk",
+      kicker: "Kind",
+      title: d.name,
+      prompt: `${d.name}.`,
+      ask: "Which kind is stored?",
+      choices: bySeed(
+        (Object.keys(ITEM_KIND_LABEL) as (keyof typeof ITEM_KIND_LABEL)[]).map((kind) => ({
+          id: kind,
+          label: ITEM_KIND_LABEL[kind],
+        })),
+        `item-${id}`,
+      ),
+      correct: d.kind,
+      answer: `${d.name} is stored as ${ITEM_KIND_LABEL[d.kind]}. Not a clearance.`,
+      drugIds: [id],
+    });
+    const storedFlag = d.pd[0];
+    if (typeof storedFlag === "string" && storedFlag.length > 0) {
+      const flagPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.pd))]
+          .filter((flag) => flag.length > 0 && flag !== storedFlag)
+          .map((flag) => ({ id: flag, label: flag.replace(/-/g, " ") })),
+        `flag-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `flag-${id}`,
+        lane: "desk",
+        kicker: "Flag",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which effect flag is stored first?",
+        choices: bySeed(
+          [{ id: storedFlag, label: storedFlag.replace(/-/g, " ") }, ...flagPool],
+          `flag-${id}-order`,
+        ),
+        correct: storedFlag,
+        answer: `${d.name} stores ${storedFlag.replace(/-/g, " ")} first. A flag is not a diagnosis and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    if (d.toxicityHint.trim()) {
+      const hintPool = bySeed(
+        [...new Set(DRUGS.map((row) => row.toxicityHint))]
+          .filter((hint) => hint.trim() && hint !== d.toxicityHint)
+          .map((hint) => ({ id: hint, label: hint })),
+        `hint-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `hint-${id}`,
+        lane: "desk",
+        kicker: "Watch",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which watch phrase is stored?",
+        choices: bySeed(
+          [{ id: d.toxicityHint, label: d.toxicityHint }, ...hintPool],
+          `hint-${id}-order`,
+        ),
+        correct: d.toxicityHint,
+        answer: `${d.name}. Watch phrase already stored: ${d.toxicityHint}. Not a diagnosis and not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const storedAlias = d.aliases[0];
+    if (typeof storedAlias === "string" && storedAlias.length > 0) {
+      const aliasPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.aliases))]
+          .filter((alias) => alias.length > 0 && alias !== storedAlias)
+          .map((alias) => ({ id: alias, label: alias })),
+        `aka-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `aka-${id}`,
+        lane: "desk",
+        kicker: "Also",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which other name is stored?",
+        choices: bySeed(
+          [{ id: storedAlias, label: storedAlias }, ...aliasPool],
+          `aka-${id}-order`,
+        ),
+        correct: storedAlias,
+        answer: `${d.name} also stores ${storedAlias}. An alias is not a different map.`,
+        drugIds: [id],
+      });
+    }
+    if (typeof d.note === "string" && d.note.length > 0) {
+      const notePool = bySeed(
+        [...new Set(DRUGS.map((row) => row.note).filter((note): note is string => Boolean(note)))]
+          .filter((note) => note !== d.note)
+          .map((note) => ({ id: note, label: note })),
+        `note-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `note-${id}`,
+        lane: "desk",
+        kicker: "Note",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which note is stored?",
+        choices: bySeed([{ id: d.note, label: d.note }, ...notePool], `note-${id}-order`),
+        correct: d.note,
+        answer: `${d.name}. Note already stored: ${d.note} Not a milligram.`,
+        drugIds: [id],
+      });
+    }
+    const secondBrand = d.brands[1];
+    if (typeof secondBrand === "string" && secondBrand.length > 0) {
+      const brandPool = bySeed(
+        [...new Set(DRUGS.flatMap((row) => row.brands))]
+          .filter((brand) => brand.length > 0 && brand !== secondBrand && brand !== d.brands[0])
+          .map((brand) => ({ id: brand, label: brand })),
+        `brand2-${id}`,
+      ).slice(0, 3);
+      out.push({
+        id: `brand2-${id}`,
+        lane: "desk",
+        kicker: "Second brand",
+        title: d.name,
+        prompt: `${d.name}.`,
+        ask: "Which second brand is stored?",
+        choices: bySeed(
+          [{ id: secondBrand, label: secondBrand }, ...brandPool],
+          `brand2-${id}-order`,
+        ),
+        correct: secondBrand,
+        answer: `${d.name} stores ${secondBrand} second. A second brand is not a different map.`,
+        drugIds: [id],
+      });
+    }
+    const rowCount = String(d.enzymes.length);
+    const rowPool = ["0", "1", "2", "3", "4", "5", "6"].filter((n) => n !== rowCount).slice(0, 3);
+    out.push({
+      id: `rows-${id}`,
+      lane: "desk",
+      kicker: "Rows",
+      title: d.name,
+      prompt: `${d.name}.`,
+      ask: "How many enzyme rows are stored?",
+      choices: bySeed(
+        [{ id: rowCount, label: rowCount }, ...rowPool.map((n) => ({ id: n, label: n }))],
+        `rows-${id}`,
+      ),
+      correct: rowCount,
+      answer: `${d.name} stores ${d.enzymes.length} enzyme ${d.enzymes.length === 1 ? "row" : "rows"}. A count is not a clearance.`,
+      drugIds: [id],
+    });
+    const enz2 = secondEnzymeCard(d);
+    if (enz2) out.push(enz2);
+    const flag2 = secondFlagCard(d);
+    if (flag2) out.push(flag2);
+    out.push(brandCountCard(d), flagCountCard(d), aliasCountCard(d));
+    const enz3 = thirdEnzymeCard(d);
+    if (enz3) out.push(enz3);
+    const role2 = secondRoleCard(d);
+    if (role2) out.push(role2);
+    const flag3 = thirdFlagCard(d);
+    if (flag3) out.push(flag3);
+    const aka2 = secondAliasCard(d);
+    if (aka2) out.push(aka2);
+    const sub2 = secondSubstrateCard(d);
+    if (sub2) out.push(sub2);
+    const path2 = secondPathCard(d);
+    if (path2) out.push(path2);
+    const sens2 = secondSensCard(d);
+    if (sens2) out.push(sens2);
+    const grade2 = secondGradeCard(d);
+    if (grade2) out.push(grade2);
+    out.push(substrateCountCard(d), perpetratorCountCard(d));
+    const row0 = firstRowRoleCard(d);
+    if (row0) out.push(row0);
+    const enz4 = fourthEnzymeCard(d);
+    if (enz4) out.push(enz4);
+    const role3 = thirdRoleCard(d);
+    if (role3) out.push(role3);
+    const role4 = fourthRoleCard(d);
+    if (role4) out.push(role4);
+    const flag4 = fourthFlagCard(d);
+    if (flag4) out.push(flag4);
+    const flag5 = fifthFlagCard(d);
+    if (flag5) out.push(flag5);
+    const aka3 = thirdAliasCard(d);
+    if (aka3) out.push(aka3);
+    const brand3 = thirdBrandCard(d);
+    if (brand3) out.push(brand3);
+    const sub3 = thirdSubstrateCard(d);
+    if (sub3) out.push(sub3);
+    const path3 = thirdPathCard(d);
+    if (path3) out.push(path3);
+    const sens3 = thirdSensCard(d);
+    if (sens3) out.push(sens3);
+    const grade3 = thirdGradeCard(d);
+    if (grade3) out.push(grade3);
+    const sub4 = fourthSubstrateCard(d);
+    if (sub4) out.push(sub4);
+    const path4 = fourthPathCard(d);
+    if (path4) out.push(path4);
+    const sens4 = fourthSensCard(d);
+    if (sens4) out.push(sens4);
+    const grade4 = fourthGradeCard(d);
+    if (grade4) out.push(grade4);
+    const enz5 = fifthEnzymeCard(d);
+    if (enz5) out.push(enz5);
+    const enz6 = sixthEnzymeCard(d);
+    if (enz6) out.push(enz6);
+    const enz7 = seventhEnzymeCard(d);
+    if (enz7) out.push(enz7);
+    const role5 = fifthRoleCard(d);
+    if (role5) out.push(role5);
+    const grade5 = fifthGradeCard(d);
+    if (grade5) out.push(grade5);
+    const grade6 = sixthGradeCard(d);
+    if (grade6) out.push(grade6);
+    const grade7 = seventhGradeCard(d);
+    if (grade7) out.push(grade7);
+    const brand4 = fourthBrandCard(d);
+    if (brand4) out.push(brand4);
+    const brand5 = fifthBrandCard(d);
+    if (brand5) out.push(brand5);
+    const brand6 = sixthBrandCard(d);
+    if (brand6) out.push(brand6);
+    const aka4 = fourthAliasCard(d);
+    if (aka4) out.push(aka4);
+    const aka5 = fifthAliasCard(d);
+    if (aka5) out.push(aka5);
+    const role6 = sixthRoleCard(d);
+    if (role6) out.push(role6);
+    const role7 = seventhRoleCard(d);
+    if (role7) out.push(role7);
+    const aka6 = sixthAliasCard(d);
+    if (aka6) out.push(aka6);
+    const aka7 = seventhAliasCard(d);
+    if (aka7) out.push(aka7);
+    const aka8 = eighthAliasCard(d);
+    if (aka8) out.push(aka8);
+    const aka9 = ninthAliasCard(d);
+    if (aka9) out.push(aka9);
+    const aka10 = tenthAliasCard(d);
+    if (aka10) out.push(aka10);
+    const aka11 = eleventhAliasCard(d);
+    if (aka11) out.push(aka11);
+    const aka12 = twelfthAliasCard(d);
+    if (aka12) out.push(aka12);
+  }
+  const seenPairs = new Set<string>();
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) {
+      const key = [ids[i], ids[j]].sort().join("|");
+      if (seenPairs.has(key)) continue;
+      seenPairs.add(key);
+      const section = labelSectionCard(ids[i], ids[j]);
+      if (section) out.push(section);
+      const owner = labelOwnerCard(ids[i], ids[j]);
+      if (owner) out.push(owner);
+      const example = labelExampleCard(ids[i], ids[j]);
+      if (example) out.push(example);
+      const labelClass = labelClassCard(ids[i], ids[j]);
+      if (labelClass) out.push(labelClass);
+      const mechanism = labelMechanismCard(ids[i], ids[j]);
+      if (mechanism) out.push(mechanism);
+      const domain = labelDomainCard(ids[i], ids[j]);
+      if (domain) out.push(domain);
+      const basis = labelBasisCard(ids[i], ids[j]);
+      if (basis) out.push(basis);
+      const more = labelMoreCard(ids[i], ids[j]);
+      if (more) out.push(more);
+      const pinEnzyme = labelPinEnzymeCard(ids[i], ids[j]);
+      if (pinEnzyme) out.push(pinEnzyme);
+      const pinKind = labelPinKindCard(ids[i], ids[j]);
+      if (pinKind) out.push(pinKind);
+      const pinSentence = labelPinSentenceCard(ids[i], ids[j]);
+      if (pinSentence) out.push(pinSentence);
+      const pinBasis = labelPinBasisCard(ids[i], ids[j]);
+      if (pinBasis) out.push(pinBasis);
+    }
   }
   return out;
 }

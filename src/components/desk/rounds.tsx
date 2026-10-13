@@ -76,9 +76,9 @@ export function RoundsPage() {
           <Plate src={LANE_PLATE.clinic} alt="" className="h-36 w-full min-h-36 sm:h-full" />
           <div className="px-5 py-5 sm:px-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Rounds coach</p>
-            <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">
+            <h1 className="mt-2 font-serif text-2xl tracking-tight text-fg">
               {ROUNDS.length} teaching cases — read the stem, then put it on the desk.
-            </h2>
+            </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
               Short clinic stories for pharmacy and medical trainees: first-pass by mouth, when a gene pathway
               acts like a second drug, sedation naloxone will not reverse, food and herb traps, and addiction-care

@@ -8,6 +8,8 @@ import {
   LABEL_CONTRAINDICATED_TAG,
   LABEL_CONTRAINDICATIONS,
   labelContraindicationFor,
+  labelContraindicationById,
+  labelPinSentence,
 } from "./label-contraindications";
 
 const RANK: Record<Severity, number> = { contraindicated: 4, major: 3, moderate: 2, minor: 1 };
@@ -233,15 +235,277 @@ const EXPECTED_PINS = [
   "ziprasidone+selegiline",
   "ziprasidone+safinamide",
   "ziprasidone+rasagiline",
+  // Former KNOWN_CONTRAINDICATION_GAPS: 91 label-quoted pairs pinned back to contraindicated.
+  "atazanavir+alfuzosin",
+  "atazanavir+lovastatin",
+  "atazanavir+midazolam",
+  "atazanavir+pimozide",
+  "atazanavir+simvastatin",
+  "atazanavir+triazolam",
+  "atazanavir-cobicistat+alfuzosin",
+  "atazanavir-cobicistat+lovastatin",
+  "atazanavir-cobicistat+lurasidone",
+  "atazanavir-cobicistat+midazolam",
+  "atazanavir-cobicistat+pimozide",
+  "atazanavir-cobicistat+ranolazine",
+  "atazanavir-cobicistat+simvastatin",
+  "atazanavir-cobicistat+triazolam",
+  "clarithromycin+lurasidone",
+  "darunavir+alfuzosin",
+  "darunavir+ivabradine",
+  "darunavir+lovastatin",
+  "darunavir+lurasidone",
+  "darunavir+midazolam",
+  "darunavir+naloxegol",
+  "darunavir+pimozide",
+  "darunavir+ranolazine",
+  "darunavir+simvastatin",
+  "darunavir+triazolam",
+  "darunavir-cobicistat+alfuzosin",
+  "darunavir-cobicistat+ivabradine",
+  "darunavir-cobicistat+lovastatin",
+  "darunavir-cobicistat+lurasidone",
+  "darunavir-cobicistat+midazolam",
+  "darunavir-cobicistat+naloxegol",
+  "darunavir-cobicistat+pimozide",
+  "darunavir-cobicistat+ranolazine",
+  "darunavir-cobicistat+simvastatin",
+  "darunavir-cobicistat+triazolam",
+  "itraconazole+eplerenone",
+  "itraconazole+felodipine",
+  "itraconazole+finerenone",
+  "itraconazole+ivabradine",
+  "itraconazole+lovastatin",
+  "itraconazole+lurasidone",
+  "itraconazole+midazolam",
+  "itraconazole+naloxegol",
+  "itraconazole+nisoldipine",
+  "itraconazole+pimozide",
+  "itraconazole+ranolazine",
+  "itraconazole+triazolam",
+  "itraconazole+voclosporin",
+  "lopinavir+alfuzosin",
+  "lopinavir+lovastatin",
+  "lopinavir+lurasidone",
+  "lopinavir+midazolam",
+  "lopinavir+pimozide",
+  "lopinavir+ranolazine",
+  "lopinavir+simvastatin",
+  "lopinavir+triazolam",
+  "mifepristone+cyclosporine",
+  "mifepristone+fentanyl",
+  "mifepristone+lovastatin",
+  "mifepristone+pimozide",
+  "mifepristone+simvastatin",
+  "mifepristone+sirolimus",
+  "mifepristone+tacrolimus",
+  "paxlovid+alfuzosin",
+  "paxlovid+eletriptan",
+  "paxlovid+eplerenone",
+  "paxlovid+finerenone",
+  "paxlovid+ivabradine",
+  "paxlovid+lovastatin",
+  "paxlovid+lurasidone",
+  "paxlovid+midazolam",
+  "paxlovid+naloxegol",
+  "paxlovid+pimozide",
+  "paxlovid+ranolazine",
+  "paxlovid+silodosin",
+  "paxlovid+simvastatin",
+  "paxlovid+tolvaptan",
+  "paxlovid+triazolam",
+  "paxlovid+ubrogepant",
+  "paxlovid+voclosporin",
+  "posaconazole+lovastatin",
+  "posaconazole+pimozide",
+  "posaconazole+simvastatin",
+  "posaconazole+sirolimus",
+  "ritonavir+alfuzosin",
+  "ritonavir+lovastatin",
+  "ritonavir+lurasidone",
+  "ritonavir+midazolam",
+  "ritonavir+pimozide",
+  "ritonavir+ranolazine",
+  "ritonavir+triazolam",
+  // Recorlev Table 6 QT row (section 4 points there). CYP3A4 finding held, or a standalone for dofetilide.
+  "levoketoconazole+bosutinib",
+  "levoketoconazole+clarithromycin",
+  "levoketoconazole+cobimetinib",
+  "levoketoconazole+crizotinib",
+  "levoketoconazole+disopyramide",
+  "levoketoconazole+dofetilide",
+  "levoketoconazole+dronedarone",
+  "levoketoconazole+ivabradine",
+  "levoketoconazole+methadone",
+  "levoketoconazole+midostaurin",
+  "levoketoconazole+nicardipine",
+  "levoketoconazole+pimozide",
+  "levoketoconazole+quinidine",
+  "levoketoconazole+ranolazine",
+  "dofetilide+verapamil",
+  "dofetilide+cimetidine",
+  "dofetilide+ketoconazole",
+  "bosentan+cyclosporine",
+  "bosentan+glyburide",
+  "riociguat+dipyridamole",
+  "riociguat+theophylline",
+  "riociguat+sildenafil",
+  "riociguat+tadalafil",
+  "riociguat+vardenafil",
+  "tetrabenazine+deutetrabenazine",
+  "tetrabenazine+valbenazine",
+  "deutetrabenazine+valbenazine",
+  "glecaprevir-pibrentasvir+rifampin",
+  "rilpivirine+carbamazepine",
+  "rilpivirine+oxcarbazepine",
+  "rilpivirine+phenobarbital",
+  "rilpivirine+phenytoin",
+  "rilpivirine+rifampin",
+  "rilpivirine+rifapentine",
+  "rilpivirine+st-johns-wort",
+  "rilpivirine+esomeprazole",
+  "rilpivirine+lansoprazole",
+  "rilpivirine+omeprazole",
+  "rilpivirine+pantoprazole",
+  "rilpivirine+rabeprazole",
+  "bictegravir+dofetilide",
+  "bictegravir+rifampin",
+  "dolutegravir+dofetilide",
+  "apomorphine+ondansetron",
+  "apomorphine+granisetron",
+  "apomorphine+dolasetron",
+  "apomorphine+palonosetron",
+  "apomorphine+alosetron",
+  "eletriptan+ketoconazole",
+  "eletriptan+itraconazole",
+  "eletriptan+nefazodone",
+  "eletriptan+clarithromycin",
+  "eletriptan+ritonavir",
+  "sofosbuvir-velpatasvir-voxilaprevir+rifampin",
+  "bictegravir-lenacapavir+dofetilide",
+  "lonafarnib+midazolam",
+  "lonafarnib+lovastatin",
+  "lonafarnib+simvastatin",
+  "lonafarnib+atorvastatin",
+  "pimozide+erythromycin",
+  "pimozide+azithromycin",
+  "pimozide+citalopram",
+  "pimozide+escitalopram",
+  "pimozide+sertraline",
+  "pimozide+nefazodone",
+  "triazolam+nefazodone",
+  "carbamazepine+nefazodone",
+  "ranolazine+clarithromycin",
+  "ranolazine+st-johns-wort",
+  "ergotamine+erythromycin",
+  "ergotamine+ketoconazole",
+  "dihydroergotamine+erythromycin",
+  "dihydroergotamine+ketoconazole",
+  "lurasidone+voriconazole",
+  "lurasidone+st-johns-wort",
+  "lurasidone+phenytoin",
+  "lurasidone+carbamazepine",
+  "eplerenone+nefazodone",
+  "eplerenone+clarithromycin",
+  "eplerenone+ritonavir",
+  "dronedarone+voriconazole",
+  "dronedarone+telithromycin",
+  "dronedarone+clarithromycin",
+  "dronedarone+nefazodone",
+  "dronedarone+erythromycin",
+  "naloxegol+clarithromycin",
+  "naloxegol+ketoconazole",
+  "bupropion+linezolid",
+  "bupropion+methylene-blue",
+  "naltrexone-bupropion+methadone",
+  "naltrexone-bupropion+buprenorphine",
+  "naltrexone-bupropion+bupropion",
+  "naltrexone-bupropion+bupropion-xl",
+  "naltrexone-bupropion+linezolid",
+  "naltrexone-bupropion+methylene-blue",
+  "dofetilide+tmp-smx",
+  "dofetilide+hctz",
+  "thioridazine+pindolol",
+  "sildenafil-pah+riociguat",
+  // wave 9
+  "sertraline+linezolid",
+  "sertraline+methylene-blue",
+  "paroxetine+linezolid",
+  "paroxetine+methylene-blue",
+  "fluvoxamine+linezolid",
+  "fluvoxamine+methylene-blue",
+  "venlafaxine+linezolid",
+  "venlafaxine+methylene-blue",
+  "desvenlafaxine+linezolid",
+  "desvenlafaxine+methylene-blue",
+  "duloxetine+linezolid",
+  "duloxetine+methylene-blue",
+  "vortioxetine+linezolid",
+  "vortioxetine+methylene-blue",
+  "mirtazapine+linezolid",
+  "mirtazapine+methylene-blue",
+  "trazodone+linezolid",
+  "trazodone+methylene-blue",
+  "clomipramine+linezolid",
+  "clomipramine+methylene-blue",
+  "buspirone+linezolid",
+  "buspirone+methylene-blue",
+  "amphetamine+linezolid",
+  "amphetamine+methylene-blue",
+  "lisdexamfetamine+linezolid",
+  "lisdexamfetamine+methylene-blue",
+  "rasagiline+meperidine",
+  "rasagiline+tramadol",
+  "rasagiline+methadone",
+  "rasagiline+cyclobenzaprine",
+  "tranylcypromine+buspirone",
+  "tranylcypromine+tapentadol",
+  "tranylcypromine+cyclobenzaprine",
+  "tranylcypromine+milnacipran",
+  "tranylcypromine+rasagiline",
+  // wave 10
+  "phenelzine+fluvoxamine",
+  "phenelzine+paroxetine",
+  "phenelzine+sertraline",
+  "phenelzine+citalopram",
+  "phenelzine+venlafaxine",
+  "phenelzine+buspirone",
+  "phenelzine+amphetamine",
+  "phenelzine+cocaine",
+  "phenelzine+methylphenidate",
+  "phenelzine+dopamine",
+  "phenelzine+epinephrine",
+  "phenelzine+norepinephrine",
+  "phenelzine+isocarboxazid",
+  "phenelzine+tranylcypromine",
+  "tranylcypromine+trazodone",
+  "tranylcypromine+nefazodone",
+  "tranylcypromine+vilazodone",
+  "tranylcypromine+vortioxetine",
+  "isocarboxazid+buspirone",
+  "isocarboxazid+dextromethorphan",
+  "linezolid+isocarboxazid",
+  "citalopram+linezolid",
+  "citalopram+methylene-blue",
+  "escitalopram+linezolid",
+  "escitalopram+methylene-blue",
+  "vilazodone+linezolid",
+  "vilazodone+methylene-blue",
+  "levomilnacipran+linezolid",
+  "levomilnacipran+methylene-blue",
+  "milnacipran+linezolid",
+  "milnacipran+methylene-blue",
 ];
 
 test("pin list is exactly the reviewed set", () => {
   assert.deepEqual(LABEL_CONTRAINDICATIONS.map((r) => r.id).sort(), [...EXPECTED_PINS].sort());
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 49);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 49);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 23);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 23);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 113);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
@@ -439,4 +703,39 @@ test("Geodon holds one pharmacodynamic card and does not assign a CYP grade", ()
   assert.match(stand.id, /label-ci-standalone/);
   assert.equal(stand.tags.includes("inhibitor"), false);
   assert.equal(stand.tags.includes("inducer"), false);
+});
+
+test("Recorlev holds the existing CYP3A4 finding, adds no CYP grade, and stays narrow", () => {
+  const levo = DRUG_BY_ID.levoketoconazole.enzymes.filter((e) => e.kind === "inhibitor" && e.enzyme === "CYP3A4");
+  assert.equal(levo.length, 1);
+  assert.equal(levo[0].kind === "inhibitor" && levo[0].strength, "strong");
+  const bos = pairFindings("levoketoconazole", "bosutinib");
+  const pinned = bos.filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.equal(pinned.length, 1);
+  assert.equal(pinned[0].kind, "pk");
+  assert.deepEqual(pinned[0].enzymes, ["CYP3A4"]);
+  assert.equal(pinned[0].drugIds[0], "levoketoconazole", "levoketoconazole is the perpetrator");
+  assert.equal(bos.some((f) => f.id.includes("label-ci")), false, "no standalone card next to the held finding");
+  const dof = pairFindings("levoketoconazole", "dofetilide").find((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+  assert.ok(dof);
+  assert.match(dof.id, /label-ci-standalone/);
+  assert.deepEqual(dof.enzymes, []);
+  // Table 6's sensitive-substrate row says "contraindicated or not recommended"; not pinned.
+  for (const other of ["simvastatin", "midazolam", "triazolam", "lurasidone", "tacrolimus", "digoxin"]) {
+    assert.equal(labelContraindicationFor("levoketoconazole", other), undefined, other);
+  }
+  // Only the rows the label names. Sibling catalog rows are not pinned.
+  for (const other of ["methadone-soluble", "quinidine-gluconate"]) {
+    if (!DRUG_BY_ID[other]) continue;
+    assert.equal(labelContraindicationFor("levoketoconazole", other), undefined, other);
+  }
+});
+
+test("bupropion/Contrave + linezolid or IV methylene blue pins say don't start, one direction", () => {
+  for (const id of ["bupropion+linezolid", "bupropion+methylene-blue", "naltrexone-bupropion+linezolid", "naltrexone-bupropion+methylene-blue"]) {
+    const r = labelContraindicationById(id)!;
+    const s = labelPinSentence(r);
+    assert.match(s, /don't start (bupropion|Contrave) in a patient being treated with linezolid or intravenous methylene blue/);
+    assert.equal((s.match(/intravenous/g) ?? []).length, 1);
+  }
 });

@@ -386,12 +386,12 @@ export function CaseCompare({ pro, onUnlock, onOpenCase }: CaseCompareProps) {
         ) : null}
       </header>
 
-      <div className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-bg-sunken p-3 sm:grid-cols-4 sm:gap-2">
+      <dl className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-bg-sunken p-3 sm:grid-cols-4 sm:gap-2">
         <SummaryMetric label="Mapped in both" value={sharedIds.size} />
         <SummaryMetric label="Shared severity shifts" value={severityShifts} />
         <SummaryMetric label="Only in case A" value={leftOnly} />
         <SummaryMetric label="Only in case B" value={rightOnly} />
-      </div>
+      </dl>
       {highestDelta !== 0 ? (
         <p className="rounded-lg border border-border bg-surface px-4 py-3 text-xs leading-relaxed text-muted">
           The highest mapped category differs: Case {highestDelta > 0 ? "A" : "B"} is{" "}

@@ -13,6 +13,7 @@ import {
   sampleNeedsPro,
   samplesInLane,
   type SampleLane,
+  type SampleRegimen,
 } from "@/lib/drugs/samples";
 import {
   PACKS,
@@ -44,6 +45,8 @@ import {
 } from "@/lib/drugs/tray-history";
 import { PLAN_BY_ID } from "@/lib/billing/plans";
 import { OPERATOR, SITE, tweetFor } from "@/lib/billing/commerce";
+import { caseOfTheDay } from "@/lib/drugs/case-of-the-day";
+import { feedbackMailto } from "@/lib/drugs/feedback";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +63,7 @@ import { MetaboliteCard } from "./metabolites";
 import { Paywall } from "./paywall";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import { CheckoutDrawer, PlansPage } from "./plans";
+import { LostKeyLink } from "./lost-key";
 import { HostDelta } from "./delta";
 import { DeskFooter } from "./operator";
 import { severitySurface } from "./severity";
@@ -269,11 +273,11 @@ export function DeskApp() {
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
             <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
               <HemeMark className="size-8" />
             </button>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-serif text-lg leading-none tracking-tight">FirstPass</span>
                 {hydrated && plan !== "free" ? (
@@ -282,7 +286,7 @@ export function DeskApp() {
                   </span>
                 ) : null}
               </div>
-              <div className="mt-1 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+              <div className="mt-1 font-mono text-[10px] sm:whitespace-nowrap uppercase tracking-[0.12em] text-muted">
                 Liver enzymes (CYP) · not FDA-cleared
               </div>
             </div>
@@ -394,7 +398,10 @@ export function DeskApp() {
 
       <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
         {view === "plans" ? (
-          <PlansPage />
+          <>
+            <PlansPage />
+            <LostKeyLink className="mt-4 text-center" />
+          </>
         ) : view === "foundry" ? (
           <Suspense fallback={<DeskFallback />}>
             <Foundry />
@@ -404,9 +411,12 @@ export function DeskApp() {
             <RoundsPage />
           </Suspense>
         ) : view === "study" ? (
-          <Suspense fallback={<DeskFallback />}>
-            <StudyPage />
-          </Suspense>
+          <>
+            <h1 className="sr-only">Learn how drug interactions work</h1>
+            <Suspense fallback={<DeskFallback />}>
+              <StudyPage />
+            </Suspense>
+          </>
         ) : view === "compare" ? (
           <Suspense fallback={<DeskFallback />}>
             <CaseCompare
@@ -428,13 +438,16 @@ export function DeskApp() {
             <HelpPage />
           </Suspense>
         ) : view === "atlas" ? (
-          pro ? (
-            <EnzymeAtlas />
-          ) : (
-            <Paywall gate="atlas" pin>
+          <>
+            <h1 className="sr-only">How drugs share liver enzymes</h1>
+            {pro ? (
               <EnzymeAtlas />
-            </Paywall>
-          )
+            ) : (
+              <Paywall gate="atlas" pin>
+                <EnzymeAtlas />
+              </Paywall>
+            )}
+          </>
         ) : view === "library" ? (
           <Formulary />
         ) : (
@@ -442,7 +455,7 @@ export function DeskApp() {
             <div className="space-y-4">
               <DrugSearch />
               {selected.length > 0 ? (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2" aria-live="polite" aria-relevant="additions removals">
                   {selected.map((id) => {
                     const drug = DRUG_BY_ID[id];
                     if (!drug) return null;
@@ -452,11 +465,26 @@ export function DeskApp() {
                       <button
                         key={id}
                         type="button"
-                        onClick={() => remove(id)}
-                        className="group flex h-10 items-center gap-2 rounded-full bg-surface pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft"
+                        onClick={(e) => {
+                          // The chip unmounts on remove; hand focus to the next chip, else the search box.
+                          const next =
+                            (e.currentTarget.nextElementSibling ?? e.currentTarget.previousElementSibling) as HTMLElement | null;
+                          remove(id);
+                          requestAnimationFrame(() => {
+                            const target =
+                              next && next.isConnected ? next : document.getElementById("drug-search");
+                            target?.focus();
+                          });
+                        }}
+                        className="group flex min-h-10 max-w-full flex-wrap items-center gap-x-2 rounded-full py-1 bg-surface pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft"
                         title="Remove from regimen"
                       >
                         <span className="font-medium">{drug.name}</span>
+                        {drug.brands[0] ? (
+                          <span className="max-w-20 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
+                            {drug.brands[0]}
+                          </span>
+                        ) : null}
                         {drug.kind === "drug" ? (
                           <span className="max-w-28 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
                             {drug.cls}
@@ -752,6 +780,9 @@ function EmptyState({
   const plan = usePlan();
   const setView = useDesk((s) => s.setView);
   const shown = samplesInLane(lane);
+  // Local calendar day, so compute after mount (the server clock may be a different day).
+  const [daily, setDaily] = useState<SampleRegimen | null>(null);
+  useEffect(() => setDaily(caseOfTheDay(new Date())), []);
   return (
     <section className="overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-border)]">
       <div className="relative">
@@ -771,6 +802,33 @@ function EmptyState({
             ? "Explore educational examples involving opioid-treatment medicines and other substances. These notes are not a treatment plan; a qualified clinician and current product labeling must guide care."
             : "Add two or more medicines, supplements, foods, or other substances to see possible concerns in everyday language, with clinical details and sources for review. This is a learning aid for clinicians and supervised education—not personal medical advice. It can miss interactions; no result does not mean a combination is safe."}
         </p>
+        {daily && lane !== "mat" ? (
+          <div className="relative mt-5 rounded-lg bg-accent-soft px-4 py-4 pr-24 ring-1 ring-accent/30">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
+              Case of the day · free
+            </p>
+            <p className="mt-1 font-serif text-lg tracking-tight text-fg">{daily.title}</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted">{daily.blurb}</p>
+            <p className="mt-1 text-[11px] text-muted">
+              {daily.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")} · fits the free five-drug desk
+            </p>
+            <div className="mt-3">
+              <Button
+                size="sm"
+                disabled={!ready}
+                onClick={() => {
+                  onLoadSample(daily.id);
+                  // This button unmounts when the case loads; keep keyboard focus in the page instead of dropping it to <body>.
+                  document.getElementById("main")?.focus();
+                }}
+                className="min-h-[44px] sm:min-h-0"
+              >
+                Open today&rsquo;s case
+              </Button>
+            </div>
+            <CopyCaseLink sampleId={daily.id} className="absolute right-3 top-3" />
+          </div>
+        ) : null}
         {undo || recent.length > 0 ? (
           <div className="mt-4 flex flex-col gap-3 rounded-lg bg-bg px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
@@ -1421,6 +1479,18 @@ function HowCard() {
 }
 
 function Disclaimer() {
+  const selected = useDesk((s) => s.selected);
+  // Built after mount so the link carries the real address and tray; sending is the visitor's own act.
+  const [feedbackHref, setFeedbackHref] = useState(() => feedbackMailto({ email: OPERATOR.email }));
+  useEffect(() => {
+    setFeedbackHref(
+      feedbackMailto({
+        email: OPERATOR.email,
+        url: window.location.href,
+        names: selected.map((id) => DRUG_BY_ID[id]?.name).filter((n): n is string => Boolean(n)),
+      }),
+    );
+  }, [selected]);
   return (
     <div className="rounded-lg bg-bg-sunken/60 px-3 py-3">
       <p className="text-[11px] font-medium uppercase tracking-wide text-muted">About this desk</p>
@@ -1432,6 +1502,13 @@ function Disclaimer() {
         anyone what to start, stop, or change. For care decisions, consult a qualified clinician and
         current FDA-approved labeling. Street-supply entries are teaching examples, not product
         identification.
+      </p>
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        Something missing or wrong?{" "}
+        <a className="text-accent underline underline-offset-2" href={feedbackHref}>
+          Send feedback
+        </a>{" "}
+        — opens your own email, nothing is tracked. Please leave out patient information.
       </p>
     </div>
   );
@@ -1570,17 +1647,23 @@ function CopyCaseLink({
     }
   }
   return (
-    <button
-      type="button"
-      onClick={(e) => void copy(e)}
-      className={cn(
-        "inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent hover:bg-accent hover:text-accent-fg",
-        className,
-      )}
-      title={`Copy ${SITE.url} link`}
-    >
-      {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-      {copied ? "Copied" : label}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={(e) => void copy(e)}
+        className={cn(
+          "inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent hover:bg-accent hover:text-accent-fg",
+          className,
+        )}
+        title={`Copy ${SITE.url} link`}
+      >
+        {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+        {copied ? "Copied" : label}
+      </button>
+      {/* Focus stays on the button, so announce the state change (WCAG 4.1.3). */}
+      <span role="status" className="sr-only">
+        {copied ? "Link copied" : ""}
+      </span>
+    </>
   );
 }

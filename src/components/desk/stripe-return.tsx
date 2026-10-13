@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Info, Loader2, Sparkles, X } from "lucide-react";
 import { claimStripeCheckout } from "@/lib/billing/stripe";
+import { claimPaypalCheckout } from "@/lib/billing/paypal";
 import { useDesk } from "@/lib/drugs/store";
 import { Button } from "@/components/ui/button";
+import { useModalFocus } from "@/lib/a11y/use-modal-focus";
 
 export interface LicenseActivatedDialogProps {
   license: string;
@@ -17,6 +19,8 @@ export function LicenseActivatedDialog({
   onDismiss,
 }: LicenseActivatedDialogProps) {
   const [copied, setCopied] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useModalFocus(dialogRef, true, onDismiss);
 
   const handleCopy = async () => {
     if (!license) return;
@@ -31,9 +35,13 @@ export function LicenseActivatedDialog({
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="license-activated-title"
+      tabIndex={-1}
+      // Focus lands here on open so the dialog name is read; it is not a control, so no ring.
+      style={{ outline: "none" }}
       className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 p-0 backdrop-blur-xs animate-in fade-in duration-200 sm:items-center sm:p-4"
     >
       <div className="relative max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-border bg-surface p-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] shadow-2xl animate-in zoom-in-95 duration-200 sm:max-h-[88dvh] sm:rounded-2xl sm:p-7">
@@ -98,6 +106,10 @@ export function LicenseActivatedDialog({
                 </>
               )}
             </Button>
+            {/* The button keeps focus when it copies, so announce it (WCAG 4.1.3). */}
+            <span role="status" className="sr-only">
+              {copied ? "License key copied" : ""}
+            </span>
           </div>
         </div>
 
@@ -113,6 +125,31 @@ export function LicenseActivatedDialog({
       </div>
     </div>
   );
+}
+
+type ClaimResult =
+  | { ok: true; plan: "pro" | "lab"; license: string; lifetime: boolean }
+  | { ok: false; reason?: string };
+
+/**
+ * The return page can land a beat before Stripe or PayPal finishes settling.
+ * Try a few times before telling the buyer anything went wrong.
+ */
+async function claimWithRetry(run: () => Promise<ClaimResult>): Promise<ClaimResult> {
+  let last: ClaimResult = { ok: false };
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    if (attempt > 0) await new Promise((r) => window.setTimeout(r, 1500 * attempt));
+    try {
+      last = await run();
+    } catch {
+      last = { ok: false };
+    }
+    if (last.ok) return last;
+    // Wrong product, wrong amount, or not a session: retrying will not change that.
+    const reason = last.reason ?? "";
+    if (reason && !/not cleared|not completed|could not (read|reach|verify)/i.test(reason)) return last;
+  }
+  return last;
 }
 
 /** After Stripe Checkout returns, claim the paid session and activate the signed key. */
@@ -138,12 +175,13 @@ export function StripeReturn({ ready }: { ready: boolean }) {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const paid = params.get("session_id") || params.get("sessionId") || params.get("fp_paid");
+    const paypalOrder = params.get("fp_pp") ? params.get("token") : null;
     const cancel =
       params.get("fp_cancel") ||
       params.get("canceled") ||
       params.get("cancelled") ||
       params.get("cancel");
-    if (!paid && !cancel) return;
+    if (!paid && !paypalOrder && !cancel) return;
     ran.current = true;
     const clean = () => {
       try {
@@ -151,6 +189,9 @@ export function StripeReturn({ ready }: { ready: boolean }) {
         url.searchParams.delete("session_id");
         url.searchParams.delete("sessionId");
         url.searchParams.delete("fp_paid");
+        url.searchParams.delete("fp_pp");
+        url.searchParams.delete("token");
+        url.searchParams.delete("PayerID");
         url.searchParams.delete("fp_cancel");
         url.searchParams.delete("canceled");
         url.searchParams.delete("cancelled");
@@ -170,7 +211,11 @@ export function StripeReturn({ ready }: { ready: boolean }) {
     setClaiming(true);
     void (async () => {
       try {
-        const res = await claimStripeCheckout({ data: { sessionId: paid ?? "" } });
+        const res = await claimWithRetry(() =>
+          paypalOrder
+            ? claimPaypalCheckout({ data: { orderId: paypalOrder } })
+            : claimStripeCheckout({ data: { sessionId: paid ?? "" } }),
+        );
         if (res.ok) {
           activate({ plan: res.plan, license: res.license, lifetime: res.lifetime });
         } else {
@@ -201,7 +246,7 @@ export function StripeReturn({ ready }: { ready: boolean }) {
           className="fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border border-accent/30 bg-surface px-4 py-3 text-sm font-medium text-fg shadow-lg"
         >
           <Loader2 className="size-4 animate-spin text-accent" />
-          <span>Verifying Stripe checkout & minting license…</span>
+          <span>Confirming your payment and unlocking Founding…</span>
         </div>
       ) : null}
 

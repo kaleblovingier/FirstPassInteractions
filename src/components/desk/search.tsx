@@ -90,8 +90,8 @@ export function DrugSearch() {
             const hit = results[active];
             if (hit && !selected.includes(hit.id)) pick(hit.id);
           } else if (e.key === "Escape") {
+            // Close the list but keep focus in the field (blurring dropped focus to <body>).
             setOpen(false);
-            (e.target as HTMLInputElement).blur();
           }
         }}
         placeholder={
@@ -140,6 +140,7 @@ export function DrugSearch() {
                 id={`drug-option-${drug.id}`}
                 type="button"
                 role="option"
+                tabIndex={-1}
                 aria-selected={i === active}
                 aria-disabled={onDesk ? true : undefined}
                 aria-label={onDesk ? `${drug.name}, already on the desk` : undefined}
@@ -164,6 +165,7 @@ export function DrugSearch() {
                     {drug.kind !== "drug" ? `${ITEM_KIND_LABEL[drug.kind]} · ` : ""}
                     {drug.cls}
                     {drug.brands.length ? ` · ${drug.brands.slice(0, 2).join(", ")}` : ""}
+                    {drug.aliases[0] ? ` · also ${drug.aliases[0]}` : ""}
                   </span>
                 </span>
                 {onDesk ? (

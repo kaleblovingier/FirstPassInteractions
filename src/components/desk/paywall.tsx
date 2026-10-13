@@ -84,7 +84,7 @@ export function Paywall({
         <div className="sticky top-3 z-30 mx-auto mb-4 flex w-full max-w-lg flex-col items-center gap-3 rounded-xl bg-surface px-4 py-4 text-center shadow-[var(--shadow-border)]">
           {card}
         </div>
-        <div className="pointer-events-none select-none blur-[3px]" aria-hidden>
+        <div className="pointer-events-none select-none blur-[3px]" aria-hidden inert>
           {children}
         </div>
       </div>
@@ -93,7 +93,7 @@ export function Paywall({
 
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <div className="pointer-events-none select-none blur-[3px]" aria-hidden>
+      <div className="pointer-events-none select-none blur-[3px]" aria-hidden inert>
         {children}
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface/80 px-4 py-5 text-center">
