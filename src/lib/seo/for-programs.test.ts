@@ -22,6 +22,11 @@ describe("/for-programs page", () => {
     assert.ok(text(html).includes("Founding"));
   });
 
+  it("no patient-use phrasing in title, meta or body", () => {
+    const PATIENT = /\bintake\b|patient'?s other medicines|before they reach the pharmacist/i;
+    for (const s of [FOR_PROGRAMS_TITLE, FOR_PROGRAMS_DESCRIPTION, text(html)]) assert.ok(!PATIENT.test(s), s.match(PATIENT)?.[0]);
+  });
+
   it("has the disclaimer, one h1 and a prefilled mailto", () => {
     assert.equal(PAIR_DISCLAIMER, "Educational reference only. Not FDA-cleared. The Prescribing Information governs.");
     assert.ok(text(html).includes(PAIR_DISCLAIMER));

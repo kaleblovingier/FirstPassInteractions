@@ -15,9 +15,9 @@ export const FOR_PROGRAMS_INTRO =
 
 export const FOR_PROGRAMS_AUDIENCES: { name: string; use: string }[] = [
   { name: "Pharmacy schools", use: "Pharmacology and therapeutics courses that teach students to read interaction sections of the Prescribing Information." },
-  { name: "Pharmacy-tech programs", use: "Community college and online programs training techs to spot label-named interactions before they reach the pharmacist." },
-  { name: "Ketamine clinics", use: "Staff reviewing what labels say about a patient's other medicines during intake." },
-  { name: "MAT and OTP programs", use: "Opioid treatment and office-based buprenorphine teams checking label wording on common co-prescribed drugs." },
+  { name: "Pharmacy-tech programs", use: "Community college and online programs training techs to recognize label-named interactions." },
+  { name: "Ketamine clinics", use: "Staff training on what labels say about common co-prescribed medicines." },
+  { name: "MAT and OTP programs", use: "Opioid treatment and office-based buprenorphine teams learning the label wording on common co-prescribed drugs." },
   { name: "Harm-reduction groups", use: "Outreach and education staff who want plain-language label wording with a source link." },
 ];
 
@@ -26,7 +26,7 @@ export const FOR_PROGRAMS_INCLUDES: string[] = [
   "Seats for every learner or staff member in the program",
   "The full desk, every pair page and every drug page",
   "Label quotes checked against current DailyMed labels",
-  "A named contact for setup and questions",
+  "Questions go to FirstPassInteractions@gmail.com",
 ];
 
 export const FOR_PROGRAMS_CTA = "Email us about a group license";
