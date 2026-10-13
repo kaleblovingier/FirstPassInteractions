@@ -106,7 +106,7 @@ export interface GoldPair {
   domain: GoldDomain;
   note?: string;
   /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10;
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -194,6 +194,8 @@ export const LABEL_SETIDS = {
   "bupropion-ir": "334e5635-e4cc-cf2a-e063-6294a90ae1e1",
   contrave: "485ff360-32c8-11df-928b-0002a5d5c51b",
   revatio: "3bb9363e-b28d-4019-8aae-539233dca214",
+  // wave 11, DailyMed v2 SPL retrieved 2026-10-12.
+  xadago: "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
   // wave 10, DailyMed v2 SPL retrieved 2026-10-12.
   celexa: "4259d9b1-de34-43a4-85a8-41dd214e9177",
   lexapro: "13bb8267-1cab-43e5-acae-55a4d957630a",
@@ -3650,13 +3652,83 @@ const WAVE_10: GoldPair[] = [
   }),
 ];
 
+/**
+ * Wave 11 (DailyMed v2 SPL retrieved 2026-10-12): inducer-naming Contraindications.
+ * Most labels that name rifampin, carbamazepine, phenytoin, phenobarbital or
+ * St. John's wort pair with a CYP3A inducer card that reads Serious concern, so
+ * they are listed in DROPPED_CANDIDATES as severity-change candidates. Pinned here:
+ * St. John's wort on Xadago and Azilect, and the other partners Xadago names,
+ * where the existing MAOI card already reads Avoid together.
+ */
+function row11(r: Row): GoldPair {
+  return { ...row7(r), wave: 11 };
+}
+
+const WAVE_11: GoldPair[] = [
+  row11({
+    drugA: "safinamide", drugB: "linezolid", queries: ["xadago", "linezolid"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class … including linezolid", labelExample: "linezolid",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "meperidine", queries: ["xadago", "meperidine"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)", labelExample: "meperidine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "methadone", queries: ["xadago", "methadone"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)", labelExample: "methadone",
+    labelClass: "contraindicated", mechanism: "PD", domain: "mat",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "tramadol", queries: ["xadago", "tramadol"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)", labelExample: "tramadol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "maoi-opioid",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "cyclobenzaprine", queries: ["xadago", "cyclobenzaprine"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … cyclobenzaprine", labelExample: "cyclobenzaprine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "muscle-relaxant",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "methylphenidate", queries: ["xadago", "methylphenidate"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … methylphenidate, amphetamine, and their derivatives", labelExample: "methylphenidate",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "amphetamine", queries: ["xadago", "amphetamine"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … methylphenidate, amphetamine, and their derivatives", labelExample: "amphetamine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row11({
+    drugA: "safinamide", drugB: "st-johns-wort", queries: ["xadago", "st john's wort"],
+    labelDrug: "Xadago (safinamide)", label: "xadago", labelSection: "4 CONTRAINDICATIONS",
+    quote: "XADAGO is contraindicated in patients with: … St John's wort", labelExample: "St John's wort",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row11({
+    drugA: "rasagiline", drugB: "st-johns-wort", queries: ["azilect", "st john's wort"],
+    labelDrug: "Azilect (rasagiline)", label: "azilect", labelSection: "4 CONTRAINDICATIONS",
+    quote: "AZILECT is contraindicated for use with St. John’s wort and with cyclobenzaprine", labelExample: "St. John’s wort",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
 export const WAVE_4_COUNT = WAVE_4.length;
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
 export const WAVE_9_COUNT = WAVE_9.length;
 export const WAVE_10_COUNT = WAVE_10.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10];
+export const WAVE_11_COUNT = WAVE_11.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -4167,5 +4239,37 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "wave 11: Juluca, Odefsey, Edurant + dexamethasone",
     reason: "Juluca and Odefsey are combination products whose catalog rows (dolutegravir, emtricitabine) do not carry the rilpivirine contraindication. Dexamethasone is contraindicated only beyond a single dose, so it is conditional.",
+  },
+  {
+    pair: "wave 11: Xadago + dextromethorphan",
+    reason: "Named on Xadago section 4 for psychosis or abnormal behavior. The pair card is a serotonin card. Not pinned without a matching card (the Azilect + dextromethorphan rule).",
+  },
+  {
+    pair: "wave 11 severity-change candidates (Kaleb): Pifeltro (doravirine) + rifampin, rifapentine, carbamazepine, oxcarbazepine, phenobarbital, phenytoin, enzalutamide, mitotane, St. John's wort",
+    reason: "Named in Pifeltro section 4. Each pair's only PK card is a CYP3A4 inducer card at major (Serious concern). A pin would raise it to Avoid together, so not pinned under this wave's rule.",
+  },
+  {
+    pair: "wave 11 severity-change candidates (Kaleb): Rukobia (fostemsavir) + rifampin, carbamazepine, phenytoin, enzalutamide, mitotane, St. John's wort",
+    reason: "Named in Rukobia section 4. CYP3A4 inducer cards read major. A pin would change severity.",
+  },
+  {
+    pair: "wave 11 severity-change candidates (Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Biltricide (praziquantel) + rifampin",
+    reason: "Named in section 4. CYP3A4 inducer cards read major. A pin would change severity.",
+  },
+  {
+    pair: "wave 11 severity-change candidates (Kaleb): Vfend (voriconazole) + rifabutin, carbamazepine, St. John's wort",
+    reason: "Named in Vfend section 4. CYP3A4/CYP2C19 inducer and inhibitor cards read major. A pin would change severity. Vfend + efavirenz is conditional on the efavirenz dose and is not a candidate.",
+  },
+  {
+    pair: "wave 11 severity-change candidates (Kaleb): Tybost (cobicistat) + carbamazepine, nevirapine (CYP3A4 card at major); + rifampin, phenobarbital, phenytoin, St. John's wort (washout card only or no card)",
+    reason: "Named in Tybost section 4 (some lines apply only with atazanavir). No card reads Avoid together, so a pin would change severity or add a standalone finding.",
+  },
+  {
+    pair: "wave 11: Genvoya / Stribild (elvitegravir) + rifampin, carbamazepine, phenobarbital, phenytoin, St. John's wort; Symtuza / Prezcobix (darunavir) + carbamazepine, phenobarbital, phenytoin; Cabenuva + rifampin, rifabutin, carbamazepine and others",
+    reason: "Contraindicated on cobicistat- or rilpivirine-containing combination products. The catalog rows (elvitegravir, darunavir, cabotegravir) are single agents, and the inducer cards read major. Not pinned (formulation rule); severity-change candidates if the catalog adds the combination products.",
+  },
+  {
+    pair: "wave 11: Edurant / Odefsey / Complera / Juluca + dexamethasone",
+    reason: "Contraindicated only for more than a single dose. Conditional; not pinned.",
   },
 ];

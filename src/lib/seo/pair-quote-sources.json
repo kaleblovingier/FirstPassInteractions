@@ -1,5 +1,5 @@
 {
- "retrieved": "2026-10-12",
+ "retrieved": "2026-10-13",
  "source": "DailyMed SPL v2 XML",
  "excerpts": {
   "alosetron+fluvoxamine": {
@@ -1482,6 +1482,10 @@
    "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
    "excerpt": "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)"
   },
+  "rasagiline+st-johns-wort": {
+   "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
+   "excerpt": "AZILECT is contraindicated for use with St. John's wort and with cyclobenzaprine"
+  },
   "rasagiline+tramadol": {
    "setid": "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
    "excerpt": "AZILECT is contraindicated for use with meperidine, tramadol, methadone, propoxyphene, and MAO inhibitors (MAOIs)"
@@ -1633,6 +1637,38 @@
   "rivaroxaban+ketoconazole": {
    "setid": "10db92f9-2300-4a80-836b-673e1ae91610",
    "excerpt": "Avoid concomitant administration of XARELTO with known combined P-gp and strong CYP3A inhibitors (e.g., ketoconazole and ritonavir)"
+  },
+  "safinamide+amphetamine": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol); serotonin-norepinephrine reuptake inhibitors (SNRIs), tricyclic, tetracyclic, or triazolopyridine antidepressants; cyclobenzaprine; methylphenidate, amphetamine, and their derivatives"
+  },
+  "safinamide+cyclobenzaprine": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol); serotonin-norepinephrine reuptake inhibitors (SNRIs), tricyclic, tetracyclic, or triazolopyridine antidepressants; cyclobenzaprine"
+  },
+  "safinamide+linezolid": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid"
+  },
+  "safinamide+meperidine": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)"
+  },
+  "safinamide+methadone": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)"
+  },
+  "safinamide+methylphenidate": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol); serotonin-norepinephrine reuptake inhibitors (SNRIs), tricyclic, tetracyclic, or triazolopyridine antidepressants; cyclobenzaprine; methylphenidate, amphetamine, and their derivatives"
+  },
+  "safinamide+st-johns-wort": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol); serotonin-norepinephrine reuptake inhibitors (SNRIs), tricyclic, tetracyclic, or triazolopyridine antidepressants; cyclobenzaprine; methylphenidate, amphetamine, and their derivatives; or St John's wort"
+  },
+  "safinamide+tramadol": {
+   "setid": "c4d65f28-983f-42b4-bb23-023ae0fe81b2",
+   "excerpt": "XADAGO is contraindicated in patients with severe hepatic impairment (Child-Pugh C: 10-15) [see Use in Specific Populations (8.6) and Clinical Pharmacology (12.3) ] . If a patient taking 50 mg XADAGO progresses from moderate to severe hepatic impairment, discontinue XADAGO. 3 DOSAGE FORMS AND STRENGTHS 50 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"50\" on one side 100 mg tablets: Orange to copper with metallic gloss, round, biconcave shaped embossed with \"100\" on one side Tablets: 50 mg and 100 mg ( 3 ) 4 CONTRAINDICATIONS XADAGO is contraindicated in patients with: Concomitant use of other drugs in the monoamine oxidase inhibitor (MAOI) class or other drugs that are potent inhibitors of monoamine oxidase, including linezolid. The combination may result in increased blood pressure, including hypertensive crisis [see Warnings and Precautions (5.1) and Drug Interactions (7.1) ] . Concomitant use of opioid drugs (e.g., meperidine and its derivatives, methadone, propoxyphene, or tramadol)"
   },
   "selegiline+meperidine": {
    "setid": "1924db3d-6a16-4496-cfd0-6903be146925",
