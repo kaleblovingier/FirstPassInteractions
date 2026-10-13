@@ -3515,7 +3515,25 @@ const WAVE_10: GoldPair[] = [
     labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
     quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … methylphenidate", labelExample: "methylphenidate",
     labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),  row10({
+    drugA: "phenelzine", drugB: "dopamine", queries: ["nardil", "dopamine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … dopamine", labelExample: "dopamine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
   }),
+  row10({
+    drugA: "phenelzine", drugB: "epinephrine", queries: ["nardil", "epinephrine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … epinephrine", labelExample: "epinephrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row10({
+    drugA: "phenelzine", drugB: "norepinephrine", queries: ["nardil", "norepinephrine"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs (including … norepinephrine", labelExample: "norepinephrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+
   row10({
     drugA: "phenelzine", drugB: "isocarboxazid", queries: ["nardil", "isocarboxazid"],
     labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
