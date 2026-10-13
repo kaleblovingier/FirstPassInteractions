@@ -11,6 +11,56 @@
       "source": "/pair/naltrexone-bupropion-bupropion-xl",
       "destination": "/pair/contrave-bupropion-xl",
       "permanent": true
+    },
+    {
+      "source": "/drug/tmp-smx",
+      "destination": "/drug/bactrim",
+      "permanent": true
+    },
+    {
+      "source": "/drug/bictegravir-lenacapavir",
+      "destination": "/drug/bixlenvo",
+      "permanent": true
+    },
+    {
+      "source": "/drug/naltrexone-bupropion",
+      "destination": "/drug/contrave",
+      "permanent": true
+    },
+    {
+      "source": "/drug/atazanavir-cobicistat",
+      "destination": "/drug/evotaz",
+      "permanent": true
+    },
+    {
+      "source": "/drug/lopinavir",
+      "destination": "/drug/kaletra",
+      "permanent": true
+    },
+    {
+      "source": "/drug/glecaprevir-pibrentasvir",
+      "destination": "/drug/mavyret",
+      "permanent": true
+    },
+    {
+      "source": "/drug/lumacaftor-ivacaftor",
+      "destination": "/drug/orkambi",
+      "permanent": true
+    },
+    {
+      "source": "/drug/darunavir-cobicistat",
+      "destination": "/drug/prezcobix",
+      "permanent": true
+    },
+    {
+      "source": "/drug/sofosbuvir-velpatasvir-voxilaprevir",
+      "destination": "/drug/vosevi",
+      "permanent": true
+    },
+    {
+      "source": "/drug/grazoprevir-elbasvir",
+      "destination": "/drug/zepatier",
+      "permanent": true
     }
   ]
 }

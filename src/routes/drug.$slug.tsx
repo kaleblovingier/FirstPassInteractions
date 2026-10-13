@@ -1,9 +1,11 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { DrugHubView } from "@/components/seo/pair-page";
-import { drugHubBySlug } from "@/lib/seo/drug-hubs";
+import { drugHubBySlug, legacyDrugHubRedirect } from "@/lib/seo/drug-hubs";
 
 export const Route = createFileRoute("/drug/$slug")({
   loader: ({ params }) => {
+    const moved = legacyDrugHubRedirect(params.slug);
+    if (moved) throw redirect({ to: "/drug/$slug", params: { slug: moved }, statusCode: 301 });
     const hub = drugHubBySlug(params.slug);
     if (!hub) throw notFound();
     return hub;

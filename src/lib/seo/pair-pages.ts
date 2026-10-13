@@ -4,6 +4,7 @@ import { LABEL_CONTRAINDICATIONS } from "@/lib/drugs/label-contraindications";
 import { LABEL_GOLD_SET } from "@/lib/drugs/reference/label-gold-set";
 import { SEVERITY_LABEL, SEVERITY_RANK, type Severity } from "@/lib/drugs/types";
 import { buildBriefUrl } from "@/lib/drugs/brief";
+import { drugHubs } from "./drug-hubs";
 import {
   PAIR_DESCRIPTION_TEMPLATE,
   PAIR_TITLE_TEMPLATE,
@@ -158,9 +159,7 @@ export function sitemapXml(): string {
     .join("\n")}\n</urlset>\n`;
 }
 
-/** Drug hub URLs (/drug/<id>): one per catalog drug that appears in a pair page. */
+/** Drug hub URLs (/drug/<slug>): one per catalog drug that appears in a pair page. */
 function hubUrls(): string[] {
-  const ids = new Set<string>();
-  for (const p of pairPages()) ids.add(p.drugA).add(p.drugB);
-  return [...ids].map((id) => `${SITE_URL}/drug/${toSlug(id)}`).sort();
+  return drugHubs().map((h) => h.canonical);
 }
