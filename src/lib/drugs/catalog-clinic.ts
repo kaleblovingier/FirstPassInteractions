@@ -362,7 +362,7 @@ const ROWS: Row[] = [
   ["baricitinib", "Baricitinib", ["Olumiant"], "JAK inhibitor", "", ["immunosuppressant"], "Renal OAT. Boxed infection/clot.", ["olumiant"]],
   ["tofacitinib", "Tofacitinib", ["Xeljanz"], "JAK inhibitor", "s:CYP3A4:major;s:CYP2C19:minor", ["immunosuppressant"], "3A4 victim. Boxed MACE/clot.", ["xeljanz"]],
   ["ruxolitinib", "Ruxolitinib", ["Jakafi", "Opzelura"], "JAK inhibitor", "s:CYP3A4:major", ["immunosuppressant"], "3A4 victim. Cytopenias.", ["jakafi", "opzelura"]],
-  ["fedratinib", "Fedratinib", ["Inrebic"], "JAK2 inhibitor", "s:CYP3A4:major;i:CYP3A4:moderate;i:CYP2C19:moderate", ["hepatotoxic"], "Wernicke boxed. 3A4 victim.", ["inrebic"]],
+  ["fedratinib", "Fedratinib", ["Inrebic"], "JAK2 inhibitor", "s:CYP3A4:major", ["hepatotoxic"], "Wernicke boxed. 3A4 victim. Inrebic label 7.2: raises CYP3A4, CYP2C19, and CYP2D6 substrates, but neither the label nor the FDA table names a strength, so these inhibitor roles stay ungraded.", ["inrebic"]],
   ["voclosporin", "Voclosporin", ["Lupkynis"], "Calcineurin inhibitor", "s:CYP3A4:sensitive", ["nephrotoxic", "immunosuppressant"], "Sensitive 3A4. Lupus nephritis. Nephrotoxic like tacrolimus.", ["lupkynis"]],
   ["avacopan", "Avacopan", ["Tavneos"], "C5a receptor blocker", "s:CYP3A4:major;i:CYP3A4:moderate", ["hepatotoxic"], "Moderate CYP3A4 inhibitor. 3A4 victim. ANCA vasculitis.", ["tavneos"]],
   ["nintedanib", "Nintedanib", ["Ofev"], "TKI (IPF)", "s:P-gp:major;s:CYP3A4:minor", ["hepatotoxic"], "P-gp victim. Diarrhea, LFTs.", ["ofev"]],

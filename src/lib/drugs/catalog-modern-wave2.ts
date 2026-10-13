@@ -72,7 +72,7 @@ export const MODERN_WAVE2_FORMULARY: Drug[] = [
     "Systolic dysfunction; 2C19/3A4 victim — REMS and PI govern",
     {
       aliases: ["camzyos"],
-      note: "oHCM REMS drug. Strong 2C19 or 3A4 inhibitors/inducers change exposure. This desk does not pick a milligram.",
+      note: "oHCM REMS drug. Strong 2C19 or 3A4 inhibitors/inducers change exposure. Camzyos label 7.2: \"Mavacamten is an inducer of CYP3A4, CYP2C9, and CYP2C19.\" The label gives no inducer strength, so these inducer roles stay ungraded and are not scored. This desk does not pick a milligram. Source: https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=669c936b-3ee6-4e36-8a22-79dd11b1255b",
     }),
   d("aprocitentan", "Aprocitentan", ["Tryvio"], "ERA (endothelin antagonist)",
     [sub("CYP3A4", "minor")],
