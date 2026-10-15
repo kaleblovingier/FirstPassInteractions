@@ -83,6 +83,7 @@ import { PrescribingStrip } from "./pi";
 
 const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
 const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
+const WatchPage = lazy(() => import("./watch").then((m) => ({ default: m.WatchPage })));
 const Foundry = lazy(() => import("./foundry").then((m) => ({ default: m.Foundry })));
 const Dossier = lazy(() => import("./dossier").then((m) => ({ default: m.Dossier })));
 const HelpPage = lazy(() => import("./help").then((m) => ({ default: m.HelpPage })));
@@ -144,6 +145,8 @@ export function DeskApp() {
   const clearRaw = useDesk((s) => s.clear);
   const load = useDesk((s) => s.load);
   const [trayTick, setTrayTick] = useState(0);
+  const [trayNote, setTrayNote] = useState({ text: "", n: 0 });
+  const announceTray = (text: string) => setTrayNote((prev) => ({ text, n: prev.n + 1 }));
   const bumpTray = () => setTrayTick((n) => n + 1);
   const clear = () => {
     clearRaw();
@@ -308,6 +311,7 @@ export function DeskApp() {
                   ["study", "Learn"],
                   ["rounds", "Cases"],
                   ["compare", "Compare"],
+                  ["watch", "Watch"],
                   ["label", "Safety"],
                   ["help", "Find help"],
                   ["plans", "Plans"],
@@ -450,10 +454,21 @@ export function DeskApp() {
           </>
         ) : view === "library" ? (
           <Formulary />
+        ) : view === "watch" ? (
+          <>
+            <h1 className="sr-only">Shortage and recall notes</h1>
+            <Suspense fallback={<DeskFallback />}>
+              <WatchPage />
+            </Suspense>
+          </>
         ) : (
           <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div className="space-y-4">
               <DrugSearch />
+              {/* Chip live region often ignores removals; say them in a separate status. */}
+              <span key={trayNote.n} role="status" className="sr-only">
+                {trayNote.text}
+              </span>
               {selected.length > 0 ? (
                 <div className="flex flex-wrap items-center gap-2" aria-live="polite" aria-relevant="additions removals">
                   {selected.map((id) => {
@@ -469,6 +484,7 @@ export function DeskApp() {
                           // The chip unmounts on remove; hand focus to the next chip, else the search box.
                           const next =
                             (e.currentTarget.nextElementSibling ?? e.currentTarget.previousElementSibling) as HTMLElement | null;
+                          announceTray(`Removed ${drug.name}`);
                           remove(id);
                           requestAnimationFrame(() => {
                             const target =
@@ -519,6 +535,7 @@ export function DeskApp() {
                     size="sm"
                     className="text-muted"
                     onClick={() => {
+                      announceTray("Tray cleared");
                       clear();
                       setActiveCaseId(null);
                       setActivePackId(null);
@@ -532,6 +549,9 @@ export function DeskApp() {
                   >
                     <RotateCcw className="size-3.5" />
                     Clear
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => setView("watch")}>
+                    Watch
                   </Button>
                 </div>
               ) : null}

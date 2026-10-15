@@ -238,7 +238,11 @@ export function WatchPage() {
                   {row?.busy && !row.pack ? (
                     <p className="text-sm text-muted">Asking OpenFDA…</p>
                   ) : null}
-                  {row?.err ? <p className="text-sm text-danger">{row.err}</p> : null}
+                  {row?.err ? (
+                    <p className="text-sm text-danger" role="alert">
+                      {row.err}
+                    </p>
+                  ) : null}
 
                   {shortage.length > 0 ? (
                     <div className="rounded-md bg-warn-soft px-3 py-2.5">
@@ -300,9 +304,8 @@ export function WatchPage() {
       )}
 
       <p className="text-xs leading-relaxed text-muted">
-        Live excerpts are shortened. The label and Prescribing Information still win. To clear all
-        pins on this browser, remove each row or clear the storage key{" "}
-        <span className="font-mono">firstpass.watch.v1</span>.
+        Live excerpts are shortened. The label and Prescribing Information still win. Pins stay in
+        this browser. Each pin is removed with its Remove button.
         {book.updatedAt ? (
           <>
             {" "}
