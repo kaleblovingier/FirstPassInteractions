@@ -77,6 +77,7 @@ import { labelPinKindCard } from "./learn/label-pin-kind";
 import { labelPinSentenceCard } from "./learn/label-pin-sentence";
 import { labelPinBasisCard } from "./learn/label-pin-basis";
 import { labelRetrievedCard } from "./learn/label-retrieved";
+import { labelScopeNoteCard } from "./learn/label-scope-note";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1227,6 +1228,8 @@ export function deskCards(ids: string[], findings: Finding[]): StudyCard[] {
       if (pinBasis) out.push(pinBasis);
       const retrieved = labelRetrievedCard(ids[i], ids[j]);
       if (retrieved) out.push(retrieved);
+      const scopeNote = labelScopeNoteCard(ids[i], ids[j]);
+      if (scopeNote) out.push(scopeNote);
     }
   }
   return out;

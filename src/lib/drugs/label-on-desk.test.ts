@@ -39,6 +39,8 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.equal(plain.includes("contraindications sentence"), false);
   assert.match(plain, /The pin stores this pair as named\. The label names the drug\. Not a new finding\./);
   assert.match(plain, /Retrieved 2026-09-27\. That date is not a new finding\./);
+  assert.equal(row.scopeNote, null);
+  assert.equal(plain.includes("Stored note:"), false);
   assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
   assert.equal(deskLabels(["simvastatin", "clarithromycin", "warfarin"]).length, 1);
   const others = alsoOnLabel(["simvastatin", "clarithromycin"]);
@@ -106,4 +108,33 @@ test("a gold line keeps a different pin contraindications sentence", () => {
   assert.match(plain, /Stored mechanism: PK\./);
   assert.match(plain, /Stored domain: muscle-relaxant\./);
   assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
+});
+
+test("a scope note is shown and an engineering note stays off the check", () => {
+  const shown = labelFor("methadone", "alprazolam");
+  assert.ok(shown);
+  assert.equal(shown.scopeNote, "Label names the class (benzodiazepines), not alprazolam specifically.");
+  const plain = deskLabelPlain(["methadone", "alprazolam"]);
+  assert.match(
+    plain,
+    /Stored note: Label names the class \(benzodiazepines\), not alprazolam specifically\. That note is not a new finding and not an instruction\./,
+  );
+  assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
+  const hidden = labelFor("methadone", "rifampin");
+  assert.ok(hidden);
+  assert.equal(hidden.scopeNote, null);
+  assert.equal(deskLabelPlain(["methadone", "rifampin"]).includes("supported floor"), false);
+  const pah = labelFor("darunavir", "sildenafil-pah");
+  assert.ok(pah);
+  assert.equal(pah.scopeNote, null);
+  assert.equal(deskLabelPlain(["darunavir", "sildenafil-pah"]).includes("erectile"), false);
+  assert.equal(labelFor("paxlovid", "lovastatin")?.scopeNote, null);
+  assert.equal(deskLabelPlain(["paxlovid", "lovastatin"]).includes("paused"), false);
+  assert.equal(labelFor("methadone", "ondansetron")?.scopeNote, null);
+  assert.equal(deskLabelPlain(["methadone", "ondansetron"]).includes("evaluate-and-monitor"), false);
+  const qt = labelFor("levoketoconazole", "bosutinib");
+  assert.equal(
+    qt?.scopeNote,
+    "Table 6 row: CYP3A4 or CYP3A4 and P-gp substrates that may prolong QT. Section 4 contraindicates drugs that cause QT prolongation associated with ventricular arrhythmias.",
+  );
 });

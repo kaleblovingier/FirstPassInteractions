@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf, pinBasisLine } from "@/lib/drugs/label-on-desk";
+import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf, pinBasisLine, scopeNoteLine } from "@/lib/drugs/label-on-desk";
 import { drugHubPath } from "@/lib/seo/drug-hubs";
 
 export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
@@ -69,6 +69,9 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
               <p className="mt-1 text-[11px] leading-relaxed text-muted">
                 Retrieved {row.retrieved}. That date is not a new finding.
               </p>
+            ) : null}
+            {scopeNoteLine(row.scopeNote) ? (
+              <p className="mt-1 min-w-0 break-words text-[11px] leading-relaxed text-muted">{scopeNoteLine(row.scopeNote)}</p>
             ) : null}
             <div className="mt-1 flex flex-wrap gap-2">
               <a

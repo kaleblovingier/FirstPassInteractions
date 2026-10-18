@@ -1691,6 +1691,20 @@ describe("study learning tools", () => {
     const war = deskCards(["warfarin", "clarithromycin"], []);
     assert.equal(war.some((c) => c.id.startsWith("ret-")), false);
   });
+
+  it("a stored label asks the scope note and hides an engineering note", () => {
+    const pair = deskCards(["methadone", "alprazolam"], []);
+    const card = pair.find((c) => c.id === "snote-alprazolam|methadone");
+    assert.equal(card?.correct, "Label names the class (benzodiazepines), not alprazolam specifically.");
+    assert.equal(card?.prompt, "Methadone × Alprazolam.");
+    assert.equal(String(card?.prompt).includes("benzodiazepines"), false);
+    const hidden = deskCards(["methadone", "rifampin"], []);
+    assert.equal(hidden.some((c) => c.id.startsWith("snote-")), false);
+    const pah = deskCards(["darunavir", "sildenafil-pah"], []);
+    assert.equal(pah.some((c) => c.id.startsWith("snote-")), false);
+    const none = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(none.some((c) => c.id.startsWith("snote-")), false);
+  });
 });
 
 

@@ -32,6 +32,11 @@ export type DeskLabel = {
   pinBasis: "named" | "class" | null;
   /** Day this quote was stored from the label. Not a severity. */
   retrieved: string;
+  /**
+   * Stored scope sentence from the gold note. Null when the note is missing
+   * or is an engineering comment (floor, catalog, pin). Not a severity.
+   */
+  scopeNote: string | null;
   url: string;
   source: "gold" | "pin";
 };
@@ -72,6 +77,7 @@ function index(): Map<string, Row> {
       pinSentence: null,
       pinBasis: null,
       retrieved: g.retrieved,
+      scopeNote: scopeNoteOf(g.note),
       url: g.url,
       source: "gold",
     });
@@ -100,6 +106,7 @@ function index(): Map<string, Row> {
       pinSentence: sentenceOf(p.contraindicationsSentence),
       pinBasis: p.basis,
       retrieved: p.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED,
+      scopeNote: null,
       url: p.url,
       source: "pin",
     };
@@ -122,6 +129,7 @@ function index(): Map<string, Row> {
         drugB: cur.drugB,
         nameA: cur.nameA,
         nameB: cur.nameB,
+        scopeNote: cur.scopeNote,
         ...held,
       });
       continue;
@@ -179,6 +187,8 @@ export function deskLabelPlain(ids: readonly string[]): string {
     const basisLine = pinBasisLine(row);
     if (basisLine) lines.push(basisLine);
     if (row.retrieved) lines.push(`Retrieved ${row.retrieved}. That date is not a new finding.`);
+    const noteLine = scopeNoteLine(row.scopeNote);
+    if (noteLine) lines.push(noteLine);
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -191,6 +201,26 @@ export function deskLabelPlain(ids: readonly string[]): string {
 function sentenceOf(value: string | undefined | null): string | null {
   const sentence = (value ?? "").trim();
   return sentence || null;
+}
+
+/**
+ * Engineering comments stay off the check. A scope note is shown verbatim.
+ * Mixed notes that mention the catalog, a floor, or a pin are not split.
+ */
+const ENGINEERING_NOTE =
+  /\b(floor|catalog|pin|engine|wave|grade|SPL|paused)\b|\bCYP rules\b|pair finding|not its own pair|not split|combo row|evaluate-and-monitor/i;
+
+export function scopeNoteOf(note: string | undefined | null): string | null {
+  const text = (note ?? "").trim();
+  if (!text || ENGINEERING_NOTE.test(text)) return null;
+  return text;
+}
+
+/** The check line for a stored scope note. Not an instruction. */
+export function scopeNoteLine(note: string | null): string | null {
+  if (!note) return null;
+  const body = note.endsWith(".") ? note : `${note}.`;
+  return `Stored note: ${body} That note is not a new finding and not an instruction.`;
 }
 
 /** Pin sentence only when it is stored and is not the quote already shown. */
@@ -241,6 +271,13 @@ export function labelPinSentencePool(): string[] {
 
 export function labelRetrievedPool(): string[] {
   return unique([...index().values()].filter((row) => row.quote).map((row) => row.retrieved));
+}
+
+/** Scope notes already stored on a shown label line. Engineering notes are absent. */
+export function labelScopeNotePool(): string[] {
+  return unique(
+    [...index().values()].filter((row) => row.quote && row.scopeNote).map((row) => row.scopeNote as string),
+  );
 }
 
 /** Other quoted lines on the same label. Not filtered by the desk. */
