@@ -304,7 +304,9 @@ export function DeskApp() {
                 <span className="font-serif text-lg leading-none tracking-tight">FirstPass</span>
                 {hydrated && plan !== "free" ? (
                   <span className="rounded-full bg-accent px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-accent-fg">
-                    {lifetime ? "Founding" : program ? `${PROGRAM_TIER_BY_ID[program.tier].name} license` : PLAN_BY_ID[plan].name}
+                    {program && !lifetime
+                      ? `${PROGRAM_TIER_BY_ID[program.tier].name} license`
+                      : lifetime ? "Founding" : PLAN_BY_ID[plan].name}
                   </span>
                 ) : null}
               </div>
