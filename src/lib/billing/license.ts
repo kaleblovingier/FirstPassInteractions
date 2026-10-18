@@ -41,6 +41,22 @@ export const mintLicenseKey = createServerFn({ method: "POST" })
     }
   });
 
+/**
+ * Program key for a whole organization (FP-ORG-…). PIN-checked like
+ * mintLicenseKey. `end` is the last month the key works, as "YYYY-MM".
+ */
+export const mintProgramLicense = createServerFn({ method: "POST" })
+  .validator((input: unknown) => ({
+    pin: readString(input, "pin"),
+    tier: readString(input, "tier"),
+    org: readString(input, "org"),
+    end: readString(input, "end"),
+  }))
+  .handler(async ({ data }) => {
+    const { mintProgramForOperator } = await import("./license.server");
+    return mintProgramForOperator(data);
+  });
+
 export const mintLicenseBatch = createServerFn({ method: "POST" })
   .validator((input: unknown) => ({
     pin: readString(input, "pin"),
