@@ -14,6 +14,7 @@ import { Route as ForProgramsRouteImport } from './routes/for-programs'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TrustRouteImport } from './routes/trust'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
@@ -44,6 +45,11 @@ const RecoverRoute = RecoverRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrugSlugRoute = DrugSlugRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust': typeof TrustRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust': typeof TrustRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust': typeof TrustRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
+    | '/trust'
     | '/drug/$slug'
     | '/pair/$slug'
     | '/api/cds/$'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
+    | '/trust'
     | '/drug/$slug'
     | '/pair/$slug'
     | '/api/cds/$'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
+    | '/trust'
     | '/drug/$slug'
     | '/pair/$slug'
     | '/api/cds/$'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   PairsRoute: typeof PairsRoute
   RecoverRoute: typeof RecoverRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TrustRoute: typeof TrustRoute
   DrugSlugRoute: typeof DrugSlugRoute
   PairSlugRoute: typeof PairSlugRoute
   ApiCdsSplatRoute: typeof ApiCdsSplatRoute
@@ -208,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drug/$slug': {
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   PairsRoute: PairsRoute,
   RecoverRoute: RecoverRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TrustRoute: TrustRoute,
   DrugSlugRoute: DrugSlugRoute,
   PairSlugRoute: PairSlugRoute,
   ApiCdsSplatRoute: ApiCdsSplatRoute,
