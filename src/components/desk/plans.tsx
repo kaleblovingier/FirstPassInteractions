@@ -14,6 +14,8 @@ import { redeemLicense } from "@/lib/billing/license";
 import { startStripeCheckout, stripeStatus } from "@/lib/billing/stripe";
 import { paypalStatus, startPaypalCheckout } from "@/lib/billing/paypal";
 import { PLAN_BY_ID, PLAN_TIERS, priceFor } from "@/lib/billing/plans";
+import { PROGRAM_TIER_BY_ID } from "@/lib/billing/programs";
+import { programLicenseLabel } from "@/lib/billing/program-license";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 import { useModalFocus } from "@/lib/a11y/use-modal-focus";
@@ -67,6 +69,7 @@ export function PlansPage() {
   const current = usePlan();
   const license = useDesk((s) => s.license);
   const lifetime = useDesk((s) => s.lifetime);
+  const program = useDesk((s) => s.program);
   const previewUntil = useDesk((s) => s.previewUntil);
   const previewUsed = useDesk((s) => s.previewUsed);
   const checkoutOpen = useDesk((s) => s.checkout.open);
@@ -75,6 +78,8 @@ export function PlansPage() {
   const downgrade = useDesk((s) => s.downgrade);
   const previewing = Boolean(previewUntil && Date.now() < previewUntil && current === "pro");
   const founding = lifetime || (current === "lab" && !previewing);
+  // A live program license opens what Founding opens, until its end month.
+  const onProgram = Boolean(program) && !lifetime && current === "lab";
 
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
@@ -114,7 +119,7 @@ export function PlansPage() {
               {founding ? (
                 <Button variant="secondary" disabled className="w-full min-h-[44px] sm:w-auto">
                   <Check className="size-4" />
-                  Founding is live on this desk
+                  {onProgram ? "Program license is live on this desk" : "Founding is live on this desk"}
                 </Button>
               ) : (
                 <Button onClick={unlock} className="w-full min-h-[44px] sm:w-auto cursor-pointer">
@@ -143,9 +148,11 @@ export function PlansPage() {
         <p className="rounded-lg bg-ok-soft px-4 py-3 text-sm text-ok">
           {previewing
             ? "Your 1-day preview is on — host factors and the enzyme atlas are open while it lasts."
-            : founding
-              ? "Founding is live — host factors, enzyme atlas, metabolite maps, full report, and export are yours."
-              : "Your key is live — host factors and the enzyme atlas are open on this desk."}
+            : onProgram && program
+              ? `${programLicenseLabel(program)}. Every Founding tool is open on this desk until then.`
+              : founding
+                ? "Founding is live — host factors, enzyme atlas, metabolite maps, full report, and export are yours."
+                : "Your key is live — host factors and the enzyme atlas are open on this desk."}
           {license ? ` Key ${license}.` : ""}{" "}
           <button type="button" className="underline min-h-[44px] inline-flex items-center cursor-pointer" onClick={downgrade}>
             Return to free desk
@@ -228,7 +235,9 @@ export function PlansPage() {
 
                     {founding ? (
                       <Button variant="secondary" className="w-full min-h-[44px]" disabled>
-                        Your current license
+                        {onProgram && program
+                          ? `Included in your ${PROGRAM_TIER_BY_ID[program.tier].name} program license`
+                          : "Your current license"}
                       </Button>
                     ) : (
                       <div className="space-y-2">
@@ -569,12 +578,19 @@ export function CheckoutDrawer() {
         );
         return;
       }
+      const program = res.program ?? null;
+      const applied = activate({ plan: res.plan, license: res.license, lifetime: res.lifetime, program });
+      if (!applied) {
+        setOk("This desk already has Founding for life, so it keeps that. The program key is not needed here.");
+        return;
+      }
       setOk(
         res.lifetime
           ? "Founding lifetime unlocked. Host factors, atlas, and export are open on this desk."
-          : "License unlocked. Host factors and atlas are open on this desk.",
+          : program
+            ? `${programLicenseLabel(program)}. Every Founding tool is open on this desk.`
+            : "License unlocked. Host factors and atlas are open on this desk.",
       );
-      activate({ plan: res.plan, license: res.license, lifetime: res.lifetime });
     } catch {
       setErr("Could not reach the license desk. Check your connection and try again.");
     } finally {
@@ -908,7 +924,7 @@ export function CheckoutDrawer() {
           </div>
 
           <p className="mt-2 text-xs leading-relaxed text-muted">
-            Paste the signed key from your email, text, or receipt. Keys look like <span className="font-mono text-fg font-medium">FP-LIFE-…</span>. Nothing unlocks until Redeem succeeds — the field stays empty until you paste one.
+            Paste the signed key from your email, text, or receipt. Keys look like <span className="font-mono text-fg font-medium">FP-LIFE-…</span>. A key from your school or program starts <span className="font-mono text-fg font-medium">FP-ORG-…</span> and works through its end month. Nothing unlocks until Redeem succeeds — the field stays empty until you paste one.
           </p>
 
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">

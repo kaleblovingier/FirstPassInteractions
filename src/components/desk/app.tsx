@@ -44,6 +44,8 @@ import {
   readHistory,
 } from "@/lib/drugs/tray-history";
 import { PLAN_BY_ID } from "@/lib/billing/plans";
+import { PROGRAM_TIER_BY_ID } from "@/lib/billing/programs";
+import { formatEndMonth, type ProgramGrant } from "@/lib/billing/program-license";
 import { OPERATOR, SITE, tweetFor } from "@/lib/billing/commerce";
 import { caseOfTheDay } from "@/lib/drugs/case-of-the-day";
 import { feedbackMailto } from "@/lib/drugs/feedback";
@@ -234,6 +236,9 @@ export function DeskApp() {
   const pro = plan !== "free";
   const license = useDesk((s) => s.license);
   const lifetime = useDesk((s) => s.lifetime);
+  const program = useDesk((s) => s.program);
+  const programNote = useDesk((s) => s.programNote);
+  const dismissProgramNote = useDesk((s) => s.dismissProgramNote);
   const previewUntil = useDesk((s) => s.previewUntil);
   const justActivated = useDesk((s) => s.justActivated);
   const dismissActivated = useDesk((s) => s.dismissActivated);
@@ -243,6 +248,20 @@ export function DeskApp() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [view, justActivated]);
+  // A program license ends with its term: re-check on load and when the tab comes back.
+  useEffect(() => {
+    if (!hydrated) return;
+    const check = () => {
+      if (document.visibilityState !== "hidden") useDesk.getState().checkProgram();
+    };
+    check();
+    window.addEventListener("focus", check);
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      window.removeEventListener("focus", check);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [hydrated]);
 
   const secretTaps = useRef(0);
   const secretTimer = useRef(0);
@@ -285,7 +304,7 @@ export function DeskApp() {
                 <span className="font-serif text-lg leading-none tracking-tight">FirstPass</span>
                 {hydrated && plan !== "free" ? (
                   <span className="rounded-full bg-accent px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-accent-fg">
-                    {lifetime ? "Founding" : PLAN_BY_ID[plan].name}
+                    {lifetime ? "Founding" : program ? `${PROGRAM_TIER_BY_ID[program.tier].name} license` : PLAN_BY_ID[plan].name}
                   </span>
                 ) : null}
               </div>
@@ -394,6 +413,17 @@ export function DeskApp() {
               ) : null}
             </p>
             <button type="button" className="shrink-0 text-sm text-ok underline" onClick={dismissActivated}>
+              Dismiss
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {hydrated && programNote ? (
+        <div role="status" className="border-b border-border bg-bg-sunken">
+          <div className="mx-auto flex max-w-6xl items-start justify-between gap-3 px-4 py-3 sm:items-center sm:px-6">
+            <p className="text-sm leading-relaxed text-fg">{programNote}</p>
+            <button type="button" className="shrink-0 text-sm text-muted underline hover:text-fg" onClick={dismissProgramNote}>
               Dismiss
             </button>
           </div>
@@ -739,6 +769,7 @@ export function DeskApp() {
                 plan={plan}
                 license={license}
                 lifetime={lifetime}
+                program={program}
                 previewUntil={previewUntil}
                 cap={pro ? 8 : 5}
               />
@@ -1316,6 +1347,7 @@ function StatsCard({
   plan,
   license,
   lifetime,
+  program,
   previewUntil,
   cap,
 }: {
@@ -1326,16 +1358,20 @@ function StatsCard({
   plan: ReturnType<typeof usePlan>;
   license: string | null;
   lifetime: boolean;
+  program: ProgramGrant | null;
   previewUntil: number | null;
   cap: number;
 }) {
   const previewing = Boolean(previewUntil && Date.now() < previewUntil && plan === "pro" && !license);
   const previewLeft = previewLabel(previewUntil);
+  const onProgram = Boolean(program) && !lifetime && plan !== "free";
   const licenseLabel = lifetime
     ? "Founding"
-    : previewing
-      ? `Preview · ${previewLeft}`
-      : PLAN_BY_ID[plan].name;
+    : onProgram && program
+      ? `Program (${PROGRAM_TIER_BY_ID[program.tier].name})`
+      : previewing
+        ? `Preview · ${previewLeft}`
+        : PLAN_BY_ID[plan].name;
   return (
     <div className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)]">
       <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Desk</h2>
@@ -1348,7 +1384,7 @@ function StatsCard({
       <div className="mt-3 text-[11px] text-muted">
         Ceiling {highest === "none" ? "—" : SEVERITY_LABEL[highest as never] ?? highest}
         {license
-          ? ` · ${license}`
+          ? ` · ${onProgram && program ? `through ${formatEndMonth(program.endsAt)} · ` : ""}${license}`
           : plan === "free"
             ? ` · free · founding $79 lifetime unlocks host factors / atlas / export`
             : previewing

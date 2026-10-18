@@ -6,6 +6,13 @@ import { rememberTray } from "./tray-history";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import {
+  normalizeProgramGrant,
+  programEnded,
+  programEndedNote,
+  programFromLicense,
+  type ProgramGrant,
+} from "@/lib/billing/program-license";
+import {
   DEFAULT_HOST,
   DEFAULT_PHENOTYPES,
   type AgeBand,
@@ -60,6 +67,10 @@ interface DeskState {
   plan: PlanId;
   license: string | null;
   lifetime: boolean;
+  /** Program license tier and last moment it works. Null for personal keys and the free desk. */
+  program: ProgramGrant | null;
+  /** One line shown after a program license ends. Cleared on dismiss or a new key. */
+  programNote: string | null;
   previewUntil: number | null;
   /** True after a preview has been started on this browser. Not cleared by returning to free. */
   previewUsed: boolean;
@@ -91,16 +102,71 @@ interface DeskState {
   closeCheckout: () => void;
   setCheckoutInterval: (interval: Interval) => void;
   startPreview: () => void;
-  activateLicense: (opts: { plan: PlanId; license: string; lifetime: boolean }) => void;
+  /** Returns false when the key was not applied (a program key on a desk that already has Founding for life). */
+  activateLicense: (opts: { plan: PlanId; license: string; lifetime: boolean; program?: ProgramGrant | null }) => boolean;
+  /** Falls back to the free desk if the program license has ended. Returns true when it did. */
+  checkProgram: (now?: number) => boolean;
+  dismissProgramNote: () => void;
   dismissActivated: () => void;
   ackHcp: () => void;
   downgrade: () => void;
 }
 
-function activePlan(s: { plan: PlanId; previewUntil: number | null }): PlanId {
+function activePlan(
+  s: { plan: PlanId; previewUntil: number | null; program?: ProgramGrant | null },
+  now: number = Date.now(),
+): PlanId {
+  if (s.program && programEnded(s.program, now)) return "free";
   if (s.plan === "pro" || s.plan === "lab") return s.plan;
-  if (s.previewUntil && Date.now() < s.previewUntil) return "pro";
+  if (s.previewUntil && now < s.previewUntil) return "pro";
   return "free";
+}
+
+type ProgramState = Pick<
+  DeskState,
+  | "plan"
+  | "license"
+  | "lifetime"
+  | "program"
+  | "programNote"
+  | "selected"
+  | "doses"
+  | "phenotypes"
+  | "smoking"
+  | "cannabisRoute"
+  | "alcohol"
+  | "age"
+  | "kidney"
+  | "preg"
+>;
+
+/**
+ * The free desk a learner lands on when their program license has ended, or
+ * null while it still runs (and for every personal key). Keeps up to five drugs
+ * and the free ketamine route; clears the host factors only a license opens.
+ */
+export function programFallback(s: ProgramState, now: number = Date.now()): Partial<DeskState> | null {
+  if (!s.program || !programEnded(s.program, now)) return null;
+  const selected = s.selected.slice(0, maxDrugs("free"));
+  return {
+    plan: "free",
+    license: null,
+    lifetime: false,
+    program: null,
+    programNote: programEndedNote(s.program),
+    justActivated: false,
+    selected,
+    doses: Object.fromEntries(
+      selected.map((id) => [id, s.doses[id]]).filter((row): row is [string, string] => Boolean(row[1])),
+    ),
+    phenotypes: { ...DEFAULT_PHENOTYPES },
+    smoking: false,
+    cannabisRoute: "smoked",
+    alcohol: "off",
+    age: "adult",
+    kidney: "ok",
+    preg: "off",
+  };
 }
 
 export const useDesk = create<DeskState>()(
@@ -122,6 +188,8 @@ export const useDesk = create<DeskState>()(
       plan: "free",
       license: null,
       lifetime: false,
+      program: null,
+      programNote: null,
       previewUntil: null,
       previewUsed: false,
       libraryShelf: "",
@@ -333,16 +401,30 @@ export const useDesk = create<DeskState>()(
           justActivated: false,
         });
       },
-      activateLicense: ({ plan, license, lifetime }) =>
+      activateLicense: ({ plan, license, lifetime, program }) => {
+        const grant = program ? normalizeProgramGrant(program) : null;
+        // Founding for life already opens everything, and never ends. Keep it.
+        if (grant && get().lifetime) return false;
         set({
           plan: plan === "lab" ? "lab" : "pro",
           license,
           lifetime,
+          program: grant,
+          programNote: null,
           previewUntil: null,
           justActivated: true,
           checkout: { ...get().checkout, open: false },
           view: "desk",
-        }),
+        });
+        return true;
+      },
+      checkProgram: (now = Date.now()) => {
+        const next = programFallback(get(), now);
+        if (!next) return false;
+        set(next);
+        return true;
+      },
+      dismissProgramNote: () => set({ programNote: null }),
       dismissActivated: () => set({ justActivated: false }),
       ackHcp: () => set({ hcpAck: true }),
       downgrade: () =>
@@ -350,6 +432,7 @@ export const useDesk = create<DeskState>()(
           plan: "free",
           license: null,
           lifetime: false,
+          program: null,
           previewUntil: null,
           justActivated: false,
           selected: get().selected.slice(0, 2),
@@ -366,7 +449,7 @@ export const useDesk = create<DeskState>()(
       skipHydration: true,
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<DeskState>;
-        return {
+        const merged: DeskState = {
           ...current,
           ...p,
           phenotypes: { ...DEFAULT_PHENOTYPES, ...p.phenotypes },
@@ -378,7 +461,12 @@ export const useDesk = create<DeskState>()(
           justActivated: false,
           hcpAck: Boolean(p.hcpAck),
           previewUsed: Boolean(p.previewUsed) || typeof p.previewUntil === "number",
+          // Program fields are optional: state saved before program keys has neither.
+          // A program key carries its own end month, so it is the fallback source.
+          program: normalizeProgramGrant(p.program) ?? programFromLicense(p.license),
+          programNote: typeof p.programNote === "string" && p.programNote ? p.programNote : null,
         };
+        return { ...merged, ...programFallback(merged) };
       },
       partialize: (s) => ({
         selected: s.selected,
@@ -395,6 +483,8 @@ export const useDesk = create<DeskState>()(
         plan: s.plan,
         license: s.license,
         lifetime: s.lifetime,
+        program: s.program,
+        programNote: s.programNote,
         previewUntil: s.previewUntil,
         previewUsed: s.previewUsed,
         hcpAck: s.hcpAck,
@@ -410,9 +500,8 @@ export function currentPlan(): PlanId {
 export function usePlan(): PlanId {
   const plan = useDesk((s) => s.plan);
   const previewUntil = useDesk((s) => s.previewUntil);
-  if (plan === "pro" || plan === "lab") return plan;
-  if (previewUntil && Date.now() < previewUntil) return "pro";
-  return "free";
+  const program = useDesk((s) => s.program);
+  return activePlan({ plan, previewUntil, program });
 }
 
 export function hostFromState(
