@@ -30,7 +30,7 @@ The operator must confirm or fix each of these. The HECVAT draft marks each one
 1. **Legal entity.** The legal form and state of "FirstPass Interactions", and the TIN on the W-9 (HECVAT 1.2).
 2. **Company size and references.** Do not invent customers (1.7).
 3. **BAA position.** Suggested: no BAAs, because PHI must not be entered (2.5).
-4. **The patient name and MRN field.** Remove the "Patient Identifier / Name" field in the handout builder (`src/components/desk/resource-navigator.tsx`) before answering "No" to the PHI question (2.4).
+4. **The patient name and MRN field.** Done on `growth/million`: the "Patient Identifier / Name" field is removed from the handout builder. Confirm it is live before answering "No" to the PHI question (2.4).
 5. **Program rosters and FERPA.** How names sent by a program are handled (2.6). Program keys are being built in another workstream; re-check this answer once they exist.
 6. **AI readers.** xAI's data terms for API inputs, and whether to tell users on screen that the readers use an outside AI service (2.7).
 7. **Data region, retention and deletion.** Vercel function region, Vercel log retention, Stripe and Resend retention, and how a deletion request is handled (2.8, 2.9, 7.2).

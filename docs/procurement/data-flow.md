@@ -225,16 +225,19 @@ error messages never carry the URL (`src/lib/server/http.ts`). Logged events see
 
 ## 8. Things in the code that work against the privacy claims
 
-These are listed for the operator to decide on. None was changed on this branch.
+These are listed for the operator to decide on. Items 1 to 3 were fixed on the integration branch (`growth/million`); the rest are open.
 
 1. **A patient name and MRN field.** The handout builder in the resource navigator has an input
    labelled "Patient Identifier / Name (Client-Side Only / No PHI Stored)" with the placeholder
    "e.g. J. Doe / MRN-84012". It is kept in React state only and is not sent or stored, but it
    invites PHI entry, against `LEGAL_TERMS.hipaa` and `NOT_FOR` in `src/lib/regulatory.ts`
    (`src/components/desk/resource-navigator.tsx`, `src/lib/drugs/healthcare-resources.ts`).
+   **Fixed:** the field is removed from the handout builder.
 2. **The readers send data to xAI without saying so on screen** (section 3.2).
+   **Fixed:** the readers panel now says asking sends the desk's drug names and findings to xAI's Grok model.
 3. **Third-party script on every page** that the help page's "Privacy guarantee" ("No search terms
    or locations are ever sent to our servers or stored in cookies") does not mention
    (`src/components/desk/help.tsx`, section 4). FirstPass code itself does keep that promise.
+   **Fixed:** the line now reads "FirstPass does not send your search terms or location to its servers and sets no cookies of its own."
 4. **Public CDS API accepts patient-level clinical values** without authentication or a rate
    limit (section 3.5).

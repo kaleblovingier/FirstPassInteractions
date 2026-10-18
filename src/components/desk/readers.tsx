@@ -49,6 +49,9 @@ export function DeskReaders({ brief }: { brief: ReaderBrief }) {
           <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
             Separate reads of this check. They cannot add a row, a milligram, or a clearance. Ask only when you want them.
           </p>
+          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
+            Asking sends the drug names and findings on this desk to xAI&apos;s Grok model. Do not put patient information on the desk.
+          </p>
         </div>
         <button
           type="button"

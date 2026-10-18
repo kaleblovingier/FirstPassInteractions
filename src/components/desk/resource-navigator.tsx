@@ -93,7 +93,6 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
   const [filterPill, setFilterPill] = useState<FilterPillId>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [zipInput, setZipInput] = useState("");
-  const [patientNameInput, setPatientNameInput] = useState("");
   const [clinicHeaderInput, setClinicHeaderInput] = useState("");
   const [selectedStateCode, setSelectedStateCode] = useState<string>("");
   const [papSearchQuery, setPapSearchQuery] = useState("");
@@ -134,10 +133,9 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
         drugIds: activeIds,
         host: activeHost,
         zip: zipInput.trim() || undefined,
-        patientName: patientNameInput.trim() || undefined,
         clinicHeader: clinicHeaderInput.trim() || undefined,
       }),
-    [activeIds.join("|"), activeHost, zipInput, patientNameInput, clinicHeaderInput],
+    [activeIds.join("|"), activeHost, zipInput, clinicHeaderInput],
   );
 
   const handleCopyHandout = async () => {
@@ -269,7 +267,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
               </Button>
             </div>
 
-            {/* Customization Controls for Handout Header & Patient */}
+            {/* Customization Controls for Handout Header */}
             <div className="mb-3 grid gap-2 sm:grid-cols-2 pt-1">
               <div>
                 <label className="mb-1 block font-mono text-[10px] text-muted uppercase tracking-wider">
@@ -280,18 +278,6 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
                   placeholder="e.g. Hope Valley Community Health Clinic"
                   value={clinicHeaderInput}
                   onChange={(e) => setClinicHeaderInput(e.target.value)}
-                  className="h-8 text-xs font-mono"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block font-mono text-[10px] text-muted uppercase tracking-wider">
-                  Patient Identifier / Name (Client-Side Only / No PHI Stored)
-                </label>
-                <Input
-                  type="text"
-                  placeholder="e.g. J. Doe / MRN-84012"
-                  value={patientNameInput}
-                  onChange={(e) => setPatientNameInput(e.target.value)}
                   className="h-8 text-xs font-mono"
                 />
               </div>
