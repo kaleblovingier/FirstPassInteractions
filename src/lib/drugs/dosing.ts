@@ -5,7 +5,7 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
-import type { Finding, HostContext, Severity } from "./types";
+import { DEFAULT_HOST, type Finding, type HostContext, type Severity } from "./types";
 
 export type DoseBand =
   | "none"
@@ -593,6 +593,18 @@ export const DOSING: Record<string, LabeledDose> = {
     neverPrescribe: true,
     source: "Not a labeled product",
   }),
+  citalopram: L({
+    id: "citalopram",
+    unit: "mg/day",
+    usualAdult: "20–40 mg once daily",
+    usualLow: 20,
+    usualHigh: 40,
+    labeledMax: 40,
+    geriatric: "Max 20 mg/day in patients > 60 years of age due to QT prolongation.",
+    hepatic: "Max 20 mg/day in hepatic impairment.",
+    maxNote: "Doses > 40 mg/day prolong QTc without additional antidepressant efficacy (FDA boxed warning).",
+    source: "Celexa PI / FDA 2011 Drug Safety Communication",
+  }),
 };
 
 const CAPS: DoseCap[] = [
@@ -666,6 +678,13 @@ const CAPS: DoseCap[] = [
     why: "Valproate doubles lamotrigine. Starter kits and the 200 mg ceiling are labeled.",
     source: "Lamictal PI",
   },
+  {
+    victim: "citalopram",
+    perpetrators: ["omeprazole", "esomeprazole", "cimetidine", "fluconazole"],
+    mg: 20,
+    why: "CYP2C19 inhibitor / Celexa boxed warning: do not exceed 20 mg daily due to QT prolongation.",
+    source: "Celexa PI / FDA Drug Safety Communication",
+  },
 ];
 
 export function parseDoses(raw: Record<string, string> | undefined): Record<string, number> {
@@ -709,7 +728,7 @@ export function checkDose(
   id: string,
   amount: number | null,
   ids: string[],
-  host: HostContext,
+  host: HostContext = DEFAULT_HOST,
 ): DoseCheck | null {
   const label = DOSING[id];
   if (!label) return null;

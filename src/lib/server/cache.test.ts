@@ -129,6 +129,21 @@ describe("BoundedLRUCache - TTL expiration and active pruning", () => {
     assert.equal(cache.size(), 1);
     assert.equal(cache.get("item3"), "v3");
   });
+
+  it("prunes expired entries before evicting valid LRU entry when at maxSize", async () => {
+    const cache = new BoundedLRUCache<string>(2, 5000);
+    cache.set("expiredSoon", "val1", 40);
+    cache.set("keepMe", "val2", 5000);
+
+    await new Promise((r) => setTimeout(r, 60));
+
+    cache.set("newItem", "val3");
+
+    assert.equal(cache.size(), 2);
+    assert.equal(cache.get("expiredSoon"), undefined);
+    assert.equal(cache.get("keepMe"), "val2");
+    assert.equal(cache.get("newItem"), "val3");
+  });
 });
 
 describe("BoundedLRUCache - Singleflight request coalescing", () => {

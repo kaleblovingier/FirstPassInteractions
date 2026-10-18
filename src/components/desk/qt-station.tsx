@@ -592,7 +592,7 @@ export function QtStation({ ids, host }: QtStationProps) {
             <span>{nomogram.headline}</span>
           </div>
           <p className="mt-1 text-muted">
-            Directives: {nomogram.electrolyteDirectives.laboratoryAlert} · {nomogram.electrolyteDirectives.potassiumTarget} · {nomogram.electrolyteDirectives.magnesiumTarget}
+            Published Emergency Benchmarks: {nomogram.electrolyteDirectives.laboratoryAlert} · {nomogram.electrolyteDirectives.potassiumTarget} · {nomogram.electrolyteDirectives.magnesiumTarget}
           </p>
         </div>
 

@@ -55,6 +55,17 @@ export const GLP = new Set([
   "semaglutide-wegovy",
 ]);
 
+export const CNI = new Set(["tacrolimus", "cyclosporine"]);
+
+export const AZOLES = new Set([
+  "voriconazole",
+  "posaconazole",
+  "itraconazole",
+  "fluconazole",
+  "isavuconazonium",
+  "ketoconazole",
+]);
+
 export type WardKind =
   | "carbapenem-vpa"
   | "vanco-zosyn"
@@ -62,6 +73,7 @@ export type WardKind =
   | "capecitabine-warfarin"
   | "pen-inducer-warfarin"
   | "letermovir-tacro"
+  | "cni-azole"
   | "linezolid-sero"
   | "glp-insulin";
 
@@ -132,6 +144,10 @@ export function isPenInducerWarfarin(a: string, b: string) {
 export function isLetermovirTacro(a: string, b: string) {
   const t = a === "tacrolimus" || b === "tacrolimus";
   return t && (a === "letermovir" || b === "letermovir");
+}
+
+export function isCniAzole(a: string, b: string) {
+  return (CNI.has(a) && AZOLES.has(b)) || (CNI.has(b) && AZOLES.has(a));
 }
 
 export function isInsulinId(id: string) {
@@ -239,6 +255,23 @@ export function wardsOnDesk(ids: string[]): WardHit[] {
         "Letermovir is a moderate 3A4 inhibitor. Tacrolimus is a sensitive NTI 3A4 victim. Levels climb. CMV prophylaxis is not a free add-on on a transplant desk.",
         "Tacrolimus trough. Open the PI for the labeled adjustment — this desk does not pick it.",
         "Prevymis label. Tacrolimus is NTI 3A4 on this desk.",
+      ),
+    );
+  }
+  const ca = pair(ids, CNI, AZOLES);
+  if (ca) {
+    out.push(
+      hit(
+        "cni-azole",
+        ca[0],
+        ca[1],
+        names(ca[0], ca[1]),
+        "major",
+        "danger",
+        "calcineurin inhibitor × azole antifungal — 3A4/P-gp clearance blockade",
+        "Azoles (voriconazole, posaconazole, itraconazole, fluconazole, ketoconazole) potently inhibit CYP3A4 and P-gp, multiplying tacrolimus and cyclosporine exposure by 2- to 5-fold or more. High CNI troughs cause acute nephrotoxicity, neurotoxicity, and tremors. Preemptive dose reductions and close therapeutic drug monitoring (troughs) are mandatory in transplant protocols.",
+        "CNI trough levels, serum creatinine, urine output, tremors, QTc. This desk does not pick the empirical dose reduction.",
+        "Prograf, Neoral, Vfend, Noxafil, and Diflucan Prescribing Information. KDIGO Transplant Guidelines.",
       ),
     );
   }

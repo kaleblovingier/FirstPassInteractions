@@ -540,7 +540,7 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
   // Stable with recurrent non-sustained bursts
   return {
     clinicalStatus: "stable-recurrent-bursts",
-    headline: "ACUTE PROTOCOL: Hemodynamically Stable Patient with Recurrent TdP Bursts / Critical QTc >= 500 ms",
+    headline: "ACUTE BENCHMARK: Hemodynamically Stable Patient with Recurrent TdP Bursts / Critical QTc >= 500 ms",
     urgency: "critical",
     steps: [
       {
