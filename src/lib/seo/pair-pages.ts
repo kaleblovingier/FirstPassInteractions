@@ -155,6 +155,7 @@ export function sitemapXml(): string {
     `${SITE_URL}/pairs`,
     `${SITE_URL}/enzymes`,
     `${SITE_URL}/for-programs`,
+    `${SITE_URL}/trust`,
     ...pairPages().map((p) => p.canonical),
     ...hubUrls(),
     ...enzymeHubUrls(),

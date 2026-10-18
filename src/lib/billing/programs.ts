@@ -7,6 +7,9 @@
  * tier here and every surface follows.
  *
  * PRICES ARE A DRAFT. The operator sets the real numbers before this ships.
+ * The bands are contiguous on purpose: from 9 people up, every tier costs less
+ * per year than Founding at $79 for each person (Team at 9+, Program from 26,
+ * Site from 101). Keep that true when the numbers change.
  *
  * Individual canon does not change: the free desk stays five drugs, and
  * Founding stays $79 once for one person. Program licenses are annual because
@@ -36,10 +39,10 @@ export const PROGRAM_TIERS: readonly ProgramTier[] = [
     name: "Team",
     tagline: "A clinic, OTP team or small teaching group.",
     annual: 690,
-    seats: 15,
+    seats: 25,
     fits: "Ketamine clinics, MAT and OTP teams, preceptor groups",
     features: [
-      "Up to 15 people on one program key",
+      "Up to 25 people on one program key",
       "Every Founding tool for every seat",
       "Teaching packs and lab-book assignments",
       "Invoice and purchase order accepted",
@@ -49,7 +52,7 @@ export const PROGRAM_TIERS: readonly ProgramTier[] = [
     id: "program",
     name: "Program",
     tagline: "A class cohort or a residency program.",
-    annual: 2400,
+    annual: 1900,
     seats: 100,
     fits: "A PharmD class year, a pharmacy-tech cohort, a residency program",
     highlighted: true,

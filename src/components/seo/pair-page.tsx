@@ -102,6 +102,7 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
       </ul>
       <p className="mt-8 text-sm" data-testid="for-programs-link">
         Teaching or running a program? <a href="/for-programs" className="underline">Group and site licenses</a>.
+        {" "}How FirstPass handles data: <a href="/trust" className="underline">Trust, privacy and validation</a>.
       </p>
       <PairDisclaimer />
     </main>

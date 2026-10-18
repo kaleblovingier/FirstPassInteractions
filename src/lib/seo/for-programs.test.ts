@@ -174,9 +174,9 @@ describe("/for-programs estimator", () => {
   it("matches the contract's numbers for a known case", () => {
     const out = estimate("40", 2);
     assert.ok(out.includes("Program license"));
-    assert.ok(out.includes("$4,320"));
-    assert.ok(out.includes("$2,160"));
-    assert.ok(out.includes("$54.00"));
+    assert.ok(out.includes("$3,420"));
+    assert.ok(out.includes("$1,710"));
+    assert.ok(out.includes("$42.75"));
     assert.ok(out.includes("10% off"));
   });
 

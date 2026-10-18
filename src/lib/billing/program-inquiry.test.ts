@@ -142,7 +142,7 @@ describe("program inquiry text", () => {
     ]) {
       assert.ok(body.includes(line), line);
     }
-    assert.equal(q.total, 4320);
+    assert.equal(q.total, 3420);
   });
 
   it("builds a mailto fallback with the whole inquiry", () => {
