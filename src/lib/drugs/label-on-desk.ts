@@ -196,6 +196,8 @@ export function deskLabelPlain(ids: readonly string[]): string {
     if (noteLine) lines.push(noteLine);
     const searchLine = storedSearchLine(row);
     if (searchLine) lines.push(searchLine);
+    const sourceLine = storedSourceLine(row);
+    if (sourceLine) lines.push(sourceLine);
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -250,6 +252,18 @@ export function storedSearchLine(row: DeskLabel): string | null {
   const search = storedSearch(row);
   if (!search) return null;
   return `Stored search: ${search}. That search is not a new finding.`;
+}
+
+/** Gold or pin, the place this quote was already stored. Not a severity. */
+export function storedSource(row: Pick<DeskLabel, "quote" | "source">): "gold" | "pin" | null {
+  if (!row.quote) return null;
+  return row.source;
+}
+
+export function storedSourceLine(row: DeskLabel): string | null {
+  const source = storedSource(row);
+  if (!source) return null;
+  return `Stored source: ${source}. That source is not a new finding.`;
 }
 
 /** Pin sentence only when it is stored and is not the quote already shown. */
@@ -312,6 +326,11 @@ export function labelScopeNotePool(): string[] {
 /** Search words already stored on a shown label line, when they are not just the name. */
 export function labelSearchPool(): string[] {
   return unique([...index().values()].filter((row) => row.quote).map((row) => storedSearch(row) ?? ""));
+}
+
+/** Gold and pin, the sources already stored on a shown label line. */
+export function labelSourcePool(): string[] {
+  return unique([...index().values()].filter((row) => row.quote).map((row) => storedSource(row) ?? ""));
 }
 
 /** Other quoted lines on the same label. Not filtered by the desk. */

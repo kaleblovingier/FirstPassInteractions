@@ -154,3 +154,15 @@ test("a stored search is shown only when it is not just the name", () => {
   assert.equal(spaced?.queries?.[0], "sodium oxybate");
   assert.equal(deskLabelPlain(["sodium-oxybate", "zolpidem"]).includes("Stored search:"), false);
 });
+
+test("a stored source names gold or pin and is not a severity", () => {
+  const gold = labelFor("simvastatin", "clarithromycin");
+  assert.equal(gold?.source, "gold");
+  const goldPlain = deskLabelPlain(["simvastatin", "clarithromycin"]);
+  assert.match(goldPlain, /Stored source: gold\. That source is not a new finding\./);
+  assert.equal(/\b\d+\s*mg\b/i.test(goldPlain), false);
+  const pin = labelFor("ranolazine", "phenobarbital");
+  assert.equal(pin?.source, "pin");
+  assert.match(deskLabelPlain(["ranolazine", "phenobarbital"]), /Stored source: pin\. That source is not a new finding\./);
+  assert.equal(labelFor("warfarin", "clarithromycin"), null);
+});
