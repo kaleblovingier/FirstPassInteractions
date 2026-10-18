@@ -41,6 +41,7 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.match(plain, /Retrieved 2026-09-27\. That date is not a new finding\./);
   assert.equal(row.scopeNote, null);
   assert.equal(plain.includes("Stored note:"), false);
+  assert.equal(plain.includes("Stored search:"), false);
   assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
   assert.equal(deskLabels(["simvastatin", "clarithromycin", "warfarin"]).length, 1);
   const others = alsoOnLabel(["simvastatin", "clarithromycin"]);
@@ -137,4 +138,19 @@ test("a scope note is shown and an engineering note stays off the check", () => 
     qt?.scopeNote,
     "Table 6 row: CYP3A4 or CYP3A4 and P-gp substrates that may prolong QT. Section 4 contraindicates drugs that cause QT prolongation associated with ventricular arrhythmias.",
   );
+});
+
+test("a stored search is shown only when it is not just the name", () => {
+  const alcohol = labelFor("methadone", "ethanol");
+  assert.ok(alcohol);
+  assert.deepEqual(alcohol.queries, ["methadone", "alcohol"]);
+  const plain = deskLabelPlain(["methadone", "ethanol"]);
+  assert.match(plain, /Stored search: methadone · alcohol\. That search is not a new finding\./);
+  assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
+  const brand = labelFor("buprenorphine", "alprazolam");
+  assert.deepEqual(brand?.queries, ["suboxone", "alprazolam"]);
+  assert.match(deskLabelPlain(["buprenorphine", "alprazolam"]), /Stored search: suboxone · alprazolam\. That search is not a new finding\./);
+  const spaced = labelFor("sodium-oxybate", "zolpidem");
+  assert.equal(spaced?.queries?.[0], "sodium oxybate");
+  assert.equal(deskLabelPlain(["sodium-oxybate", "zolpidem"]).includes("Stored search:"), false);
 });

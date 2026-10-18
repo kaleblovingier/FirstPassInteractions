@@ -1705,6 +1705,18 @@ describe("study learning tools", () => {
     const none = deskCards(["simvastatin", "clarithromycin"], []);
     assert.equal(none.some((c) => c.id.startsWith("snote-")), false);
   });
+
+  it("a stored label asks the search words when they are not just the name", () => {
+    const pair = deskCards(["methadone", "ethanol"], []);
+    const card = pair.find((c) => c.id === "qry-ethanol|methadone");
+    assert.equal(card?.correct, "methadone · alcohol");
+    assert.equal(card?.prompt, "Methadone × Ethanol.");
+    assert.equal(String(card?.prompt).toLowerCase().includes("alcohol"), false);
+    const same = deskCards(["simvastatin", "clarithromycin"], []);
+    assert.equal(same.some((c) => c.id.startsWith("qry-")), false);
+    const spaced = deskCards(["sodium-oxybate", "zolpidem"], []);
+    assert.equal(spaced.some((c) => c.id.startsWith("qry-")), false);
+  });
 });
 
 

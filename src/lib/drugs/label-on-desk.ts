@@ -37,6 +37,8 @@ export type DeskLabel = {
    * or is an engineering comment (floor, catalog, pin). Not a severity.
    */
   scopeNote: string | null;
+  /** Gold search words. Null on a pin-only line. Not a severity. */
+  queries: [string, string] | null;
   url: string;
   source: "gold" | "pin";
 };
@@ -78,6 +80,7 @@ function index(): Map<string, Row> {
       pinBasis: null,
       retrieved: g.retrieved,
       scopeNote: scopeNoteOf(g.note),
+      queries: g.queries,
       url: g.url,
       source: "gold",
     });
@@ -107,6 +110,7 @@ function index(): Map<string, Row> {
       pinBasis: p.basis,
       retrieved: p.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED,
       scopeNote: null,
+      queries: null,
       url: p.url,
       source: "pin",
     };
@@ -130,6 +134,7 @@ function index(): Map<string, Row> {
         nameA: cur.nameA,
         nameB: cur.nameB,
         scopeNote: cur.scopeNote,
+        queries: cur.queries,
         ...held,
       });
       continue;
@@ -189,6 +194,8 @@ export function deskLabelPlain(ids: readonly string[]): string {
     if (row.retrieved) lines.push(`Retrieved ${row.retrieved}. That date is not a new finding.`);
     const noteLine = scopeNoteLine(row.scopeNote);
     if (noteLine) lines.push(noteLine);
+    const searchLine = storedSearchLine(row);
+    if (searchLine) lines.push(searchLine);
   }
   for (const extra of alsoOnLabel(ids)) {
     lines.push(
@@ -221,6 +228,28 @@ export function scopeNoteLine(note: string | null): string | null {
   if (!note) return null;
   const body = note.endsWith(".") ? note : `${note}.`;
   return `Stored note: ${body} That note is not a new finding and not an instruction.`;
+}
+
+function compact(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+/** Gold search words, or null when they are only the stored id and name. */
+export function storedSearch(row: Pick<DeskLabel, "queries" | "drugA" | "drugB" | "nameA" | "nameB">): string | null {
+  const queries = row.queries;
+  if (!queries) return null;
+  const same = (query: string, id: string, name: string) => {
+    const text = compact(query);
+    return text === compact(id) || text === compact(name);
+  };
+  if (same(queries[0], row.drugA, row.nameA) && same(queries[1], row.drugB, row.nameB)) return null;
+  return `${queries[0]} · ${queries[1]}`;
+}
+
+export function storedSearchLine(row: DeskLabel): string | null {
+  const search = storedSearch(row);
+  if (!search) return null;
+  return `Stored search: ${search}. That search is not a new finding.`;
 }
 
 /** Pin sentence only when it is stored and is not the quote already shown. */
@@ -278,6 +307,11 @@ export function labelScopeNotePool(): string[] {
   return unique(
     [...index().values()].filter((row) => row.quote && row.scopeNote).map((row) => row.scopeNote as string),
   );
+}
+
+/** Search words already stored on a shown label line, when they are not just the name. */
+export function labelSearchPool(): string[] {
+  return unique([...index().values()].filter((row) => row.quote).map((row) => storedSearch(row) ?? ""));
 }
 
 /** Other quoted lines on the same label. Not filtered by the desk. */
