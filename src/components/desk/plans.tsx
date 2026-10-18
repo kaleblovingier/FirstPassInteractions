@@ -14,7 +14,7 @@ import { redeemLicense } from "@/lib/billing/license";
 import { startStripeCheckout, stripeStatus } from "@/lib/billing/stripe";
 import { paypalStatus, startPaypalCheckout } from "@/lib/billing/paypal";
 import { PLAN_BY_ID, PLAN_TIERS, priceFor } from "@/lib/billing/plans";
-import { PROGRAM_TIER_BY_ID } from "@/lib/billing/programs";
+import { PROGRAM_TIER_BY_ID, PROGRAM_TIERS } from "@/lib/billing/programs";
 import { programLicenseLabel } from "@/lib/billing/program-license";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
@@ -260,6 +260,14 @@ export function PlansPage() {
           );
         })}
       </ul>
+
+      <p data-testid="plans-for-programs" className="text-center text-sm text-muted">
+        Buying for a class, a residency or a clinic? Program licenses start at ${PROGRAM_TIERS[0].annual.toLocaleString("en-US")} a year for up to{" "}
+        {PROGRAM_TIERS[0].seats} people, with one key for everyone.{" "}
+        <a href="/for-programs" className="font-medium text-accent hover:underline">
+          Group and site licenses
+        </a>
+      </p>
 
       {/* Accepted Payment Methods */}
       <section className="rounded-xl bg-surface px-4 py-5 shadow-[var(--shadow-border)] sm:px-6">
