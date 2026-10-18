@@ -9,6 +9,30 @@ import { useDesk, usePlan } from "@/lib/drugs/store";
 import { maxDrugs } from "@/lib/billing/plans";
 import { cn } from "@/lib/utils";
 
+const SLASH_STORAGE_KEY = "firstpass.slash.v1";
+
+function slashShortcutOff(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(SLASH_STORAGE_KEY) === "off";
+  } catch {
+    return false;
+  }
+}
+
+function ignoresSlash(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  ) {
+    return true;
+  }
+  if (target instanceof HTMLElement && target.isContentEditable) return true;
+  return target.closest('[contenteditable="true"]') !== null;
+}
+
 export function DrugSearch() {
   const selected = useDesk((s) => s.selected);
   const add = useDesk((s) => s.add);
@@ -18,6 +42,8 @@ export function DrugSearch() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
+  const [slashOff, setSlashOff] = useState(false);
+  const slashOffRef = useRef(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,15 +54,26 @@ export function DrugSearch() {
   }, [q, results.length]);
 
   useEffect(() => {
+    const off = slashShortcutOff();
+    slashOffRef.current = off;
+    setSlashOff(off);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // Storage is the source of truth unless a write failed and only the ref updated.
+    const stored = slashShortcutOff();
+    if (stored === slashOff) slashOffRef.current = stored;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "/" && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
+      if (slashOffRef.current) return;
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+      if (ignoresSlash(e.target)) return;
+      e.preventDefault();
+      inputRef.current?.focus();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [slashOff]);
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -56,9 +93,26 @@ export function DrugSearch() {
     inputRef.current?.focus();
   }
 
+  function toggleSlash() {
+    const nextOff = !slashOff;
+    if (typeof window !== "undefined") {
+      try {
+        if (nextOff) window.localStorage.setItem(SLASH_STORAGE_KEY, "off");
+        else window.localStorage.removeItem(SLASH_STORAGE_KEY);
+      } catch {
+        /* storage blocked; the in-memory switch still applies */
+      }
+    }
+    const stored = slashShortcutOff();
+    const off = stored === nextOff ? stored : nextOff;
+    slashOffRef.current = off;
+    setSlashOff(off);
+  }
+
   return (
     <div>
-      <div ref={rootRef} className="relative">
+      <div className="flex items-start gap-2">
+      <div ref={rootRef} className="relative min-w-0 flex-1">
         <label className="sr-only" htmlFor="drug-search">
           Search medicines and other substances
         </label>
@@ -233,12 +287,27 @@ export function DrugSearch() {
           </div>
         ) : null}
       </div>
+        <button
+          type="button"
+          aria-pressed={slashOff}
+          onClick={toggleSlash}
+          className="h-12 min-h-[44px] shrink-0 whitespace-nowrap rounded-lg bg-bg-sunken px-3 text-xs font-medium text-fg shadow-[var(--shadow-border)] hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+        >
+          {slashOff ? "Turn on / key" : "Turn off / key"}
+        </button>
+      </div>
       {!q && !full ? (
         <div className="mt-2 space-y-2 px-1">
           {selected.length < 2 ? (
             <p className="text-xs leading-relaxed text-muted">
-              Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.
-              Search a name, or tap a starter below — add two items to see mapped pair findings.
+              {slashOff ? (
+                "The / key is off. Search a name, or tap a starter below — add two items to see mapped pair findings."
+              ) : (
+                <>
+                  Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.
+                  Search a name, or tap a starter below — add two items to see mapped pair findings.
+                </>
+              )}
             </p>
           ) : null}
           <div className="flex flex-wrap gap-1.5" aria-label="Quick-add teaching starters">

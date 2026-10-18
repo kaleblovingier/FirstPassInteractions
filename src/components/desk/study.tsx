@@ -59,7 +59,7 @@ const LANE_PLAIN: Record<StudyLane, string> = {
 const PILE_PLAIN: Record<StudyPile, string> = {
   all: "All",
   open: "Not yet",
-  miss: "Review",
+  miss: "Due",
 };
 
 const HOW_STEPS = [
@@ -76,7 +76,7 @@ const HOW_STEPS = [
   {
     n: "3",
     title: "Mark and drill",
-    body: "Review is due now. Got it waits 1 day, then 3, a week, and 3 weeks. That wait is a study rhythm, not a dosing schedule.",
+    body: "A Review mark is due now. Got it comes back after 1 day, then 3, a week, and 3 weeks. The Due pile is whatever is due now, including a card you already got whose wait ended. That wait is a study rhythm, not a dosing schedule. Not an exam key, not a prescription.",
   },
 ] as const;
 
@@ -298,11 +298,13 @@ export function StudyPage() {
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
               Short flashcards for pharmacy and medical trainees. Say the enzyme story out loud, then reveal.
-              Mark Got it or Review, and drill only the ones you missed. Not an exam key, not dosing advice,
-              not a prescription — the Prescribing Information still wins.
+              A Review mark is due now. Got it comes back after 1 day, then 3, a week, and 3 weeks. The Due
+              pile is whatever is due now, including a card you already got whose wait ended. That wait is a
+              study rhythm, not a dosing schedule. Not an exam key, not dosing advice, not a prescription —
+              the Prescribing Information still wins.
             </p>
             <p className="mt-3 font-mono text-[11px] uppercase tracking-wide text-muted">
-              {known} got it · {missed} review · {unseen} not yet
+              {known} got it · {missed} due now · {unseen} not yet
               {plan === "free" ? " · five-drug desks stay free" : ""}
             </p>
             <div
@@ -311,7 +313,7 @@ export function StudyPage() {
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={knownPct}
-              aria-label={`${knownPct}% marked got it, ${missPct}% marked review`}
+              aria-label={`${knownPct}% marked got it, ${missPct}% due now`}
             >
               <div className="h-full bg-ok" style={{ width: `${knownPct}%` }} />
               <div className="h-full bg-warn" style={{ width: `${missPct}%` }} />
@@ -542,7 +544,7 @@ export function StudyPage() {
               {" · "}
               <span className="font-mono font-medium text-ok">{known} Got it</span>
               {" vs "}
-              <span className="font-mono font-medium text-warn">{missed} Review</span>
+              <span className="font-mono font-medium text-warn">{missed} due now</span>
               {unseen > 0 ? (
                 <>
                   {" · "}
@@ -564,7 +566,7 @@ export function StudyPage() {
                   : "bg-bg-sunken text-muted hover:bg-surface-2 hover:text-fg",
               )}
             >
-              <span>{pile === "miss" ? "Viewing Review Cards" : "Focus Review Cards"}</span>
+              <span>{pile === "miss" ? "Viewing due cards" : "Focus due cards"}</span>
               <span
                 className={cn(
                   "rounded-full px-2 py-0.5 font-mono text-[11px] font-semibold tabular-nums",
@@ -642,7 +644,7 @@ export function StudyPage() {
               <span className="flex items-center gap-1 text-[10px]">
                 <span className="text-ok font-medium">got</span>
                 <span className="text-subtle">/</span>
-                <span className="text-warn font-medium">review</span>
+                <span className="text-warn font-medium">due</span>
                 <span className="text-subtle">/</span>
                 <span className="text-subtle">unseen</span>
               </span>
@@ -661,7 +663,7 @@ export function StudyPage() {
                       ? "bg-bg-sunken font-medium text-fg ring-1 ring-accent"
                       : "bg-bg-sunken/60 text-muted hover:bg-bg-sunken hover:text-fg",
                   )}
-                  title={`${topic.label}: ${got} got, ${review} review, ${unseen} unseen (${total} total)`}
+                  title={`${topic.label}: ${got} got, ${review} due, ${unseen} unseen (${total} total)`}
                 >
                   <span className={active ? "font-medium text-fg" : "text-fg"}>{topic.shortLabel}</span>
                   <span className="font-mono text-[11px] tabular-nums">
@@ -707,7 +709,7 @@ export function StudyPage() {
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">First pass</p>
           <p className="mt-1 text-sm font-medium text-fg">No marks yet — that is fine.</p>
           <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted">
-            Work one card, mark Got it or Review, then filter to Review when you want a tighter drill. You can
+            Work one card, mark Got it or Review, then filter to Due when you want a tighter drill. You can
             also jump to the desk, library, or rounds anytime.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -750,7 +752,7 @@ export function StudyPage() {
         ) : (
         <p className="rounded-xl bg-surface px-5 py-8 text-sm text-muted shadow-[var(--shadow-border)]">
           {pile === "miss"
-            ? "Nothing is due in this lane. A miss is due now. Got it waits 1 day, then 3, a week, and 3 weeks."
+            ? "Nothing is due in this lane. A Review mark is due now. Got it comes back after 1 day, then 3, a week, and 3 weeks. The Due pile is whatever is due now, including a card you already got whose wait ended. That wait is a study rhythm, not a dosing schedule. Not an exam key, not a prescription."
             : pile === "open"
               ? "Nothing unseen here. Switch to All, or reset marks to start over."
               : lane === "clinical" && clinicalTopic !== "all"
@@ -761,9 +763,15 @@ export function StudyPage() {
       ) : (
         <>
         {lane === "desk" ? (
-          <p className="mb-3 text-xs leading-relaxed text-muted">
+          <details className="mb-3">
+            <summary className="flex min-h-[44px] cursor-pointer items-center text-sm font-medium text-fg">
+              How a desk card is worded
+            </summary>
+            <p className="text-xs leading-relaxed text-muted">
             Substrate: that enzyme clears it, or activates a prodrug, on this map. Inhibitor: blocks that enzyme. Inducer: speeds it up. The card uses only the role and direction already stored. Not a milligram. A time-dependent row keeps the block until new enzyme is made. The recovery note is the one already stored, not a restart date. A substrate is stored as clearance or as prodrug activation. A perpetrator grade is the strong, moderate, or weak already on the map. A narrow-index flag is either stored on that substrate or it is not. Sensitivity is the sensitive, major, or minor already on the map. The shelf is the class already stored on the name. Same shelf is not a collision. A brand is the first stored brand, not a different map. Kind is medicine, food, herb, or research peptide. An effect flag is the first flag already stored. A watch phrase is the phrase already stored, not a diagnosis. Another name is an alias already stored. A note is the sentence already stored. A second brand is the next brand already stored. An enzyme count is how many enzyme rows are stored. A second enzyme is the next enzyme row already stored. A second flag is the next effect flag already stored. A count is how many brands, flags, or other names are stored. A third enzyme is the enzyme on the third stored row. The second-row role is the role on that row. A third flag is the next effect flag. A second other name is the next alias. A second substrate is the next substrate row, with its stored pathway and sensitivity. A second perpetrator grade is the strength on the next inhibitor or inducer. A substrate count and a perpetrator count are how many of those rows are stored. The first-row role is the role on the first enzyme row, even when a later row is a perpetrator. A fourth enzyme is the enzyme on the fourth stored row. The third-row role and the fourth-row role are the roles on those rows. A fourth flag and a fifth flag are the next effect flags. A third other name is the next alias. A third brand is the next brand. A third substrate and a fourth substrate are the next substrate rows, with their stored pathway and sensitivity. A third perpetrator grade and a fourth perpetrator grade are the strengths on those later inhibitors or inducers. The check lists every stored enzyme row and names an enzyme only when two names store it. Same enzyme is not a collision. A fifth, sixth, or seventh enzyme is that stored row. The fifth-row role is the role on that row. A later perpetrator grade is the strength on that inhibitor or inducer. A later brand and a later other name are the next stored words. The shelf can show one enzyme and one role. A perpetrator meeting a substrate is named on the check. The pair check is still the severity. A sixth-row role and a seventh-row role are the role on that row. A later other name is the next stored alias. The name card opens the stored watch phrase and the stored note. Opening them is not a new finding. A stored label line is the quote, the section, and the label that carries it. A paraphrased line is not shown. That quote is not a new finding. The pair check is still the severity. Other lines on that same label are named when they are not on this desk. That list is not a suggestion to add them. A mechanism word, a domain, a named-or-class pin, and the other-line count are the words already stored. The check shows the stored mechanism and the stored domain on the label line. When a pin stores an enzyme and a direction, the check names them. That enzyme is not a new finding. Learn asks which enzyme the pin stores and whether the pin stores an inhibitor or an inducer. When a pin stores a contraindications sentence that is not the quote, the check shows that sentence. That sentence is not a new finding. Learn asks which contraindications sentence the pin stores. When a pin stores a pair as named or class, the check says so, including when a gold quote owns the line. Named means the label names the drug. Class means the label names a class. That word is not a new finding. Learn asks that word when the gold line had hidden it. The check shows the day that label line was retrieved. That date is not a new finding. Learn asks which day is stored. The check also links the stored drug page for each name on that line. That link is not a new finding. When a stored label note is a scope sentence, the check shows that note. An engineering note stays off the check. That note is not a new finding and not an instruction. Learn asks which note is stored. None of this is a milligram or a clearance.
-          </p>
+            </p>
+          </details>
+
         ) : null}
         <StudyCardView
           card={card}
@@ -812,7 +820,7 @@ function StudyEmptyCoach({
   const deskEmpty = lane === "desk" && pile === "all";
 
   const headline = missEmpty
-    ? "Nothing in Review for this lane"
+    ? "Nothing in Due for this lane"
     : openEmpty
       ? "Nothing left unmarked here"
       : deskEmpty
@@ -822,9 +830,9 @@ function StudyEmptyCoach({
         : "No cards in this lane";
 
   const body = missEmpty
-    ? "A miss is due now. Got it waits 1 day, then 3, a week, and 3 weeks. That wait is a study rhythm, not a dosing schedule. Switch to All to keep going."
+    ? "A Review mark is due now. Got it comes back after 1 day, then 3, a week, and 3 weeks. The Due pile is whatever is due now, including a card you already got whose wait ended. That wait is a study rhythm, not a dosing schedule. Not an exam key, not a prescription. Switch to All to keep going."
     : openEmpty
-      ? "You have seen everything in this pile. Switch to All, open Review, or reset marks for a fresh pass."
+      ? "You have seen everything in this pile. Switch to All, open Due, or reset marks for a fresh pass."
       : deskEmpty
         ? selectedCount
           ? "The items on the desk did not yield a flashcard here. Try Teaching rounds or Classic pairs, or open the desk to add a teaching partner."
@@ -852,7 +860,7 @@ function StudyEmptyCoach({
                 onClick={() => onPile("miss")}
                 className="min-h-[44px] rounded-full bg-bg-sunken px-4 text-xs font-medium text-muted hover:text-fg"
               >
-                Open Review
+                Open Due
               </button>
             )}
             <button

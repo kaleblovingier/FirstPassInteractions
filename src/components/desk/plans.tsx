@@ -730,9 +730,14 @@ export function CheckoutDrawer() {
                   <input
                     id="checkout-email"
                     type="email"
+                    name="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    spellCheck={false}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@clinic.org"
+                    aria-describedby={payErr ? "checkout-pay-error" : undefined}
                     className="mt-1 min-h-[44px] w-full rounded-md bg-surface px-3 text-sm text-fg shadow-[var(--shadow-border)] placeholder:text-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                   />
                 </div>
@@ -761,7 +766,7 @@ export function CheckoutDrawer() {
                 </Button>
               ) : null}
               {payErr ? (
-                <p className="text-xs font-medium text-danger" role="alert">
+                <p id="checkout-pay-error" className="text-xs font-medium text-danger" role="alert">
                   {payErr}
                 </p>
               ) : null}
