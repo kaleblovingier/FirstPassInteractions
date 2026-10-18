@@ -2,9 +2,10 @@ import { analyze } from "@/lib/drugs/engine";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { LABEL_CONTRAINDICATIONS } from "@/lib/drugs/label-contraindications";
 import { LABEL_GOLD_SET } from "@/lib/drugs/reference/label-gold-set";
-import { SEVERITY_LABEL, SEVERITY_RANK, type Severity } from "@/lib/drugs/types";
+import { SEVERITY_LABEL, SEVERITY_RANK, type Enzyme, type Severity } from "@/lib/drugs/types";
 import { buildBriefUrl } from "@/lib/drugs/brief";
 import { drugHubs } from "./drug-hubs";
+import { enzymeHubUrls } from "./enzyme-hubs";
 import {
   PAIR_DESCRIPTION_TEMPLATE,
   PAIR_TITLE_TEMPLATE,
@@ -31,6 +32,8 @@ export interface PairPage {
   severity: Severity | "none";
   severityLabel: string;
   mechanism: string;
+  /** Enzymes on the finding the mechanism line comes from (the engine's own list); empty for non-enzyme findings. */
+  enzymes: Enzyme[];
   quote: PairQuote | null;
   title: string;
   description: string;
@@ -117,6 +120,7 @@ function build(): PairPage[] {
       severity,
       severityLabel,
       mechanism,
+      enzymes: top ? [...top.enzymes] : [],
       quote,
       title: fillPairTemplate(PAIR_TITLE_TEMPLATE, v),
       description: fillPairTemplate(PAIR_DESCRIPTION_TEMPLATE, v),
@@ -149,9 +153,11 @@ export function sitemapXml(): string {
   const urls = [
     `${SITE_URL}/`,
     `${SITE_URL}/pairs`,
+    `${SITE_URL}/enzymes`,
     `${SITE_URL}/for-programs`,
     ...pairPages().map((p) => p.canonical),
     ...hubUrls(),
+    ...enzymeHubUrls(),
   ];
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
