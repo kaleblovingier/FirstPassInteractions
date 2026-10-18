@@ -234,12 +234,11 @@ export const ACCESSIBILITY: TrustSection = {
   id: "accessibility",
   title: "Accessibility",
   intro:
-    "A draft Accessibility Conformance Report (VPAT 2.5, WCAG 2.2 edition, dated 2026-10-12) covers the desk and the public pair and drug pages. It is a draft. The owner has not yet verified every row, and no one has tested FirstPass with a screen reader.",
+    "A draft Accessibility Conformance Report (VPAT 2.5, WCAG 2.2 edition, dated 2026-10-12) covers the desk and the public pair and drug pages. It is a draft. The owner has not yet verified every row, and no one has tested FirstPass with a screen reader. The full report goes out on request once every row is verified.",
   points: [
     {
       lead: "Summary.",
       text: "Of 56 Level A and AA rows: 15 Supports, 3 Partially Supports, 29 Not Evaluated and 9 Not Applicable. The report names each partial gap and its planned fix.",
-      source: "docs/accessibility/ACR-WCAG22.md",
     },
     {
       lead: "Automated checks.",
@@ -254,7 +253,7 @@ export const ACCESSIBILITY: TrustSection = {
       text: "Testing with a screen reader, speech input or switch access, and in browsers other than Chrome. Most Not Evaluated rows wait on that.",
     },
   ],
-  sources: ["docs/accessibility/ACR-WCAG22.md", "docs/accessibility/wcag-conformance.md"],
+  sources: ["docs/accessibility/wcag-conformance.md"],
 };
 
 export const PROCUREMENT = {
