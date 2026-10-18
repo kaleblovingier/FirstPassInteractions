@@ -169,6 +169,9 @@ export function programFallback(s: ProgramState, now: number = Date.now()): Part
   };
 }
 
+/** Set by the persist merge when a saved program license had already ended. */
+let endedOnLoad = false;
+
 export const useDesk = create<DeskState>()(
   persist(
     (set, get) => ({
@@ -466,7 +469,15 @@ export const useDesk = create<DeskState>()(
           program: normalizeProgramGrant(p.program) ?? programFromLicense(p.license),
           programNote: typeof p.programNote === "string" && p.programNote ? p.programNote : null,
         };
-        return { ...merged, ...programFallback(merged) };
+        const ended = programFallback(merged);
+        endedOnLoad = Boolean(ended);
+        return { ...merged, ...ended };
+      },
+      // Save the free desk right away when a program term ended while the tab was closed.
+      onRehydrateStorage: () => (state) => {
+        if (!endedOnLoad || !state) return;
+        endedOnLoad = false;
+        useDesk.setState({});
       },
       partialize: (s) => ({
         selected: s.selected,

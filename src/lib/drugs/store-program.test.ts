@@ -165,6 +165,19 @@ describe("desk store: program licenses", () => {
     assert.equal(s.ketamineRoute, "oral");
     assert.equal(s.hcpAck, true);
     assert.equal(currentPlan(), "free");
+    // The free desk is saved at once, so the next load does not start on the ended key.
+    assert.equal(saved()?.state.plan, "free");
+    assert.equal(saved()?.state.license, null);
+    assert.equal(saved()?.state.program, null);
+    assert.equal(saved()?.state.programNote, s.programNote);
+    assert.deepEqual(saved()?.state.selected, ["a", "b", "c", "d", "e"]);
+  });
+
+  it("does not rewrite saved state on an ordinary load", async () => {
+    const before = JSON.stringify({ state: OLD_FOUNDING, version: 0 });
+    mem.set(KEY, before);
+    await useDesk.persist.rehydrate();
+    assert.equal(mem.get(KEY), before);
   });
 
   it("reads the end from the key when the saved program field is missing", async () => {
