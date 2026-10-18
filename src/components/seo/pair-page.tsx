@@ -1,6 +1,8 @@
+import { Fragment } from "react";
 import type { PairPage } from "@/lib/seo/pair-pages";
 import { DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
+import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
 
 export function PairDisclaimer() {
   return (
@@ -48,6 +50,17 @@ export function PairPageView({ page }: { page: PairPage }) {
         <a href={drugHubPath(page.drugA)} className="underline">{page.nameA}</a> ·{" "}
         <a href={drugHubPath(page.drugB)} className="underline">{page.nameB}</a>
       </p>
+      {page.enzymes.length ? (
+        <p className="mt-2 text-sm" data-testid="pair-enzyme-links">
+          {page.enzymes.length > 1 ? "Enzymes" : "Enzyme"} behind this pair:{" "}
+          {page.enzymes.map((e, i) => (
+            <Fragment key={e}>
+              {i ? " · " : ""}
+              <a href={enzymePath(e)} className="underline">{e}</a>
+            </Fragment>
+          ))}
+        </p>
+      ) : null}
       <PairDisclaimer />
     </main>
   );
@@ -75,6 +88,17 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
             <a href={`/drug/${h.slug}`} className="underline">{h.name}</a>
           </li>
         ))}
+      </ul>
+      <h2 className="mt-8 text-lg font-semibold">By enzyme</h2>
+      <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm" data-testid="enzyme-hub-index">
+        {enzymeHubs().map((h) => (
+          <li key={h.slug}>
+            <a href={h.path} className="underline">{h.enzyme}</a>
+          </li>
+        ))}
+        <li>
+          <a href="/enzymes" className="underline">All enzymes</a>
+        </li>
       </ul>
       <p className="mt-8 text-sm" data-testid="for-programs-link">
         Teaching or running a program? <a href="/for-programs" className="underline">Group and site licenses</a>.
@@ -113,6 +137,19 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
           </ul>
         </section>
       ))}
+      {hub.enzymes.length ? (
+        <section className="mt-8" data-testid="drug-hub-enzymes">
+          <h2 className="text-lg font-semibold">Enzyme roles on the desk</h2>
+          <ul className="mt-2 space-y-1 text-sm">
+            {hub.enzymes.map((e) => (
+              <li key={e.enzyme}>
+                <a href={e.path} className="underline">{e.enzyme}</a>{" "}
+                <span className="text-muted">· {e.roles.join(" · ")}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
       <PairDisclaimer />
     </main>
   );
