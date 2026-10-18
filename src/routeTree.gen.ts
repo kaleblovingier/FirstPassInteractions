@@ -10,12 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EnzymesRouteImport } from './routes/enzymes'
 import { Route as ForProgramsRouteImport } from './routes/for-programs'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
+import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
@@ -25,6 +27,11 @@ import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhoo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnzymesRoute = EnzymesRouteImport.update({
+  id: '/enzymes',
+  path: '/enzymes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForProgramsRoute = ForProgramsRouteImport.update({
@@ -57,6 +64,11 @@ const DrugSlugRoute = DrugSlugRouteImport.update({
   path: '/drug/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnzymeSlugRoute = EnzymeSlugRouteImport.update({
+  id: '/enzyme/$slug',
+  path: '/enzyme/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PairSlugRoute = PairSlugRouteImport.update({
   id: '/pair/$slug',
   path: '/pair/$slug',
@@ -85,12 +97,14 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/drug/$slug': typeof DrugSlugRoute
+  '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -99,12 +113,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/drug/$slug': typeof DrugSlugRoute
+  '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -114,12 +130,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust': typeof TrustRoute
   '/drug/$slug': typeof DrugSlugRoute
+  '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -130,12 +148,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/enzymes'
     | '/for-programs'
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
     | '/trust'
     | '/drug/$slug'
+    | '/enzyme/$slug'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -144,12 +164,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/enzymes'
     | '/for-programs'
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
     | '/trust'
     | '/drug/$slug'
+    | '/enzyme/$slug'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -158,12 +180,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/enzymes'
     | '/for-programs'
     | '/pairs'
     | '/recover'
     | '/sitemap.xml'
     | '/trust'
     | '/drug/$slug'
+    | '/enzyme/$slug'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -173,12 +197,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EnzymesRoute: typeof EnzymesRoute
   ForProgramsRoute: typeof ForProgramsRoute
   PairsRoute: typeof PairsRoute
   RecoverRoute: typeof RecoverRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrustRoute: typeof TrustRoute
   DrugSlugRoute: typeof DrugSlugRoute
+  EnzymeSlugRoute: typeof EnzymeSlugRoute
   PairSlugRoute: typeof PairSlugRoute
   ApiCdsSplatRoute: typeof ApiCdsSplatRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
@@ -193,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/enzymes': {
+      id: '/enzymes'
+      path: '/enzymes'
+      fullPath: '/enzymes'
+      preLoaderRoute: typeof EnzymesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/for-programs': {
@@ -237,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrugSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/enzyme/$slug': {
+      id: '/enzyme/$slug'
+      path: '/enzyme/$slug'
+      fullPath: '/enzyme/$slug'
+      preLoaderRoute: typeof EnzymeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pair/$slug': {
       id: '/pair/$slug'
       path: '/pair/$slug'
@@ -277,12 +317,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EnzymesRoute: EnzymesRoute,
   ForProgramsRoute: ForProgramsRoute,
   PairsRoute: PairsRoute,
   RecoverRoute: RecoverRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrustRoute: TrustRoute,
   DrugSlugRoute: DrugSlugRoute,
+  EnzymeSlugRoute: EnzymeSlugRoute,
   PairSlugRoute: PairSlugRoute,
   ApiCdsSplatRoute: ApiCdsSplatRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,

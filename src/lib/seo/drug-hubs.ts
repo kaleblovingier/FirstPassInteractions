@@ -2,6 +2,7 @@ import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { buildBriefUrl } from "@/lib/drugs/brief";
 import { SEVERITY_LABEL, SEVERITY_RANK, type Severity } from "@/lib/drugs/types";
 import { pairPages, type PairPage } from "./pair-pages";
+import { drugEnzymeLinks, type DrugEnzymeLink } from "./enzyme-hubs";
 import {
   DRUG_HUB_CTA_TEMPLATE,
   DRUG_HUB_DESCRIPTION_TEMPLATE,
@@ -33,6 +34,8 @@ export interface DrugHub {
   cta: string;
   groups: DrugHubGroup[];
   pairCount: number;
+  /** Each enzyme the drug stores a catalog role on, linked to its /enzyme hub. */
+  enzymes: DrugEnzymeLink[];
 }
 
 const toSlug = (s: string) =>
@@ -107,6 +110,7 @@ function build(): DrugHub[] {
       cta: fillDrugTemplate(DRUG_HUB_CTA_TEMPLATE, name),
       groups: g,
       pairCount: pages.length,
+      enzymes: drugEnzymeLinks(id),
     });
   }
   hubs.sort((x, y) => x.slug.localeCompare(y.slug));
