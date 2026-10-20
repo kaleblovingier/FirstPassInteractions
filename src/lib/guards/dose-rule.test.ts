@@ -33,6 +33,13 @@ test("dose rule: catches administered amounts, skips lab values", () => {
   assert.equal(hit("Magnesium Sulfate 2 g IV push"), 1);
   assert.equal(hit("Calcium gluconate 1-2 g"), 1);
   assert.equal(hit("Regular insulin 10 units"), 1);
+  assert.equal(hit("built-in auto-taper · 60 mg/min cap"), 1); // rounds.ts:1245
+  assert.equal(hit("gentamicin 1 mg/kg q8h"), 1); // rounds.ts:1289
+  assert.deepEqual("gentamicin 1 mg/kg q8h".match(DOSE_PATTERN), ["1 mg/kg q8h"]);
+  assert.equal(hit("load 20 mg/kg"), 1);
+  assert.equal(hit("norepinephrine 0.1 mcg/kg/min"), 1);
+  assert.equal(hit("insulin 0.1 units/kg/h"), 1);
+  assert.equal(hit("glucose 180 mg/dL, Na 126 mEq/L, level 15 mcg/mL, CrCl 30 mL/min, lactate 2 mmol/L, UOP 0.5 mL/kg/h"), 0);
   assert.equal(hit("glucose < 250 mg/dL, K+ 4.5 mEq/L, CrCl < 50 mL/min, trough 20 mcg/mL"), 0);
 });
 
