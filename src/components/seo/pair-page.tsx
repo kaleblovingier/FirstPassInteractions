@@ -150,6 +150,8 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
   );
 }
 
+export const CITED_ONLY_HUB_INTRO = "Interaction notes for this supplement, quoted from FDA-approved labeling.";
+
 export function DrugHubView({ hub }: { hub: DrugHub }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
@@ -158,7 +160,7 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
       <p data-testid="drug-hub-intro" className="mt-3 text-sm text-muted">
-        {fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
+        {hub.pairCount === 0 ? CITED_ONLY_HUB_INTRO : fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
       </p>
       <p className="mt-6">
         <a href={hub.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">

@@ -48,7 +48,8 @@ describe("drug hub pages", () => {
       const t = text(html(h));
       assert.ok(t.includes(`Open ${h.name} in the desk`), h.slug);
       assert.ok(html(h).includes(`href="${h.deskUrl}"`) && h.deskUrl.endsWith(`brief=${h.drugId}`), h.slug);
-      assert.ok(t.includes(PAIR_DISCLAIMER) && t.includes(`These are pairs with ${h.name} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with ${h.name}; it just isn't on this list. Open any pair in the desk to see it alongside other drugs.`), h.slug);
+      const intro = h.pairCount === 0 ? "Interaction notes for this supplement, quoted from FDA-approved labeling." : `These are pairs with ${h.name} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with ${h.name}; it just isn't on this list. Open any pair in the desk to see it alongside other drugs.`;
+      assert.ok(t.includes(PAIR_DISCLAIMER) && t.includes(intro), h.slug);
       for (const g of h.groups) assert.ok(labels.has(g.label) && g.label === SEVERITY_LABEL[g.severity]);
     }
     assert.equal(PAIR_DISCLAIMER, "Educational reference only. Not FDA-cleared. The Prescribing Information governs.");
@@ -118,8 +119,20 @@ describe("cited-only supplement hubs", () => {
       const html = renderToStaticMarkup(createElement(DrugHubView, { hub }));
       assert.ok(html.includes("Educational reference only. Not FDA-cleared. The Prescribing Information governs."));
       assert.ok(html.includes("drug-hub-label-note"));
+      assert.ok(html.includes("Interaction notes for this supplement, quoted from FDA-approved labeling."));
+      assert.ok(!html.includes("These are pairs with"));
       assert.doesNotMatch(html, /\d\s*mg\b/i);
       assert.ok(!html.includes("/pair/"));
     }
+  });
+});
+
+describe("hubs with pairs keep the shared intro", () => {
+  it("renders the pair intro, not the supplement intro", async () => {
+    const { drugHubs } = await import("./drug-hubs");
+    const hub = drugHubs().find((h) => h.pairCount > 0)!;
+    const html = renderToStaticMarkup(createElement(DrugHubView, { hub }));
+    assert.ok(html.includes("These are pairs with"));
+    assert.ok(!html.includes("Interaction notes for this supplement"));
   });
 });
