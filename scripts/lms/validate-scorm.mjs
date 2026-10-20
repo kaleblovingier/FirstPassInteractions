@@ -43,6 +43,14 @@ export function validate(buf, { disclaimer } = {}) {
     if (!m.includes(`<resource identifier="${ref}"`)) errors.push(`item references missing resource ${ref}`);
   for (const [, h] of m.matchAll(/href="([^"]+)"/g)) if (!files.has(h)) errors.push(`manifest href not in zip: ${h}`);
   for (const [name, data] of files) {
+    if (name.endsWith(".js")) {
+      const t = data.toString("utf8");
+      const sets = [...t.matchAll(/LMSSetValue\(\s*["']([^"']+)["']\s*,\s*["']([^"']*)["']/g)].map((m) => [m[1], m[2]]);
+      if (/LMSSetValue\(\s*[^"'\s]/.test(t)) errors.push(`${name}: LMSSetValue with a non-literal argument`);
+      for (const [k, v] of sets)
+        if (k !== "cmi.core.lesson_status" || v !== "browsed") errors.push(`${name}: sends ${k}=${v} (only lesson_status "browsed" is allowed)`);
+      if (/\b(passed|failed|completed)\b|cmi\.core\.score/.test(t)) errors.push(`${name}: mentions passed, failed, completed or a score`);
+    }
     if (name.startsWith("/") || name.includes("..")) errors.push(`unsafe path ${name}`);
     if (!/\.(html|css|js)$/.test(name)) continue;
     const t = data.toString("utf8");

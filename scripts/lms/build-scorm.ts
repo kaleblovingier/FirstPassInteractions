@@ -5,7 +5,8 @@
  * text. Pairs whose card text contains a dose or a price are skipped.
  * The package makes no network requests: no scripts load from any server, and
  * it writes nothing about the learner. It only tells the hosting LMS the page
- * was opened (LMSInitialize / LMSFinish) when an LMS API is present.
+ * was viewed (lesson_status "browsed": viewed, no credit) when an LMS API is
+ * present. It never sends passed, failed, completed or a score.
  *
  *   npx tsx scripts/lms/build-scorm.ts [--out dir]
  */
@@ -26,7 +27,7 @@ const { cards, skipped } = scormCards();
 
 const SCORM_SHIM = `(function(){var w=window,a=null,n=0;while(w&&n<10){if(w.API){a=w.API;break}if(w===w.parent)break;w=w.parent;n++}
 if(!a&&window.opener&&window.opener.API)a=window.opener.API;if(!a)return;a.LMSInitialize("");
-a.LMSSetValue("cmi.core.lesson_status","completed");a.LMSCommit("");
+a.LMSSetValue("cmi.core.lesson_status","browsed");a.LMSCommit("");
 window.addEventListener("pagehide",function(){try{a.LMSFinish("")}catch(e){}});})();`;
 
 const css = `body{font-family:system-ui,sans-serif;line-height:1.5;max-width:46rem;margin:0 auto;padding:1rem;color:#111;background:#fff}

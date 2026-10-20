@@ -27,3 +27,11 @@ test("flags missing manifest, missing file, dose, price, remote load, missing di
   assert.ok(bad(page("<script>fetch('/api')</script>")).some((e) => /network/.test(e)));
   assert.ok(bad("<html lang=\"en\"><title>x</title></html>").some((e) => /disclaimer/.test(e)));
 });
+
+const withJs = (js) => validate(zip({ "imsmanifest.xml": manifest, "index.html": page(""), "scorm.js": js }), { disclaimer: D });
+test("SCORM status: only lesson_status browsed is allowed", () => {
+  assert.deepEqual(withJs('a.LMSSetValue("cmi.core.lesson_status","browsed");'), []);
+  for (const v of ["completed", "passed", "failed"]) assert.ok(withJs(`a.LMSSetValue("cmi.core.lesson_status","${v}");`).length > 0, v);
+  assert.ok(withJs('a.LMSSetValue("cmi.core.score.raw","100");').length > 0);
+  assert.ok(withJs("a.LMSSetValue(k, v);").length > 0);
+});
