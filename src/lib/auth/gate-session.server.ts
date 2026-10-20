@@ -14,6 +14,7 @@ import {
   sessionBoundToGateIdentity,
 } from "./gate-identity.server";
 import { GATE_SESSION_MARKER_COOKIE } from "./gate-session-marker";
+import { logSafeError } from "../server/safe-log";
 
 export const GATE_PROVIDER_ID = "grok-gate";
 const GATE_ACCOUNT_ISSUER = "https://grok.com";
@@ -51,7 +52,7 @@ async function emitSessionCookie(
       cookieOptions,
     );
   } catch (err) {
-    console.error(`${LOG} setSignedCookie failed`, err);
+    logSafeError(`${LOG} setSignedCookie failed`, err);
     return null;
   }
 
@@ -59,9 +60,7 @@ async function emitSessionCookie(
     sessionTokenName,
   )?.value;
   if (!sessionValue) {
-    console.error(`${LOG} signed Set-Cookie missing session token value`, {
-      cookiePreview: signedCookie.slice(0, 120),
-    });
+    logSafeError(`${LOG} signed Set-Cookie missing session token value`);
     return null;
   }
 
@@ -77,7 +76,7 @@ async function emitSessionCookie(
       domain: cookieOptions.domain,
     });
   } catch (err) {
-    console.error(`${LOG} TanStack setCookie failed`, err);
+    logSafeError(`${LOG} TanStack setCookie failed`, err);
   }
 
   // Also stash on Better Auth responseHeaders so after-hooks (tanstackStartCookies)
@@ -90,7 +89,7 @@ async function emitSessionCookie(
       console.error(`${LOG} ctx.context.responseHeaders is missing`);
     }
   } catch (err) {
-    console.error(`${LOG} responseHeaders.append(set-cookie) failed`, err);
+    logSafeError(`${LOG} responseHeaders.append(set-cookie) failed`, err);
   }
 
   return sessionValue;
@@ -119,7 +118,7 @@ async function expireSessionDataCookie(
       maxAge: 0,
     });
   } catch (err) {
-    console.error(`${LOG} TanStack setCookie (expire session_data) failed`, err);
+    logSafeError(`${LOG} TanStack setCookie (expire session_data) failed`, err);
   }
   try {
     ctx.context.responseHeaders?.append(
@@ -128,9 +127,9 @@ async function expireSessionDataCookie(
         `${secure ? "Secure; " : ""}SameSite=Lax; Max-Age=0`,
     );
   } catch (err) {
-    console.error(
+    logSafeError(
       `${LOG} responseHeaders.append (expire session_data) failed`,
-      err,
+      err
     );
   }
 }
@@ -162,7 +161,7 @@ async function writeGateMarkerCookie(
       maxAge,
     });
   } catch (err) {
-    console.error(`${LOG} TanStack setCookie (gate marker) failed`, err);
+    logSafeError(`${LOG} TanStack setCookie (gate marker) failed`, err);
   }
   try {
     ctx.context.responseHeaders?.append(
@@ -171,7 +170,7 @@ async function writeGateMarkerCookie(
         (maxAge === undefined ? "" : `; Max-Age=${maxAge}`),
     );
   } catch (err) {
-    console.error(`${LOG} responseHeaders.append (gate marker) failed`, err);
+    logSafeError(`${LOG} responseHeaders.append (gate marker) failed`, err);
   }
 }
 
@@ -238,20 +237,19 @@ export function gateIdentitySessions() {
             const cookieHeader = inbound.get("cookie") ?? "";
             if (cookieHeader.includes(`${sessionCookieName}=`)) {
               const existing = await getSessionFromCtx(ctx).catch((err) => {
-                console.error(`${LOG} getSessionFromCtx failed`, err);
+                logSafeError(`${LOG} getSessionFromCtx failed`, err);
                 return null;
               });
               if (existing?.session && existing.user) {
                 const accounts = await ctx.context.internalAdapter
                   .findAccounts(existing.user.id)
                   .catch((err) => {
-                    console.error(`${LOG} findAccounts failed`, err);
+                    logSafeError(`${LOG} findAccounts failed`, err);
                     return null;
                   });
                 if (!accounts) {
-                  console.error(
+                  logSafeError(
                     `${LOG} could not load accounts for existing session user`,
-                    { userId: existing.user.id },
                   );
                   return;
                 }
@@ -268,9 +266,9 @@ export function gateIdentitySessions() {
                 await ctx.context.internalAdapter
                   .deleteSession(existing.session.token)
                   .catch((err) => {
-                    console.error(
+                    logSafeError(
                       `${LOG} deleteSession (stale non-gate session) failed`,
-                      err,
+                      err
                     );
                     return null;
                   });
@@ -287,11 +285,10 @@ export function gateIdentitySessions() {
                 } as GateAccount,
               });
               if (result.error || !result.data) {
-                console.error(`${LOG} handleOAuthUserInfo failed`, {
-                  error: result.error,
-                  hasData: Boolean(result.data),
-                  sub: identity.sub,
-                });
+                logSafeError(
+                  `${LOG} handleOAuthUserInfo failed (hasData=${Boolean(result.data)})`,
+                  result.error ?? null,
+                );
                 return;
               }
 
@@ -307,9 +304,8 @@ export function gateIdentitySessions() {
                 result.data.session.token,
               );
               if (!sessionValue) {
-                console.error(
+                logSafeError(
                   `${LOG} session created in DB but cookie was not emitted`,
-                  { userId: result.data.user.id },
                 );
                 return;
               }
@@ -328,7 +324,7 @@ export function gateIdentitySessions() {
               removeRequestCookie(headers, sessionDataCookie.name);
               return { context: { headers } };
             } catch (err) {
-              console.error(`${LOG} gate identity session hook threw`, err);
+              logSafeError(`${LOG} gate identity session hook threw`, err);
               return;
             }
           }),
