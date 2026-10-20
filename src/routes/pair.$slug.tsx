@@ -1,4 +1,5 @@
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { ogMeta, ogImageUrl, pairOgJob, ogAlt } from "@/lib/seo/og";
 import { PairPageView } from "@/components/seo/pair-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { legacyPairRedirect, pairPageBySlug } from "@/lib/seo/pair-pages";
@@ -18,9 +19,7 @@ export const Route = createFileRoute("/pair/$slug")({
           meta: [
             { title: loaderData.title },
             { name: "description", content: loaderData.description },
-            { property: "og:title", content: loaderData.title },
-            { property: "og:description", content: loaderData.description },
-            { property: "og:url", content: loaderData.canonical },
+            ...ogMeta({ title: loaderData.title, description: loaderData.description, url: loaderData.canonical, image: ogImageUrl("pair", loaderData.slug), alt: ogAlt(pairOgJob(loaderData)) }),
             breadcrumbMeta([
               HOME_CRUMB,
               { name: "Drug pairs", url: `${SITE_URL}/pairs` },
