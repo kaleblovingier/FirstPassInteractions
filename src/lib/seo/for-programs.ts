@@ -159,29 +159,21 @@ export function estimateLines(e: ReturnType<typeof programQuote>): string[] {
 
 /* ---------------- structured data ---------------- */
 
-/** JSON-LD for the three tiers. Only facts the page itself shows. */
+/** JSON-LD for the program license. Identity only: no prices or offers. */
 export function forProgramsJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "Service",
     name: "FirstPass program license",
+    serviceType: "Group and site licenses",
     description:
       "Annual group and site licenses to FirstPass, an educational drug-interaction reference for licensed healthcare professionals and supervised health-professions students.",
     url: FOR_PROGRAMS_URL,
-    brand: { "@type": "Brand", name: "FirstPass" },
-    offers: PROGRAM_TIERS.map((t) => ({
-      "@type": "Offer",
-      name: `${t.name} license`,
-      description: `${seatsLabel(t)}. ${t.tagline}`,
-      price: t.annual,
-      priceCurrency: "USD",
-      url: FOR_PROGRAMS_URL,
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        price: t.annual,
-        priceCurrency: "USD",
-        unitText: "year",
-      },
-    })),
+    provider: { "@type": "Organization", name: "FirstPass", url: FOR_PROGRAMS_URL.replace(/\/for-programs$/, "/") },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Program tiers",
+      itemListElement: PROGRAM_TIERS.map((t) => ({ "@type": "Offer", name: `${t.name} license`, description: `${seatsLabel(t)}. ${t.tagline}` })),
+    },
   };
 }

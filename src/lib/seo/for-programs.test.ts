@@ -242,16 +242,16 @@ describe("/for-programs key, procurement and inquiry sections", () => {
 });
 
 describe("/for-programs JSON-LD", () => {
-  it("lists only the three tiers at their contract prices", () => {
+  it("lists the three tiers with no pricing", () => {
     const ld = forProgramsJsonLd();
-    assert.equal(ld["@type"], "Product");
+    assert.equal(ld["@type"], "Service");
     assert.equal(ld.url, FOR_PROGRAMS_URL);
     assert.deepEqual(
-      ld.offers.map((o) => [o.name, o.price, o.priceCurrency]),
-      PROGRAM_TIERS.map((t) => [`${t.name} license`, t.annual, "USD"]),
+      ld.hasOfferCatalog.itemListElement.map((o) => o.name),
+      PROGRAM_TIERS.map((t) => `${t.name} license`),
     );
     const s = JSON.stringify(ld);
-    assert.ok(!/aggregateRating|review|"Pro"/.test(s));
+    assert.ok(!/aggregateRating|review|"Pro"|price|\$\s?\d|USD/i.test(s));
     assert.ok(!BANNED.test(s));
   });
 });
