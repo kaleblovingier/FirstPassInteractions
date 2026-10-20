@@ -3,13 +3,13 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.75.0",
+  version: "1.76.0",
   released: "2026-09-26",
   manufacturer: "Kaleb Lovingier",
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal build tag. Not an FDA Unique Device Identifier (FirstPass is not a device). */
-  buildId: "FP-SW-1.75.0",
+  buildId: "FP-SW-1.76.0",
 } as const;
 
 /** FD&C Act 520(o)(1)(E) / FDA CDS Guidance (January 2026, superseding 2022) posture — not a clearance. */
@@ -87,6 +87,7 @@ export const INDICATIONS = [
   "When a stored label note is a scope sentence, the check shows that note. An engineering note stays off the check. That note is not a new finding and not an instruction. The pair check is still the severity. Learn asks which note is stored. None of this is a milligram or a clearance.",
   "When a stored label line keeps search words that are not just the name, the check shows those words. A hyphen in the stored id is not a new search. That search is not a new finding. The pair check is still the severity. Learn asks which search words are stored. None of this is a milligram or a clearance.",
   "The check says whether a stored label line came from gold or from a pin. That source is not a new finding. The pair check is still the severity. Learn asks which source stored the line. None of this is a milligram or a clearance.",
+  "The check shows the stored label class on a gold line. That class is the label's word. Not a new finding. A pin-only line has no class. The pair check is still the severity. Learn asks which class is stored. None of this is a milligram or a clearance.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

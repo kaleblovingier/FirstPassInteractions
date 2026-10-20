@@ -180,6 +180,8 @@ export function deskLabelPlain(ids: readonly string[]): string {
     if (row.example) lines.push(`Names: ${row.example}`);
     if (row.mechanism) lines.push(`Stored mechanism: ${row.mechanism}.`);
     if (row.domain) lines.push(`Stored domain: ${row.domain}.`);
+    const classLine = labelClassLine(row);
+    if (classLine) lines.push(classLine);
     if (row.pinEnzyme && row.pinKind) {
       lines.push(`The pin stores ${row.pinEnzyme} as an ${row.pinKind}. That enzyme is not a new finding.`);
     }
@@ -264,6 +266,12 @@ export function storedSourceLine(row: DeskLabel): string | null {
   const source = storedSource(row);
   if (!source) return null;
   return `Stored source: ${source}. That source is not a new finding.`;
+}
+
+/** Gold label class. The label's word, not the pair check. Null on a pin-only line. */
+export function labelClassLine(row: Pick<DeskLabel, "labelClass">): string | null {
+  if (!row.labelClass) return null;
+  return `Stored label class: ${row.labelClass}. Not a new finding. The pair check is still the severity.`;
 }
 
 /** Pin sentence only when it is stored and is not the quote already shown. */

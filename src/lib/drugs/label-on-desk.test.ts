@@ -166,3 +166,31 @@ test("a stored source names gold or pin and is not a severity", () => {
   assert.match(deskLabelPlain(["ranolazine", "phenobarbital"]), /Stored source: pin\. That source is not a new finding\./);
   assert.equal(labelFor("warfarin", "clarithromycin"), null);
 });
+
+test("a stored label class is the label's word and not a pin-only line", () => {
+  const gold = labelFor("simvastatin", "clarithromycin");
+  assert.equal(gold?.labelClass, "contraindicated");
+  const goldPlain = deskLabelPlain(["simvastatin", "clarithromycin"]);
+  assert.match(
+    goldPlain,
+    /Stored label class: contraindicated\. Not a new finding\. The pair check is still the severity\./,
+  );
+  assert.equal(/\b\d+\s*mg\b/i.test(goldPlain), false);
+  assert.match(
+    deskLabelPlain(["suvorexant", "ketoconazole"]),
+    /Stored label class: avoid\. Not a new finding\. The pair check is still the severity\./,
+  );
+  assert.match(
+    deskLabelPlain(["methadone", "ketoconazole"]),
+    /Stored label class: boxed-warning\. Not a new finding\. The pair check is still the severity\./,
+  );
+  const warning = deskLabelPlain(["methadone", "rifampin"]);
+  assert.match(
+    warning,
+    /Stored label class: warning\. Not a new finding\. The pair check is still the severity\./,
+  );
+  assert.equal(warning.includes("supported floor"), false);
+  const pin = labelFor("ranolazine", "phenobarbital");
+  assert.equal(pin?.labelClass, null);
+  assert.equal(deskLabelPlain(["ranolazine", "phenobarbital"]).includes("Stored label class:"), false);
+});

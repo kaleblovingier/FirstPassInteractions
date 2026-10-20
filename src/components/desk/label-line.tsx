@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf, pinBasisLine, scopeNoteLine, storedSearchLine, storedSourceLine } from "@/lib/drugs/label-on-desk";
+import { deskLabelPlain, deskLabels, alsoOnLabel, pinSentenceOf, pinBasisLine, scopeNoteLine, storedSearchLine, storedSourceLine, labelClassLine } from "@/lib/drugs/label-on-desk";
 import { drugHubPath } from "@/lib/seo/drug-hubs";
 
 export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
@@ -50,6 +50,9 @@ export function StoredLabelLine({ ids }: { ids: readonly string[] }) {
             ) : null}
             {row.domain ? (
               <p className="mt-1 text-[11px] leading-relaxed text-muted">Stored domain: {row.domain}.</p>
+            ) : null}
+            {labelClassLine(row) ? (
+              <p className="mt-1 min-w-0 break-words text-[11px] leading-relaxed text-muted">{labelClassLine(row)}</p>
             ) : null}
             {row.pinEnzyme && row.pinKind ? (
               <p className="mt-1 text-[11px] leading-relaxed text-muted">
