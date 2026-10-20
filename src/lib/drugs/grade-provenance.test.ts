@@ -6,7 +6,7 @@ import { DrugHubView, PairPageView } from "@/components/seo/pair-page";
 import { pairPages } from "@/lib/seo/pair-pages";
 import { drugHubs } from "@/lib/seo/drug-hubs";
 import { analyze } from "./engine";
-import { gradeBases, leadGradeBasis } from "./grade-provenance";
+import { gradeBases, leadGradeBasis, sourceLinkText } from "./grade-provenance";
 
 const pages = pairPages();
 const serious = (s: string) => s === "contraindicated" || s === "major";
@@ -75,5 +75,51 @@ describe("grade provenance: one-click basis for every Avoid together / Serious c
       if (b.kind !== "rule") continue;
       assert.doesNotMatch(b.detail, /\b\d+\s?mg\b|\bPro\b|\bStrong\b/, p.slug);
     }
+  });
+});
+
+describe("grade provenance: link names say which label they open", () => {
+  const links = (html: string) => [...html.matchAll(/<a [^>]*target="_blank"[^>]*>(.*?)<\/a>/g)].map((m) => m[1]!.replace(/<[^>]+>/g, ""));
+
+  it("no pair page or drug page link reads 'Open source'", () => {
+    for (const p of pages) {
+      const html = renderToStaticMarkup(createElement(PairPageView, { page: p }));
+      assert.ok(!/>\s*Open source\s*</.test(html), `${p.slug}: 'Open source' link`);
+    }
+    for (const h of drugHubs()) {
+      const html = renderToStaticMarkup(createElement(DrugHubView, { hub: h }));
+      assert.ok(!/>\s*Open source\s*</.test(html), `${h.slug}: 'Open source' link`);
+    }
+  });
+
+  it("every DailyMed link names the label it opens", () => {
+    for (const p of pages) {
+      for (const b of p.why) {
+        if (!b.href?.includes("dailymed")) continue;
+        const t = sourceLinkText(b.title, b.href);
+        if (b.href.includes("search.cfm")) {
+          assert.match(t, /^Search DailyMed for \S/, `${p.slug}: ${b.title}`);
+          assert.doesNotMatch(t, /label on DailyMed/, `${p.slug}: search link claims a label`);
+        } else assert.match(t, /^\S.* label on DailyMed$/, `${p.slug}: ${b.title}`);
+      }
+    }
+  });
+
+  it("/drug/contrave source links have distinct accessible names", () => {
+    const h = drugHubs().find((x) => x.slug === "contrave");
+    assert.ok(h, "expected a /drug/contrave hub");
+    const html = renderToStaticMarkup(createElement(DrugHubView, { hub: h }));
+    const names = links(html);
+    assert.ok(names.length > 1, "expected several source links on /drug/contrave");
+    assert.equal(new Set(names).size, names.length, `duplicate link names: ${names.join(" | ")}`);
+    for (const n of names) assert.match(n, /label on DailyMed|Search DailyMed for|label|PubMed|CPIC|FDA/, n);
+  });
+
+  it("sourceLinkText names the owner and never says 'Open source' or 'Strong'", () => {
+    assert.equal(sourceLinkText("Contrave label, Contraindications", "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=x"), "Contrave label on DailyMed");
+    assert.equal(sourceLinkText("Prescribing Information", "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=sodium%20oxybate"), "Search DailyMed for Sodium oxybate");
+    assert.equal(sourceLinkText("Basis: catalog rule", "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=selegiline"), "Search DailyMed for Selegiline");
+    assert.equal(sourceLinkText("PMID 123", "https://pubmed.ncbi.nlm.nih.gov/123/"), "PMID 123 on PubMed");
+    for (const p of pages) for (const b of p.why) if (b.href) assert.doesNotMatch(sourceLinkText(b.title, b.href), /Open source|\bStrong\b/);
   });
 });

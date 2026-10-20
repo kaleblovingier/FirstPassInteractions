@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
+import { sourceLinkText } from "@/lib/drugs/grade-provenance";
 import { findingsOnTray, partitionFindings } from "@/lib/drugs/brief";
 import { clinicianScan, plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import type { Finding, Severity } from "@/lib/drugs/types";
@@ -211,7 +212,7 @@ function FindingCard({ finding }: { finding: Finding }) {
                     rel="noreferrer"
                     className="mt-1 inline-flex h-10 items-center gap-1 font-mono text-[11px] text-accent hover:underline"
                   >
-                    Open source <ExternalLink className="size-3" />
+                    {sourceLinkText(b.label, b.href)} <ExternalLink className="size-3" />
                   </a>
                 ) : null}
               </div>
