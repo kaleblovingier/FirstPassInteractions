@@ -110,8 +110,29 @@ Current pin rule: pin only when the card **already** reads contraindicated. Ever
 
 Options:
 
-1. **Pin the 9 partner labels that name lomitapide** in their own Contraindications sections (Norvir, Kaletra, Paxlovid, Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox). Exact-substring quotes are above. Recorlev is excluded because its row is conditional.
-2. Option 1, plus **class-level pins from Juxtapid section 4** for the other strong and moderate inhibitors (e.g. diltiazem, verapamil, fluconazole, erythromycin). Those quotes name the class, not the drug, so the current pin rule would need to allow class quotes.
+1. **Pin the 9 partner labels (9 distinct catalog pairs, see Count reconciliation) that name lomitapide** in their own Contraindications sections (Norvir, Kaletra, Paxlovid, Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox). Exact-substring quotes are above. Recorlev is excluded because its row is conditional.
+2. Option 1, plus **class-level pins (the 52 class-only partners listed below) from Juxtapid section 4** for the other strong and moderate inhibitors (e.g. diltiazem, verapamil, fluconazole, erythromycin). Those quotes name the class, not the drug, so the current pin rule would need to allow class quotes.
 3. **No pins.** Keep lomitapide out of the gold set and change the test so it allows a drug that is in the catalog but deliberately excluded.
 
 Note: foods and supplements the catalog grades as moderate CYP3A4 inhibitors (grapefruit, goldenseal, etc.) are listed for completeness. Juxtapid 7.1 separately says to avoid grapefruit.
+
+## Count reconciliation
+
+Each label resolves (via catalog search on its brand name) to exactly one catalog row. No two labels map to the same row: Norvir, Kaletra, and Paxlovid are separate catalog rows (`ritonavir`, `lopinavir`, `paxlovid`), as are Prezista/Prezcobix and Reyataz/Evotaz. Standalone `cobicistat` (Tybost) has no label here that names lomitapide, so it is class-only. `nirmatrelvir` alone is not graded as a CYP3A4 inhibitor in the catalog, so it is outside the 61.
+
+| # | Label naming lomitapide | Catalog pair it would pin | Our inhibitor grade | Current card |
+|---|---|---|---|---|
+| 1 | Norvir (ritonavir) | lomitapide + ritonavir | strong | major ("Serious concern") |
+| 2 | Kaletra (lopinavir/ritonavir) | lomitapide + lopinavir | strong | major ("Serious concern") |
+| 3 | Paxlovid (nirmatrelvir/ritonavir) | lomitapide + paxlovid | strong | major ("Serious concern") |
+| 4 | Prezista (darunavir) | lomitapide + darunavir | strong | major ("Serious concern") |
+| 5 | Prezcobix (darunavir/cobicistat) | lomitapide + darunavir-cobicistat | strong | major ("Serious concern") |
+| 6 | Reyataz (atazanavir) | lomitapide + atazanavir | strong | major ("Serious concern") |
+| 7 | Evotaz (atazanavir/cobicistat) | lomitapide + atazanavir-cobicistat | strong | major ("Serious concern") |
+| 8 | Clarithromycin tablets | lomitapide + clarithromycin | strong | major ("Serious concern") |
+| 9 | Sporanox (itraconazole) capsules | lomitapide + itraconazole | strong | major ("Serious concern") |
+
+- **Option 1:** 9 labels → **9 distinct catalog pairs**, all 9 within the 61 class partners; every one is currently major.
+- **Option 2 adds:** 61 − 9 = **52 class-only partners** (Juxtapid section 4 class quote only), all currently major:
+
+`adagrasib` (strong), `aprepitant` (moderate), `avacopan` (moderate), `berberine` (moderate), `berotralstat` (moderate), `bictegravir-lenacapavir` (moderate), `cannabidiol` (moderate), `ceritinib` (strong), `ciprofloxacin` (moderate), `cobicistat` (strong), `conivaptan` (moderate), `crizotinib` (moderate), `darunavir-cobicistat-ftc-taf` (strong), `diltiazem` (moderate), `dronedarone` (moderate), `elvitegravir-and-ritonavir` (strong), `ensitrelvir` (strong), `erythromycin` (moderate), `fluconazole` (moderate), `fluvoxamine` (moderate), `goldenseal` (moderate), `grapefruit` (moderate), `idelalisib` (strong), `imatinib` (moderate), `indinavir-and-ritonavir` (strong), `isavuconazole` (moderate), `ketoconazole` (strong), `lefamulin` (moderate), `lenacapavir` (moderate), `letermovir` (moderate), `levoketoconazole` (strong), `lonafarnib` (strong), `mifepristone` (strong), `nefazodone` (strong), `nelfinavir` (strong), `netupitant` (moderate), `paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir` (strong), `piperine` (moderate), `pomegranate` (moderate), `posaconazole` (strong), `quercetin` (moderate), `relacorilant` (strong), `resveratrol` (moderate), `rilzabrutinib` (moderate), `schisandra` (moderate), `starfruit` (moderate), `stiripentol` (moderate), `telithromycin` (strong), `tipranavir-and-ritonavir` (strong), `tucatinib` (strong), `verapamil` (moderate), `voriconazole` (strong)
