@@ -40,6 +40,10 @@ export function DeskFooter() {
           <p className="mt-1 text-[11px] leading-relaxed text-subtle">
             {SOFTWARE.name} {SOFTWARE.version}. {PI_FOOTER}
           </p>
+          <p className="mt-1 text-[11px] text-subtle" data-testid="desk-legal-links">
+            <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
+            <a href="/cookies" className="underline">Cookies</a>
+          </p>
         </div>
       </div>
     </footer>
