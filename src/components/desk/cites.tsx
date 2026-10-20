@@ -352,7 +352,7 @@ function CiteCard({
     .join(", ");
 
   return (
-    <li className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
+    <li className="min-w-0 rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] [overflow-wrap:anywhere] sm:p-5">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="font-mono text-xs text-accent">PMID {cite.pmid}</span>
         <span className="font-mono text-[11px] text-muted">
