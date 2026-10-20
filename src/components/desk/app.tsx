@@ -1393,7 +1393,7 @@ function StatsCard({
         {license
           ? ` · ${onProgram && program ? `through ${formatEndMonth(program.endsAt)} · ` : ""}${license}`
           : plan === "free"
-            ? ` · free · founding $79 lifetime unlocks host factors / atlas / export`
+            ? ` · Founding license unlocks host factors / atlas / export`
             : previewing
               ? " · buy before the preview ends"
               : ""}

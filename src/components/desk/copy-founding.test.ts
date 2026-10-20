@@ -20,3 +20,9 @@ describe("desk copy", () => {
     assert.doesNotMatch(s, /\bunits IV\b|mg\/dL|insulinDoseUnits|primaryAgent\.dose/);
   });
 });
+
+describe("crawlable desk status line", () => {
+  it("app.tsx status line has no 'free' or pricing", () => {
+    assert.doesNotMatch(read("app.tsx"), /free · founding \$79|founding \$79 lifetime/);
+  });
+});
