@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { siteOgMeta } from "@/lib/seo/og-meta";
 import { SITE_URL } from "@/lib/seo/pair-copy";
+import { siteJsonLdMeta } from "@/lib/seo/site-jsonld";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "FirstPass";
@@ -18,6 +19,7 @@ export const Route = createRootRoute({
       { name: "description", content: SITE_DESCRIPTION },
       ...siteOgMeta({ title: APP_NAME, description: SITE_DESCRIPTION, url: `${SITE_URL}/` }),
       { name: "theme-color", content: "#efece4" },
+      siteJsonLdMeta(),
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
