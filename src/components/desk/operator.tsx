@@ -65,7 +65,7 @@ function OperatorLines({ className }: { className?: string }) {
           >
             {rail.label} {rail.handle}
           </a>
-          {rail.id === "venmo" ? <span className="text-muted"> · founding $79 lifetime</span> : null}
+          {rail.id === "venmo" ? <span className="text-muted"> · Founding $79 one-time license</span> : null}
         </li>
       ))}
       <li>

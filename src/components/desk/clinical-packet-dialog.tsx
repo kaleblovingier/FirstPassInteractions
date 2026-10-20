@@ -542,13 +542,7 @@ export function ClinicalPacketDialog({
                   {packet.riskIndexes.potassium.report.membraneStabilization.indicated && (
                     <div className="mt-2 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
                       <span className="font-mono font-bold text-danger">Membrane Stabilization Required: </span>
-                      {packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.name} {packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.dose} ({packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.routePreference})
-                    </div>
-                  )}
-                  {packet.riskIndexes.potassium.report.intracellularShifting.indicated && (
-                    <div className="mt-1.5 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
-                      <span className="font-mono font-bold text-accent">Intracellular Shifting Nomogram: </span>
-                      Regular Insulin {packet.riskIndexes.potassium.report.intracellularShifting.insulinDoseUnits} units IV + D50W {packet.riskIndexes.potassium.report.intracellularShifting.dextroseRequirement.administer ? "25 g" : "omitted (high BG)"} IV | Albuterol 10–20 mg nebulized (4x-8x asthma dose)
+                      {packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.name} ({packet.riskIndexes.potassium.report.membraneStabilization.primaryAgent.routePreference})
                     </div>
                   )}
                 </div>
@@ -576,7 +570,7 @@ export function ClinicalPacketDialog({
                   )}
                   <div className="mt-1.5 rounded bg-surface/60 p-2 border border-border/50 text-[11px] text-muted">
                     <span className="font-semibold text-fg">Euglycemic DKA Alert: </span>
-                    Presents with glucose &lt; 250 mg/dL with high anion gap metabolic acidosis. Resuscitation requires concurrent IV Dextrose + Insulin infusion.
+                    Can present with near-normal glucose and a high anion gap metabolic acidosis. See the Prescribing Information.
                   </div>
                 </div>
               )}

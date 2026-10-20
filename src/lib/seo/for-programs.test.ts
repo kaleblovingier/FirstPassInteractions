@@ -250,13 +250,18 @@ describe("/for-programs key, procurement and inquiry sections", () => {
 });
 
 describe("/for-programs JSON-LD", () => {
-  it("describes the license with no offers or prices", () => {
-    const ld = forProgramsJsonLd() as Record<string, unknown>;
+  it("lists the three tiers with no pricing, and names the teaching audience", () => {
+    const ld = forProgramsJsonLd();
+    assert.equal((ld as Record<string, unknown>).offers, undefined);
+    assert.match(ld.audience.audienceType, /residency/);
     assert.equal(ld["@type"], "Service");
     assert.equal(ld.url, FOR_PROGRAMS_URL);
-    assert.equal(ld.offers, undefined);
+    assert.deepEqual(
+      ld.hasOfferCatalog.itemListElement.map((o) => o.name),
+      PROGRAM_TIERS.map((t) => `${t.name} license`),
+    );
     const s = JSON.stringify(ld);
-    assert.ok(!/aggregateRating|review|"Pro"|price/i.test(s));
+    assert.ok(!/aggregateRating|review|"Pro"|price|\$\s?\d|USD/i.test(s));
     assert.ok(!BANNED.test(s));
   });
 });

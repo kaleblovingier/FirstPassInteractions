@@ -171,3 +171,19 @@ select {
     color: HighlightText;
   }
 }
+
+/* WCAG 2.5.8 target size (24x24) on drug hub pages: the pair links, the "Why this grade"
+   summaries and the source links inside them were ~16-20px tall inline text and sat too
+   close to each other. CSS only; the markup is left alone. */
+main:has([data-testid="drug-hub-intro"]) section > ul > li > a,
+[data-testid="hub-why"] > summary,
+[data-testid="grade-basis"] a,
+[data-testid="legal-links"] a {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+  padding-block: 2px;
+}
+[data-testid="hub-why"] > summary {
+  padding-inline: 2px;
+}

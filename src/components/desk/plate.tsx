@@ -18,6 +18,8 @@ export function Plate({
         alt={alt}
         className="absolute inset-0 size-full object-cover"
         draggable={false}
+        loading="lazy"
+        decoding="async"
       />
       {overlay ? <span className="absolute inset-0 bg-ink/20" /> : null}
     </span>

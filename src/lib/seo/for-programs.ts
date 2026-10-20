@@ -178,7 +178,7 @@ export function estimateLines(e: ReturnType<typeof programQuote>): string[] {
 
 /* ---------------- structured data ---------------- */
 
-/** JSON-LD for the page. No prices: search engines see what the license is, not what it costs. */
+/** JSON-LD for the program license. Identity only: no prices or offers. */
 export function forProgramsJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -188,7 +188,12 @@ export function forProgramsJsonLd() {
     description:
       "Group and site licenses to FirstPass, an educational drug-interaction reference for licensed healthcare professionals and supervised health-professions students. Label-sourced pairs in the FDA label's own wording, with DailyMed links.",
     url: FOR_PROGRAMS_URL,
-    brand: { "@type": "Brand", name: "FirstPass" },
     audience: { "@type": "Audience", audienceType: "Pharmacy schools, residency programs, pharmacy-tech programs and clinic teams" },
+    provider: { "@type": "Organization", name: "FirstPass", url: FOR_PROGRAMS_URL.replace(/\/for-programs$/, "/") },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Program tiers",
+      itemListElement: PROGRAM_TIERS.map((t) => ({ "@type": "Offer", name: `${t.name} license`, description: `${seatsLabel(t)}. ${t.tagline}` })),
+    },
   };
 }
