@@ -490,20 +490,20 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
         {
           stepNumber: 2,
           title: "Intravenous Magnesium Sulfate Bolus",
-          agentOrIntervention: "Magnesium Sulfate 2 g IV Push",
-          dosingOrParameters: "2 grams IV diluted in 10 mL D5W or NS administered over 1–2 minutes",
+          agentOrIntervention: "Magnesium Sulfate (See the Prescribing Information) Push",
+          dosingOrParameters: "(See the Prescribing Information) diluted in 10 mL D5W or NS administered over 1–2 minutes",
           timing: "Immediately following initial defibrillation attempt / during CPR",
           mechanism: "Suppresses early afterdepolarizations (EADs) by blocking inward L-type calcium currents (ICa-L).",
           clinicalPearls: [
             "Administer regardless of baseline serum magnesium level (even if normal!).",
-            "Can repeat a second 2 g bolus in 5–15 minutes if polymorphic VT recurs.",
+            "Can repeat a second (See the Prescribing Information) in 5–15 minutes if polymorphic VT recurs.",
           ],
         },
         {
           stepNumber: 3,
           title: "Aggressive Intracellular Potassium Repletion",
           agentOrIntervention: "Potassium Chloride IV Infusion",
-          dosingOrParameters: "Infuse via central line (target rate 10–20 mEq/hr with continuous ECG)",
+          dosingOrParameters: "Infuse via central line (target rate (See the Prescribing Information) with continuous ECG)",
           timing: "Target serum K+ 4.5–5.0 mEq/L STAT",
           mechanism: "Increases outward repolarizing IKr current conductance and reduces hERG channel drug affinity.",
           clinicalPearls: [
@@ -546,14 +546,14 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
       {
         stepNumber: 1,
         title: "First-Line Membrane Stabilization: IV Magnesium Sulfate",
-        agentOrIntervention: "Magnesium Sulfate 2 g IV Infusion",
-        dosingOrParameters: "2 grams IV in 50–100 mL D5W over 15 minutes; may push over 1–2 minutes if active bursts occur",
+        agentOrIntervention: "Magnesium Sulfate (See the Prescribing Information) Infusion",
+        dosingOrParameters: "(See the Prescribing Information) in 50–100 mL D5W over 15 minutes; may push over 1–2 minutes if active bursts occur",
         timing: "Immediate first-line intervention",
         mechanism: "Suppresses Phase 2/3 Early Afterdepolarizations (EADs) by antagonizing L-type calcium channels (ICa-L) without shortening the baseline QT interval.",
         clinicalPearls: [
           "THE CHIEF CLINICAL PEARL: Magnesium is effective EVEN IF baseline serum magnesium is completely normal (e.g. 2.2 mg/dL). Do not wait for lab confirmation.",
-          "Repeat with a second 2 g bolus in 5–15 minutes if non-sustained polymorphic VT bursts persist.",
-          "Follow with continuous IV infusion of Magnesium Sulfate 0.5–1.0 g/hour (or 2–4 mg/min) for 24–48 hours until QTc stabilizes < 500 ms.",
+          "Repeat with a second (See the Prescribing Information) in 5–15 minutes if non-sustained polymorphic VT bursts persist.",
+          "Follow with continuous IV infusion of Magnesium Sulfate (See the Prescribing Information) for 24–48 hours until QTc stabilizes < 500 ms.",
         ],
       },
       {
@@ -565,7 +565,7 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
         mechanism: "Accelerating heart rate shortens the ventricular repolarization period and extinguishes the short-long-short triggering pause.",
         clinicalPearls: [
           "Temporary transvenous overdrive pacing is the gold standard.",
-          "Pharmacological alternative: Isoproterenol (Isuprel) continuous infusion at 2–10 mcg/min titrated to maintain ventricular rate 90–110 bpm.",
+          "Pharmacological alternative: Isoproterenol (Isuprel) continuous infusion at (See the Prescribing Information) titrated to maintain ventricular rate 90–110 bpm.",
           "CONTRAINDICATION WARNING: Isoproterenol is strictly contraindicated in Congenital Long QT Syndrome (especially LQT1 and LQT2, where adrenergic surge triggers lethal arrhythmias) and in acute coronary ischemia / acute MI.",
         ],
         warning: "Do not use Isoproterenol in suspected congenital LQTS or acute myocardial infarction.",
@@ -608,7 +608,7 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
     electrolyteDirectives: {
       potassiumTarget: "Target serum K+ 4.5–5.0 mEq/L (high-normal)",
       magnesiumTarget: "Target serum Mg2+ >= 2.0–2.5 mg/dL (high-normal)",
-      laboratoryAlert: "Administer Magnesium Sulfate 2 g IV immediately without waiting for serum magnesium lab values.",
+      laboratoryAlert: "Administer Magnesium Sulfate (See the Prescribing Information) immediately without waiting for serum magnesium lab values.",
     },
     antiarrhythmicAvoidanceList: [
       "Amiodarone (Class III - exacerbates QT prolongation)",

@@ -57,7 +57,7 @@ test("evaluatePotassium: reduces insulin shifting dose to 5 units in renal impai
   // Impaired kidney (eGFR < 30): 5 units
   const renalImpaired = evaluatePotassium({ potassiumMeqL: 6.6, egfrMlMin: 20, baselineGlucoseMgDl: 160 });
   assert.equal(renalImpaired.intracellularShifting.insulinDoseUnits, 5);
-  assert.ok(renalImpaired.intracellularShifting.insulinAdjustmentReason.includes("Adjusted to 5 units IV"));
+  assert.ok(renalImpaired.intracellularShifting.insulinAdjustmentReason.includes("Reduced insulin dose (See the Prescribing Information)"));
 
   // Low baseline glucose (< 140): 5 units
   const lowGlucose = evaluatePotassium({ potassiumMeqL: 6.6, egfrMlMin: 70, baselineGlucoseMgDl: 110 });
@@ -108,7 +108,7 @@ test("evaluatePotassium: compares modern GI binders: Lokelma rapid onset, Patiro
   const binders = res.elimination.giBinders;
 
   assert.ok(binders.szcLokelma.onset.includes("1 hour"));
-  assert.ok(binders.szcLokelma.sodiumLoadWarning.includes("400 mg sodium"));
+  assert.ok(binders.szcLokelma.sodiumLoadWarning.includes("Each dose contains sodium (See the Prescribing Information)"));
 
   assert.ok(binders.patiromerVeltassa.onset.includes("4 to 7 hours"));
   assert.ok(binders.patiromerVeltassa.drugSeparationWindow.includes("3 hours"));

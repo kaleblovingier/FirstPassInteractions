@@ -557,7 +557,7 @@ export function evaluatePotassium({
       : "Not acutely indicated at current potassium and EKG baseline. Keep calcium available if K+ rises >= 6.5 or conduction defects emerge.",
     primaryAgent: {
       name: "Calcium Gluconate 10%",
-      dose: "1 to 2 g (10 to 20 mL of 10% solution)",
+      dose: "(See the Prescribing Information)",
       infusionTime: "IV push over 2 to 5 minutes with continuous cardiac telemetry",
       onset: "1 to 3 minutes",
       duration: "30 to 60 minutes (transient membrane effect)",
@@ -567,7 +567,7 @@ export function evaluatePotassium({
     },
     alternativeAgent: {
       name: "Calcium Chloride 10%",
-      dose: "1 g (10 mL of 10% solution) IV over 2 to 5 minutes",
+      dose: "(See the Prescribing Information) over 2 to 5 minutes",
       infusionTime: "2 to 5 minutes (rapid push in cardiac arrest)",
       routePreference: "Central venous access strongly preferred",
       elementalCalciumMeq: 13.6, // ~13.6 mEq elemental Ca per 1 g (10 mL) — 3x more potent
@@ -587,8 +587,8 @@ export function evaluatePotassium({
   const isCkdOrHypoProne = egfrMlMin < 30 || baselineGlucoseMgDl < 140;
   const insulinDoseUnits = isCkdOrHypoProne ? 5 : 10;
   const insulinAdjustmentReason = isCkdOrHypoProne
-    ? `Adjusted to ${insulinDoseUnits} units IV (reduced from standard 10 units) due to reduced renal clearance of insulin (eGFR ${egfrMlMin} mL/min) and/or baseline glucose (${baselineGlucoseMgDl} mg/dL) to protect against severe refractory hypoglycemia.`
-    : "Standard 10 units IV push. Drives potassium into skeletal muscle and hepatic cells via Na+/K+-ATPase stimulation within 15-30 minutes.";
+    ? `Reduced insulin dose (See the Prescribing Information) due to reduced renal clearance of insulin (eGFR ${egfrMlMin} mL/min) and/or baseline glucose (${baselineGlucoseMgDl} mg/dL) to protect against severe refractory hypoglycemia.`
+    : "Standard (See the Prescribing Information). Drives potassium into skeletal muscle and hepatic cells via Na+/K+-ATPase stimulation within 15-30 minutes.";
 
   const shouldAdministerDextrose = baselineGlucoseMgDl < 250;
   const intracellularShifting: IntracellularShiftingStep = {
@@ -600,20 +600,20 @@ export function evaluatePotassium({
       volumeD50wMl: shouldAdministerDextrose ? 50 : 0,
       administer: shouldAdministerDextrose,
       reason: shouldAdministerDextrose
-        ? "Dextrose 50% (D50W) 25 g (50 mL IV) co-administered simultaneously with insulin to prevent severe hypoglycemia. Consider repeating 25 g at 60 minutes or hanging 10% dextrose (D10W) infusion at 50-75 mL/hr."
+        ? "Dextrose 50% (D50W) (See the Prescribing Information) co-administered simultaneously with insulin to prevent severe hypoglycemia. Consider repeating (See the Prescribing Information) at 60 minutes or hanging 10% dextrose (D10W) infusion at 50-75 mL/hr."
         : `Baseline blood glucose is elevated (${baselineGlucoseMgDl} mg/dL >= 250 mg/dL). Bolus dextrose may be deferred, but frequent point-of-care glucose monitoring remains mandatory.`,
     },
     glucoseMonitoringCadence: "Point-of-care capillary blood glucose hourly for at least 4 to 6 hours. Hypoglycemia nadir typically occurs between 60 to 180 minutes post-insulin injection.",
     albuterolDosing: {
       doseMg: 10,
-      administration: "10 to 20 mg nebulized over 10 to 15 minutes",
-      asthmaComparison: "4x to 8x higher than standard asthma bronchodilator dose (standard asthma neb is 2.5 mg). Requires multiple unit-dose vials or continuous nebulization.",
+      administration: "(See the Prescribing Information) over 10 to 15 minutes",
+      asthmaComparison: "4x to 8x higher than standard asthma bronchodilator dose (standard asthma neb is (See the Prescribing Information)). Requires multiple unit-dose vials or continuous nebulization.",
       onsetAndDuration: "Onset ~30 min, peak 60-90 min, duration 2-4 hours. Produces additive 0.5 to 1.0 mEq/L serum potassium reduction when combined with insulin.",
       caution: "Caution in severe tachyarrhythmias, active coronary ischemia, or heart rate > 120 bpm. Note: ~20% of ESRD patients are non-responders due to beta-2 adrenergic desensitization.",
     },
     sodiumBicarbonateGuidance: {
       indicated: false, // Default: only for documented severe metabolic acidosis
-      dose: "Sodium Bicarbonate 8.4% (50 mEq / 50 mL IV over 5 minutes) or isotonic infusion (150 mEq in 1 L D5W)",
+      dose: "Sodium Bicarbonate 8.4% IV or isotonic infusion in D5W (See the Prescribing Information)",
       acidosisRequirement: "ONLY indicated if concurrent severe metabolic acidosis is documented (pH < 7.20 or serum bicarbonate < 15 mEq/L).",
       ineffectiveWarning: "Bolus sodium bicarbonate in non-acidemic hyperkalemic patients is INEFFECTIVE for acute potassium lowering and risks hypernatremia, acute volume overload, and hypocalcemic tetany.",
     },
@@ -621,7 +621,7 @@ export function evaluatePotassium({
 
   // Step 3: Potassium Elimination
   const loopCandidate = urineOutput === "normal" && egfrMlMin >= 15;
-  const loopDose = egfrMlMin < 30 ? "Furosemide 80 to 120 mg IV" : "Furosemide 40 to 80 mg IV";
+  const loopDose = egfrMlMin < 30 ? "Furosemide (See the Prescribing Information)" : "Furosemide (See the Prescribing Information)";
   
   const hdTriggers: string[] = [];
   if (potassiumMeqL >= 6.5) hdTriggers.push(`Severe refractory hyperkalemia (${potassiumMeqL} mEq/L)`);
@@ -641,22 +641,22 @@ export function evaluatePotassium({
     giBinders: {
       szcLokelma: {
         name: "Sodium Zirconium Cyclosilicate (SZC / Lokelma)",
-        dose: "10 g PO TID with meals for up to 48 hours",
-        maintenanceDose: "5 to 10 g PO once daily once potassium normalizes",
+        dose: "(See the Prescribing Information) with meals for up to 48 hours",
+        maintenanceDose: "(See the Prescribing Information) once potassium normalizes",
         onset: "~1 hour (median time to normal potassium ~2.2 hours)",
-        sodiumLoadWarning: "Each 5 g dose contains ~400 mg sodium. Monitor for peripheral edema in severe decompensated heart failure or oliguric renal failure.",
+        sodiumLoadWarning: "Each dose contains sodium (See the Prescribing Information). Monitor for peripheral edema in severe decompensated heart failure or oliguric renal failure.",
         clinicalNiche: "Agent of choice for acute emergency GI binding due to rapid 1-hour onset and high selectivity for potassium over calcium/magnesium throughout GI tract.",
       },
       patiromerVeltassa: {
         name: "Patiromer (Veltassa)",
-        dose: "8.4 g PO once daily with food (titrate up to 25.2 g daily)",
+        dose: "(See the Prescribing Information) with food (titrate up to (See the Prescribing Information))",
         onset: "4 to 7 hours (subacute / chronic outpatient use)",
         drugSeparationWindow: "CRITICAL: Non-selectively binds other oral drugs. Separate all other oral medications by at least 3 hours before or 3 hours after patiromer.",
         clinicalNiche: "Ideal for chronic outpatient hyperkalemia management to enable RAAS inhibitor / MRA continuation in heart failure and CKD. NOT suitable for solitary emergency resuscitation due to delayed 4-7h onset.",
       },
       spsKayexalate: {
         name: "Sodium Polystyrene Sulfonate (SPS / Kayexalate)",
-        dose: "15 to 60 g PO or retention enema",
+        dose: "(See the Prescribing Information) or retention enema",
         onset: "2 to 24 hours (unpredictable)",
         boxedWarningBowelNecrosis: "FDA WARNING: Risk of intestinal necrosis, ischemic colitis, and colonic perforation, especially when co-administered with sorbitol. Avoid in postoperative patients, ileus, bowel obstruction, or severe constipation.",
         recommendation: "Modern consensus discourages SPS in acute care when Lokelma or Patiromer is available.",
@@ -664,7 +664,7 @@ export function evaluatePotassium({
     },
     hemodialysis: {
       emergentIndicated: hdTriggers.length >= 2 || (potassiumMeqL >= 6.5 && urineOutput === "anuric"),
-      clearanceRateMeqPerHour: "25 to 50 mEq K+ removed per hour on low-potassium dialysate bath (1-2 mEq/L)",
+      clearanceRateMeqPerHour: "(See the Prescribing Information) K+ removed per hour on low-potassium dialysate bath (1-2 mEq/L)",
       triggersPresent: hdTriggers,
       summary: hdTriggers.length >= 2 || (potassiumMeqL >= 6.5 && urineOutput === "anuric")
         ? "EMERGENT HEMODIALYSIS INDICATED: Definitive potassium elimination required. Prepare emergent vascular access, nephrology consultation, and dialyzer priming."
@@ -681,11 +681,11 @@ export function evaluatePotassium({
   // Immediate Action Items
   const immediateActions: string[] = [];
   if (needsMembraneStabilization) {
-    immediateActions.push("STAT: Administer Calcium Gluconate 1-2 g IV push over 2-5 min under continuous telemetry.");
+    immediateActions.push("STAT: Administer Calcium Gluconate (See the Prescribing Information) over 2-5 min under continuous telemetry.");
   }
   if (needsShifting) {
-    immediateActions.push(`SHIFT: Regular Insulin ${insulinDoseUnits} units IV + D50W ${shouldAdministerDextrose ? "25 g (50 mL)" : "omitted (BG >= 250)"} IV push.`);
-    immediateActions.push("SHIFT: Albuterol 10-20 mg nebulized over 10-15 minutes (additive K+ reduction).");
+    immediateActions.push(`SHIFT: Regular Insulin IV (See the Prescribing Information) + D50W ${shouldAdministerDextrose ? "(See the Prescribing Information)" : "omitted (BG >= 250)"} IV push.`);
+    immediateActions.push("SHIFT: Albuterol (See the Prescribing Information) over 10-15 minutes (additive K+ reduction).");
     immediateActions.push("MONITOR: Point-of-care blood glucose q1h x 4-6 hours (prevent hypoglycemia nadir).");
   }
   if (elimination.hemodialysis.emergentIndicated) {
@@ -693,7 +693,7 @@ export function evaluatePotassium({
   } else if (loopCandidate) {
     immediateActions.push(`ELIMINATE: ${loopDose} to drive kaliuresis.`);
   }
-  immediateActions.push("BIND: Initiate Sodium Zirconium Cyclosilicate (Lokelma) 10 g PO TID for rapid gastrointestinal K+ capture.");
+  immediateActions.push("BIND: Initiate Sodium Zirconium Cyclosilicate (Lokelma) (See the Prescribing Information) for rapid gastrointestinal K+ capture.");
 
   if (perpetrators.length > 0) {
     const names = perpetrators.map((p) => p.name).join(", ");
@@ -705,8 +705,8 @@ export function evaluatePotassium({
   const clinicalPearls = [
     "Membrane stabilization with IV calcium does not lower potassium by a single milliequivalent — it only temporarily buys 30-60 minutes by shifting the threshold cardiac action potential away from resting potential.",
     "Up to 50% of patients with severe hyperkalemia have a completely normal or non-diagnostic EKG right up until sudden cardiac arrest (the classic EKG Dissociation Trap).",
-    "In patients with CKD (eGFR < 30 mL/min), reduce shifting regular insulin from 10 units to 5 units IV to protect against devastating, prolonged hypoglycemia.",
-    "Standard asthma albuterol (2.5 mg) is insufficient for hyperkalemia shifting; 10 to 20 mg (4x to 8x the bronchodilator dose) is required to stimulate beta-2 Na+/K+-ATPase translocation.",
+    "In patients with CKD (eGFR < 30 mL/min), reduce the shifting regular insulin dose (See the Prescribing Information) to protect against devastating, prolonged hypoglycemia.",
+    "Standard asthma albuterol (See the Prescribing Information) is insufficient for hyperkalemia shifting; (See the Prescribing Information) is required to stimulate beta-2 Na+/K+-ATPase translocation.",
     "Bactrim (TMP-SMX) is a stealth ENaC blocker: trimethoprim acts like amiloride in the cortical collecting duct, routinely causing unexplained inpatient hyperkalemia.",
     "Lokelma (SZC) binds potassium within 1 hour throughout the entire GI tract, while Patiromer requires 4-7 hours and is designed for outpatient chronic GDMT enablement.",
     "SPS (Kayexalate) carries an FDA boxed warning for colonic necrosis and intestinal perforation, especially with sorbitol, and is no longer preferred in acute resuscitation.",
