@@ -9,33 +9,33 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 
 | | Before | After |
 |---|---|---|
-| Pages | 485 | 485 |
-| Verbatim label quote + DailyMed link visible (0 clicks) | 485 | 485 (quote block unchanged) |
-| Graded finding's own basis + link shown ("Why this grade", open) | 0 | 485 |
-| ...of which a label quote/section with DailyMed link | 0 | 485 |
+| Pages | 487 | 487 |
+| Verbatim label quote + DailyMed link visible (0 clicks) | 487 | 487 (quote block unchanged) |
+| Graded finding's own basis + link shown ("Why this grade", open) | 0 | 487 |
+| ...of which a label quote/section with DailyMed link | 0 | 487 |
 | Grade rests only on a catalog rule (shown as such) | not stated | 0 |
 
 ## Drug pages (/drug/...)
 
 | | Before | After |
 |---|---|---|
-| Graded pair rows | 970 | 970 |
-| Basis + source link in one click | 0 (two clicks, via the pair page) | 970 |
+| Graded pair rows | 974 | 974 |
+| Basis + source link in one click | 0 (two clicks, via the pair page) | 974 |
 | Rows with an honest catalog-rule note instead | 0 | 0 |
 
 ## Desk check row (pairs behind the pair pages)
 
 | | Before | After |
 |---|---|---|
-| Pair findings | 1171 | 1171 |
-| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1152 |
+| Pair findings | 1174 | 1174 |
+| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1155 |
 | Lead basis is a catalog-rule note | not stated | 19 |
 
 ## Whole catalog: grades resting only on an engine rule
 
 | Tier | Findings | Rule-only | Share |
 |---|---|---|---|
-| Avoid together | 3011 | 21 | 0.7% |
+| Avoid together | 3011 | 19 | 0.6% |
 | Serious concern | 67498 | 14762 | 21.9% |
 
 Top rule-only rules:
@@ -58,7 +58,7 @@ Top rule-only rules:
 | Serious concern · pk-CYP1A2-inhibitor | 36 |
 | Serious concern · pd-k | 30 |
 
-### Avoid together with no cited source (21)
+### Avoid together with no cited source (19)
 
 - 5-HTP / L-tryptophan + Isocarboxazid (pd)
 - 5-HTP / L-tryptophan + Methylene blue (pd)
@@ -72,10 +72,8 @@ Top rule-only rules:
 - Moclobemide + Tyramine foods (pd-tyramine)
 - Selegiline + 5-HTP / L-tryptophan (pd)
 - Selegiline + Tyramine foods (pd-tyramine)
-- Tranylcypromine + 5-HTP / L-tryptophan (pd)
 - Tranylcypromine + Tyramine foods (pd-tyramine)
 - Trimethoprim–sulfamethoxazole + Methotrexate (pd-mtx)
-- Tyramine foods + Isocarboxazid (pd-tyramine)
 - Tyramine foods + Methylene blue (pd-tyramine)
 - Tyramine foods + Ozanimod (pd-tyramine)
 - Tyramine foods + Rasagiline (pd-tyramine)

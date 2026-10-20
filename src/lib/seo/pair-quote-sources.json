@@ -1,5 +1,5 @@
 {
- "retrieved": "2026-10-13",
+ "retrieved": "2026-10-20",
  "source": "DailyMed SPL v2 XML",
  "excerpts": {
   "alosetron+fluvoxamine": {
@@ -669,6 +669,10 @@
   "isocarboxazid+dextromethorphan": {
    "setid": "95fde749-44ad-4668-86c4-0ff17bca0074",
    "excerpt": "Marplan (isocarboxazid) should not be administered in combination with any of the following: MAO inhibitors or dibenzazepine derivatives; sympathomimetics (including amphetamines); some central nervous system depressants (including narcotics and alcohol); antihypertensive, diuretic, antihistaminic, sedative or anesthetic drugs, buproprion HCL, buspirone HCL, dextromethorphan"
+  },
+  "isocarboxazid+tyramine-foods": {
+   "setid": "95fde749-44ad-4668-86c4-0ff17bca0074",
+   "excerpt": "Marplan (isocarboxazid) should not be administered in combination with any of the following: MAO inhibitors or dibenzazepine derivatives; sympathomimetics (including amphetamines); some central nervous system depressants (including narcotics and alcohol); antihypertensive, diuretic, antihistaminic, sedative or anesthetic drugs, buproprion HCL, buspirone HCL, dextromethorphan, cheese or other foods with a high tyramine content"
   },
   "itraconazole+avanafil": {
    "setid": "a4d555fa-787c-40fb-bb7d-b0d4f7318fd0",
@@ -1765,6 +1769,10 @@
   "tranylcypromine+cyclobenzaprine": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine"
+  },
+  "tranylcypromine+five-htp": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran tryptophan dopamine rasagiline hydroxytryptophan"
   },
   "tranylcypromine+meperidine": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",

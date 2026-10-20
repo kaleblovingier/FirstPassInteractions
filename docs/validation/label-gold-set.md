@@ -7,7 +7,7 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 481 |
+| Pairs (each tied to a verified FDA label statement) | 483 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
@@ -18,12 +18,13 @@
 | Wave 9 (MAOI-class contraindications naming linezolid / IV methylene blue; Azilect; Parnate Table 1) | 35 |
 | Wave 10 (Nardil, Parnate other antidepressants, Marplan, Zyvox; Celexa, Lexapro, Viibryd, Fetzima, Savella + linezolid / IV methylene blue) | 31 |
 | Wave 11 (inducer-naming contraindications: Xadago, Azilect + St. John's wort; Xadago named partners) | 9 |
-| Label says contraindicated | 446 |
+| Wave 12 (unsourced Avoid together grades: Parnate Table 1 + 5-HTP / L-tryptophan; Marplan + tyramine foods) | 2 |
+| Label says contraindicated | 448 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 481 / 481 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 446 / 446 |
+| Engine at or above label-supported floor | 483 / 483 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 448 / 448 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -584,6 +585,8 @@ None.
 | 479 | 11 | safinamide | amphetamine | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … methylphenidate, amphetamine, and their derivatives" · e.g. "amphetamine" |
 | 480 | 11 | safinamide | st-johns-wort | [Xadago (safinamide)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "XADAGO is contraindicated in patients with: … St John's wort" · e.g. "St John's wort" |
 | 481 | 11 | rasagiline | st-johns-wort | [Azilect (rasagiline)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a40d0e73-3f9f-4b01-979d-402c9cdaeb60) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "AZILECT is contraindicated for use with St. John’s wort and with cyclobenzaprine" · e.g. "St. John’s wort" |
+| 482 | 12 | tranylcypromine | five-htp | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … hydroxytryptophan" · e.g. "hydroxytryptophan" |
+| 483 | 12 | isocarboxazid | tyramine-foods | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan (isocarboxazid) should not be administered in combination with any of the following: … cheese or other foods with a high tyramine content" · e.g. "cheese or other foods with a high tyramine content" |
 
 ## Method
 
@@ -706,6 +709,18 @@ None.
 - **wave 11 severity-change candidates (Kaleb): Tybost (cobicistat) + carbamazepine, nevirapine (CYP3A4 card at major); + rifampin, phenobarbital, phenytoin, St. John's wort (washout card only or no card)**: Named in Tybost section 4 (some lines apply only with atazanavir). No card reads Avoid together, so a pin would change severity or add a standalone finding.
 - **wave 11: Genvoya / Stribild (elvitegravir) + rifampin, carbamazepine, phenobarbital, phenytoin, St. John's wort; Symtuza / Prezcobix (darunavir) + carbamazepine, phenobarbital, phenytoin; Cabenuva + rifampin, rifabutin, carbamazepine and others**: Contraindicated on cobicistat- or rilpivirine-containing combination products. The catalog rows (elvitegravir, darunavir, cabotegravir) are single agents, and the inducer cards read major. Not pinned (formulation rule); severity-change candidates if the catalog adds the combination products.
 - **wave 11: Edurant / Odefsey / Complera / Juluca + dexamethasone**: Contraindicated only for more than a single dose. Conditional; not pinned.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Marplan (isocarboxazid) + 5-HTP / L-tryptophan**: Marplan CONTRAINDICATIONS, Sympathomimetics paragraph: "Use of sympathomimetics and compounds such as guanethidine, methyldopa, methylphenidate, reserpine, epinephrine, norepinephrine, phenylalanine, dopamine, levodopa, tyrosine, and tryptophan with Marplan may precipitate hypertension, headache, and related symptoms." Inside the section, but the sentence says may precipitate, not should not be administered. Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Parnate (tranylcypromine) + Tyramine foods**: Not in Table 1 (4.1). Boxed Warning, 5.2 and 7.2 name it. 5.2: "MAOIs, including PARNATE, have been associated with hypertensive crises caused by the ingestion of foods or beverages with a high concentration of tyramine." Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Selegiline HCl capsules + Tyramine foods**: WARNINGS: "Rare cases of hypertensive reactions associated with ingestion of tyramine-containing foods have been reported in patients taking the recommended daily dose of selegiline." Not in CONTRAINDICATIONS. Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Azilect (rasagiline) + Tyramine foods**: 5.1 Hypertension: "Dietary tyramine restriction is not required during treatment with recommended doses of AZILECT." The label also says certain very high tyramine foods could cause severe hypertension. Not in section 4. Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Xadago (safinamide) + Tyramine foods**: 5.1 Hypertension: "Dietary tyramine restriction is not required during treatment with recommended doses of XADAGO." Also 7.6 Tyramine. Not in section 4. Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Sivextro (tedizolid) + Tyramine foods**: Named only in 12.3 Pharmacokinetics (a tyramine pressor study): "Two placebo-controlled crossover studies were conducted to assess the potential of … SIVEXTRO at steady state to enhance pressor responses to pseudoephedrine and tyramine in healthy adults." Not in section 4. Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Zeposia (ozanimod) + Tyramine foods**: Named only in 12.2 and 12.3: "No clinically significant effect in tyramine induced pressor response was observed" and ozanimod "had no effect on the plasma concentrations of oral tyramine". The label text does not support Avoid together. Not pinned; grade unchanged.
+- **wave 12 (label-cited outside Contraindications, for Kaleb): Bactrim (sulfamethoxazole and trimethoprim) + methotrexate**: PRECAUTIONS, Drug Interactions table: "Methotrexate Avoid concurrent use". Label class is avoid, not contraindicated. Not pinned; grade unchanged.
+- **wave 12 (not named on label): Selegiline, Azilect, Xadago, ProvayBlue, Sivextro, Zeposia + 5-HTP / L-tryptophan; ProvayBlue + Tyramine foods**: The current SPL does not name tryptophan, hydroxytryptophan or tyramine. ProvayBlue names serotonergic drug classes (SSRIs, SNRIs, MAOIs) and opioids only. Not pinned; grade unchanged.
+- **wave 12 (no FDA label): moclobemide, harmaline + 5-HTP / L-tryptophan and Tyramine foods**: No US-approved DailyMed label for moclobemide or harmaline, and 5-HTP / L-tryptophan and tyramine foods are supplements or foods. Not pinned; grade unchanged.
+- **wave 12 (severity change, for Kaleb): Varubi (rolapitant) + thioridazine**: Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads major (Serious concern). A pin would raise it to Avoid together, so not pinned.
+- **wave 12 (severity change, for Kaleb): Varubi (rolapitant) + pimozide**: Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads moderate (Use care). A pin would raise it to Avoid together, so not pinned.
 
 ## Not in catalog
 
