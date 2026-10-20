@@ -11,10 +11,10 @@
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { pairPages, type PairPage } from "@/lib/seo/pair-pages";
+import type { PairPage } from "@/lib/seo/pair-pages";
+import { scormCards } from "@/lib/lms/scorm-cards";
 import { PAIR_DISCLAIMER } from "@/lib/seo/pair-copy";
 import { makeZip } from "./zip.mjs";
-import { hasDose, hasPrice } from "./content-guard.mjs";
 
 const args = process.argv.slice(2);
 const outDir = args.includes("--out") ? args[args.indexOf("--out") + 1]! : "dist-lms";
@@ -22,13 +22,7 @@ const outDir = args.includes("--out") ? args[args.indexOf("--out") + 1]! : "dist
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-function cardText(p: PairPage) {
-  return [p.nameA, p.nameB, p.severityLabel, p.mechanism, p.quote?.quote ?? "", p.quote?.labelDrug ?? "", p.quote?.labelSection ?? ""].join(" \n ");
-}
-
-const all = pairPages().filter((p) => p.quote);
-const cards = all.filter((p) => !hasDose(cardText(p)) && !hasPrice(cardText(p)));
-const skipped = all.filter((p) => !cards.includes(p)).map((p) => p.slug);
+const { cards, skipped } = scormCards();
 
 const SCORM_SHIM = `(function(){var w=window,a=null,n=0;while(w&&n<10){if(w.API){a=w.API;break}if(w===w.parent)break;w=w.parent;n++}
 if(!a&&window.opener&&window.opener.API)a=window.opener.API;if(!a)return;a.LMSInitialize("");
