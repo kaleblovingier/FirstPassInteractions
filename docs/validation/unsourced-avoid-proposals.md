@@ -1,0 +1,45 @@
+# Unsourced "Avoid together" grades: label search beyond Contraindications (proposals)
+
+Educational reference only. Not FDA-cleared. No doses.
+
+**Proposals only.** This file changes no grade, pin, gold row or card. Kaleb decides each row.
+
+Scope: the 19 "Avoid together" grades with no cited source in `docs/grade-provenance-audit.md` (listed in `docs/validation/unsourced-avoid-candidates.md`). For each, the current DailyMed SPL (v2 XML, retrieved 2026-10-19 PT) was searched for an exact quote naming the partner or its class in the Boxed Warning, Contraindications, Warnings and Precautions (or Warnings / Precautions on older labels) and Drug Interactions. Quotes are verbatim after whitespace folding ("…" marks an elided span) and were checked as substrings of the SPL. Quotes that would carry a dose amount were trimmed to avoid it.
+
+Suggested actions:
+
+- **Keep**: the grade stands; no US label exists to cite, so it needs a non-label source.
+- **Cite (non-contraindication)**: the label names the partner or its class with an avoid/warning statement outside Contraindications. Cite it as the basis and keep the tier, but do not pin it as a label contraindication.
+- **Downgrade candidate**: the label does not support Avoid together (names nothing, or says monitor, or says no effect). Kaleb's call; a downgrade is a severity change.
+
+| # | Pair | Label (setid) | Section | Quote | Suggested action | Reason |
+|---|---|---|---|---|---|---|
+| 1 | Isocarboxazid + 5-HTP / L-tryptophan | [Marplan](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) (95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS (Sympathomimetics paragraph) | "Use of sympathomimetics and compounds such as … tyrosine, and tryptophan with Marplan may precipitate hypertension, headache, and related symptoms." | Cite (non-contraindication) | Named inside the section, but worded "may precipitate", not "should not be administered". Also: "The combination of MAO inhibitors and tryptophan has been reported to cause behavioral and neurologic symptoms". |
+| 2 | Methylene blue + 5-HTP / L-tryptophan | [ProvayBlue](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4f6848e5-35ed-4046-b13c-3032b5ba3232) (4f6848e5-35ed-4046-b13c-3032b5ba3232) | Boxed Warning; 7 Drug Interactions | "Avoid concomitant use of PROVAYBLUE with medicinal products that enhance serotonergic transmission" | Cite (non-contraindication) | Class-level avoid (serotonergic products) plus a boxed serotonin-syndrome warning. Tryptophan is not named, so cite the class statement only. |
+| 3 | Ozanimod + 5-HTP / L-tryptophan | [Zeposia](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=93ce2fab-edfb-4804-8074-963071de51e4) (93ce2fab-edfb-4804-8074-963071de51e4) | 7 Drug Interactions (Table 6) | "Co-administration of ZEPOSIA with MAO inhibitors (e.g., selegiline, phenelzine, linezolid) is contraindicated." | Downgrade candidate | The label treats ozanimod as a drug affected by MAO inhibitors, not as one. It names no tryptophan or serotonergic warning. |
+| 4 | Rasagiline + 5-HTP / L-tryptophan | [Azilect](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a40d0e73-3f9f-4b01-979d-402c9cdaeb60) (a40d0e73-3f9f-4b01-979d-402c9cdaeb60) | 5.2 Serotonin Syndrome | "Serotonin syndrome has been reported with concomitant use of an antidepressant" | Downgrade candidate | Serotonin warnings name antidepressants, opioids and other MAOIs. Tryptophan is not named. |
+| 5 | Safinamide + 5-HTP / L-tryptophan | [Xadago](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) (c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 5 Warnings and Precautions (Highlights; see 5.2) | "May cause serotonin syndrome when used with MAO inhibitors, antidepressants, or opioid drugs" | Downgrade candidate | Named classes only; tryptophan is not named. |
+| 6 | Tedizolid + 5-HTP / L-tryptophan | [Sivextro](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=75672079-589f-451a-bdbf-eaebcfcc80a9) (75672079-589f-451a-bdbf-eaebcfcc80a9) | 5.1 Serotonin Syndrome | "Monitor patients for the emergence of serotonin syndrome with the concomitant use of SIVEXTRO and serotonergic agents." | Downgrade candidate | The label says monitor, not avoid, and does not name tryptophan. |
+| 7 | Harmaline + 5-HTP / L-tryptophan | none | | No US-approved DailyMed label for harmaline. | Keep | No label to cite; needs a literature source. |
+| 8 | Harmaline + Tyramine foods | none | | No US-approved DailyMed label for harmaline. | Keep | No label to cite; needs a literature source. |
+| 9 | Moclobemide + 5-HTP / L-tryptophan | none | | No US-approved DailyMed label for moclobemide. | Keep | No label to cite; needs a non-US label or literature source. |
+| 10 | Moclobemide + Tyramine foods | none | | No US-approved DailyMed label for moclobemide. | Keep | No label to cite; needs a non-US label or literature source. |
+| 11 | Selegiline + 5-HTP / L-tryptophan | [Selegiline HCl capsules](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1924db3d-6a16-4496-cfd0-6903be146925) (1924db3d-6a16-4496-cfd0-6903be146925) | WARNINGS / PRECAUTIONS | Not named. | Downgrade candidate | The oral capsule label names no tryptophan or serotonergic-supplement warning. |
+| 12 | Selegiline + Tyramine foods | [Selegiline HCl capsules](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=1924db3d-6a16-4496-cfd0-6903be146925) (1924db3d-6a16-4496-cfd0-6903be146925) | WARNINGS | "Rare cases of hypertensive reactions associated with ingestion of tyramine-containing foods have been reported in patients taking the recommended daily dose of selegiline." | Cite (non-contraindication) | Named in Warnings as rare reports. If the card is meant to cover only oral MAO-B dosing, Kaleb may prefer a downgrade. |
+| 13 | Tranylcypromine + Tyramine foods | [Parnate](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) (b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | Boxed Warning; 5.2 Hypertensive Crisis and Hypertension | "Instruct patients to avoid ingestion of foods and beverages with high tyramine content" | Cite (non-contraindication) | Boxed Warning names tyramine. Not in Table 1 (4.1), so not a pin. |
+| 14 | Trimethoprim–sulfamethoxazole + Methotrexate | [Bactrim](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=f59d0c04-9c66-4d53-a0e1-cb55570deb62) (f59d0c04-9c66-4d53-a0e1-cb55570deb62) | PRECAUTIONS › Drug Interactions | "Methotrexate Avoid concurrent use" | Cite (non-contraindication) | The label's own class is avoid. |
+| 15 | Methylene blue + Tyramine foods | [ProvayBlue](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=4f6848e5-35ed-4046-b13c-3032b5ba3232) (4f6848e5-35ed-4046-b13c-3032b5ba3232) | all searched sections | Not named. | Downgrade candidate | ProvayBlue names serotonergic drugs and opioids only; no tyramine statement. |
+| 16 | Ozanimod + Tyramine foods | [Zeposia](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=93ce2fab-edfb-4804-8074-963071de51e4) (93ce2fab-edfb-4804-8074-963071de51e4) | 12.2 Pharmacodynamics (Tyramine Challenge Test) | "No clinically significant effect in tyramine induced pressor response was observed" | Downgrade candidate | The label reports no tyramine pressor effect. |
+| 17 | Rasagiline + Tyramine foods | [Azilect](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a40d0e73-3f9f-4b01-979d-402c9cdaeb60) (a40d0e73-3f9f-4b01-979d-402c9cdaeb60) | 5.1 Hypertension; 7.7 Tyramine/Rasagiline Interaction | "Patients should be advised to avoid foods containing a very large amount of tyramine while taking recommended doses of AZILECT" | Cite (non-contraindication) | Avoid applies to very high tyramine foods only; the same section says "Dietary tyramine restriction is not required". Kaleb may prefer a downgrade. |
+| 18 | Safinamide + Tyramine foods | [Xadago](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c4d65f28-983f-42b4-bb23-023ae0fe81b2) (c4d65f28-983f-42b4-bb23-023ae0fe81b2) | 7.6 Tyramine; 5.1 Hypertension | "Patients should be advised to avoid foods containing a large amount of tyramine while taking recommended doses of XADAGO" | Cite (non-contraindication) | Same pattern as Azilect: "Dietary tyramine restriction is not required" in 5.1, avoid for large-tyramine foods. |
+| 19 | Tedizolid + Tyramine foods | [Sivextro](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=75672079-589f-451a-bdbf-eaebcfcc80a9) (75672079-589f-451a-bdbf-eaebcfcc80a9) | 12.3 Pharmacokinetics only | "assess the potential of … SIVEXTRO at steady state to enhance pressor responses to pseudoephedrine and tyramine in healthy adults" | Downgrade candidate | A tyramine challenge study only; no avoid or warning statement in sections 4, 5 or 7. |
+
+## Summary
+
+| Suggested action | Pairs |
+|---|---|
+| Keep (no US label) | 4 |
+| Cite (non-contraindication) | 7 |
+| Downgrade candidate | 8 |
+
+None of these meets the pin bar (partner named in the Contraindications section with contraindicated wording), so none is pinned.
