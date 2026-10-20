@@ -69,16 +69,16 @@ export const PRIVACY_DOC: LegalDoc = {
         "Live lookups: catalog drug names or ids. The server asks public sources (OpenFDA, NLM RxNorm and RxClass, PubChem, DailyMed, ClinicalTrials.gov, PubMed, CPIC, PsychonautWiki, TripSit) by drug name. Host toggles and typed amounts are not sent.",
         "\"Ask the three readers\": only when you press it, a short brief built from the check on screen (drug names, top rows, sources) is sent to xAI's API. Answers are kept in server memory for up to 10 minutes.",
         "Program inquiry form (/for-programs): your name, work email, organization and message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
-        "Lost-key recovery (/recover): the email you type is checked against Stripe, and if a purchase matches, the key is emailed to that address through Resend.",
+        "Lost-key recovery (/recover): the email you type is checked against Stripe, and if a purchase matches, the key is emailed to that address through Resend. Stripe checkout is built but switched off.",
         "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
-        "FirstPass's own server logs record event names, status, timing and counts, not request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
+        "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
       ],
     },
     {
       id: "payments",
       title: "Payments and the Founding license",
       paras: [
-        "Card payments run on Stripe's hosted checkout, so card numbers never reach FirstPass. Stripe keeps the buyer's name and email; the server reads them to issue the Founding key and writes the key back to the Stripe record. PayPal checkout, when switched on, works the same way through PayPal.",
+        "Founding is paid by Venmo, Cash App or PayPal. The payment happens in that app, so FirstPass never sees your card or bank details. The operator matches the payment and emails the Founding key. Stripe checkout is built but switched off. If card checkout is added later, this policy will be updated first.",
         "Venmo, Cash App and direct PayPal payments are handled by hand. The operator sees the payer's name, handle and the amount in that app and in the payment emails it sends, and uses them to issue the key.",
         "Founding keys are emailed through Resend to the purchase email, with a blind copy to the FirstPass inbox.",
       ],
@@ -87,14 +87,14 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "processors",
       title: "Who else handles data",
       paras: [
-        "Vercel (hosting and request logs), Stripe and PayPal (payments), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI (only when you use the readers), and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
+        "Vercel (hosting and request logs), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI (only when you use the readers), and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
       ],
     },
     {
       id: "retention",
       title: "How long we keep it",
       paras: [
-        "Browser data: until you clear it. Rate-limit counters: until the server instance restarts, and at most a day. Reader answers: up to 10 minutes. Emails (key deliveries, inquiries, payment notices): in the FirstPass inbox until deleted. Stripe and PayPal records: kept by those companies under their own rules, which include legal record-keeping. Vercel logs: per Vercel's retention.",
+        "Browser data: until you clear it. Rate-limit counters: until the server instance restarts, and at most a day. Reader answers: up to 10 minutes. Emails (key deliveries, inquiries, payment notices): in the FirstPass inbox until deleted. Venmo, Cash App and PayPal records: kept by those companies under their own rules, which include legal record-keeping. Vercel logs: per Vercel's retention.",
       ],
     },
     {
@@ -154,7 +154,7 @@ export const TERMS_DOC: LegalDoc = {
       id: "what",
       title: "What FirstPass is",
       paras: [
-        "FirstPass is an educational drug-interaction reference for licensed healthcare professionals and health-professions students. It is not medical advice and does not replace professional judgment. Educational reference only. Not FDA-cleared. The Prescribing Information governs. Check it and your local protocols before acting.",
+        "FirstPass is an educational drug-interaction reference for licensed healthcare professionals and health-professions students. It is not medical advice and does not replace professional judgment. Educational reference only. Not FDA-cleared. The Prescribing Information governs.",
         "Using FirstPass does not create a doctor-patient or pharmacist-patient relationship with anyone. A blank or mild result is not a statement that a combination is safe.",
         "FirstPass is not affiliated with or endorsed by the FDA, the National Library of Medicine (NLM) or any drug manufacturer. Drug and product names are trademarks of their owners and are used only to identify the products.",
       ],

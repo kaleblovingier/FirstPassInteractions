@@ -27,7 +27,8 @@ describe("/trust payments line", () => {
   it("names Venmo, Cash App and PayPal and says Stripe is not live", () => {
     const pay = JSON.stringify(TRUST_SECTIONS).match(/Founding is paid by[^"]*/)?.[0] ?? "";
     assert.match(pay, /Venmo, Cash App or PayPal/);
-    assert.doesNotMatch(pay, /Stripe|card checkout/i);
+    assert.match(pay, /Stripe checkout is built but switched off\./);
+    assert.doesNotMatch(pay, /runs on Stripe|Stripe's hosted checkout/i);
   });
 });
 
@@ -45,10 +46,30 @@ describe("MarketingFirstPass wording", () => {
     ]) assert.ok(terms.includes(line), line);
     assert.doesNotMatch(TERMS_DOC.sections.find((x) => x.id === "license")!.paras.join(" "), /\$\d|\bPro\b/);
     assert.ok(all(COOKIES_DOC).includes("FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored."));
-    assert.ok(all(PRIVACY_DOC).includes("not request contents, emails or keys"));
+    assert.ok(all(PRIVACY_DOC).includes("designed not to record request contents, emails or keys."));
   });
   it("legal pages show the draft note", async () => {
     const { LegalView } = await import("@/components/seo/legal-page");
     assert.ok(renderToStaticMarkup(createElement(LegalView, { doc: TERMS_DOC })).includes("Draft. These terms have not yet been reviewed by an attorney."));
+  });
+});
+
+describe("/privacy payments", () => {
+  it("does not say checkout runs on Stripe and names the live methods", async () => {
+    const { PRIVACY_DOC } = await import("@/lib/seo/legal");
+    const p = PRIVACY_DOC.sections.flatMap((s) => s.paras).join(" ");
+    assert.doesNotMatch(p, /runs on Stripe|Stripe's hosted checkout|Card payments run/i);
+    assert.match(p, /Stripe checkout is built but switched off\./);
+    assert.match(p, /designed not to record request contents, emails or keys\./);
+    assert.match(p, /Venmo, Cash App or PayPal/);
+    assert.match(p, /If card checkout is added later, this policy will be updated/);
+  });
+});
+
+describe("/terms disclaimer line", () => {
+  it("uses the exact disclaimer and drops the local-protocols phrase", () => {
+    const what = TERMS_DOC.sections.find((s) => s.id === "what")!.paras.join(" ");
+    assert.ok(what.includes("Educational reference only. Not FDA-cleared. The Prescribing Information governs."));
+    assert.doesNotMatch(what, /local protocols before acting/i);
   });
 });
