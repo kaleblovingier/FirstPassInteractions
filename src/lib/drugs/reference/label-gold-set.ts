@@ -3884,7 +3884,6 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
 export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
   { drug: "flibanserin", reason: "Not in catalog. Paxlovid section 4 names it. Not curated." },
-  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition." },
   { drug: "astemizole", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
   { drug: "terfenadine", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
   { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row." },
@@ -4049,7 +4048,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "Sporanox + eliglustat",
     reason:
-      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Not in the catalog.",
+      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is in the catalog since Ship 1.77 (FDA Table 1 role only), but the contraindication is metabolizer-conditional, so it is not an unconditional pair. Recorlev Table 6 names it with the same condition.",
   },
   {
     pair: "Sporanox + venetoclax",

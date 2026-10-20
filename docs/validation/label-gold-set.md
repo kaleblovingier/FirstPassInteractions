@@ -645,7 +645,7 @@ None.
 - **clarithromycin + colchicine**: Current clarithromycin tablets: contraindicated only in renal or hepatic impairment.
 - **itraconazole + simvastatin**: Already in wave 1 from the Zocor label. Not repeated from Sporanox.
 - **Sporanox + colchicine / fesoterodine / solifenacin**: Contraindicated only in renal or hepatic impairment.
-- **Sporanox + eliglustat**: Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Not in the catalog.
+- **Sporanox + eliglustat**: Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is in the catalog since Ship 1.77 (FDA Table 1 role only), but the contraindication is metabolizer-conditional, so it is not an unconditional pair. Recorlev Table 6 names it with the same condition.
 - **Sporanox + venetoclax**: Contraindicated only in CLL/SLL during initiation and ramp-up.
 - **Sporanox + ergonovine**: The label names ergometrine (ergonovine). No ergonovine catalog row. Methylergonovine is a different drug and is paired on its own. Not listed under NOT_IN_CATALOG because that check treats a name substring as a hit.
 - **Noxafil + venetoclax**: Contraindicated only at initiation and during the ramp-up phase in CLL or SLL.
@@ -738,7 +738,6 @@ None.
 ## Not in catalog
 
 - **flibanserin**: Not in catalog. Paxlovid section 4 names it. Not curated.
-- **eliglustat**: Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition.
 - **astemizole**: Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label.
 - **terfenadine**: Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label.
 - **cisapride**: Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row.
