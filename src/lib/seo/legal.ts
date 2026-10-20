@@ -19,7 +19,7 @@ export type LegalDoc = {
 };
 
 export const REFUND_TODO =
-  "TODO (Kaleb): refund policy for the $79 Founding license has not been set. Until it is, email " +
+  "TODO (Kaleb): refund policy for the Founding license has not been set. Until it is, email " +
   LEGAL_EMAIL +
   " about any refund request.";
 

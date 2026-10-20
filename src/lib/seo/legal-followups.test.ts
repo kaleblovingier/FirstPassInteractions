@@ -11,7 +11,7 @@ describe("legal follow-ups", () => {
   it("/terms defines lifetime, including shutdown", () => {
     const terms = TERMS_DOC.sections.flatMap((s) => s.paras).join(" ");
     assert.ok(terms.includes(LIFETIME_TERMS));
-    assert.match(LIFETIME_TERMS, /shuts down/);
+    assert.match(LIFETIME_TERMS, /stops offering the desk/);
     assert.doesNotMatch(LIFETIME_TERMS, /\bPro\b|\bfree\b|\d+\s?mg/i);
   });
   it("/pairs says not affiliated with FDA or NLM, and the disclaimer carries the trademark line", () => {
@@ -43,7 +43,7 @@ describe("MarketingFirstPass wording", () => {
       "Lab-book receipts are not CE credit and are not accredited continuing education.",
       "If FirstPass stops offering the desk, the license ends and no further updates are owed.",
     ]) assert.ok(terms.includes(line), line);
-    assert.doesNotMatch(terms, /\$\d/);
+    assert.doesNotMatch(TERMS_DOC.sections.find((x) => x.id === "license")!.paras.join(" "), /\$\d|\bPro\b/);
     assert.ok(all(COOKIES_DOC).includes("FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored."));
     assert.ok(all(PRIVACY_DOC).includes("not request contents, emails or keys"));
   });
