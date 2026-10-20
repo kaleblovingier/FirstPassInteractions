@@ -6708,8 +6708,7 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
                 <span className="font-bold text-fg">{evaluation.membraneStabilization.primaryAgent.name}</span>
                 <span className="font-mono text-[10px] text-accent font-semibold">Peripheral IV Preferred</span>
               </div>
-              <p className="font-mono text-sm font-bold text-fg">{evaluation.membraneStabilization.primaryAgent.dose}</p>
-              <p className="text-muted text-[11px]">{evaluation.membraneStabilization.primaryAgent.infusionTime}</p>
+              <p className="text-muted text-[11px]">See the Prescribing Information.</p>
               <div className="flex flex-wrap gap-2 pt-1 font-mono text-[10px] text-subtle">
                 <span>Onset: {evaluation.membraneStabilization.primaryAgent.onset}</span>
                 <span>Duration: {evaluation.membraneStabilization.primaryAgent.duration}</span>
@@ -6759,43 +6758,10 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3 text-xs">
-            {/* Insulin + Dextrose */}
-            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-1">
-              <span className="font-bold text-fg block">A. Regular Insulin IV Push</span>
-              <span className="font-mono text-base font-bold text-accent block">
-                See the Prescribing Information
-              </span>
-              <p className="text-muted text-[11px] leading-relaxed">
-                {evaluation.intracellularShifting.insulinAdjustmentReason}
-              </p>
-              <div className="mt-2 pt-1.5 border-t border-border/70 space-y-0.5">
-                <span className="font-semibold text-fg block text-[11px]">Co-administered Dextrose:</span>
-                <span className="font-mono text-xs font-bold text-fg">
-                  {evaluation.intracellularShifting.dextroseRequirement.administer
-                    ? "D50W 25 g (50 mL) IV"
-                    : "Deferred (BG &ge; 250 mg/dL)"}
-                </span>
-                <p className="text-[10px] text-subtle leading-relaxed">
-                  {evaluation.intracellularShifting.dextroseRequirement.reason}
-                </p>
-              </div>
-            </div>
-
-            {/* High-Dose Nebulized Albuterol */}
-            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-1">
-              <span className="font-bold text-fg block">B. High-Dose Albuterol Nebulizer</span>
-              <span className="font-mono text-base font-bold text-fg block">
-                {evaluation.intracellularShifting.albuterolDosing.doseMg} to 20 mg Nebulized
-              </span>
-              <p className="text-[11px] text-accent font-medium">
-                {evaluation.intracellularShifting.albuterolDosing.asthmaComparison}
-              </p>
-              <p className="text-muted text-[11px] leading-relaxed">
-                {evaluation.intracellularShifting.albuterolDosing.onsetAndDuration}
-              </p>
-              <p className="text-subtle text-[10px] leading-relaxed pt-1">
-                {evaluation.intracellularShifting.albuterolDosing.caution}
-              </p>
+            {/* Insulin + Dextrose / Albuterol: no doses shown (no-doses rule) */}
+            <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-2">
+              <span className="font-bold text-fg block">Intracellular shifting agents</span>
+              <p className="text-muted text-[11px] leading-relaxed">See the Prescribing Information.</p>
             </div>
 
             {/* Sodium Bicarbonate */}

@@ -20,3 +20,28 @@ describe("desk copy", () => {
     assert.doesNotMatch(s, /\bunits IV\b|mg\/dL|insulinDoseUnits|primaryAgent\.dose/);
   });
 });
+
+describe("crawlable desk status line", () => {
+  it("app.tsx status line has no 'free' or pricing", () => {
+    assert.doesNotMatch(read("app.tsx"), /free · founding \$79|founding \$79 lifetime/);
+  });
+});
+
+describe("yearly plan label", () => {
+  it("is 'Desk (year)', never 'Founding (year)'", () => {
+    const s = read("foundry.tsx");
+    assert.doesNotMatch(s, /Founding \(year\)/);
+    assert.equal(s.split('"Desk (year)"').length - 1, 2);
+  });
+});
+
+describe("potassium station and EHR export show no doses", () => {
+  it("clinical.tsx and clinical-packet.ts do not render insulin/albuterol/calcium doses", () => {
+    const ui = read("clinical.tsx");
+    const exp = readFileSync("src/lib/drugs/clinical-packet.ts", "utf8");
+    for (const s of [ui, exp]) {
+      assert.doesNotMatch(s, /insulinDoseUnits|primaryAgent\.dose\b|albuterolDosing\.doseMg|D50W 25 g|10–20 mg nebulized/);
+    }
+    assert.match(read("clinical-packet-dialog.tsx"), /Membrane Stabilization Required:/);
+  });
+});

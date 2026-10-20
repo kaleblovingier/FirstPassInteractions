@@ -593,10 +593,10 @@ export function buildClinicalPacket(
       ehrLines.push(`  Active Perpetrators: ${pr.perpetrators.map((p) => `${p.name} [${p.category}]`).join(", ")}`);
     }
     if (pr.membraneStabilization.indicated) {
-      ehrLines.push(`  Myocardial Membrane Stabilization: ${pr.membraneStabilization.primaryAgent.name} ${pr.membraneStabilization.primaryAgent.dose} (${pr.membraneStabilization.primaryAgent.routePreference})`);
+      ehrLines.push(`  Myocardial Membrane Stabilization: ${pr.membraneStabilization.primaryAgent.name}. See the Prescribing Information.`);
     }
     if (pr.intracellularShifting.indicated) {
-      ehrLines.push(`  Intracellular Shifting: Regular Insulin IV (See the Prescribing Information) + D50W ${pr.intracellularShifting.dextroseRequirement.administer ? "(See the Prescribing Information)" : "omitted"} | Albuterol (See the Prescribing Information)`);
+      ehrLines.push("  Intracellular Shifting: See the Prescribing Information.");
     }
     if (pr.elimination.hemodialysis.emergentIndicated) {
       ehrLines.push(`  Definitive Elimination: Emergent Hemodialysis Indicated (${pr.elimination.hemodialysis.triggersPresent.join("; ")})`);
