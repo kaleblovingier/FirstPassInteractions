@@ -622,7 +622,7 @@ None.
 - **wave 7: metronidazole + disulfiram (Flagyl)**: The Flagyl Contraindications section says 'Do not administer' within two weeks of disulfiram, not 'contraindicated'. Skipped as ambiguous wording.
 - **wave 7: tetrabenazine / deutetrabenazine + MAOIs or reserpine**: MAOIs are a class (not expanded); reserpine is not a catalog row.
 - **wave 7: eletriptan + troleandomycin / nelfinavir; Mavyret + atazanavir**: Troleandomycin and nelfinavir are not catalog rows. Mavyret + atazanavir is already in the gold set.
-- **wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)**: Recorlev Table 6 says use with these is "contraindicated or not recommended" and does not say which. Section 4 says "certain" sensitive substrates. Not pinned as contraindicated. Ebastine, lomitapide, saquinavir, and tipranavir are not in the catalog.
+- **wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)**: Recorlev Table 6 says use with these is "contraindicated or not recommended" and does not say which. Section 4 says "certain" sensitive substrates. Not pinned as contraindicated. Ebastine and tipranavir are not in the catalog. Lomitapide and saquinavir are shelf rows and are still not pinned from this row.
 - **wave 6: levoketoconazole + strong CYP3A4 inhibitors or inducers (Table 7)**: Recorlev Table 7 says "not recommended", not contraindicated.
 - **methadone / buprenorphine / fentanyl + strong CYP3A4 inhibitor or inducer**: Wave 1: labels use monitor/consider-dose-change language, not contraindicated/avoid, so they failed the wave-1 rule. Wave 2 adds methadone and buprenorphine pairs under 'boxed-warning' / 'warning' with a label-supported floor; fentanyl not curated.
 - **colchicine + clarithromycin**: Biaxin: contraindicated only 'in patients with renal or hepatic impairment'. Not cleanly expressible as a two-drug regimen on the default host.
@@ -640,12 +640,13 @@ None.
 - **Symtuza (darunavir/cobicistat/FTC/TAF) pairs**: A combo row exists, but wave 3 anchors only the named labels: Prezista, Prezcobix, Reyataz, and Evotaz.
 - **glecaprevir, pibrentasvir, or elbasvir as single ingredients**: Labels name the fixed combinations. Paired to grazoprevir-elbasvir and glecaprevir-pibrentasvir, not the single-ingredient rows.
 - **Biaxin brand SPL as the wave-4 clarithromycin source**: DailyMed v2 effective time is 2012-02-22. Wave 4 quotes the current clarithromycin tablets SPL instead (effective 2026-06-24).
-- **clarithromycin + astemizole / terfenadine**: Named on the 2012 Biaxin contraindications list. Not on the current clarithromycin tablets contraindications section, and not in the catalog.
+- **clarithromycin + astemizole / terfenadine**: Named on the 2012 Biaxin contraindications list. Not on the current clarithromycin tablets contraindications section. The names are on the shelf with no enzyme grade, and they are not paired with clarithromycin.
+- **cisapride / terfenadine / astemizole on Norvir, Sporanox, Kaletra, or Recorlev**: The names are on the shelf with no enzyme grade. Pinned only where a stored current contraindication sentence names them: nefazodone, erythromycin, and clarithromycin tablets for cisapride. Not pinned from Norvir, Sporanox, Kaletra, or Recorlev Table 6.
 - **clarithromycin + pimozide / lovastatin / simvastatin**: Already in wave 1. Not repeated from the current clarithromycin tablets label.
 - **clarithromycin + colchicine**: Current clarithromycin tablets: contraindicated only in renal or hepatic impairment.
 - **itraconazole + simvastatin**: Already in wave 1 from the Zocor label. Not repeated from Sporanox.
 - **Sporanox + colchicine / fesoterodine / solifenacin**: Contraindicated only in renal or hepatic impairment.
-- **Sporanox + eliglustat**: Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Not in the catalog.
+- **Sporanox + eliglustat**: Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is on the shelf as an FDA Table 1 example. The line stays unpinned.
 - **Sporanox + venetoclax**: Contraindicated only in CLL/SLL during initiation and ramp-up.
 - **Sporanox + ergonovine**: The label names ergometrine (ergonovine). No ergonovine catalog row. Methylergonovine is a different drug and is paired on its own. Not listed under NOT_IN_CATALOG because that check treats a name substring as a hit.
 - **Noxafil + venetoclax**: Contraindicated only at initiation and during the ramp-up phase in CLL or SLL.
@@ -738,14 +739,8 @@ None.
 ## Not in catalog
 
 - **flibanserin**: Not in catalog. Paxlovid section 4 names it. Not curated.
-- **eliglustat**: Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition.
-- **astemizole**: Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label.
-- **terfenadine**: Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label.
-- **cisapride**: Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row.
 - **aminophylline**: Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead.
 - **buprenorphine/naloxone**: No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.
-- **lomitapide**: Named on the Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox, Norvir, Paxlovid, and Kaletra contraindication lists. Not in the catalog.
-- **indinavir**: Named on Reyataz Table 6 and Evotaz Table 1. Not in the catalog.
 - **mesoridazine**: Named on Geodon section 4.1. Not in the catalog.
 - **sparfloxacin**: Named on Geodon section 4.1. Not in the catalog.
 - **halofantrine**: Named on Geodon section 4.1. Not in the catalog.

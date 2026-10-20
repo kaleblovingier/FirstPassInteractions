@@ -76,8 +76,8 @@ const SKIP_UNGRADED: { id: string; why: string }[] = [
   },
 ];
 
-/** FDA-listed, not in this catalog. Not invented here. */
-const NOT_IN_CATALOG = ["belumosudil", "danicopan", "fostamatinib"];
+/** FDA-listed P-gp rows with no grade. Not given a strength here. */
+const NOT_IN_CATALOG = ["belumosudil", "danicopan", "fostamatinib", "saquinavir-and-ritonavir"];
 
 test("FDA-listed P-gp roles present in the catalog are carried", () => {
   for (const row of MUST_HAVE) {
@@ -115,4 +115,11 @@ test("documented P-gp skip list stays ungraded", () => {
   for (const id of NOT_IN_CATALOG) {
     assert.equal(DRUG_BY_ID[id], undefined, id);
   }
+  const saquinavir = DRUG_BY_ID.saquinavir;
+  assert.ok(saquinavir, "saquinavir is a graded CYP3A4 example");
+  assert.equal(
+    saquinavir.enzymes.some((e) => e.enzyme === "P-gp"),
+    false,
+    "saquinavir stays ungraded on P-gp",
+  );
 });
