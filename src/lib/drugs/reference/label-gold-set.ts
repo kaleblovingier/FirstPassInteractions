@@ -3985,18 +3985,12 @@ export const KNOWN_CONTRAINDICATION_GAPS: readonly string[] = [
 /** Drugs we looked for but the catalog does not carry (not forced into the set). */
 export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
   { drug: "flibanserin", reason: "Not in catalog. Paxlovid section 4 names it. Not curated." },
-  { drug: "eliglustat", reason: "Not in catalog. Sporanox contraindicates it only for certain CYP2D6 metabolizer groups. Recorlev Table 6 names it with the same metabolizer condition." },
-  { drug: "astemizole", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
-  { drug: "terfenadine", reason: "Not in catalog. Named on the 2012 Biaxin contraindications list, not on the current clarithromycin tablets label." },
-  { drug: "cisapride", reason: "Not in catalog. Named on the Norvir, current clarithromycin, Sporanox, and Kaletra contraindication lists, and in the Recorlev Table 6 QT row." },
   { drug: "aminophylline", reason: "Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead." },
   {
     drug: "buprenorphine/naloxone",
     reason:
       "No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.",
   },
-  { drug: "lomitapide", reason: "Named on the Prezista, Prezcobix, Reyataz, Evotaz, clarithromycin, Sporanox, Norvir, Paxlovid, and Kaletra contraindication lists. Not in the catalog." },
-  { drug: "indinavir", reason: "Named on Reyataz Table 6 and Evotaz Table 1. Not in the catalog." },
   { drug: "mesoridazine", reason: "Named on Geodon section 4.1. Not in the catalog." },
   { drug: "sparfloxacin", reason: "Named on Geodon section 4.1. Not in the catalog." },
   { drug: "halofantrine", reason: "Named on Geodon section 4.1. Not in the catalog." },
@@ -4048,7 +4042,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)",
     reason:
-      "Recorlev Table 6 says use with these is \"contraindicated or not recommended\" and does not say which. Section 4 says \"certain\" sensitive substrates. Not pinned as contraindicated. Ebastine, lomitapide, saquinavir, and tipranavir are not in the catalog.",
+      "Recorlev Table 6 says use with these is \"contraindicated or not recommended\" and does not say which. Section 4 says \"certain\" sensitive substrates. Not pinned as contraindicated. Ebastine and tipranavir are not in the catalog. Lomitapide and saquinavir are shelf rows and are still not pinned from this row.",
   },
   {
     pair: "wave 6: levoketoconazole + strong CYP3A4 inhibitors or inducers (Table 7)",
@@ -4132,7 +4126,12 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "clarithromycin + astemizole / terfenadine",
     reason:
-      "Named on the 2012 Biaxin contraindications list. Not on the current clarithromycin tablets contraindications section, and not in the catalog.",
+      "Named on the 2012 Biaxin contraindications list. Not on the current clarithromycin tablets contraindications section. The names are on the shelf with no enzyme grade, and they are not paired with clarithromycin.",
+  },
+  {
+    pair: "cisapride / terfenadine / astemizole on Norvir, Sporanox, Kaletra, or Recorlev",
+    reason:
+      "The names are on the shelf with no enzyme grade. Pinned only where a stored current contraindication sentence names them: nefazodone, erythromycin, and clarithromycin tablets for cisapride. Not pinned from Norvir, Sporanox, Kaletra, or Recorlev Table 6.",
   },
   {
     pair: "clarithromycin + pimozide / lovastatin / simvastatin",
@@ -4154,7 +4153,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "Sporanox + eliglustat",
     reason:
-      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Not in the catalog.",
+      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is on the shelf as an FDA Table 1 example. The line stays unpinned.",
   },
   {
     pair: "Sporanox + venetoclax",

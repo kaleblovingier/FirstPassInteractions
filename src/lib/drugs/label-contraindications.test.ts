@@ -530,6 +530,14 @@ const EXPECTED_PINS = [
   "isocarboxazid+cyclobenzaprine",
   "isocarboxazid+amoxapine",
   "isocarboxazid+trimipramine",
+  // label-named shelf, no enzyme grade
+  "nefazodone+terfenadine",
+  "nefazodone+astemizole",
+  "nefazodone+cisapride",
+  "clarithromycin+cisapride",
+  "erythromycin+terfenadine",
+  "erythromycin+astemizole",
+  "erythromycin+cisapride",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -537,7 +545,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 41);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 48);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 145);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
