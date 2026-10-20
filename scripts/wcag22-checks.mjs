@@ -23,9 +23,10 @@ for (const spec of paths) for (const width of [320, 1280]) {
   const ov = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   if (width === 320) report(ov <= 0, `${tag} 1.4.10 no sideways scroll (${ov}px)`);
   // 2.5.8 target size: under 24x24 and its 24px box overlaps another target's box.
+  // Inline links inside running text (p/td/dd/figcaption) use the WCAG "inline" exception; list items are checked.
   const small = await page.evaluate(() => {
     const sel = "a[href],button,input:not([type=hidden]),select,textarea,[role=button],[role=tab],[role=checkbox],[role=switch],[tabindex]:not([tabindex='-1'])";
-    const els = [...document.querySelectorAll(sel)].filter((e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && !e.closest("p,li,td,dd,figcaption") ; });
+    const els = [...document.querySelectorAll(sel)].filter((e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && !(s.display === "inline" && e.closest("p,td,dd,figcaption")) ; });
     const boxes = els.map((e) => { const r = e.getBoundingClientRect(); const cx = r.x + r.width / 2, cy = r.y + r.height / 2; return { e, r, b: { x: cx - 12, y: cy - 12, w: 24, h: 24 } }; });
     const hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
     const out = [];
