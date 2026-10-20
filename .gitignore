@@ -11,3 +11,4 @@ node_modules/
 # Nitro "vercel" preset). Never commit build output or local CLI state.
 .vercel
 public/og/
+dist-lms/
