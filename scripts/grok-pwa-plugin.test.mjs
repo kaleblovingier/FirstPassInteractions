@@ -508,3 +508,20 @@ test("vite plugin bakes og identity as a virtual module", () => {
   assert.match(plugin, /snapshotOgIdentity/);
 });
 
+
+test("page-owned share card (og:image present) survives platform injection", () => {
+  const html =
+    '<html><head><title>Pair | FirstPass</title>' +
+    '<meta property="og:title" content="Warfarin + Aspirin">' +
+    '<meta property="og:description" content="Label text">' +
+    '<meta property="og:image" content="https://firstpass-desk.vercel.app/og/pair/a-b.png">' +
+    '<meta property="og:image:alt" content="FirstPass: A + B.">' +
+    '<meta name="twitter:card" content="summary_large_image"></head></html>';
+  const out = injectGrokPwaHead(html, { host: "firstpass-desk.vercel.app", site: { title: "FirstPass", card: "custom" } });
+  assert.match(out, /property="og:title" content="Warfarin \+ Aspirin"/);
+  assert.match(out, /property="og:description" content="Label text"/);
+  assert.match(out, /property="og:image" content="https:\/\/firstpass-desk\.vercel\.app\/og\/pair\/a-b\.png"/);
+  assert.equal(out.split('property="og:title"').length - 1, 1);
+  assert.equal(out.split('property="og:image"').length - 1, 1);
+  assert.equal(out.split('name="twitter:card"').length - 1, 1);
+});
