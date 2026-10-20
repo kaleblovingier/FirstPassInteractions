@@ -82,7 +82,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "Payments.",
-      text: "Card payments run on Stripe's hosted checkout page, so card numbers never reach FirstPass. Stripe keeps the buyer's email and name. The FirstPass server reads them from Stripe to send the Founding key and writes the key back to the Stripe record. PayPal checkout is built but stays off unless it is configured. Venmo, Cash App and direct PayPal payments are handled by the operator, who issues the key.",
+      text: "Founding is paid by Venmo, Cash App or PayPal. The payment happens in that app, so FirstPass never sees your card or bank details. The operator matches the payment and emails the Founding key. Card checkout through Stripe is built but is not switched on.",
     },
     {
       lead: "Key emails.",

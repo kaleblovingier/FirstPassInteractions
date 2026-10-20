@@ -23,6 +23,17 @@ export const REFUND_TODO =
   LEGAL_EMAIL +
   " about any refund request.";
 
+/** What "lifetime" means for the Founding license. */
+export const LIFETIME_TERMS =
+  "The Founding license is a one-time purchase. It unlocks the desk's licensed features for the buyer for as long as FirstPass offers the desk. If FirstPass stops offering the desk, the license ends and no further updates are owed.";
+
+/** Sitewide trademark line. */
+export const TRADEMARK_LINE =
+  "Drug and product names are trademarks of their owners and are used only to identify the products.";
+
+/** Shown on /pairs. */
+export const NOT_AFFILIATED_LINE = "Not affiliated with or endorsed by FDA or NLM.";
+
 export const PRIVACY_DOC: LegalDoc = {
   path: "/privacy",
   title: "Privacy policy | FirstPass",
@@ -126,7 +137,7 @@ export const COOKIES_DOC: LegalDoc = {
       id: "storage",
       title: "Local and session storage",
       paras: [
-        "The desk keeps your work (drugs on the desk, toggles, study marks, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and is never sent to a FirstPass database. Clear site data to remove it.",
+        "The desk keeps your work (drugs on the desk, toggles, study marks, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and stays in your browser. FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored. Clear site data to remove it.",
       ],
     },
     { id: "changes", title: "Changes", paras: [`Effective ${LEGAL_EFFECTIVE}.`] },
@@ -143,22 +154,25 @@ export const TERMS_DOC: LegalDoc = {
       id: "what",
       title: "What FirstPass is",
       paras: [
-        "FirstPass is an educational drug-interaction reference for licensed healthcare professionals and health-professions students. It is not medical advice and does not replace professional judgment. It is not FDA-cleared or FDA-approved. The FDA-approved Prescribing Information governs; check it and your local protocols before acting.",
+        "FirstPass is an educational drug-interaction reference for licensed healthcare professionals and health-professions students. It is not medical advice and does not replace professional judgment. Educational reference only. Not FDA-cleared. The Prescribing Information governs. Check it and your local protocols before acting.",
         "Using FirstPass does not create a doctor-patient or pharmacist-patient relationship with anyone. A blank or mild result is not a statement that a combination is safe.",
+        "FirstPass is not affiliated with or endorsed by the FDA, the National Library of Medicine (NLM) or any drug manufacturer. Drug and product names are trademarks of their owners and are used only to identify the products.",
       ],
     },
     {
       id: "you",
       title: "Your responsibilities",
       paras: [
-        "You are responsible for how you use what FirstPass shows, and for checking it against primary sources. Do not enter protected health information or any patient-identifying data. Do not use FirstPass for patient self-treatment. Do not try to break, overload or copy the service, or share license keys beyond what your license allows.",
+        "You are responsible for how you use what FirstPass shows, and for checking it against primary sources. Do not enter protected health information or any patient-identifying data. Do not use FirstPass for self-treatment. If you are a patient, ask your pharmacist or clinician about your medicines. Do not try to break, overload or copy the service, or share license keys beyond what your license allows.",
       ],
     },
     {
       id: "license",
       title: "Founding license",
       paras: [
-        "The Founding license is a one-time $79 purchase that unlocks the desk's licensed features for the buyer. Keys are personal to the buyer unless a program license says otherwise.",
+        LIFETIME_TERMS,
+        "Keys are personal to the buyer unless a program license says otherwise.",
+        "Lab-book receipts are not CE credit and are not accredited continuing education.",
         REFUND_TODO,
       ],
     },

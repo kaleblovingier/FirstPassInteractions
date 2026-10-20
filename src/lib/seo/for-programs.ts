@@ -64,7 +64,7 @@ export const FOR_PROGRAMS_KEY_STEPS: string[] = [
   "Share it with your learners or staff the way you already share course materials.",
   "Each person opens the desk, goes to Plans and pastes the key under Redeem.",
   "The key works through the end month printed on it. Renew and we send next year's key.",
-  "There are no accounts. We store nothing about the people who use the key.",
+  "There are no learner accounts, and we keep nothing about the learners who use the key. We do keep the name and email of the person who buys it, so we can send and renew the key.",
 ];
 
 export const FOR_PROGRAMS_FAQ: { q: string; a: string; link?: { href: string; label: string } }[] = [

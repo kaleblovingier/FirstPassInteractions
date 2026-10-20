@@ -7,6 +7,9 @@ export function LegalView({ doc }: { doc: LegalDoc }) {
       <p className="text-xs text-muted">
         <a href="/" className="underline">Desk</a> · <a href="/trust" className="underline">Trust</a>
       </p>
+      <p className="mt-2 rounded border px-3 py-2 text-sm font-medium" data-testid="legal-draft-note" role="note">
+        Draft. These terms have not yet been reviewed by an attorney.
+      </p>
       <h1 className="mt-2 text-2xl font-semibold">{doc.h1}</h1>
       <p className="mt-2 text-sm text-muted">Effective {LEGAL_EFFECTIVE}</p>
       {doc.sections.map((s) => (
