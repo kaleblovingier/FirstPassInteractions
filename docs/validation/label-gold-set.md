@@ -7,7 +7,7 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 483 |
+| Pairs (each tied to a verified FDA label statement) | 492 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
@@ -19,12 +19,13 @@
 | Wave 10 (Nardil, Parnate other antidepressants, Marplan, Zyvox; Celexa, Lexapro, Viibryd, Fetzima, Savella + linezolid / IV methylene blue) | 31 |
 | Wave 11 (inducer-naming contraindications: Xadago, Azilect + St. John's wort; Xadago named partners) | 9 |
 | Wave 12 (unsourced Avoid together grades: Parnate Table 1 + 5-HTP / L-tryptophan; Marplan + tyramine foods) | 2 |
-| Label says contraindicated | 448 |
+| Wave 13 (Avoid together cards without a gold row: Parnate Table 1 and Nardil Contraindications) | 9 |
+| Label says contraindicated | 457 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 483 / 483 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 448 / 448 |
+| Engine at or above label-supported floor | 492 / 492 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 457 / 457 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -587,6 +588,15 @@ None.
 | 481 | 11 | rasagiline | st-johns-wort | [Azilect (rasagiline)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a40d0e73-3f9f-4b01-979d-402c9cdaeb60) | 4 CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "AZILECT is contraindicated for use with St. John’s wort and with cyclobenzaprine" · e.g. "St. John’s wort" |
 | 482 | 12 | tranylcypromine | five-htp | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … hydroxytryptophan" · e.g. "hydroxytryptophan" |
 | 483 | 12 | isocarboxazid | tyramine-foods | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan (isocarboxazid) should not be administered in combination with any of the following: … cheese or other foods with a high tyramine content" · e.g. "cheese or other foods with a high tyramine content" |
+| 484 | 13 | tranylcypromine | dextromethorphan | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … dextromethorphan" · e.g. "dextromethorphan" |
+| 485 | 13 | tranylcypromine | sam-e | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … s-adenosyl-L-methionine (SAM-e)" · e.g. "s-adenosyl-L-methionine (SAM-e)" |
+| 486 | 13 | tranylcypromine | amoxapine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., amoxapine" · e.g. "amoxapine" |
+| 487 | 13 | tranylcypromine | dopamine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … dopamine" · e.g. "dopamine" |
+| 488 | 13 | tranylcypromine | pseudoephedrine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … pseudoephedrine" · e.g. "pseudoephedrine" |
+| 489 | 13 | tranylcypromine | phenylephrine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … phenylephrine" · e.g. "phenylephrine" |
+| 490 | 13 | tranylcypromine | ephedrine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … and ephedrine" · e.g. "ephedrine" |
+| 491 | 13 | phenelzine | tyramine-foods | [Nardil (phenelzine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=513a41d0-37d4-4355-8a6d-a2c643bce6fa) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Hypertensive crises during NARDIL therapy may also be caused by the ingestion of foods with a high concentration of tyramine or dopamine" · e.g. "foods with a high concentration of tyramine" |
+| 492 | 13 | phenelzine | five-htp | [Nardil (phenelzine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=513a41d0-37d4-4355-8a6d-a2c643bce6fa) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "patients being treated with NARDIL should not take sympathomimetic drugs … or related compounds (including methyldopa, L-dopa, L-tryptophan, L-tyrosine, and phenylalanine)" · e.g. "L-tryptophan" |
 
 ## Method
 
@@ -621,7 +631,7 @@ None.
 - **wave 2: naltrexone + thioridazine**: Naltrexone label reports lethargy and somnolence only (no avoid/monitor instruction); too weak to set a floor.
 - **wave 2: esketamine + modafinil / armodafinil / tranylcypromine / opioids; buprenorphine + linezolid / tranylcypromine**: Named on the label but trimmed as mechanism duplicates of pairs already in wave 2.
 - **darunavir + rifampin / St. John's wort**: Wave 1 left these off because darunavir is labeled with a booster. Wave 3 adds them from the current Prezista and Prezcobix contraindication lists, including the combo rows.
-- **extra verified duplicates (e.g. lovastatin+itraconazole, triazolam+ritonavir, dronedarone+clarithromycin, eplerenone+clarithromycin, lemborexant+rifampin, ticagrelor+rifampin, rivaroxaban+rifampin, tranylcypromine+dextromethorphan)**: Label statement verified but trimmed to keep the set near 45 without repeating the same mechanism.
+- **extra verified duplicates (e.g. lovastatin+itraconazole, triazolam+ritonavir, dronedarone+clarithromycin, eplerenone+clarithromycin, lemborexant+rifampin, ticagrelor+rifampin, rivaroxaban+rifampin)**: Label statement verified but trimmed to keep the set near 45 without repeating the same mechanism.
 - **colchicine + Prezista / Prezcobix / Evotaz**: Contraindicated only in renal and/or hepatic impairment. Not expressible on the default host. Reyataz section 4 does not name colchicine.
 - **Reyataz + amiodarone / quinidine / lurasidone**: Table 6 qualifies these as contraindicated only with ritonavir. Unboosted atazanavir on a two-drug regimen is not that statement. Evotaz lists lurasidone without that qualifier and is included.
 - **rifampin + atazanavir (Reyataz Table 6)**: Already in wave 1 from the Rifadin label (rifampin+atazanavir). Not duplicated. Evotaz + rifampin uses atazanavir-cobicistat and is included.
@@ -721,6 +731,9 @@ None.
 - **wave 12 (no FDA label): moclobemide, harmaline + 5-HTP / L-tryptophan and Tyramine foods**: No US-approved DailyMed label for moclobemide or harmaline, and 5-HTP / L-tryptophan and tyramine foods are supplements or foods. Not pinned; grade unchanged.
 - **wave 12 (severity change, for Kaleb): Varubi (rolapitant) + thioridazine**: Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads major (Serious concern). A pin would raise it to Avoid together, so not pinned.
 - **wave 12 (severity change, for Kaleb): Varubi (rolapitant) + pimozide**: Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads moderate (Use care). A pin would raise it to Avoid together, so not pinned.
+- **wave 13: Parnate (tranylcypromine) + norepinephrine; Xadago (safinamide) + norepinephrine**: A name scan matched "norepinephrine" only inside "serotonin and norepinephrine reuptake inhibitors". Neither section 4 names norepinephrine as a drug. Not pinned; grade unchanged.
+- **wave 13: Parnate (tranylcypromine) + Ephedra**: Table 1 names "dietary supplements that contain sympathomimetics" as a class and names ephedrine, not ephedra. Not an exact name. Not pinned; grade unchanged.
+- **wave 13: Gemfibrozil + simvastatin**: Gemfibrozil tablets CONTRAINDICATIONS (setid 1967afce-ce55-4b10-bd8c-e4e94130de87): "Combination therapy of gemfibrozil with simvastatin". Zocor section 4 also names gemfibrozil. The card already reads Avoid together and the quote is exact, but a pin adds a public pair page, and the card's existing PubMed note says "not free", which the pair-page copy guard rejects. Not pinned until that card note is reworded (Kaleb's call); grade unchanged.
 
 ## Not in catalog
 

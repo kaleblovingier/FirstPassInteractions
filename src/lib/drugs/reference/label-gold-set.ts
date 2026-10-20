@@ -106,7 +106,7 @@ export interface GoldPair {
   domain: GoldDomain;
   note?: string;
   /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12;
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -3749,6 +3749,80 @@ const WAVE_12: GoldPair[] = [
   }),
 ];
 
+/**
+ * Wave 13 (DailyMed v2 SPL retrieved 2026-10-19): Avoid together cards that had
+ * no gold row, where the Contraindications section names the partner. Parnate
+ * Table 1 (4.1) and Nardil CONTRAINDICATIONS. Every pair card already read
+ * Avoid together; no grade changes.
+ */
+function row13(r: Row): GoldPair {
+  return { ...row7(r), wave: 13, retrieved: "2026-10-19" };
+}
+
+const WAVE_13: GoldPair[] = [
+  row13({
+    drugA: "tranylcypromine", drugB: "dextromethorphan", queries: ["parnate", "dextromethorphan"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … dextromethorphan", labelExample: "dextromethorphan",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 lists dextromethorphan under Individual Drugs.",
+  }),
+  row13({
+    drugA: "tranylcypromine", drugB: "sam-e", queries: ["parnate", "SAM-e"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … s-adenosyl-L-methionine (SAM-e)", labelExample: "s-adenosyl-L-methionine (SAM-e)",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 lists SAM-e under Individual Drugs.",
+  }),
+  row13({
+    drugA: "tranylcypromine", drugB: "amoxapine", queries: ["parnate", "amoxapine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Other antidepressants (e.g., amoxapine", labelExample: "amoxapine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 names amoxapine under Other antidepressants.",
+  }),
+  row13({
+    drugA: "tranylcypromine", drugB: "dopamine", queries: ["parnate", "dopamine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … dopamine", labelExample: "dopamine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 lists dopamine under Individual Drugs.",
+  }),
+  row13({
+    drugA: "tranylcypromine", drugB: "pseudoephedrine", queries: ["parnate", "pseudoephedrine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … pseudoephedrine", labelExample: "pseudoephedrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 names pseudoephedrine under Sympathomimetic products.",
+  }),
+  row13({
+    drugA: "tranylcypromine", drugB: "phenylephrine", queries: ["parnate", "phenylephrine"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … phenylephrine", labelExample: "phenylephrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 names phenylephrine under Sympathomimetic products.",
+  }),
+  row13({
+    drugA: "tranylcypromine", drugB: "ephedrine", queries: ["parnate", "Akovaz"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … and ephedrine", labelExample: "ephedrine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 names ephedrine under Sympathomimetic products.",
+  }),
+  row13({
+    drugA: "phenelzine", drugB: "tyramine-foods", queries: ["nardil", "Tyramine foods"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "Hypertensive crises during NARDIL therapy may also be caused by the ingestion of foods with a high concentration of tyramine or dopamine", labelExample: "foods with a high concentration of tyramine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  row13({
+    drugA: "phenelzine", drugB: "five-htp", queries: ["nardil", "5-HTP / L-tryptophan"],
+    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
+    quote: "patients being treated with NARDIL should not take sympathomimetic drugs … or related compounds (including methyldopa, L-dopa, L-tryptophan, L-tyrosine, and phenylalanine)", labelExample: "L-tryptophan",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
@@ -3756,7 +3830,8 @@ export const WAVE_9_COUNT = WAVE_9.length;
 export const WAVE_10_COUNT = WAVE_10.length;
 export const WAVE_11_COUNT = WAVE_11.length;
 export const WAVE_12_COUNT = WAVE_12.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12];
+export const WAVE_13_COUNT = WAVE_13.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -3907,7 +3982,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
       "Wave 1 left these off because darunavir is labeled with a booster. Wave 3 adds them from the current Prezista and Prezcobix contraindication lists, including the combo rows.",
   },
   {
-    pair: "extra verified duplicates (e.g. lovastatin+itraconazole, triazolam+ritonavir, dronedarone+clarithromycin, eplerenone+clarithromycin, lemborexant+rifampin, ticagrelor+rifampin, rivaroxaban+rifampin, tranylcypromine+dextromethorphan)",
+    pair: "extra verified duplicates (e.g. lovastatin+itraconazole, triazolam+ritonavir, dronedarone+clarithromycin, eplerenone+clarithromycin, lemborexant+rifampin, ticagrelor+rifampin, rivaroxaban+rifampin)",
     reason: "Label statement verified but trimmed to keep the set near 45 without repeating the same mechanism.",
   },
   {
@@ -4347,5 +4422,17 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: 'wave 12 (severity change, for Kaleb): Varubi (rolapitant) + pimozide',
     reason: 'Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads moderate (Use care). A pin would raise it to Avoid together, so not pinned.',
+  },
+  {
+    pair: "wave 13: Parnate (tranylcypromine) + norepinephrine; Xadago (safinamide) + norepinephrine",
+    reason: "A name scan matched \"norepinephrine\" only inside \"serotonin and norepinephrine reuptake inhibitors\". Neither section 4 names norepinephrine as a drug. Not pinned; grade unchanged.",
+  },
+  {
+    pair: "wave 13: Parnate (tranylcypromine) + Ephedra",
+    reason: "Table 1 names \"dietary supplements that contain sympathomimetics\" as a class and names ephedrine, not ephedra. Not an exact name. Not pinned; grade unchanged.",
+  },
+  {
+    pair: "wave 13: Gemfibrozil + simvastatin",
+    reason: 'Gemfibrozil tablets CONTRAINDICATIONS (setid 1967afce-ce55-4b10-bd8c-e4e94130de87): "Combination therapy of gemfibrozil with simvastatin". Zocor section 4 also names gemfibrozil. The card already reads Avoid together and the quote is exact, but a pin adds a public pair page, and the card\'s existing PubMed note says "not free", which the pair-page copy guard rejects. Not pinned until that card note is reworded (Kaleb\'s call); grade unchanged.',
   },
 ];
