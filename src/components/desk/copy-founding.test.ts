@@ -26,3 +26,11 @@ describe("crawlable desk status line", () => {
     assert.doesNotMatch(read("app.tsx"), /free · founding \$79|founding \$79 lifetime/);
   });
 });
+
+describe("yearly plan label", () => {
+  it("is 'Desk (year)', never 'Founding (year)'", () => {
+    const s = read("foundry.tsx");
+    assert.doesNotMatch(s, /Founding \(year\)/);
+    assert.equal(s.split('"Desk (year)"').length - 1, 2);
+  });
+});
