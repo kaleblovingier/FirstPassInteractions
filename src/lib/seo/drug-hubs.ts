@@ -2,6 +2,7 @@ import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { buildBriefUrl } from "@/lib/drugs/brief";
 import { SEVERITY_LABEL, SEVERITY_RANK, type Severity } from "@/lib/drugs/types";
 import { pairPages, type PairPage } from "./pair-pages";
+import type { GradeBasis } from "@/lib/drugs/grade-provenance";
 import { drugEnzymeLinks, type DrugEnzymeLink } from "./enzyme-hubs";
 import {
   DRUG_HUB_CTA_TEMPLATE,
@@ -15,6 +16,8 @@ export interface DrugHubPair {
   pairSlug: string;
   otherId: string;
   otherName: string;
+  /** Lead "Why this grade" basis from the pair page. */
+  why?: GradeBasis;
 }
 
 export interface DrugHubGroup {
@@ -89,7 +92,7 @@ function build(): DrugHub[] {
       const otherId = p.drugA === id ? p.drugB : p.drugA;
       const otherName = p.drugA === id ? p.nameB : p.nameA;
       if (!groups.has(p.severity)) groups.set(p.severity, []);
-      groups.get(p.severity)!.push({ pairSlug: p.slug, otherId, otherName });
+      groups.get(p.severity)!.push({ pairSlug: p.slug, otherId, otherName, ...(p.why[0] ? { why: p.why[0] } : {}) });
     }
     const g: DrugHubGroup[] = [...groups.entries()]
       .sort((x, y) => SEVERITY_RANK[y[0]] - SEVERITY_RANK[x[0]])

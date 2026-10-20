@@ -1,9 +1,13 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { siteOgMeta } from "@/lib/seo/og-meta";
+import { SITE_URL } from "@/lib/seo/pair-copy";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "FirstPass";
+const SITE_DESCRIPTION =
+  "FirstPass is a medicine-interaction learning desk: plain-language summaries first, then clinical pathway detail and sources.";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -11,11 +15,8 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: APP_NAME },
-      {
-        name: "description",
-        content:
-          "FirstPass is a medicine-interaction learning desk: plain-language summaries first, then clinical pathway detail and sources. Free for up to five medicines.",
-      },
+      { name: "description", content: SITE_DESCRIPTION },
+      ...siteOgMeta({ title: APP_NAME, description: SITE_DESCRIPTION, url: `${SITE_URL}/` }),
       { name: "theme-color", content: "#efece4" },
     ],
     links: [

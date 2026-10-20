@@ -2,13 +2,45 @@ import { Fragment } from "react";
 import type { PairPage } from "@/lib/seo/pair-pages";
 import { DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
+import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
+import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
+
+/** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
+export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?: string }) {
+  return (
+    <div data-testid="grade-basis" data-basis-kind={basis.kind} className="mt-2">
+      <p className="text-xs font-medium">{basis.title}</p>
+      <p className="mt-0.5 text-xs text-muted">{basis.detail}</p>
+      {basis.href ? (
+        <a href={basis.href} rel="noopener" target="_blank" className="text-xs underline">
+          {sourceLinkText(basis.title, basis.href)}
+          {context ? <span className="sr-only">, for {context}</span> : null}
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
+/** Privacy, Terms and Cookies links, shown under the disclaimer on every public page. */
+export function LegalLinks({ className = "" }: { className?: string }) {
+  return (
+    <nav aria-label="Legal" className={className} data-testid="legal-links">
+      <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
+      <a href="/cookies" className="underline">Cookies</a>
+    </nav>
+  );
+}
 
 export function PairDisclaimer() {
   return (
-    <p data-testid="pair-disclaimer" className="mt-8 text-xs text-muted">
-      {PAIR_DISCLAIMER}
-    </p>
+    <>
+      <p data-testid="pair-disclaimer" className="mt-8 text-xs text-muted">
+        {PAIR_DISCLAIMER}
+      </p>
+      <LegalLinks className="mt-2 text-xs text-muted" />
+      <p data-testid="trademark-line" className="mt-1 text-xs text-muted">{TRADEMARK_LINE}</p>
+    </>
   );
 }
 
@@ -39,6 +71,14 @@ export function PairPageView({ page }: { page: PairPage }) {
             </a>
           </figcaption>
         </figure>
+      ) : null}
+      {page.why.length ? (
+        <details open data-testid="pair-why" className="mt-6 rounded-xl border border-border p-4 text-sm">
+          <summary className="cursor-pointer font-medium">Why this grade</summary>
+          {page.why.map((b) => (
+            <GradeBasisRow key={`${b.kind}-${b.title}`} basis={b} />
+          ))}
+        </details>
       ) : null}
       <p className="mt-6">
         <a href={page.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">
@@ -71,6 +111,7 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
     <main className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-semibold">Drug pairs checked against FDA label text</h1>
       <p className="mt-3 text-sm text-muted">{PAIRS_INDEX_INTRO}</p>
+      <p data-testid="not-affiliated" className="mt-2 text-xs text-muted">{NOT_AFFILIATED_LINE}</p>
       <ul className="mt-6 space-y-1 text-sm">
         {pages.map((p) => (
           <li key={p.slug}>
@@ -133,6 +174,12 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
                 <a href={`/pair/${p.pairSlug}`} className="underline">
                   {hub.name} and {p.otherName}
                 </a>
+                {p.why ? (
+                  <details data-testid="hub-why" className="ml-1 inline-block align-top">
+                    <summary className="cursor-pointer text-xs text-muted">Why this grade</summary>
+                    <GradeBasisRow basis={p.why} context={`${hub.name} and ${p.otherName}`} />
+                  </details>
+                ) : null}
               </li>
             ))}
           </ul>

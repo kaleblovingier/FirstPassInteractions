@@ -1,6 +1,7 @@
 import { OPERATOR, PAY_RAILS } from "@/lib/billing/commerce";
 import { useDesk } from "@/lib/drugs/store";
 import { PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
+import { TRADEMARK_LINE } from "@/lib/seo/legal";
 
 export function OperatorCard() {
   return (
@@ -40,6 +41,11 @@ export function DeskFooter() {
           <p className="mt-1 text-[11px] leading-relaxed text-subtle">
             {SOFTWARE.name} {SOFTWARE.version}. {PI_FOOTER}
           </p>
+          <p className="mt-1 text-[11px] text-subtle" data-testid="desk-legal-links">
+            <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
+            <a href="/cookies" className="underline">Cookies</a>
+          </p>
+          <p className="mt-1 text-[11px] text-subtle" data-testid="desk-trademark-line">{TRADEMARK_LINE}</p>
         </div>
       </div>
     </footer>
@@ -59,7 +65,7 @@ function OperatorLines({ className }: { className?: string }) {
           >
             {rail.label} {rail.handle}
           </a>
-          {rail.id === "venmo" ? <span className="text-muted"> · founding $79 lifetime</span> : null}
+          {rail.id === "venmo" ? <span className="text-muted"> · Founding $79 one-time license</span> : null}
         </li>
       ))}
       <li>

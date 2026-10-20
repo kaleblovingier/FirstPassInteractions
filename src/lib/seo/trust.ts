@@ -82,7 +82,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "Payments.",
-      text: "Card payments run on Stripe's hosted checkout page, so card numbers never reach FirstPass. Stripe keeps the buyer's email and name. The FirstPass server reads them from Stripe to send the Founding key and writes the key back to the Stripe record. PayPal checkout is built but stays off unless it is configured. Venmo, Cash App and direct PayPal payments are handled by the operator, who issues the key.",
+      text: "Founding is paid by Venmo, Cash App or PayPal. The payment happens in that app, so FirstPass never sees your card or bank details. The operator matches the payment and emails the Founding key. Stripe checkout is built but switched off.",
     },
     {
       lead: "Key emails.",
@@ -90,7 +90,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "Lost-key recovery.",
-      text: "The email you type is checked against Stripe. To limit abuse, the server counts requests by email and IP address in memory. Those counters are lost when that server instance restarts, and they are not written to disk or a database.",
+      text: "Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent. To limit abuse, the server counts requests by email and IP address in memory. Those counters are lost when that server instance restarts, and they are not written to disk or a database.",
     },
     {
       lead: "No analytics.",
@@ -137,7 +137,7 @@ export const SECURITY: TrustSection = {
   points: [
     {
       lead: "Signed keys.",
-      text: "A license key is checked on the server with HMAC-SHA256 and a secret that never leaves the server. FirstPass keeps no key database: a paid key is derived again from its Stripe payment record, and the key is also written to that Stripe record.",
+      text: "A license key is checked on the server with HMAC-SHA256 and a secret that never leaves the server. FirstPass keeps no key database. The operator issues each Founding key after matching the payment, and the key is sent in an email to the buyer.",
     },
     {
       lead: "Secrets stay on the server.",

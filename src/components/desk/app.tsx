@@ -967,7 +967,12 @@ function EmptyState({
           <Button variant="secondary" size="sm" onClick={() => setView("library")}>
             Browse drug library
           </Button>
-          <Button variant="secondary" size="sm" onClick={() => setLane("mat")}>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-auto min-h-9 max-w-full whitespace-normal py-1.5"
+            onClick={() => setLane("mat")}
+          >
             Opioid treatment (MAT / OTP) board
           </Button>
           <Button variant="secondary" size="sm" onClick={() => setLane("clinic")}>
@@ -1028,9 +1033,9 @@ function EmptyState({
             Examples load into the checker so you can see how its summaries and source links work.
           </p>
         </div>
-        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        <ul className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
           {shown.map((s) => (
-            <li key={s.id} className="relative">
+            <li key={s.id} className="relative min-w-0">
               <button
                 type="button"
                 disabled={!ready}
@@ -1038,7 +1043,7 @@ function EmptyState({
                 className="flex h-full w-full overflow-hidden rounded-lg bg-bg text-left shadow-[var(--shadow-border)] transition-transform duration-150 hover:-translate-y-px disabled:opacity-60"
               >
                 <Plate src={plateForSample(s)} alt="" className="h-full w-20 shrink-0 min-h-24" />
-                <span className="flex min-w-0 flex-1 flex-col justify-center px-4 py-3 pr-12">
+                <span className="flex min-w-0 flex-1 flex-col justify-center px-4 py-3 pr-12 [overflow-wrap:anywhere]">
                   <span className="flex items-center gap-2 text-sm font-medium text-fg">
                     {s.title}
                     {plan === "free" && sampleNeedsPro(s) ? (

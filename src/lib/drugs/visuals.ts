@@ -205,7 +205,7 @@ export const CLASS_TILES: { id: SampleLane; label: string; hint: string; plate: 
   { id: "entactogen", label: "MDMA & stimulants", hint: "MDMA, cathinones", plate: PLATES.mdma },
   { id: "gaba", label: "Sedatives & alcohol", hint: "Alcohol, GHB, benzos", plate: PLATES.alcohol },
   { id: "mat", label: "Opioid treatment (MAT)", hint: "Suboxone, methadone, Vivitrol", plate: PLATES.poppy },
-  { id: "clinic", label: "Clinic staples", hint: "Named pairs, dose teaching, antibiotics", plate: PLATES.heme },
+  { id: "clinic", label: "Clinic staples", hint: "Named pairs, label teaching, antibiotics", plate: PLATES.heme },
   { id: "food", label: "Food & herbs", hint: "Grapefruit, dairy, kale, juice", plate: PLATES.grapefruit },
   { id: "smoke", label: "Smoking effects", hint: "Clozapine and smoking-sensitive medicines", plate: PLATES.tobacco },
   { id: "street", label: "Street supply", hint: "Harm reduction: xylazine, pressed pills, adulterants", plate: PLATES.poppy },

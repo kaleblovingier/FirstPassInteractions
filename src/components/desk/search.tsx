@@ -112,7 +112,16 @@ export function DrugSearch() {
   return (
     <div>
       <div className="flex items-start gap-2">
-      <div ref={rootRef} className="relative min-w-0 flex-1">
+      <div
+        ref={rootRef}
+        className="relative min-w-0 flex-1"
+        onBlur={(e) => {
+          // WCAG 2.4.11 / 1.4.13: close the suggestion list when keyboard focus leaves the
+          // search, so the open list can't cover the controls that receive focus next.
+          const next = e.relatedTarget as Node | null;
+          if (next && !e.currentTarget.contains(next)) setOpen(false);
+        }}
+      >
         <label className="sr-only" htmlFor="drug-search">
           Search medicines and other substances
         </label>
