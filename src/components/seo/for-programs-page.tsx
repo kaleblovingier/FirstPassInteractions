@@ -589,6 +589,10 @@ export function InquiryForm({ values, onChange }: { values: InquiryValues; onCha
         </button>
         <p className="text-xs text-muted">This goes to us only. We keep no copy on the site.</p>
       </div>
+      <p className="mt-2 text-xs text-muted" data-testid="form-legal-note">
+        Don't include patient information. See the <a href="/privacy" className="underline">privacy policy</a> and{" "}
+        <a href="/terms" className="underline">terms</a>.
+      </p>
     </form>
   );
 }

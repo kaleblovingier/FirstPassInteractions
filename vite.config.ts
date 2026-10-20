@@ -195,9 +195,9 @@ export default defineConfig(({ command, isPreview }) => ({
       prerender: {
         enabled: true,
         crawlLinks: true,
-        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path === "/trust" || path === "/enzymes" || path.startsWith("/enzyme/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
+        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path === "/trust" || path === "/privacy" || path === "/terms" || path === "/cookies" || path === "/enzymes" || path.startsWith("/enzyme/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
       },
-      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/trust" }, { path: "/enzymes" }, { path: "/sitemap.xml" }],
+      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/trust" }, { path: "/privacy" }, { path: "/terms" }, { path: "/cookies" }, { path: "/enzymes" }, { path: "/sitemap.xml" }],
     }),
     ...(command === "build" || isPreview
       ? [

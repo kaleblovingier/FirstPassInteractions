@@ -20,11 +20,24 @@ export function GradeBasisRow({ basis }: { basis: GradeBasis }) {
   );
 }
 
+/** Privacy, Terms and Cookies links, shown under the disclaimer on every public page. */
+export function LegalLinks({ className = "" }: { className?: string }) {
+  return (
+    <nav aria-label="Legal" className={className} data-testid="legal-links">
+      <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
+      <a href="/cookies" className="underline">Cookies</a>
+    </nav>
+  );
+}
+
 export function PairDisclaimer() {
   return (
-    <p data-testid="pair-disclaimer" className="mt-8 text-xs text-muted">
-      {PAIR_DISCLAIMER}
-    </p>
+    <>
+      <p data-testid="pair-disclaimer" className="mt-8 text-xs text-muted">
+        {PAIR_DISCLAIMER}
+      </p>
+      <LegalLinks className="mt-2 text-xs text-muted" />
+    </>
   );
 }
 

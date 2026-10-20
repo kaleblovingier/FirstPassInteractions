@@ -91,6 +91,10 @@ export function LostKeyRecovery() {
         >
           {busy ? "Sending…" : "Email my key"}
         </Button>
+      <p className="mt-2 text-xs text-muted" data-testid="form-legal-note">
+        Don't include patient information. See the <a href="/privacy" className="underline">privacy policy</a> and{" "}
+        <a href="/terms" className="underline">terms</a>.
+      </p>
       </form>
       <p
         id="recover-status"
