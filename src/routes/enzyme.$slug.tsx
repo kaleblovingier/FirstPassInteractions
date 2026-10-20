@@ -1,3 +1,4 @@
+import { siteOgMeta } from "@/lib/seo/og-meta";
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { EnzymePageView } from "@/components/seo/enzyme-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
@@ -28,9 +29,7 @@ export const Route = createFileRoute("/enzyme/$slug")({
             { title: loaderData.title },
             { name: "description", content: loaderData.description },
             ...(loaderData.indexable ? [] : [{ name: "robots", content: "noindex, follow" }]),
-            { property: "og:title", content: loaderData.title },
-            { property: "og:description", content: loaderData.description },
-            { property: "og:url", content: loaderData.canonical },
+            ...siteOgMeta({ title: loaderData.title, description: loaderData.description, url: loaderData.canonical }),
             breadcrumbMeta([
               HOME_CRUMB,
               { name: "Enzymes", url: `${SITE_URL}/enzymes` },

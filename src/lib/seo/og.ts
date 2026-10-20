@@ -5,8 +5,7 @@ import { SITE_URL } from "./pair-copy";
 
 /** Line printed on every share image. */
 export const OG_DISCLAIMER = "Educational reference only. Not FDA-cleared.";
-export const OG_WIDTH = 1200;
-export const OG_HEIGHT = 630;
+export { OG_WIDTH, OG_HEIGHT } from "./og-meta";
 
 /** Words that must never appear in share-image text or og/twitter meta. */
 export const OG_BANNED = [/\bfree\b/i, /\bpro\b/i, /\$\s?\d/, /\bprice|pricing\b/i, /\b\d+(\.\d+)?\s?(mg|mcg|µg|g|ml|units?|iu)\b/i, /\bdos(e|es|ing|age)\b/i, /decision support/i, /\bCDS\b/];
@@ -63,22 +62,5 @@ export function ogImageJobs(): OgImageJob[] {
 /** Alt text for a share image: what the image says, in words. */
 export const ogAlt = (j: OgImageJob) => [`FirstPass: ${j.heading}`, j.sub, j.gradeLabel].filter(Boolean).join(". ") + ".";
 
-/** og + twitter meta tags for a page. */
-export function ogMeta(o: { title: string; description: string; url: string; image: string; alt: string }) {
-  return [
-    { property: "og:type", content: "website" },
-    { property: "og:site_name", content: "FirstPass" },
-    { property: "og:title", content: o.title },
-    { property: "og:description", content: o.description },
-    { property: "og:url", content: o.url },
-    { property: "og:image", content: o.image },
-    { property: "og:image:width", content: String(OG_WIDTH) },
-    { property: "og:image:height", content: String(OG_HEIGHT) },
-    { property: "og:image:alt", content: o.alt },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: o.title },
-    { name: "twitter:description", content: o.description },
-    { name: "twitter:image", content: o.image },
-    { name: "twitter:image:alt", content: o.alt },
-  ];
-}
+export { ogMeta, siteOgMeta, DEFAULT_OG_IMAGE, DEFAULT_OG_ALT } from "./og-meta";
+
