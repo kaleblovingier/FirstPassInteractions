@@ -7,7 +7,7 @@ Question: is every stored label quote (gold set and contraindication pins) still
 
 | Result | Quotes | Pairs |
 |---|---|---|
-| Pass (exact, in the cited section) | 180 | 505 |
+| Pass (exact, in the cited section) | 202 | 527 |
 | Moved (exact, but in a different section than cited) | 1 | 1 |
 | Drifted (not in the current label) | 0 | 0 |
 | Could not fetch | 0 | 0 |
@@ -35,7 +35,7 @@ None.
 | Adempas (riociguat) | 7b57509a-3d5d-41d4-8fed-1471e26372a3 | 32 | 2026-08-13 | 1 | pass |
 | Anafranil (clomipramine) | 4074b555-7635-41a9-809d-fae3b3610059 | 22 | 2024-11-26 | 1 | pass |
 | Apokyn (apomorphine) | 3235535d-9ef9-4657-8b2a-176a807d091c | 21 | 2024-10-10 | 1 | pass |
-| Austedo (deutetrabenazine) | 7ea3c60a-45c7-44cc-afc2-d87fa53993c0 | 35 | 2025-02-28 | 1 | pass |
+| Austedo (deutetrabenazine) | 7ea3c60a-45c7-44cc-afc2-d87fa53993c0 | 36 | 2025-02-28 | 1 | pass |
 | Azilect (rasagiline) | a40d0e73-3f9f-4b01-979d-402c9cdaeb60 | 26 | 2020-06-30 | 2 | pass |
 | Belsomra (suvorexant) | e5b72731-1acb-45b7-9c13-290ad12d3951 | 21 | 2025-03-10 | 1 | pass |
 | Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide) | 664cb8f0-1f65-441b-b0d9-ba3d798be309 | 26 | 2026-09-09 | 2 | pass |
@@ -66,16 +66,16 @@ None.
 | Lexapro (escitalopram) | 13bb8267-1cab-43e5-acae-55a4d957630a | 45 | 2023-10-01 | 1 | pass |
 | Lotronex (alosetron) | 35cbb9d5-639b-207a-e054-00144ff88e88 | 8 | 2026-06-30 | 1 | pass |
 | Lovastatin tablets | 9438d8a0-ca5b-4676-aab9-d0241ccff6c9 | 5 | 2026-07-23 | 1 | pass |
-| Marplan (isocarboxazid) | 95fde749-44ad-4668-86c4-0ff17bca0074 | 1 | 2026-04-21 | 3 | pass |
+| Marplan (isocarboxazid) | 95fde749-44ad-4668-86c4-0ff17bca0074 | 1 | 2026-04-21 | 16 | pass |
 | Mavyret (glecaprevir/pibrentasvir) | 7bf99777-0401-9095-8645-16c6e907fcc0 | 201 | 2025-06-25 | 1 | pass |
 | Methadone HCl tablets | 540edd43-165d-4257-b989-3bccc8f54afb | 2 | 2026-09-09 | 9 | pass |
 | Movantik (naloxegol) | 28596788-b73f-4247-85fc-3105f51fff5a | 5 | 2026-09-01 | 1 | pass |
 | Multaq (dronedarone) | 3bd4006a-8bad-4909-ac6d-b6d84390155c | 13 | 2026-01-27 | 2 | pass |
 | Naltrexone HCl tablets | 06ff2d5a-e62b-4fa4-bbdb-01938535bc65 | 15 | 2026-09-04 | 3 | pass |
-| Nardil (phenelzine) | 513a41d0-37d4-4355-8a6d-a2c643bce6fa | 11 | 2025-06-06 | 16 | pass |
+| Nardil (phenelzine) | 513a41d0-37d4-4355-8a6d-a2c643bce6fa | 11 | 2025-06-06 | 18 | pass |
 | Norvir (ritonavir) | 2849298e-de6e-47bb-8194-56e075b33fc3 | 1653 | 2026-07-23 | 2 | pass |
 | Noxafil (posaconazole) | b073b082-7b57-4423-8c06-4fd4263d6f84 | 56 | 2026-02-13 | 4 | pass |
-| Parnate (tranylcypromine) | b72d8187-dfcc-4ea0-b5e9-c0be95b69a27 | 11 | 2025-07-02 | 11 | pass |
+| Parnate (tranylcypromine) | b72d8187-dfcc-4ea0-b5e9-c0be95b69a27 | 11 | 2025-07-02 | 18 | pass |
 | Paxil (paroxetine) | ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e | 13 | 2026-09-29 | 1 | pass |
 | Paxlovid (nirmatrelvir/ritonavir) | 8a99d6d6-fd9e-45bb-b1bf-48c7f761232a | 12 | 2026-02-19 | 2 | pass |
 | Pimozide | 70b079e2-a1f7-4a93-8685-d60a4d7c1280 | 5 | 2026-08-12 | 7 | pass |
@@ -174,8 +174,21 @@ None.
 - escitalopram+linezolid, escitalopram+methylene-blue: Lexapro (escitalopram), 4 CONTRAINDICATIONS
 - alosetron+fluvoxamine: Lotronex (alosetron), 4.3 Concomitant Use of Fluvoxamine
 - lovastatin+clarithromycin: Lovastatin tablets, CONTRAINDICATIONS
+- isocarboxazid+amitriptyline: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+amoxapine: Marplan (isocarboxazid), CONTRAINDICATIONS
 - isocarboxazid+buspirone: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+clomipramine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+cocaine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+cyclobenzaprine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+desipramine: Marplan (isocarboxazid), CONTRAINDICATIONS
 - isocarboxazid+dextromethorphan: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+doxepin: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+fluoxetine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+imipramine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+meperidine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+nortriptyline: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+tranylcypromine: Marplan (isocarboxazid), CONTRAINDICATIONS
+- isocarboxazid+trimipramine: Marplan (isocarboxazid), CONTRAINDICATIONS
 - isocarboxazid+tyramine-foods: Marplan (isocarboxazid), CONTRAINDICATIONS
 - glecaprevir-pibrentasvir+rifampin: Mavyret (glecaprevir/pibrentasvir), 4 CONTRAINDICATIONS
 - methadone+alprazolam, methadone+ethanol: Methadone HCl tablets, WARNING: SERIOUS AND LIFE-THREATENING RISKS FROM USE OF METHADONE HYDROCHLORIDE TABLETS
@@ -200,6 +213,7 @@ None.
 - phenelzine+dextromethorphan: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+dopamine: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+epinephrine: Nardil (phenelzine), CONTRAINDICATIONS
+- phenelzine+five-htp: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+fluvoxamine: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+isocarboxazid: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+meperidine: Nardil (phenelzine), CONTRAINDICATIONS
@@ -208,6 +222,7 @@ None.
 - phenelzine+paroxetine: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+sertraline: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+tranylcypromine: Nardil (phenelzine), CONTRAINDICATIONS
+- phenelzine+tyramine-foods: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+venlafaxine: Nardil (phenelzine), CONTRAINDICATIONS
 - ritonavir+alfuzosin, ritonavir+ranolazine, ritonavir+amiodarone, ritonavir+dronedarone, ritonavir+flecainide, ritonavir+propafenone, ritonavir+quinidine, ritonavir+lurasidone, ritonavir+pimozide, ritonavir+dihydroergotamine, ritonavir+methylergonovine, ritonavir+lovastatin, ritonavir+suzetrigine, ritonavir+sildenafil-pah, ritonavir+triazolam, ritonavir+midazolam: Norvir (ritonavir), 4 CONTRAINDICATIONS
 - ritonavir+apalutamide, ritonavir+st-johns-wort: Norvir (ritonavir), 4 CONTRAINDICATIONS
@@ -215,13 +230,20 @@ None.
 - posaconazole+ergotamine, posaconazole+dihydroergotamine: Noxafil (posaconazole), 4 CONTRAINDICATIONS
 - posaconazole+pimozide, posaconazole+quinidine: Noxafil (posaconazole), 4 CONTRAINDICATIONS
 - posaconazole+sirolimus: Noxafil (posaconazole), 4 CONTRAINDICATIONS
+- tranylcypromine+amoxapine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+buspirone: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+cyclobenzaprine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
+- tranylcypromine+dextromethorphan: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
+- tranylcypromine+dopamine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
+- tranylcypromine+ephedrine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+five-htp: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+meperidine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+milnacipran: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+nefazodone: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
+- tranylcypromine+phenylephrine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
+- tranylcypromine+pseudoephedrine: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+rasagiline: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
+- tranylcypromine+sam-e: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+tapentadol: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+trazodone: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs
 - tranylcypromine+vilazodone: Parnate (tranylcypromine), 4.1 Combination with Certain Drugs

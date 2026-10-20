@@ -106,7 +106,7 @@ export interface GoldPair {
   domain: GoldDomain;
   note?: string;
   /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13;
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13 | 14;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -3823,6 +3823,112 @@ const WAVE_13: GoldPair[] = [
   }),
 ];
 
+/**
+ * Wave 14 (DailyMed v2 SPL setid 95fde749-44ad-4668-86c4-0ff17bca0074,
+ * retrieved 2026-10-19): Marplan CONTRAINDICATIONS. Avoid together cards with no
+ * gold row whose partner the section names. Every pair card already read
+ * Avoid together; no grade changes. Class-only, "may precipitate" and
+ * misspelled mentions are in DROPPED_CANDIDATES.
+ */
+function row14(r: Row): GoldPair {
+  return { ...row7(r), wave: 14, retrieved: "2026-10-19" };
+}
+
+const WAVE_14: GoldPair[] = [
+  row14({
+    drugA: "isocarboxazid", drugB: "meperidine", queries: ["marplan", "meperidine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Meperidine should not be used concomitantly with MAO inhibitors or within 2- or 3-weeks following MAO therapy", labelExample: "Meperidine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "The Meperidine subsection of Contraindicated MAOI-Other Drug Combinations.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "fluoxetine", queries: ["marplan", "fluoxetine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Fluoxetine and other SSRIs should therefore not be used in combination with Marplan", labelExample: "Fluoxetine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "SSRI subsection. Sertraline and paroxetine are named only in washout and \"may occur\" sentences; see DROPPED_CANDIDATES.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "cocaine", queries: ["marplan", "cocaine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Patients taking Marplan should not undergo elective surgery requiring general anesthesia. Also, they should not be given cocaine", labelExample: "cocaine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Anesthetic Agents subsection.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "tranylcypromine", queries: ["marplan", "tranylcypromine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Tranylcypromine sulfate", labelExample: "Tranylcypromine sulfate",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Other MAO Inhibitors.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "amitriptyline", queries: ["marplan", "amitriptyline"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Amitriptyline HCL", labelExample: "Amitriptyline HCL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "clomipramine", queries: ["marplan", "clomipramine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Clomipramine hydrochloride", labelExample: "Clomipramine hydrochloride",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "desipramine", queries: ["marplan", "desipramine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Desipramine HCL", labelExample: "Desipramine HCL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "imipramine", queries: ["marplan", "imipramine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Imipramine HCL", labelExample: "Imipramine HCL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "nortriptyline", queries: ["marplan", "nortriptyline"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Nortriptyline HCL", labelExample: "Nortriptyline HCL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "doxepin", queries: ["marplan", "doxepin"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Doxepin HCL", labelExample: "Doxepin HCL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "cyclobenzaprine", queries: ["marplan", "cyclobenzaprine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Cyclobenzaprine HCL", labelExample: "Cyclobenzaprine HCL",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "amoxapine", queries: ["marplan", "amoxapine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Amoxapine", labelExample: "Amoxapine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+  row14({
+    drugA: "isocarboxazid", drugB: "trimipramine", queries: ["marplan", "trimipramine"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Trimipramine maleate", labelExample: "Trimipramine maleate",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Listed under Dibenzazepine-Related and Other Tricyclics.",
+  }),
+];
+
+
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
@@ -3831,7 +3937,8 @@ export const WAVE_10_COUNT = WAVE_10.length;
 export const WAVE_11_COUNT = WAVE_11.length;
 export const WAVE_12_COUNT = WAVE_12.length;
 export const WAVE_13_COUNT = WAVE_13.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13];
+export const WAVE_14_COUNT = WAVE_14.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13, ...WAVE_14];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -4434,5 +4541,37 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "wave 13: Gemfibrozil + simvastatin",
     reason: 'Gemfibrozil tablets CONTRAINDICATIONS (setid 1967afce-ce55-4b10-bd8c-e4e94130de87): "Combination therapy of gemfibrozil with simvastatin". Zocor section 4 also names gemfibrozil. The card already reads Avoid together and the quote is exact, but a pin adds a public pair page, and the card\'s existing PubMed note says "not free", which the pair-page copy guard rejects. Not pinned until that card note is reworded (Kaleb\'s call); grade unchanged.',
+  },
+  {
+    pair: "wave 14: Marplan (isocarboxazid) + sertraline, paroxetine, fluvoxamine, citalopram, venlafaxine",
+    reason: 'Named only in a washout sentence ("At least 2 weeks should be allowed after stopping sertraline … or paroxetine") or a "Serious reactions may also occur" example list. The contraindication sentence ("should not be administered in combination with any SSRI") names the class only. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 14 (for Kaleb): Marplan (isocarboxazid) + methylphenidate, epinephrine, norepinephrine, dopamine",
+    reason: 'Named in CONTRAINDICATIONS, but the sentence says use "with Marplan may precipitate hypertension, headache, and related symptoms", not "should not be administered" (same wording as the Marplan + tryptophan row). Possible pin candidates for Kaleb; not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 14: Marplan (isocarboxazid) + amphetamine",
+    reason: 'Section names "sympathomimetics (including amphetamines)" as a class, not the catalog drug (the wave 10 class rule). Not pinned.',
+  },
+  {
+    pair: "wave 14: Marplan (isocarboxazid) + protriptyline",
+    reason: 'The SPL table spells it "Protripyline HCL". Not an exact name match. Not pinned until the label is corrected or Kaleb accepts the spelling.',
+  },
+  {
+    pair: "wave 14: Parnate (tranylcypromine) + amphetamine, methylphenidate",
+    reason: 'Table 1 names the class row "Amphetamines and methylphenidates and derivatives", not individual drugs. Not pinned.',
+  },
+  {
+    pair: "wave 14: Parnate, Xadago, Emsam + epinephrine; Xadago, Emsam + norepinephrine",
+    reason: 'Substring false matches: "epinephrine" only inside "norepinephrine", and "norepinephrine" only inside "serotonin-norepinephrine reuptake inhibitors". Emsam is also covered by the wave 9 transdermal-formulation rule. Not pinned.',
+  },
+  {
+    pair: "wave 14: Nardil (phenelzine) + Mucuna pruriens (L-DOPA)",
+    reason: 'Nardil names "L-dopa", a constituent, not Mucuna pruriens. Not an exact name. Not pinned.',
+  },
+  {
+    pair: "wave 14 (conditional): Entresto (sacubitril/valsartan) + aliskiren",
+    reason: 'Section 4: "with concomitant use of aliskiren in patients with diabetes". Contraindicated only in a patient subgroup. Not pinned; grade unchanged.',
   },
 ];
