@@ -96,7 +96,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12";
+  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12" | "2026-10-19";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -106,7 +106,7 @@ export interface GoldPair {
   domain: GoldDomain;
   note?: string;
   /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11;
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -3722,13 +3722,41 @@ const WAVE_11: GoldPair[] = [
 ];
 
 export const WAVE_4_COUNT = WAVE_4.length;
+/**
+ * Wave 12 (DailyMed v2 SPL retrieved 2026-10-19): closes Avoid together grades
+ * that had no cited source (docs/grade-provenance-audit.md). Only partners named
+ * in the Contraindications section, where the MAOI card already reads Avoid
+ * together. Partners named only in Warnings, Drug Interactions or a dietary
+ * section are in DROPPED_CANDIDATES for Kaleb and are not pinned.
+ */
+function row12(r: Row): GoldPair {
+  return { ...row7(r), wave: 12, retrieved: "2026-10-19" };
+}
+
+const WAVE_12: GoldPair[] = [
+  row12({
+    drugA: "tranylcypromine", drugB: "five-htp", queries: ["parnate", "5-HTP / L-tryptophan"],
+    labelDrug: "Parnate (tranylcypromine)", label: "parnate", labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … hydroxytryptophan", labelExample: "hydroxytryptophan",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+    note: "Table 1 lists tryptophan and hydroxytryptophan under Individual Drugs.",
+  }),
+  row12({
+    drugA: "isocarboxazid", drugB: "tyramine-foods", queries: ["marplan", "Tyramine foods"],
+    labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … cheese or other foods with a high tyramine content", labelExample: "cheese or other foods with a high tyramine content",
+    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+];
+
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
 export const WAVE_9_COUNT = WAVE_9.length;
 export const WAVE_10_COUNT = WAVE_10.length;
 export const WAVE_11_COUNT = WAVE_11.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11];
+export const WAVE_12_COUNT = WAVE_12.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -4271,5 +4299,53 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "wave 11: Edurant / Odefsey / Complera / Juluca + dexamethasone",
     reason: "Contraindicated only for more than a single dose. Conditional; not pinned.",
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Marplan (isocarboxazid) + 5-HTP / L-tryptophan',
+    reason: 'Marplan CONTRAINDICATIONS, Sympathomimetics paragraph: "Use of sympathomimetics and compounds such as guanethidine, methyldopa, methylphenidate, reserpine, epinephrine, norepinephrine, phenylalanine, dopamine, levodopa, tyrosine, and tryptophan with Marplan may precipitate hypertension, headache, and related symptoms." Inside the section, but the sentence says may precipitate, not should not be administered. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Parnate (tranylcypromine) + Tyramine foods',
+    reason: 'Not in Table 1 (4.1). Boxed Warning, 5.2 and 7.2 name it. 5.2: "MAOIs, including PARNATE, have been associated with hypertensive crises caused by the ingestion of foods or beverages with a high concentration of tyramine." Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Selegiline HCl capsules + Tyramine foods',
+    reason: 'WARNINGS: "Rare cases of hypertensive reactions associated with ingestion of tyramine-containing foods have been reported in patients taking the recommended daily dose of selegiline." Not in CONTRAINDICATIONS. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Azilect (rasagiline) + Tyramine foods',
+    reason: '5.1 Hypertension: "Dietary tyramine restriction is not required during treatment with recommended doses of AZILECT." The label also says certain very high tyramine foods could cause severe hypertension. Not in section 4. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Xadago (safinamide) + Tyramine foods',
+    reason: '5.1 Hypertension: "Dietary tyramine restriction is not required during treatment with recommended doses of XADAGO." Also 7.6 Tyramine. Not in section 4. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Sivextro (tedizolid) + Tyramine foods',
+    reason: 'Named only in 12.3 Pharmacokinetics (a tyramine pressor study): "Two placebo-controlled crossover studies were conducted to assess the potential of … SIVEXTRO at steady state to enhance pressor responses to pseudoephedrine and tyramine in healthy adults." Not in section 4. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Zeposia (ozanimod) + Tyramine foods',
+    reason: 'Named only in 12.2 and 12.3: "No clinically significant effect in tyramine induced pressor response was observed" and ozanimod "had no effect on the plasma concentrations of oral tyramine". The label text does not support Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (label-cited outside Contraindications, for Kaleb): Bactrim (sulfamethoxazole and trimethoprim) + methotrexate',
+    reason: 'PRECAUTIONS, Drug Interactions table: "Methotrexate Avoid concurrent use". Label class is avoid, not contraindicated. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (not named on label): Selegiline, Azilect, Xadago, ProvayBlue, Sivextro, Zeposia + 5-HTP / L-tryptophan; ProvayBlue + Tyramine foods',
+    reason: 'The current SPL does not name tryptophan, hydroxytryptophan or tyramine. ProvayBlue names serotonergic drug classes (SSRIs, SNRIs, MAOIs) and opioids only. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (no FDA label): moclobemide, harmaline + 5-HTP / L-tryptophan and Tyramine foods',
+    reason: 'No US-approved DailyMed label for moclobemide or harmaline, and 5-HTP / L-tryptophan and tyramine foods are supplements or foods. Not pinned; grade unchanged.',
+  },
+  {
+    pair: 'wave 12 (severity change, for Kaleb): Varubi (rolapitant) + thioridazine',
+    reason: 'Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads major (Serious concern). A pin would raise it to Avoid together, so not pinned.',
+  },
+  {
+    pair: 'wave 12 (severity change, for Kaleb): Varubi (rolapitant) + pimozide',
+    reason: 'Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads moderate (Use care). A pin would raise it to Avoid together, so not pinned.',
   },
 ];

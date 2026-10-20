@@ -69,6 +69,10 @@
  *   new CYP grade. Dofetilide has no finding and uses the no-enzyme path.
  *   Table 6's sensitive-substrate row says "contraindicated or not
  *   recommended" without saying which, so those drugs are not pinned.
+ * - Wave 12 rows (retrieved 2026-10-19, origin "pd") close two of the 21
+ *   unsourced Avoid together grades in docs/grade-provenance-audit.md: Parnate
+ *   Table 1 (4.1) names tryptophan and hydroxytryptophan, and the Marplan
+ *   CONTRAINDICATIONS sentence names foods with a high tyramine content.
  * - Wave 7 rows (retrieved 2026-10-12) copy quote, labelSection, labelExample
  *   and the DailyMed link byte-for-byte from the wave-7 gold rows. Every quote
  *   is section 4 (Contraindications) text from Tikosyn, Tracleer, Adempas,
@@ -124,7 +128,7 @@ export interface LabelContraindication {
    * DailyMed retrieval date for this quote when it is not
    * `LABEL_CONTRAINDICATIONS_RETRIEVED` (wave 3 is 2026-10-02; Recorlev is 2026-10-05).
    */
-  retrieved?: "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12";
+  retrieved?: "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12" | "2026-10-19";
 }
 
 export const LABEL_CONTRAINDICATIONS_RETRIEVED = "2026-09-27";
@@ -6404,6 +6408,32 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "pd",
     retrieved: "2026-10-12",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3bb9363e-b28d-4019-8aae-539233dca214",
+  },
+  {
+    id: "tranylcypromine+five-htp",
+    labelDrugId: "tranylcypromine",
+    otherId: "five-htp",
+    labelDrug: "Parnate (tranylcypromine)",
+    labelSection: "4.1 Combination with Certain Drugs",
+    quote: "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … hydroxytryptophan",
+    labelExample: "hydroxytryptophan",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-19",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+  },
+  {
+    id: "isocarboxazid+tyramine-foods",
+    labelDrugId: "isocarboxazid",
+    otherId: "tyramine-foods",
+    labelDrug: "Marplan (isocarboxazid)",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … cheese or other foods with a high tyramine content",
+    labelExample: "cheese or other foods with a high tyramine content",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-19",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074",
   },
 ];
 
