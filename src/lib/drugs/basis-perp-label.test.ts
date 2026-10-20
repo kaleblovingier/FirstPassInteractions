@@ -276,3 +276,26 @@ test('Zokinvy quotes midazolam and the statins as contraindicated, not an unname
   assert.match(d('simvastatin'), /ZOKINVY is contraindicated in patients taking/);
   assert.doesNotMatch(d('triazolam'), line);
 });
+
+test('wave 12 role-only labels cite their own brand on a pk finding', () => {
+  for (const [perp, victim, brand] of [
+    ['netupitant', 'midazolam', 'Akynzeo'],
+    ['nitisinone', 'warfarin', 'Nitisinone'],
+    ['abrocitinib', 'omeprazole', 'Cibinqo'],
+    ['avacopan', 'midazolam', 'Tavneos'],
+    ['rilzabrutinib', 'midazolam', 'Wayrilz'],
+  ] as const) {
+    const b = pkBasis(perp, victim).find((x) => x.label.startsWith(brand));
+    assert.ok(b, `${perp}+${victim}`);
+    assert.doesNotMatch(b.detail, /calls this combination contraindicated/);
+  }
+});
+
+test('rolapitant + pimozide gets no Varubi role line claiming the label is silent', () => {
+  const b = pkBasis('rolapitant', 'pimozide').find((x) => x.label.startsWith('Varubi'));
+  assert.ok(!b || !/does not name this pair/.test(b.detail));
+});
+
+test('no wave 12 role quote states a dose', () => {
+  for (const L of PERPETRATOR_LABELS) assert.doesNotMatch(L.roleQuote, /\bmg\b/, L.brand);
+});
