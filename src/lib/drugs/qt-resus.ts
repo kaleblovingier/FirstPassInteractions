@@ -491,7 +491,7 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
           stepNumber: 2,
           title: "Intravenous Magnesium Sulfate Bolus",
           agentOrIntervention: "Magnesium Sulfate (See the Prescribing Information) Push",
-          dosingOrParameters: "(See the Prescribing Information) diluted in 10 mL D5W or NS administered over 1–2 minutes",
+          dosingOrParameters: "Dilution and rate: See the Prescribing Information",
           timing: "Immediately following initial defibrillation attempt / during CPR",
           mechanism: "Suppresses early afterdepolarizations (EADs) by blocking inward L-type calcium currents (ICa-L).",
           clinicalPearls: [
@@ -547,7 +547,7 @@ export function getTdpResuscitationNomogram(status: "stable-recurrent-bursts" | 
         stepNumber: 1,
         title: "First-Line Membrane Stabilization: IV Magnesium Sulfate",
         agentOrIntervention: "Magnesium Sulfate (See the Prescribing Information) Infusion",
-        dosingOrParameters: "(See the Prescribing Information) in 50–100 mL D5W over 15 minutes; may push over 1–2 minutes if active bursts occur",
+        dosingOrParameters: "Dilution and rate: See the Prescribing Information",
         timing: "Immediate first-line intervention",
         mechanism: "Suppresses Phase 2/3 Early Afterdepolarizations (EADs) by antagonizing L-type calcium channels (ICa-L) without shortening the baseline QT interval.",
         clinicalPearls: [

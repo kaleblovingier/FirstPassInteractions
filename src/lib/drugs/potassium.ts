@@ -600,7 +600,7 @@ export function evaluatePotassium({
       volumeD50wMl: shouldAdministerDextrose ? 50 : 0,
       administer: shouldAdministerDextrose,
       reason: shouldAdministerDextrose
-        ? "Dextrose 50% (D50W) (See the Prescribing Information) co-administered simultaneously with insulin to prevent severe hypoglycemia. Consider repeating (See the Prescribing Information) at 60 minutes or hanging 10% dextrose (D10W) infusion at 50-75 mL/hr."
+        ? "Dextrose 50% (D50W) (See the Prescribing Information) co-administered simultaneously with insulin to prevent severe hypoglycemia. Consider repeating (See the Prescribing Information) at 60 minutes or a 10% dextrose (D10W) infusion (See the Prescribing Information)."
         : `Baseline blood glucose is elevated (${baselineGlucoseMgDl} mg/dL >= 250 mg/dL). Bolus dextrose may be deferred, but frequent point-of-care glucose monitoring remains mandatory.`,
     },
     glucoseMonitoringCadence: "Point-of-care capillary blood glucose hourly for at least 4 to 6 hours. Hypoglycemia nadir typically occurs between 60 to 180 minutes post-insulin injection.",
