@@ -3890,12 +3890,6 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
     reason:
       "No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.",
   },
-  { drug: "mesoridazine", reason: "Named on Geodon section 4.1. Not in the catalog." },
-  { drug: "sparfloxacin", reason: "Named on Geodon section 4.1. Not in the catalog." },
-  { drug: "halofantrine", reason: "Named on Geodon section 4.1. Not in the catalog." },
-  { drug: "pentamidine", reason: "Named on Geodon section 4.1. Not in the catalog." },
-  { drug: "probucol", reason: "Named on Geodon section 4.1. Not in the catalog." },
-  { drug: "levomethadyl acetate", reason: "Named on Geodon section 4.1. Not in the catalog." },
 ];
 
 /** Candidate pairs considered and dropped, with the reason. */
@@ -3932,7 +3926,8 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   },
   {
     pair: "wave 7: eletriptan + troleandomycin / nelfinavir; Mavyret + atazanavir",
-    reason: "Troleandomycin and nelfinavir are not catalog rows. Mavyret + atazanavir is already in the gold set.",
+    reason:
+      "Troleandomycin is a name-only shelf row and nelfinavir is an FDA Table 1 strong CYP3A4 inhibitor. Both are pinned from the Relpax sentence. Mavyret + atazanavir is already in the gold set.",
   },
   {
     pair: "wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)",
@@ -4212,7 +4207,12 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   {
     pair: "wave 7: Movantik, Inspra, Latuda, Multaq + nelfinavir / indinavir / troleandomycin / mibefradil / avasimibe / saquinavir",
     reason:
-      "Named on these labels. Not in the catalog.",
+      "Inspra names nelfinavir and troleandomycin, and those pairs are pinned. Indinavir and saquinavir are substrate rows, not stored inhibitor grades, so they are not pinned as perpetrators. Latuda names the class with etc., not these drugs. Mibefradil and avasimibe stay off. Movantik and Multaq are not pinned from this note.",
+  },
+  {
+    pair: "Geodon 4.1 names that were not in the catalog",
+    reason:
+      "mesoridazine, sparfloxacin, halofantrine, pentamidine, levomethadyl acetate, and probucol are name-only shelf rows. Pinned with ziprasidone from the stored section 4.1 sentence. No enzyme grade.",
   },
   {
     pair: "wave 7: Lexapro / Celexa + pimozide; Zoloft + pimozide; Tegretol + nefazodone",

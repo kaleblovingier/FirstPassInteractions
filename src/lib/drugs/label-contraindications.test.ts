@@ -526,6 +526,23 @@ const EXPECTED_PINS = [
   "erythromycin+terfenadine",
   "erythromycin+astemizole",
   "erythromycin+cisapride",
+  "pimozide+dirithromycin",
+  "pimozide+troleandomycin",
+  "ergotamine+troleandomycin",
+  "dihydroergotamine+troleandomycin",
+  "eplerenone+troleandomycin",
+  "eletriptan+troleandomycin",
+  "ziprasidone+mesoridazine",
+  "ziprasidone+sparfloxacin",
+  "ziprasidone+halofantrine",
+  "ziprasidone+pentamidine",
+  "ziprasidone+levomethadyl-acetate",
+  "ziprasidone+probucol",
+  "eletriptan+nelfinavir",
+  "eplerenone+nelfinavir",
+  "ergotamine+nelfinavir",
+  "dihydroergotamine+nelfinavir",
+  "ranolazine+nelfinavir",
 ];
 
 test("pin list is exactly the reviewed set", () => {
@@ -533,10 +550,10 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 48);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 60);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 133);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 44);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 49);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
