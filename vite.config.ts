@@ -1,4 +1,5 @@
 import { readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
@@ -142,6 +143,26 @@ function authPopupPlugin(): Plugin {
   };
 }
 
+/**
+ * Build-only: render 1200x630 share images into public/og/ (scripts/og-images.ts)
+ * before the client build copies public/. Runs once per build process even though
+ * Vite builds several environments; the script's content-hash cache skips
+ * unchanged images. Runs via tsx because the script imports `@/` aliased modules.
+ */
+let ogGenerated = false;
+function ogImagesPlugin(): Plugin {
+  return {
+    name: "firstpass:og-images",
+    apply: "build",
+    buildStart() {
+      if (ogGenerated) return;
+      ogGenerated = true;
+      const r = spawnSync(process.execPath, ["--import", "tsx", "scripts/og-images.ts", "public"], { stdio: "inherit" });
+      if (r.status !== 0) throw new Error("[og] share image generation failed");
+    },
+  };
+}
+
 // `0.0.0.0:8080` is the live-preview contract — don't change host/port.
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
@@ -165,6 +186,7 @@ export default defineConfig(({ command, isPreview }) => ({
     appEnvPlugin(),
     // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
     grokPwaPlugin(),
+    ogImagesPlugin(),
     tailwindcss(),
     tanstackStart({
       // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /for-programs, /trust, sitemap.xml).
