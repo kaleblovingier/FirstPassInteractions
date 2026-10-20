@@ -28,22 +28,37 @@ export function formatUsdCents(n: number): string {
   return USD_CENTS.format(n);
 }
 
-const LOWEST_ANNUAL = Math.min(...PROGRAM_TIERS.map((t) => t.annual));
-
-export const FOR_PROGRAMS_TITLE = "Group and site licenses for programs, billed yearly | FirstPass";
-export const FOR_PROGRAMS_DESCRIPTION = `Group and site licenses to FirstPass for pharmacy schools, pharmacy-tech programs, ketamine clinics, MAT and OTP programs, and harm-reduction groups. Annual pricing from ${formatUsd(LOWEST_ANNUAL)} a year, with invoice and purchase order. ${PAIR_DISCLAIMER}`;
+export const FOR_PROGRAMS_TITLE = "Group and site licenses for teaching programs | FirstPass";
+export const FOR_PROGRAMS_DESCRIPTION = `Group and site licenses to FirstPass, an educational drug-interaction reference for pharmacy schools, residency programs, pharmacy-tech programs and clinic in-services. Label-sourced pairs in the FDA label's own wording, with DailyMed links. Invoice and purchase order. ${PAIR_DISCLAIMER}`;
 export const FOR_PROGRAMS_H1 = "FirstPass for programs";
 export const FOR_PROGRAMS_INTRO =
-  "FirstPass shows what FDA drug labels say about taking two drugs together, with the label's own wording and a DailyMed link. Programs can set up a group or site license so a whole class, team or clinic works from the same reference.";
+  "FirstPass is an educational reference for teaching drug interactions. Each pair shows what the FDA labels say about taking two drugs together, in the label's own wording, with a DailyMed link. A group or site license puts a whole class, residency cohort or clinic team on the same reference for lectures, in-services and self-study.";
 export const FOR_PROGRAMS_USERS =
   "FirstPass is for licensed healthcare professionals and for students in health-professions programs working under faculty or preceptor supervision.";
 
 export const FOR_PROGRAMS_AUDIENCES: { name: string; use: string }[] = [
   { name: "Pharmacy schools", use: "Pharmacology and therapeutics courses that teach students to read interaction sections of the Prescribing Information." },
+  { name: "Residency programs", use: "Pharmacy and medical residency teaching: journal clubs, topic discussions and precepting on how labels word interactions." },
   { name: "Pharmacy-tech programs", use: "Community college and online programs training techs to recognize label-named interactions." },
-  { name: "Ketamine clinics", use: "Staff training on what labels say about common co-prescribed medicines." },
+  { name: "Ketamine clinics", use: "Staff in-services on what labels say about common co-prescribed medicines." },
   { name: "MAT and OTP programs", use: "Opioid treatment and office-based buprenorphine teams learning the label wording on common co-prescribed drugs." },
   { name: "Harm-reduction groups", use: "Outreach and education staff who want plain-language label wording with a source link." },
+];
+
+/** What a program gets, in plain terms for the person deciding. Kept in line with /trust. */
+export const FOR_PROGRAMS_WHAT_YOU_GET: { name: string; text: string }[] = [
+  { name: "Label-sourced interaction pairs", text: "Pair pages quote what the FDA Prescribing Information says about taking the two drugs together. Pairs without a label quote say so." },
+  { name: "The label's own wording", text: "Quoted label text comes with a DailyMed link, so learners can open the source and read it in context." },
+  { name: "A \"Why this grade\" box on pair pages", text: "A short explanation of what the grade rests on, so a class can discuss the reasoning, not just the result." },
+  { name: "Teaching tools", text: "The desk, drug pages, the enzyme atlas and metabolite maps, for lectures, in-services and self-study." },
+];
+
+/** How the content is checked. Only what /trust already says; no numbers that go stale. */
+export const FOR_PROGRAMS_HOW_CHECKED: string[] = [
+  "A label gold set ties drug pairs to FDA label statements quoted from DailyMed, and scripts check the desk against it.",
+  "Links that open a DailyMed search say so, rather than claiming a specific label.",
+  "No clinician has reviewed the content yet. The trust page lists what is and isn't backed by an outside source.",
+  "Not affiliated with or endorsed by FDA or NLM.",
 ];
 
 /** Choices for "Program type" on the inquiry form. */
@@ -64,7 +79,7 @@ export const FOR_PROGRAMS_KEY_STEPS: string[] = [
   "Share it with your learners or staff the way you already share course materials.",
   "Each person opens the desk, goes to Plans and pastes the key under Redeem.",
   "The key works through the end month printed on it. Renew and we send next year's key.",
-  "There are no accounts for learners, and we keep nothing about the learners who use the key. We do keep the name and email of the person who buys it, so we can send the key and resend it if it's lost.",
+  "There are no accounts for learners, and the key isn't tied to any learner. We do keep the name and email of the person who buys it, so we can send the key and resend it if it's lost.",
 ];
 
 export const FOR_PROGRAMS_FAQ: { q: string; a: string; link?: { href: string; label: string } }[] = [
@@ -75,7 +90,7 @@ export const FOR_PROGRAMS_FAQ: { q: string; a: string; link?: { href: string; la
   { q: "Can you send a W-9?", a: "Yes, on request." },
   {
     q: "Does anyone enter patient information?",
-    a: "No. FirstPass has no patient fields and no accounts, so there is nowhere to enter patient information. We never take patient information (no PHI).",
+    a: "No. FirstPass has no patient fields and no accounts, so there is nowhere to enter patient information. FirstPass is designed not to take patient information (no PHI).",
   },
   {
     q: "What do we need to install?",
@@ -95,7 +110,11 @@ export const FOR_PROGRAMS_FAQ: { q: string; a: string; link?: { href: string; la
   },
   {
     q: "Is FirstPass a clinical tool?",
-    a: "No. It is an educational reference. It is not FDA-cleared, and the Prescribing Information governs.",
+    a: "No. It is an educational reference for teaching, not a point-of-care tool. It is not FDA-cleared, and the Prescribing Information governs.",
+  },
+  {
+    q: "Can we talk it through first?",
+    a: `Yes. Email ${FOR_PROGRAMS_EMAIL} with your program, roughly how many people would use it, and when you'd like to start. We reply by email.`,
   },
   {
     q: "Where are the privacy, security and validation details?",
@@ -104,7 +123,7 @@ export const FOR_PROGRAMS_FAQ: { q: string; a: string; link?: { href: string; la
   },
 ];
 
-export const FOR_PROGRAMS_CTA = "Email us about a group license";
+export const FOR_PROGRAMS_CTA = `Email ${FOR_PROGRAMS_EMAIL} about a group license`;
 export const FOR_PROGRAMS_ESTIMATE_NOTE = "Estimate. We confirm every quote in writing.";
 
 /* ---------------- the seat estimator ---------------- */
@@ -165,10 +184,11 @@ export function forProgramsJsonLd() {
     "@context": "https://schema.org",
     "@type": "Service",
     name: "FirstPass program license",
-    serviceType: "Group and site licenses",
+    serviceType: "Group and site licenses for an educational drug-interaction reference",
     description:
-      "Annual group and site licenses to FirstPass, an educational drug-interaction reference for licensed healthcare professionals and supervised health-professions students.",
+      "Group and site licenses to FirstPass, an educational drug-interaction reference for licensed healthcare professionals and supervised health-professions students. Label-sourced pairs in the FDA label's own wording, with DailyMed links.",
     url: FOR_PROGRAMS_URL,
+    audience: { "@type": "Audience", audienceType: "Pharmacy schools, residency programs, pharmacy-tech programs and clinic teams" },
     provider: { "@type": "Organization", name: "FirstPass", url: FOR_PROGRAMS_URL.replace(/\/for-programs$/, "/") },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
