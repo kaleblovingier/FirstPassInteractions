@@ -120,7 +120,7 @@ test("buildClinicalPacket: evaluates potassium homeostasis, perpetrators, binder
   assert.ok(packet.riskIndexes.potassium.report !== null);
   assert.ok(packet.riskIndexes.potassium.perpetrators.length >= 3);
   assert.ok(packet.ehrNoteText.includes("Potassium Homeostasis & Cardioprotective Shifting"));
-  assert.ok(packet.ehrNoteText.includes("Regular Insulin"));
+  assert.ok(packet.ehrNoteText.includes("Intracellular Shifting: See the Prescribing Information.") && !packet.ehrNoteText.includes("Regular Insulin"));
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("salt substitutes") || cp.includes("potassium chloride")));
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("Patiromer") && cp.includes("3 hours")));
 });
