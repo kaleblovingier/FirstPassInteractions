@@ -165,6 +165,13 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
           {hub.cta}
         </a>
       </p>
+      {hub.labelNote ? (
+        <section className="mt-8" data-testid="drug-hub-label-note">
+          <h2 className="text-lg font-semibold">What the FDA label says</h2>
+          <p className="mt-2 text-sm [overflow-wrap:anywhere]">{hub.labelNote}</p>
+          <p className="mt-1 text-xs text-muted">Cited, not graded. No interaction grade is stored for this supplement.</p>
+        </section>
+      ) : null}
       {hub.groups.map((g) => (
         <section key={g.severity} className="mt-8">
           <h2 className="text-lg font-semibold">{g.label}</h2>

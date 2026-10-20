@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { CITED_ONLY_HUB_IDS } from "./drug-hubs";
 import { DrugHubView, PairPageView, PairsIndexView } from "@/components/seo/pair-page";
 import { pairPages, sitemapXml } from "./pair-pages";
 import { drugHubBySlug, drugHubs, drugHubPath, legacyDrugHubRedirect } from "./drug-hubs";
@@ -17,8 +18,8 @@ const DOSE = /\b\d+(\.\d+)?\s?(mg|mcg|µg|g|mL|units?|IU)\b|\b(once|twice|three 
 const BANNED = /regimen|clinical decision support|\bCDS\b|\bfree\b|pric(e|ing)|\$\d|\bPro\b/i;
 
 describe("drug hub pages", () => {
-  it("one hub per catalog drug that appears in a pair page", () => {
-    const ids = new Set(pages.flatMap((p) => [p.drugA, p.drugB]));
+  it("one hub per catalog drug that appears in a pair page, plus the cited-only supplements", () => {
+    const ids = new Set([...pages.flatMap((p) => [p.drugA, p.drugB]), ...CITED_ONLY_HUB_IDS]);
     assert.equal(hubs.length, ids.size);
     assert.equal(new Set(hubs.map((h) => h.slug)).size, hubs.length);
     for (const h of hubs) {
@@ -97,6 +98,28 @@ describe("drug hub pages", () => {
     for (const r of drugRedirects) {
       assert.equal(r.permanent, true);
       assert.equal(`/drug/${legacyDrugHubRedirect(r.source.replace("/drug/", ""))}`, r.destination);
+    }
+  });
+});
+
+describe("cited-only supplement hubs", () => {
+  it("gives each label-named supplement a /drug page with its label note, no pairs, no mg, and a sitemap URL", async () => {
+    const { CITED_ONLY_HUB_IDS, drugHubs } = await import("./drug-hubs");
+    const { sitemapXml } = await import("./pair-pages");
+    const xml = sitemapXml();
+    for (const id of CITED_ONLY_HUB_IDS) {
+      const hub = drugHubs().find((h) => h.drugId === id);
+      assert.ok(hub, id);
+      assert.equal(hub.pairCount, 0);
+      assert.deepEqual(hub.groups, []);
+      assert.ok(hub.labelNote);
+      assert.doesNotMatch(hub.labelNote, /\d\s*(mg|mcg|g)\b/i);
+      assert.ok(xml.includes(hub.canonical), hub.canonical);
+      const html = renderToStaticMarkup(createElement(DrugHubView, { hub }));
+      assert.ok(html.includes("Educational reference only. Not FDA-cleared. The Prescribing Information governs."));
+      assert.ok(html.includes("drug-hub-label-note"));
+      assert.doesNotMatch(html, /\d\s*mg\b/i);
+      assert.ok(!html.includes("/pair/"));
     }
   });
 });
