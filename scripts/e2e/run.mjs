@@ -1,6 +1,6 @@
 // End-to-end runner: serves the existing local build (npm run build first) with test-only env stubs,
 // runs every scripts/e2e/*.e2e.mjs, stops the server, exits 1 on any failure.
-//   CHROME=/usr/bin/google-chrome node scripts/e2e/run.mjs [name ...]
+//   CHROME=/usr/bin/google-chrome npx tsx scripts/e2e/run.mjs [name ...]
 // The license pepper is a throwaway test value, never a real secret; nothing talks to Stripe.
 import { spawn } from "node:child_process";
 import fs from "node:fs";

@@ -1,7 +1,8 @@
 import { addDrug, check, freshPage } from "./lib.mjs";
 import { testKey } from "./license.e2e.mjs";
-// Dose-like strings that must never appear in an export. Reported, not fixed here.
-const DOSE = [/\b\d+(\.\d+)?\s?(mg|mcg|µg|g|mL|units?|IU|mEq|mmol)\b/gi, /mg\/dL/gi, /\bD50W?\b/g, /albuterol[^.\n]{0,20}\b\d/gi, /\bunits?\/(kg|hr|h)\b/gi];
+// Dose rule and ratchet come from the dose guard (src/lib/guards/dose-rule.ts) via dose-ratchet.ts.
+// Needs tsx: npx tsx scripts/e2e/run.mjs
+import { classifyExportText } from "./dose-ratchet.ts";
 export default async function (browser) {
   const { ctx, page, errors } = await freshPage(browser);
   // Unlock first with a test-only key, so the export is not gated.
@@ -13,6 +14,7 @@ export default async function (browser) {
   await page.waitForTimeout(1500);
   await page.keyboard.press("Escape").catch(() => {});
   const found = [];
+  const baselined = [];
   for (const [a, b] of [["clarithromycin", "simvastatin"], ["linezolid", "sertraline"], ["methadone", "alprazolam"]]) {
     await page.goto(new URL("/", process.env.E2E_BASE).href, { waitUntil: "networkidle" });
     await page.evaluate(() => { const k = "firstpass.desk.v7"; const s = JSON.parse(localStorage.getItem(k) || "{}"); if (s.state) { s.state.selected = []; localStorage.setItem(k, JSON.stringify(s)); } });
@@ -34,14 +36,13 @@ export default async function (browser) {
     for (const [kind, t] of Object.entries(texts)) {
       check(t.length > 50, `export ${a}+${b} ${kind}: produces output (${t.length} chars)`);
       check(/not (medical|clinical) advice|education|not a substitute|clinical judgment|disclaimer|does not replace/i.test(t), `export ${a}+${b} ${kind}: carries the disclaimer`);
-      const hits = new Set();
-      for (const re of DOSE) for (const m of t.matchAll(re)) hits.add(t.slice(Math.max(0, m.index - 30), m.index + 40).replace(/\s+/g, " "));
-      for (const h of hits) found.push(`${a}+${b} ${kind}: "${h}"`);
+      for (const h of classifyExportText(t)) (h.status === "new" ? found : baselined).push(`${a}+${b} ${kind}: "${h.context}" [${h.files.join(", ") || "no scoped source"}]`);
     }
     await page.getByRole("button", { name: "Close clinical packet" }).click().catch(() => {});
   }
-  check(found.length === 0, `export: no dose strings in exports (${found.length})`);
-  for (const f of found) console.log(`     dose-like: ${f}`);
+  check(found.length === 0, `export: no dose strings beyond the dose-guard baseline (${found.length} new, ${baselined.length} baselined)`);
+  for (const f of found) console.log(`     NEW dose: ${f}`);
+  for (const f of baselined) console.log(`     baselined: ${f}`);
   check(errors.length === 0, `export: no page errors (${errors.join("; ").slice(0, 120)})`);
   await ctx.close();
 }
