@@ -1,0 +1,461 @@
+{
+ "retrieved": "2026-10-19",
+ "source": "DailyMed SPL v2 XML (dailymed.nlm.nih.gov/dailymed/services/v2/spls/{setid}.xml)",
+ "labels": {
+  "aff45863-ffe1-4d4f-8acf-c7081512a6c0": {
+   "labelDrug": "Adderall XR (mixed amphetamine salts)",
+   "version": 38,
+   "effective": "2026-04-30"
+  },
+  "7b57509a-3d5d-41d4-8fed-1471e26372a3": {
+   "labelDrug": "Adempas (riociguat)",
+   "version": 32,
+   "effective": "2026-08-13"
+  },
+  "4074b555-7635-41a9-809d-fae3b3610059": {
+   "labelDrug": "Anafranil (clomipramine)",
+   "version": 22,
+   "effective": "2024-11-26"
+  },
+  "3235535d-9ef9-4657-8b2a-176a807d091c": {
+   "labelDrug": "Apokyn (apomorphine)",
+   "version": 21,
+   "effective": "2024-10-10"
+  },
+  "7ea3c60a-45c7-44cc-afc2-d87fa53993c0": {
+   "labelDrug": "Austedo (deutetrabenazine)",
+   "version": 35,
+   "effective": "2025-02-28"
+  },
+  "a40d0e73-3f9f-4b01-979d-402c9cdaeb60": {
+   "labelDrug": "Azilect (rasagiline)",
+   "version": 26,
+   "effective": "2020-06-30"
+  },
+  "e5b72731-1acb-45b7-9c13-290ad12d3951": {
+   "labelDrug": "Belsomra (suvorexant)",
+   "version": 21,
+   "effective": "2025-03-10"
+  },
+  "664cb8f0-1f65-441b-b0d9-ba3d798be309": {
+   "labelDrug": "Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide)",
+   "version": 26,
+   "effective": "2026-09-09"
+  },
+  "072a3c7e-33fb-4a87-ba21-3d8dad3f5c48": {
+   "labelDrug": "Bixlenvo (bictegravir/lenacapavir)",
+   "version": 1,
+   "effective": "2026-08-27"
+  },
+  "f7b3f443-e83d-4bf2-0e96-023448fed9a8": {
+   "labelDrug": "Brilinta (ticagrelor)",
+   "version": 56,
+   "effective": "2026-05-07"
+  },
+  "334e5635-e4cc-cf2a-e063-6294a90ae1e1": {
+   "labelDrug": "Bupropion hydrochloride tablets",
+   "version": 2,
+   "effective": "2026-08-24"
+  },
+  "7c9eafb9-9ce1-4b28-900c-8fcb4b23424e": {
+   "labelDrug": "Buspirone hydrochloride tablets",
+   "version": 23,
+   "effective": "2026-06-15"
+  },
+  "4db7eece-2eef-bc1b-e063-6394a90a98cb": {
+   "labelDrug": "Cafergot (ergotamine/caffeine)",
+   "version": 1,
+   "effective": "2026-03-23"
+  },
+  "4259d9b1-de34-43a4-85a8-41dd214e9177": {
+   "labelDrug": "Celexa (citalopram)",
+   "version": 40,
+   "effective": "2023-10-09"
+  },
+  "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6": {
+   "labelDrug": "Clarithromycin tablets",
+   "version": 14,
+   "effective": "2026-06-24"
+  },
+  "485ff360-32c8-11df-928b-0002a5d5c51b": {
+   "labelDrug": "Contrave (naltrexone/bupropion)",
+   "version": 27,
+   "effective": "2025-11-10"
+  },
+  "92018a65-38f6-45f7-91d4-a34921b81d0d": {
+   "labelDrug": "Corlanor (ivabradine)",
+   "version": 33,
+   "effective": "2025-11-10"
+  },
+  "00acd9e9-b26a-4626-949e-112ecd2f27e6": {
+   "labelDrug": "Cymbalta (duloxetine)",
+   "version": 3,
+   "effective": "2016-08-06"
+  },
+  "7074cb65-77b3-45d2-8e8d-da8dc0f70bfd": {
+   "labelDrug": "Dayvigo (lemborexant)",
+   "version": 39,
+   "effective": "2025-02-24"
+  },
+  "07a9112c-8c04-4849-8cb3-9463f58731d2": {
+   "labelDrug": "Dihydroergotamine mesylate injection",
+   "version": 7,
+   "effective": "2023-08-22"
+  },
+  "03880372-2c68-45c6-a53a-f420c49541d6": {
+   "labelDrug": "Edurant (rilpivirine)",
+   "version": 28,
+   "effective": "2025-08-28"
+  },
+  "c848a5d8-ba94-4c84-80e3-0bf35fb8e32e": {
+   "labelDrug": "Effexor XR (venlafaxine)",
+   "version": 7,
+   "effective": "2023-08-15"
+  },
+  "41a133ef-e461-48ad-8221-b735bdd0ec25": {
+   "labelDrug": "Eliquis (apixaban)",
+   "version": 5,
+   "effective": "2026-09-24"
+  },
+  "83db29d7-5d85-49d6-8cb6-740473365cf8": {
+   "labelDrug": "Evotaz (atazanavir/cobicistat)",
+   "version": 16,
+   "effective": "2025-05-12"
+  },
+  "f371258d-91b3-4b6a-ac99-434a1964c3af": {
+   "labelDrug": "Fetzima (levomilnacipran)",
+   "version": 33,
+   "effective": "2024-04-30"
+  },
+  "6eeb14df-6fcf-a737-5359-5744eb4accea": {
+   "labelDrug": "Fluvoxamine maleate tablets",
+   "version": 16,
+   "effective": "2026-09-11"
+  },
+  "8326928a-2cb6-4f7f-9712-03a425a14c37": {
+   "labelDrug": "Geodon (ziprasidone)",
+   "version": 50,
+   "effective": "2025-01-13"
+  },
+  "1a52bedc-8e2c-4116-a296-a87770676b4a": {
+   "labelDrug": "Inspra (eplerenone)",
+   "version": 6,
+   "effective": "2025-06-23"
+  },
+  "8290add3-4449-4e58-6c97-8fe1eec972e3": {
+   "labelDrug": "Kaletra (lopinavir/ritonavir)",
+   "version": 1702,
+   "effective": "2026-07-23"
+  },
+  "14e8f864-8b8a-4e7e-8439-e510d3107063": {
+   "labelDrug": "Ketalar (ketamine)",
+   "version": 33,
+   "effective": "2026-03-27"
+  },
+  "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9": {
+   "labelDrug": "Korlym (mifepristone)",
+   "version": 26,
+   "effective": "2025-09-25"
+  },
+  "afad3051-9df2-4c54-9684-e8262a133af8": {
+   "labelDrug": "Latuda (lurasidone)",
+   "version": 37,
+   "effective": "2025-01-31"
+  },
+  "13bb8267-1cab-43e5-acae-55a4d957630a": {
+   "labelDrug": "Lexapro (escitalopram)",
+   "version": 45,
+   "effective": "2023-10-01"
+  },
+  "35cbb9d5-639b-207a-e054-00144ff88e88": {
+   "labelDrug": "Lotronex (alosetron)",
+   "version": 8,
+   "effective": "2026-06-30"
+  },
+  "9438d8a0-ca5b-4676-aab9-d0241ccff6c9": {
+   "labelDrug": "Lovastatin tablets",
+   "version": 5,
+   "effective": "2026-07-23"
+  },
+  "95fde749-44ad-4668-86c4-0ff17bca0074": {
+   "labelDrug": "Marplan (isocarboxazid)",
+   "version": 1,
+   "effective": "2026-04-21"
+  },
+  "7bf99777-0401-9095-8645-16c6e907fcc0": {
+   "labelDrug": "Mavyret (glecaprevir/pibrentasvir)",
+   "version": 201,
+   "effective": "2025-06-25"
+  },
+  "540edd43-165d-4257-b989-3bccc8f54afb": {
+   "labelDrug": "Methadone HCl tablets",
+   "version": 2,
+   "effective": "2026-09-09"
+  },
+  "28596788-b73f-4247-85fc-3105f51fff5a": {
+   "labelDrug": "Movantik (naloxegol)",
+   "version": 5,
+   "effective": "2026-09-01"
+  },
+  "3bd4006a-8bad-4909-ac6d-b6d84390155c": {
+   "labelDrug": "Multaq (dronedarone)",
+   "version": 13,
+   "effective": "2026-01-27"
+  },
+  "06ff2d5a-e62b-4fa4-bbdb-01938535bc65": {
+   "labelDrug": "Naltrexone HCl tablets",
+   "version": 15,
+   "effective": "2026-09-04"
+  },
+  "513a41d0-37d4-4355-8a6d-a2c643bce6fa": {
+   "labelDrug": "Nardil (phenelzine)",
+   "version": 11,
+   "effective": "2025-06-06"
+  },
+  "2849298e-de6e-47bb-8194-56e075b33fc3": {
+   "labelDrug": "Norvir (ritonavir)",
+   "version": 1653,
+   "effective": "2026-07-23"
+  },
+  "b073b082-7b57-4423-8c06-4fd4263d6f84": {
+   "labelDrug": "Noxafil (posaconazole)",
+   "version": 56,
+   "effective": "2026-02-13"
+  },
+  "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27": {
+   "labelDrug": "Parnate (tranylcypromine)",
+   "version": 11,
+   "effective": "2025-07-02"
+  },
+  "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e": {
+   "labelDrug": "Paxil (paroxetine)",
+   "version": 13,
+   "effective": "2026-09-29"
+  },
+  "8a99d6d6-fd9e-45bb-b1bf-48c7f761232a": {
+   "labelDrug": "Paxlovid (nirmatrelvir/ritonavir)",
+   "version": 12,
+   "effective": "2026-02-19"
+  },
+  "70b079e2-a1f7-4a93-8685-d60a4d7c1280": {
+   "labelDrug": "Pimozide",
+   "version": 5,
+   "effective": "2026-08-12"
+  },
+  "de8b0b67-eb25-4684-83b5-7ad785314227": {
+   "labelDrug": "Plavix (clopidogrel)",
+   "version": 5,
+   "effective": "2025-05-30"
+  },
+  "9c38fdb6-d0ba-4f16-a0e3-85d9ec334d9f": {
+   "labelDrug": "Prezcobix (darunavir/cobicistat)",
+   "version": 29,
+   "effective": "2026-02-01"
+  },
+  "814301f9-c990-46a5-b481-2879a521a16f": {
+   "labelDrug": "Prezista (darunavir)",
+   "version": 58,
+   "effective": "2025-08-29"
+  },
+  "0f43610c-f290-46ea-d186-4f998ed99fce": {
+   "labelDrug": "Pristiq (desvenlafaxine)",
+   "version": 67,
+   "effective": "2026-04-28"
+  },
+  "4f6848e5-35ed-4046-b13c-3032b5ba3232": {
+   "labelDrug": "ProvayBlue (methylene blue injection)",
+   "version": 28,
+   "effective": "2025-05-28"
+  },
+  "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299": {
+   "labelDrug": "Prozac (fluoxetine)",
+   "version": 59,
+   "effective": "2026-01-08"
+  },
+  "e038f963-d78f-460e-a11f-46f224061505": {
+   "labelDrug": "Ranexa (ranolazine)",
+   "version": 3,
+   "effective": "2016-08-06"
+  },
+  "00979fb3-d70f-493d-94ca-2914cbadaa9d": {
+   "labelDrug": "Ranolazine extended-release",
+   "version": 5,
+   "effective": "2026-01-29"
+  },
+  "d4c5fead-bc4a-fb02-e053-2a95a90ae4fc": {
+   "labelDrug": "Recorlev (levoketoconazole)",
+   "version": 13,
+   "effective": "2026-03-10"
+  },
+  "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e": {
+   "labelDrug": "Relpax (eletriptan)",
+   "version": 4,
+   "effective": "2024-01-15"
+  },
+  "98ad1917-a094-44f5-a28f-a64a8cfcd887": {
+   "labelDrug": "Remeron (mirtazapine)",
+   "version": 8,
+   "effective": "2025-08-06"
+  },
+  "3bb9363e-b28d-4019-8aae-539233dca214": {
+   "labelDrug": "Revatio (sildenafil)",
+   "version": 5,
+   "effective": "2024-12-18"
+  },
+  "165cff62-b284-4a27-a65d-9ec8a5bfcdd8": {
+   "labelDrug": "Reyataz (atazanavir)",
+   "version": 37,
+   "effective": "2024-12-05"
+  },
+  "1b074c23-dd35-43c9-820c-0e603481fdd3": {
+   "labelDrug": "Rifadin (rifampin)",
+   "version": 2,
+   "effective": "2026-08-25"
+  },
+  "9de82310-70e8-47b9-b1fc-6c6848b99455": {
+   "labelDrug": "Rozerem (ramelteon)",
+   "version": 20,
+   "effective": "2026-04-15"
+  },
+  "16a4a314-f97e-4e91-95e9-576a3773d284": {
+   "labelDrug": "Savella (milnacipran)",
+   "version": 41,
+   "effective": "2025-09-10"
+  },
+  "1924db3d-6a16-4496-cfd0-6903be146925": {
+   "labelDrug": "Selegiline HCl capsules",
+   "version": 9,
+   "effective": "2026-09-17"
+  },
+  "a4d555fa-787c-40fb-bb7d-b0d4f7318fd0": {
+   "labelDrug": "Sporanox (itraconazole)",
+   "version": 31,
+   "effective": "2026-07-13"
+  },
+  "d81a6a79-a74a-44b7-822c-0dfa3036eaed": {
+   "labelDrug": "Spravato (esketamine)",
+   "version": 21,
+   "effective": "2026-09-22"
+  },
+  "8a5edcf9-828c-4f97-b671-268ab13a8ecd": {
+   "labelDrug": "Suboxone (buprenorphine/naloxone) film",
+   "version": 37,
+   "effective": "2025-12-22"
+  },
+  "8d409411-aa9f-4f3a-a52c-fbcb0c3ec053": {
+   "labelDrug": "Tegretol (carbamazepine)",
+   "version": 39,
+   "effective": "2026-08-20"
+  },
+  "1fd16a99-e856-4a37-9dae-c443714fac14": {
+   "labelDrug": "Thioridazine",
+   "version": 2,
+   "effective": "2026-03-02"
+  },
+  "02438044-d6a3-49e9-a1ac-3aad21ef2c8c": {
+   "labelDrug": "Tikosyn (dofetilide)",
+   "version": 30,
+   "effective": "2026-04-21"
+  },
+  "63df5af3-b8ac-4e76-9830-2dbb340af922": {
+   "labelDrug": "Tivicay (dolutegravir)",
+   "version": 34,
+   "effective": "2026-08-25"
+  },
+  "749e42fb-2fe0-45dd-9268-b43bb3f4081c": {
+   "labelDrug": "Tracleer (bosentan)",
+   "version": 36,
+   "effective": "2025-11-17"
+  },
+  "5c2ac7cb-3a38-2174-e063-6394a90a95cc": {
+   "labelDrug": "Tramadol HCl tablets",
+   "version": 1,
+   "effective": "2026-09-23"
+  },
+  "4006d439-e2de-4590-82e9-fc9d56e3ec1b": {
+   "labelDrug": "Trazodone hydrochloride tablets",
+   "version": 30,
+   "effective": "2025-07-09"
+  },
+  "5add318e-11b9-42f8-b052-0d8cebb32fcf": {
+   "labelDrug": "Triazolam",
+   "version": 26,
+   "effective": "2026-07-10"
+  },
+  "1a5b68e2-14d0-419d-9ec6-1ca97145e838": {
+   "labelDrug": "Trintellix (vortioxetine)",
+   "version": 18,
+   "effective": "2025-03-05"
+  },
+  "08d08721-1f4c-478a-8abf-d9c402d50553": {
+   "labelDrug": "Vfend (voriconazole)",
+   "version": 33,
+   "effective": "2026-03-20"
+  },
+  "4c55ccfb-c4cf-11df-851a-0800200c9a66": {
+   "labelDrug": "Viibryd (vilazodone)",
+   "version": 34,
+   "effective": "2023-10-01"
+  },
+  "cd11c435-b0f0-4bb9-ae78-60f101f3703f": {
+   "labelDrug": "Vivitrol (naltrexone ER injectable suspension)",
+   "version": 39,
+   "effective": "2026-05-31"
+  },
+  "17ffc094-8ca7-45d2-80d8-fd043bc9a221": {
+   "labelDrug": "Vosevi (sofosbuvir/velpatasvir/voxilaprevir)",
+   "version": 6,
+   "effective": "2025-07-14"
+  },
+  "704e4378-ca83-445c-8b45-3cfa51c1ecad": {
+   "labelDrug": "Vyvanse (lisdexamfetamine)",
+   "version": 81,
+   "effective": "2026-04-30"
+  },
+  "c4d65f28-983f-42b4-bb23-023ae0fe81b2": {
+   "labelDrug": "Xadago (safinamide)",
+   "version": 22,
+   "effective": "2026-10-05"
+  },
+  "10db92f9-2300-4a80-836b-673e1ae91610": {
+   "labelDrug": "Xarelto (rivaroxaban)",
+   "version": 65,
+   "effective": "2026-09-10"
+  },
+  "ac768bab-8afa-4446-bc7f-caeeffec0cda": {
+   "labelDrug": "Xenazine (tetrabenazine)",
+   "version": 21,
+   "effective": "2019-11-01"
+  },
+  "926eb076-a4a8-45e4-91ef-411f0aa4f3ca": {
+   "labelDrug": "Xyrem (sodium oxybate)",
+   "version": 27,
+   "effective": "2025-07-01"
+  },
+  "60c27d35-7349-4fc6-86ad-70fffdbe3e08": {
+   "labelDrug": "Zanaflex (tizanidine)",
+   "version": 2,
+   "effective": "2026-01-02"
+  },
+  "8f55d5de-5a4f-4a39-8c84-c53976dd6af9": {
+   "labelDrug": "Zocor (simvastatin)",
+   "version": 11,
+   "effective": "2025-03-28"
+  },
+  "97391d0c-943e-4c5a-8423-68e163aa7f50": {
+   "labelDrug": "Zokinvy (lonafarnib)",
+   "version": 2,
+   "effective": "2025-07-02"
+  },
+  "fda754f6-d0f3-4dce-a17a-927d64f912f7": {
+   "labelDrug": "Zoloft (sertraline)",
+   "version": 7,
+   "effective": "2023-08-08"
+  },
+  "3e5e9975-6f36-42e4-ab46-0e75dda83592": {
+   "labelDrug": "Zyvox (linezolid)",
+   "version": 24,
+   "effective": "2026-07-09"
+  }
+ }
+}

@@ -306,6 +306,10 @@
    "setid": "4259d9b1-de34-43a4-85a8-41dd214e9177",
    "excerpt": "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
   },
+  "clarithromycin+cisapride": {
+   "setid": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
+   "excerpt": "Concomitant administration of clarithromycin tablets with cisapride and pimozide is contraindicated"
+  },
   "clarithromycin+dihydroergotamine": {
    "setid": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
    "excerpt": "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated"
@@ -613,6 +617,18 @@
   "ergotamine+ritonavir": {
    "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
    "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity"
+  },
+  "erythromycin+astemizole": {
+   "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
+   "excerpt": "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine."
+  },
+  "erythromycin+cisapride": {
+   "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
+   "excerpt": "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine."
+  },
+  "erythromycin+terfenadine": {
+   "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
+   "excerpt": "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine."
   },
   "escitalopram+linezolid": {
    "setid": "13bb8267-1cab-43e5-acae-55a4d957630a",
@@ -1138,6 +1154,18 @@
    "setid": "06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
    "excerpt": "Naltrexone hydrochloride is contraindicated in: 1. Patients receiving opioid analgesics."
   },
+  "nefazodone+astemizole": {
+   "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
+   "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
+  },
+  "nefazodone+cisapride": {
+   "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
+   "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
+  },
+  "nefazodone+terfenadine": {
+   "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
+   "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
+  },
   "paroxetine+linezolid": {
    "setid": "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
    "excerpt": "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
@@ -1322,6 +1350,10 @@
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
    "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate, dopamine, epinephrine"
   },
+  "phenelzine+five-htp": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "patients being treated with NARDIL should not take sympathomimetic drugs (including amphetamines, cocaine, methylphenidate, dopamine, epinephrine, and norepinephrine) or related compounds (including methyldopa, L-dopa, L-tryptophan, L-tyrosine, and phenylalanine)"
+  },
   "phenelzine+fluoxetine": {
    "setid": "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
    "excerpt": "The use of MAOIs intended to treat psychiatric disorders with PROZAC or within 5 weeks of stopping treatment with PROZAC is contraindicated"
@@ -1365,6 +1397,10 @@
   "phenelzine+tranylcypromine": {
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
    "excerpt": "NARDIL should not be administered together with or in rapid succession to other MAO inhibitors because HYPERTENSIVE CRISES and convulsive seizures, fever, marked sweating, excitation, delirium, tremor, coma, and circulatory collapse may occur. Concomitant use with meperidine is contraindicated (see WARNINGS ). A List of MAO Inhibitors by Generic Name Follows: pargyline hydrochloride pargyline hydrochloride and methylclothiazide furazolidone isocarboxazid procarbazine tranylcypromine"
+  },
+  "phenelzine+tyramine-foods": {
+   "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
+   "excerpt": "Hypertensive crises during NARDIL therapy may also be caused by the ingestion of foods with a high concentration of tyramine or dopamine"
   },
   "phenelzine+venlafaxine": {
    "setid": "513a41d0-37d4-4355-8a6d-a2c643bce6fa",
@@ -1762,6 +1798,10 @@
    "setid": "60c27d35-7349-4fc6-86ad-70fffdbe3e08",
    "excerpt": "Concomitant use of Zanaflex with strong cytochrome P450 1A2 (CYP1A2) inhibitors (e.g., fluvoxamine, ciprofloxacin) is contraindicated."
   },
+  "tranylcypromine+amoxapine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine"
+  },
   "tranylcypromine+buspirone": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone"
@@ -1769,6 +1809,18 @@
   "tranylcypromine+cyclobenzaprine": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine"
+  },
+  "tranylcypromine+dextromethorphan": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan"
+  },
+  "tranylcypromine+dopamine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran tryptophan dopamine"
+  },
+  "tranylcypromine+ephedrine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine"
   },
   "tranylcypromine+five-htp": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
@@ -1786,9 +1838,21 @@
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone"
   },
+  "tranylcypromine+phenylephrine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine"
+  },
+  "tranylcypromine+pseudoephedrine": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine"
+  },
   "tranylcypromine+rasagiline": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
    "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e) carbamazepine meperidine tapentadol cyclobenzaprine methyldopa tetrabenazine dextromethorphan milnacipran tryptophan dopamine rasagiline"
+  },
+  "tranylcypromine+sam-e": {
+   "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",
+   "excerpt": "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated. Such use may cause severe or life-threatening reactions such as hypertensive crises or serotonin syndrome [see Drug Interactions (7.1)]. Medication-free periods between administration of PARNATE and contraindicated agents are recommended [ see Dosage and Administration (2.2) and Drug Interactions (7.1) ]. Table 1: Products Contraindicated with the Use of PARNATE Drug Classes Non-selective H1 receptor antagonists Antidepressants including but not limited to: Other monoamine oxidase inhibitors (MAOIs) Selective serotonin reuptake inhibitors (SSRIs) and serotonin and norepinephrine reuptake inhibitors (SNRIs) Tricyclic antidepressants Other antidepressants (e.g., amoxapine, bupropion, maprotiline, nefazodone, trazodone, vilazodone, vortioxetine) Amphetamines and methylphenidates and derivatives Sympathomimetic products (e.g., cold, hay fever or weight reducing products that contain vasoconstrictors such as pseudoephedrine, phenylephrine, and ephedrine; or dietary supplements that contain sympathomimetics) Triptans Individual Drugs (not included in the above classes) buspirone levodopa s-adenosyl-L-methionine (SAM-e)"
   },
   "tranylcypromine+tapentadol": {
    "setid": "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27",

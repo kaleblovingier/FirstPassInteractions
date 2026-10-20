@@ -20,6 +20,8 @@ import {
   FOR_PROGRAMS_ESTIMATE_NOTE,
   FOR_PROGRAMS_FAQ,
   FOR_PROGRAMS_H1,
+  FOR_PROGRAMS_HOW_CHECKED,
+  FOR_PROGRAMS_WHAT_YOU_GET,
   FOR_PROGRAMS_INCLUDES,
   FOR_PROGRAMS_INTRO,
   FOR_PROGRAMS_KEY_STEPS,
@@ -126,6 +128,29 @@ export function ForProgramsView() {
           {FOR_PROGRAMS_AUDIENCES.map((a) => (
             <li key={a.name}>
               <strong>{a.name}.</strong> {a.use}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-12 max-w-2xl" aria-labelledby="get-h">
+        <h2 id="get-h" className={H2}>What your program gets</h2>
+        <ul className="mt-3 space-y-2 text-sm">
+          {FOR_PROGRAMS_WHAT_YOU_GET.map((g) => (
+            <li key={g.name}>
+              <strong>{g.name}.</strong> {g.text}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-12 max-w-2xl" aria-labelledby="checked-h">
+        <h2 id="checked-h" className={H2}>How it's checked</h2>
+        <ul className="mt-3 space-y-2">
+          {FOR_PROGRAMS_HOW_CHECKED.map((c) => (
+            <li key={c} className="flex gap-2 text-sm">
+              <Check aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-accent" />
+              <span>{c}</span>
             </li>
           ))}
         </ul>

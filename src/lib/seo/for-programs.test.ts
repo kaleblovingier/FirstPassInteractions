@@ -64,12 +64,20 @@ describe("/for-programs copy rules", () => {
     assert.match(body, /supervision/);
   });
 
-  it("title and description sell group and site licenses with yearly pricing", () => {
+  it("title, description and JSON-LD sell group and site licenses with no price", () => {
+    const NO_PRICE = /\$\s?\d|\bUSD\b|\bprice|\bper (year|month|seat)\b|\bmonthly\b|\bfree\b|\bPro\b/i;
     assert.match(FOR_PROGRAMS_TITLE, /group and site licenses/i);
-    assert.match(FOR_PROGRAMS_TITLE, /yearly|annual/i);
     assert.match(FOR_PROGRAMS_DESCRIPTION, /group and site licenses/i);
-    assert.match(FOR_PROGRAMS_DESCRIPTION, /annual pricing from \$690 a year/i);
+    assert.match(FOR_PROGRAMS_DESCRIPTION, /educational/);
+    assert.match(FOR_PROGRAMS_DESCRIPTION, /DailyMed/);
     assert.match(FOR_PROGRAMS_DESCRIPTION, /purchase order/);
+    for (const s of [FOR_PROGRAMS_TITLE, FOR_PROGRAMS_DESCRIPTION, JSON.stringify(forProgramsJsonLd())]) assert.ok(!NO_PRICE.test(s), s.match(NO_PRICE)?.[0]);
+  });
+
+  it("says what a program gets and how it's checked, without FDA/NLM affiliation or point-of-care framing", () => {
+    for (const s of ["Label-sourced interaction pairs", "The label's own wording", "Why this grade", "No clinician has reviewed", "Not affiliated with or endorsed by FDA or NLM."]) assert.ok(body.includes(s), s);
+    assert.ok(!/point-of-care|84\.6|Lexicomp|CE credit|medical device|\bat the bedside\b/i.test(body.replace("not a point-of-care tool", "")));
+    assert.ok(body.includes("FirstPassInteractions@gmail.com"));
   });
 
   it("has the disclaimer, one h1 and a prefilled mailto", () => {
@@ -205,7 +213,7 @@ describe("/for-programs key, procurement and inquiry sections", () => {
     assert.match(steps, /Redeem/);
     assert.match(steps, /end month/);
     assert.match(steps, /no accounts/i);
-    assert.match(steps, /keep nothing about the learners/);
+    assert.match(steps, /isn't tied to any learner/);
     assert.doesNotMatch(steps, /store nothing/);
     assert.match(steps, /name and email of the person who buys it/);
     for (const s of FOR_PROGRAMS_KEY_STEPS) assert.ok(body.includes(s), s);
@@ -217,7 +225,7 @@ describe("/for-programs key, procurement and inquiry sections", () => {
     assert.match(faq, /purchase orders?/);
     assert.match(faq, /W-9/);
     assert.match(faq, /no PHI/);
-    assert.match(faq, /never take patient information/);
+    assert.match(faq, /designed not to take patient information/);
     assert.match(faq, /any modern browser/);
     assert.match(faq, /accessibility conformance report/);
     assert.match(faq, /not FDA-cleared/);
@@ -242,16 +250,18 @@ describe("/for-programs key, procurement and inquiry sections", () => {
 });
 
 describe("/for-programs JSON-LD", () => {
-  it("lists only the three tiers at their contract prices", () => {
+  it("lists the three tiers with no pricing, and names the teaching audience", () => {
     const ld = forProgramsJsonLd();
-    assert.equal(ld["@type"], "Product");
+    assert.equal((ld as Record<string, unknown>).offers, undefined);
+    assert.match(ld.audience.audienceType, /residency/);
+    assert.equal(ld["@type"], "Service");
     assert.equal(ld.url, FOR_PROGRAMS_URL);
     assert.deepEqual(
-      ld.offers.map((o) => [o.name, o.price, o.priceCurrency]),
-      PROGRAM_TIERS.map((t) => [`${t.name} license`, t.annual, "USD"]),
+      ld.hasOfferCatalog.itemListElement.map((o) => o.name),
+      PROGRAM_TIERS.map((t) => `${t.name} license`),
     );
     const s = JSON.stringify(ld);
-    assert.ok(!/aggregateRating|review|"Pro"/.test(s));
+    assert.ok(!/aggregateRating|review|"Pro"|price|\$\s?\d|USD/i.test(s));
     assert.ok(!BANNED.test(s));
   });
 });

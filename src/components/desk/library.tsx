@@ -70,9 +70,9 @@ function foundingGateCopy(kind: "contraindications" | FoundingGateKind) {
     return {
       title: "Contraindicated Disease Conditions Matrix",
       blurb:
-        "Contraindicated Disease Conditions Matrix is a Founding / Pro feature ($79 once).",
+        "Contraindicated Disease Conditions Matrix is a Founding feature ($79 once).",
       reason:
-        "Contraindicated Disease Conditions Matrix is a Founding / Pro feature ($79 once).",
+        "Contraindicated Disease Conditions Matrix is a Founding feature ($79 once).",
     };
   }
   return baseFoundingGateCopy(kind);
@@ -868,10 +868,10 @@ function ContraindicatedConditionsView() {
                 <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
                   Founding Clinical Matrix
                 </p>
-                <Badge tone="accent">Pro Feature</Badge>
+                <Badge tone="accent">Founding feature</Badge>
               </div>
               <h2 className="font-serif text-2xl font-bold tracking-tight text-fg sm:text-3xl">
-                Contraindicated Disease Conditions Matrix is a Founding / Pro feature ($79 once).
+                Contraindicated Disease Conditions Matrix is a Founding feature ($79 once).
               </h2>
               <p className="text-sm leading-relaxed text-muted">
                 Explore verified clinical disease thresholds, organ impairment contraindications,
@@ -894,7 +894,7 @@ function ContraindicatedConditionsView() {
                 Unlock Founding ($79 once)
               </Button>
               <p className="text-xs text-muted">
-                One-time purchase · Lifetime desk access · No subscriptions
+                One-time purchase · Open for as long as FirstPass offers the desk · No subscriptions
               </p>
             </div>
           </div>
@@ -936,7 +936,7 @@ function ContraindicatedConditionsView() {
               Myasthenia Gravis, Pheochromocytoma, Active Peptic Ulcer &amp; GI Bleed, Pregnancy
               Teratogenicity (FDA Category X), Prolonged QTc / LQTS (&gt; 500 ms), Recent MAOI
               Exposure (&lt; 14 days), Heart Failure HFrEF, Narrow-Angle Glaucoma, G6PD Deficiency,
-              and Parkinson’s / Lewy Body Dementia are reserved for Founding and Pro.
+              and Parkinson’s / Lewy Body Dementia are reserved for Founding.
             </p>
             <div className="mt-5 flex justify-center">
               <Button

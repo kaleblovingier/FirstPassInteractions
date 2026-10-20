@@ -3,7 +3,7 @@
 
 export const SOFTWARE = {
   name: "FirstPass",
-  version: "1.76.0",
+  version: "1.78.0",
   released: "2026-09-26",
   developer: "Kaleb Lovingier",
   publisher: "FirstPass Interactions",
@@ -11,8 +11,8 @@ export const SOFTWARE = {
   email: "FirstPassInteractions@gmail.com",
   phone: "360-707-8923",
   /** Internal software release tag. Not an FDA Unique Device Identifier (UDI) (FirstPass is non-device clinical decision support software). */
-  releaseTag: "FP-SW-1.76.0",
-  buildId: "FP-SW-1.76.0",
+  releaseTag: "FP-SW-1.78.0",
+  buildId: "FP-SW-1.78.0",
 } as const;
 
 export const LEGAL_TERMS = {
@@ -102,6 +102,8 @@ export const INDICATIONS = [
   "When a stored label line keeps search words that are not just the name, the check shows those words. A hyphen in the stored id is not a new search. That search is not a new finding. The pair check is still the severity. Learn asks which search words are stored. None of this is a milligram or a clearance.",
   "The check says whether a stored label line came from gold or from a pin. That source is not a new finding. The pair check is still the severity. Learn asks which source stored the line. None of this is a milligram or a clearance.",
   "The check shows the stored label class on a gold line. That class is the label's word. Not a new finding. A pin-only line has no class. The pair check is still the severity. Learn asks which class is stored. None of this is a milligram or a clearance.",
+  "The shelf adds FDA Table 1 names that were missing, with only the role and grade already on that table. A row with no grade stays off. That row is not a new finding. None of this is a milligram or a clearance.",
+  "The shelf adds names a stored current label already contraindicates, with no enzyme grade. The check shows that stored sentence. That sentence is not a new finding. The pair check is still the severity. None of this is a milligram or a clearance.",
   "When an enzyme on the desk has no mapped row, saying whether no perpetrator or no victim was mapped. That line is not a clearance.",
   "Showing the start clock, the stop clock, and the watch for the sharpest pair only. If that pair has no mapped clock, the row says so. The clock is a study aid for how timing changes the picture, not a real-time or time-critical alert, and it does not pick a milligram.",
   "Building a shareable regimen brief that lists mapped pairs worst-first with a plain-language lead sentence, then whole-desk notes. Free desks may copy the brief for teaching. The brief does not pick a milligram or a next step.",

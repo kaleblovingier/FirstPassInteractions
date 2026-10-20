@@ -204,7 +204,7 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     roleQuote: "These effects appear to be due to the inhibition of CYP3A4 by nefazodone",
     contraindicatedGroups: [
       {
-        victimIds: ["pimozide", "carbamazepine"],
+        victimIds: ["pimozide", "carbamazepine", "terfenadine", "astemizole", "cisapride"],
         section: "Contraindications",
         quote: "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated",
       },
@@ -244,7 +244,7 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     roleQuote:
       "Co-administration of clarithromycin is known to inhibit CYP3A, and a drug primarily metabolized by CYP3A may be associated with elevations in drug concentrations that could increase or prolong both therapeutic and adverse effects of the concomitant drug.",
     contraindicatedGroups: [
-      { victimIds: ["pimozide"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin tablets with cisapride and pimozide is contraindicated" },
+      { victimIds: ["pimozide", "cisapride"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin tablets with cisapride and pimozide is contraindicated" },
       { victimIds: ["lovastatin", "simvastatin", "simvastatin-ezetimibe"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin tablets with HMG-CoA reductase inhibitors (statins) that are extensively metabolized by CYP3A4 (lovastatin or simvastatin) is contraindicated, due to the increased risk of myopathy, including rhabdomyolysis" },
       { victimIds: ["ergotamine", "dihydroergotamine"], section: "4 Contraindications", quote: "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated" },
       { victimIds: ["lurasidone"], section: "4 Contraindications", quote: "and lurasidone is contraindicated since it may result in an increase in lurasidone exposure and the potential for serious adverse reactions" },
@@ -493,7 +493,7 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     roleQuote: "Erythromycin is considered a moderate inhibitor of CYP3A4.",
     contraindicatedGroups: [
       {
-        victimIds: ["pimozide"],
+        victimIds: ["pimozide", "terfenadine", "astemizole", "cisapride"],
         section: "Contraindications",
         quote:
           "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine.",
