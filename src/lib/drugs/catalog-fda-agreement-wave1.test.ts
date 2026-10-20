@@ -69,9 +69,11 @@ test("rifampin, phenobarbital, grapefruit, ciprofloxacin match FDA grades", () =
 test("other perpetrator grades aligned to FDA", () => {
   const cases: [string, Enzyme, Kind, string][] = [
     ["abiraterone", "CYP2D6", "inhibitor", "moderate"],
-    ["cinacalcet", "CYP2D6", "inhibitor", "moderate"],
+    // Current Sensipar label: "Cinacalcet is a strong inhibitor of CYP2D6."
+    ["cinacalcet", "CYP2D6", "inhibitor", "strong"],
     ["amiodarone", "CYP3A4", "inhibitor", "weak"],
-    ["apalutamide", "CYP2C19", "inducer", "moderate"],
+    // Current Erleada label: "Apalutamide is a strong inducer of CYP3A4 and CYP2C19".
+    ["apalutamide", "CYP2C19", "inducer", "strong"],
     ["armodafinil", "CYP3A4", "inducer", "weak"],
     ["modafinil", "CYP3A4", "inducer", "weak"],
     ["cimetidine", "CYP1A2", "inhibitor", "weak"],
