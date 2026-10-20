@@ -400,7 +400,7 @@ export function buildClinicalPacket(
     );
     if (ids.includes("rivaroxaban")) {
       counselingPoints.push(
-        "Rivaroxaban (Xarelto) 15 mg and 20 mg tablets must always be taken with food (with your evening meal). Taking it without food reduces drug absorption by one-third and leaves you vulnerable to clots.",
+        "Higher-strength rivaroxaban (Xarelto) tablets (See the Prescribing Information) must always be taken with food (with your evening meal). Taking it without food reduces drug absorption by one-third and leaves you vulnerable to clots.",
       );
     }
     if (ids.includes("dabigatran")) {
@@ -528,7 +528,7 @@ export function buildClinicalPacket(
       ehrLines.push(
         `  Tisdale Inpatient QTc Risk: Score ${riskIndexes.qt.tisdale.score}/21 (${riskIndexes.qt.tisdale.tierLabel.toUpperCase()}) — ${riskIndexes.qt.tisdale.predictedRiskPercentage}`,
         `  Telemetry Protocol: ${riskIndexes.qt.tisdale.telemetryRequirement} | Electrolyte Goals: K+ ${riskIndexes.qt.tisdale.electrolyteTargets.potassiumMeqL}, Mg2+ ${riskIndexes.qt.tisdale.electrolyteTargets.magnesiumMgDl}`,
-        `  Acute TdP Resuscitation Directive: Magnesium Sulfate 2 g IV push over 1–2 min (suppresses EADs regardless of baseline Mg) | Avoid Class Ia/III antiarrhythmics`,
+        `  Acute TdP Resuscitation Directive: Magnesium Sulfate (See the Prescribing Information) over 1–2 min (suppresses EADs regardless of baseline Mg) | Avoid Class Ia/III antiarrhythmics`,
       );
     }
   } else {
@@ -557,7 +557,7 @@ export function buildClinicalPacket(
     );
     if (r.apixabanAbc) {
       ehrLines.push(
-        `  Apixaban ABC Criteria: ${r.apixabanAbc.criteriaMetCount}/3 met (${r.apixabanAbc.reductionIndicated ? "Dose reduction to 2.5 mg BID indicated" : "Standard 5 mg BID maintained"})`,
+        `  Apixaban ABC Criteria: ${r.apixabanAbc.criteriaMetCount}/3 met (${r.apixabanAbc.reductionIndicated ? "Dose reduction indicated (See the Prescribing Information)" : "Standard dose maintained (See the Prescribing Information)"})`,
       );
     }
     for (const rail of r.renalRails) {
@@ -579,7 +579,7 @@ export function buildClinicalPacket(
       `- Valproate Pharmacokinetics & Hyperammonemia Evaluation: Active agent on desk`,
       `  TDM & Albumin Binding: Target total (50–100 mcg/mL), free (5–15 mcg/mL). Saturable binding occurs >75–100 mcg/mL or in hypoalbuminemia.`,
       `  Hyperammonemic Encephalopathy (VHE): Metabolite block of NAGS produces severe encephalopathy with completely normal AST/ALT.`,
-      `  Antidote Protocol: IV L-Carnitine (Levocarnitine) 100 mg/kg IV loading (max 6 g), then 50 mg/kg q8h until ammonia resolves.`,
+      `  Antidote Protocol: IV L-Carnitine (Levocarnitine) loading dose, then maintenance until ammonia resolves (See the Prescribing Information).`,
     );
   }
 

@@ -158,7 +158,7 @@ test("buildClinicalPacket: evaluates Tisdale QTc score, inpatient telemetry, and
   assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "loopDiuretic" && f.present), true);
   assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "twoOrMoreQtDrugs" && f.present), true);
   assert.ok(packet.ehrNoteText.includes("Tisdale Inpatient QTc Risk"));
-  assert.ok(packet.ehrNoteText.includes("Acute TdP Resuscitation Directive: Magnesium Sulfate 2 g IV push"));
+  assert.ok(packet.ehrNoteText.includes("Acute TdP Resuscitation Directive: Magnesium Sulfate (See the Prescribing Information)"));
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("fluttering in your chest") || cp.includes("racing heartbeat")));
 });
 

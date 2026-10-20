@@ -9,26 +9,26 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 
 | | Before | After |
 |---|---|---|
-| Pages | 487 | 487 |
-| Verbatim label quote + DailyMed link visible (0 clicks) | 487 | 487 (quote block unchanged) |
-| Graded finding's own basis + link shown ("Why this grade", open) | 0 | 487 |
-| ...of which a label quote/section with DailyMed link | 0 | 487 |
+| Pages | 496 | 496 |
+| Verbatim label quote + DailyMed link visible (0 clicks) | 496 | 496 (quote block unchanged) |
+| Graded finding's own basis + link shown ("Why this grade", open) | 0 | 496 |
+| ...of which a label quote/section with DailyMed link | 0 | 496 |
 | Grade rests only on a catalog rule (shown as such) | not stated | 0 |
 
 ## Drug pages (/drug/...)
 
 | | Before | After |
 |---|---|---|
-| Graded pair rows | 974 | 974 |
-| Basis + source link in one click | 0 (two clicks, via the pair page) | 974 |
+| Graded pair rows | 992 | 992 |
+| Basis + source link in one click | 0 (two clicks, via the pair page) | 992 |
 | Rows with an honest catalog-rule note instead | 0 | 0 |
 
 ## Desk check row (pairs behind the pair pages)
 
 | | Before | After |
 |---|---|---|
-| Pair findings | 1174 | 1174 |
-| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1155 |
+| Pair findings | 1190 | 1190 |
+| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1171 |
 | Lead basis is a catalog-rule note | not stated | 19 |
 
 ## Whole catalog: grades resting only on an engine rule
@@ -36,7 +36,7 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 | Tier | Findings | Rule-only | Share |
 |---|---|---|---|
 | Avoid together | 3011 | 19 | 0.6% |
-| Serious concern | 67498 | 14669 | 21.7% |
+| Serious concern | 67498 | 14664 | 21.7% |
 
 Top rule-only rules:
 
@@ -44,7 +44,7 @@ Top rule-only rules:
 |---|---|
 | Serious concern · pd | 10382 |
 | Serious concern · pk-CYP3A4-inducer | 2245 |
-| Serious concern · washout | 661 |
+| Serious concern · washout | 656 |
 | Serious concern · pk-CYP3A4-inhibitor | 576 |
 | Serious concern · pd-alpha2 | 234 |
 | Serious concern · pk-CYP2D6-inhibitor | 78 |

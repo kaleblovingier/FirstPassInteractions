@@ -140,7 +140,7 @@ test("getTdpResuscitationNomogram: stable protocol specifies magnesium, overdriv
 
   const step1 = nomo.steps[0];
   assert.match(step1.title, /Magnesium Sulfate/);
-  assert.match(step1.dosingOrParameters, /2 grams IV/);
+  assert.match(step1.dosingOrParameters, /See the Prescribing Information/);
   assert.ok(step1.clinicalPearls.some((p) => p.includes("completely normal")));
 
   const step2 = nomo.steps[1];

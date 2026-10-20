@@ -194,3 +194,19 @@ test("a stored label class is the label's word and not a pin-only line", () => {
   assert.equal(pin?.labelClass, null);
   assert.equal(deskLabelPlain(["ranolazine", "phenobarbital"]).includes("Stored label class:"), false);
 });
+
+test("a name with no stored enzyme grade still shows the label sentence", () => {
+  const row = labelFor("clarithromycin", "cisapride");
+  assert.ok(row);
+  assert.equal(row.source, "pin");
+  assert.equal(row.labelClass, null);
+  assert.equal(row.pinEnzyme, null);
+  assert.equal(DRUG_BY_ID.cisapride?.enzymes.length, 0);
+  const plain = deskLabelPlain(["clarithromycin", "cisapride"]);
+  assert.match(plain, /Concomitant administration of clarithromycin tablets with cisapride and pimozide is contraindicated/);
+  assert.match(plain, /Stored source: pin\. That source is not a new finding\./);
+  assert.equal(plain.includes("Stored label class:"), false);
+  assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
+  assert.equal(labelFor("clarithromycin", "astemizole"), null);
+  assert.equal(labelFor("clarithromycin", "terfenadine"), null);
+});

@@ -1,6 +1,6 @@
 // Scripted WCAG 2.2 checks for criteria axe does not cover well:
 // 1.4.10 reflow, 1.4.12 text spacing, 2.3.3 reduced motion, 2.5.8 target size, 2.4.11 focus not obscured.
-// Usage: CHROME=/usr/bin/google-chrome node scripts/wcag22-checks.mjs <baseUrl> [path[@Button] ...]
+// Usage: CHROME=/usr/bin/google-chrome node scripts/wcag22-checks.mjs <baseUrl> [path[@Button[>Button...]] ...]
 import { chromium } from "playwright";
 const [base, ...rest] = process.argv.slice(2);
 if (!base) { console.error("usage: node scripts/wcag22-checks.mjs <baseUrl> [paths]"); process.exit(2); }
@@ -14,7 +14,7 @@ async function open(spec, width, opts = {}) {
   const ctx = await browser.newContext({ viewport: { width, height: 800 }, reducedMotion: opts.reduce ? "reduce" : "no-preference" });
   const page = await ctx.newPage();
   await page.goto(new URL(path, base).href, { waitUntil: "networkidle" });
-  if (click) { await page.getByRole("button", { name: click, exact: true }).first().click(); await page.waitForTimeout(600); }
+  for (const name of click ? click.split(">") : []) { await page.getByRole("button", { name, exact: true }).or(page.getByRole("tab", { name, exact: true })).first().click({ timeout: 10000 }); await page.waitForTimeout(600); }
   return { ctx, page };
 }
 for (const spec of paths) for (const width of [320, 1280]) {
@@ -23,9 +23,10 @@ for (const spec of paths) for (const width of [320, 1280]) {
   const ov = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   if (width === 320) report(ov <= 0, `${tag} 1.4.10 no sideways scroll (${ov}px)`);
   // 2.5.8 target size: under 24x24 and its 24px box overlaps another target's box.
+  // Inline links inside running text (p/td/dd/figcaption) use the WCAG "inline" exception; list items are checked.
   const small = await page.evaluate(() => {
     const sel = "a[href],button,input:not([type=hidden]),select,textarea,[role=button],[role=tab],[role=checkbox],[role=switch],[tabindex]:not([tabindex='-1'])";
-    const els = [...document.querySelectorAll(sel)].filter((e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && !e.closest("p,li,td,dd,figcaption") ; });
+    const els = [...document.querySelectorAll(sel)].filter((e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && !(s.display === "inline" && e.closest("p,td,dd,figcaption")) ; });
     const boxes = els.map((e) => { const r = e.getBoundingClientRect(); const cx = r.x + r.width / 2, cy = r.y + r.height / 2; return { e, r, b: { x: cx - 12, y: cy - 12, w: 24, h: 24 } }; });
     const hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
     const out = [];

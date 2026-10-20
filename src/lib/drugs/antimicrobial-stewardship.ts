@@ -482,7 +482,7 @@ export const ANTIMICROBIAL_PROFILES: Record<string, AntimicrobialProfile> = {
     category: "oxazolidinone",
     classLabel: "Second-Generation Oxazolidinone",
     spectrumSummary:
-      "Potent oxazolidinone active against MRSA, MSSA, and Streptococcus pyogenes. Once-daily dosing (200 mg q24h) for a standard 6-day course in acute bacterial skin and skin structure infections (ABSSSI).",
+      "Potent oxazolidinone active against MRSA, MSSA, and Streptococcus pyogenes. Once-daily dosing (See the Prescribing Information) for a standard 6-day course in acute bacterial skin and skin structure infections (ABSSSI).",
     primaryClearance: "hepatic",
     dialyzability:
       "Not dialyzable to a significant degree; no supplemental dose required post-HD.",
@@ -843,7 +843,7 @@ export function evaluateCefepimeNeurotoxicity(
         "Mandatory administration immediately AFTER hemodialysis runs. Administering cefepime pre-dialysis strips ~70% of the active drug into dialysate, collapsing pharmacodynamic %T > MIC against Pseudomonas; conversely, failing to extend dose intervals between dialyses triggers severe neurotoxic accumulation.",
     },
     stewardshipAction: [
-      "Mandate renal dose adjustment for CrCl < 50 mL/min (e.g., 1 g IV q24h or 1 g IV post-HD vs 2 g IV q8h standard).",
+      "Mandate renal dose adjustment for CrCl < 50 mL/min (See the Prescribing Information).",
       "In any patient developing acute delirium, myoclonus, or confusion while receiving cefepime, immediately order continuous EEG and hold cefepime.",
       "Switch to alternative antipseudomonal agents (meropenem [provided valproate is absent], piperacillin-tazobactam, or aztreonam) during neurotoxicity workup.",
       "Consider emergent hemodialysis in life-threatening NCSE or severe overdose to rapidly extract ~70% of circulating drug.",
@@ -1096,7 +1096,7 @@ export function evaluatePolymyxinToxicities(
         "General anesthetics and magnesium infusions",
       ],
       reversalPearl:
-        "Unlike pure competitive NMBA block, anticholinesterases (neostigmine, pyridostigmine) provide inconsistent or ineffective reversal because presynaptic calcium influx remains blunted. Administration of IV Calcium Gluconate (1-2 g IV) can partially restore presynaptic calcium influx and reverse polymyxin-mediated neuromuscular blockade.",
+        "Unlike pure competitive NMBA block, anticholinesterases (neostigmine, pyridostigmine) provide inconsistent or ineffective reversal because presynaptic calcium influx remains blunted. Administration of IV Calcium Gluconate (See the Prescribing Information) can partially restore presynaptic calcium influx and reverse polymyxin-mediated neuromuscular blockade.",
     },
     stewardshipAction: actions,
   };
@@ -1258,7 +1258,7 @@ export function detectAntimicrobialCollisions(
       clinicalManifestation:
         "Acute encephalopathy, myoclonic jerking, asterixis, non-convulsive status epilepticus, and coma.",
       practiceStandard:
-        "Mandatory renal interval adjustment according to CrCl (e.g., 1 g q24h or 1 g post-HD). Immediate continuous EEG for acute delirium; hemodialysis clears ~70% per 3-hour run.",
+        "Mandatory renal interval adjustment according to CrCl (See the Prescribing Information). Immediate continuous EEG for acute delirium; hemodialysis clears ~70% per 3-hour run.",
       stewardshipAction:
         "Renally adjust dose immediately; if neurotoxicity is suspected, switch to alternative antipseudomonal agent.",
     });
@@ -1335,7 +1335,7 @@ export function detectAntimicrobialCollisions(
       clinicalManifestation:
         "Failure of postoperative spontaneous ventilation, prolonged paralysis, flaccid weakness, and fatal apnea.",
       practiceStandard:
-        "Avoid combination during surgical procedures; if unavoidable, maintain mechanical ventilation and administer IV Calcium Gluconate (1-2 g) for rescue.",
+        "Avoid combination during surgical procedures; if unavoidable, maintain mechanical ventilation and administer IV Calcium Gluconate (See the Prescribing Information) for rescue.",
       stewardshipAction:
         "Alert anesthesia/critical care team. Note that neostigmine provides unreliable reversal; prepare IV calcium gluconate.",
     });
@@ -1524,7 +1524,7 @@ export function generateStewardshipMonitoringPlan(
       frequency: "Continuous in ICU / perioperative settings",
       rationale:
         "Polymyxins inhibit presynaptic acetylcholine release. Prolonged apnea occurs with NMBAs or aminoglycosides.",
-      thresholds: "Ptosis, diplopia, dyspnea; have IV Calcium Gluconate (1-2 g) available for rescue.",
+      thresholds: "Ptosis, diplopia, dyspnea; have IV Calcium Gluconate (See the Prescribing Information) available for rescue.",
     });
   }
 
@@ -1583,7 +1583,7 @@ export function generateStewardshipPearls(
 
   if (onDesk.hasPolymyxin) {
     pearls.push(
-      "Polymyxin Antidote Pearl: Polymyxin-induced respiratory paralysis cannot be reliably reversed by neostigmine because the block is primarily presynaptic (calcium influx failure). Intravenous Calcium Gluconate (1-2 g) can restore presynaptic calcium influx and reverse paralysis."
+      "Polymyxin Antidote Pearl: Polymyxin-induced respiratory paralysis cannot be reliably reversed by neostigmine because the block is primarily presynaptic (calcium influx failure). Intravenous Calcium Gluconate (See the Prescribing Information) can restore presynaptic calcium influx and reverse paralysis."
     );
   }
 
