@@ -46,6 +46,10 @@ const specs = [
   ...(only.has("enzyme") ? [...pick(/^\/enzymes?$/), ...pick(/^\/enzyme\//)] : []),
   ...(only.has("tools") ? TOOLS : []),
 ];
+// Optional standalone learning routes: gated only when this build serves them.
+for (const p of only.has("tools") ? ["/practice"] : []) {
+  try { if ((await fetch(new URL(p, base))).ok) specs.push(p); } catch { /* not served */ }
+}
 console.log(`a11y-gate: ${specs.length} routes x 2 widths`);
 
 const browser = await chromium.launch({ ...(process.env.CHROME ? { executablePath: process.env.CHROME } : {}), args: ["--no-sandbox"] });
