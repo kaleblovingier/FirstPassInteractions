@@ -12,7 +12,7 @@ This packet lists every rule in the interaction engine that can produce a **cont
 
 ## How the counts were made
 
-- Every unordered pair of the 1,861 catalog entries (1,730,730 pairs) was run through `analyze([a, b])` with no host context (no phenotypes, smoking, alcohol, renal, pregnancy) and no entered amounts. Host-, phenotype-, and dose-driven rules are therefore **not** counted here.
+- Every unordered pair of the 1,866 catalog entries (1,740,045 pairs) was run through `analyze([a, b])` with no host context (no phenotypes, smoking, alcohol, renal, pregnancy) and no entered amounts. Host-, phenotype-, and dose-driven rules are therefore **not** counted here.
 - "Pairs" = distinct drug pairs on which the rule produced a contraindicated/major finding. One pair can appear under several rules.
 - PK rules are grouped by the escalation branch in `pkSeverity()` (perpetrator strength × victim grade), across all enzymes; the per-enzyme finding split is in the trigger column.
 - "Current cited source" is what `basisFor()` in `src/lib/drugs/basis.ts` attaches today: a label/PI paraphrase keyed to the rule, or a drug-level PubMed cite, or nothing ("curated map only").
