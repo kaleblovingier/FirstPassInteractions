@@ -4,7 +4,7 @@ import { drugHubs, type DrugHub } from "./drug-hubs";
 import { SITE_URL } from "./pair-copy";
 
 /** Line printed on every share image. */
-export const OG_DISCLAIMER = "Educational reference only. Not FDA-cleared.";
+export const OG_DISCLAIMER = "Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
@@ -21,6 +21,8 @@ export interface OgImageJob {
   sub: string;
   severity: Severity | "none" | null;
   gradeLabel: string | null;
+  /** Full disclaimer printed in the card footer. */
+  disclaimer: string;
 }
 
 export const ogImagePath = (kind: OgKind, slug: string) => `/og/${kind}/${slug}.png`;
@@ -34,6 +36,7 @@ export function pairOgJob(p: PairPage): OgImageJob {
     sub: "What the FDA labels say about these two drugs together",
     severity: p.severity,
     gradeLabel: p.severityLabel,
+    disclaimer: OG_DISCLAIMER,
   };
 }
 
@@ -47,12 +50,13 @@ export function hubOgJob(h: DrugHub): OgImageJob {
     sub: `${n} label-sourced ${n === 1 ? "pair" : "pairs"}`,
     severity: top?.severity ?? null,
     gradeLabel: top ? `Highest grade: ${SEVERITY_LABEL[top.severity]}` : null,
+    disclaimer: OG_DISCLAIMER,
   };
 }
 
 export const STATIC_OG_JOBS: OgImageJob[] = [
-  { path: ogImagePath("page", "pairs"), kicker: "All pairs", heading: "Label-sourced drug interaction pairs", sub: "The FDA label's own wording, with a DailyMed link", severity: null, gradeLabel: null },
-  { path: ogImagePath("page", "for-programs"), kicker: "For programs", heading: "Group and site licenses", sub: "For teaching and care programs", severity: null, gradeLabel: null },
+  { path: ogImagePath("page", "pairs"), kicker: "All pairs", heading: "Label-sourced drug interaction pairs", sub: "The FDA label's own wording, with a DailyMed link", severity: null, gradeLabel: null, disclaimer: OG_DISCLAIMER },
+  { path: ogImagePath("page", "for-programs"), kicker: "For programs", heading: "Group and site licenses", sub: "For teaching and care programs", severity: null, gradeLabel: null, disclaimer: OG_DISCLAIMER },
 ];
 
 /** Every share image the build must produce. Derived from data, so slug renames follow automatically. */

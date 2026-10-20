@@ -10,7 +10,7 @@ import { createRequire } from "node:module";
 import { dirname, join, relative } from "node:path";
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
-import { OG_DISCLAIMER, OG_HEIGHT, OG_WIDTH, ogImageJobs, type OgImageJob } from "../src/lib/seo/og";
+import { OG_HEIGHT, OG_WIDTH, ogImageJobs, type OgImageJob } from "../src/lib/seo/og";
 
 const require = createRequire(import.meta.url);
 const fontDir = join(dirname(require.resolve("@fontsource/inter/package.json")), "files");
@@ -18,7 +18,7 @@ const fonts = [
   { name: "Inter", data: readFileSync(join(fontDir, "inter-latin-400-normal.woff")), weight: 400 as const, style: "normal" as const },
   { name: "Inter", data: readFileSync(join(fontDir, "inter-latin-700-normal.woff")), weight: 700 as const, style: "normal" as const },
 ];
-const RENDER_VERSION = "2";
+const RENDER_VERSION = "3";
 
 const GRADE_COLOR: Record<string, string> = {
   contraindicated: "#b91c1c", major: "#c2410c", moderate: "#a16207", minor: "#1d4ed8", none: "#475569",
@@ -42,7 +42,7 @@ function tree(j: OgImageJob): Node {
         ? [h("div", { display: "flex", marginTop: 28 }, [h("div", { fontSize: 32, fontWeight: 700, color: "#fff", background: GRADE_COLOR[j.severity ?? "none"] ?? "#475569", padding: "10px 24px", borderRadius: 12 }, j.gradeLabel)])]
         : []),
     ]),
-    h("div", { fontSize: 26, color: "#475569", borderTop: "2px solid #cbd5e1", paddingTop: 20 }, OG_DISCLAIMER),
+    h("div", { display: "flex", fontSize: 24, color: "#475569", borderTop: "2px solid #cbd5e1", paddingTop: 20, whiteSpace: "nowrap" }, j.disclaimer),
   ]);
 }
 
