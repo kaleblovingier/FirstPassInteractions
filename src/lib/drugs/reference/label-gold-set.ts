@@ -4153,7 +4153,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "Sporanox + eliglustat",
     reason:
-      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is on the shelf as an FDA Table 1 example. The line stays unpinned.",
+      "Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is in the catalog since Ship 1.77 (FDA Table 1 role only), but the contraindication is metabolizer-conditional, so it is not an unconditional pair. Recorlev Table 6 names it with the same condition.",
   },
   {
     pair: "Sporanox + venetoclax",
