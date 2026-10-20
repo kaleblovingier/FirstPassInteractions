@@ -96,7 +96,11 @@ describe("grade provenance: link names say which label they open", () => {
     for (const p of pages) {
       for (const b of p.why) {
         if (!b.href?.includes("dailymed")) continue;
-        assert.match(sourceLinkText(b.title, b.href), /^\S.* label on DailyMed$/, `${p.slug}: ${b.title}`);
+        const t = sourceLinkText(b.title, b.href);
+        if (b.href.includes("search.cfm")) {
+          assert.match(t, /^Search DailyMed for \S/, `${p.slug}: ${b.title}`);
+          assert.doesNotMatch(t, /label on DailyMed/, `${p.slug}: search link claims a label`);
+        } else assert.match(t, /^\S.* label on DailyMed$/, `${p.slug}: ${b.title}`);
       }
     }
   });
@@ -108,12 +112,13 @@ describe("grade provenance: link names say which label they open", () => {
     const names = links(html);
     assert.ok(names.length > 1, "expected several source links on /drug/contrave");
     assert.equal(new Set(names).size, names.length, `duplicate link names: ${names.join(" | ")}`);
-    for (const n of names) assert.match(n, /label on DailyMed|label|PubMed|CPIC|FDA/, n);
+    for (const n of names) assert.match(n, /label on DailyMed|Search DailyMed for|label|PubMed|CPIC|FDA/, n);
   });
 
   it("sourceLinkText names the owner and never says 'Open source' or 'Strong'", () => {
     assert.equal(sourceLinkText("Contrave label, Contraindications", "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=x"), "Contrave label on DailyMed");
-    assert.equal(sourceLinkText("Prescribing Information", "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=sodium%20oxybate"), "Sodium oxybate label on DailyMed");
+    assert.equal(sourceLinkText("Prescribing Information", "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=sodium%20oxybate"), "Search DailyMed for Sodium oxybate");
+    assert.equal(sourceLinkText("Basis: catalog rule", "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=selegiline"), "Search DailyMed for Selegiline");
     assert.equal(sourceLinkText("PMID 123", "https://pubmed.ncbi.nlm.nih.gov/123/"), "PMID 123 on PubMed");
     for (const p of pages) for (const b of p.why) if (b.href) assert.doesNotMatch(sourceLinkText(b.title, b.href), /Open source|\bStrong\b/);
   });

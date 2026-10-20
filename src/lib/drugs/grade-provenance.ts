@@ -60,7 +60,8 @@ function cap(s: string): string {
 }
 
 /** Visible link text that names what the link opens, never a bare "Open source".
- *  A DailyMed link names whose label it opens, e.g. "Contrave label on DailyMed". */
+ *  A DailyMed label link names whose label it opens, e.g. "Contrave label on DailyMed";
+ *  a DailyMed search link says so, e.g. "Search DailyMed for Selegiline". */
 export function sourceLinkText(title: string, href: string): string {
   let url: URL | null = null;
   try {
@@ -73,6 +74,7 @@ export function sourceLinkText(title: string, href: string): string {
   if (host.endsWith("dailymed.nlm.nih.gov")) {
     const query = url?.searchParams.get("query")?.trim();
     const owner = labelOwner ?? (query ? cap(query) : "");
+    if (url?.pathname.includes("search.cfm")) return owner ? `Search DailyMed for ${owner}` : "Search DailyMed";
     return owner ? `${owner} label on DailyMed` : "Label on DailyMed";
   }
   if (labelOwner) return `${labelOwner} label`;
