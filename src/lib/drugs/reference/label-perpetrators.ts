@@ -826,11 +826,8 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     role: "inhibitor",
     section: "7 Drug Interactions",
     roleQuote: "Rolapitant is a moderate CYP2D6 inhibitor.",
-    contraindicatedWith: {
-      victimIds: ["thioridazine",  "pimozide"],
-      section: "4 Contraindications",
-      quote: "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide.",
-    },
+    // Section 4 names thioridazine and pimozide, but the desk cards do not read contraindicated, so they are not quoted here.
+    alsoNamed: ["thioridazine", "pimozide"],
     url: DM("8670c3cf-82d9-466d-be49-de33d8c8742b"),
     labelEffective: "2026-09-08",
     retrieved: "2026-10-13",

@@ -291,10 +291,9 @@ test('wave 12 role-only labels cite their own brand on a pk finding', () => {
   }
 });
 
-test('rolapitant + pimozide quotes the Varubi contraindication', () => {
+test('rolapitant + pimozide gets no Varubi role line claiming the label is silent', () => {
   const b = pkBasis('rolapitant', 'pimozide').find((x) => x.label.startsWith('Varubi'));
-  assert.ok(b);
-  assert.match(b.detail, /VARUBI is contraindicated in patients taking CYP2D6 substrates/);
+  assert.ok(!b || !/does not name this pair/.test(b.detail));
 });
 
 test('no wave 12 role quote states a dose', () => {
