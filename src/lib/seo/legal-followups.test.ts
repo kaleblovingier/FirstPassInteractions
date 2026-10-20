@@ -27,7 +27,7 @@ describe("/trust payments line", () => {
   it("names Venmo, Cash App and PayPal and says Stripe is not live", () => {
     const pay = JSON.stringify(TRUST_SECTIONS).match(/Founding is paid by[^"]*/)?.[0] ?? "";
     assert.match(pay, /Venmo, Cash App or PayPal/);
-    assert.match(pay, /not switched on/);
+    assert.doesNotMatch(pay, /Stripe|card checkout/i);
   });
 });
 

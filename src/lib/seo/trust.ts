@@ -82,7 +82,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "Payments.",
-      text: "Founding is paid by Venmo, Cash App or PayPal. The payment happens in that app, so FirstPass never sees your card or bank details. The operator matches the payment and emails the Founding key. Card checkout through Stripe is built but is not switched on.",
+      text: "Founding is paid by Venmo, Cash App or PayPal. The payment happens in that app, so FirstPass never sees your card or bank details. The operator matches the payment and emails the Founding key.",
     },
     {
       lead: "Key emails.",
