@@ -167,15 +167,15 @@ export default defineConfig(({ command, isPreview }) => ({
     grokPwaPlugin(),
     tailwindcss(),
     tanstackStart({
-      // Static HTML for the public SEO pages (/pairs, /pair/*, /drug/*, sitemap.xml).
-      // /pairs links to every pair page, so crawling it covers them all.
+      // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /for-programs, /trust, sitemap.xml).
+      // /pairs links to every pair page and /enzymes to every enzyme page, so crawling covers them all.
       // The desk itself stays server-rendered as before.
       prerender: {
         enabled: true,
         crawlLinks: true,
-        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
+        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path === "/trust" || path === "/enzymes" || path.startsWith("/enzyme/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
       },
-      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/sitemap.xml" }],
+      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/trust" }, { path: "/enzymes" }, { path: "/sitemap.xml" }],
     }),
     ...(command === "build" || isPreview
       ? [

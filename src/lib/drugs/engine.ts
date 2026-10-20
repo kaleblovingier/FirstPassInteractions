@@ -1193,15 +1193,19 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     (a.id === "methotrexate" && (has(b, "nsaid") || b.id === "tmp-smx")) ||
     (b.id === "methotrexate" && (has(a, "nsaid") || a.id === "tmp-smx"))
   ) {
+    const isSmx = a.id === "tmp-smx" || b.id === "tmp-smx";
     out.push(
       pdPair(a, b, {
-        suffix: "pd-mtx",
-        severity: "major",
-        effect: "methotrexate toxicity",
-        mechanism: "reduced MTX clearance",
-        clinical:
-          "NSAIDs and trimethoprim–sulfamethoxazole reduce methotrexate clearance and add marrow/mucosal toxicity. This pairing is a classic cause of MTX disaster.",
-        tags: ["marrow"],
+        suffix: isSmx ? "pd-mtx-tmpsmx" : "pd-mtx",
+        severity: isSmx ? "contraindicated" : "major",
+        effect: isSmx ? "fatal pancytopenia / acute methotrexate toxicity" : "methotrexate toxicity",
+        mechanism: isSmx
+          ? "TMP-SMX (OAT1/3 tubular excretion blockade + additive antifolate) × MTX"
+          : "reduced MTX clearance",
+        clinical: isSmx
+          ? "Trimethoprim impairs renal tubular excretion of methotrexate via OAT1/OAT3 and OCT2 transporters, and sulfamethoxazole displaces it from albumin, while both agents inhibit dihydrofolate reductase. Fatal pancytopenia and severe mucocutaneous toxicity are labeled. Avoid coadministration."
+          : "NSAIDs and trimethoprim–sulfamethoxazole reduce methotrexate clearance and add marrow/mucosal toxicity. This pairing is a classic cause of MTX disaster.",
+        tags: isSmx ? ["marrow", "oncology", "boxed"] : ["marrow"],
       }),
     );
   }

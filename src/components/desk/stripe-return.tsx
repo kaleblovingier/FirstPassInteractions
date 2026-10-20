@@ -5,10 +5,14 @@ import { claimPaypalCheckout } from "@/lib/billing/paypal";
 import { useDesk } from "@/lib/drugs/store";
 import { Button } from "@/components/ui/button";
 import { useModalFocus } from "@/lib/a11y/use-modal-focus";
+import { formatEndDay, type ProgramGrant } from "@/lib/billing/program-license";
+import { PROGRAM_TIER_BY_ID } from "@/lib/billing/programs";
 
 export interface LicenseActivatedDialogProps {
   license: string;
   lifetime: boolean;
+  /** Set when the key is a program key; the copy then names its end date instead of "lifetime". */
+  program?: ProgramGrant | null;
   onDismiss: () => void;
 }
 
@@ -16,6 +20,7 @@ export interface LicenseActivatedDialogProps {
 export function LicenseActivatedDialog({
   license,
   lifetime,
+  program,
   onDismiss,
 }: LicenseActivatedDialogProps) {
   const [copied, setCopied] = useState(false);
@@ -63,13 +68,19 @@ export function LicenseActivatedDialog({
               Access Unlocked
             </p>
             <h2 id="license-activated-title" className="font-serif text-2xl font-bold tracking-tight text-fg">
-              {lifetime ? "Founding Lifetime License Activated!" : "License Activated!"}
+              {program
+                ? `${PROGRAM_TIER_BY_ID[program.tier].name} Program License Activated!`
+                : lifetime
+                  ? "Founding Lifetime License Activated!"
+                  : "License Activated!"}
             </h2>
           </div>
         </div>
 
         <p className="mt-4 text-sm leading-relaxed text-muted">
-          Thank you for supporting FirstPass! Your desk now has lifetime access to the Contraindicated Conditions Matrix, Host Factors & Genetics, Enzyme Atlas (CYP), Metabolite Trees, Full Clinical Reports, and CSV/JSON export.
+          {program
+            ? `Your desk has every Founding tool through ${formatEndDay(program.endsAt)}: the Contraindicated Conditions Matrix, Host Factors & Genetics, Enzyme Atlas (CYP), Metabolite Trees, Full Clinical Reports, and CSV/JSON export. Ask your program lead for the renewed key when the term ends.`
+            : `Thank you for supporting FirstPass! Your desk now has ${lifetime ? "lifetime " : ""}access to the Contraindicated Conditions Matrix, Host Factors & Genetics, Enzyme Atlas (CYP), Metabolite Trees, Full Clinical Reports, and CSV/JSON export.`}
         </p>
 
         {/* Monospace License Key block */}
@@ -159,6 +170,7 @@ export function StripeReturn({ ready }: { ready: boolean }) {
   const justActivated = useDesk((s) => s.justActivated);
   const license = useDesk((s) => s.license);
   const lifetime = useDesk((s) => s.lifetime);
+  const program = useDesk((s) => s.program);
   const dismiss = useDesk((s) => s.dismissActivated);
   const ran = useRef(false);
   const [claiming, setClaiming] = useState(false);
@@ -275,6 +287,7 @@ export function StripeReturn({ ready }: { ready: boolean }) {
         <LicenseActivatedDialog
           license={license}
           lifetime={lifetime}
+          program={program}
           onDismiss={dismiss}
         />
       ) : null}

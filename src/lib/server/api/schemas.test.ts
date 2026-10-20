@@ -117,3 +117,24 @@ test("schemas: an empty module list is rejected; omitting it runs every module",
   const omitted = validateSchema(KineticsEvaluationRequestSchema, { drugs: ["warfarin"] });
   assert.equal(omitted.success, true);
 });
+
+test("schemas: age > 89 is rejected under HIPAA Safe Harbor de-identification", () => {
+  const errors = errorsFor(HostContextSchema, { age: 92 });
+  assert.equal(errors.length, 1);
+  assert.equal(errors[0].name, "age");
+  assert.match(errors[0].reason, /HIPAA Safe Harbor.*89/);
+
+  const valid = validateSchema(HostContextSchema, { age: 89 });
+  assert.equal(valid.success, true);
+});
+
+test("schemas: PHI patterns (SSN or 9+ digit identifiers) in queries and drug lists are rejected", () => {
+  const ssnQuery = errorsFor(DrugLookupRequestSchema, { q: "123-45-6789" });
+  assert.equal(ssnQuery[0].name, "q");
+  assert.match(ssnQuery[0].reason, /prohibited/);
+
+  const mrnDrug = errorsFor(InteractionCheckRequestSchema, { drugs: ["warfarin", "9876543210"] });
+  assert.equal(mrnDrug[0].name, "drugs.1");
+  assert.match(mrnDrug[0].reason, /not patient identifiers/);
+});
+

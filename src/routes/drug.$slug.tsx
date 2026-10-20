@@ -1,6 +1,8 @@
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { DrugHubView } from "@/components/seo/pair-page";
+import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { drugHubBySlug, legacyDrugHubRedirect } from "@/lib/seo/drug-hubs";
+import { SITE_URL } from "@/lib/seo/pair-copy";
 
 export const Route = createFileRoute("/drug/$slug")({
   loader: ({ params }) => {
@@ -19,6 +21,11 @@ export const Route = createFileRoute("/drug/$slug")({
             { property: "og:title", content: loaderData.title },
             { property: "og:description", content: loaderData.description },
             { property: "og:url", content: loaderData.canonical },
+            breadcrumbMeta([
+              HOME_CRUMB,
+              { name: "Drug pairs", url: `${SITE_URL}/pairs` },
+              { name: loaderData.name, url: loaderData.canonical },
+            ]),
           ],
           links: [{ rel: "canonical", href: loaderData.canonical }],
         }

@@ -388,8 +388,8 @@ export function HelpPage() {
         </div>
 
         <p id={hintId} className="mt-2 text-xs leading-relaxed text-muted">
-          <span className="font-semibold text-fg">Privacy guarantee:</span> What you type stays on this device.
-          No search terms or locations are ever sent to our servers or stored in cookies. Outbound links go
+          <span className="font-semibold text-fg">Privacy:</span> What you type stays on this device.
+          FirstPass does not send your search terms or location to its servers and sets no cookies of its own. Outbound links go
           directly to official federal and state websites.
         </p>
 

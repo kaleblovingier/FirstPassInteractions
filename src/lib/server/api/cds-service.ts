@@ -91,7 +91,7 @@ import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
 
 export const STATUTORY_CDS_DISCLAIMER =
-  "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice.";
+  "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice. Provided AS IS with all faults pursuant to UCC § 2-316.";
 
 export interface ApiDrugSummary {
   id: string;

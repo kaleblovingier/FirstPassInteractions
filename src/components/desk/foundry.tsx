@@ -15,8 +15,18 @@ import {
 } from "@/lib/billing/commerce";
 import { collectLicenses, draftCollected } from "@/lib/billing/collect";
 import { loadPipe, savePipe } from "@/lib/billing/hunts";
-import { mintLicenseKey } from "@/lib/billing/license";
+import { mintLicenseKey, mintProgramLicense } from "@/lib/billing/license";
 import { priceFor } from "@/lib/billing/plans";
+import { PROGRAM_TIERS, programKeyEndsAt, type ProgramTierId } from "@/lib/billing/programs";
+import {
+  PROGRAM_MAX_MONTHS_AHEAD,
+  PROGRAM_ORG_MAX,
+  defaultProgramEndMonth,
+  endMonthValue,
+  formatEndDay,
+  parseEndMonth,
+  programOnboardingNote,
+} from "@/lib/billing/program-license";
 import { teachingPackLinks } from "@/lib/drugs/permalinks";
 import { useDesk } from "@/lib/drugs/store";
 import { Button } from "@/components/ui/button";
@@ -650,6 +660,8 @@ function CloseDesk({
         </pre>
       </section>
 
+      <ProgramKeyDesk pin={pin} copied={copied} copy={copy} />
+
       {issued.length > 0 ? (
         <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
           <div className="flex items-center justify-between gap-2">
@@ -683,5 +695,165 @@ function CloseDesk({
         </section>
       ) : null}
     </>
+  );
+}
+
+type MintedProgram = { key: string; org: string; tier: ProgramTierId; endsAt: string };
+
+function seatsLabel(seats: number | null) {
+  return seats === null ? "Unlimited" : `${seats} seats`;
+}
+
+function monthBounds(now: Date) {
+  const total = now.getUTCFullYear() * 12 + now.getUTCMonth();
+  const at = (n: number) => endMonthValue(Math.floor(n / 12), (n % 12) + 1);
+  return { min: at(total), max: at(total + PROGRAM_MAX_MONTHS_AHEAD) };
+}
+
+/** One key a whole program redeems, ending with the paid term. */
+function ProgramKeyDesk({
+  pin,
+  copied,
+  copy,
+}: {
+  pin: string;
+  copied: string;
+  copy: (label: string, text: string) => void;
+}) {
+  const [org, setOrg] = useState("");
+  const [tier, setTier] = useState<ProgramTierId>("program");
+  const [end, setEnd] = useState(() => defaultProgramEndMonth());
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [warn, setWarn] = useState("");
+  const [minted, setMinted] = useState<MintedProgram | null>(null);
+  const bounds = useMemo(() => monthBounds(new Date()), []);
+  const endParsed = parseEndMonth(end);
+  const lastDay = endParsed ? formatEndDay(programKeyEndsAt(endParsed.year, endParsed.month)) : "";
+  const note = useMemo(
+    () => (minted ? programOnboardingNote({ ...minted, siteUrl: SITE.url, contact: OPERATOR.email }) : ""),
+    [minted],
+  );
+
+  async function mint() {
+    setBusy(true);
+    setErr("");
+    setWarn("");
+    try {
+      const res = await mintProgramLicense({ data: { pin, tier, org, end } });
+      if (!res.ok) {
+        setErr(res.reason);
+        setMinted(null);
+        return;
+      }
+      if (res.defaultPin || res.defaultPepper) {
+        setWarn(
+          "Minted with the development PIN or pepper. Set the production PIN and license pepper before you send a real program key.",
+        );
+      }
+      setMinted({ key: res.key, org: res.org, tier: res.tier, endsAt: res.endsAt });
+    } catch {
+      setErr("Could not mint. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
+      <div className="flex items-center gap-2">
+        <KeyRound className="size-4 text-accent" />
+        <h2 className="font-serif text-xl tracking-tight text-fg">Program key</h2>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-muted">
+        One key a whole program redeems. Each learner gets every Founding tool through the end month, then
+        their desk goes back to free. Seats are on the honor system: there are no accounts and nothing about
+        learners is stored. The same organization, tier and end month always mint the same key.
+      </p>
+
+      <label className="mt-4 block text-xs font-medium text-muted" htmlFor="program-org">
+        Organization
+      </label>
+      <Input
+        id="program-org"
+        className="mt-1.5"
+        value={org}
+        maxLength={PROGRAM_ORG_MAX}
+        placeholder="School, residency, clinic or team"
+        onChange={(e) => setOrg(e.target.value)}
+      />
+
+      <p className="mt-4 text-xs font-medium text-muted" id="program-tier-label">
+        Tier
+      </p>
+      <div className="mt-1.5 grid gap-1 sm:grid-cols-3" role="group" aria-labelledby="program-tier-label">
+        {PROGRAM_TIERS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            aria-pressed={tier === t.id}
+            onClick={() => setTier(t.id)}
+            className={cn(
+              "flex min-h-11 flex-col items-start justify-center rounded-sm px-3 py-2 text-left",
+              tier === t.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+            )}
+          >
+            <span className="text-sm font-medium">{t.name}</span>
+            <span className="font-mono text-[11px] opacity-80">
+              {seatsLabel(t.seats)} · ${t.annual.toLocaleString("en-US")}/yr
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <label className="mt-4 block text-xs font-medium text-muted" htmlFor="program-end">
+        Last month the key works
+      </label>
+      <div className="mt-1.5 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
+        <Input
+          id="program-end"
+          type="month"
+          value={end}
+          min={bounds.min}
+          max={bounds.max}
+          aria-describedby="program-end-hint"
+          onChange={(e) => setEnd(e.target.value)}
+        />
+        <Button onClick={() => void mint()} disabled={busy || !pin || !org.trim() || !endParsed}>
+          {busy ? "Minting…" : "Mint program key"}
+        </Button>
+      </div>
+      <p id="program-end-hint" className="mt-1.5 text-xs text-muted">
+        {lastDay ? `Works through ${lastDay} (UTC).` : "Pick a month."}
+        {pin ? "" : " Enter the operator PIN above to mint."}
+      </p>
+
+      {err ? <p className="mt-3 text-sm text-danger">{err}</p> : null}
+      {warn ? <p className="mt-3 text-sm text-warn">{warn}</p> : null}
+
+      {minted ? (
+        <>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-md bg-ok-soft px-3 py-2">
+            <span className="min-w-0 break-all font-mono text-sm text-ok">{minted.key}</span>
+            <Button size="sm" variant="secondary" onClick={() => void copy("program-key", minted.key)}>
+              {copied === "program-key" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+              {copied === "program-key" ? "Copied" : "Copy key"}
+            </Button>
+          </div>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-xs font-medium uppercase tracking-wide text-muted">Onboarding note for the program lead</h3>
+            <Button size="sm" variant="secondary" onClick={() => void copy("program-note", note)}>
+              {copied === "program-note" ? "Copied" : "Copy note"}
+            </Button>
+          </div>
+          <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap rounded-md bg-bg-sunken px-3 py-3 font-sans text-sm leading-relaxed text-fg">
+            {note}
+          </pre>
+        </>
+      ) : null}
+      <span role="status" className="sr-only">
+        {copied === "program-key" ? "Program key copied" : copied === "program-note" ? "Onboarding note copied" : ""}
+      </span>
+    </section>
   );
 }

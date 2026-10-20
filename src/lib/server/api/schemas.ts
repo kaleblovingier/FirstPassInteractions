@@ -51,7 +51,10 @@ export const HostContextSchema = z
     age: z
       .number()
       .min(0, "Age cannot be negative")
-      .max(125, "Age exceeds physiologic range")
+      .max(
+        89,
+        "Under HIPAA Safe Harbor de-identification (45 CFR § 164.514(b)(2)), discrete age must not exceed 89 years (aggregate patients 90 or older into the 89-year geriatric cohort)",
+      )
       .optional(),
     sex: z.enum(["male", "female"]).optional(),
     weightKg: z
@@ -92,12 +95,28 @@ export const HostContextSchema = z
 
 export type HostContextInput = z.infer<typeof HostContextSchema>;
 
+const PHI_PATIENT_ID_REGEX = /\b(?:\d{3}-\d{2}-\d{4}|\d{9,})\b/;
+
+export const DrugIdentifierSchema = z
+  .string()
+  .trim()
+  .min(1, "Drug identifier cannot be empty")
+  .max(100)
+  .refine(
+    (val) => !PHI_PATIENT_ID_REGEX.test(val),
+    "Drug identifiers must be pharmacological names, not patient identifiers",
+  );
+
 export const DrugLookupRequestSchema = z.strictObject({
   q: z
     .string()
     .trim()
     .min(1, "Search query cannot be empty")
-    .max(100, "Query exceeds max length 100"),
+    .max(100, "Query exceeds max length 100")
+    .refine(
+      (val) => !PHI_PATIENT_ID_REGEX.test(val),
+      "Search queries must be generic or brand drug names; patient health identifiers are prohibited",
+    ),
   limit: z.coerce.number().int().min(1).max(50).default(10),
 });
 
@@ -105,7 +124,7 @@ export type DrugLookupRequest = z.infer<typeof DrugLookupRequestSchema>;
 
 export const InteractionCheckRequestSchema = z.strictObject({
   drugs: z
-    .array(z.string().trim().min(1, "Drug identifier cannot be empty").max(100))
+    .array(DrugIdentifierSchema)
     .min(1, "At least 1 drug must be provided")
     .max(20, "Maximum 20 drugs can be checked simultaneously"),
   host: HostContextSchema.optional(),
@@ -153,7 +172,7 @@ export type KineticsModuleName = Exclude<z.infer<typeof KineticsModuleEnum>, "al
 
 export const KineticsEvaluationRequestSchema = z.strictObject({
   drugs: z
-    .array(z.string().trim().min(1, "Drug identifier cannot be empty").max(100))
+    .array(DrugIdentifierSchema)
     .min(1, "At least 1 drug must be provided")
     .max(20, "Maximum 20 drugs can be evaluated simultaneously"),
   host: HostContextSchema.optional(),

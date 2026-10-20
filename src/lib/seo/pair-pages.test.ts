@@ -4,7 +4,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { PairPageView, PairsIndexView } from "@/components/seo/pair-page";
 import { pairPages, pairPageBySlug, sitemapXml } from "./pair-pages";
-import { PAIR_DISCLAIMER, PAIR_DESCRIPTION_TEMPLATE, PAIR_TITLE_TEMPLATE, PAIRS_INDEX_DESCRIPTION, PAIRS_INDEX_INTRO, PAIRS_INDEX_TITLE, PAIR_CTA } from "./pair-copy";
+import { enzymeHubs } from "./enzyme-hubs";
+import { PAIR_DISCLAIMER, PAIR_DESCRIPTION_TEMPLATE, PAIR_TITLE_TEMPLATE, PAIRS_INDEX_DESCRIPTION, PAIRS_INDEX_INTRO, PAIRS_INDEX_TITLE, PAIR_CTA, SITE_URL } from "./pair-copy";
 import { analyze } from "@/lib/drugs/engine";
 import { LABEL_CONTRAINDICATIONS } from "@/lib/drugs/label-contraindications";
 import { LABEL_GOLD_SET } from "@/lib/drugs/reference/label-gold-set";
@@ -130,10 +131,12 @@ describe("public pair pages", () => {
     }
   });
 
-  it("sitemap lists /, /pairs, /for-programs, every pair canonical and every drug hub", () => {
+  it("sitemap lists /, /pairs, /enzymes, /for-programs, /trust, every pair canonical, every drug hub and every indexable enzyme hub", () => {
     const xml = sitemapXml();
     const hubCount = new Set(pages.flatMap((p) => [p.drugA, p.drugB])).size;
-    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 3 + hubCount);
+    const enzymeCount = enzymeHubs().filter((h) => h.indexable).length;
+    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 5 + hubCount + enzymeCount);
+    assert.ok(xml.includes(`<loc>${SITE_URL}/trust</loc>`));
     for (const p of pages) assert.ok(xml.includes(`<loc>${p.canonical}</loc>`), p.slug);
   });
 });

@@ -397,7 +397,10 @@ function logLookup(cache: "hit" | "miss", started: number, outcome: LiveOutcome)
 /** Like lookupLive, plus which sources failed — rxnav needs to know a label went unscanned. */
 export async function lookupLiveOutcome(id: string, name: string): Promise<LiveOutcome> {
   const query = liveQueryName(id, name);
-  const chem = (query || name).replace(/\(.*?\)/g, "").trim();
+  const chem = (query || name)
+    .replace(/\(.*?\)/g, "")
+    .replace(/[\u2010-\u2015]/g, "-")
+    .trim();
   if (!chem) {
     return {
       sources: { ok: true, query: name, ...EMPTY_LIVE, reason: "No live label for this item." },

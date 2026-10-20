@@ -125,7 +125,10 @@ export type SafetyKind =
   | "dual-raas"
   | "ppi-acid"
   | "clopidogrel-ppi"
-  | "sglt2-loop";
+  | "sglt2-loop"
+  | "pde5-nitrate"
+  | "xo-thiopurine"
+  | "mtx-tmpsmx";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -305,6 +308,53 @@ export function isLoop(id: string) {
 
 export function isSglt2Loop(a: string, b: string) {
   return (isSglt2(a) && isLoop(b)) || (isSglt2(b) && isLoop(a));
+}
+
+export const PDE5_INHIBITORS = new Set([
+  "sildenafil",
+  "tadalafil",
+  "vardenafil",
+  "avanafil",
+  "sildenafil-pah",
+  "finasteride-tadalafil",
+]);
+
+export const NITRATES = new Set([
+  "nitroglycerin",
+  "isosorbide-mononitrate",
+  "isosorbide-dinitrate",
+  "riociguat",
+]);
+
+export const XO_INHIBITORS = new Set(["allopurinol", "febuxostat", "allopurinol-tls"]);
+export const THIOPURINES = new Set(["azathioprine", "mercaptopurine"]);
+
+export function isPde5(id: string) {
+  return PDE5_INHIBITORS.has(id) || /PDE5/i.test(clsOf(id));
+}
+
+export function isNitrate(id: string) {
+  return NITRATES.has(id) || /Nitrate|sGC stimulator/i.test(clsOf(id));
+}
+
+export function isPde5Nitrate(a: string, b: string) {
+  return (isPde5(a) && isNitrate(b)) || (isPde5(b) && isNitrate(a));
+}
+
+export function isXoInhibitor(id: string) {
+  return XO_INHIBITORS.has(id) || /Xanthine oxidase/i.test(clsOf(id));
+}
+
+export function isThiopurine(id: string) {
+  return THIOPURINES.has(id) || /Thiopurine/i.test(clsOf(id));
+}
+
+export function isXoThiopurine(a: string, b: string) {
+  return (isXoInhibitor(a) && isThiopurine(b)) || (isXoInhibitor(b) && isThiopurine(a));
+}
+
+export function isMtxTmpsmx(a: string, b: string) {
+  return (a === "methotrexate" && b === "tmp-smx") || (b === "methotrexate" && a === "tmp-smx");
 }
 
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
@@ -548,6 +598,60 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "SGLT2 inhibitors dump glucose and water. Next to a loop they stack volume contraction. Sick-day ketones can be euglycemic — a normal fingerstick does not clear DKA. Not a CYP row and not stacked sulfonylurea hypo (that is a different flag). Hold teaching on sick days lives in the PI, not here.",
         "Orthostasis, Cr, ketones if unwell. This desk does not hold the SGLT2.",
         "Jardiance / Farxiga / Invokana labels. Loop diuretic PI.",
+      ),
+    );
+  }
+
+  const pn = pair(ids, isPde5, isNitrate);
+  if (pn) {
+    out.push(
+      hit(
+        "pde5-nitrate",
+        pn[0],
+        pn[1],
+        names(pn[0], pn[1]),
+        "contraindicated",
+        "danger",
+        "PDE5 inhibitor × nitrate / sGC stimulator — refractory hypotension",
+        "PDE5 inhibitors plus organic nitrates or soluble guanylate cyclase stimulators cause profound intracellular cGMP accumulation, triggering massive systemic vasodilation, refractory hypotension, and cardiovascular collapse. Concomitant use is an absolute labeled contraindication. Do not give nitrates within 24 hours of sildenafil or 48 hours of tadalafil.",
+        "Blood pressure, syncope, ischemic chest pain. This desk does not time the washout.",
+        "Viagra, Cialis, Nitrostat, Imdur, and Adempas Prescribing Information. ACC/AHA guidelines.",
+      ),
+    );
+  }
+
+  const xt = pair(ids, isXoInhibitor, isThiopurine);
+  if (xt) {
+    out.push(
+      hit(
+        "xo-thiopurine",
+        xt[0],
+        xt[1],
+        names(xt[0], xt[1]),
+        "contraindicated",
+        "danger",
+        "xanthine oxidase inhibitor × thiopurine — fatal marrow aplasia",
+        "Xanthine oxidase catabolizes 6-mercaptopurine into inactive 6-thiouric acid. XO inhibition diverts thiopurine flux into cytotoxic thioguanine nucleotides (6-TGN), multiplying bone marrow exposure and causing severe, potentially fatal pancytopenia. Febuxostat is labeled contraindicated; allopurinol requires a mandatory 66–75% dose reduction under close hematologic monitoring.",
+        "CBC with differential, signs of infection, mucosal bleeding. This desk does not pick the thiopurine dose.",
+        "Imuran, Purixan, Zyloprim, and Uloric Prescribing Information.",
+      ),
+    );
+  }
+
+  const mt = pair(ids, (id) => id === "methotrexate", (id) => id === "tmp-smx");
+  if (mt) {
+    out.push(
+      hit(
+        "mtx-tmpsmx",
+        mt[0],
+        mt[1],
+        names(mt[0], mt[1]),
+        "contraindicated",
+        "danger",
+        "methotrexate × TMP-SMX — tubular blockade / additive antifolate",
+        "Trimethoprim impairs renal tubular secretion of methotrexate via OAT1/OAT3 and OCT2 transporters, while sulfamethoxazole displaces methotrexate from albumin. Concurrently, both agents inhibit dihydrofolate reductase, synergistically extinguishing folate-dependent nucleotide synthesis. Fatal pancytopenia and toxic epidermal necrolysis are documented. Avoid coadministration.",
+        "CBC with differential, renal function, severe mucositis or skin detachment. Consider leucovorin rescue under oncology/poison guidance.",
+        "Methotrexate and Bactrim Prescribing Information. Groenendal 1990 (PMID 2189332).",
       ),
     );
   }
