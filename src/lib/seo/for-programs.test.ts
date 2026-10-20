@@ -205,7 +205,9 @@ describe("/for-programs key, procurement and inquiry sections", () => {
     assert.match(steps, /Redeem/);
     assert.match(steps, /end month/);
     assert.match(steps, /no accounts/i);
-    assert.match(steps, /store nothing/);
+    assert.match(steps, /keep nothing about the learners/);
+    assert.doesNotMatch(steps, /store nothing/);
+    assert.match(steps, /name and email of the person who buys it/);
     for (const s of FOR_PROGRAMS_KEY_STEPS) assert.ok(body.includes(s), s);
   });
 

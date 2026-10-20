@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import type { PairPage } from "@/lib/seo/pair-pages";
 import { DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
+import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
 import type { GradeBasis } from "@/lib/drugs/grade-provenance";
 
@@ -37,6 +38,7 @@ export function PairDisclaimer() {
         {PAIR_DISCLAIMER}
       </p>
       <LegalLinks className="mt-2 text-xs text-muted" />
+      <p data-testid="trademark-line" className="mt-1 text-xs text-muted">{TRADEMARK_LINE}</p>
     </>
   );
 }
@@ -108,6 +110,7 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
     <main className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-semibold">Drug pairs checked against FDA label text</h1>
       <p className="mt-3 text-sm text-muted">{PAIRS_INDEX_INTRO}</p>
+      <p data-testid="not-affiliated" className="mt-2 text-xs text-muted">{NOT_AFFILIATED_LINE}</p>
       <ul className="mt-6 space-y-1 text-sm">
         {pages.map((p) => (
           <li key={p.slug}>

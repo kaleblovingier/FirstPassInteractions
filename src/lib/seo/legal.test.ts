@@ -46,7 +46,7 @@ describe("legal pages", () => {
 
   it("terms carry the required disclaimers", () => {
     const t = text(TERMS_DOC);
-    for (const needle of ["not medical advice", "not FDA-cleared", "Prescribing Information governs", "pharmacist-patient relationship", "\"as is\"", "Limitation of liability", "State of Washington", "protected health information", "TODO (Kaleb)"]) {
+    for (const needle of ["not medical advice", "Not FDA-cleared", "Prescribing Information governs", "pharmacist-patient relationship", "\"as is\"", "Limitation of liability", "State of Washington", "protected health information", "TODO (Kaleb)"]) {
       assert.ok(t.includes(needle), needle);
     }
     const p = text(PRIVACY_DOC);
