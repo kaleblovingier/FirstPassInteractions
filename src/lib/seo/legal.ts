@@ -69,7 +69,7 @@ export const PRIVACY_DOC: LegalDoc = {
         "Live lookups: catalog drug names or ids. The server asks public sources (OpenFDA, NLM RxNorm and RxClass, PubChem, DailyMed, ClinicalTrials.gov, PubMed, CPIC, PsychonautWiki, TripSit) by drug name. Host toggles and typed amounts are not sent.",
         "\"Ask the three readers\": only when you press it, a short brief built from the check on screen (drug names, top rows, sources) is sent to xAI's API. Answers are kept in server memory for up to 10 minutes.",
         "Program inquiry form (/for-programs): your name, work email, organization and message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
-        "Lost-key recovery (/recover): the email you type is checked against Stripe, and if a purchase matches, the key is emailed to that address through Resend. Stripe checkout is built but switched off.",
+        "Lost-key recovery (/recover): Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent.",
         "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
         "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
       ],

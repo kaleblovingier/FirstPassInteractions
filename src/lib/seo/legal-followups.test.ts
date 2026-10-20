@@ -73,3 +73,17 @@ describe("/terms disclaimer line", () => {
     assert.doesNotMatch(what, /local protocols before acting/i);
   });
 });
+
+describe("lost-key recovery wording", () => {
+  it("says recovery checks only card purchases and drops the Stripe lookup claims", async () => {
+    const { PRIVACY_DOC } = await import("@/lib/seo/legal");
+    const R = "Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent.";
+    const trust = JSON.stringify(TRUST_SECTIONS);
+    const priv = PRIVACY_DOC.sections.flatMap((s) => s.paras).join(" ");
+    for (const t of [trust, priv]) {
+      assert.ok(t.includes(R));
+      assert.doesNotMatch(t, /checked against Stripe|derived again from its Stripe/);
+    }
+    assert.ok(trust.includes("The operator issues each Founding key after matching the payment, and the key is sent in an email to the buyer."));
+  });
+});
