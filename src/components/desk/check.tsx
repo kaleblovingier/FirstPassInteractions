@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
+import { leadGradeBasis } from "@/lib/drugs/grade-provenance";
 import { clockForFinding, FDA_GRADES, TDI } from "@/lib/drugs/cyp-protocol";
 import { conditionLanes, foodBeside, sameShelfGroups } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
@@ -1187,6 +1188,7 @@ function CheckRow({
               Open {enzyme} in the atlas
             </button>
           ) : null}
+          <WhyThisGrade finding={finding} />
           <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Sources to check</p>
           <div className="flex flex-wrap gap-2">
             {basis.map((b) =>
@@ -1212,5 +1214,27 @@ function CheckRow({
         </div>
       ) : null}
     </li>
+  );
+}
+
+/** One-click "Why this grade": the lead label quote or source, or an honest catalog-rule note. */
+function WhyThisGrade({ finding }: { finding: Finding }) {
+  const why = leadGradeBasis(finding);
+  return (
+    <div data-testid="check-why" data-basis-kind={why.kind} className="rounded-md bg-bg-sunken px-3 py-2.5">
+      <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Why this grade</p>
+      <p className="mt-1 text-xs font-medium text-fg">{why.title}</p>
+      <p className="mt-0.5 text-sm leading-relaxed text-muted">{why.detail}</p>
+      {why.href ? (
+        <a
+          href={why.href}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-1 inline-flex h-10 items-center gap-1 font-mono text-[11px] text-accent hover:underline"
+        >
+          {why.kind === "rule" ? "Search DailyMed" : "Open source"} <ExternalLink className="size-3" />
+        </a>
+      ) : null}
+    </div>
   );
 }

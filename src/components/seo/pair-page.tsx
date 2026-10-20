@@ -3,6 +3,22 @@ import type { PairPage } from "@/lib/seo/pair-pages";
 import { DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
+import type { GradeBasis } from "@/lib/drugs/grade-provenance";
+
+/** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
+export function GradeBasisRow({ basis }: { basis: GradeBasis }) {
+  return (
+    <div data-testid="grade-basis" data-basis-kind={basis.kind} className="mt-2">
+      <p className="text-xs font-medium">{basis.title}</p>
+      <p className="mt-0.5 text-xs text-muted">{basis.detail}</p>
+      {basis.href ? (
+        <a href={basis.href} rel="noopener" target="_blank" className="text-xs underline">
+          {basis.kind === "rule" ? "Search DailyMed" : "Open source"}
+        </a>
+      ) : null}
+    </div>
+  );
+}
 
 export function PairDisclaimer() {
   return (
@@ -39,6 +55,14 @@ export function PairPageView({ page }: { page: PairPage }) {
             </a>
           </figcaption>
         </figure>
+      ) : null}
+      {page.why.length ? (
+        <details open data-testid="pair-why" className="mt-6 rounded-xl border border-border p-4 text-sm">
+          <summary className="cursor-pointer font-medium">Why this grade</summary>
+          {page.why.map((b) => (
+            <GradeBasisRow key={`${b.kind}-${b.title}`} basis={b} />
+          ))}
+        </details>
       ) : null}
       <p className="mt-6">
         <a href={page.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">
@@ -133,6 +157,12 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
                 <a href={`/pair/${p.pairSlug}`} className="underline">
                   {hub.name} and {p.otherName}
                 </a>
+                {p.why ? (
+                  <details data-testid="hub-why" className="ml-1 inline-block align-top">
+                    <summary className="cursor-pointer text-xs text-muted">Why this grade</summary>
+                    <GradeBasisRow basis={p.why} />
+                  </details>
+                ) : null}
               </li>
             ))}
           </ul>

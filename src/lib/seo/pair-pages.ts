@@ -4,6 +4,7 @@ import { LABEL_CONTRAINDICATIONS } from "@/lib/drugs/label-contraindications";
 import { LABEL_GOLD_SET } from "@/lib/drugs/reference/label-gold-set";
 import { SEVERITY_LABEL, SEVERITY_RANK, type Enzyme, type Severity } from "@/lib/drugs/types";
 import { buildBriefUrl } from "@/lib/drugs/brief";
+import { gradeBases, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { drugHubs } from "./drug-hubs";
 import { enzymeHubUrls } from "./enzyme-hubs";
 import {
@@ -35,6 +36,8 @@ export interface PairPage {
   /** Enzymes on the finding the mechanism line comes from (the engine's own list); empty for non-enzyme findings. */
   enzymes: Enzyme[];
   quote: PairQuote | null;
+  /** "Why this grade": basis for the tier shown (label quote, source, or an honest catalog-rule note). Empty only when no finding. */
+  why: GradeBasis[];
   title: string;
   description: string;
   canonical: string;
@@ -122,6 +125,7 @@ function build(): PairPage[] {
       mechanism,
       enzymes: top ? [...top.enzymes] : [],
       quote,
+      why: top ? gradeBases(top) : [],
       title: fillPairTemplate(PAIR_TITLE_TEMPLATE, v),
       description: fillPairTemplate(PAIR_DESCRIPTION_TEMPLATE, v),
       canonical: `${SITE_URL}/pair/${slug}`,
