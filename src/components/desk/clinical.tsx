@@ -6763,7 +6763,7 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
             <div className="rounded bg-bg-sunken p-3 border border-border space-y-1 sm:col-span-1">
               <span className="font-bold text-fg block">A. Regular Insulin IV Push</span>
               <span className="font-mono text-base font-bold text-accent block">
-                {evaluation.intracellularShifting.insulinDoseUnits} Units IV
+                See the Prescribing Information
               </span>
               <p className="text-muted text-[11px] leading-relaxed">
                 {evaluation.intracellularShifting.insulinAdjustmentReason}
