@@ -118,8 +118,9 @@ test("label drift: committed report and label versions match the offline fixture
 test("label drift: label-versions.json has a version and date for every quoted setid", () => {
   const v = JSON.parse(readFileSync(PATHS.versions, "utf8"));
   assert.match(v.retrieved, /^\d{4}-\d{2}-\d{2}$/);
-  for (const [setid, l] of Object.entries<{ version: number; effective: string }>(v.labels)) {
+  for (const [setid, l] of Object.entries<{ version: number; effective: string; checkedOn: string }>(v.labels)) {
     assert.ok(Number.isInteger(l.version) && l.version > 0, setid);
     assert.match(l.effective, /^\d{4}-\d{2}-\d{2}$/, setid);
+    assert.match(l.checkedOn, /^\d{4}-\d{2}-\d{2}$/, setid);
   }
 });

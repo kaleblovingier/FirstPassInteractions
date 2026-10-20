@@ -3815,12 +3815,6 @@ const WAVE_13: GoldPair[] = [
     quote: "Hypertensive crises during NARDIL therapy may also be caused by the ingestion of foods with a high concentration of tyramine or dopamine", labelExample: "foods with a high concentration of tyramine",
     labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
   }),
-  row13({
-    drugA: "phenelzine", drugB: "five-htp", queries: ["nardil", "5-HTP / L-tryptophan"],
-    labelDrug: "Nardil (phenelzine)", label: "nardil", labelSection: "CONTRAINDICATIONS",
-    quote: "patients being treated with NARDIL should not take sympathomimetic drugs … or related compounds (including methyldopa, L-dopa, L-tryptophan, L-tyrosine, and phenylalanine)", labelExample: "L-tryptophan",
-    labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
-  }),
 ];
 
 /**
@@ -4012,7 +4006,11 @@ export const NOT_IN_CATALOG: { drug: string; reason: string }[] = [
 ];
 
 /** Candidate pairs considered and dropped, with the reason. */
-export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
+/**
+ * `pairs` (optional) lists every drug pair an entry covers, so generated docs can
+ * report "N entries covering M pairs" per wave without a hand count.
+ */
+export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[] }[] = [
   {
     pair: "wave 7: Bixlenvo (bictegravir/lenacapavir) + strong CYP3A inducers",
     reason: "Section 4 names the class only, with no drug named. Not expanded.",
@@ -4544,34 +4542,57 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string }[] = [
   },
   {
     pair: "wave 14: Marplan (isocarboxazid) + sertraline, paroxetine, fluvoxamine, citalopram, venlafaxine",
+    pairs: ["isocarboxazid+sertraline", "isocarboxazid+paroxetine", "isocarboxazid+fluvoxamine", "isocarboxazid+citalopram", "isocarboxazid+venlafaxine"],
     reason: 'Named only in a washout sentence ("At least 2 weeks should be allowed after stopping sertraline … or paroxetine") or a "Serious reactions may also occur" example list. The contraindication sentence ("should not be administered in combination with any SSRI") names the class only. Not pinned; grade unchanged.',
   },
   {
     pair: "wave 14 (for Kaleb): Marplan (isocarboxazid) + methylphenidate, epinephrine, norepinephrine, dopamine",
+    pairs: ["isocarboxazid+methylphenidate", "isocarboxazid+epinephrine", "isocarboxazid+norepinephrine", "isocarboxazid+dopamine"],
     reason: 'Named in CONTRAINDICATIONS, but the sentence says use "with Marplan may precipitate hypertension, headache, and related symptoms", not "should not be administered" (same wording as the Marplan + tryptophan row). Possible pin candidates for Kaleb; not pinned; grade unchanged.',
   },
   {
     pair: "wave 14: Marplan (isocarboxazid) + amphetamine",
+    pairs: ["isocarboxazid+amphetamine"],
     reason: 'Section names "sympathomimetics (including amphetamines)" as a class, not the catalog drug (the wave 10 class rule). Not pinned.',
   },
   {
     pair: "wave 14: Marplan (isocarboxazid) + protriptyline",
+    pairs: ["isocarboxazid+protriptyline"],
     reason: 'The SPL table spells it "Protripyline HCL". Not an exact name match. Not pinned until the label is corrected or Kaleb accepts the spelling.',
   },
   {
     pair: "wave 14: Parnate (tranylcypromine) + amphetamine, methylphenidate",
+    pairs: ["tranylcypromine+amphetamine", "tranylcypromine+methylphenidate"],
     reason: 'Table 1 names the class row "Amphetamines and methylphenidates and derivatives", not individual drugs. Not pinned.',
   },
   {
     pair: "wave 14: Parnate, Xadago, Emsam + epinephrine; Xadago, Emsam + norepinephrine",
+    pairs: ["tranylcypromine+epinephrine", "safinamide+epinephrine", "selegiline+epinephrine", "safinamide+norepinephrine", "selegiline+norepinephrine"],
     reason: 'Substring false matches: "epinephrine" only inside "norepinephrine", and "norepinephrine" only inside "serotonin-norepinephrine reuptake inhibitors". Emsam is also covered by the wave 9 transdermal-formulation rule. Not pinned.',
   },
   {
     pair: "wave 14: Nardil (phenelzine) + Mucuna pruriens (L-DOPA)",
+    pairs: ["phenelzine+mucuna"],
     reason: 'Nardil names "L-dopa", a constituent, not Mucuna pruriens. Not an exact name. Not pinned.',
   },
   {
     pair: "wave 14 (conditional): Entresto (sacubitril/valsartan) + aliskiren",
+    pairs: ["sacubitril-valsartan+aliskiren"],
     reason: 'Section 4: "with concomitant use of aliskiren in patients with diabetes". Contraindicated only in a patient subgroup. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 15 (severity change, for Kaleb): Marplan (isocarboxazid) + maprotiline, carbamazepine, procarbazine",
+    pairs: ["isocarboxazid+maprotiline", "isocarboxazid+carbamazepine", "isocarboxazid+procarbazine"],
+    reason: 'Marplan CONTRAINDICATIONS (setid 95fde749-44ad-4668-86c4-0ff17bca0074, effective 2026-04-21, retrieved 2026-10-19) names each individually in the table under "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities" ("Maprotiline HCL", "Carbamazepine", "Procarbazine"). The cards read moderate (Use care) for maprotiline and procarbazine and major (Serious concern) for carbamazepine. A pin would raise them to Avoid together, so not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 15 (severity change, for Kaleb): Marplan (isocarboxazid) + bupropion",
+    pairs: ["isocarboxazid+bupropion"],
+    reason: 'Marplan CONTRAINDICATIONS: "The concurrent administration of a MAO inhibitor and buproprion hydrochloride (Wellbutrin ® , and Zyban ® , Glaxo Wellcome) is contraindicated." The sentence misspells the drug ("buproprion"; only the subheading reads "Bupropion"), and the card reads major (Serious concern), so a pin would also raise the grade. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 15 (pin removed): Nardil (phenelzine) + 5-HTP / L-tryptophan",
+    pairs: ["phenelzine+five-htp"],
+    reason: 'The wave 13 pin quoted Nardil naming "L-tryptophan" in a "should not take sympathomimetic drugs … or related compounds" list. The catalog entry is 5-HTP (5-hydroxytryptophan), which Nardil does not name, so the quote does not name the partner exactly. Pin and gold row removed; grade unchanged.',
   },
 ];

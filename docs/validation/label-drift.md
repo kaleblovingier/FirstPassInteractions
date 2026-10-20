@@ -7,7 +7,7 @@ Question: is every stored label quote (gold set and contraindication pins) still
 
 | Result | Quotes | Pairs |
 |---|---|---|
-| Pass (exact, in the cited section) | 202 | 527 |
+| Pass (exact, in the cited section) | 201 | 526 |
 | Moved (exact, but in a different section than cited) | 1 | 1 |
 | Drifted (not in the current label) | 0 | 0 |
 | Could not fetch | 0 | 0 |
@@ -72,7 +72,7 @@ None.
 | Movantik (naloxegol) | 28596788-b73f-4247-85fc-3105f51fff5a | 5 | 2026-09-01 | 1 | pass |
 | Multaq (dronedarone) | 3bd4006a-8bad-4909-ac6d-b6d84390155c | 13 | 2026-01-27 | 2 | pass |
 | Naltrexone HCl tablets | 06ff2d5a-e62b-4fa4-bbdb-01938535bc65 | 15 | 2026-09-04 | 3 | pass |
-| Nardil (phenelzine) | 513a41d0-37d4-4355-8a6d-a2c643bce6fa | 11 | 2025-06-06 | 18 | pass |
+| Nardil (phenelzine) | 513a41d0-37d4-4355-8a6d-a2c643bce6fa | 11 | 2025-06-06 | 17 | pass |
 | Norvir (ritonavir) | 2849298e-de6e-47bb-8194-56e075b33fc3 | 1653 | 2026-07-23 | 2 | pass |
 | Noxafil (posaconazole) | b073b082-7b57-4423-8c06-4fd4263d6f84 | 56 | 2026-02-13 | 4 | pass |
 | Parnate (tranylcypromine) | b72d8187-dfcc-4ea0-b5e9-c0be95b69a27 | 11 | 2025-07-02 | 18 | pass |
@@ -213,7 +213,6 @@ None.
 - phenelzine+dextromethorphan: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+dopamine: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+epinephrine: Nardil (phenelzine), CONTRAINDICATIONS
-- phenelzine+five-htp: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+fluvoxamine: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+isocarboxazid: Nardil (phenelzine), CONTRAINDICATIONS
 - phenelzine+meperidine: Nardil (phenelzine), CONTRAINDICATIONS
