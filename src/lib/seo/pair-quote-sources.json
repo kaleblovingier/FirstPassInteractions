@@ -306,6 +306,10 @@
    "setid": "4259d9b1-de34-43a4-85a8-41dd214e9177",
    "excerpt": "CELEXA is contraindicated in patients: taking, or within 14 days of stopping, MAOIs (including MAOIs such as linezolid or intravenous methylene blue)"
   },
+  "clarithromycin+cisapride": {
+   "setid": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
+   "excerpt": "Concomitant administration of clarithromycin tablets with cisapride and pimozide is contraindicated"
+  },
   "clarithromycin+dihydroergotamine": {
    "setid": "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6",
    "excerpt": "Concomitant administration of clarithromycin and ergotamine or dihydroergotamine is contraindicated"
@@ -613,6 +617,18 @@
   "ergotamine+ritonavir": {
    "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
    "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity"
+  },
+  "erythromycin+astemizole": {
+   "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
+   "excerpt": "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine."
+  },
+  "erythromycin+cisapride": {
+   "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
+   "excerpt": "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine."
+  },
+  "erythromycin+terfenadine": {
+   "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
+   "excerpt": "Erythromycin is contraindicated in patients taking terfenadine, astemizole, cisapride, pimozide, ergotamine, or dihydroergotamine."
   },
   "escitalopram+linezolid": {
    "setid": "13bb8267-1cab-43e5-acae-55a4d957630a",
@@ -1137,6 +1153,18 @@
   "naltrexone+oxycodone": {
    "setid": "06ff2d5a-e62b-4fa4-bbdb-01938535bc65",
    "excerpt": "Naltrexone hydrochloride is contraindicated in: 1. Patients receiving opioid analgesics."
+  },
+  "nefazodone+astemizole": {
+   "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
+   "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
+  },
+  "nefazodone+cisapride": {
+   "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
+   "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
+  },
+  "nefazodone+terfenadine": {
+   "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
+   "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
   },
   "paroxetine+linezolid": {
    "setid": "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
