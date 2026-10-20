@@ -3,6 +3,7 @@ import { CLINIC_BEERS, CLINIC_PREG_AVOID } from "./clinic";
 import { CLINIC_FORMULARY } from "./catalog-clinic";
 import { MODERN_FORMULARY } from "./catalog-modern";
 import { MODERN_WAVE2_FORMULARY } from "./catalog-modern-wave2";
+import { FDA_TABLE_SHELF } from "./catalog-fda-shelf";
 import { hasDrugbank } from "./drugbank";
 import { hasPgx } from "./pgx";
 import { hasCite } from "./pubmed";
@@ -2754,11 +2755,13 @@ const coreIds = new Set(raw.map((d) => d.id));
 const clinicExtra = CLINIC_FORMULARY.filter((d) => !coreIds.has(d.id));
 const afterClinic = new Set([...coreIds, ...clinicExtra.map((d) => d.id)]);
 const afterModern = new Set([...afterClinic, ...MODERN_FORMULARY.map((d) => d.id)]);
+const afterWave2 = new Set([...afterModern, ...MODERN_WAVE2_FORMULARY.map((d) => d.id)]);
 export const DRUGS: Drug[] = [
   ...raw,
   ...clinicExtra,
   ...MODERN_FORMULARY.filter((d) => !afterClinic.has(d.id)),
   ...MODERN_WAVE2_FORMULARY.filter((d) => !afterModern.has(d.id)),
+  ...FDA_TABLE_SHELF.filter((d) => !afterWave2.has(d.id)),
 ];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 
