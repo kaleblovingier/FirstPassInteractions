@@ -20,7 +20,8 @@
     "smoke:sale": "node scripts/sale-smoke.mjs",
     "test": "node scripts/run-tests.mjs",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lms:scorm": "tsx scripts/lms/build-scorm.ts && node scripts/lms/validate-scorm.mjs dist-lms/firstpass-pairs-scorm12.zip"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
