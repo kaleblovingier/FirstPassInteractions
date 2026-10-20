@@ -187,3 +187,7 @@ main:has([data-testid="drug-hub-intro"]) section > ul > li > a,
 [data-testid="hub-why"] > summary {
   padding-inline: 2px;
 }
+
+/* Pre-hydration placeholders hidden before paint for returning visitors (see __root.tsx). */
+html[data-fp-ack] [data-fp-prehydrate="hcp"],
+html[data-fp-paid] [data-fp-prehydrate="unlock"] { display: none !important; }

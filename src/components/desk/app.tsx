@@ -315,8 +315,8 @@ export function DeskApp() {
               </div>
             </div>
             </div>
-            {hydrated && !pro ? (
-              <Button size="sm" className="sm:hidden" onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
+            {!hydrated || !pro ? (
+              <Button size="sm" className="sm:hidden" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
               </Button>
             ) : null}
@@ -352,8 +352,8 @@ export function DeskApp() {
                 </button>
               ))}
             </nav>
-            {hydrated && !pro ? (
-              <Button size="sm" className="hidden shrink-0 sm:inline-flex" onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
+            {!hydrated || !pro ? (
+              <Button size="sm" className="hidden shrink-0 sm:inline-flex" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
               </Button>
             ) : null}
@@ -361,8 +361,10 @@ export function DeskApp() {
         </div>
       </header>
 
-      {hydrated && !hcpAck ? (
-        <aside aria-label="Clinical education disclaimer" className="border-b border-border bg-warn-soft/90 backdrop-blur-sm">
+      {/* Server-rendered so it does not push the page down after hydration (CLS); a returning
+          visitor who already acknowledged it is hidden before paint by the root head script. */}
+      {!hydrated || !hcpAck ? (
+        <aside aria-label="Clinical education disclaimer" data-fp-prehydrate={hydrated ? undefined : "hcp"} className="border-b border-border bg-warn-soft/90 backdrop-blur-sm">
           <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm leading-relaxed text-fg">

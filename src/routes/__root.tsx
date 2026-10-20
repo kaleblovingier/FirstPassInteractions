@@ -29,18 +29,25 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       // Non-blocking web fonts: fetched as print media, switched to all once
-      // loaded by the inline script below (display=swap keeps text visible).
+      // loaded by the inline script below. display=optional: text renders at once in the fallback and never swaps fonts mid-view (no layout shift); cached fonts are used on later views.
       {
         rel: "stylesheet",
         media: "print",
         id: "fp-fonts",
-        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=optional",
       },
     ],
     scripts: [
       {
         children:
           "(function(){var l=document.getElementById('fp-fonts');if(!l)return;var on=function(){l.media='all'};if(l.sheet)on();else l.addEventListener('load',on);})();",
+      },
+      {
+        // Before first paint: hide server-rendered placeholders that this visitor's saved desk
+        // state would remove after hydration (disclaimer already acknowledged, paid plan), so the
+        // page does not shift. Read-only; the store remains the source of truth after hydration.
+        children:
+          "(function(){try{var s=JSON.parse(localStorage.getItem('firstpass.desk.v7')||'{}').state||{},d=document.documentElement;if(s.hcpAck)d.setAttribute('data-fp-ack','');if(s.plan&&s.plan!=='free')d.setAttribute('data-fp-paid','')}catch(e){}})();",
       },
       {
         // Offline reading of published reference pages (public/sw.js). Skipped inside frames (previews).
