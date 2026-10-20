@@ -19,7 +19,6 @@ export const EXEMPT_PATHS = [
   // Exact FDA label quote data (pins, gold set, citations) — must stay verbatim.
   "src/lib/drugs/reference/",
   "src/lib/seo/pair-quote-sources.json",
-  // Pharmacy-math workbook / question bank (uses mg/mcg/mEq on purpose). Add paths here.
   // Out of scope for this sweep.
   "src/routes/plans.tsx",
   "src/routes/stripe-return.tsx",
