@@ -54,3 +54,30 @@ export function leadGradeBasis(finding: Finding): GradeBasis {
 export function hasCitedSource(finding: Finding): boolean {
   return gradeBases(finding).some((b) => b.kind !== "rule" && Boolean(b.href));
 }
+
+function cap(s: string): string {
+  return s ? s[0]!.toUpperCase() + s.slice(1) : s;
+}
+
+/** Visible link text that names what the link opens, never a bare "Open source".
+ *  A DailyMed link names whose label it opens, e.g. "Contrave label on DailyMed". */
+export function sourceLinkText(title: string, href: string): string {
+  let url: URL | null = null;
+  try {
+    url = new URL(href);
+  } catch {
+    url = null;
+  }
+  const host = url?.hostname ?? "";
+  const labelOwner = /^(.+?) label(?:,|$)/.exec(title)?.[1];
+  if (host.endsWith("dailymed.nlm.nih.gov")) {
+    const query = url?.searchParams.get("query")?.trim();
+    const owner = labelOwner ?? (query ? cap(query) : "");
+    return owner ? `${owner} label on DailyMed` : "Label on DailyMed";
+  }
+  if (labelOwner) return `${labelOwner} label`;
+  if (host.endsWith("pubmed.ncbi.nlm.nih.gov") || /^PMID /.test(title)) return `${title} on PubMed`;
+  if (host.endsWith("cpicpgx.org")) return "CPIC guideline";
+  if (host.endsWith("fda.gov")) return /interaction table/i.test(title) ? "FDA interaction table" : "FDA safety notice";
+  return title;
+}

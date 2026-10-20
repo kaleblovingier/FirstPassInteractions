@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
-import { leadGradeBasis } from "@/lib/drugs/grade-provenance";
+import { leadGradeBasis, sourceLinkText } from "@/lib/drugs/grade-provenance";
 import { clockForFinding, FDA_GRADES, TDI } from "@/lib/drugs/cyp-protocol";
 import { conditionLanes, foodBeside, sameShelfGroups } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
@@ -1232,7 +1232,7 @@ function WhyThisGrade({ finding }: { finding: Finding }) {
           rel="noreferrer"
           className="mt-1 inline-flex h-10 items-center gap-1 font-mono text-[11px] text-accent hover:underline"
         >
-          {why.kind === "rule" ? "Search DailyMed" : "Open source"} <ExternalLink className="size-3" />
+          {sourceLinkText(why.title, why.href)} <ExternalLink className="size-3" />
         </a>
       ) : null}
     </div>

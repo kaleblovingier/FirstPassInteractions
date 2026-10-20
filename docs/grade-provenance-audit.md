@@ -36,7 +36,7 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 | Tier | Findings | Rule-only | Share |
 |---|---|---|---|
 | Avoid together | 3011 | 19 | 0.6% |
-| Serious concern | 67498 | 14762 | 21.9% |
+| Serious concern | 67498 | 14669 | 21.7% |
 
 Top rule-only rules:
 
@@ -44,16 +44,16 @@ Top rule-only rules:
 |---|---|
 | Serious concern · pd | 10382 |
 | Serious concern · pk-CYP3A4-inducer | 2245 |
-| Serious concern · pk-CYP3A4-inhibitor | 666 |
 | Serious concern · washout | 661 |
+| Serious concern · pk-CYP3A4-inhibitor | 576 |
 | Serious concern · pd-alpha2 | 234 |
 | Serious concern · pk-CYP2D6-inhibitor | 78 |
 | Serious concern · pd-alk | 60 |
 | Serious concern · pk-CYP2C19-inducer | 52 |
 | Serious concern · pk-CYP1A2-inducer | 48 |
 | Serious concern · pd-nmda | 45 |
-| Serious concern · pk-CYP2C19-inhibitor | 45 |
 | Serious concern · pk-CYP2C9-inducer | 45 |
+| Serious concern · pk-CYP2C19-inhibitor | 43 |
 | Serious concern · pk-P-gp-inducer | 42 |
 | Serious concern · pk-CYP1A2-inhibitor | 36 |
 | Serious concern · pd-k | 30 |
