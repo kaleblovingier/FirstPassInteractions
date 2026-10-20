@@ -77,7 +77,7 @@ const SKIP_UNGRADED: { id: string; why: string }[] = [
 ];
 
 /** FDA-listed, not in this catalog. Not invented here. */
-const NOT_IN_CATALOG = ["belumosudil", "danicopan", "fostamatinib", "saquinavir"];
+const NOT_IN_CATALOG = ["belumosudil", "danicopan", "fostamatinib"];
 
 test("FDA-listed P-gp roles present in the catalog are carried", () => {
   for (const row of MUST_HAVE) {
