@@ -7,7 +7,7 @@ import appCss from "../styles.css?url";
 
 const APP_NAME = "FirstPass";
 const SITE_DESCRIPTION =
-  "FirstPass is a medicine-interaction learning desk: plain-language summaries first, then clinical pathway detail and sources.";
+  "FirstPass is an educational drug-interaction reference for teaching: label-sourced pairs in the FDA label's own wording, with DailyMed links. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
 
 export const Route = createRootRoute({
   head: () => ({
