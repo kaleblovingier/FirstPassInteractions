@@ -159,6 +159,11 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
         <a href="/pairs" className="underline">All pairs</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
+      {hub.marketStatus ? (
+        <p data-testid="drug-hub-market-status" className="mt-3 rounded-lg border border-border px-3 py-2 text-sm">
+          {hub.marketStatus}
+        </p>
+      ) : null}
       <p data-testid="drug-hub-intro" className="mt-3 text-sm text-muted">
         {hub.pairCount === 0 ? CITED_ONLY_HUB_INTRO : fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
       </p>

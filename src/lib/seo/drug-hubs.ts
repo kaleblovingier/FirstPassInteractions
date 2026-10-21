@@ -1,4 +1,5 @@
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
+import { MARKET_STATUS } from "@/lib/drugs/catalog-label-names";
 import { buildBriefUrl } from "@/lib/drugs/brief";
 import { SEVERITY_LABEL, SEVERITY_RANK, type Severity } from "@/lib/drugs/types";
 import { pairPages, type PairPage } from "./pair-pages";
@@ -39,6 +40,8 @@ export interface DrugHub {
   pairCount: number;
   /** Each enzyme the drug stores a catalog role on, linked to its /enzyme hub. */
   enzymes: DrugEnzymeLink[];
+  /** US market status (withdrawn or restricted), shown above the pairs. */
+  marketStatus?: string;
   /** Cited-only supplement hubs: the catalog note naming the label section. No grade. */
   labelNote?: string;
 }
@@ -123,6 +126,7 @@ function build(): DrugHub[] {
       groups: g,
       pairCount: pages.length,
       enzymes: drugEnzymeLinks(id),
+      ...(MARKET_STATUS[id] ? { marketStatus: MARKET_STATUS[id] } : {}),
     });
   }
   for (const id of CITED_ONLY_HUB_IDS) {
