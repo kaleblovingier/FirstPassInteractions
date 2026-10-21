@@ -42,7 +42,16 @@ export interface DrugHub {
   enzymes: DrugEnzymeLink[];
   /** US market status (withdrawn or restricted), shown above the pairs. */
   marketStatus?: string;
+  /** Cited-only supplement hubs: the catalog note naming the label section. No grade. */
+  labelNote?: string;
 }
+
+/**
+ * Supplements named in a current FDA label but not graded against any partner
+ * (supplements-label-batch). They have no pair pages, so they get a hub that
+ * shows only the label citation. Listed explicitly; no other entry qualifies.
+ */
+export const CITED_ONLY_HUB_IDS = ["danshen", "siberian-ginseng", "glucomannan", "kelp", "beta-carotene"] as const;
 
 const toSlug = (s: string) =>
   s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -118,6 +127,26 @@ function build(): DrugHub[] {
       pairCount: pages.length,
       enzymes: drugEnzymeLinks(id),
       ...(MARKET_STATUS[id] ? { marketStatus: MARKET_STATUS[id] } : {}),
+    });
+  }
+  for (const id of CITED_ONLY_HUB_IDS) {
+    const d = DRUG_BY_ID[id];
+    if (!d || byDrug.has(id)) continue;
+    const name = drugHubName(id);
+    const slug = drugHubSlug(id);
+    hubs.push({
+      slug,
+      drugId: id,
+      name,
+      title: fillDrugTemplate(DRUG_HUB_TITLE_TEMPLATE, name),
+      description: fillDrugTemplate(DRUG_HUB_DESCRIPTION_TEMPLATE, name),
+      canonical: `${SITE_URL}/drug/${slug}`,
+      deskUrl: buildBriefUrl([id], { base: SITE_URL }).replace(SITE_URL, ""),
+      cta: fillDrugTemplate(DRUG_HUB_CTA_TEMPLATE, name),
+      groups: [],
+      pairCount: 0,
+      enzymes: drugEnzymeLinks(id),
+      ...(d.note ? { labelNote: d.note } : {}),
     });
   }
   hubs.sort((x, y) => x.slug.localeCompare(y.slug));

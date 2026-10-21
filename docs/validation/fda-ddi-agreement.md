@@ -13,10 +13,10 @@
 
 **Denominator:** only (drug, target, role) pairs that FDA's Table 1 actually lists **and** whose drug resolves to a catalog entry. Catalog drugs absent from the FDA table are never counted as disagreements.
 
-- Pairs compared: **280** (from 186 FDA drug names matched to the catalog; 27 FDA names not in catalog)
-- Exact agreement (role + FDA class/grade): **84.6% (237/280)**
-- Role agreement (same role on the target, class/grade ignored): **97.9% (274/280)**
-- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (35/35)**; role: 100% (35/35) (regression gate baseline: 100%)
+- Pairs compared: **307** (from 209 FDA drug names matched to the catalog; 4 FDA names not in catalog)
+- Exact agreement (role + FDA class/grade): **86% (264/307)**
+- Role agreement (same role on the target, class/grade ignored): **98% (301/307)**
+- FDA strong-inhibitor + strong-inducer pairs, exact: **100% (41/41)**; role: 100% (41/41) (regression gate baseline: 100%)
 
 | Category | Count | In formulary review list? |
 | --- | ---: | --- |
@@ -24,7 +24,7 @@
 | strength_mismatch | 37 | yes |
 | missing_in_catalog | 6 | yes |
 | not_in_fda | 52 | no (informational) |
-| drug_not_in_catalog | 27 | no (coverage) |
+| drug_not_in_catalog | 4 | no (coverage) |
 
 Reviewed direction-mismatch allowlist entries: 0.
 
@@ -32,13 +32,13 @@ Reviewed direction-mismatch allowlist entries: 0.
 
 | Target | Pairs | Exact | Role | Strength mismatch | Direction mismatch | Missing |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| CYP1A2 | 26 | 76.9% | 100% | 6 | 0 | 0 |
-| CYP2B6 | 12 | 75% | 100% | 3 | 0 | 0 |
-| CYP2C8 | 19 | 84.2% | 94.7% | 2 | 0 | 1 |
-| CYP2C9 | 21 | 81% | 95.2% | 3 | 0 | 1 |
-| CYP2C19 | 20 | 90% | 95% | 1 | 0 | 1 |
-| CYP2D6 | 34 | 88.2% | 100% | 4 | 0 | 0 |
-| CYP3A4 (FDA "3A") | 124 | 83.1% | 97.6% | 18 | 0 | 3 |
+| CYP1A2 | 28 | 78.6% | 100% | 6 | 0 | 0 |
+| CYP2B6 | 14 | 78.6% | 100% | 3 | 0 | 0 |
+| CYP2C8 | 20 | 85% | 95% | 2 | 0 | 1 |
+| CYP2C9 | 23 | 82.6% | 95.7% | 3 | 0 | 1 |
+| CYP2C19 | 22 | 90.9% | 95.5% | 1 | 0 | 1 |
+| CYP2D6 | 38 | 89.5% | 100% | 4 | 0 | 0 |
+| CYP3A4 (FDA "3A") | 138 | 84.8% | 97.8% | 18 | 0 | 3 |
 | P-gp | 24 | 100% | 100% | 0 | 0 | 0 |
 
 ## Formulary owner review list
@@ -170,9 +170,9 @@ The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target
 
 ## Coverage: FDA drugs not in catalog
 
-<details><summary>27 names</summary>
+<details><summary>4 names</summary>
 
-belumosudil, danicopan, diosmin, eliglustat, elvitegravir and ritonavir, fostamatinib, indinavir, indinavir and ritonavir, leniolisib, lomitapide, lorcaserin, methoxsalen, nelfinavir, paritaprevir and ritonavir and (ombitasvir and/or dasabuvir), R-venlafaxine, S-mephenytoin, S-venlafaxine, saquinavir, saquinavir and ritonavir, sevabertinib, taletrectinib, tenofovir, ticlopidine, tipranavir and ritonavir, tobacco (smoking), tolbutamide, trimethoprim
+belumosudil, danicopan, fostamatinib, saquinavir and ritonavir
 
 </details>
 

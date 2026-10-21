@@ -2750,6 +2750,52 @@ const raw: Drug[] = [
       aliases: ["aloe vera", "aloe latex", "aloe juice", "aloin", "aloe barbadensis"],
       note: "Oral latex or juice, not the topical gel. Glucose drop plus stimulant-laxative potassium loss — digoxin and QT drugs sit next to it. Not a CYP perpetrator.",
     }),
+  // —— Supplement label batch (named in a current FDA label; cited only, no grade) ———
+  d("danshen", "Danshen", [], "Herbal (Salvia miltiorrhiza)",
+    [],
+    [],
+    "May falsely change digoxin test results",
+    {
+      kind: "herb",
+      aliases: ["salvia miltiorrhiza", "red sage", "dan shen", "tan shen"],
+      note: "Lanoxin section 7.4 names Danshen among traditional medicine substances that can interfere with digoxin assays. That is a lab-test effect, not a graded interaction. No CYP or P-gp grade.",
+    }),
+  d("siberian-ginseng", "Siberian ginseng (eleuthero)", [], "Herbal adaptogen (Eleutherococcus senticosus)",
+    [],
+    [],
+    "May falsely change digoxin test results",
+    {
+      kind: "herb",
+      aliases: ["eleuthero", "eleutherococcus", "eleutherococcus senticosus", "siberian ginseng"],
+      note: "Not Panax (Asian) ginseng. Lanoxin section 7.4 names Siberian Ginseng among substances that can interfere with digoxin assays. Lab-test effect, not a graded interaction. No CYP or P-gp grade.",
+    }),
+  d("glucomannan", "Glucomannan", [], "Viscous fiber (konjac)",
+    [],
+    [],
+    "Named by the nateglinide label as able to add to its glucose-lowering effect",
+    {
+      kind: "herb",
+      aliases: ["konjac", "konjac root", "konjac glucomannan", "amorphophallus konjac"],
+      note: "Nateglinide section 7 (Table 2) lists glucomannan among drugs that may increase its blood-glucose-lowering effect. No CYP grade.",
+    }),
+  d("kelp", "Kelp", [], "Seaweed iodine source",
+    [],
+    [],
+    "Iodine load can block radioiodine uptake",
+    {
+      kind: "herb",
+      aliases: ["kelp supplement", "seaweed supplement", "bladderwrack", "fucus vesiculosus"],
+      note: "The HICON (sodium iodide I-131) label, section 7 Table 4, lists kelp among agents blocking radioiodine uptake. Timing is not shown here; the Prescribing Information governs. No CYP grade.",
+    }),
+  d("beta-carotene", "Beta-carotene", [], "Provitamin A carotenoid",
+    [],
+    [],
+    "Absorption reduced by orlistat",
+    {
+      kind: "herb",
+      aliases: ["beta carotene", "β-carotene", "provitamin a"],
+      note: "The Xenical (orlistat) label, section 7.2, reports reduced absorption of beta-carotene supplement when given together. Absorption effect, not a graded interaction. No CYP grade.",
+    }),
 ];
 
 const coreIds = new Set(raw.map((d) => d.id));

@@ -1,4 +1,5 @@
 import { describe, it } from "node:test";
+import { drugHubs } from "./drug-hubs";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -133,7 +134,7 @@ describe("public pair pages", () => {
 
   it("sitemap lists /, /pairs, /enzymes, /for-programs, /practice, /trust, /privacy, /terms, /cookies, every pair canonical, every drug hub and every indexable enzyme hub", () => {
     const xml = sitemapXml();
-    const hubCount = new Set(pages.flatMap((p) => [p.drugA, p.drugB])).size;
+    const hubCount = drugHubs().length;
     const enzymeCount = enzymeHubs().filter((h) => h.indexable).length;
     assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 9 + hubCount + enzymeCount);
     assert.ok(xml.includes(`<loc>${SITE_URL}/trust</loc>`));
