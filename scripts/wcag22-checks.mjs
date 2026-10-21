@@ -1,6 +1,6 @@
 // Scripted WCAG 2.2 checks for criteria axe does not cover well:
 // 1.4.10 reflow, 1.4.12 text spacing, 2.3.3 reduced motion, 2.5.8 target size, 2.4.11 focus not obscured.
-// Usage: CHROME=/usr/bin/google-chrome node scripts/wcag22-checks.mjs <baseUrl> [path[@Button] ...]
+// Usage: CHROME=/usr/bin/google-chrome node scripts/wcag22-checks.mjs <baseUrl> [path[@Button[>Button...]] ...]
 import { chromium } from "playwright";
 const [base, ...rest] = process.argv.slice(2);
 if (!base) { console.error("usage: node scripts/wcag22-checks.mjs <baseUrl> [paths]"); process.exit(2); }
@@ -14,7 +14,7 @@ async function open(spec, width, opts = {}) {
   const ctx = await browser.newContext({ viewport: { width, height: 800 }, reducedMotion: opts.reduce ? "reduce" : "no-preference" });
   const page = await ctx.newPage();
   await page.goto(new URL(path, base).href, { waitUntil: "networkidle" });
-  if (click) { await page.getByRole("button", { name: click, exact: true }).first().click(); await page.waitForTimeout(600); }
+  for (const name of click ? click.split(">") : []) { await page.getByRole("button", { name, exact: true }).or(page.getByRole("tab", { name, exact: true })).first().click({ timeout: 10000 }); await page.waitForTimeout(600); }
   return { ctx, page };
 }
 for (const spec of paths) for (const width of [320, 1280]) {

@@ -10,9 +10,9 @@ import { buildCatalogMatcher } from "./reference/validate-fda";
 
 const UNGRADED = ["belumosudil", "danicopan", "fostamatinib", "saquinavir and ritonavir"];
 
-test("label-named shelf is three names and no enzyme grade", () => {
-  assert.equal(LABEL_NAMED_SHELF.length, 3);
-  assert.equal(DRUGS.filter((d) => d.cls === "Named on a stored label").length, 3);
+test("label-named shelf is eleven names and no enzyme grade", () => {
+  assert.equal(LABEL_NAMED_SHELF.length, 11);
+  assert.equal(DRUGS.filter((d) => d.cls === "Named on a stored label").length, 11);
   const match = buildCatalogMatcher(DRUGS);
   for (const drug of LABEL_NAMED_SHELF) {
     assert.equal(DRUG_BY_ID[drug.id]?.id, drug.id);

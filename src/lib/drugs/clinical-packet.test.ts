@@ -120,7 +120,7 @@ test("buildClinicalPacket: evaluates potassium homeostasis, perpetrators, binder
   assert.ok(packet.riskIndexes.potassium.report !== null);
   assert.ok(packet.riskIndexes.potassium.perpetrators.length >= 3);
   assert.ok(packet.ehrNoteText.includes("Potassium Homeostasis & Cardioprotective Shifting"));
-  assert.ok(packet.ehrNoteText.includes("Regular Insulin"));
+  assert.ok(packet.ehrNoteText.includes("Intracellular Shifting: See the Prescribing Information.") && !packet.ehrNoteText.includes("Regular Insulin"));
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("salt substitutes") || cp.includes("potassium chloride")));
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("Patiromer") && cp.includes("3 hours")));
 });
@@ -158,7 +158,7 @@ test("buildClinicalPacket: evaluates Tisdale QTc score, inpatient telemetry, and
   assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "loopDiuretic" && f.present), true);
   assert.equal(packet.riskIndexes.qt.tisdale.factors.some((f) => f.id === "twoOrMoreQtDrugs" && f.present), true);
   assert.ok(packet.ehrNoteText.includes("Tisdale Inpatient QTc Risk"));
-  assert.ok(packet.ehrNoteText.includes("Acute TdP Resuscitation Directive: Magnesium Sulfate 2 g IV push"));
+  assert.ok(packet.ehrNoteText.includes("Acute TdP Resuscitation Directive: Magnesium Sulfate (See the Prescribing Information)"));
   assert.ok(packet.counselingPoints.some((cp) => cp.includes("fluttering in your chest") || cp.includes("racing heartbeat")));
 });
 
