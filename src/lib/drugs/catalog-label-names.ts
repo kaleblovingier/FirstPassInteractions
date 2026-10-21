@@ -34,4 +34,12 @@ export const LABEL_NAMED_SHELF: Drug[] = [
   d("cisapride", "cisapride", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
   d("terfenadine", "terfenadine", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
   d("astemizole", "astemizole", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("dirithromycin", "dirithromycin", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("troleandomycin", "troleandomycin", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("mesoridazine", "mesoridazine", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("sparfloxacin", "sparfloxacin", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("halofantrine", "halofantrine", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("pentamidine", "pentamidine", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("levomethadyl-acetate", "levomethadyl acetate", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
+  d("probucol", "probucol", [], "Named on a stored label", [], "Name only. Not a dose.", { note: NOTE }),
 ];

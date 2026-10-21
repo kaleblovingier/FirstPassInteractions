@@ -14,6 +14,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as EnzymesRouteImport } from './routes/enzymes'
 import { Route as ForProgramsRouteImport } from './routes/for-programs'
 import { Route as PairsRouteImport } from './routes/pairs'
+import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -50,6 +51,11 @@ const ForProgramsRoute = ForProgramsRouteImport.update({
 const PairsRoute = PairsRouteImport.update({
   id: '/pairs',
   path: '/pairs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeRoute = PracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
+  '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
+  '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/pairs': typeof PairsRoute
+  '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/enzymes'
     | '/for-programs'
     | '/pairs'
+    | '/practice'
     | '/privacy'
     | '/recover'
     | '/sitemap.xml'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/enzymes'
     | '/for-programs'
     | '/pairs'
+    | '/practice'
     | '/privacy'
     | '/recover'
     | '/sitemap.xml'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/enzymes'
     | '/for-programs'
     | '/pairs'
+    | '/practice'
     | '/privacy'
     | '/recover'
     | '/sitemap.xml'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   EnzymesRoute: typeof EnzymesRoute
   ForProgramsRoute: typeof ForProgramsRoute
   PairsRoute: typeof PairsRoute
+  PracticeRoute: typeof PracticeRoute
   PrivacyRoute: typeof PrivacyRoute
   RecoverRoute: typeof RecoverRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/pairs'
       fullPath: '/pairs'
       preLoaderRoute: typeof PairsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice': {
+      id: '/practice'
+      path: '/practice'
+      fullPath: '/practice'
+      preLoaderRoute: typeof PracticeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -381,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnzymesRoute: EnzymesRoute,
   ForProgramsRoute: ForProgramsRoute,
   PairsRoute: PairsRoute,
+  PracticeRoute: PracticeRoute,
   PrivacyRoute: PrivacyRoute,
   RecoverRoute: RecoverRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

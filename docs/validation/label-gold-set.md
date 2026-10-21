@@ -636,7 +636,7 @@ Wave 15: 3 entries covering 5 pairs.
 - **wave 7: rilpivirine + dexamethasone (Edurant Table 2)**: Contraindicated only for more than a single-dose treatment. Not an unconditional pair.
 - **wave 7: metronidazole + disulfiram (Flagyl)**: The Flagyl Contraindications section says 'Do not administer' within two weeks of disulfiram, not 'contraindicated'. Skipped as ambiguous wording.
 - **wave 7: tetrabenazine / deutetrabenazine + MAOIs or reserpine**: MAOIs are a class (not expanded); reserpine is not a catalog row.
-- **wave 7: eletriptan + troleandomycin / nelfinavir; Mavyret + atazanavir**: Troleandomycin and nelfinavir are not catalog rows. Mavyret + atazanavir is already in the gold set.
+- **wave 7: eletriptan + troleandomycin / nelfinavir; Mavyret + atazanavir**: Troleandomycin is a name-only shelf row and nelfinavir is an FDA Table 1 strong CYP3A4 inhibitor. Both are pinned from the Relpax sentence. Mavyret + atazanavir is already in the gold set.
 - **wave 6: levoketoconazole + Table 6 sensitive CYP3A4 or CYP3A4 and P-gp substrates (alfentanil, avanafil, buspirone, conivaptan, dabigatran etexilate, darifenacin, darunavir, digoxin, everolimus, fexofenadine, ibrutinib, lovastatin, lurasidone, midazolam, naloxegol, nisoldipine, simvastatin, sirolimus, tacrolimus, triazolam, vardenafil)**: Recorlev Table 6 says use with these is "contraindicated or not recommended" and does not say which. Section 4 says "certain" sensitive substrates. Not pinned as contraindicated. Ebastine and tipranavir are not in the catalog. Lomitapide and saquinavir are shelf rows and are still not pinned from this row.
 - **wave 6: levoketoconazole + strong CYP3A4 inhibitors or inducers (Table 7)**: Recorlev Table 7 says "not recommended", not contraindicated.
 - **methadone / buprenorphine / fentanyl + strong CYP3A4 inhibitor or inducer**: Wave 1: labels use monitor/consider-dose-change language, not contraindicated/avoid, so they failed the wave-1 rule. Wave 2 adds methadone and buprenorphine pairs under 'boxed-warning' / 'warning' with a label-supported floor; fentanyl not curated.
@@ -695,7 +695,8 @@ Wave 15: 3 entries covering 5 pairs.
 - **wave 7: disulfiram + metronidazole**: Disulfiram and Flagyl name each other. The only pair card is a seizure-threshold card, not the psychotic reaction the labels describe. Not pinned (the Geodon + tacrolimus rule).
 - **wave 7: triptans (Imitrex, Maxalt, Zomig, Amerge, almotriptan, frovatriptan, Relpax) + ergotamine / dihydroergotamine**: Section 4 names ergotamine and dihydroergotamine within 24 hours. The only pair card is a serotonin card, not the vasospasm the labels describe. Not pinned without a matching card.
 - **wave 7: Lybalvi + opioids**: Section 4 says 'patients using opioids' and names no drug.
-- **wave 7: Movantik, Inspra, Latuda, Multaq + nelfinavir / indinavir / troleandomycin / mibefradil / avasimibe / saquinavir**: Named on these labels. Not in the catalog.
+- **wave 7: Movantik, Inspra, Latuda, Multaq + nelfinavir / indinavir / troleandomycin / mibefradil / avasimibe / saquinavir**: Inspra names nelfinavir and troleandomycin, and those pairs are pinned. Indinavir and saquinavir are substrate rows, not stored inhibitor grades, so they are not pinned as perpetrators. Latuda names the class with etc., not these drugs. Mibefradil and avasimibe stay off. Movantik and Multaq are not pinned from this note.
+- **Geodon 4.1 names that were not in the catalog**: mesoridazine, sparfloxacin, halofantrine, pentamidine, levomethadyl acetate, and probucol are name-only shelf rows. Pinned with ziprasidone from the stored section 4.1 sentence. No enzyme grade.
 - **wave 7: Lexapro / Celexa + pimozide; Zoloft + pimozide; Tegretol + nefazodone**: Same pair as the pimozide-label and nefazodone rows. One row per pair.
 - **wave 7: Zoloft oral solution + disulfiram**: Contraindicated for the oral solution only (it contains alcohol). The catalog sertraline row is not formulation-specific.
 - **wave 9: Parnate + carbamazepine**: Named in Parnate Table 1. The only pair cards are washout cards, not the hypertensive or serotonin reaction the label describes. Not pinned without a matching card.
@@ -767,12 +768,6 @@ Wave 15: 3 entries covering 5 pairs.
 - **flibanserin**: Not in catalog. Paxlovid section 4 names it. Not curated.
 - **aminophylline**: Not in catalog; named with theophylline on Ketalar 7.1. Wave 2 uses ketamine+theophylline instead.
 - **buprenorphine/naloxone**: No separate combination row; 'suboxone' / 'zubsolv' resolve to the catalog 'buprenorphine' row, so wave-2 Suboxone-label pairs use that id.
-- **mesoridazine**: Named on Geodon section 4.1. Not in the catalog.
-- **sparfloxacin**: Named on Geodon section 4.1. Not in the catalog.
-- **halofantrine**: Named on Geodon section 4.1. Not in the catalog.
-- **pentamidine**: Named on Geodon section 4.1. Not in the catalog.
-- **probucol**: Named on Geodon section 4.1. Not in the catalog.
-- **levomethadyl acetate**: Named on Geodon section 4.1. Not in the catalog.
 
 ## Limitations
 

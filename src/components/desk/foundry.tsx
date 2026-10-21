@@ -107,7 +107,7 @@ export function Foundry() {
   const invoice = useMemo(
     () =>
       invoiceText({
-        plan: plan === "life" ? "Founding license (one-time)" : plan === "lab" ? "Lab seat (year)" : "Founding (year)",
+        plan: plan === "life" ? "Founding license (one-time)" : plan === "lab" ? "Lab seat (year)" : "Desk (year)",
         price: plan === "life" ? COMMERCE.founding : plan === "lab" ? priceFor("lab", "year") : priceFor("pro", "year"),
         pay: payNote || OPERATOR.payLine,
         keyHint: last ?? undefined,
@@ -550,7 +550,7 @@ function CloseDesk({
             {(
               [
                 ["life", "Life"],
-                ["pro", "Founding (year)"],
+                ["pro", "Desk (year)"],
                 ["lab", "Lab"],
               ] as const
             ).map(([id, label]) => (

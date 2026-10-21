@@ -42,6 +42,11 @@ export const Route = createRootRoute({
         children:
           "(function(){var l=document.getElementById('fp-fonts');if(!l)return;var on=function(){l.media='all'};if(l.sheet)on();else l.addEventListener('load',on);})();",
       },
+      {
+        // Offline reading of published reference pages (public/sw.js). Skipped inside frames (previews).
+        children:
+          "if('serviceWorker'in navigator&&window.top===window&&(location.protocol==='https:'||location.hostname==='127.0.0.1'||location.hostname==='localhost'))addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});",
+      },
     ],
   }),
   component: () => (

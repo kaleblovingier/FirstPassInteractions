@@ -210,3 +210,21 @@ test("a name with no stored enzyme grade still shows the label sentence", () => 
   assert.equal(labelFor("clarithromycin", "astemizole"), null);
   assert.equal(labelFor("clarithromycin", "terfenadine"), null);
 });
+
+test("a Geodon name with no enzyme grade shows the stored sentence", () => {
+  const row = labelFor("ziprasidone", "mesoridazine");
+  assert.equal(row?.source, "pin");
+  assert.equal(row?.labelClass, null);
+  assert.equal(row?.example, "mesoridazine");
+  const plain = deskLabelPlain(["ziprasidone", "mesoridazine"]);
+  assert.match(plain, /ziprasidone should not be given with/);
+  assert.match(plain, /Stored source: pin/);
+  assert.equal(plain.includes("Stored label class:"), false);
+  assert.equal(DRUG_BY_ID.mesoridazine?.enzymes.length, 0);
+  assert.equal(labelFor("ziprasidone", "tacrolimus"), null);
+  const held = labelFor("eletriptan", "nelfinavir");
+  assert.equal(held?.source, "pin");
+  assert.equal(held?.pinEnzyme, "CYP3A4");
+  assert.equal(held?.labelClass, null);
+  assert.match(deskLabelPlain(["eletriptan", "nelfinavir"]), /potent CYP3A4 inhibitors/);
+});

@@ -7,7 +7,7 @@ Question: is every stored label quote (gold set and contraindication pins) still
 
 | Result | Quotes | Pairs |
 |---|---|---|
-| Pass (exact, in the cited section) | 204 | 533 |
+| Pass (exact, in the cited section) | 204 | 550 |
 | Moved (exact, but in a different section than cited) | 1 | 1 |
 | Drifted (not in the current label) | 0 | 0 |
 | Could not fetch | 0 | 0 |
@@ -35,7 +35,7 @@ None.
 | Adempas (riociguat) | 7b57509a-3d5d-41d4-8fed-1471e26372a3 | 32 | 2026-08-13 | 1 | pass |
 | Anafranil (clomipramine) | 4074b555-7635-41a9-809d-fae3b3610059 | 22 | 2024-11-26 | 1 | pass |
 | Apokyn (apomorphine) | 3235535d-9ef9-4657-8b2a-176a807d091c | 21 | 2024-10-10 | 1 | pass |
-| Austedo (deutetrabenazine) | 7ea3c60a-45c7-44cc-afc2-d87fa53993c0 | 36 | 2025-02-28 | 1 | pass |
+| Austedo (deutetrabenazine) | 7ea3c60a-45c7-44cc-afc2-d87fa53993c0 | 35 | 2025-02-28 | 1 | pass |
 | Azilect (rasagiline) | a40d0e73-3f9f-4b01-979d-402c9cdaeb60 | 26 | 2020-06-30 | 2 | pass |
 | Belsomra (suvorexant) | e5b72731-1acb-45b7-9c13-290ad12d3951 | 21 | 2025-03-10 | 1 | pass |
 | Biktarvy (bictegravir/emtricitabine/tenofovir alafenamide) | 664cb8f0-1f65-441b-b0d9-ba3d798be309 | 26 | 2026-09-09 | 2 | pass |
@@ -141,7 +141,7 @@ None.
 - ticagrelor+ketoconazole: Brilinta (ticagrelor), 7.1 Strong CYP3A Inhibitors
 - bupropion+linezolid, bupropion+methylene-blue: Bupropion hydrochloride tablets, 4 CONTRAINDICATIONS
 - buspirone+linezolid, buspirone+methylene-blue: Buspirone hydrochloride tablets, CONTRAINDICATIONS
-- ergotamine+erythromycin: Cafergot (ergotamine/caffeine), CONTRAINDICATIONS
+- ergotamine+erythromycin, ergotamine+troleandomycin, ergotamine+nelfinavir: Cafergot (ergotamine/caffeine), CONTRAINDICATIONS
 - ergotamine+ketoconazole: Cafergot (ergotamine/caffeine), CONTRAINDICATIONS
 - ergotamine+ritonavir: Cafergot (ergotamine/caffeine), CONTRAINDICATIONS
 - citalopram+linezolid, citalopram+methylene-blue: Celexa (citalopram), 4 CONTRAINDICATIONS
@@ -154,7 +154,7 @@ None.
 - ivabradine+clarithromycin: Corlanor (ivabradine), 4. CONTRAINDICATIONS
 - duloxetine+linezolid, duloxetine+methylene-blue: Cymbalta (duloxetine), 4 CONTRAINDICATIONS
 - lemborexant+itraconazole: Dayvigo (lemborexant), 2.2 Dosage Recommendations for Concomitant Use with CYP3A Inhibitors or CYP3A Inducers
-- dihydroergotamine+erythromycin, dihydroergotamine+ketoconazole: Dihydroergotamine mesylate injection, CONTRAINDICATIONS
+- dihydroergotamine+erythromycin, dihydroergotamine+ketoconazole, dihydroergotamine+troleandomycin, dihydroergotamine+nelfinavir: Dihydroergotamine mesylate injection, CONTRAINDICATIONS
 - rilpivirine+carbamazepine, rilpivirine+oxcarbazepine, rilpivirine+phenobarbital, rilpivirine+phenytoin, rilpivirine+rifampin, rilpivirine+rifapentine, rilpivirine+st-johns-wort, rilpivirine+esomeprazole, rilpivirine+lansoprazole, rilpivirine+omeprazole, rilpivirine+pantoprazole, rilpivirine+rabeprazole: Edurant (rilpivirine), 4 CONTRAINDICATIONS
 - venlafaxine+linezolid, venlafaxine+methylene-blue: Effexor XR (venlafaxine), 4 CONTRAINDICATIONS
 - apixaban+rifampin: Eliquis (apixaban), 7.2 Combined P-gp and Strong CYP3A4 Inducers
@@ -163,10 +163,10 @@ None.
 - levomilnacipran+linezolid, levomilnacipran+methylene-blue: Fetzima (levomilnacipran), 4 CONTRAINDICATIONS
 - fluvoxamine+linezolid, fluvoxamine+methylene-blue: Fluvoxamine maleate tablets, 4 CONTRAINDICATIONS
 - pimozide+fluvoxamine: Fluvoxamine maleate tablets, 4 CONTRAINDICATIONS
-- ziprasidone+dofetilide, ziprasidone+sotalol, ziprasidone+quinidine, ziprasidone+thioridazine, ziprasidone+chlorpromazine, ziprasidone+droperidol, ziprasidone+pimozide, ziprasidone+gatifloxacin, ziprasidone+moxifloxacin, ziprasidone+mefloquine, ziprasidone+dolasetron, ziprasidone+arsenic-trioxide, ziprasidone+amiodarone, ziprasidone+dronedarone, ziprasidone+ibutilide, ziprasidone+procainamide: Geodon (ziprasidone), 4.1 QT Prolongation
+- ziprasidone+dofetilide, ziprasidone+sotalol, ziprasidone+quinidine, ziprasidone+thioridazine, ziprasidone+chlorpromazine, ziprasidone+droperidol, ziprasidone+pimozide, ziprasidone+gatifloxacin, ziprasidone+moxifloxacin, ziprasidone+mefloquine, ziprasidone+dolasetron, ziprasidone+arsenic-trioxide, ziprasidone+amiodarone, ziprasidone+dronedarone, ziprasidone+ibutilide, ziprasidone+procainamide, ziprasidone+mesoridazine, ziprasidone+sparfloxacin, ziprasidone+halofantrine, ziprasidone+pentamidine, ziprasidone+levomethadyl-acetate, ziprasidone+probucol: Geodon (ziprasidone), 4.1 QT Prolongation
 - ziprasidone+linezolid, ziprasidone+methylene-blue, ziprasidone+phenelzine, ziprasidone+tranylcypromine, ziprasidone+isocarboxazid, ziprasidone+moclobemide, ziprasidone+selegiline, ziprasidone+safinamide, ziprasidone+rasagiline: Geodon (ziprasidone), 4.3 Monoamine Oxidase Inhibitors (MAOIs)
 - eplerenone+ketoconazole: Inspra (eplerenone), 4 CONTRAINDICATIONS
-- eplerenone+nefazodone, eplerenone+clarithromycin, eplerenone+ritonavir: Inspra (eplerenone), 4 CONTRAINDICATIONS
+- eplerenone+nefazodone, eplerenone+clarithromycin, eplerenone+ritonavir, eplerenone+troleandomycin, eplerenone+nelfinavir: Inspra (eplerenone), 4 CONTRAINDICATIONS
 - lopinavir+alfuzosin, lopinavir+ranolazine, lopinavir+dronedarone, lopinavir+lurasidone, lopinavir+pimozide, lopinavir+dihydroergotamine, lopinavir+ergotamine, lopinavir+methylergonovine, lopinavir+grazoprevir-elbasvir, lopinavir+lovastatin, lopinavir+simvastatin, lopinavir+suzetrigine, lopinavir+sildenafil-pah, lopinavir+triazolam, lopinavir+midazolam: Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS
 - lopinavir+apalutamide, lopinavir+rifampin, lopinavir+st-johns-wort: Kaletra (lopinavir/ritonavir), 4 CONTRAINDICATIONS
 - ketamine+ethanol: Ketalar (ketamine), 7.3 Benzodiazepines, Opioid Analgesics, Or Other CNS Depressants
@@ -256,7 +256,7 @@ None.
 - paxlovid+alfuzosin, paxlovid+ranolazine, paxlovid+amiodarone, paxlovid+dronedarone, paxlovid+flecainide, paxlovid+propafenone, paxlovid+quinidine, paxlovid+lurasidone, paxlovid+pimozide, paxlovid+silodosin, paxlovid+eplerenone, paxlovid+ivabradine, paxlovid+dihydroergotamine, paxlovid+ergotamine, paxlovid+methylergonovine, paxlovid+lovastatin, paxlovid+simvastatin, paxlovid+voclosporin, paxlovid+eletriptan, paxlovid+ubrogepant, paxlovid+finerenone, paxlovid+suzetrigine, paxlovid+naloxegol, paxlovid+sildenafil-pah, paxlovid+triazolam, paxlovid+midazolam, paxlovid+tolvaptan: Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS
 - paxlovid+apalutamide, paxlovid+enzalutamide, paxlovid+carbamazepine, paxlovid+phenobarbital, paxlovid+primidone, paxlovid+phenytoin, paxlovid+rifampin, paxlovid+rifapentine, paxlovid+lumacaftor-ivacaftor, paxlovid+st-johns-wort: Paxlovid (nirmatrelvir/ritonavir), 4 CONTRAINDICATIONS
 - pimozide+citalopram, pimozide+escitalopram: Pimozide, CONTRAINDICATIONS
-- pimozide+erythromycin, pimozide+azithromycin: Pimozide, CONTRAINDICATIONS
+- pimozide+erythromycin, pimozide+azithromycin, pimozide+dirithromycin, pimozide+troleandomycin: Pimozide, CONTRAINDICATIONS
 - pimozide+nefazodone: Pimozide, CONTRAINDICATIONS
 - pimozide+sertraline: Pimozide, CONTRAINDICATIONS
 - pimozide+clarithromycin: Pimozide tablets, CONTRAINDICATIONS
@@ -274,11 +274,11 @@ None.
 - ranolazine+ketoconazole: Ranexa (ranolazine), 4 CONTRAINDICATIONS
 - ranolazine+rifampin, ranolazine+phenobarbital: Ranexa (ranolazine), 7.1 Effects of Other Drugs on Ranolazine
 - ranolazine+rifampin, ranolazine+phenobarbital, ranolazine+primidone: Ranexa (ranolazine), 4 CONTRAINDICATIONS
-- ranolazine+clarithromycin: Ranolazine extended-release, 4 CONTRAINDICATIONS
+- ranolazine+clarithromycin, ranolazine+nelfinavir: Ranolazine extended-release, 4 CONTRAINDICATIONS
 - ranolazine+st-johns-wort: Ranolazine extended-release, 4 CONTRAINDICATIONS
 - levoketoconazole+bosutinib, levoketoconazole+clarithromycin, levoketoconazole+cobimetinib, levoketoconazole+crizotinib, levoketoconazole+disopyramide, levoketoconazole+dofetilide, levoketoconazole+dronedarone, levoketoconazole+ivabradine, levoketoconazole+methadone, levoketoconazole+midostaurin, levoketoconazole+nicardipine, levoketoconazole+pimozide, levoketoconazole+quinidine, levoketoconazole+ranolazine: Recorlev (levoketoconazole), 7.1 Effect of RECORLEV on Other Drugs
 - levoketoconazole+bosutinib, levoketoconazole+clarithromycin, levoketoconazole+cobimetinib, levoketoconazole+crizotinib, levoketoconazole+disopyramide, levoketoconazole+dofetilide, levoketoconazole+dronedarone, levoketoconazole+ivabradine, levoketoconazole+methadone, levoketoconazole+midostaurin, levoketoconazole+nicardipine, levoketoconazole+pimozide, levoketoconazole+quinidine, levoketoconazole+ranolazine: Recorlev (levoketoconazole), 4 CONTRAINDICATIONS
-- eletriptan+ketoconazole, eletriptan+itraconazole, eletriptan+nefazodone, eletriptan+clarithromycin, eletriptan+ritonavir: Relpax (eletriptan), 4 CONTRAINDICATIONS
+- eletriptan+ketoconazole, eletriptan+itraconazole, eletriptan+nefazodone, eletriptan+clarithromycin, eletriptan+ritonavir, eletriptan+troleandomycin, eletriptan+nelfinavir: Relpax (eletriptan), 4 CONTRAINDICATIONS
 - mirtazapine+linezolid, mirtazapine+methylene-blue: Remeron (mirtazapine), 4 CONTRAINDICATIONS
 - sildenafil-pah+riociguat: Revatio (sildenafil), 4 CONTRAINDICATIONS
 - atazanavir+alfuzosin, atazanavir+carbamazepine, atazanavir+phenobarbital, atazanavir+phenytoin, atazanavir+apalutamide, atazanavir+encorafenib, atazanavir+irinotecan, atazanavir+ivosidenib, atazanavir+pimozide, atazanavir+midazolam, atazanavir+triazolam, atazanavir+dihydroergotamine, atazanavir+ergotamine, atazanavir+methylergonovine, atazanavir+grazoprevir-elbasvir, atazanavir+glecaprevir-pibrentasvir, atazanavir+st-johns-wort, atazanavir+lovastatin, atazanavir+simvastatin, atazanavir+sildenafil-pah, atazanavir+nevirapine: Reyataz (atazanavir), 4 CONTRAINDICATIONS
