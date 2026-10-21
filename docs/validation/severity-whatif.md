@@ -15,9 +15,9 @@ The question was whether a CYP or P-gp finding should read contraindicated ("Avo
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,866 / 1,740,045 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 277 (277 CYP, 0 P-gp) on 277 pairs (277 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 277 |
+| Catalog entries / unordered pairs scanned | 1,874 / 1,755,001 |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 282 (282 CYP, 0 P-gp) on 282 pairs (282 by display name, as #66 counts) |
+| … of which carry a label citation (kept at contraindicated) | 282 |
 | **Findings that move contraindicated → major** | **0** on **0** pairs |
 | **Pairs whose overall severity changes** | **0** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
@@ -27,9 +27,9 @@ The question was whether a CYP or P-gp finding should read contraindicated ("Avo
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **277 findings on 277 pairs keyed by display name**: **differs**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **282 findings on 282 pairs keyed by display name**: **differs**.
 
-277 carry a label citation and are kept at contraindicated, so 0 are capped.
+282 carry a label citation and are kept at contraindicated, so 0 are capped.
 
 ## Moved findings by rule / enzyme
 

@@ -132,12 +132,13 @@ describe("public pair pages", () => {
     }
   });
 
-  it("sitemap lists /, /pairs, /enzymes, /for-programs, /trust, /privacy, /terms, /cookies, every pair canonical, every drug hub and every indexable enzyme hub", () => {
+  it("sitemap lists /, /pairs, /enzymes, /for-programs, /practice, /trust, /privacy, /terms, /cookies, every pair canonical, every drug hub and every indexable enzyme hub", () => {
     const xml = sitemapXml();
     const hubCount = drugHubs().length;
     const enzymeCount = enzymeHubs().filter((h) => h.indexable).length;
-    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 8 + hubCount + enzymeCount);
+    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 9 + hubCount + enzymeCount);
     assert.ok(xml.includes(`<loc>${SITE_URL}/trust</loc>`));
+    assert.ok(xml.includes(`<loc>${SITE_URL}/practice</loc>`));
     for (const p of pages) assert.ok(xml.includes(`<loc>${p.canonical}</loc>`), p.slug);
   });
 });
