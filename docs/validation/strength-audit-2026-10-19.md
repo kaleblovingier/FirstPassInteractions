@@ -1,6 +1,6 @@
 # Catalog strength audit, 2026-10-19
 
-Educational tool, NOT FDA-cleared. No dosing. Labels were read from the openFDA label API (api.fda.gov/drug/label.json) on 2026-10-19.
+Educational reference only. Not FDA-cleared. The Prescribing Information governs.
 
 Branch `catalog-strength-audit`. Not pushed. **Every grade change below needs Kaleb's approval before merge.**
 
