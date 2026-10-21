@@ -19,6 +19,7 @@ import {
   WAVE_11_COUNT,
   WAVE_12_COUNT,
   WAVE_13_COUNT,
+  WAVE_14_COUNT,
 } from "./label-gold-set";
 import { evaluatePair } from "./label-gold-set-eval";
 
@@ -36,8 +37,9 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
   assert.ok(WAVE_10_COUNT >= 15 && WAVE_10_COUNT <= 40, `wave 10 size ${WAVE_10_COUNT}`);
   assert.ok(WAVE_12_COUNT >= 1 && WAVE_12_COUNT <= 40, `wave 12 size ${WAVE_12_COUNT}`);
   assert.ok(WAVE_13_COUNT >= 8 && WAVE_13_COUNT <= 15, `wave 13 size ${WAVE_13_COUNT}`);
+  assert.ok(WAVE_14_COUNT >= 10 && WAVE_14_COUNT <= 20, `wave 14 size ${WAVE_14_COUNT}`);
   assert.ok(WAVE_11_COUNT >= 5 && WAVE_11_COUNT <= 40, `wave 11 size ${WAVE_11_COUNT}`);
-  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT + WAVE_4_COUNT + WAVE_5_COUNT + WAVE_6_COUNT + WAVE_7_COUNT + WAVE_9_COUNT + WAVE_10_COUNT + WAVE_11_COUNT + WAVE_12_COUNT + WAVE_13_COUNT);
+  assert.equal(LABEL_GOLD_SET.length, WAVE_1_COUNT + WAVE_2_COUNT + WAVE_3_COUNT + WAVE_4_COUNT + WAVE_5_COUNT + WAVE_6_COUNT + WAVE_7_COUNT + WAVE_9_COUNT + WAVE_10_COUNT + WAVE_11_COUNT + WAVE_12_COUNT + WAVE_13_COUNT + WAVE_14_COUNT);
   assert.equal(byId.size, LABEL_GOLD_SET.length, "pair ids are unique");
   const unordered = new Set(LABEL_GOLD_SET.map((p) => [p.drugA, p.drugB].sort().join("+")));
   assert.equal(unordered.size, LABEL_GOLD_SET.length, "no pair listed twice in either order");
@@ -45,7 +47,7 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
     assert.ok(DRUG_BY_ID[p.drugA], `${p.drugA} in catalog`);
     assert.ok(DRUG_BY_ID[p.drugB], `${p.drugB} in catalog`);
     assert.notEqual(p.drugA, p.drugB);
-    const retrieved = p.wave === 12 || p.wave === 13 ? "2026-10-19" : p.wave === 7 || p.wave === 9 || p.wave === 10 || p.wave === 11 ? "2026-10-12" : p.wave === 6 ? "2026-10-05" : p.wave === 5 ? "2026-10-03" : p.wave >= 3 ? "2026-10-02" : "2026-09-27";
+    const retrieved = p.wave === 12 || p.wave === 13 || p.wave === 14 ? "2026-10-19" : p.wave === 7 || p.wave === 9 || p.wave === 10 || p.wave === 11 ? "2026-10-12" : p.wave === 6 ? "2026-10-05" : p.wave === 5 ? "2026-10-03" : p.wave >= 3 ? "2026-10-02" : "2026-09-27";
     assert.equal(p.retrieved, retrieved);
     assert.match(p.url, /^https:\/\/(dailymed\.nlm\.nih\.gov|www\.accessdata\.fda\.gov)\//);
     assert.ok(p.labelSection.trim().length > 0);
@@ -56,7 +58,7 @@ test("gold set: shape, unique ids, catalog ids exist", () => {
     } else if (p.wave === 3 || p.wave === 4) {
       assert.equal(p.expectedFloor, "major", `${p.id}: floor`);
       assert.equal(p.labelClass, "contraindicated", `${p.id}: wave ${p.wave} class`);
-    } else if (p.wave === 5 || p.wave === 6 || p.wave === 7 || p.wave === 9 || p.wave === 10 || p.wave === 11 || p.wave === 12 || p.wave === 13) {
+    } else if (p.wave === 5 || p.wave === 6 || p.wave === 7 || p.wave === 9 || p.wave === 10 || p.wave === 11 || p.wave === 12 || p.wave === 13 || p.wave === 14) {
       assert.equal(p.expectedFloor, "contraindicated", `${p.id}: floor`);
       assert.equal(p.labelClass, "contraindicated", `${p.id}: wave ${p.wave} class`);
     } else {

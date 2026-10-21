@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { CITED_ONLY_HUB_IDS } from "./drug-hubs";
 import { DrugHubView, PairPageView, PairsIndexView } from "@/components/seo/pair-page";
 import { pairPages, sitemapXml } from "./pair-pages";
 import { drugHubBySlug, drugHubs, drugHubPath, legacyDrugHubRedirect } from "./drug-hubs";
@@ -17,8 +18,8 @@ const DOSE = /\b\d+(\.\d+)?\s?(mg|mcg|µg|g|mL|units?|IU)\b|\b(once|twice|three 
 const BANNED = /regimen|clinical decision support|\bCDS\b|\bfree\b|pric(e|ing)|\$\d|\bPro\b/i;
 
 describe("drug hub pages", () => {
-  it("one hub per catalog drug that appears in a pair page", () => {
-    const ids = new Set(pages.flatMap((p) => [p.drugA, p.drugB]));
+  it("one hub per catalog drug that appears in a pair page, plus the cited-only supplements", () => {
+    const ids = new Set([...pages.flatMap((p) => [p.drugA, p.drugB]), ...CITED_ONLY_HUB_IDS]);
     assert.equal(hubs.length, ids.size);
     assert.equal(new Set(hubs.map((h) => h.slug)).size, hubs.length);
     for (const h of hubs) {
@@ -47,7 +48,8 @@ describe("drug hub pages", () => {
       const t = text(html(h));
       assert.ok(t.includes(`Open ${h.name} in the desk`), h.slug);
       assert.ok(html(h).includes(`href="${h.deskUrl}"`) && h.deskUrl.endsWith(`brief=${h.drugId}`), h.slug);
-      assert.ok(t.includes(PAIR_DISCLAIMER) && t.includes(`These are pairs with ${h.name} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with ${h.name}; it just isn't on this list. Open any pair in the desk to see it alongside other drugs.`), h.slug);
+      const intro = h.pairCount === 0 ? "Interaction notes for this supplement, quoted from FDA-approved labeling." : `These are pairs with ${h.name} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with ${h.name}; it just isn't on this list. Open any pair in the desk to see it alongside other drugs.`;
+      assert.ok(t.includes(PAIR_DISCLAIMER) && t.includes(intro), h.slug);
       for (const g of h.groups) assert.ok(labels.has(g.label) && g.label === SEVERITY_LABEL[g.severity]);
     }
     assert.equal(PAIR_DISCLAIMER, "Educational reference only. Not FDA-cleared. The Prescribing Information governs.");
@@ -98,5 +100,39 @@ describe("drug hub pages", () => {
       assert.equal(r.permanent, true);
       assert.equal(`/drug/${legacyDrugHubRedirect(r.source.replace("/drug/", ""))}`, r.destination);
     }
+  });
+});
+
+describe("cited-only supplement hubs", () => {
+  it("gives each label-named supplement a /drug page with its label note, no pairs, no mg, and a sitemap URL", async () => {
+    const { CITED_ONLY_HUB_IDS, drugHubs } = await import("./drug-hubs");
+    const { sitemapXml } = await import("./pair-pages");
+    const xml = sitemapXml();
+    for (const id of CITED_ONLY_HUB_IDS) {
+      const hub = drugHubs().find((h) => h.drugId === id);
+      assert.ok(hub, id);
+      assert.equal(hub.pairCount, 0);
+      assert.deepEqual(hub.groups, []);
+      assert.ok(hub.labelNote);
+      assert.doesNotMatch(hub.labelNote, /\d\s*(mg|mcg|g)\b/i);
+      assert.ok(xml.includes(hub.canonical), hub.canonical);
+      const html = renderToStaticMarkup(createElement(DrugHubView, { hub }));
+      assert.ok(html.includes("Educational reference only. Not FDA-cleared. The Prescribing Information governs."));
+      assert.ok(html.includes("drug-hub-label-note"));
+      assert.ok(html.includes("Interaction notes for this supplement, quoted from FDA-approved labeling."));
+      assert.ok(!html.includes("These are pairs with"));
+      assert.doesNotMatch(html, /\d\s*mg\b/i);
+      assert.ok(!html.includes("/pair/"));
+    }
+  });
+});
+
+describe("hubs with pairs keep the shared intro", () => {
+  it("renders the pair intro, not the supplement intro", async () => {
+    const { drugHubs } = await import("./drug-hubs");
+    const hub = drugHubs().find((h) => h.pairCount > 0)!;
+    const html = renderToStaticMarkup(createElement(DrugHubView, { hub }));
+    assert.ok(html.includes("These are pairs with"));
+    assert.ok(!html.includes("Interaction notes for this supplement"));
   });
 });

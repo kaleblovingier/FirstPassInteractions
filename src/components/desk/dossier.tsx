@@ -483,7 +483,7 @@ function PubchemPanel({ id }: { id: string }) {
               <dd className="break-all font-mono text-xs text-fg">{chem.inchikey || "—"}</dd>
             </div>
           </dl>
-          {chem.iupac ? <p className="text-sm leading-relaxed text-muted">{chem.iupac}</p> : null}
+          {chem.iupac ? <p className="text-sm leading-relaxed text-muted [overflow-wrap:anywhere]">{chem.iupac}</p> : null}
           <div className="flex flex-wrap gap-3">
             <Out href={`https://pubchem.ncbi.nlm.nih.gov/compound/${encodeURIComponent(chem.cid)}`}>Open CID {chem.cid}</Out>
             <Out href={`https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(drug.name)}`}>Search PubChem</Out>

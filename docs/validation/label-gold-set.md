@@ -7,7 +7,7 @@
 
 | Measure | Count |
 |---|---|
-| Pairs (each tied to a verified FDA label statement) | 492 |
+| Pairs (each tied to a verified FDA label statement) | 504 |
 | Wave 1 (contraindicated / avoid labels, mixed domains) | 46 |
 | Wave 2 (MAT / ketamine clinic: methadone, buprenorphine, naltrexone, ketamine, esketamine) | 30 |
 | Wave 3 (label contraindications: Korlym, Prezista, Prezcobix, Reyataz, Evotaz) | 97 |
@@ -19,13 +19,13 @@
 | Wave 10 (Nardil, Parnate other antidepressants, Marplan, Zyvox; Celexa, Lexapro, Viibryd, Fetzima, Savella + linezolid / IV methylene blue) | 31 |
 | Wave 11 (inducer-naming contraindications: Xadago, Azilect + St. John's wort; Xadago named partners) | 9 |
 | Wave 12 (unsourced Avoid together grades: Parnate Table 1 + 5-HTP / L-tryptophan; Marplan + tyramine foods) | 2 |
-| Wave 13 (Avoid together cards without a gold row: Parnate Table 1 and Nardil Contraindications) | 9 |
-| Label says contraindicated | 457 |
+| Wave 13 (Avoid together cards without a gold row: Parnate Table 1 and Nardil Contraindications) | 8 |
+| Label says contraindicated | 469 |
 | Label says avoid / not recommended | 11 |
 | Label Boxed Warning names the interaction (wave 2) | 6 |
 | Label Warnings / Drug Interactions statement (wave 2) | 18 |
-| Engine at or above label-supported floor | 492 / 492 |
-| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 457 / 457 |
+| Engine at or above label-supported floor | 504 / 504 |
+| Exact match: label contraindicated and engine contraindicated ("Avoid together") | 469 / 469 |
 | Contraindicated on label, engine major (meets floor, not exact) | 0 |
 | Under-calls (engine below floor) | 0 |
 
@@ -596,7 +596,19 @@ None.
 | 489 | 13 | tranylcypromine | phenylephrine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … phenylephrine" · e.g. "phenylephrine" |
 | 490 | 13 | tranylcypromine | ephedrine | [Parnate (tranylcypromine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b72d8187-dfcc-4ea0-b5e9-c0be95b69a27) | 4.1 Combination with Certain Drugs | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Concomitant use of PARNATE or use in rapid succession with the products in Table 1 is contraindicated … Sympathomimetic products … vasoconstrictors such as … and ephedrine" · e.g. "ephedrine" |
 | 491 | 13 | phenelzine | tyramine-foods | [Nardil (phenelzine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=513a41d0-37d4-4355-8a6d-a2c643bce6fa) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Hypertensive crises during NARDIL therapy may also be caused by the ingestion of foods with a high concentration of tyramine or dopamine" · e.g. "foods with a high concentration of tyramine" |
-| 492 | 13 | phenelzine | five-htp | [Nardil (phenelzine)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=513a41d0-37d4-4355-8a6d-a2c643bce6fa) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "patients being treated with NARDIL should not take sympathomimetic drugs … or related compounds (including methyldopa, L-dopa, L-tryptophan, L-tyrosine, and phenylalanine)" · e.g. "L-tryptophan" |
+| 492 | 14 | isocarboxazid | meperidine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Meperidine should not be used concomitantly with MAO inhibitors or within 2- or 3-weeks following MAO therapy" · e.g. "Meperidine" |
+| 493 | 14 | isocarboxazid | fluoxetine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Fluoxetine and other SSRIs should therefore not be used in combination with Marplan" · e.g. "Fluoxetine" |
+| 494 | 14 | isocarboxazid | cocaine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Patients taking Marplan should not undergo elective surgery requiring general anesthesia. Also, they should not be given cocaine" · e.g. "cocaine" |
+| 495 | 14 | isocarboxazid | tranylcypromine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Tranylcypromine sulfate" · e.g. "Tranylcypromine sulfate" |
+| 496 | 14 | isocarboxazid | amitriptyline | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Amitriptyline HCL" · e.g. "Amitriptyline HCL" |
+| 497 | 14 | isocarboxazid | clomipramine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Clomipramine hydrochloride" · e.g. "Clomipramine hydrochloride" |
+| 498 | 14 | isocarboxazid | desipramine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Desipramine HCL" · e.g. "Desipramine HCL" |
+| 499 | 14 | isocarboxazid | imipramine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Imipramine HCL" · e.g. "Imipramine HCL" |
+| 500 | 14 | isocarboxazid | nortriptyline | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Nortriptyline HCL" · e.g. "Nortriptyline HCL" |
+| 501 | 14 | isocarboxazid | doxepin | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Doxepin HCL" · e.g. "Doxepin HCL" |
+| 502 | 14 | isocarboxazid | cyclobenzaprine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Cyclobenzaprine HCL" · e.g. "Cyclobenzaprine HCL" |
+| 503 | 14 | isocarboxazid | amoxapine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Amoxapine" · e.g. "Amoxapine" |
+| 504 | 14 | isocarboxazid | trimipramine | [Marplan (isocarboxazid)](https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074) | CONTRAINDICATIONS | contraindicated | contraindicated | contraindicated (Avoid together) | pass (exact) | "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities … Trimipramine maleate" · e.g. "Trimipramine maleate" |
 
 ## Method
 
@@ -613,6 +625,9 @@ None.
 6. Floor: wave 1 requires at least `major` ("Serious concern") for both label classes. Wave 2 sets the floor to the minimum severity the label text supports: the naltrexone + labeled-opioid contraindicated labels -> `contraindicated` ("Avoid together"); avoid and Boxed Warning statements -> `major`; a Warnings / Drug Interactions statement that names overdose or death -> `major`; monitor / dose-change language -> `moderate` ("Use care"). For contraindicated labels the stricter expectation is `contraindicated` ("Avoid together"), reported separately as exact matches. Wave 5 sets the floor to `contraindicated` because a label pin holds the engine there. The pin lifts an existing pharmacodynamic card, or stands alone when there is no finding. It does not assign a CYP grade.
 
 ## Dropped candidates
+
+Wave 14: 8 entries covering 20 pairs.
+Wave 15: 3 entries covering 5 pairs.
 
 - **wave 7: Bixlenvo (bictegravir/lenacapavir) + strong CYP3A inducers**: Section 4 names the class only, with no drug named. Not expanded.
 - **wave 7: Orladeyo, Ravicti, fexinidazole**: Orladeyo section 4 is 'None'. Ravicti section 4 is hypersensitivity only. Fexinidazole names metronidazole and tinidazole only as nitroimidazole hypersensitivity, not coadministration.
@@ -646,7 +661,7 @@ None.
 - **clarithromycin + colchicine**: Current clarithromycin tablets: contraindicated only in renal or hepatic impairment.
 - **itraconazole + simvastatin**: Already in wave 1 from the Zocor label. Not repeated from Sporanox.
 - **Sporanox + colchicine / fesoterodine / solifenacin**: Contraindicated only in renal or hepatic impairment.
-- **Sporanox + eliglustat**: Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is on the shelf as an FDA Table 1 example. The line stays unpinned.
+- **Sporanox + eliglustat**: Contraindicated only in CYP2D6 poor or intermediate metabolizers, or when a CYP2D6 inhibitor is also on board. Eliglustat is in the catalog since Ship 1.77 (FDA Table 1 role only), but the contraindication is metabolizer-conditional, so it is not an unconditional pair. Recorlev Table 6 names it with the same condition.
 - **Sporanox + venetoclax**: Contraindicated only in CLL/SLL during initiation and ramp-up.
 - **Sporanox + ergonovine**: The label names ergometrine (ergonovine). No ergonovine catalog row. Methylergonovine is a different drug and is paired on its own. Not listed under NOT_IN_CATALOG because that check treats a name substring as a hit.
 - **Noxafil + venetoclax**: Contraindicated only at initiation and during the ramp-up phase in CLL or SLL.
@@ -736,6 +751,17 @@ None.
 - **wave 13: Parnate (tranylcypromine) + norepinephrine; Xadago (safinamide) + norepinephrine**: A name scan matched "norepinephrine" only inside "serotonin and norepinephrine reuptake inhibitors". Neither section 4 names norepinephrine as a drug. Not pinned; grade unchanged.
 - **wave 13: Parnate (tranylcypromine) + Ephedra**: Table 1 names "dietary supplements that contain sympathomimetics" as a class and names ephedrine, not ephedra. Not an exact name. Not pinned; grade unchanged.
 - **wave 13: Gemfibrozil + simvastatin**: Gemfibrozil tablets CONTRAINDICATIONS (setid 1967afce-ce55-4b10-bd8c-e4e94130de87): "Combination therapy of gemfibrozil with simvastatin". Zocor section 4 also names gemfibrozil. The card already reads Avoid together and the quote is exact, but a pin adds a public pair page, and the card's existing PubMed note says "not free", which the pair-page copy guard rejects. Not pinned until that card note is reworded (Kaleb's call); grade unchanged.
+- **wave 14: Marplan (isocarboxazid) + sertraline, paroxetine, fluvoxamine, citalopram, venlafaxine**: Named only in a washout sentence ("At least 2 weeks should be allowed after stopping sertraline … or paroxetine") or a "Serious reactions may also occur" example list. The contraindication sentence ("should not be administered in combination with any SSRI") names the class only. Not pinned; grade unchanged.
+- **wave 14 (for Kaleb): Marplan (isocarboxazid) + methylphenidate, epinephrine, norepinephrine, dopamine**: Named in CONTRAINDICATIONS, but the sentence says use "with Marplan may precipitate hypertension, headache, and related symptoms", not "should not be administered" (same wording as the Marplan + tryptophan row). Possible pin candidates for Kaleb; not pinned; grade unchanged.
+- **wave 14: Marplan (isocarboxazid) + amphetamine**: Section names "sympathomimetics (including amphetamines)" as a class, not the catalog drug (the wave 10 class rule). Not pinned.
+- **wave 14: Marplan (isocarboxazid) + protriptyline**: The SPL table spells it "Protripyline HCL". Not an exact name match. Not pinned until the label is corrected or Kaleb accepts the spelling.
+- **wave 14: Parnate (tranylcypromine) + amphetamine, methylphenidate**: Table 1 names the class row "Amphetamines and methylphenidates and derivatives", not individual drugs. Not pinned.
+- **wave 14: Parnate, Xadago, Emsam + epinephrine; Xadago, Emsam + norepinephrine**: Substring false matches: "epinephrine" only inside "norepinephrine", and "norepinephrine" only inside "serotonin-norepinephrine reuptake inhibitors". Emsam is also covered by the wave 9 transdermal-formulation rule. Not pinned.
+- **wave 14: Nardil (phenelzine) + Mucuna pruriens (L-DOPA)**: Nardil names "L-dopa", a constituent, not Mucuna pruriens. Not an exact name. Not pinned.
+- **wave 14 (conditional): Entresto (sacubitril/valsartan) + aliskiren**: Section 4: "with concomitant use of aliskiren in patients with diabetes". Contraindicated only in a patient subgroup. Not pinned; grade unchanged.
+- **wave 15 (severity change, for Kaleb): Marplan (isocarboxazid) + maprotiline, carbamazepine, procarbazine**: Marplan CONTRAINDICATIONS (setid 95fde749-44ad-4668-86c4-0ff17bca0074, effective 2026-04-21, retrieved 2026-10-19) names each individually in the table under "Marplan should not be administered together with, or in close proximity to, other MAO inhibitors or dibenzazepine-related entities" ("Maprotiline HCL", "Carbamazepine", "Procarbazine"). The cards read moderate (Use care) for maprotiline and procarbazine and major (Serious concern) for carbamazepine. A pin would raise them to Avoid together, so not pinned; grade unchanged.
+- **wave 15 (severity change, for Kaleb): Marplan (isocarboxazid) + bupropion**: Marplan CONTRAINDICATIONS: "The concurrent administration of a MAO inhibitor and buproprion hydrochloride (Wellbutrin ® , and Zyban ® , Glaxo Wellcome) is contraindicated." The sentence misspells the drug ("buproprion"; only the subheading reads "Bupropion"), and the card reads major (Serious concern), so a pin would also raise the grade. Not pinned; grade unchanged.
+- **wave 15 (pin removed): Nardil (phenelzine) + 5-HTP / L-tryptophan**: The wave 13 pin quoted Nardil naming "L-tryptophan" in a "should not take sympathomimetic drugs … or related compounds" list. The catalog entry is 5-HTP (5-hydroxytryptophan), which Nardil does not name, so the quote does not name the partner exactly. Pin and gold row removed; grade unchanged.
 
 ## Not in catalog
 

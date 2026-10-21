@@ -832,4 +832,15 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     labelEffective: "2026-09-08",
     retrieved: "2026-10-13",
   },
+  {
+    perpIds: ["dronedarone"],
+    brand: "Multaq",
+    enzyme: "CYP2D6",
+    role: "inhibitor",
+    section: "12.3 Pharmacokinetics",
+    roleQuote: "Dronedarone is metabolized primarily by CYP3A and is a moderate inhibitor of CYP3A and CYP2D6.",
+    url: DM("3bd4006a-8bad-4909-ac6d-b6d84390155c"),
+    labelEffective: "2026-01-27",
+    retrieved: "2026-10-19",
+  },
 ];
