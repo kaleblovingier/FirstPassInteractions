@@ -67,7 +67,7 @@ export function PracticeView({ questions, initialIndex = 0 }: { questions: Pract
         Score on this device: {score.correct} of {score.answered}{" "}
         <button type="button" className="underline" onClick={resetScore}>Reset score</button>
       </p>
-      <p className="mt-1 text-xs text-muted">Your score is kept only in this browser. Nothing is sent to us.</p>
+      <p className="mt-1 text-xs text-muted">Your score is kept only in this browser. We don't send or store your score.</p>
 
       <section aria-labelledby="practice-pair" className="mt-6 rounded border p-4">
         <h2 id="practice-pair" className="text-lg font-medium" data-testid="practice-pair">{q.nameA} + {q.nameB}</h2>

@@ -351,6 +351,13 @@ export function DeskApp() {
                   {label}
                 </button>
               ))}
+              <a
+                href="/practice"
+                data-testid="nav-practice"
+                className="inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-full px-2 text-xs font-medium text-muted hover:text-fg sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm"
+              >
+                Practice
+              </a>
             </nav>
             {!hydrated || !pro ? (
               <Button size="sm" className="hidden shrink-0 sm:inline-flex" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
