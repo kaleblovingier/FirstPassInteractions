@@ -187,3 +187,7 @@ main:has([data-testid="drug-hub-intro"]) section > ul > li > a,
 [data-testid="hub-why"] > summary {
   padding-inline: 2px;
 }
+
+/* 1.4.12: long unbroken names in headings (e.g. "(nirmatrelvir/ritonavir)") may wrap
+   inside the word when user text spacing would otherwise push them past 320px. */
+main :is(h1, h2) { overflow-wrap: anywhere; }
