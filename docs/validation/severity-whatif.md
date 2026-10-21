@@ -15,7 +15,7 @@ The question was whether a CYP or P-gp finding should read contraindicated ("Avo
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,869 / 1,745,646 |
+| Catalog entries / unordered pairs scanned | 1,874 / 1,755,001 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 282 (282 CYP, 0 P-gp) on 282 pairs (282 by display name, as #66 counts) |
 | … of which carry a label citation (kept at contraindicated) | 282 |
 | **Findings that move contraindicated → major** | **0** on **0** pairs |

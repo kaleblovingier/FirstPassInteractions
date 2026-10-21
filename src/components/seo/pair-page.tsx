@@ -150,6 +150,8 @@ export function PairsIndexView({ pages }: { pages: PairPage[] }) {
   );
 }
 
+export const CITED_ONLY_HUB_INTRO = "Interaction notes for this supplement, quoted from FDA-approved labeling.";
+
 export function DrugHubView({ hub }: { hub: DrugHub }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
@@ -158,13 +160,20 @@ export function DrugHubView({ hub }: { hub: DrugHub }) {
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
       <p data-testid="drug-hub-intro" className="mt-3 text-sm text-muted">
-        {fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
+        {hub.pairCount === 0 ? CITED_ONLY_HUB_INTRO : fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
       </p>
       <p className="mt-6">
         <a href={hub.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">
           {hub.cta}
         </a>
       </p>
+      {hub.labelNote ? (
+        <section className="mt-8" data-testid="drug-hub-label-note">
+          <h2 className="text-lg font-semibold">What the FDA label says</h2>
+          <p className="mt-2 text-sm [overflow-wrap:anywhere]">{hub.labelNote}</p>
+          <p className="mt-1 text-xs text-muted">Cited, not graded. No interaction grade is stored for this supplement.</p>
+        </section>
+      ) : null}
       {hub.groups.map((g) => (
         <section key={g.severity} className="mt-8">
           <h2 className="text-lg font-semibold">{g.label}</h2>
