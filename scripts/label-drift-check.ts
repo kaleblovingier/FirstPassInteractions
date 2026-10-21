@@ -92,7 +92,7 @@ export function build(fx: DriftFixture) {
         labels: Object.fromEntries(
           versions.map((v) => [
             v.setid,
-            { labelDrug: v.labelDrug, version: v.version, effective: v.effective },
+            { labelDrug: v.labelDrug, version: v.version, effective: v.effective, checkedOn: fx.retrieved },
           ]),
         ),
       },

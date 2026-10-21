@@ -188,6 +188,20 @@ L.push("6. Floor: wave 1 requires at least `major` (\"Serious concern\") for bot
 L.push("");
 L.push("## Dropped candidates");
 L.push("");
+{
+  const byWave = new Map<number, { entries: number; pairs: number }>();
+  for (const d of DROPPED_CANDIDATES) {
+    const m = /^wave (\d+)\b/.exec(d.pair);
+    if (!m || !d.pairs) continue;
+    const w = byWave.get(+m[1]!) ?? { entries: 0, pairs: 0 };
+    w.entries++;
+    w.pairs += d.pairs.length;
+    byWave.set(+m[1]!, w);
+  }
+  for (const [w, c] of [...byWave].sort((a, b) => a[0] - b[0]))
+    L.push(`Wave ${w}: ${c.entries} ${c.entries === 1 ? "entry" : "entries"} covering ${c.pairs} ${c.pairs === 1 ? "pair" : "pairs"}.`);
+  if (byWave.size) L.push("");
+}
 for (const d of DROPPED_CANDIDATES) L.push(`- **${esc(d.pair)}**: ${esc(d.reason)}`);
 L.push("");
 L.push("## Not in catalog");
