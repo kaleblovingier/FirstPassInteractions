@@ -43,7 +43,8 @@ export function DeskFooter() {
           </p>
           <p className="mt-1 text-[11px] text-subtle" data-testid="desk-legal-links">
             <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
-            <a href="/cookies" className="underline">Cookies</a>
+            <a href="/cookies" className="underline">Cookies</a> ·{" "}
+            <a href="/practice" className="underline">Practice</a>
           </p>
           <p className="mt-1 text-[11px] text-subtle" data-testid="desk-trademark-line">{TRADEMARK_LINE}</p>
         </div>
