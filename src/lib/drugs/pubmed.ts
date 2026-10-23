@@ -1,5 +1,7 @@
 /** Curated PubMed shelf. Titles from NCBI esummary. Live search is a separate server call. */
 
+import { CITES_WAVE2 } from "./pubmed-wave2";
+
 export type CiteTag =
   | "cyp"
   | "pgx"
@@ -375,6 +377,7 @@ export const CITES: Cite[] = [
   c("26253303", 2015, "Gastroenterology", "Extreme bradycardia after first doses of sofosbuvir and daclatasvir in patients receiving amiodarone: 2 cases including a rechallenge.",
     "Fontaine. The labeled sofosbuvir–amiodarone bradycardia row. Not stacked nodal PD.",
     ["clinic"], ["epclusa", "amiodarone", "sofosbuvir"], ["epclusa", "amiodarone"]),
+  ...CITES_WAVE2,
 ];
 
 export function pubmedUrl(pmid: string) {

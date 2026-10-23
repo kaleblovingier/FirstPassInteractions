@@ -5,6 +5,7 @@ import { MODERN_FORMULARY } from "./catalog-modern";
 import { MODERN_WAVE2_FORMULARY } from "./catalog-modern-wave2";
 import { FDA_TABLE_SHELF } from "./catalog-fda-shelf";
 import { LABEL_NAMED_SHELF } from "./catalog-label-names";
+import { MODERN_WAVE3_FORMULARY } from "./catalog-modern-wave3";
 import { hasDrugbank } from "./drugbank";
 import { hasPgx } from "./pgx";
 import { hasCite } from "./pubmed";
@@ -2804,6 +2805,7 @@ const afterClinic = new Set([...coreIds, ...clinicExtra.map((d) => d.id)]);
 const afterModern = new Set([...afterClinic, ...MODERN_FORMULARY.map((d) => d.id)]);
 const afterWave2 = new Set([...afterModern, ...MODERN_WAVE2_FORMULARY.map((d) => d.id)]);
 const afterFda = new Set([...afterWave2, ...FDA_TABLE_SHELF.map((d) => d.id)]);
+const afterLabel = new Set([...afterFda, ...LABEL_NAMED_SHELF.map((d) => d.id)]);
 export const DRUGS: Drug[] = [
   ...raw,
   ...clinicExtra,
@@ -2811,6 +2813,7 @@ export const DRUGS: Drug[] = [
   ...MODERN_WAVE2_FORMULARY.filter((d) => !afterModern.has(d.id)),
   ...FDA_TABLE_SHELF.filter((d) => !afterWave2.has(d.id)),
   ...LABEL_NAMED_SHELF.filter((d) => !afterFda.has(d.id)),
+  ...MODERN_WAVE3_FORMULARY.filter((d) => !afterLabel.has(d.id)),
 ];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 

@@ -1,5 +1,6 @@
 import { sampleNeedsPro, type SampleRegimen } from "./samples";
 import { DRUG_BY_ID } from "./catalog";
+import { ROUNDS_WAVE2 } from "./rounds-wave2";
 
 if (DRUG_BY_ID["hctz"] && !DRUG_BY_ID["hydrochlorothiazide"]) {
   DRUG_BY_ID["hydrochlorothiazide"] = DRUG_BY_ID["hctz"];
@@ -1645,6 +1646,7 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Ritonavir blocks 3A4 and P-gp. The cap stays on the label. Not a milligram.",
   },
+  ...ROUNDS_WAVE2,
 ];
 
 
