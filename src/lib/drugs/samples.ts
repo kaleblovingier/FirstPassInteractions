@@ -1,4 +1,5 @@
 import type { AlcoholPattern, CannabisRoute, KetamineRoute, PhenotypeMap } from "./types";
+import { SAMPLE_REGIMENS_WAVE2 } from "./samples-wave2";
 
 export type SampleLane = "nmda" | "entactogen" | "gaba" | "phenotype" | "smoke" | "mat" | "food" | "street" | "clinic";
 
@@ -1898,4 +1899,5 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     drugIds: ["sildenafil", "nitroglycerin"],
     lane: "clinic",
   },
+  ...SAMPLE_REGIMENS_WAVE2,
 ];
