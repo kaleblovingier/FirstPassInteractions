@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy, KeyRound } from "lucide-react";
 import { isFramed, redirectToLoginIfRequired, useRefetchWhenConnectorReady } from "@/lib/app-data";
 import {
@@ -15,9 +15,15 @@ import {
 } from "@/lib/billing/commerce";
 import { collectLicenses, draftCollected } from "@/lib/billing/collect";
 import { loadPipe, savePipe } from "@/lib/billing/hunts";
+import { filterIssued, issuedPlanLabel } from "@/lib/billing/operator-desk";
 import { mintLicenseKey, mintProgramLicense } from "@/lib/billing/license";
 import { priceFor } from "@/lib/billing/plans";
-import { PROGRAM_TIERS, programKeyEndsAt, type ProgramTierId } from "@/lib/billing/programs";
+import {
+  PROGRAM_TIERS,
+  isProgramTierId,
+  programKeyEndsAt,
+  type ProgramTierId,
+} from "@/lib/billing/programs";
 import {
   PROGRAM_MAX_MONTHS_AHEAD,
   PROGRAM_ORG_MAX,
@@ -25,6 +31,7 @@ import {
   endMonthValue,
   formatEndDay,
   parseEndMonth,
+  programFromLicense,
   programOnboardingNote,
 } from "@/lib/billing/program-license";
 import { teachingPackLinks } from "@/lib/drugs/permalinks";
@@ -73,6 +80,23 @@ function persistIssued(rows: Issued[]) {
   localStorage.setItem(ISSUED_KEY, JSON.stringify(rows.slice(0, 80)));
 }
 
+/** Rebuild the program-lead note from a key kept on this browser. */
+function issuedProgramNote(row: Issued): string | null {
+  if (!row.plan.startsWith("program:")) return null;
+  const tier = row.plan.slice("program:".length);
+  if (!isProgramTierId(tier)) return null;
+  const grant = programFromLicense(row.key);
+  if (!grant || grant.tier !== tier) return null;
+  return programOnboardingNote({
+    key: row.key,
+    org: row.soldTo || "your program",
+    tier,
+    endsAt: grant.endsAt,
+    siteUrl: SITE.url,
+    contact: OPERATOR.email,
+  });
+}
+
 export function Foundry() {
   const setView = useDesk((s) => s.setView);
   const [pin, setPinState] = useState("");
@@ -107,8 +131,18 @@ export function Foundry() {
   const invoice = useMemo(
     () =>
       invoiceText({
-        plan: plan === "life" ? "Founding license (one-time)" : plan === "lab" ? "Lab seat (year)" : "Desk (year)",
-        price: plan === "life" ? COMMERCE.founding : plan === "lab" ? priceFor("lab", "year") : priceFor("pro", "year"),
+        plan:
+          plan === "life"
+            ? "Founding license (one-time)"
+            : plan === "lab"
+              ? "Lab seat (year)"
+              : "Desk (year)",
+        price:
+          plan === "life"
+            ? COMMERCE.founding
+            : plan === "lab"
+              ? priceFor("lab", "year")
+              : priceFor("pro", "year"),
         pay: payNote || OPERATOR.payLine,
         keyHint: last ?? undefined,
       }),
@@ -122,7 +156,8 @@ export function Foundry() {
   function setPin(value: string) {
     setPinState(value);
     try {
-      sessionStorage.setItem(PIN_KEY, value);
+      if (value) sessionStorage.setItem(PIN_KEY, value);
+      else sessionStorage.removeItem(PIN_KEY);
     } catch {
       /* session */
     }
@@ -130,7 +165,9 @@ export function Foundry() {
 
   function remember(rows: Issued[]) {
     setIssued((current) => {
-      const next = [...rows, ...current].filter((row, i, all) => all.findIndex((r) => r.key === row.key) === i).slice(0, 80);
+      const next = [...rows, ...current]
+        .filter((row, i, all) => all.findIndex((r) => r.key === row.key) === i)
+        .slice(0, 80);
       persistIssued(next);
       return next;
     });
@@ -180,9 +217,13 @@ export function Foundry() {
         });
       } else if (res.mail === "ok") {
         setPendingMail(false);
-        const n = res.rows.filter((r) => r.source === "venmo" || r.source === "cashapp" || r.source === "paypal").length;
+        const n = res.rows.filter(
+          (r) => r.source === "venmo" || r.source === "cashapp" || r.source === "paypal",
+        ).length;
         setMailNote(
-          n ? `${n} written payment${n === 1 ? "" : "s"} in mail matched a license price.` : "No $79 / plan-price receipts in mail.",
+          n
+            ? `${n} written payment${n === 1 ? "" : "s"} in mail matched a license price.`
+            : "No $79 / plan-price receipts in mail.",
         );
       }
       setCollected(res.rows);
@@ -205,8 +246,15 @@ export function Foundry() {
           if (!key) return p;
           return { ...p, status: "keyed" as const, note: key };
         });
-        savePipe(pipe);
-        setWaiting(pipe.filter((p) => p.status === "waiting").length);
+        if (savePipe(pipe)) {
+          setWaiting(pipe.filter((p) => p.status === "waiting").length);
+        } else {
+          setMailNote((prev) =>
+            [prev, "Hunt book was not updated — the saved book was left untouched."]
+              .filter(Boolean)
+              .join(" "),
+          );
+        }
         await copy("fulfill", text);
       }
     } catch {
@@ -283,11 +331,15 @@ export function Foundry() {
         <div className="grid sm:grid-cols-[200px_minmax(0,1fr)]">
           <Plate src="/plates/hero.jpg" alt="" className="h-36 w-full sm:h-full min-h-36" />
           <div className="px-5 py-5 sm:px-6">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Operator desk</p>
-            <h1 className="mt-2 font-serif text-3xl tracking-tight text-fg">Find buyers. Post. Mint the key.</h1>
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              Operator desk
+            </p>
+            <h1 className="mt-2 font-serif text-3xl tracking-tight text-fg">
+              Find buyers. Post. Mint the key.
+            </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-              Founding is $79 once via Venmo, Cash App, or PayPal. After it clears, mint the signed key
-              here and send it. Buyers paste it under Redeem on Plans.
+              Founding is $79 once via Venmo, Cash App, or PayPal. After it clears, mint the signed
+              key here and send it. Buyers paste it under Redeem on Plans.
             </p>
             <div className="mt-4 flex flex-wrap gap-1">
               {(
@@ -311,7 +363,11 @@ export function Foundry() {
                 </button>
               ))}
             </div>
-            <button type="button" className="mt-3 block text-sm text-accent hover:underline" onClick={() => setView("plans")}>
+            <button
+              type="button"
+              className="mt-3 block text-sm text-accent hover:underline"
+              onClick={() => setView("plans")}
+            >
               Back to licenses
             </button>
           </div>
@@ -353,6 +409,7 @@ export function Foundry() {
           mint={mint}
           collect={() => void collect()}
           draftMail={() => void draftMail()}
+          onIssued={(row) => remember([row])}
         />
       )}
     </div>
@@ -389,6 +446,7 @@ function CloseDesk({
   mint,
   collect,
   draftMail,
+  onIssued,
 }: {
   pin: string;
   setPin: (v: string) => void;
@@ -419,8 +477,15 @@ function CloseDesk({
   mint: () => void;
   collect: () => void;
   draftMail: () => void;
+  onIssued: (row: Issued) => void;
 }) {
-  const extra = [waiting ? `${waiting} waiting in the hunt` : "", nameCount ? `${nameCount} pasted` : ""]
+  const [showPin, setShowPin] = useState(false);
+  const [issuedQuery, setIssuedQuery] = useState("");
+  const shownIssued = useMemo(() => filterIssued(issued, issuedQuery), [issued, issuedQuery]);
+  const extra = [
+    waiting ? `${waiting} waiting in the hunt` : "",
+    nameCount ? `${nameCount} pasted` : "",
+  ]
     .filter(Boolean)
     .join(" · ");
   const canDraft = collected.some((r) => r.email && !r.mailed && r.source !== "stripe");
@@ -436,8 +501,16 @@ function CloseDesk({
                   <p className="text-sm font-medium text-fg">{b.who}</p>
                   <p className="mt-1 text-xs leading-relaxed text-muted">{b.why}</p>
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => void copy(b.who, buyerDm(b.who))}>
-                  {copied === b.who ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => void copy(b.who, buyerDm(b.who))}
+                >
+                  {copied === b.who ? (
+                    <Check className="size-3.5" />
+                  ) : (
+                    <Copy className="size-3.5" />
+                  )}
                   {copied === b.who ? "Copied" : "DM"}
                 </Button>
               </li>
@@ -452,22 +525,26 @@ function CloseDesk({
               {copied === "dm" ? "Copied" : "Copy"}
             </Button>
           </div>
-          <pre className="mt-3 whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted">{dm}</pre>
+          <pre className="mt-3 whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted">
+            {dm}
+          </pre>
           <div className="mt-5 flex items-center justify-between gap-2">
             <h3 className="text-xs font-medium uppercase tracking-wide text-muted">Launch post</h3>
             <Button size="sm" variant="secondary" onClick={() => void copy("tweet", tweet)}>
               {copied === "tweet" ? "Copied" : "Copy post"}
             </Button>
           </div>
-          <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted">{tweet}</pre>
+          <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted">
+            {tweet}
+          </pre>
         </section>
       </div>
 
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <h2 className="font-serif text-xl tracking-tight text-fg">Teaching packs</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          Free try links. Send one of these before you ask for founding pay. No card and no key — the
-          five-drug desk still applies. Educational maps, not a charting system.
+          Free try links. Send one of these before you ask for founding pay. No card and no key —
+          the five-drug desk still applies. Educational maps, not a charting system.
         </p>
         <ul className="mt-4 space-y-3">
           {teachingPackLinks(SITE.url).map((pack) => (
@@ -477,8 +554,16 @@ function CloseDesk({
                 <p className="mt-1 text-xs leading-relaxed text-muted">{pack.blurb}</p>
                 <p className="mt-1 truncate font-mono text-[11px] text-accent">{pack.url}</p>
               </div>
-              <Button size="sm" variant="secondary" onClick={() => void copy(`pack:${pack.id}`, pack.url)}>
-                {copied === `pack:${pack.id}` ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => void copy(`pack:${pack.id}`, pack.url)}
+              >
+                {copied === `pack:${pack.id}` ? (
+                  <Check className="size-3.5" />
+                ) : (
+                  <Copy className="size-3.5" />
+                )}
                 {copied === `pack:${pack.id}` ? "Copied" : "Copy"}
               </Button>
             </li>
@@ -489,8 +574,8 @@ function CloseDesk({
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <h2 className="font-serif text-xl tracking-tight text-fg">How a sale closes</h2>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Close founding at $79 once on Venmo, Cash App, or PayPal, then mint the signed key here and
-          send it. There is no monthly plan.
+          Close founding at $79 once on Venmo, Cash App, or PayPal, then mint the signed key here
+          and send it. There is no monthly plan.
         </p>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {[
@@ -508,7 +593,8 @@ function CloseDesk({
           ))}
         </ol>
         <label className="mt-5 block text-xs font-medium text-muted" htmlFor="pay-note">
-          How you get paid (goes on the invoice you copy — not shown to strangers unless you send it)
+          How you get paid (goes on the invoice you copy — not shown to strangers unless you send
+          it)
         </label>
         <Input
           id="pay-note"
@@ -528,50 +614,83 @@ function CloseDesk({
           <h2 className="font-serif text-xl tracking-tight text-fg">Mint licenses</h2>
         </div>
         <p className="mt-2 text-sm text-muted">
-          Operator only — buyers never see this screen. They pay $79 once on Venmo, Cash App, or PayPal.
-          You mint the key here and send it. They Redeem on Plans. One PIN. Collect scans those written
-          receipts for $79 and the other plan prices, and keys everyone waiting in the hunt. Mint one
-          covers a payment with no receipt in mail. Collecting twice returns the same keys.
+          Operator only — buyers never see this screen. They pay $79 once on Venmo, Cash App, or
+          PayPal. You mint the key here and send it. They Redeem on Plans. One PIN. Collect scans
+          those written receipts for $79 and the other plan prices, and keys everyone waiting in the
+          hunt. Mint one covers a payment with no receipt in mail. Collecting twice returns the same
+          keys.
         </p>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
+        <label className="mt-4 block text-xs font-medium text-muted" htmlFor="operator-pin">
+          Operator PIN
+        </label>
+        <div className="mt-1.5 flex gap-2">
           <Input
             id="operator-pin"
-            type="password"
+            className="min-w-0 flex-1"
+            type={showPin ? "text" : "password"}
             autoComplete="off"
             placeholder="Operator PIN"
             value={pin}
+            aria-describedby="operator-pin-hint"
             onChange={(e) => setPin(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && pin && !busy) collect();
             }}
           />
-          <div className="grid grid-cols-3 gap-1">
-            {(
-              [
-                ["life", "Life"],
-                ["pro", "Desk (year)"],
-                ["lab", "Lab"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setPlan(id)}
-                className={
-                  plan === id
-                    ? "h-11 rounded-sm bg-ink text-bg text-sm font-medium"
-                    : "h-11 rounded-sm bg-bg-sunken text-muted text-sm font-medium hover:text-fg"
-                }
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            className="shrink-0"
+            aria-pressed={showPin}
+            onClick={() => setShowPin((v) => !v)}
+          >
+            {showPin ? "Hide" : "Show"}
+          </Button>
+        </div>
+        <p id="operator-pin-hint" className="mt-1.5 text-xs text-muted">
+          {pin
+            ? "Kept in this tab until you close it."
+            : "Required to collect or mint. Kept in this tab only, not on the server."}
+          {pin ? (
+            <button
+              type="button"
+              className="ml-2 underline hover:text-fg"
+              onClick={() => setPin("")}
+            >
+              Forget
+            </button>
+          ) : null}
+        </p>
+        <div className="mt-3 grid grid-cols-3 gap-1">
+          {(
+            [
+              ["life", "Life"],
+              ["pro", "Desk (year)"],
+              ["lab", "Lab"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setPlan(id)}
+              className={
+                plan === id
+                  ? "h-11 rounded-sm bg-ink text-bg text-sm font-medium"
+                  : "h-11 rounded-sm bg-bg-sunken text-muted text-sm font-medium hover:text-fg"
+              }
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         <Button className="mt-4 w-full sm:w-auto" onClick={collect} disabled={busy || !pin}>
-          {busy || pendingMail ? "Collecting…" : extra ? `Collect licenses · ${extra}` : "Collect licenses"}
+          {busy || pendingMail
+            ? "Collecting…"
+            : extra
+              ? `Collect licenses · ${extra}`
+              : "Collect licenses"}
         </Button>
         {mailNote ? <p className="mt-3 text-sm text-muted">{mailNote}</p> : null}
 
@@ -602,7 +721,10 @@ function CloseDesk({
         {collected.length ? (
           <ul className="mt-4 space-y-2">
             {collected.map((row) => (
-              <li key={row.key} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+              <li
+                key={row.key}
+                className="flex flex-wrap items-center justify-between gap-2 text-sm"
+              >
                 <span className="min-w-0">
                   <span className="block truncate text-fg">{row.soldTo || "License"}</span>
                   <span className="font-mono text-[11px] text-muted">{row.key}</span>
@@ -616,14 +738,20 @@ function CloseDesk({
         {fulfillment ? (
           <>
             <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
-              <h3 className="text-xs font-medium uppercase tracking-wide text-muted">Fulfillment to paste back</h3>
+              <h3 className="text-xs font-medium uppercase tracking-wide text-muted">
+                Fulfillment to paste back
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {canDraft ? (
                   <Button size="sm" variant="secondary" onClick={draftMail} disabled={busy || !pin}>
                     Draft in Gmail
                   </Button>
                 ) : null}
-                <Button size="sm" variant="secondary" onClick={() => void copy("fulfill", fulfillment)}>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => void copy("fulfill", fulfillment)}
+                >
                   {copied === "fulfill" ? "Copied" : "Copy fulfillment"}
                 </Button>
               </div>
@@ -635,7 +763,9 @@ function CloseDesk({
         ) : null}
 
         <details className="mt-6">
-          <summary className="cursor-pointer text-sm font-medium text-muted hover:text-fg">One-off mint</summary>
+          <summary className="cursor-pointer text-sm font-medium text-muted hover:text-fg">
+            One-off mint
+          </summary>
           <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
             <Input
               id="sold-to"
@@ -650,7 +780,9 @@ function CloseDesk({
         </details>
 
         <div className="mt-5 flex items-center justify-between gap-2">
-          <h3 className="text-xs font-medium uppercase tracking-wide text-muted">Invoice to send</h3>
+          <h3 className="text-xs font-medium uppercase tracking-wide text-muted">
+            Invoice to send
+          </h3>
           <Button size="sm" variant="secondary" onClick={() => void copy("inv", invoice)}>
             {copied === "inv" ? "Copied" : "Copy invoice"}
           </Button>
@@ -660,40 +792,97 @@ function CloseDesk({
         </pre>
       </section>
 
-      <ProgramKeyDesk pin={pin} copied={copied} copy={copy} />
+      <ProgramKeyDesk pin={pin} copied={copied} copy={copy} onIssued={onIssued} />
 
-      {issued.length > 0 ? (
-        <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Issued on this browser</h2>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => void copy("all", fulfillKeys(issued.map((row) => ({ key: row.key, soldTo: row.soldTo }))))}
-            >
-              Copy all
-            </Button>
-          </div>
-          <ul className="mt-3 space-y-2">
-            {issued.map((row) => (
-              <li key={row.key} className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                <span className="font-mono text-xs text-fg">{row.key}</span>
-                <span className="text-xs text-muted">
-                  {row.soldTo ? `${row.soldTo} · ` : ""}
-                  {row.plan} · {row.at.slice(0, 10)}
-                </span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => void copy("fulfill", fulfillKey({ key: row.key, soldTo: row.soldTo }))}
-                >
-                  Copy
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-xs font-medium uppercase tracking-wide text-muted">
+            Issued on this browser
+          </h2>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={shownIssued.length === 0}
+            onClick={() =>
+              void copy(
+                "issued-all",
+                fulfillKeys(shownIssued.map((row) => ({ key: row.key, soldTo: row.soldTo }))),
+              )
+            }
+          >
+            {copied === "issued-all" ? "Copied" : issuedQuery.trim() ? "Copy shown" : "Copy all"}
+          </Button>
+        </div>
+        <p className="mt-2 text-sm text-muted">
+          {issued.length === 0
+            ? "Keys you mint stay on this browser. Nothing issued here yet."
+            : `${issued.length} ${issued.length === 1 ? "key" : "keys"} on this browser. They are not stored on the server.`}
+        </p>
+        {issued.length > 0 ? (
+          <Input
+            className="mt-3"
+            value={issuedQuery}
+            placeholder="Search buyer, plan, or key"
+            aria-label="Search issued keys"
+            onChange={(e) => setIssuedQuery(e.target.value)}
+          />
+        ) : null}
+        {issued.length > 0 && shownIssued.length === 0 ? (
+          <p className="mt-3 text-sm text-muted">No keys match that search.</p>
+        ) : null}
+        <ul className="mt-3 space-y-2">
+          {shownIssued.map((row) => (
+            <li key={row.key} className="rounded-md bg-bg-sunken px-3 py-3">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-fg">{row.soldTo || "License"}</p>
+                  <p className="mt-1 break-all font-mono text-[11px] text-fg">{row.key}</p>
+                  <p className="mt-1 text-xs text-muted">
+                    {issuedPlanLabel(row.plan)} · {row.at.slice(0, 10)}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => void copy(`key:${row.key}`, row.key)}
+                  >
+                    {copied === `key:${row.key}` ? "Copied" : "Key"}
+                  </Button>
+                  {issuedProgramNote(row) ? (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        const note = issuedProgramNote(row);
+                        if (note) void copy(`note:${row.key}`, note);
+                      }}
+                    >
+                      {copied === `note:${row.key}` ? "Copied" : "Note"}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() =>
+                        void copy(
+                          `send:${row.key}`,
+                          fulfillKey({ key: row.key, soldTo: row.soldTo }),
+                        )
+                      }
+                    >
+                      {copied === `send:${row.key}` ? "Copied" : "Send"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="sr-only" role="status">
+          {copied && copied !== "program-key" && copied !== "program-note" ? "Copied" : ""}
+        </p>
+      </section>
     </>
   );
 }
@@ -715,11 +904,14 @@ function ProgramKeyDesk({
   pin,
   copied,
   copy,
+  onIssued,
 }: {
   pin: string;
   copied: string;
   copy: (label: string, text: string) => void;
+  onIssued: (row: Issued) => void;
 }) {
+  const noteRef = useRef<HTMLDivElement>(null);
   const [org, setOrg] = useState("");
   const [tier, setTier] = useState<ProgramTierId>("program");
   const [end, setEnd] = useState(() => defaultProgramEndMonth());
@@ -731,9 +923,21 @@ function ProgramKeyDesk({
   const endParsed = parseEndMonth(end);
   const lastDay = endParsed ? formatEndDay(programKeyEndsAt(endParsed.year, endParsed.month)) : "";
   const note = useMemo(
-    () => (minted ? programOnboardingNote({ ...minted, siteUrl: SITE.url, contact: OPERATOR.email }) : ""),
+    () =>
+      minted
+        ? programOnboardingNote({ ...minted, siteUrl: SITE.url, contact: OPERATOR.email })
+        : "",
     [minted],
   );
+
+  useEffect(() => {
+    if (!minted) return;
+    noteRef.current?.scrollIntoView({ block: "nearest" });
+  }, [minted]);
+
+  function focusPin() {
+    document.getElementById("operator-pin")?.focus();
+  }
 
   async function mint() {
     setBusy(true);
@@ -751,7 +955,14 @@ function ProgramKeyDesk({
           "Minted with the development PIN or pepper. Set the production PIN and license pepper before you send a real program key.",
         );
       }
-      setMinted({ key: res.key, org: res.org, tier: res.tier, endsAt: res.endsAt });
+      const mintedRow = { key: res.key, org: res.org, tier: res.tier, endsAt: res.endsAt };
+      setMinted(mintedRow);
+      onIssued({
+        key: res.key,
+        plan: `program:${res.tier}`,
+        at: new Date().toISOString(),
+        soldTo: res.org,
+      });
     } catch {
       setErr("Could not mint. Try again.");
     } finally {
@@ -766,9 +977,10 @@ function ProgramKeyDesk({
         <h2 className="font-serif text-xl tracking-tight text-fg">Program key</h2>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        One key a whole program redeems. Each learner gets every Founding tool through the end month, then
-        their desk goes back to free. Seats are on the honor system: there are no accounts and nothing about
-        learners is stored. The same organization, tier and end month always mint the same key.
+        One key a whole program redeems. Each learner gets every Founding tool through the end
+        month, then their desk goes back to free. Seats are on the honor system: there are no
+        accounts and nothing about learners is stored. The same organization, tier and end month
+        always mint the same key.
       </p>
 
       <label className="mt-4 block text-xs font-medium text-muted" htmlFor="program-org">
@@ -786,7 +998,11 @@ function ProgramKeyDesk({
       <p className="mt-4 text-xs font-medium text-muted" id="program-tier-label">
         Tier
       </p>
-      <div className="mt-1.5 grid gap-1 sm:grid-cols-3" role="group" aria-labelledby="program-tier-label">
+      <div
+        className="mt-1.5 grid gap-1 sm:grid-cols-3"
+        role="group"
+        aria-labelledby="program-tier-label"
+      >
         {PROGRAM_TIERS.map((t) => (
           <button
             key={t.id}
@@ -825,7 +1041,15 @@ function ProgramKeyDesk({
       </div>
       <p id="program-end-hint" className="mt-1.5 text-xs text-muted">
         {lastDay ? `Works through ${lastDay} (UTC).` : "Pick a month."}
-        {pin ? "" : " Enter the operator PIN above to mint."}
+        {pin ? null : (
+          <>
+            {" "}
+            <button type="button" className="underline hover:text-fg" onClick={focusPin}>
+              Focus the operator PIN
+            </button>{" "}
+            above to mint.
+          </>
+        )}
       </p>
 
       {err ? <p className="mt-3 text-sm text-danger">{err}</p> : null}
@@ -835,24 +1059,49 @@ function ProgramKeyDesk({
         <>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-md bg-ok-soft px-3 py-2">
             <span className="min-w-0 break-all font-mono text-sm text-ok">{minted.key}</span>
-            <Button size="sm" variant="secondary" onClick={() => void copy("program-key", minted.key)}>
-              {copied === "program-key" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => void copy("program-key", minted.key)}
+            >
+              {copied === "program-key" ? (
+                <Check className="size-3.5" />
+              ) : (
+                <Copy className="size-3.5" />
+              )}
               {copied === "program-key" ? "Copied" : "Copy key"}
             </Button>
           </div>
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-xs font-medium uppercase tracking-wide text-muted">Onboarding note for the program lead</h3>
+        </>
+      ) : null}
+
+      <div ref={noteRef} className="mt-4 rounded-md bg-bg-sunken px-3 py-3 ring-1 ring-accent/30">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-sm font-medium text-fg">Onboarding note for the program lead</h3>
+          {minted ? (
             <Button size="sm" variant="secondary" onClick={() => void copy("program-note", note)}>
               {copied === "program-note" ? "Copied" : "Copy note"}
             </Button>
-          </div>
-          <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap rounded-md bg-bg-sunken px-3 py-3 font-sans text-sm leading-relaxed text-fg">
+          ) : null}
+        </div>
+        {minted ? (
+          <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap font-sans text-sm leading-relaxed text-fg">
             {note}
           </pre>
-        </>
-      ) : null}
+        ) : (
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            Appears here when the key mints. It has the redeem steps, the last day the key works,
+            seat guidance, and the privacy line. Send that note with the key — the key alone does
+            not explain redeem.
+          </p>
+        )}
+      </div>
       <span role="status" className="sr-only">
-        {copied === "program-key" ? "Program key copied" : copied === "program-note" ? "Onboarding note copied" : ""}
+        {copied === "program-key"
+          ? "Program key copied"
+          : copied === "program-note"
+            ? "Onboarding note copied"
+            : ""}
       </span>
     </section>
   );
