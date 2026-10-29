@@ -3,6 +3,7 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { basisFor } from "@/lib/drugs/basis";
 import { leadGradeBasis, sourceLinkText } from "@/lib/drugs/grade-provenance";
+import { LabelFreshnessLine } from "@/components/label-freshness";
 import { clockForFinding, FDA_GRADES, TDI } from "@/lib/drugs/cyp-protocol";
 import { conditionLanes, foodBeside, sameShelfGroups } from "@/lib/drugs/also";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
@@ -1218,7 +1219,7 @@ function CheckRow({
 }
 
 /** One-click "Why this grade": the lead label quote or source, or an honest catalog-rule note. */
-function WhyThisGrade({ finding }: { finding: Finding }) {
+export function WhyThisGrade({ finding }: { finding: Finding }) {
   const why = leadGradeBasis(finding);
   return (
     <div data-testid="check-why" data-basis-kind={why.kind} className="rounded-md bg-bg-sunken px-3 py-2.5">
@@ -1235,6 +1236,7 @@ function WhyThisGrade({ finding }: { finding: Finding }) {
           {sourceLinkText(why.title, why.href)} <ExternalLink className="size-3" />
         </a>
       ) : null}
+      <LabelFreshnessLine basis={why} />
     </div>
   );
 }
