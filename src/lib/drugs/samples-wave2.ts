@@ -16,7 +16,7 @@ export const SAMPLE_REGIMENS_WAVE2: SampleRegimen[] = [
   {
     id: "metonitazene-bromazolam",
     title: "Metonitazene + bromazolam",
-    blurb: "Nitazene-class opioid × designer benzo — same FDA boxed-warning airway risk as any opioid-benzo pair",
+    blurb: "Nitazene-class opioid × designer benzo — same airway stack as any opioid plus a benzodiazepine. Metonitazene has no FDA label of its own.",
     drugIds: ["metonitazene", "bromazolam"],
     lane: "street",
   },
