@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DRUG_BY_ID, DRUGS, normalizeSearchText } from "./catalog.ts";
+import { DRUG_BY_ID, DRUGS, normalizeSearchText, searchDrugs } from "./catalog.ts";
 import { MODERN_WAVE3_FORMULARY } from "./catalog-modern-wave3.ts";
 import { ENZYMES } from "./types.ts";
 import type { PdFlag } from "./types.ts";
@@ -19,6 +19,8 @@ const WAVE3_IDS = [
   "lerodalcibep",
   "zoliflodacin",
   "tradipitant",
+  "mavorixafor",
+  "vanzacaftor-tezacaftor-deutivacaftor",
 ] as const;
 
 /**
@@ -143,4 +145,65 @@ test("label-sourced specifics hold for the antibodies, aficamten, zoliflodacin, 
 
   const lerodalcibep = byId.get("lerodalcibep")!;
   assert.equal(lerodalcibep.enzymes.length, 0, "Lerochol 12.3: degrades to peptides, no CYP role, no formal DDI studies");
+});
+
+test("mavorixafor (Xolremdi) is present, searchable, and leaves ungraded perpetrator roles ungraded", () => {
+  const row = DRUG_BY_ID.mavorixafor;
+  assert.ok(row);
+  assert.equal(row.name, "Mavorixafor");
+  assert.deepEqual(row.brands, ["Xolremdi"]);
+  assert.ok(row.aliases.includes("xolremdi"));
+  assert.equal(searchDrugs("Xolremdi")[0]?.id, "mavorixafor");
+  assert.equal(searchDrugs("mavorixafor")[0]?.id, "mavorixafor");
+  assert.equal(row.cls, "CXCR4 antagonist");
+  assert.ok(
+    row.enzymes.some((r) => r.kind === "substrate" && r.enzyme === "CYP3A4" && r.sensitivity === "major"),
+    "strong CYP3A4 inhibitor dosage reduction and strong-inducer avoid are a major substrate",
+  );
+  assert.equal(
+    row.enzymes.some((r) => r.kind === "inhibitor" || r.kind === "inducer"),
+    false,
+    "CYP2D6, CYP3A4, and P-gp inhibitor sentences name no strength",
+  );
+  assert.equal(row.enzymes.some((r) => r.enzyme === "CYP2D6" || r.enzyme === "P-gp"), false);
+  assert.ok(row.pd.includes("qt-known"));
+  assert.match(row.note ?? "", /Mavorixafor is a CYP2D6 inhibitor/);
+  assert.match(row.note ?? "", /highly dependent on CYP2D6 for clearance/);
+  assert.match(row.note ?? "", /Mavorixafor is an inhibitor of CYP3A4/);
+  assert.match(row.note ?? "", /Mavorixafor is an inhibitor of P-gp/);
+  assert.match(row.note ?? "", /Mavorixafor is a P-gp substrate/);
+  assert.match(row.note ?? "", /dailymed\.nlm\.nih\.gov\/dailymed\/drugInfo\.cfm\?setid=7f3a5ee3-ca73-4876-85a0-ed1e108a2237/);
+  assert.doesNotMatch(`${row.toxicityHint} ${row.note ?? ""}`, /\b\d+(\.\d+)?\s*(mg|mcg|g)\b/i);
+});
+
+test("Alyftrek mirrors the Trikafta CYP3A victim and leaves unlabeled perpetrator strength ungraded", () => {
+  const id = "vanzacaftor-tezacaftor-deutivacaftor";
+  const row = DRUG_BY_ID[id];
+  assert.ok(row);
+  assert.equal(row.name, "Vanzacaftor–tezacaftor–deutivacaftor");
+  assert.deepEqual(row.brands, ["Alyftrek"]);
+  assert.ok(row.aliases.includes("alyftrek"));
+  assert.ok(row.aliases.includes("vanzacaftor"));
+  assert.ok(row.aliases.includes("deutivacaftor"));
+  assert.equal(row.cls, "CFTR modulator");
+  assert.equal(searchDrugs("Alyftrek")[0]?.id, id);
+  assert.equal(searchDrugs("vanzacaftor")[0]?.id, id);
+  assert.equal(searchDrugs("deutivacaftor")[0]?.id, id);
+  const trikafta = DRUG_BY_ID["elexacaftor-tezacaftor-ivacaftor"];
+  assert.ok(trikafta);
+  assert.deepEqual(
+    row.enzymes.map((r) => (r.kind === "substrate" ? `${r.kind}:${r.enzyme}:${r.sensitivity}` : `${r.kind}:${r.enzyme}`)),
+    trikafta.enzymes.map((r) => (r.kind === "substrate" ? `${r.kind}:${r.enzyme}:${r.sensitivity}` : `${r.kind}:${r.enzyme}`)),
+    "same CYP3A4 major-substrate shape as Trikafta, and no extra perpetrator grade",
+  );
+  assert.ok(row.pd.includes("hepatotoxic"));
+  assert.equal(row.pd.some((flag) => flag === "qt-known" || flag === "qt-possible"), false);
+  assert.equal(row.enzymes.some((r) => r.kind === "inhibitor" || r.kind === "inducer"), false);
+  assert.match(row.note ?? "", /Vanzacaftor, tezacaftor, and deutivacaftor are substrates of CYP3A/);
+  assert.match(row.note ?? "", /Tezacaftor and deutivacaftor \(components of ALYFTREK\) are P-gp inhibitors/);
+  assert.match(row.note ?? "", /is an inhibitor of CYP2C9 in vitro/);
+  assert.match(row.note ?? "", /None/);
+  assert.match(row.note ?? "", /dailymed\.nlm\.nih\.gov\/dailymed\/drugInfo\.cfm\?setid=7e635909-c6fd-4f0d-ae77-cdff03653a20/);
+  assert.doesNotMatch(`${row.toxicityHint} ${row.note ?? ""}`, /\b\d+(\.\d+)?\s*(mg|mcg|g)\b/i);
+  assert.equal(searchDrugs("tezacaftor")[0]?.id, "tezacaftor-ivacaftor");
 });
