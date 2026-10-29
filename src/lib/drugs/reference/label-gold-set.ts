@@ -96,7 +96,7 @@ export interface GoldPair {
   paraphrased: boolean;
   labelExample?: string;
   url: string;
-  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12" | "2026-10-19";
+  retrieved: "2026-09-27" | "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12" | "2026-10-19" | "2026-10-28";
   labelClass: LabelClass;
   /** Minimum engine severity for the pair (pair-level findings only). */
   expectedFloor: Severity;
@@ -105,8 +105,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13 | 14;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi; 16 = Nitrostat, isosorbide dinitrate, febuxostat, disulfiram. */
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13 | 14 | 16;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -217,6 +217,15 @@ export const LABEL_SETIDS = {
   "adderall-xr": "aff45863-ffe1-4d4f-8acf-c7081512a6c0",
   vyvanse: "704e4378-ca83-445c-8b45-3cfa51c1ecad",
   azilect: "a40d0e73-3f9f-4b01-979d-402c9cdaeb60",
+  // wave 16, DailyMed v2 SPL retrieved 2026-10-28.
+  // Nitrostat (nitroglycerin) sublingual tablets. Viatris Specialty. SPL version 3, effective 2023-02-15.
+  nitrostat: "9a52da75-d0af-4237-96c0-0b12adfa8636",
+  // Isosorbide dinitrate tablets. PAR Health. SPL version 18, effective 2026-07-31.
+  "isosorbide-dinitrate": "6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+  // Febuxostat tablets. Novadoz. SPL version 6, effective 2026-02-20.
+  febuxostat: "d1969ea8-5178-42ee-97fc-feee8595e677",
+  // Disulfiram tablets. Alvogen. SPL version 16, effective 2026-01-29.
+  disulfiram: "b90f8ff4-4fb3-46ab-8149-cb55f24a4044",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -3922,6 +3931,93 @@ const WAVE_14: GoldPair[] = [
   }),
 ];
 
+/**
+ * Wave 16 (DailyMed v2 SPL retrieved 2026-10-28): Contraindications sections
+ * that name a catalog partner whose card already reads Avoid together.
+ * Nitrostat 4.1 (PDE-5 inhibitors), isosorbide dinitrate CONTRAINDICATIONS
+ * (erectile-dysfunction PDE-5 inhibitors), febuxostat section 4 (azathioprine
+ * and mercaptopurine), and disulfiram CONTRAINDICATIONS (alcohol). No grade
+ * changes. Class-only lines, section-4 misses, and severity raises are in
+ * DROPPED_CANDIDATES.
+ */
+function row16(r: Row): GoldPair {
+  return { ...row7(r), wave: 16, retrieved: "2026-10-28" };
+}
+
+const NITROSTAT_PDE5 =
+  "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride.";
+const ISDN_PDE5 =
+  "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil.";
+const FEBUXOSTAT_CI =
+  "Febuxostat is contraindicated in patients being treated with azathioprine or mercaptopurine.";
+const DISULFIRAM_CI =
+  "who are receiving or have recently received metronidazole, paraldehyde, alcohol, or alcohol-containing preparations, e.g., cough syrups, tonics and the like, should not be given disulfiram.";
+
+const WAVE_16: GoldPair[] = [
+  row16({
+    drugA: "nitroglycerin", drugB: "avanafil", queries: ["nitrostat", "stendra"],
+    labelDrug: "Nitrostat (nitroglycerin)", label: "nitrostat", labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: NITROSTAT_PDE5, labelExample: "avanafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "nitroglycerin", drugB: "sildenafil", queries: ["nitrostat", "viagra"],
+    labelDrug: "Nitrostat (nitroglycerin)", label: "nitrostat", labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: NITROSTAT_PDE5, labelExample: "sildenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "nitroglycerin", drugB: "tadalafil", queries: ["nitrostat", "cialis"],
+    labelDrug: "Nitrostat (nitroglycerin)", label: "nitrostat", labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: NITROSTAT_PDE5, labelExample: "tadalafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "nitroglycerin", drugB: "vardenafil", queries: ["nitrostat", "levitra"],
+    labelDrug: "Nitrostat (nitroglycerin)", label: "nitrostat", labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: NITROSTAT_PDE5, labelExample: "vardenafil hydrochloride",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "isosorbide-dinitrate", drugB: "sildenafil", queries: ["isordil", "viagra"],
+    labelDrug: "Isosorbide dinitrate", label: "isosorbide-dinitrate", labelSection: "CONTRAINDICATIONS",
+    quote: ISDN_PDE5, labelExample: "sildenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "isosorbide-dinitrate", drugB: "tadalafil", queries: ["isordil", "cialis"],
+    labelDrug: "Isosorbide dinitrate", label: "isosorbide-dinitrate", labelSection: "CONTRAINDICATIONS",
+    quote: ISDN_PDE5, labelExample: "tadalafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "isosorbide-dinitrate", drugB: "vardenafil", queries: ["isordil", "levitra"],
+    labelDrug: "Isosorbide dinitrate", label: "isosorbide-dinitrate", labelSection: "CONTRAINDICATIONS",
+    quote: ISDN_PDE5, labelExample: "vardenafil",
+    labelClass: "contraindicated", mechanism: "PD", domain: "cardiology",
+  }),
+  row16({
+    drugA: "febuxostat", drugB: "azathioprine", queries: ["uloric", "imuran"],
+    labelDrug: "Febuxostat tablets", label: "febuxostat", labelSection: "4 CONTRAINDICATIONS",
+    quote: FEBUXOSTAT_CI, labelExample: "azathioprine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "endocrine",
+    note: "The same sentence names mercaptopurine.",
+  }),
+  row16({
+    drugA: "febuxostat", drugB: "mercaptopurine", queries: ["uloric", "purinethol"],
+    labelDrug: "Febuxostat tablets", label: "febuxostat", labelSection: "4 CONTRAINDICATIONS",
+    quote: FEBUXOSTAT_CI, labelExample: "mercaptopurine",
+    labelClass: "contraindicated", mechanism: "PD", domain: "endocrine",
+  }),
+  row16({
+    drugA: "disulfiram", drugB: "ethanol", queries: ["antabuse", "alcohol"],
+    labelDrug: "Disulfiram tablets", label: "disulfiram", labelSection: "CONTRAINDICATIONS",
+    quote: DISULFIRAM_CI, labelExample: "alcohol",
+    labelClass: "contraindicated", mechanism: "PD", domain: "mat",
+    note: "The sentence also names metronidazole. That card reads Use care, so it is not pinned.",
+  }),
+];
+
 
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
@@ -3932,7 +4028,8 @@ export const WAVE_11_COUNT = WAVE_11.length;
 export const WAVE_12_COUNT = WAVE_12.length;
 export const WAVE_13_COUNT = WAVE_13.length;
 export const WAVE_14_COUNT = WAVE_14.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13, ...WAVE_14];
+export const WAVE_16_COUNT = WAVE_16.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13, ...WAVE_14, ...WAVE_16];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -4593,5 +4690,79 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
     pair: "wave 15 (pin removed): Nardil (phenelzine) + 5-HTP / L-tryptophan",
     pairs: ["phenelzine+five-htp"],
     reason: 'The wave 13 pin quoted Nardil naming "L-tryptophan" in a "should not take sympathomimetic drugs … or related compounds" list. The catalog entry is 5-HTP (5-hydroxytryptophan), which Nardil does not name, so the quote does not name the partner exactly. Pin and gold row removed; grade unchanged.',
+  },
+  {
+    pair: "wave 16 (severity change, for Kaleb): Nitrostat (nitroglycerin) + riociguat; isosorbide dinitrate + riociguat",
+    pairs: ["nitroglycerin+riociguat", "isosorbide-dinitrate+riociguat"],
+    reason: 'Nitrostat 4.1 (setid 9a52da75-d0af-4237-96c0-0b12adfa8636, effective 2023-02-15, retrieved 2026-10-28): "Do not use NITROSTAT in patients who are taking the soluble guanylate cyclase stimulators, such as riociguat." Isosorbide dinitrate CONTRAINDICATIONS (setid 6df6a2fa-c56c-4eb6-a485-c16585420eb0, effective 2026-07-31): "Do not use isosorbide dinitrate in patients who are taking the soluble guanylate cyclase stimulator riociguat." Neither pair has a card. A pin would add Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: Nitrostat and isosorbide dinitrate + sildenafil (PAH)",
+    pairs: ["nitroglycerin+sildenafil-pah", "isosorbide-dinitrate+sildenafil-pah"],
+    reason: 'Both sentences name sildenafil. Isosorbide dinitrate limits the list to "drugs for erectile dysfunction". The PAH row is the Revatio catalog id, used when a label says Revatio. The sildenafil row carries these pairs. Not pinned as a second row; grade unchanged.',
+  },
+  {
+    pair: "wave 16: isosorbide mononitrate + PDE5 inhibitors",
+    pairs: ["isosorbide-mononitrate+sildenafil", "isosorbide-mononitrate+tadalafil", "isosorbide-mononitrate+vardenafil", "isosorbide-mononitrate+avanafil", "isosorbide-mononitrate+sildenafil-pah"],
+    reason: 'Isosorbide mononitrate extended-release CONTRAINDICATIONS (setid 6a582db5-eb45-4320-98c1-55517d7d8c38, effective 2026-09-24, retrieved 2026-10-28) is hypersensitivity to nitrates or nitrites only. It does not name a PDE5 inhibitor. Cards already read Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: poppers and nitroprusside + PDE5 inhibitors",
+    pairs: ["poppers+sildenafil", "poppers+tadalafil", "poppers+vardenafil", "poppers+avanafil", "nitroprusside+sildenafil", "nitroprusside+tadalafil", "nitroprusside+vardenafil", "nitroprusside+avanafil"],
+    reason: 'Viagra 4.1 names "organic nitrates or organic nitrites" as a class and does not name poppers. Sodium nitroprusside CONTRAINDICATIONS (setid 5a599880-c133-44ef-a9f2-bd1b681563be, effective 2026-08-10) does not name a PDE5 inhibitor. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: allopurinol + azathioprine, mercaptopurine",
+    pairs: ["allopurinol+azathioprine", "allopurinol+mercaptopurine"],
+    reason: 'Zyloprim CONTRAINDICATIONS (setid 342832b5-1a32-4bea-bc49-ab0fd152154e) and current allopurinol tablets section 4 (setid 5d330416-4289-762e-e063-6294a90a532e, effective 2026-10-06, retrieved 2026-10-28) are hypersensitivity only. They do not name azathioprine or mercaptopurine. Cards already read Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16 (label-cited outside Contraindications, for Kaleb): sofosbuvir regimens + amiodarone",
+    pairs: ["sofosbuvir+amiodarone", "epclusa+amiodarone", "ledipasvir-sofosbuvir+amiodarone", "sofosbuvir-velpatasvir-voxilaprevir+amiodarone"],
+    reason: 'Sovaldi, Harvoni, Epclusa, and Vosevi section 4 (retrieved 2026-10-28) do not name amiodarone. Sovaldi and Harvoni section 4 point at ribavirin contraindications; Epclusa section 4 is the ribavirin combination; Vosevi section 4 names rifampin only (already pinned). Cards already read Avoid together from the bradycardia row. Not pinned from a section outside Contraindications; grade unchanged.',
+  },
+  {
+    pair: "wave 16: carbapenems + valproate",
+    pairs: ["meropenem+valproate", "ertapenem+valproate", "imipenem-cilastatin+valproate", "doripenem+valproate", "meropenem-vaborbactam+valproate", "imipenem-relebactam+valproate"],
+    reason: 'Meropenem section 4 (setid 74ff19b5-6156-4a27-affb-744b0ce1aeec, effective 2020-05-29, retrieved 2026-10-28) is hypersensitivity to beta-lactams only. It does not name valproate. Cards already read Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: Entresto (sacubitril/valsartan) + ACE inhibitors",
+    pairs: ["sacubitril-valsartan+lisinopril", "sacubitril-valsartan+enalapril", "sacubitril-valsartan+ramipril", "sacubitril-valsartan+captopril"],
+    reason: 'Entresto section 4 (setid 000dc81d-ab91-450c-8eae-8eb74e72296f, effective 2026-07-06, retrieved 2026-10-28): "with concomitant use of ACE inhibitors." The class is named and no individual ACE inhibitor is named. Aliskiren stays the wave 14 conditional drop (diabetes only). Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: clozapine + benzodiazepines",
+    pairs: ["clozapine+alprazolam", "clozapine+diazepam", "clozapine+lorazepam", "clozapine+clonazepam", "clozapine+midazolam"],
+    reason: 'Clozapine section 4 (Versacloz setid 2592c9a8-fd74-4e0d-a895-b07b014cf355, effective 2026-09-06, retrieved 2026-10-28) is hypersensitivity only. It does not name a benzodiazepine. Cards already read Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16 (label-cited outside Contraindications, for Kaleb): isotretinoin + tetracyclines",
+    pairs: ["isotretinoin+doxycycline", "isotretinoin+tetracycline", "isotretinoin+minocycline"],
+    reason: 'Zenatane section 4 (setid 27b3cf26-f22e-5b70-1c24-009933b7c6ee, effective 2026-09-20, retrieved 2026-10-28) is pregnancy and hypersensitivity only. Warnings 5.4 and Drug Interactions 7.2 say "Avoid concomitant use of Zenatane with tetracyclines" and name no individual drug. Cards already read Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16 (severity change, for Kaleb): Diflucan (fluconazole) + erythromycin, pimozide, quinidine",
+    pairs: ["fluconazole+erythromycin", "fluconazole+pimozide", "fluconazole+quinidine"],
+    reason: 'Diflucan CONTRAINDICATIONS (setid f694c617-3383-416c-91b6-b94fda371204, effective 2026-04-02, retrieved 2026-10-28): "Coadministration of other drugs known to prolong the QT interval and which are metabolized via the enzyme CYP3A4 such as erythromycin, pimozide, and quinidine are contraindicated in patients receiving fluconazole." Cards read Serious concern. A pin would raise them to Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16 (severity change, for Kaleb): Reyataz (atazanavir) + lomitapide, indinavir",
+    pairs: ["atazanavir+lomitapide", "atazanavir+indinavir"],
+    reason: 'Reyataz section 4 and the patient "Do not take REYATAZ if you" list (setid 165cff62-b284-4a27-a65d-9ec8a5bfcdd8, effective 2024-12-05, retrieved 2026-10-28) name indinavir and lomitapide. Drug Interactions says coadministration with each is contraindicated. Cards read Serious concern. A pin would raise them to Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16 (severity change, for Kaleb): disulfiram + metronidazole",
+    pairs: ["disulfiram+metronidazole"],
+    reason: 'Disulfiram CONTRAINDICATIONS (setid b90f8ff4-4fb3-46ab-8149-cb55f24a4044, effective 2026-01-29, retrieved 2026-10-28) names metronidazole in the same "should not be given disulfiram" sentence as alcohol. The only pair card is a seizure-threshold card at Use care, not the disulfiram reaction. A pin would raise that card to Avoid together. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: Edurant PPI examples that are not named; Reyataz + PPIs",
+    pairs: ["rilpivirine+dexlansoprazole", "rilpivirine+omeprazole-sodium-bicarbonate", "atazanavir+omeprazole", "atazanavir+pantoprazole", "atazanavir+dexlansoprazole"],
+    reason: 'Edurant Table 2 (section 4) names esomeprazole, lansoprazole, omeprazole, pantoprazole, and rabeprazole as examples. Dexlansoprazole and omeprazole/sodium bicarbonate are not named. Reyataz section 4 does not name a PPI. Those cards already read Avoid together from the gastric-pH row. Not pinned; grade unchanged.',
+  },
+  {
+    pair: "wave 16: Sunlenca (lenacapavir) + strong CYP3A inducers; Caprelsa, Tasigna, Imbruvica, Sivextro",
+    reason: 'Sunlenca section 4 (setid e5652804-29c4-40d7-aeb2-0142ed2a7b5b, effective 2026-08-27) names the strong CYP3A inducer class and no drug. Caprelsa section 4 is congenital long QT syndrome. Tasigna section 4 is hypokalemia, hypomagnesemia, or long QT syndrome. Imbruvica and Sivextro section 4 are "None". Nothing named to pin.',
   },
 ];
