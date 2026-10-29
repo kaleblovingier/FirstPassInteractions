@@ -195,3 +195,8 @@ html[data-fp-paid] [data-fp-prehydrate="unlock"] { display: none !important; }
 /* 1.4.12: long unbroken names in headings (e.g. "(nirmatrelvir/ritonavir)") may wrap
    inside the word when user text spacing would otherwise push them past 320px. */
 main :is(h1, h2) { overflow-wrap: anywhere; }
+
+/* 1.4.12: enzyme-map columns size to the longest name (en dashes, slashes).
+   With text spacing that min-content is wider than a 320px viewport.
+   anywhere is what lets the column shrink; break-word does not change min-content. */
+[data-enzyme-atlas] { overflow-wrap: anywhere; }
