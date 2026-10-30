@@ -15,9 +15,12 @@ import {
   FOR_PROGRAMS_ESTIMATE_NOTE,
   FOR_PROGRAMS_FAQ,
   FOR_PROGRAMS_KEY_STEPS,
+  FOR_PROGRAMS_LIBRARY_LINKS,
   FOR_PROGRAMS_MAILTO,
+  FOR_PROGRAMS_STUDENTS,
   FOR_PROGRAMS_TITLE,
   FOR_PROGRAMS_URL,
+  FOR_PROGRAMS_WHATS_NEW,
   formatUsd,
   formatUsdCents,
   forProgramsJsonLd,
@@ -89,6 +92,31 @@ describe("/for-programs copy rules", () => {
     assert.equal(FOR_PROGRAMS_MAILTO, "mailto:FirstPassInteractions@gmail.com?subject=FirstPass%20group%20license%20inquiry");
     assert.ok(html.includes(`href="${FOR_PROGRAMS_MAILTO}"`));
     for (const a of ["Pharmacy schools", "Pharmacy-tech programs", "Ketamine clinics", "MAT and OTP programs", "Harm-reduction groups"]) assert.ok(body.includes(a), a);
+  });
+
+  it("shows the approved teaching what's-new, with links only to pages that exist", () => {
+    assert.equal(
+      FOR_PROGRAMS_WHATS_NEW,
+      "FirstPass shipped a big round for teaching programs: a /practice recall mode, offline reading of the public reference pages for classrooms and labs, and a SCORM 1.2 package of label-quoted pair cards that LMS courses can host. The library also grew. Marplan Contraindications pairs now come from the label, five supplements show what drug labels say about them, cisapride, terfenadine and astemizole are marked as withdrawn or restricted in the US.",
+    );
+    assert.ok(!/\$|\bfree\b|\bPro\b|WCAG|clinical decision/i.test(FOR_PROGRAMS_WHATS_NEW));
+    const start = html.indexOf('data-testid="for-programs-whats-new"');
+    const open = html.lastIndexOf("<p", start);
+    const para = html.slice(open, html.indexOf("</p>", start) + 4).replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+    assert.equal(para, FOR_PROGRAMS_WHATS_NEW);
+    assert.ok(html.includes('href="/practice"'));
+    assert.ok(html.includes('href="/enzymes"'));
+    assert.ok(html.includes('id="founding"'));
+    for (const l of FOR_PROGRAMS_LIBRARY_LINKS) assert.ok(html.includes(`href="${l.href}"`), l.href);
+    for (const s of FOR_PROGRAMS_STUDENTS) {
+      assert.ok(FOR_PROGRAMS_WHATS_NEW.toLowerCase().includes(s.text.replace(/\.$/, "").toLowerCase()), s.text);
+      assert.ok(html.includes(`href="${s.href}"`), s.href);
+      assert.ok(body.includes(s.cta), s.cta);
+    }
+    assert.ok(body.includes("Open the desk"));
+    assert.ok(body.includes("Founding for one person"));
+    assert.ok(!/WCAG compliant/i.test(body));
+    assert.ok(!/seven newer|teaching scenarios/i.test(body));
   });
 
   it("is in the sitemap and linked from /pairs", () => {
