@@ -1,7 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+// POSIX joins keep keys like "src/lib/..." on Windows too, matching the baseline and exemptions.
+import { posix } from "node:path";
+const { join } = posix;
 import { SCOPED_PATHS, isExempt, findDoses, DOSE_PATTERN } from "./dose-rule";
 import baseline from "./dose-baseline.json";
 
