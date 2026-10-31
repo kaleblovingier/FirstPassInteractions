@@ -246,7 +246,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
             )}
             {hypo.isHighRiskForOds && hypo.hyponatremiaSeverity !== "normonatremic" && (
               <Badge tone="danger" className="font-mono uppercase text-[10px]">
-                ODS High-Risk (Ceiling 6 mEq/24h)
+                ODS High-Risk (Ceiling 6 mEq/L in 24h)
               </Badge>
             )}
             <Badge tone="accent" className="font-mono uppercase text-[10px]">
@@ -1017,7 +1017,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <div className="p-2.5 rounded bg-danger-soft border border-danger text-[11px] space-y-1.5 text-danger">
                 <div className="flex items-center justify-between">
                   <span className="font-bold">{RELOWERING_PROTOCOL.title}</span>
-                  <span className="font-mono text-[10px]">TRIGGER: &gt; 8 mEq/24h</span>
+                  <span className="font-mono text-[10px]">TRIGGER: &gt; 8 mEq/L in 24h</span>
                 </div>
                 <p className="text-[10px] opacity-90">{RELOWERING_PROTOCOL.neuroprotectiveRationale}</p>
                 <ul className="list-disc list-inside space-y-0.5 text-[10px] font-medium pt-1">
