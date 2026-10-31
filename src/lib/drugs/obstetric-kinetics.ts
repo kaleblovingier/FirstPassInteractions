@@ -1176,7 +1176,7 @@ export function evaluateTeratogenRisk(
         gestationalAgeWeeksFromLmp >= teratogen.peakVulnerabilityGestationalAgeWeeks.min &&
         gestationalAgeWeeksFromLmp <= teratogen.peakVulnerabilityGestationalAgeWeeks.max;
 
-      let actionMessage = inWindow
+      const actionMessage = inWindow
         ? `CURRENTLY INSIDE CRITICAL VULNERABILITY WINDOW (Weeks ${teratogen.peakVulnerabilityGestationalAgeWeeks.min}-${teratogen.peakVulnerabilityGestationalAgeWeeks.max} GA). Urgent risk of ${teratogen.characteristicPhenotypeSignature[0]}.`
         : `Identified teratogenic profile. Peak vulnerability window is Weeks ${teratogen.peakVulnerabilityGestationalAgeWeeks.min}-${teratogen.peakVulnerabilityGestationalAgeWeeks.max} GA (patient currently at Week ${gestationalAgeWeeksFromLmp} GA).`;
 

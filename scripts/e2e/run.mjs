@@ -15,7 +15,7 @@ const pepper = "e2e-test-pepper-not-a-secret";
 const env = { ...process.env, LICENSE_PEPPER: pepper, FOUNDER_PIN: "e2e-test-pin", STRIPE_SECRET_KEY: "", RESEND_API_KEY: "" };
 const server = spawn("npm", ["run", "preview", "--", "--port", String(port), "--strictPort", "--host", "127.0.0.1"], { cwd: root, env, detached: true, stdio: "ignore" });
 const base = `http://127.0.0.1:${port}`;
-for (let i = 0; i < 60; i++) { try { if ((await fetch(base + "/")).ok) break; } catch {} await new Promise((r) => setTimeout(r, 500)); }
+for (let i = 0; i < 60; i++) { try { if ((await fetch(base + "/")).ok) break; } catch { /* server not up yet */ } await new Promise((r) => setTimeout(r, 500)); }
 process.env.E2E_BASE = base;
 process.env.E2E_LICENSE_PEPPER = pepper;
 const { launch, failures } = await import("./lib.mjs");
@@ -27,7 +27,7 @@ for (const f of files) {
   try { await (await import(path.join(here, f))).default(browser); } catch (e) { console.log(`FAIL ${f} threw: ${String(e.message).split("\n")[0]}`); process.exitCode = 1; }
 }
 await browser.close();
-try { process.kill(-server.pid); } catch {}
+try { process.kill(-server.pid); } catch { /* server already exited */ }
 const n = failures();
 console.log(`\ne2e: ${files.length} files, ${n} failed`);
 process.exit(n || process.exitCode ? 1 : 0);
