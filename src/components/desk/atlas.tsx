@@ -49,7 +49,7 @@ export function EnzymeAtlas() {
   }, [q]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-enzyme-atlas>
       <div className="overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-border)]">
         <div className="grid lg:grid-cols-[280px_minmax(0,1fr)]">
           <Plate
@@ -162,7 +162,7 @@ export function EnzymeAtlas() {
       ) : (
         <>
           <p className="text-sm leading-relaxed text-muted">{atlasMapLine}</p>
-          <div className="grid gap-3 lg:grid-cols-3">
+          <div className="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-3">
             <AtlasColumn
               role="substrate"
               drugs={bucket.substrates}
@@ -228,7 +228,7 @@ function AtlasColumn({
                 disabled={on}
                 className="flex w-full items-center justify-between gap-2 rounded-sm px-2 py-2 text-left hover:bg-bg-sunken disabled:opacity-40"
               >
-                <span>
+                <span className="min-w-0">
                   <span className="block text-sm text-fg">{d.name}</span>
                   <span className="block text-[11px] text-muted">
                     {d.cls}

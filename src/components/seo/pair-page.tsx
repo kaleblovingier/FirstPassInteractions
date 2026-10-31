@@ -5,6 +5,7 @@ import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
 import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
 import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
+import { LabelFreshnessLine } from "@/components/label-freshness";
 
 /** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
 export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?: string }) {
@@ -18,6 +19,7 @@ export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?:
           {context ? <span className="sr-only">, for {context}</span> : null}
         </a>
       ) : null}
+      <LabelFreshnessLine basis={basis} />
     </div>
   );
 }
