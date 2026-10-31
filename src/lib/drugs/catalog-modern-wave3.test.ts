@@ -140,6 +140,18 @@ test("label-sourced specifics hold for the antibodies, aficamten, zoliflodacin, 
     zoliflodacin.enzymes.some((r) => r.kind === "substrate" && r.enzyme === "CYP3A4" && r.sensitivity === "major"),
     "Nuzolvence 12.3: CYP3A4 carries 68% of clearance",
   );
+  assert.ok(
+    zoliflodacin.enzymes.every((r) => r.enzyme !== "P-gp"),
+    "Nuzolvence names P-gp and BCRP with no potency word, so no P-gp grade is stored",
+  );
+  assert.match(zoliflodacin.note ?? "", /unlikely to translate to a clinically significant safety risk/);
+  assert.doesNotMatch(zoliflodacin.note ?? "", /well above anticipated unbound plasma levels/);
+
+  const aficamtenNote = byId.get("aficamten")!.note ?? "";
+  assert.match(aficamtenNote, /not expected to induce CYP1A2, CYP2B6, or CYP3A4/);
+  assert.match(aficamtenNote, /does not say it is not expected to induce CYP2C8, CYP2C19, or CYP2D6/);
+  assert.doesNotMatch(aficamtenNote, /built around CYP3A/);
+  assert.doesNotMatch(aficamtenNote, /induce CYP1A2\/2B6\/2C8/);
 
   const lerodalcibep = byId.get("lerodalcibep")!;
   assert.equal(lerodalcibep.enzymes.length, 0, "Lerochol 12.3: degrades to peptides, no CYP role, no formal DDI studies");

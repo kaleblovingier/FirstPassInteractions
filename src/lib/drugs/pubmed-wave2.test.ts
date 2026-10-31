@@ -8,6 +8,8 @@ import assert from "node:assert/strict";
 import { CITES_WAVE2 } from "./pubmed-wave2";
 import { CITES, CITE_TAGS, type CiteTag } from "./pubmed";
 import { DRUG_BY_ID } from "./catalog";
+import { ROUNDS_WAVE2 } from "./rounds-wave2";
+import { SAMPLE_REGIMENS_WAVE2 } from "./samples-wave2";
 
 const TARGET_IDS = [
   "medetomidine",
@@ -69,6 +71,33 @@ test("every target drug that was missing coverage now has at least one wave2 cit
   const covered = new Set(CITES_WAVE2.flatMap((c) => c.drugIds));
   const missing = TARGET_IDS.filter((id) => !covered.has(id));
   assert.deepEqual(missing, [], `still uncited after wave2: ${missing.join(", ")}`);
+});
+
+test("tianeptine teaching does not present the unsourced CYP3A4 grade as a label", () => {
+  const round = ROUNDS_WAVE2.find((row) => row.id === "r-tianeptine-ritonavir");
+  assert.ok(round);
+  assert.match(round.teach, /not a prescribing-information sentence/);
+  assert.match(round.teach, /beta-oxidation/);
+  assert.doesNotMatch(round.teach, /doesn't read labels/);
+  assert.doesNotMatch(`${round.stem} ${round.teach}`, /\b\d+(\.\d+)?\s?(mg|mcg)\b/i);
+  const sample = SAMPLE_REGIMENS_WAVE2.find((row) => row.id === "metonitazene-bromazolam");
+  assert.ok(sample);
+  assert.match(sample.blurb, /no FDA label of its own/);
+  assert.doesNotMatch(sample.blurb, /FDA boxed-warning/);
+});
+
+test("wave2 why copy does not over-read the papers it cites", () => {
+  const byPmid = new Map(CITES_WAVE2.map((row) => [row.pmid, row.why]));
+  const tirz = byPmid.get("42721915") ?? "";
+  assert.match(tirz, /20% to 23%/);
+  assert.match(tirz, /not the same as lost contraceptive efficacy/);
+  assert.doesNotMatch(tirz, /55-66%/);
+  const med = byPmid.get("41668237") ?? "";
+  assert.match(med, /bag-mask ventilation/);
+  assert.doesNotMatch(med, /without any extra naloxone/);
+  const kratom = byPmid.get("36924284") ?? "";
+  assert.doesNotMatch(kratom, /single cup/);
+  assert.doesNotMatch(kratom, /\b\d+(\.\d+)?\s?(mg|mcg|g)\b/i);
 });
 
 test("wave2 why copy carries no milligram doses", () => {
