@@ -267,7 +267,7 @@ export function evaluateWintersFormula(input: WintersInput): WintersResult {
     differentialDiagnosis.push(
       "Uncomplicated metabolic acidosis with intact central respiratory drive and ventilatory mechanics",
     );
-    actionGuidance:
+    actionGuidance =
       "Maintain support of spontaneous ventilation. Address underlying metabolic acidosis driver (e.g. insulin/fluids for DKA, perfusion restoration for lactic acidosis). Avoid sedative-hypnotics that impair respiratory drive.";
   } else if (measuredPaco2MmHg > expectedPaco2Max) {
     status = "concomitant-respiratory-acidosis";
