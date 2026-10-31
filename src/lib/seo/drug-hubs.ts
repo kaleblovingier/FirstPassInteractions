@@ -48,10 +48,22 @@ export interface DrugHub {
 
 /**
  * Supplements named in a current FDA label but not graded against any partner
- * (supplements-label-batch). They have no pair pages, so they get a hub that
- * shows only the label citation. Listed explicitly; no other entry qualifies.
+ * (supplements-label-batch, plus the later cited-only shelf). They have no pair
+ * pages, so they get a hub that shows only the label citation. Listed explicitly;
+ * no other entry qualifies.
  */
-export const CITED_ONLY_HUB_IDS = ["danshen", "siberian-ginseng", "glucomannan", "kelp", "beta-carotene"] as const;
+export const CITED_ONLY_HUB_IDS = [
+  "danshen",
+  "siberian-ginseng",
+  "glucomannan",
+  "kelp",
+  "beta-carotene",
+  "chan-su",
+  "agar",
+  "carrageenan",
+  "pancreatin",
+  "amylase",
+] as const;
 
 const toSlug = (s: string) =>
   s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");

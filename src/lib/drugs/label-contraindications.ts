@@ -83,6 +83,12 @@
  *   dopamine, pseudoephedrine, phenylephrine and ephedrine; Nardil
  *   CONTRAINDICATIONS with tyramine foods and L-tryptophan. Each pair card
  *   already read Avoid together.
+ * - Wave 16 rows (retrieved 2026-10-28, origin "pd") copy quote, labelSection,
+ *   labelExample and the DailyMed link byte-for-byte from the wave-16 gold
+ *   rows: Nitrostat 4.1 with avanafil, sildenafil, tadalafil and vardenafil;
+ *   isosorbide dinitrate CONTRAINDICATIONS with sildenafil, tadalafil and
+ *   vardenafil; febuxostat 4 with azathioprine and mercaptopurine; disulfiram
+ *   CONTRAINDICATIONS with alcohol. Each pair card already read Avoid together.
  * - Wave 7 rows (retrieved 2026-10-12) copy quote, labelSection, labelExample
  *   and the DailyMed link byte-for-byte from the wave-7 gold rows. Every quote
  *   is section 4 (Contraindications) text from Tikosyn, Tracleer, Adempas,
@@ -138,7 +144,7 @@ export interface LabelContraindication {
    * DailyMed retrieval date for this quote when it is not
    * `LABEL_CONTRAINDICATIONS_RETRIEVED` (wave 3 is 2026-10-02; Recorlev is 2026-10-05).
    */
-  retrieved?: "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12" | "2026-10-19";
+  retrieved?: "2026-10-02" | "2026-10-03" | "2026-10-05" | "2026-10-12" | "2026-10-19" | "2026-10-28";
 }
 
 export const LABEL_CONTRAINDICATIONS_RETRIEVED = "2026-09-27";
@@ -7045,6 +7051,138 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "wave7",
     retrieved: "2026-10-12",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=00979fb3-d70f-493d-94ca-2914cbadaa9d",
+  },
+  // Wave 16 (retrieved 2026-10-28). Each card already read Avoid together.
+  // Quotes match label-gold-set.ts byte for byte.
+  {
+    id: "nitroglycerin+avanafil",
+    labelDrugId: "nitroglycerin",
+    otherId: "avanafil",
+    labelDrug: "Nitrostat (nitroglycerin)",
+    labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride.",
+    labelExample: "avanafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9a52da75-d0af-4237-96c0-0b12adfa8636",
+  },
+  {
+    id: "nitroglycerin+sildenafil",
+    labelDrugId: "nitroglycerin",
+    otherId: "sildenafil",
+    labelDrug: "Nitrostat (nitroglycerin)",
+    labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride.",
+    labelExample: "sildenafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9a52da75-d0af-4237-96c0-0b12adfa8636",
+  },
+  {
+    id: "nitroglycerin+tadalafil",
+    labelDrugId: "nitroglycerin",
+    otherId: "tadalafil",
+    labelDrug: "Nitrostat (nitroglycerin)",
+    labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride.",
+    labelExample: "tadalafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9a52da75-d0af-4237-96c0-0b12adfa8636",
+  },
+  {
+    id: "nitroglycerin+vardenafil",
+    labelDrugId: "nitroglycerin",
+    otherId: "vardenafil",
+    labelDrug: "Nitrostat (nitroglycerin)",
+    labelSection: "4.1 PDE-5-Inhibitors and sGC-Stimulators",
+    quote: "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride.",
+    labelExample: "vardenafil hydrochloride",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9a52da75-d0af-4237-96c0-0b12adfa8636",
+  },
+  {
+    id: "isosorbide-dinitrate+sildenafil",
+    labelDrugId: "isosorbide-dinitrate",
+    otherId: "sildenafil",
+    labelDrug: "Isosorbide dinitrate",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil.",
+    labelExample: "sildenafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+  },
+  {
+    id: "isosorbide-dinitrate+tadalafil",
+    labelDrugId: "isosorbide-dinitrate",
+    otherId: "tadalafil",
+    labelDrug: "Isosorbide dinitrate",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil.",
+    labelExample: "tadalafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+  },
+  {
+    id: "isosorbide-dinitrate+vardenafil",
+    labelDrugId: "isosorbide-dinitrate",
+    otherId: "vardenafil",
+    labelDrug: "Isosorbide dinitrate",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil.",
+    labelExample: "vardenafil",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+  },
+  {
+    id: "febuxostat+azathioprine",
+    labelDrugId: "febuxostat",
+    otherId: "azathioprine",
+    labelDrug: "Febuxostat tablets",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Febuxostat is contraindicated in patients being treated with azathioprine or mercaptopurine.",
+    labelExample: "azathioprine",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d1969ea8-5178-42ee-97fc-feee8595e677",
+  },
+  {
+    id: "febuxostat+mercaptopurine",
+    labelDrugId: "febuxostat",
+    otherId: "mercaptopurine",
+    labelDrug: "Febuxostat tablets",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "Febuxostat is contraindicated in patients being treated with azathioprine or mercaptopurine.",
+    labelExample: "mercaptopurine",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d1969ea8-5178-42ee-97fc-feee8595e677",
+  },
+  {
+    id: "disulfiram+ethanol",
+    labelDrugId: "disulfiram",
+    otherId: "ethanol",
+    labelDrug: "Disulfiram tablets",
+    labelSection: "CONTRAINDICATIONS",
+    quote: "who are receiving or have recently received metronidazole, paraldehyde, alcohol, or alcohol-containing preparations, e.g., cough syrups, tonics and the like, should not be given disulfiram.",
+    labelExample: "alcohol",
+    basis: "named",
+    origin: "pd",
+    retrieved: "2026-10-28",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b90f8ff4-4fb3-46ab-8149-cb55f24a4044",
   },
 ];
 

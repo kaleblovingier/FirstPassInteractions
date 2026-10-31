@@ -625,7 +625,7 @@ export function StudyPage() {
                 className={cn(
                   "min-h-[44px] rounded-full px-3.5 text-xs font-medium",
                   clinicalTopic === t.id
-                    ? "bg-accent text-accent-foreground"
+                    ? "bg-accent text-accent-fg"
                     : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >

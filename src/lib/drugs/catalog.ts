@@ -2797,6 +2797,53 @@ const raw: Drug[] = [
       aliases: ["beta carotene", "β-carotene", "provitamin a"],
       note: "The Xenical (orlistat) label, section 7.2, reports reduced absorption of beta-carotene supplement when given together. Absorption effect, not a graded interaction. No CYP grade.",
     }),
+  // Named on those same current labels, but already catalogued with a grade, so not repeated:
+  // gymnema, thioctic acid (alpha-lipoic acid), ashwagandha, Asian ginseng.
+  d("chan-su", "Chan Su", [], "Herbal (Venenum Bufonis)",
+    [],
+    [],
+    "May falsely change digoxin test results",
+    {
+      kind: "herb",
+      aliases: ["chansu", "venenum bufonis", "bufo", "toad venom"],
+      note: "Lanoxin (digoxin) label, section 7.4 Drug/Laboratory Test Interactions (DailyMed setid 9ec84cac-6ecc-43dc-8006-6ccc029e2707), names Chan Su among traditional Chinese and Ayurvedic medicine substances that can interfere with digoxin immunoassays. Lab-test effect, not a graded interaction. No CYP or P-gp grade.",
+    }),
+  d("agar", "Agar", [], "Seaweed product (agar)",
+    [],
+    [],
+    "Iodine load can block radioiodine uptake",
+    {
+      kind: "herb",
+      aliases: ["agar-agar", "agar agar", "kanten"],
+      note: "The HICON (sodium iodide I-131) label, section 7 Table 4 (DailyMed setid 524a0dac-6e2b-2c0c-04b4-76d85dba63c5), lists agar among agents blocking radioiodine uptake. Timing is not shown here; the Prescribing Information governs. No CYP grade.",
+    }),
+  d("carrageenan", "Carrageenan", [], "Seaweed product (carrageenan)",
+    [],
+    [],
+    "Iodine load can block radioiodine uptake",
+    {
+      kind: "herb",
+      aliases: ["irish moss", "chondrus crispus", "chondrus"],
+      note: "The HICON (sodium iodide I-131) label, section 7 Table 4 (DailyMed setid 524a0dac-6e2b-2c0c-04b4-76d85dba63c5), lists carrageenan among agents blocking radioiodine uptake. Timing is not shown here; the Prescribing Information governs. No CYP grade.",
+    }),
+  d("pancreatin", "Pancreatin", [], "Digestive enzyme preparation",
+    [],
+    [],
+    "Named by the acarbose label as able to reduce its effect",
+    {
+      kind: "herb",
+      aliases: ["pancreatin enzyme", "pancreatic extract"],
+      note: "Acarbose tablets label, Drug Interactions section (DailyMed setid 656769ee-e292-4950-83df-a38e6b1a9d6e), says digestive enzyme preparations containing carbohydrate-splitting enzymes (for example, amylase, pancreatin) may reduce the effect of acarbose and should not be taken concomitantly. Cited from that label, not stored as an interaction grade. No CYP grade.",
+    }),
+  d("amylase", "Amylase", [], "Carbohydrate-splitting enzyme",
+    [],
+    [],
+    "Named by the acarbose label as able to reduce its effect",
+    {
+      kind: "herb",
+      aliases: ["digestive amylase", "amylase enzyme"],
+      note: "Acarbose tablets label, Drug Interactions section (DailyMed setid 656769ee-e292-4950-83df-a38e6b1a9d6e), names amylase among carbohydrate-splitting enzymes that may reduce the effect of acarbose and should not be taken concomitantly. Cited from that label, not stored as an interaction grade. No CYP grade.",
+    }),
 ];
 
 const coreIds = new Set(raw.map((d) => d.id));

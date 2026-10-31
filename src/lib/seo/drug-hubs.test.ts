@@ -6,6 +6,8 @@ import { CITED_ONLY_HUB_IDS } from "./drug-hubs";
 import { DrugHubView, PairPageView, PairsIndexView } from "@/components/seo/pair-page";
 import { pairPages, sitemapXml } from "./pair-pages";
 import { drugHubBySlug, drugHubs, drugHubPath, legacyDrugHubRedirect } from "./drug-hubs";
+import { DRUG_BY_ID } from "@/lib/drugs/catalog";
+import { analyze } from "@/lib/drugs/engine";
 import { readFileSync } from "node:fs";
 import { PAIR_DISCLAIMER } from "./pair-copy";
 import { SEVERITY_LABEL } from "@/lib/drugs/types";
@@ -123,6 +125,38 @@ describe("cited-only supplement hubs", () => {
       assert.ok(!html.includes("These are pairs with"));
       assert.doesNotMatch(html, /\d\s*mg\b/i);
       assert.ok(!html.includes("/pair/"));
+    }
+  });
+});
+
+describe("new cited-only label shelf", () => {
+  const ids = ["chan-su", "agar", "carrageenan", "pancreatin", "amylase"] as const;
+  const setids: Record<(typeof ids)[number], string> = {
+    "chan-su": "9ec84cac-6ecc-43dc-8006-6ccc029e2707",
+    agar: "524a0dac-6e2b-2c0c-04b4-76d85dba63c5",
+    carrageenan: "524a0dac-6e2b-2c0c-04b4-76d85dba63c5",
+    pancreatin: "656769ee-e292-4950-83df-a38e6b1a9d6e",
+    amylase: "656769ee-e292-4950-83df-a38e6b1a9d6e",
+  };
+
+  it("quotes a current label section and setid, stores no enzyme or PD grade, and creates no pair finding", () => {
+    const partners = ["digoxin", "warfarin", "acarbose", "levothyroxine", "simvastatin"];
+    for (const id of ids) {
+      assert.ok(CITED_ONLY_HUB_IDS.includes(id), id);
+      const drug = DRUG_BY_ID[id];
+      assert.ok(drug, id);
+      assert.deepEqual(drug.enzymes, []);
+      assert.deepEqual(drug.pd, []);
+      assert.match(drug.note ?? "", new RegExp(`setid ${setids[id]}`));
+      assert.match(drug.note ?? "", /section 7|Drug Interactions section/);
+      assert.doesNotMatch(drug.note ?? "", /\d\s*(mg|mcg|g|weeks?)\b/i);
+      const hub = drugHubs().find((h) => h.drugId === id);
+      assert.equal(hub?.labelNote, drug.note);
+      assert.equal(pages.some((p) => p.drugA === id || p.drugB === id), false, id);
+      for (const other of partners) {
+        const pair = analyze([id, other]).findings.filter((f) => f.drugIds.includes(id) && f.drugIds.includes(other));
+        assert.equal(pair.length, 0, `${id} x ${other}`);
+      }
     }
   });
 });
