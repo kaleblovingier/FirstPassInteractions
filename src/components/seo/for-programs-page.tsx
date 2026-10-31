@@ -21,6 +21,8 @@ import {
   FOR_PROGRAMS_FAQ,
   FOR_PROGRAMS_H1,
   FOR_PROGRAMS_HOW_CHECKED,
+  FOR_PROGRAMS_LIBRARY_LINKS,
+  FOR_PROGRAMS_STUDENTS,
   FOR_PROGRAMS_WHAT_YOU_GET,
   FOR_PROGRAMS_INCLUDES,
   FOR_PROGRAMS_INTRO,
@@ -59,6 +61,33 @@ function yearsOption(y: Years) {
 function toYears(raw: string): Years {
   const n = Number(raw);
   return n === 2 || n === 3 ? n : 1;
+}
+
+const LINK = "font-medium text-accent underline";
+
+/** The approved what's-new paragraph, with links only where a page already exists. */
+function WhatsNew() {
+  return (
+    <p data-testid="for-programs-whats-new" className="mt-3 text-sm leading-relaxed">
+      {[
+        "FirstPass shipped a big round for teaching programs: a ",
+        <a key="practice" href="/practice" className={LINK}>/practice</a>,
+        " recall mode, offline reading of the ",
+        <a key="pages" href="/pairs" className={LINK}>public reference pages</a>,
+        " for classrooms and labs, and a SCORM 1.2 package of ",
+        <a key="cards" href="/pairs" className={LINK}>label-quoted pair cards</a>,
+        " that LMS courses can host. The library also grew. ",
+        <a key="marplan" href="/drug/isocarboxazid" className={LINK}>Marplan</a>,
+        " Contraindications pairs now come from the label, five supplements show what drug labels say about them, ",
+        <a key="cisapride" href="/drug/cisapride" className={LINK}>cisapride</a>,
+        ", ",
+        <a key="terfenadine" href="/drug/terfenadine" className={LINK}>terfenadine</a>,
+        " and ",
+        <a key="astemizole" href="/drug/astemizole" className={LINK}>astemizole</a>,
+        " are marked as withdrawn or restricted in the US.",
+      ]}
+    </p>
+  );
 }
 
 /* ---------------- page ---------------- */
@@ -103,17 +132,27 @@ export function ForProgramsView() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <p className="text-xs text-muted">
+      <nav aria-label="Reference" className="text-xs text-muted">
         <a href="/pairs" className="underline">All pairs</a>
-      </p>
+        {" · "}
+        <a href="/practice" className="underline">Practice</a>
+        {" · "}
+        <a href="/enzymes" className="underline">Enzymes</a>
+      </nav>
 
       <header className="mt-4 max-w-2xl">
         <p className={KICKER}>Group and site licenses</p>
         <h1 className="mt-2 font-serif text-3xl tracking-tight text-fg sm:text-4xl">{FOR_PROGRAMS_H1}</h1>
         <p className="mt-3 text-sm leading-relaxed">{FOR_PROGRAMS_INTRO}</p>
         <p className="mt-2 text-sm leading-relaxed text-muted">{FOR_PROGRAMS_USERS}</p>
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          <a href="#estimate" className={cn(buttonVariants(), "min-h-[44px]")}>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <a href="/practice" data-testid="for-programs-practice" className={cn(buttonVariants(), "min-h-[44px]")}>
+            Open practice
+          </a>
+          <a href="#founding" data-testid="for-programs-founding" className={cn(buttonVariants({ variant: "secondary" }), "min-h-[44px]")}>
+            Founding for one person
+          </a>
+          <a href="#estimate" className={cn(buttonVariants({ variant: "secondary" }), "min-h-[44px]")}>
             Estimate your license
           </a>
           <a href="#inquiry" className={cn(buttonVariants({ variant: "secondary" }), "min-h-[44px]")}>
@@ -121,6 +160,36 @@ export function ForProgramsView() {
           </a>
         </div>
       </header>
+
+      <section className="mt-12 max-w-2xl" aria-labelledby="new-h">
+        <h2 id="new-h" className={H2}>What&apos;s new for teaching</h2>
+        <WhatsNew />
+        <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          {FOR_PROGRAMS_LIBRARY_LINKS.map((l) => (
+            <li key={l.href}>
+              <a href={l.href} className={LINK}>{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-12 max-w-2xl" aria-labelledby="students-h">
+        <h2 id="students-h" className={H2}>What students get</h2>
+        <ul className="mt-4 grid gap-4">
+          {FOR_PROGRAMS_STUDENTS.map((s) => (
+            <li key={s.name} className={CARD} data-testid={`student-${s.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
+              <h3 className="text-sm font-semibold text-fg">{s.name}</h3>
+              <p className="mt-1 text-sm leading-relaxed">{s.text}</p>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <a href={s.href} className={cn(buttonVariants({ variant: "secondary" }), "min-h-[44px]")}>{s.cta}</a>
+                {s.name === "Public reference pages" ? (
+                  <a href="/enzymes" className={cn(buttonVariants({ variant: "secondary" }), "min-h-[44px]")}>Enzyme pages</a>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="mt-12 max-w-2xl" aria-labelledby="who-h">
         <h2 id="who-h" className={H2}>Who it's for</h2>
@@ -164,8 +233,12 @@ export function ForProgramsView() {
             <TierCard key={t.id} tier={t} />
           ))}
         </ul>
-        <p data-testid="for-programs-comparison" className="mt-5 max-w-2xl rounded-lg bg-bg-sunken/60 px-4 py-3 text-sm">
+        <p id="founding" data-testid="for-programs-comparison" className="mt-5 max-w-2xl scroll-mt-6 rounded-lg bg-bg-sunken/60 px-4 py-3 text-sm">
           {FOR_PROGRAMS_COMPARISON}
+        </p>
+        <p className="mt-3 text-sm">
+          <a href="/" className={LINK}>Open the desk</a>
+          <span className="text-muted">, then Plans, to buy Founding for one person.</span>
         </p>
       </section>
 

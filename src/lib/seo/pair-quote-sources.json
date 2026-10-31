@@ -1,5 +1,5 @@
 {
- "retrieved": "2026-10-20",
+ "retrieved": "2026-10-29",
  "source": "DailyMed SPL v2 XML",
  "excerpts": {
   "alosetron+fluvoxamine": {
@@ -514,6 +514,18 @@
    "setid": "07a9112c-8c04-4849-8cb3-9463f58731d2",
    "excerpt": "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated"
   },
+  "dihydroergotamine+nelfinavir": {
+   "setid": "07a9112c-8c04-4849-8cb3-9463f58731d2",
+   "excerpt": "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated"
+  },
+  "dihydroergotamine+troleandomycin": {
+   "setid": "07a9112c-8c04-4849-8cb3-9463f58731d2",
+   "excerpt": "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated"
+  },
+  "disulfiram+ethanol": {
+   "setid": "b90f8ff4-4fb3-46ab-8149-cb55f24a4044",
+   "excerpt": "who are receiving or have recently received metronidazole, paraldehyde, alcohol, or alcohol-containing preparations, e.g., cough syrups, tonics and the like, should not be given disulfiram."
+  },
   "dofetilide+cimetidine": {
    "setid": "02438044-d6a3-49e9-a1ac-3aad21ef2c8c",
    "excerpt": "The concomitant use of verapamil or the cation transport system inhibitors cimetidine, trimethoprim (alone or in combination with sulfamethoxazole), or ketoconazole with TIKOSYN is contraindicated"
@@ -586,7 +598,15 @@
    "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
    "excerpt": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir"
   },
+  "eletriptan+nelfinavir": {
+   "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
+   "excerpt": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir"
+  },
   "eletriptan+ritonavir": {
+   "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
+   "excerpt": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir"
+  },
+  "eletriptan+troleandomycin": {
    "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
    "excerpt": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir"
   },
@@ -602,7 +622,15 @@
    "setid": "1a52bedc-8e2c-4116-a296-a87770676b4a",
    "excerpt": "INSPRA is contraindicated in all patients with:•serum potassium >5.5 mEq/L at initiation,•creatinine clearance ≤30 mL/min, or•concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)"
   },
+  "eplerenone+nelfinavir": {
+   "setid": "1a52bedc-8e2c-4116-a296-a87770676b4a",
+   "excerpt": "INSPRA is contraindicated in all patients with:•serum potassium >5.5 mEq/L at initiation,•creatinine clearance ≤30 mL/min, or•concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)"
+  },
   "eplerenone+ritonavir": {
+   "setid": "1a52bedc-8e2c-4116-a296-a87770676b4a",
+   "excerpt": "INSPRA is contraindicated in all patients with:•serum potassium >5.5 mEq/L at initiation,•creatinine clearance ≤30 mL/min, or•concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)"
+  },
+  "eplerenone+troleandomycin": {
    "setid": "1a52bedc-8e2c-4116-a296-a87770676b4a",
    "excerpt": "INSPRA is contraindicated in all patients with:•serum potassium >5.5 mEq/L at initiation,•creatinine clearance ≤30 mL/min, or•concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)"
   },
@@ -614,9 +642,17 @@
    "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
    "excerpt": "ergotamine use is contraindicated with these drugs and other potent inhibitors of CYP 3A4 (e.g., ketoconazole, itraconazole)"
   },
+  "ergotamine+nelfinavir": {
+   "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
+   "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity (ergotism) characterized by vasospasm and ischemia of the extremities (see PRECAUTIONS : Drug Interactions ), with some cases resulting in amputation. There have been rare reports of cerebral ischemia in patients on protease inhibitor therapy when ergotamine tartrate and caffeine tablets was coadministered, at least one resulting in death. Because of the increased risk of ergotism and other serious vasospastic adverse events, ergotamine use is contraindicated with these drugs"
+  },
   "ergotamine+ritonavir": {
    "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
    "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity"
+  },
+  "ergotamine+troleandomycin": {
+   "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
+   "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity (ergotism) characterized by vasospasm and ischemia of the extremities (see PRECAUTIONS : Drug Interactions ), with some cases resulting in amputation. There have been rare reports of cerebral ischemia in patients on protease inhibitor therapy when ergotamine tartrate and caffeine tablets was coadministered, at least one resulting in death. Because of the increased risk of ergotism and other serious vasospastic adverse events, ergotamine use is contraindicated with these drugs"
   },
   "erythromycin+astemizole": {
    "setid": "0c05e1f7-a3d4-8e69-e063-6394a90aecc3",
@@ -657,6 +693,14 @@
   "esketamine+phenelzine": {
    "setid": "d81a6a79-a74a-44b7-822c-0dfa3036eaed",
    "excerpt": "Concomitant use with monoamine oxidase inhibitors (MAOIs) may increase blood pressure [see Warnings and Precautions (5.7) ] . Closely monitor blood pressure with concomitant use of SPRAVATO with MAOIs."
+  },
+  "febuxostat+azathioprine": {
+   "setid": "d1969ea8-5178-42ee-97fc-feee8595e677",
+   "excerpt": "Febuxostat is contraindicated in patients being treated with azathioprine or mercaptopurine."
+  },
+  "febuxostat+mercaptopurine": {
+   "setid": "d1969ea8-5178-42ee-97fc-feee8595e677",
+   "excerpt": "Febuxostat is contraindicated in patients being treated with azathioprine or mercaptopurine."
   },
   "fluoxetine+linezolid": {
    "setid": "c88f33ed-6dfb-4c5e-bc01-d8e36dd97299",
@@ -741,6 +785,18 @@
   "isocarboxazid+tyramine-foods": {
    "setid": "95fde749-44ad-4668-86c4-0ff17bca0074",
    "excerpt": "Marplan (isocarboxazid) should not be administered in combination with any of the following: MAO inhibitors or dibenzazepine derivatives; sympathomimetics (including amphetamines); some central nervous system depressants (including narcotics and alcohol); antihypertensive, diuretic, antihistaminic, sedative or anesthetic drugs, buproprion HCL, buspirone HCL, dextromethorphan, cheese or other foods with a high tyramine content"
+  },
+  "isosorbide-dinitrate+sildenafil": {
+   "setid": "6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+   "excerpt": "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil."
+  },
+  "isosorbide-dinitrate+tadalafil": {
+   "setid": "6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+   "excerpt": "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil."
+  },
+  "isosorbide-dinitrate+vardenafil": {
+   "setid": "6df6a2fa-c56c-4eb6-a485-c16585420eb0",
+   "excerpt": "Do not use isosorbide dinitrate in patients who are taking certain drugs for erectile dysfunction (phosphodiesterase inhibitors), such as sildenafil, tadalafil, or vardenafil."
   },
   "itraconazole+avanafil": {
    "setid": "a4d555fa-787c-40fb-bb7d-b0d4f7318fd0",
@@ -1218,6 +1274,22 @@
    "setid": "0bd4c34a-4f43-4c84-8b98-1d074cba97d5",
    "excerpt": "Coadministration of terfenadine, astemizole, cisapride, pimozide, or carbamazepine with nefazodone hydrochloride is contraindicated"
   },
+  "nitroglycerin+avanafil": {
+   "setid": "9a52da75-d0af-4237-96c0-0b12adfa8636",
+   "excerpt": "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride."
+  },
+  "nitroglycerin+sildenafil": {
+   "setid": "9a52da75-d0af-4237-96c0-0b12adfa8636",
+   "excerpt": "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride."
+  },
+  "nitroglycerin+tadalafil": {
+   "setid": "9a52da75-d0af-4237-96c0-0b12adfa8636",
+   "excerpt": "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride."
+  },
+  "nitroglycerin+vardenafil": {
+   "setid": "9a52da75-d0af-4237-96c0-0b12adfa8636",
+   "excerpt": "Do not use NITROSTAT in patients who are taking PDE-5 Inhibitors, such as avanafil, sildenafil, tadalafil, vardenafil hydrochloride."
+  },
   "paroxetine+linezolid": {
    "setid": "ef3b5cbe-f9e1-c1ac-79da-cfe14e3a7e7e",
    "excerpt": "PAXIL is contraindicated in patients: Taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
@@ -1466,6 +1538,10 @@
    "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
    "excerpt": "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin."
   },
+  "pimozide+dirithromycin": {
+   "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
+   "excerpt": "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin"
+  },
   "pimozide+erythromycin": {
    "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
    "excerpt": "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin"
@@ -1497,6 +1573,10 @@
   "pimozide+sertraline": {
    "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
    "excerpt": "Concomitant use of pimozide in patients taking sertraline is contraindicated"
+  },
+  "pimozide+troleandomycin": {
+   "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
+   "excerpt": "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin"
   },
   "posaconazole+atorvastatin": {
    "setid": "b073b082-7b57-4423-8c06-4fd4263d6f84",
@@ -1541,6 +1621,10 @@
   "ranolazine+ketoconazole": {
    "setid": "e038f963-d78f-460e-a11f-46f224061505",
    "excerpt": "Do not use RANEXA with strong CYP3A inhibitors, including ketoconazole, itraconazole, clarithromycin, nefazodone, nelfinavir, ritonavir, indinavir, and saquinavir"
+  },
+  "ranolazine+nelfinavir": {
+   "setid": "00979fb3-d70f-493d-94ca-2914cbadaa9d",
+   "excerpt": "Ranolazine is contraindicated in patients: Taking strong inhibitors of CYP3A [see Drug Interactions (7.1) ] Taking inducers of CYP3A [see Drug Interactions (7.1) ] With liver cirrhosis [see Use in Specific Populations (8.6) ] Strong CYP3A inhibitors (e.g., ketoconazole, clarithromycin, nelfinavir)"
   },
   "ranolazine+phenobarbital": {
    "setid": "e038f963-d78f-460e-a11f-46f224061505",
@@ -1994,6 +2078,10 @@
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
   },
+  "ziprasidone+halofantrine": {
+   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
+   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
+  },
   "ziprasidone+ibutilide": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
@@ -2002,11 +2090,19 @@
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
   },
+  "ziprasidone+levomethadyl-acetate": {
+   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
+   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
+  },
   "ziprasidone+linezolid": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
   },
   "ziprasidone+mefloquine": {
+   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
+   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
+  },
+  "ziprasidone+mesoridazine": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
   },
@@ -2022,11 +2118,19 @@
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
   },
+  "ziprasidone+pentamidine": {
+   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
+   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
+  },
   "ziprasidone+phenelzine": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
   },
   "ziprasidone+pimozide": {
+   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
+   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
+  },
+  "ziprasidone+probucol": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
   },
@@ -2054,6 +2158,10 @@
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
   },
+  "ziprasidone+sparfloxacin": {
+   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
+   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
+  },
   "ziprasidone+thioridazine": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
@@ -2061,74 +2169,6 @@
   "ziprasidone+tranylcypromine": {
    "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
    "excerpt": "Ziprasidone is contraindicated in patients taking, or within 14 days of stopping, MAOIs (including the MAOIs linezolid and intravenous methylene blue)"
-  },
-  "pimozide+dirithromycin": {
-   "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
-   "excerpt": "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin"
-  },
-  "pimozide+troleandomycin": {
-   "setid": "70b079e2-a1f7-4a93-8685-d60a4d7c1280",
-   "excerpt": "pimozide is contraindicated in patients receiving the macrolide antibiotics clarithromycin, erythromycin, azithromycin, dirithromycin, and troleandomycin"
-  },
-  "ergotamine+troleandomycin": {
-   "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
-   "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity (ergotism) characterized by vasospasm and ischemia of the extremities (see PRECAUTIONS : Drug Interactions ), with some cases resulting in amputation. There have been rare reports of cerebral ischemia in patients on protease inhibitor therapy when ergotamine tartrate and caffeine tablets was coadministered, at least one resulting in death. Because of the increased risk of ergotism and other serious vasospastic adverse events, ergotamine use is contraindicated with these drugs"
-  },
-  "ergotamine+nelfinavir": {
-   "setid": "4db7eece-2eef-bc1b-e063-6394a90a98cb",
-   "excerpt": "Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity (ergotism) characterized by vasospasm and ischemia of the extremities (see PRECAUTIONS : Drug Interactions ), with some cases resulting in amputation. There have been rare reports of cerebral ischemia in patients on protease inhibitor therapy when ergotamine tartrate and caffeine tablets was coadministered, at least one resulting in death. Because of the increased risk of ergotism and other serious vasospastic adverse events, ergotamine use is contraindicated with these drugs"
-  },
-  "dihydroergotamine+troleandomycin": {
-   "setid": "07a9112c-8c04-4849-8cb3-9463f58731d2",
-   "excerpt": "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated"
-  },
-  "dihydroergotamine+nelfinavir": {
-   "setid": "07a9112c-8c04-4849-8cb3-9463f58731d2",
-   "excerpt": "The use of potent CYP3A4 inhibitors (i.e., ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, troleandomycin, ketoconazole, itraconazole) with dihydroergotamine is, therefore contraindicated"
-  },
-  "eplerenone+troleandomycin": {
-   "setid": "1a52bedc-8e2c-4116-a296-a87770676b4a",
-   "excerpt": "INSPRA is contraindicated in all patients with:•serum potassium >5.5 mEq/L at initiation,•creatinine clearance ≤30 mL/min, or•concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)"
-  },
-  "eplerenone+nelfinavir": {
-   "setid": "1a52bedc-8e2c-4116-a296-a87770676b4a",
-   "excerpt": "INSPRA is contraindicated in all patients with:•serum potassium >5.5 mEq/L at initiation,•creatinine clearance ≤30 mL/min, or•concomitant administration of strong CYP3A inhibitors (e.g., ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, and nelfinavir)"
-  },
-  "eletriptan+troleandomycin": {
-   "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
-   "excerpt": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir"
-  },
-  "eletriptan+nelfinavir": {
-   "setid": "2a501dbd-3ea8-47e4-9fcb-07035b8c8c9e",
-   "excerpt": "Recent use (i.e., within at least 72 hours) of the following potent CYP3A4 inhibitors: ketoconazole, itraconazole, nefazodone, troleandomycin, clarithromycin, ritonavir, or nelfinavir"
-  },
-  "ranolazine+nelfinavir": {
-   "setid": "00979fb3-d70f-493d-94ca-2914cbadaa9d",
-   "excerpt": "Ranolazine is contraindicated in patients: Taking strong inhibitors of CYP3A [see Drug Interactions (7.1) ] Taking inducers of CYP3A [see Drug Interactions (7.1) ] With liver cirrhosis [see Use in Specific Populations (8.6) ] Strong CYP3A inhibitors (e.g., ketoconazole, clarithromycin, nelfinavir)"
-  },
-  "ziprasidone+mesoridazine": {
-   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
-   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
-  },
-  "ziprasidone+sparfloxacin": {
-   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
-   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
-  },
-  "ziprasidone+halofantrine": {
-   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
-   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
-  },
-  "ziprasidone+pentamidine": {
-   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
-   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
-  },
-  "ziprasidone+levomethadyl-acetate": {
-   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
-   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
-  },
-  "ziprasidone+probucol": {
-   "setid": "8326928a-2cb6-4f7f-9712-03a425a14c37",
-   "excerpt": "ziprasidone is contraindicated:•in patients with a known history of QT prolongation (including congenital long QT syndrome)•in patients with recent acute myocardial infarction•in patients with uncompensated heart failure Pharmacokinetic/pharmacodynamic studies between ziprasidone and other drugs that prolong the QT interval have not been performed. An additive effect of ziprasidone and other drugs that prolong the QT interval cannot be excluded. Therefore, ziprasidone should not be given with:"
   }
  }
 }

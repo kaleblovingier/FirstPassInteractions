@@ -53,6 +53,31 @@ export const FOR_PROGRAMS_WHAT_YOU_GET: { name: string; text: string }[] = [
   { name: "Teaching tools", text: "The desk, drug pages, the enzyme atlas and metabolite maps, for lectures, in-services and self-study." },
 ];
 
+/**
+ * Room-approved what's-new for teaching programs. Visible text only — no price,
+ * no "free", no "Pro". Do not add claims past this paragraph.
+ * The page disclaimer already states the closing educational line.
+ * Newer compounds and their teaching scenarios stay off this page until that
+ * catalog change is signed off.
+ */
+export const FOR_PROGRAMS_WHATS_NEW =
+  "FirstPass shipped a big round for teaching programs: a /practice recall mode, offline reading of the public reference pages for classrooms and labs, and a SCORM 1.2 package of label-quoted pair cards that LMS courses can host. The library also grew. Marplan Contraindications pairs now come from the label, five supplements show what drug labels say about them, cisapride, terfenadine and astemizole are marked as withdrawn or restricted in the US.";
+
+/** What a class can open from the what's-new paragraph. Links are existing pages only. */
+export const FOR_PROGRAMS_STUDENTS: { name: string; text: string; href: string; cta: string }[] = [
+  { name: "Practice", text: "A /practice recall mode.", href: "/practice", cta: "Open practice" },
+  { name: "Public reference pages", text: "Offline reading of the public reference pages for classrooms and labs.", href: "/pairs", cta: "Open pair pages" },
+  { name: "SCORM 1.2", text: "A SCORM 1.2 package of label-quoted pair cards that LMS courses can host.", href: "/pairs", cta: "Read the pair cards" },
+];
+
+/** Named library notes from the what's-new paragraph, each on its existing page. */
+export const FOR_PROGRAMS_LIBRARY_LINKS: { href: string; label: string }[] = [
+  { href: "/drug/isocarboxazid", label: "Marplan pairs" },
+  { href: "/drug/cisapride", label: "cisapride" },
+  { href: "/drug/terfenadine", label: "terfenadine" },
+  { href: "/drug/astemizole", label: "astemizole" },
+];
+
 /** How the content is checked. Only what /trust already says; no numbers that go stale. */
 export const FOR_PROGRAMS_HOW_CHECKED: string[] = [
   "A label gold set ties drug pairs to FDA label statements quoted from DailyMed, and scripts check the desk against it.",

@@ -80,6 +80,7 @@ import { labelRetrievedCard } from "./learn/label-retrieved";
 import { labelScopeNoteCard } from "./learn/label-scope-note";
 import { labelSearchCard } from "./learn/label-search";
 import { labelSourceCard } from "./learn/label-source";
+import { SUPPLEMENT_LABEL_TOPICS, supplementLabelCards } from "./learn/supplement-label";
 
 export type { StudyGrade, StudyMark } from "./study-marks";
 export { duePhrase, isDue, normalizeStudyMarks, scheduleStudyMark } from "./study-marks";
@@ -1480,6 +1481,9 @@ export const CLINICAL_TOPIC_MAP: Record<string, ClinicalTopic> = {
   "clin-cha2ds2-vasc-sex-modifier": "anticoag",
   "clin-has-bled-not-a-veto": "anticoag",
   "clin-hys-law-r-ratio": "tox",
+
+  // Cited-only supplement labels (no severity). Topics live with the card specs.
+  ...SUPPLEMENT_LABEL_TOPICS,
 };
 
 export function clinicalCards(): StudyCard[] {
@@ -5156,7 +5160,7 @@ export function clinicalCards(): StudyCard[] {
       drugIds: ["amox-clav", "isoniazid"],
     },
   ];
-  return cards.map((c) => ({
+  return [...cards, ...supplementLabelCards()].map((c) => ({
     ...c,
     topic: CLINICAL_TOPIC_MAP[c.id] ?? "tox",
   }));

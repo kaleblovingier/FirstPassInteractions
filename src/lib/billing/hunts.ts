@@ -1,4 +1,5 @@
 import { COMMERCE, OPERATOR, SITE, WHO_FOR, payClose } from "./commerce";
+import { nextPipeStorage, type PipeSaveOpts } from "./operator-desk";
 
 export type Prey = "clinic" | "mat" | "pharmacy" | "school" | "harm" | "assoc";
 export type Range = "whatcom" | "puget" | "eastwa" | "pnw" | "us";
@@ -1092,9 +1093,27 @@ export function loadPipe(): PipeRow[] {
   }
 }
 
-export function savePipe(rows: PipeRow[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(PIPE_KEY, JSON.stringify(rows.slice(0, 80)));
+/**
+ * Persist the book. Returns false when the write is refused:
+ * an empty list over a real book (pass `allowEmpty`), or any edit over
+ * storage that does not parse as an array (pass `replaceUnreadable`).
+ */
+export function savePipe(rows: PipeRow[], opts?: PipeSaveOpts): boolean {
+  if (typeof window === "undefined") return false;
+  let raw: string | null = null;
+  try {
+    raw = localStorage.getItem(PIPE_KEY);
+  } catch {
+    return false;
+  }
+  const payload = nextPipeStorage(raw, rows, opts);
+  if (payload == null) return false;
+  try {
+    localStorage.setItem(PIPE_KEY, payload);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function toPipe(t: Target, status: PipeStatus = "queued"): PipeRow {
