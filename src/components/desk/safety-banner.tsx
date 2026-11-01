@@ -53,12 +53,12 @@ export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionS
                   Adulterant Supply Risk
                 </span>
                 <span className="rounded bg-danger/20 px-1.5 py-0.5 font-mono text-[9px] text-danger font-medium">
-                  Xylazine & Fentanyl Alert
+                  Xylazine & Fentanyl Note
                 </span>
               </div>
               <p className="mt-1 text-xs leading-relaxed text-fg">
                 Street supply contains high rates of potent synthetic opioids and alpha-2 adulterants (xylazine / tranq).
-                <strong className="font-semibold text-fg"> Naloxone will not reverse xylazine sedation</strong> — rescue breathing is mandatory.
+                <strong className="font-semibold text-fg"> Naloxone does not reverse xylazine sedation</strong>; overdose-response guidance calls for rescue breathing.
               </p>
             </div>
           </div>
@@ -71,7 +71,7 @@ export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionS
               className="h-8 gap-1.5 bg-danger text-bg hover:bg-danger/90 text-xs font-medium whitespace-nowrap"
             >
               <HeartPulse className="size-3.5" />
-              Safety Protocols & Local Care
+              Overdose Response & Local Care
             </Button>
           </div>
         </div>
