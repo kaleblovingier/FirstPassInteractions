@@ -50,13 +50,8 @@ export function ClinicalPacketDialog({
   onOpenHelp,
 }: ClinicalPacketDialogProps) {
   const [copiedState, setCopiedState] = useState<"ehr" | "handout" | null>(null);
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({
-    reconcile: true,
-    cyp: true,
-    organ: true,
-    toxicity: true,
-    counsel: true,
-  });
+  // Starts empty: only the reviewing clinician ticks an attestation.
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [reviewerName, setReviewerName] = useState("");
   const [reviewerRole, setReviewerRole] = useState("PharmD");
   const [clinicalNotes, setClinicalNotes] = useState("");

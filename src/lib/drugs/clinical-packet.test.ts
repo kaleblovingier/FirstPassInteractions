@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ClinicalPacketDialog } from "@/components/desk/clinical-packet-dialog";
 import { buildClinicalPacket } from "./clinical-packet";
 import { analyze } from "./engine";
 import { DEFAULT_HOST } from "./types";
@@ -163,3 +166,26 @@ test("buildClinicalPacket: evaluates Tisdale QTc score, inpatient telemetry, and
 });
 
 
+
+test("buildClinicalPacket: the EHR note never pre-ticks a clinician attestation", () => {
+  const ids = ["methadone", "alprazolam"];
+  const packet = buildClinicalPacket(ids, DEFAULT_HOST, analyze(ids, DEFAULT_HOST).findings, {});
+  assert.doesNotMatch(packet.ehrNoteText, /\[X\]/i);
+  assert.equal(packet.ehrNoteText.match(/^\[ \] /gm)?.length, 5);
+});
+
+test("ClinicalPacketDialog: the attestation checklist opens unticked", () => {
+  const ids = ["methadone", "alprazolam"];
+  const html = renderToStaticMarkup(
+    createElement(ClinicalPacketDialog, {
+      open: true,
+      onClose: () => {},
+      selected: ids,
+      host: DEFAULT_HOST,
+      findings: analyze(ids, DEFAULT_HOST).findings,
+    }),
+  );
+  assert.ok(html.includes("Clinical Verification &amp; Attestation"));
+  assert.ok(html.includes('aria-pressed="false"'));
+  assert.doesNotMatch(html, /aria-pressed="true"/);
+});
