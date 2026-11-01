@@ -13,7 +13,7 @@ import {
   DRUGS,
   normalizeSearchText,
   searchDrugs,
-  stripSaltFormTokens,
+  saltFormKeys,
 } from "../../drugs/catalog";
 import { analyze } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
@@ -400,7 +400,7 @@ function searchCandidates(query: string): ApiDrugRef[] {
 export function resolveDrugQuery(query: string): DrugResolution {
   const index = getExactIndex();
   const normalized = normalizeSearchText(query);
-  for (const key of new Set([normalized, stripSaltFormTokens(normalized)])) {
+  for (const key of saltFormKeys(normalized)) {
     if (!key) continue;
     for (const matchedBy of MATCH_ORDER) {
       const ids = index[matchedBy].get(key);

@@ -237,8 +237,8 @@ const QUERIES: [query: string, want: string, kind: string][] = [
 ];
 
 // Floors are the hit counts this list reaches today; raise them as coverage improves.
-const DESK_FLOOR = 143;
-const API_FLOOR = 142;
+const DESK_FLOOR = 167;
+const API_FLOOR = 163;
 
 /** What one Enter on the desk search adds: the top suggestion. */
 function deskAdds(query: string): string[] {
