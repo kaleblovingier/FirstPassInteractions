@@ -35,8 +35,9 @@ export const claimStripeCheckout = createServerFn({ method: "POST" })
 export const listPaidLicenses = createServerFn({ method: "POST" })
   .validator((input: unknown) => ({ pin: readString(input, "pin") }))
   .handler(async ({ data }) => {
-    const { pinOk } = await import("./license.server");
-    if (!pinOk(data.pin)) return { ok: false as const, reason: "Operator PIN is wrong." };
+    const { pinRefusal } = await import("./license.server");
+    const refused = pinRefusal(data.pin);
+    if (refused) return { ok: false as const, reason: refused };
     const { listPaidSessions } = await import("./stripe.server");
     return listPaidSessions();
   });

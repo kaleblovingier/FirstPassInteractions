@@ -1,5 +1,6 @@
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "@/lib/env.server";
+import { SlidingWindow, clientIp } from "@/lib/server/rate-limit";
 import {
   PROGRAM_KEY_RE,
   PROGRAM_TIER_FROM_LETTER,
@@ -68,14 +69,40 @@ function hmac(payload: string) {
 }
 
 function safeEq(a: string, b: string) {
-  const aa = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (aa.length !== bb.length) return false;
-  return timingSafeEqual(aa, bb);
+  // Fixed-size digests, so the time taken does not reveal the secret's length.
+  return timingSafeEqual(createHash("sha256").update(a).digest(), createHash("sha256").update(b).digest());
 }
 
-export function pinOk(pin: string) {
-  return safeEq(pin.trim(), resolvePin());
+/** Wrong PINs per address, and per instance so that rotating addresses does not help a guesser. */
+export const PIN_LOCKOUT = { perIp: 5, perInstance: 30, windowMs: 15 * 60 * 1000 };
+export const PIN_LOCKED = "Too many wrong PIN attempts. Wait 15 minutes, then try again.";
+const wrongPinsByIp = new SlidingWindow(PIN_LOCKOUT.perIp, PIN_LOCKOUT.windowMs);
+const wrongPins = new SlidingWindow(PIN_LOCKOUT.perInstance, PIN_LOCKOUT.windowMs);
+
+/** Throws PIN_LOCKED while locked out, without checking the PIN, so a guess learns nothing then. */
+export function pinOk(pin: string, ip = clientIp(), now = Date.now()) {
+  if (wrongPinsByIp.full(ip, now) || wrongPins.full("all", now)) throw new Error(PIN_LOCKED);
+  const ok = safeEq(pin.trim(), resolvePin());
+  if (!ok) {
+    wrongPinsByIp.hit(ip, now);
+    wrongPins.hit("all", now);
+  }
+  return ok;
+}
+
+/** For callers that answer with a reason: null when the PIN is right, else what to tell the operator. */
+export function pinRefusal(pin: string): string | null {
+  try {
+    return pinOk(pin) ? null : "Operator PIN is wrong.";
+  } catch (e) {
+    return e instanceof Error ? e.message : "License secrets are not configured.";
+  }
+}
+
+/** Test hook: forget wrong PINs. */
+export function resetPinLockout() {
+  wrongPinsByIp.reset();
+  wrongPins.reset();
 }
 
 export function defaultPinSet() {
