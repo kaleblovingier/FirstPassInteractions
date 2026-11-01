@@ -109,3 +109,14 @@ describe("third-party credit lines", () => {
     }
   });
 });
+
+describe("lifetime wording in public docs", () => {
+  it("README and outreach canon use the /terms meaning, never a bare lifetime promise", async () => {
+    const { readFileSync } = await import("node:fs");
+    for (const file of ["README.md", "outreach/team-lanes.md"]) {
+      const s = readFileSync(file, "utf8");
+      assert.match(s, /for as long as FirstPass offers the desk/, file);
+      assert.doesNotMatch(s, /Founding lifetime is|\(lifetime\)/, file);
+    }
+  });
+});
