@@ -1,6 +1,8 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "@/lib/env.server";
-import { SlidingWindow, clientIp } from "@/lib/server/rate-limit";
+import { BoundedLRUCache } from "@/lib/server/cache";
+import { logEvent } from "@/lib/server/log";
+import { clientIp } from "@/lib/server/rate-limit";
 import {
   PROGRAM_KEY_RE,
   PROGRAM_TIER_FROM_LETTER,
@@ -73,19 +75,45 @@ function safeEq(a: string, b: string) {
   return timingSafeEqual(createHash("sha256").update(a).digest(), createHash("sha256").update(b).digest());
 }
 
-/** Wrong PINs per address, and per instance so that rotating addresses does not help a guesser. */
-export const PIN_LOCKOUT = { perIp: 5, perInstance: 30, windowMs: 15 * 60 * 1000 };
-export const PIN_LOCKED = "Too many wrong PIN attempts. Wait 15 minutes, then try again.";
-const wrongPinsByIp = new SlidingWindow(PIN_LOCKOUT.perIp, PIN_LOCKOUT.windowMs);
-const wrongPins = new SlidingWindow(PIN_LOCKOUT.perInstance, PIN_LOCKOUT.windowMs);
+/**
+ * Wrong-PIN backoff, per address only, so a guesser elsewhere can never lock the operator out.
+ * The first `free` wrong PINs cost nothing; then each wait doubles from `baseMs` up to `maxMs`.
+ * A right PIN, or `resetMs` without a wrong one, starts the address over.
+ */
+export const PIN_BACKOFF = { free: 5, baseMs: 1_000, maxMs: 15 * 60 * 1000, resetMs: 60 * 60 * 1000 };
+const strikes = new BoundedLRUCache<{ fails: number; last: number }>(10_000, PIN_BACKOFF.resetMs);
 
-/** Throws PIN_LOCKED while locked out, without checking the PIN, so a guess learns nothing then. */
+function recentFails(ip: string, now: number): { fails: number; last: number } {
+  const s = strikes.get(ip);
+  return s && now - s.last < PIN_BACKOFF.resetMs ? s : { fails: 0, last: 0 };
+}
+
+/** Milliseconds `ip` must still wait before its next PIN check; 0 means go ahead. */
+export function pinWaitMs(ip: string, now = Date.now()): number {
+  const { fails, last } = recentFails(ip, now);
+  if (fails < PIN_BACKOFF.free) return 0;
+  const wait = Math.min(PIN_BACKOFF.baseMs * 2 ** (fails - PIN_BACKOFF.free), PIN_BACKOFF.maxMs);
+  return Math.max(0, last + wait - now);
+}
+
+export function pinWaitMessage(ms: number): string {
+  const secs = Math.ceil(ms / 1000);
+  const when = secs === 1 ? "1 second" : secs < 90 ? `${secs} seconds` : `${Math.ceil(secs / 60)} minutes`;
+  return `Too many wrong PINs from here. Try again in ${when}.`;
+}
+
+/** Throws while this address is backing off, without checking the PIN, so those guesses learn nothing. */
 export function pinOk(pin: string, ip = clientIp(), now = Date.now()) {
-  if (wrongPinsByIp.full(ip, now) || wrongPins.full("all", now)) throw new Error(PIN_LOCKED);
+  const wait = pinWaitMs(ip, now);
+  if (wait > 0) throw new Error(pinWaitMessage(wait));
   const ok = safeEq(pin.trim(), resolvePin());
-  if (!ok) {
-    wrongPinsByIp.hit(ip, now);
-    wrongPins.hit("all", now);
+  if (ok) {
+    strikes.delete(ip);
+  } else {
+    const fails = recentFails(ip, now).fails + 1;
+    strikes.set(ip, { fails, last: now });
+    // Count only, never the address or the guess. A steady stream of these is the brute-force signal to alert on.
+    logEvent("warn", "pin.wrong", { fails });
   }
   return ok;
 }
@@ -100,9 +128,8 @@ export function pinRefusal(pin: string): string | null {
 }
 
 /** Test hook: forget wrong PINs. */
-export function resetPinLockout() {
-  wrongPinsByIp.reset();
-  wrongPins.reset();
+export function resetPinBackoff() {
+  strikes.clear();
 }
 
 export function defaultPinSet() {

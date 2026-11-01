@@ -7,7 +7,10 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { BoundedLRUCache } from "./cache";
 
-/** Caller IP as Vercel reports it. Vercel overwrites these headers, so a client cannot spoof them there. */
+/**
+ * Caller IP from `x-real-ip`, the header Vercel's own `ipAddress()` helper reads. Vercel sets it and
+ * overwrites client-sent forwarded-for values, so a client cannot spoof it there.
+ */
 export function clientIp(request?: Request): string {
   let req = request;
   if (!req) {
@@ -18,7 +21,7 @@ export function clientIp(request?: Request): string {
     }
   }
   const h = req?.headers;
-  const raw = h?.get("x-vercel-forwarded-for") || h?.get("x-forwarded-for") || h?.get("x-real-ip") || "unknown";
+  const raw = h?.get("x-real-ip") || h?.get("x-forwarded-for") || "unknown";
   return raw.split(",")[0]!.trim() || "unknown";
 }
 

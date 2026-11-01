@@ -35,10 +35,10 @@ describe("SlidingWindow", () => {
 describe("clientIp", () => {
   const req = (headers: Record<string, string>) => new Request("https://desk.test/", { headers });
 
-  it("prefers Vercel's forwarded-for, takes the first hop, and falls back to unknown", () => {
-    assert.equal(clientIp(req({ "x-vercel-forwarded-for": "203.0.113.9", "x-forwarded-for": "198.51.100.1" })), "203.0.113.9");
+  it("reads x-real-ip like Vercel's ipAddress(), then the first forwarded hop, then unknown", () => {
+    assert.equal(clientIp(req({ "x-real-ip": "192.0.2.4", "x-forwarded-for": "198.51.100.1" })), "192.0.2.4");
+    assert.equal(clientIp(req({ "x-vercel-forwarded-for": "203.0.113.9", "x-real-ip": "192.0.2.4" })), "192.0.2.4");
     assert.equal(clientIp(req({ "x-forwarded-for": "198.51.100.1, 10.0.0.1" })), "198.51.100.1");
-    assert.equal(clientIp(req({ "x-real-ip": "192.0.2.4" })), "192.0.2.4");
     assert.equal(clientIp(req({})), "unknown");
   });
 
