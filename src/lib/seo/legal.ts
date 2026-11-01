@@ -34,6 +34,21 @@ export const TRADEMARK_LINE =
 /** Shown on /pairs. */
 export const NOT_AFFILIATED_LINE = "Not affiliated with or endorsed by FDA or NLM.";
 
+/** Statement the RxNav terms of service ask apps using NLM data to show (lhncbc.nlm.nih.gov/RxNav/TermsofService.html). */
+export const NLM_ATTRIBUTION =
+  "This product uses publicly available data from the U.S. National Library of Medicine (NLM), National Institutes of Health, Department of Health and Human Services; NLM is not responsible for the product and does not endorse or recommend this or any other product.";
+
+/** WHOCC asks every use of ATC material to name it (atcddd.fhi.no/copyright_disclaimer). */
+export const ATC_CREDIT = "ATC classes: WHO Collaborating Centre for Drug Statistics Methodology, via NLM RxClass.";
+
+/** PsychonautWiki text is CC BY-SA 4.0; the live extracts are shortened, so say so and keep the license. */
+export const PSYCHONAUTWIKI_CREDIT =
+  "Extracts from PsychonautWiki (psychonautwiki.org) by its contributors, licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). FirstPass shortened them and removed dosage and route sentences; the shortened text is shared under the same license.";
+
+/** The note TripSit asks for wherever its combination data appears (wiki.tripsit.me/wiki/Drug_combinations). */
+export const TRIPSIT_NOTE =
+  "Combination ratings: TripSit (combo.tripsit.me). TripSit's chart is only meant as a quick overview and reference; do more individual research before making a decision.";
+
 export const PRIVACY_DOC: LegalDoc = {
   path: "/privacy",
   title: "Privacy policy | FirstPass",
