@@ -887,7 +887,7 @@ export function calculateHit4TsScore(params: Hit4TsInput): Hit4TsResult {
         ]
       : [],
     actionSummary: isIntermediateOrHigh
-      ? "IMMEDIATE CESSATION of all heparin products (unfractionated heparin, LMWH, heparin flushes, catheter locks). Order PF4-heparin ELISA and confirmatory Serotonin Release Assay (SRA). Initiate non-heparin alternative anticoagulant (Argatroban, Bivalirudin, or Fondaparinux). Avoid prophylactic platelet transfusions due to extreme risk of paradoxical arterial/venous thrombotic occlusion."
+      ? "Published HIT management at this probability: all heparin products are stopped at once (unfractionated heparin, LMWH, heparin flushes, catheter locks), a PF4-heparin ELISA and confirmatory Serotonin Release Assay (SRA) are sent, a non-heparin alternative anticoagulant (Argatroban, Bivalirudin, or Fondaparinux) is started, and prophylactic platelet transfusions are avoided because of the extreme risk of paradoxical arterial/venous thrombotic occlusion."
       : "Continue heparin if clinically indicated. Observe platelet trends. Do not order PF4 ELISA reflexively due to high false-positive rate of non-pathogenic antibodies in low probability patients.",
   };
 

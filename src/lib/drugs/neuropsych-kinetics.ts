@@ -596,7 +596,7 @@ export function evaluateClozapineAnc(
         canInitiateOrContinue: false,
         monitoringFrequency: "Daily until ANC >= 1,500 / µL and clinical recovery from infection risk.",
         clinicalActionDirective:
-          "IMMEDIATE PERMANENT CLOZAPINE CESSATION. Immediate hematology consultation. Patient must NEVER be rechallenged with clozapine. Strict protective isolation / infection precautions. Institute broad-spectrum empiric antibiotics if febrile (febrile neutropenia protocol). Consider G-CSF (filgrastim) in consultation with hematologist.",
+          "Published management at this ANC: immediate permanent clozapine cessation, with immediate hematology consultation; the patient is not rechallenged with clozapine. Strict protective isolation / infection precautions apply, broad-spectrum empiric antibiotics are started if febrile (febrile neutropenia protocol), and G-CSF (filgrastim) is considered in consultation with hematology.",
         hematologyConsultRequired: true,
         rechallengePermitted: false,
         remsThresholdDescription: "General Population: Severe Agranulocytosis (ANC < 500 / µL) - Black Box Warning.",
@@ -639,7 +639,7 @@ export function evaluateClozapineAnc(
         canInitiateOrContinue: false,
         monitoringFrequency: "Daily until ANC >= 1,000 / µL and clinical recovery from infection risk.",
         clinicalActionDirective:
-          "IMMEDIATE PERMANENT CLOZAPINE CESSATION. Immediate hematology consultation. Patient must NEVER be rechallenged with clozapine. Strict infection precautions; consider G-CSF.",
+          "Published management at this ANC: immediate permanent clozapine cessation, with immediate hematology consultation; the patient is not rechallenged with clozapine. Strict infection precautions apply, and G-CSF is considered.",
         hematologyConsultRequired: true,
         rechallengePermitted: false,
         remsThresholdDescription: "BEN: Severe Agranulocytosis (ANC < 500 / µL) - Black Box Warning.",

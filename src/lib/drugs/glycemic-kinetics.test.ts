@@ -68,7 +68,7 @@ describe("Glycemic Kinetics, DKA/HHS Protocols, Potassium Safety Gate & Inpatien
       assert.ok(gate.potassiumReplacementRate.includes("20 to 40 mEq/h"));
       assert.ok(gate.potassiumReplacementRate.includes("central venous catheter required"));
       assert.ok(gate.potassiumReplacementRate.includes("continuous cardiac ECG telemetry"));
-      assert.ok(gate.warningBanner.includes("HOLD ALL INSULIN IMMEDIATELY"));
+      assert.ok(gate.warningBanner.includes("Protocols hold all insulin"));
       assert.ok(gate.warningBanner.includes("cardiac arrhythmias"));
       assert.ok(gate.physiologicalRationale.includes("Na+/K+-ATPase"));
     });
@@ -445,7 +445,7 @@ describe("Glycemic Kinetics, DKA/HHS Protocols, Potassium Safety Gate & Inpatien
 
       assert.equal(report.potassiumGate.status, "critical-hold-insulin");
       assert.equal(report.insulinProtocol.isInsulinPermittedByKGate, false);
-      assert.ok(report.safetyAlerts.some((a) => a.includes("HOLD ALL INSULIN")));
+      assert.ok(report.safetyAlerts.some((a) => a.includes("hold all insulin")));
     });
 
     it("generates SGLT2 Euglycemic DKA alert when SGLT2 inhibitor is present", () => {
