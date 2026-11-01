@@ -254,7 +254,8 @@ function FdaPanel({ id }: { id: string }) {
     <div className="space-y-4">
       {busy && !pack ? <p className="text-sm text-muted">Asking OpenFDA…</p> : null}
       {err ? <p className="text-sm text-danger">{err}</p> : null}
-      {pack?.reason && !label ? <p className="text-sm text-muted">{pack.reason}</p> : null}
+      {/* A partial answer names the sources that failed, even when the label came back. */}
+      {pack?.ok && pack.reason ? <p className="text-sm text-muted">{pack.reason}</p> : null}
       {label ? (
         <>
           <div className="flex flex-wrap gap-1.5">
