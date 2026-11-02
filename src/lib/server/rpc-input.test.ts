@@ -4,11 +4,13 @@ import {
   CpicInput,
   IdsInput,
   LiveInput,
+  MAX_INPUT_NODES,
   ReaderBriefInput,
   SearchInput,
   checkInput,
   nameOnShelf,
   onShelf,
+  withinNodeBudget,
 } from "./rpc-input";
 import { setLogSink } from "./log";
 
@@ -38,6 +40,47 @@ describe("rpc-input - shelf membership", () => {
     assert.equal(nameOnShelf(" warfarin "), true);
     assert.equal(nameOnShelf("Object"), false);
     assert.equal(nameOnShelf("warfarin; DROP TABLE"), false);
+  });
+});
+
+describe("rpc-input - size budget", () => {
+  const fullBrief = {
+    names: Array(16).fill("Warfarin"),
+    lead: "a",
+    clock: "b",
+    watch: "c",
+    source: "d",
+    fold: "e",
+    hands: "f",
+    rows: Array.from({ length: 12 }, () => ({ severity: "Major", line: "x", why: "y" })),
+    quiet: Array(40).fill("q"),
+    food: Array(12).fill("f"),
+  };
+
+  it("passes the largest real input and refuses wide, deep or cyclic ones", () => {
+    assert.equal(withinNodeBudget(fullBrief), true);
+    assert.equal(withinNodeBudget({ ids: Array(MAX_INPUT_NODES - 1).fill("x") }), true);
+    assert.equal(withinNodeBudget({ ids: Array(MAX_INPUT_NODES).fill("x") }), false);
+    assert.equal(withinNodeBudget(Object.fromEntries(Array.from({ length: 2_000 }, (_, i) => [`k${i}`, 1]))), false);
+    let deep: unknown = "leaf";
+    for (let i = 0; i < 2_000; i += 1) deep = [deep];
+    assert.equal(withinNodeBudget(deep), false);
+    const loop: Record<string, unknown> = {};
+    loop.self = loop;
+    assert.equal(withinNodeBudget(loop), false, "a cycle runs out of budget instead of spinning");
+    for (const v of [null, undefined, 0, "", "text", true]) assert.equal(withinNodeBudget(v), true);
+  });
+
+  it("refuses an oversized list before zod walks it, and logs no contents", () => {
+    const huge = { ids: Array<number>(2_000_000).fill(1) };
+    const started = Date.now();
+    assert.deepEqual(checkInput("lookupRxnavInteractions", IdsInput, huge), { ok: false });
+    assert.ok(Date.now() - started < 500, "refused without validating each element");
+    const last = JSON.parse(lines.at(-1)!);
+    assert.equal(last.event, "rpc.invalid");
+    assert.equal(last.oversized, true);
+    assert.equal(lines.at(-1)!.length < 200, true);
+    assert.equal(checkInput("readRegimen", ReaderBriefInput, fullBrief).ok, true);
   });
 });
 
