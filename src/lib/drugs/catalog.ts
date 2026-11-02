@@ -3470,7 +3470,9 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
     let score = 0;
     for (const { mq, tokens, compactQuery, enzymeKey, enzymeDigits, teach, saltBonus } of matchQueries) {
       let s = 0;
-      if (searchable.some((value) => value === mq)) s = 100;
+      // A row's own id or name outranks another row's identical brand or alias, as in the API.
+      if (name === mq || id === mq) s = 100;
+      else if (searchable.some((value) => value === mq)) s = 99;
       else if (name.startsWith(mq) || id.startsWith(mq)) s = 80;
       else if (brands.some((b) => b.startsWith(mq)) || aliases.some((a) => a.startsWith(mq))) s = 70;
       else if (name.includes(mq) || id.includes(mq)) s = 60;

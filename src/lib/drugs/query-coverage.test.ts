@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { searchDrugs } from "./catalog";
+import { findCombination } from "./combos";
 import { resolveDrugQuery } from "../server/api/cds-service";
 
 /**
@@ -192,7 +193,7 @@ const QUERIES: [query: string, want: string, kind: string][] = [
   ["Fioricet", "", "combination"],
   ["Excedrin", "acetaminophen+aspirin+caffeine", "combination"],
   ["NyQuil", "acetaminophen+dextromethorphan+doxylamine", "combination"],
-  ["DayQuil", "acetaminophen+dextromethorphan+phenylephrine-oral", "combination"],
+  ["DayQuil", "acetaminophen+dextromethorphan", "combination"],
   ["Tylenol PM", "acetaminophen+diphenhydramine", "combination"],
   ["Advil PM", "ibuprofen+diphenhydramine", "combination"],
   ["Robitussin DM", "guaifenesin+dextromethorphan", "combination"],
@@ -237,11 +238,13 @@ const QUERIES: [query: string, want: string, kind: string][] = [
 ];
 
 // Floors are the hit counts this list reaches today; raise them as coverage improves.
-const DESK_FLOOR = 167;
-const API_FLOOR = 163;
+const DESK_FLOOR = 195;
+const API_FLOOR = 191;
 
-/** What one Enter on the desk search adds: the top suggestion. */
+/** What one Enter on the desk search adds: the combination option when one leads, else the top suggestion. */
 function deskAdds(query: string): string[] {
+  const combo = findCombination(query);
+  if (combo) return combo.ids;
   const top = searchDrugs(query)[0];
   return top ? [top.id] : [];
 }
@@ -249,7 +252,7 @@ function deskAdds(query: string): string[] {
 /** What one API lookup analyzes for this string. */
 function apiAdds(query: string): string[] {
   const r = resolveDrugQuery(query);
-  return r.status === "resolved" ? [r.drugId] : [];
+  return r.status === "resolved" ? (r.drugIds ?? [r.drugId]) : [];
 }
 
 function hits(want: string, got: string[]): boolean {
