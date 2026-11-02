@@ -138,13 +138,14 @@ export function pinWaitMessage(ms: number): string {
 export async function pinOk(pin: string, key = clientKey(), now = Date.now()): Promise<boolean> {
   const wait = pinWaitMs(key, now);
   if (wait > 0) throw new Error(pinWaitMessage(wait));
+  // Count the attempt before the pause so parallel guesses from one client can't all pass the wait check; a right PIN clears it.
+  const fails = key === SHARED_CLIENT ? undefined : trackWrong(key, now);
   if (pinSlowed(now)) await pause(PIN_THROTTLE.slowMs);
   if (safeEq(pin.trim(), resolvePin())) {
     strikes.delete(key);
     return true;
   }
   recentWrong.hit("all", now);
-  const fails = key === SHARED_CLIENT ? undefined : trackWrong(key, now);
   // Counts only, never the client or the guess. A steady stream of these is the brute-force signal to alert on.
   logEvent("warn", "pin.wrong", { fails, slowed: pinSlowed(now) });
   return false;

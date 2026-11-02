@@ -129,6 +129,14 @@ describe("operator PIN check", () => {
     assert.equal(pinSlowed(t0 + PIN_THROTTLE.globalWindowMs), false, "the slow-down lifts with the window");
   });
 
+  it("counts parallel guesses from one client before the slow-down, so only the free ones get tested", async () => {
+    const t0 = 8_000_000;
+    for (let i = 0; i < PIN_THROTTLE.globalFree; i += 1) await pinOk("guess", `192.0.2.${i}`, t0);
+    assert.equal(pinSlowed(t0), true);
+    const results = await Promise.allSettled(Array.from({ length: 10 }, () => pinOk("guess", "203.0.113.7", t0)));
+    assert.equal(results.filter((r) => r.status === "fulfilled").length, PIN_THROTTLE.free);
+  });
+
   it("never refuses the shared key used when callers cannot be told apart", async () => {
     for (let i = 0; i < 100; i += 1) assert.equal(await pinOk("guess", SHARED_CLIENT, 7_000_000 + i), false);
     assert.equal(pinWaitMs(SHARED_CLIENT, 7_000_100), 0);
