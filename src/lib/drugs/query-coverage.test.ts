@@ -235,11 +235,12 @@ const QUERIES: [query: string, want: string, kind: string][] = [
   ["Sudafed", "pseudoephedrine", "otc"],
   ["melatonin", "melatonin", "otc"],
   ["St. John's wort", "st-johns-wort", "otc"],
+  ["marijuana", "dronabinol", "street"],
 ];
 
 // Floors are the hit counts this list reaches today; raise them as coverage improves.
-const DESK_FLOOR = 195;
-const API_FLOOR = 191;
+const DESK_FLOOR = 196;
+const API_FLOOR = 192;
 
 /** What one Enter on the desk search adds: the combination option when one leads, else the top suggestion. */
 function deskAdds(query: string): string[] {
