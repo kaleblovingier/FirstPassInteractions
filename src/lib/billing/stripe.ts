@@ -36,7 +36,7 @@ export const listPaidLicenses = createServerFn({ method: "POST" })
   .validator((input: unknown) => ({ pin: readString(input, "pin") }))
   .handler(async ({ data }) => {
     const { pinRefusal } = await import("./license.server");
-    const refused = pinRefusal(data.pin);
+    const refused = await pinRefusal(data.pin);
     if (refused) return { ok: false as const, reason: refused };
     const { listPaidSessions } = await import("./stripe.server");
     return listPaidSessions();

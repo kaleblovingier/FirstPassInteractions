@@ -66,7 +66,7 @@ export async function collectLicenses(opts: {
   names: string;
   hunt: string;
 }) {
-  const refused = pinRefusal(opts.pin);
+  const refused = await pinRefusal(opts.pin);
   if (refused) return { ok: false as const, reason: refused };
   const fallback = parseIssuedPlan(opts.plan);
   const rows: CollectRow[] = [];
@@ -140,7 +140,7 @@ export async function collectLicenses(opts: {
 }
 
 export async function draftCollected(opts: { pin: string; rows: CollectRow[] }) {
-  const refused = pinRefusal(opts.pin);
+  const refused = await pinRefusal(opts.pin);
   if (refused) return { ok: false as const, reason: refused };
   const withMail = opts.rows.filter((r) => r.email && !r.mailed && r.source !== "stripe");
   if (!withMail.length) {

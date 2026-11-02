@@ -2,7 +2,7 @@ import { READER_TITLES, sanitizeBrief, type ReaderBrief, type ReaderId, type Rea
 import { BoundedLRUCache } from "../server/cache";
 import { UpstreamError, fetchJson } from "../server/http";
 import { logEvent } from "../server/log";
-import { SlidingWindow, clientIp } from "../server/rate-limit";
+import { SlidingWindow, clientKey } from "../server/rate-limit";
 
 const ORDER: ReaderId[] = ["pair", "gap", "trainee"];
 
@@ -77,7 +77,7 @@ async function askOne(id: ReaderId, brief: ReaderBrief, apiKey: string): Promise
 
 export async function readWithBots(
   input: unknown,
-  ip = clientIp(),
+  ip = clientKey(),
 ): Promise<{ ok: true; readers: ReaderNote[] } | { ok: false; error: string }> {
   const brief = sanitizeBrief(input);
   if (brief.names.length === 0) return { ok: false, error: "Add a name before asking the readers." };
