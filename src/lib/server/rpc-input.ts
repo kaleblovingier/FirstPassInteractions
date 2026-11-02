@@ -74,11 +74,37 @@ export const ReaderBriefInput = z
   })
   .transform((brief): ReaderBrief => sanitizeBrief(brief));
 
+/**
+ * Most array items and object fields, counted through every level, that one request may carry. Real inputs
+ * stay far below (a full reader brief is about 130). zod before 4.6.6 checks every element of an oversized
+ * array before `.max()` refuses it, so the size is checked first.
+ * shortcut: works around that zod bug, can go once zod >= 4.6.6 is installed.
+ */
+export const MAX_INPUT_NODES = 1_000;
+
+export function withinNodeBudget(value: unknown, budget = MAX_INPUT_NODES): boolean {
+  const stack: unknown[] = [value];
+  let left = budget;
+  while (stack.length) {
+    const v = stack.pop();
+    if (!v || typeof v !== "object") continue;
+    const kids = Array.isArray(v) ? v : Object.values(v);
+    left -= kids.length;
+    if (left < 0) return false;
+    stack.push(...kids); // at most `budget` items, so the spread stays small
+  }
+  return true;
+}
+
 export function checkInput<S extends z.ZodType>(
   fn: string,
   schema: S,
   input: unknown,
 ): Checked<z.output<S>> {
+  if (!withinNodeBudget(input)) {
+    logEvent("info", "rpc.invalid", { fn, oversized: true });
+    return { ok: false };
+  }
   const parsed = schema.safeParse(input);
   if (parsed.success) return { ok: true, value: parsed.data };
   logEvent("info", "rpc.invalid", { fn, issues: parsed.error.issues.length });

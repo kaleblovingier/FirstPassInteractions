@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { readCache, readWithBots, resetReaderBudget } from "./readers.server";
+import { ASKS_PER_IP, readCache, readWithBots, resetReaderBudget } from "./readers.server";
 import type { ReaderBrief } from "./readers";
 import { setLogSink } from "../server/log";
 
@@ -127,14 +127,27 @@ describe("readers.server - readWithBots", () => {
   it("caps asks per instance so a loop cannot drain the owner's key", async () => {
     const calls = stubFetch(() => chat("A plain restatement."));
     for (let i = 0; i < 30; i++) {
-      const result = await readWithBots(brief(`Lead ${i}`));
+      const result = await readWithBots(brief(`Lead ${i}`), `192.0.2.${i}`);
       assert.equal(result.ok, true, `ask ${i}`);
     }
-    const limited = await readWithBots(brief("Lead 31"));
+    const limited = await readWithBots(brief("Lead 31"), "192.0.2.200");
     assert.deepEqual(limited, { ok: false, error: "The readers are busy right now. Try again in a minute." });
     assert.equal(calls.length, 90);
 
-    const repeat = await readWithBots(brief("Lead 3"));
+    const repeat = await readWithBots(brief("Lead 3"), "192.0.2.201");
     assert.equal(repeat.ok, true, "a cached read is still served while capped");
+  });
+
+  it("caps fresh asks per caller, leaving room for everyone else", async () => {
+    const calls = stubFetch(() => chat("A plain restatement."));
+    for (let i = 0; i < ASKS_PER_IP; i++) {
+      assert.equal((await readWithBots(brief(`Lead ${i}`), "203.0.113.5")).ok, true, `ask ${i}`);
+    }
+    const limited = await readWithBots(brief("One more"), "203.0.113.5");
+    assert.deepEqual(limited, { ok: false, error: "Too many reader asks from here. Try again in a minute." });
+    assert.equal(calls.length, ASKS_PER_IP * 3, "a refused ask makes no model call");
+
+    assert.equal((await readWithBots(brief("Lead 0"), "203.0.113.5")).ok, true, "cached reads stay free");
+    assert.equal((await readWithBots(brief("Other caller"), "198.51.100.5")).ok, true);
   });
 });

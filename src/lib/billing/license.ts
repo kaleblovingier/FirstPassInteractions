@@ -23,7 +23,7 @@ export const mintLicenseKey = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { mintKey, mintKeyFromNote, pinOk, defaultPinSet, defaultPepperSet, parseIssuedPlan } = await import("./license.server");
     try {
-      if (!pinOk(data.pin)) {
+      if (!(await pinOk(data.pin))) {
         return { ok: false as const, reason: "Operator PIN is wrong." };
       }
       const plan = parseIssuedPlan(data.plan);
@@ -68,7 +68,7 @@ export const mintLicenseBatch = createServerFn({ method: "POST" })
       "./license.server"
     );
     try {
-      if (!pinOk(data.pin)) {
+      if (!(await pinOk(data.pin))) {
         return { ok: false as const, reason: "Operator PIN is wrong." };
       }
       const names = parseNameList(data.names);
