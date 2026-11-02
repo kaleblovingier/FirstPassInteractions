@@ -460,12 +460,12 @@ export function evaluateMagnesiumSulfate(options: {
 
   const managementSummary =
     tier === "therapeutic"
-      ? "Magnesium concentration is within therapeutic bounds. Maintain continuous fetal monitoring, hourly respiratory rate and DTR checks, and strict fluid balance."
+      ? "Magnesium concentration is within therapeutic bounds. Published monitoring continues fetal monitoring, hourly respiratory rate and DTR checks, and strict fluid balance."
       : tier === "subtherapeutic"
-        ? "Subtherapeutic level. Review infusion pump verification and evaluate need for re-bolusing in consultation with senior obstetric team if clinical seizure risk is high."
+        ? "Subtherapeutic level. Published practice reviews infusion pump verification and weighs re-bolusing with the senior obstetric team if clinical seizure risk is high."
         : tier === "loss_of_reflexes"
-          ? "Immediate action: Hold magnesium infusion. Check stat serum magnesium level. Verify respiratory rate >= 12/min and oxygen saturation. Prepare calcium gluconate at bedside."
-          : "CRITICAL EMERGENCY: Stop magnesium infusion immediately. Administer Calcium Gluconate 10% (1 g IV over 3-5 minutes). Secure airway, provide 100% FiO2 respiratory support, and obtain immediate stat serum magnesium.";
+          ? "Published management at this level: the magnesium infusion is held, a serum magnesium level is drawn at once, respiratory rate >= 12/min and oxygen saturation are verified, and calcium gluconate is kept at the bedside."
+          : "Published management at this level: the magnesium infusion is stopped at once, Calcium Gluconate 10% (1 g IV over 3-5 minutes) is given, the airway is secured with 100% FiO2 respiratory support, and a serum magnesium level is drawn at once.";
 
   return {
     serumLevel: { mgDl, mmolL, mEqL },
@@ -1394,7 +1394,7 @@ export function obstetricReportOnDesk(
   const activeAlerts: string[] = [];
 
   if (magnesiumSulfate.antidoteRequired) {
-    activeAlerts.push(`CRITICAL MAGNESIUM TOXICITY: ${magnesiumSulfate.tierLabel}. Calcium Gluconate 10% 1 g IV indicated immediately.`);
+    activeAlerts.push(`MAGNESIUM TOXICITY: ${magnesiumSulfate.tierLabel}. Published antidote: Calcium Gluconate 10% 1 g IV, given at once.`);
   }
   if (magnesiumSulfate.renalAccumulationWarning) {
     activeAlerts.push("RENAL FAILURE MAGNESIUM ACCUMULATION TRAP: GFR impairment / oliguria. Reduce or hold magnesium infusion and check serial levels.");

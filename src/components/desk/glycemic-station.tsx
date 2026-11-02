@@ -209,7 +209,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               }
               className="text-[11px] font-semibold"
             >
-              K+ Gate: {potassiumGate.insulinAction === "HOLD_ALL_INSULIN" ? "HOLD INSULIN" : "INSULIN PERMITTED"}
+              K+ Gate: {potassiumGate.insulinAction === "HOLD_ALL_INSULIN" ? "Below 3.3 (protocols hold insulin)" : "At or above 3.3 (protocols allow insulin)"}
             </Badge>
             <Badge
               tone={fluidTitration.dextroseAdditionMilestone.reached ? "info" : "default"}
@@ -227,13 +227,13 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
               <div className="space-y-1">
                 <span className="font-bold uppercase tracking-wider text-red-700 dark:text-red-300">
-                  Critical Potassium Safety Alert — Serum K+ &lt; 3.3 mEq/L
+                  Potassium Gate Reference — Serum K+ &lt; 3.3 mEq/L
                 </span>
                 <p className="font-medium leading-relaxed">
                   {potassiumGate.warningBanner}
                 </p>
                 <p className="text-[11px] opacity-90">
-                  <strong>Action:</strong> {potassiumGate.potassiumReplacementRate}. Target K+ &gt;= 3.3 mEq/L prior to starting insulin.
+                  <strong>Published repletion:</strong> {potassiumGate.potassiumReplacementRate}. Protocols target K+ &gt;= 3.3 mEq/L before insulin starts.
                 </p>
               </div>
             </div>

@@ -484,10 +484,10 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ShieldAlert className="h-4 w-4 text-danger" />
-                    <span className="font-bold text-xs text-fg">Emergency Antidote Protocol: Calcium Gluconate 10%</span>
+                    <span className="font-bold text-xs text-fg">Antidote Reference: Calcium Gluconate 10%</span>
                   </div>
                   <Badge tone="danger" className="text-[10px] font-mono">
-                    STAT IV RESCUE
+                    IV ANTIDOTE REFERENCE
                   </Badge>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">

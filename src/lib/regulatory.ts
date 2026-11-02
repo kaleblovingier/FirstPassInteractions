@@ -139,7 +139,7 @@ export const CDS_CRITERIA: { id: string; title: string; how: string }[] = [
   {
     id: "1",
     title: "Not an image or signal device",
-    how: "FirstPass does not acquire, process, or analyze medical images, IVD data, or physiologic signals. Inputs are user-selected drug names and optional host flags.",
+    how: "FirstPass does not acquire, process, or analyze medical images, signals from in vitro diagnostic devices, or physiologic signal patterns. Inputs are user-selected drug names, optional host flags, and single values a user types in, such as a weight, a lab result, or a QT interval read from an ECG report. It takes no waveform, image, device feed, or genotype file.",
   },
   {
     id: "2",
@@ -177,7 +177,7 @@ export const HAZARDS: { id: string; hazard: string; control: string }[] = [
   {
     id: "H4",
     hazard: "Patient uses the desk without an HCP.",
-    control: "Intended-use statement, persistent HCP banner, and no patient-facing dosing UI. Dose rails are HCP-directed labeled ranges, not a prescription writer.",
+    control: "Intended-use statement and an HCP notice that stays up until the user acknowledges it. The desk does not verify licensure. Dose rails are HCP-directed labeled ranges, not a prescription writer.",
   },
   {
     id: "H5",

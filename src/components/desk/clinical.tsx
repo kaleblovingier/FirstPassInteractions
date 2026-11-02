@@ -6697,7 +6697,7 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
               </h5>
             </div>
             <Badge tone={evaluation.membraneStabilization.indicated ? "danger" : "default"}>
-              {evaluation.membraneStabilization.indicated ? "INDICATED STAT" : "MONITOR / RESERVE"}
+              {evaluation.membraneStabilization.indicated ? "INDICATED (PUBLISHED CRITERIA)" : "MONITOR / RESERVE"}
             </Badge>
           </div>
 
@@ -7167,7 +7167,7 @@ function Sglt2Panel({ ids, host }: { ids: string[]; host: HostContext }) {
               {euDkaEval.headline}
             </span>
             <Badge tone={euDkaEval.isEuDkaSuspected ? "danger" : "default"}>
-              {euDkaEval.isEuDkaSuspected ? "EMERGENCY PROTOCOL" : "BASELINE"}
+              {euDkaEval.isEuDkaSuspected ? "EU-DKA SUSPECTED" : "BASELINE"}
             </Badge>
           </div>
           <p className="leading-relaxed text-fg">

@@ -1556,7 +1556,7 @@ export function generateStewardshipPearls(
 
   if (onDesk.hasCefepime) {
     pearls.push(
-      "Cefepime Hemodialysis Timing: Cefepime is ~68-70% cleared in a single 3-hour hemodialysis run. Always administer the daily maintenance dose IMMEDIATELY AFTER hemodialysis to maintain pharmacodynamic %T > MIC while avoiding interdialytic neurotoxic accumulation."
+      "Cefepime Hemodialysis Timing: Cefepime is ~68-70% cleared in a single 3-hour hemodialysis run. The daily maintenance dose is given right after hemodialysis to maintain pharmacodynamic %T > MIC while avoiding interdialytic neurotoxic accumulation."
     );
     pearls.push(
       "Cefepime Neurotoxicity Triad: Suspect cefepime neurotoxicity in any patient with renal dysfunction developing myoclonus, altered mental status, and GPDs on EEG. Clinical resolution occurs within 48-72 hours of stopping the drug."

@@ -375,7 +375,7 @@ export function DeskApp() {
           <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm leading-relaxed text-fg">
-                <strong className="font-semibold text-fg">For clinicians and supervised learning.</strong> Not for
+                <strong className="font-semibold text-fg">For licensed healthcare professionals and supervised health-professions students.</strong> Not for
                 personal treatment, dose changes, or deciding whether to combine substances. This
                 educational checker can miss risks and cannot test what is in a product. If someone is
                 seriously unwell or may be overdosing, contact local emergency services or a poison
@@ -1569,7 +1569,7 @@ function Disclaimer() {
       <p className="mt-1.5 text-[11px] leading-relaxed text-subtle">
         Built for learning and clinical review — not a personal treatment guide.{" "}
         {SOFTWARE.name} {SOFTWARE.version} is an educational clinical decision-support aid for
-        clinicians and supervised learning. {NOT_CLEARED} It can miss risks; an empty result is not
+        licensed healthcare professionals and supervised health-professions students. {NOT_CLEARED} It can miss risks; an empty result is not
         proof that a combination is safe. It does not identify product contents, diagnose, or tell
         anyone what to start, stop, or change. For care decisions, consult a qualified clinician and
         current FDA-approved labeling. Street-supply entries are teaching examples, not product

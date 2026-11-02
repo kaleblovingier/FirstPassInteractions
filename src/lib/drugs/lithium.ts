@@ -116,7 +116,7 @@ export function classifyLithiumLevel(
       ],
       inTargetRange: false,
       clinicalNote:
-        "Grade 1 toxicity. Hold lithium, obtain STAT repeat level, IV volume resuscitation with 0.9% NaCl if volume contracted, and evaluate renal function.",
+        "Grade 1 toxicity. Published management: lithium is held, a repeat level is drawn urgently, IV volume resuscitation with 0.9% NaCl is given if volume contracted, and renal function is evaluated.",
     };
   }
 
