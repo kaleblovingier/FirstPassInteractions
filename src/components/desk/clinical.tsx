@@ -147,6 +147,7 @@ import {
 } from "@/lib/drugs/harm";
 import { comboOnDesk, comboTone, wikiOnDesk, type LiveCombo, type WikiPage } from "@/lib/drugs/psychonaut";
 import { lookupPsychonaut } from "@/lib/drugs/psychonaut-rpc";
+import { PSYCHONAUTWIKI_CREDIT, TRIPSIT_NOTE } from "@/lib/seo/legal";
 import {
   dosingOnDesk,
   dosingWanted,
@@ -1448,6 +1449,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
             TripSit live: {liveCombo.ok ? `${liveCombo.status}. ${liveCombo.note}` : liveCombo.reason}
           </p>
         ) : null}
+        <p className="mt-3 text-[11px] leading-relaxed text-subtle">{PSYCHONAUTWIKI_CREDIT}</p>
       </article>
 
       <article className="rounded-md bg-bg-sunken px-3 py-3">
@@ -1545,6 +1547,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
         </ul>
       </article>
 
+      <p className="text-[11px] leading-relaxed text-subtle">{TRIPSIT_NOTE}</p>
       <p className="text-[11px] leading-relaxed text-subtle">{HR_FOOTER}</p>
     </div>
   );

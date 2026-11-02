@@ -10,6 +10,7 @@ import { pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
+import { NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
   ITEM_KIND_LABEL,
   PHENOTYPE_ENZYMES,
@@ -450,6 +451,7 @@ function RxnormPanel({ id }: { id: string }) {
         NLM RxNorm ingredient identifier and brand names (TTY=BN). Identity only — CYP scoring stays
         on this desk.
       </p>
+      <p className="text-[11px] leading-relaxed text-subtle">{NLM_ATTRIBUTION}</p>
     </div>
   );
 }

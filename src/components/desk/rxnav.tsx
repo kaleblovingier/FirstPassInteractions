@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { lookupRxnavInteractions } from "@/lib/drugs/live-rpc";
 import type { RxclassHit, RxnavPair } from "@/lib/drugs/live";
+import { ATC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -146,6 +147,9 @@ export function RxnavBoard({ ids }: { ids: string[] }) {
           Drug-class docs
           <ExternalLink className="ml-1 inline size-3" />
         </a>
+      </p>
+      <p className="mt-1 text-[11px] leading-relaxed text-subtle">
+        {ATC_CREDIT} {NLM_ATTRIBUTION}
       </p>
     </section>
   );

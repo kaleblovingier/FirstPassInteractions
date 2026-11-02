@@ -74,7 +74,7 @@ Pay $79 once via Venmo, Cash App, or PayPal. After it clears, mint a signed key 
 
 ## License
 
-HMAC-signed keys (`FP-LIFE-…`). The five-drug core checker stays free. Founding lifetime is $79.
+HMAC-signed keys (`FP-LIFE-…`). The five-drug core checker stays free. Founding is $79 once and lasts for as long as FirstPass offers the desk; if FirstPass stops offering the desk, the license ends (see `/terms`).
 
 ## Deploy
 
