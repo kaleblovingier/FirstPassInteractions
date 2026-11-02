@@ -5,7 +5,8 @@
 
 import { plainLanguageSummary } from "./interaction-summary";
 import { isVirtual } from "./host";
-import { SOFTWARE } from "@/lib/regulatory";
+import { basisFor } from "./basis";
+import { PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 import {
   SEVERITY_LABEL,
   SEVERITY_RANK,
@@ -14,6 +15,29 @@ import {
 } from "./types";
 
 const MAX_BRIEF_IDS = 8;
+
+/** Closing line for anything copied, printed or downloaded off the desk. */
+export const EXPORT_NOT_A_DOSE =
+  "Educational reference only. It does not pick a milligram or a next clinical step. The FDA-approved Prescribing Information governs.";
+
+/** What an export says when nothing on the desk matched. */
+export const EXPORT_EMPTY =
+  "No mapped findings for these names. An empty list is not a green light: the map may simply not cover them.";
+
+/** The lead source for an exported row, so the reader can open it (label pin first, as on the desk). */
+export function findingSourceLine(f: Finding): string {
+  const b = basisFor(f)[0];
+  return b ? `${b.label}${b.href ? ` — ${b.href}` : ""}` : "No external source verified";
+}
+
+/** The founding Report: caller's header lines, then every finding with its source, then the footer. */
+export function deskReportText(head: string[], findings: Finding[]): string {
+  const rows = findings.flatMap((f) => [
+    `• ${SEVERITY_LABEL[f.severity]} — ${f.headline}: ${plainLanguageSummary(f)} ${f.mechanism}. ${f.clinical}`,
+    `  Source: ${findingSourceLine(f)}`,
+  ]);
+  return [...head, "", ...(rows.length ? rows : [EXPORT_EMPTY]), "", EXPORT_NOT_A_DOSE, PI_FOOTER].join("\n");
+}
 
 export function realDrugIds(drugIds: string[]): string[] {
   return drugIds.filter((id) => id && !isVirtual(id));

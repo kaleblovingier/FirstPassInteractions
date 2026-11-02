@@ -15,6 +15,8 @@ import {
   X,
 } from "lucide-react";
 import { buildClinicalPacket, type ClinicalPacketData } from "@/lib/drugs/clinical-packet";
+import { EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
+import { NOT_CLEARED, PI_FOOTER } from "@/lib/regulatory";
 import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
 import type { Finding, HostContext } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
@@ -50,13 +52,8 @@ export function ClinicalPacketDialog({
   onOpenHelp,
 }: ClinicalPacketDialogProps) {
   const [copiedState, setCopiedState] = useState<"ehr" | "handout" | null>(null);
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({
-    reconcile: true,
-    cyp: true,
-    organ: true,
-    toxicity: true,
-    counsel: true,
-  });
+  // Starts empty: only the reviewing clinician ticks an attestation.
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [reviewerName, setReviewerName] = useState("");
   const [reviewerRole, setReviewerRole] = useState("PharmD");
   const [clinicalNotes, setClinicalNotes] = useState("");
@@ -606,6 +603,7 @@ export function ClinicalPacketDialog({
                       <strong className="text-accent">Clinical Watch: </strong>
                       {f.clinical}
                     </p>
+                    <p className="mt-0.5 text-[11px] text-subtle">Source: {findingSourceLine(f)}</p>
                   </div>
                 ))}
 
@@ -623,6 +621,7 @@ export function ClinicalPacketDialog({
                       <strong className="text-accent">Clinical Watch: </strong>
                       {f.clinical}
                     </p>
+                    <p className="mt-0.5 text-[11px] text-subtle">Source: {findingSourceLine(f)}</p>
                   </div>
                 ))}
 
@@ -633,6 +632,7 @@ export function ClinicalPacketDialog({
                       <span className="font-mono text-[10px] uppercase text-muted">Use care</span>
                     </div>
                     <p className="mt-0.5 text-muted">{f.clinical}</p>
+                    <p className="mt-0.5 text-[11px] text-subtle">Source: {findingSourceLine(f)}</p>
                   </div>
                 ))}
               </div>
@@ -738,6 +738,10 @@ export function ClinicalPacketDialog({
               </div>
             </div>
           </section>
+
+          <p className="text-[11px] leading-relaxed text-subtle">
+            {EXPORT_NOT_A_DOSE} {NOT_CLEARED} {PI_FOOTER}
+          </p>
         </div>
 
         {/* Footer actions */}

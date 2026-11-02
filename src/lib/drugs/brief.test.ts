@@ -130,3 +130,26 @@ test("findingsOnTray drops off-tray grapefruit so brief lead stays on-tray", () 
   assert.match(text, /Sharpest pair \(Serious concern\): Ketamine × Alprazolam/);
   assert.doesNotMatch(text, /[Gg]rapefruit/);
 });
+
+test("deskReportText: every finding carries a source, and the footer says not a dose and PI governs", async () => {
+  const { deskReportText, findingSourceLine, EXPORT_NOT_A_DOSE } = await import("./brief.ts");
+  const { analyze } = await import("./engine.ts");
+  const { DEFAULT_HOST } = await import("./types.ts");
+  const { PI_FOOTER } = await import("../regulatory.ts");
+  const findings = analyze(["clarithromycin", "simvastatin"], DEFAULT_HOST).findings;
+  assert.ok(findings.length > 0);
+  const text = deskReportText(["FirstPass regimen: Clarithromycin + Simvastatin"], findings);
+  assert.equal(text.match(/^ {2}Source: /gm)?.length, findings.length);
+  for (const f of findings) assert.ok(text.includes(`  Source: ${findingSourceLine(f)}`), f.id);
+  assert.match(findingSourceLine(findings[0]!), / — https:\/\//);
+  assert.ok(text.endsWith(`${EXPORT_NOT_A_DOSE}\n${PI_FOOTER}`));
+});
+
+test("deskReportText: an empty desk says nothing matched, never that the pair is safe", async () => {
+  const { deskReportText, EXPORT_EMPTY, EXPORT_NOT_A_DOSE } = await import("./brief.ts");
+  const text = deskReportText(["FirstPass regimen: Ondansetron"], []);
+  assert.ok(text.includes(EXPORT_EMPTY));
+  assert.ok(text.includes(EXPORT_NOT_A_DOSE));
+  assert.match(text, /not a green light/);
+  assert.doesNotMatch(text, /\bsafe\b|no interaction/i);
+});

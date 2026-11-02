@@ -35,6 +35,7 @@ import {
   type Severity,
 } from "./types";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "../regulatory";
+import { EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "./brief";
 
 export interface RegimenItemDetail {
   id: string;
@@ -515,7 +516,7 @@ export function buildClinicalPacket(
       `  Contributors: ${riskIndexes.acb.contributors.map((c) => `${c.name} (+${c.score})`).join(", ")}`,
     );
   } else {
-    ehrLines.push(`- Anticholinergic Cognitive Burden: 0 (No scored anticholinergic agents mapped)`);
+    ehrLines.push(`- Anticholinergic Cognitive Burden: not scored. No agent on this regimen is on the mapped ACB list; that is not a computed zero.`);
   }
 
   if (riskIndexes.qt && riskIndexes.qt.rows.length > 0) {
@@ -532,7 +533,7 @@ export function buildClinicalPacket(
       );
     }
   } else {
-    ehrLines.push(`- Cardiac QTc Prolongation Burden: No additive QTc prolonging agents identified`);
+    ehrLines.push(`- Cardiac QTc Prolongation Burden: no QTc-prolonging agent in the mapped set. Not proof of absent QT risk.`);
   }
 
   if (riskIndexes.cnsDepression.hasSynergy) {
@@ -628,7 +629,7 @@ export function buildClinicalPacket(
   );
 
   if (findings.length === 0) {
-    ehrLines.push("No mapped collisions identified for the current active regimen.");
+    ehrLines.push(EXPORT_EMPTY);
   } else {
     if (collisions.contraindicated.length > 0) {
       ehrLines.push(`[CONTRAINDICATED / AVOID TOGETHER]`);
@@ -636,6 +637,7 @@ export function buildClinicalPacket(
         ehrLines.push(`• ${f.headline}`);
         ehrLines.push(`  Mechanism: ${f.mechanism}`);
         ehrLines.push(`  Clinical Watch: ${f.clinical}`);
+        ehrLines.push(`  Source: ${findingSourceLine(f)}`);
       }
       ehrLines.push("");
     }
@@ -645,13 +647,14 @@ export function buildClinicalPacket(
         ehrLines.push(`• ${f.headline}`);
         ehrLines.push(`  Mechanism: ${f.mechanism}`);
         ehrLines.push(`  Clinical Watch: ${f.clinical}`);
+        ehrLines.push(`  Source: ${findingSourceLine(f)}`);
       }
       ehrLines.push("");
     }
     if (collisions.moderate.length > 0) {
       ehrLines.push(`[MODERATE / USE CARE]`);
       for (const f of collisions.moderate) {
-        ehrLines.push(`• ${f.headline} — ${f.clinical}`);
+        ehrLines.push(`• ${f.headline} — ${f.clinical}`, `  Source: ${findingSourceLine(f)}`);
       }
       ehrLines.push("");
     }
@@ -666,17 +669,18 @@ export function buildClinicalPacket(
     `==================================================================`,
     `6. CLINICIAN ATTESTATION & REVIEW CHECKLIST`,
     `==================================================================`,
-    `[X] Active regimen reconciled with external pharmacy / clinical records`,
-    `[X] CYP450 pharmacokinetic and pharmacodynamic collisions evaluated`,
-    `[X] Organ clearance (renal/hepatic) dosing parameters reviewed`,
-    `[X] Multi-agent toxicity (ACB, QTc, Sedation, MME) evaluated`,
-    `[X] Patient counseling delivered & naloxone co-prescription offered/verified`,
+    `[ ] Active regimen reconciled with external pharmacy / clinical records`,
+    `[ ] CYP450 pharmacokinetic and pharmacodynamic collisions evaluated`,
+    `[ ] Organ clearance (renal/hepatic) dosing parameters reviewed`,
+    `[ ] Multi-agent toxicity (ACB, QTc, Sedation, MME) evaluated`,
+    `[ ] Patient counseling delivered & naloxone co-prescription offered/verified`,
     "",
     `Reviewed By: ___________________________________ [MD/DO/PharmD/NP/PA]`,
     `Date & Time: ___________________________________`,
     `Notes: _________________________________________________________________`,
     "",
     `------------------------------------------------------------------`,
+    EXPORT_NOT_A_DOSE,
     PI_FOOTER,
   );
 
@@ -700,6 +704,7 @@ export function buildClinicalPacket(
     `• Poison Help Center: 1-800-222-1222`,
     "",
     `Notice: This document is for educational review. Always talk with your pharmacist or doctor before changing or stopping any medication.`,
+    `This guide does not set or change any dose. Your prescriber and the medicine's FDA-approved label (Prescribing Information) govern. ${SOFTWARE.name} ${SOFTWARE.version} is not FDA-cleared.`,
   ];
   const patientHandoutText = handoutLines.join("\n");
 

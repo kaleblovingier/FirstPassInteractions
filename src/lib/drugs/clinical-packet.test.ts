@@ -1,8 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ClinicalPacketDialog } from "@/components/desk/clinical-packet-dialog";
 import { buildClinicalPacket } from "./clinical-packet";
 import { analyze } from "./engine";
 import { DEFAULT_HOST } from "./types";
+import { EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "./brief";
+import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 
 test("buildClinicalPacket: formats empty tray gracefully with disclaimers", () => {
   const host = { ...DEFAULT_HOST };
@@ -163,3 +168,57 @@ test("buildClinicalPacket: evaluates Tisdale QTc score, inpatient telemetry, and
 });
 
 
+
+test("buildClinicalPacket: the EHR note never pre-ticks a clinician attestation", () => {
+  const ids = ["methadone", "alprazolam"];
+  const packet = buildClinicalPacket(ids, DEFAULT_HOST, analyze(ids, DEFAULT_HOST).findings, {});
+  assert.doesNotMatch(packet.ehrNoteText, /\[X\]/i);
+  assert.equal(packet.ehrNoteText.match(/^\[ \] /gm)?.length, 5);
+});
+
+test("ClinicalPacketDialog: the attestation checklist opens unticked", () => {
+  const ids = ["methadone", "alprazolam"];
+  const html = renderToStaticMarkup(
+    createElement(ClinicalPacketDialog, {
+      open: true,
+      onClose: () => {},
+      selected: ids,
+      host: DEFAULT_HOST,
+      findings: analyze(ids, DEFAULT_HOST).findings,
+    }),
+  );
+  assert.ok(html.includes("Clinical Verification &amp; Attestation"));
+  assert.ok(html.includes('aria-pressed="false"'));
+  assert.doesNotMatch(html, /aria-pressed="true"/);
+});
+
+test("buildClinicalPacket: an empty or unscored desk never reads as safe", () => {
+  const ids = ["ondansetron"];
+  const packet = buildClinicalPacket(ids, DEFAULT_HOST, [], {});
+  assert.ok(packet.ehrNoteText.includes(EXPORT_EMPTY));
+  assert.match(packet.ehrNoteText, /Anticholinergic Cognitive Burden: not scored\. .*not a computed zero/);
+  assert.doesNotMatch(packet.ehrNoteText, /Burden: 0 |No additive QTc prolonging agents identified/);
+});
+
+test("buildClinicalPacket: printed findings carry a source and the note and handout say not a dose", () => {
+  const ids = ["clarithromycin", "simvastatin", "methadone", "alprazolam"];
+  const findings = analyze(ids, DEFAULT_HOST).findings;
+  const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+  const printed = findings.filter((f) => f.severity !== "minor");
+  assert.ok(printed.length >= 2);
+  assert.equal(packet.ehrNoteText.match(/^ {2}Source: /gm)?.length, printed.length);
+  for (const f of printed) assert.ok(packet.ehrNoteText.includes(`  Source: ${findingSourceLine(f)}`), f.id);
+  assert.ok(packet.ehrNoteText.includes(`${EXPORT_NOT_A_DOSE}\n${PI_FOOTER}`));
+  assert.match(packet.patientHandoutText, /does not set or change any dose/);
+  assert.match(packet.patientHandoutText, /Prescribing Information\) govern/);
+});
+
+test("ClinicalPacketDialog: the printed packet carries sources and the not-cleared / PI footer", () => {
+  const ids = ["clarithromycin", "simvastatin"];
+  const findings = analyze(ids, DEFAULT_HOST).findings;
+  const html = renderToStaticMarkup(
+    createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+  );
+  assert.ok(html.includes("Source: "));
+  for (const s of [EXPORT_NOT_A_DOSE, NOT_CLEARED, PI_FOOTER]) assert.ok(html.includes(s.replace(/&/g, "&amp;")), s);
+});

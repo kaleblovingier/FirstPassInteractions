@@ -4,6 +4,7 @@ import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { plainWordsReport } from "@/lib/drugs/quick-chips";
+import { deskReportText, EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
 import { parseDoses } from "@/lib/drugs/dosing";
 import { applyHost, FIRST_PASS_NMDA } from "@/lib/drugs/host";
 import { treesFor } from "@/lib/drugs/metabolites";
@@ -1210,15 +1211,8 @@ function RiskBanner({
       `Ketamine route: ${KETAMINE_ROUTE_LABEL[host.ketamineRoute]}`,
       `Cannabis route: ${CANNABIS_ROUTE_LABEL[host.cannabisRoute]}`,
       `Highest severity: ${SEVERITY_LABEL[highest]}`,
-      "",
-      ...report.findings.map(
-        (f) =>
-          `• ${SEVERITY_LABEL[f.severity]} — ${f.headline}: ${plainLanguageSummary(f)} ${f.mechanism}. ${f.clinical}`,
-      ),
-      "",
-      "Educational model. Not a substitute for clinical decision support.",
     ];
-    await write("full", lines.join("\n"));
+    await write("full", deskReportText(lines, report.findings));
   }
 
   async function shareLine() {
@@ -1600,8 +1594,9 @@ function exportDesk(
     regimen: selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean),
     host,
     highest: report.highest,
-    findings: report.findings,
-    footer: PI_FOOTER,
+    findings: report.findings.map((f) => ({ ...f, source: findingSourceLine(f) })),
+    ...(report.findings.length ? {} : { note: EXPORT_EMPTY }),
+    footer: `${EXPORT_NOT_A_DOSE} ${PI_FOOTER}`,
   };
   const blob = new Blob([JSON.stringify(body, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1614,7 +1609,7 @@ function exportDesk(
 
 function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
   const rows = [
-    ["severity", "kind", "headline", "mechanism", "effect", "clinical", "enzymes", "drugs"].join(","),
+    ["severity", "kind", "headline", "mechanism", "effect", "clinical", "enzymes", "drugs", "source"].join(","),
     ...report.findings.map((f) =>
       [
         f.severity,
@@ -1625,11 +1620,13 @@ function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
         csv(f.clinical),
         csv(f.enzymes.join("|")),
         csv(f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join("|")),
+        csv(findingSourceLine(f)),
       ].join(","),
     ),
   ];
+  const empty = report.findings.length ? "" : `# ${EXPORT_EMPTY}\n`;
   const blob = new Blob(
-    [`# FirstPass ${SOFTWARE.version} ${selected.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")}\n# ${PI_FOOTER}\n${rows.join("\n")}`],
+    [`# FirstPass ${SOFTWARE.version} ${selected.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")}\n# ${EXPORT_NOT_A_DOSE}\n# ${PI_FOOTER}\n${empty}${rows.join("\n")}`],
     { type: "text/csv" },
   );
   const url = URL.createObjectURL(blob);
