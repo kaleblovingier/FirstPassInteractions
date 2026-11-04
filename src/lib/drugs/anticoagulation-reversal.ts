@@ -1814,20 +1814,11 @@ export function anticoagulationReportOnDesk(
     });
   }
 
-  // 4. Targeted Reversal: Andexanet alfa
+  // 4. Targeted Reversal: Andexanet alfa — sized only from an entered last dose and time, never assumed ones.
   let andexanetDosing: AndexanetAlfaProtocolResult | undefined;
-  if (drugIds.includes("apixaban")) {
-    andexanetDosing = calculateAndexanetAlfaDosing({
-      agent: "apixaban",
-      lastDoseMg,
-      hoursSinceLastDose,
-    });
-  } else if (drugIds.includes("rivaroxaban")) {
-    andexanetDosing = calculateAndexanetAlfaDosing({
-      agent: "rivaroxaban",
-      lastDoseMg,
-      hoursSinceLastDose,
-    });
+  const andexAgent = drugIds.includes("apixaban") ? "apixaban" : drugIds.includes("rivaroxaban") ? "rivaroxaban" : null;
+  if (andexAgent && options?.lastDoseMg !== undefined && options?.hoursSinceLastDose !== undefined) {
+    andexanetDosing = calculateAndexanetAlfaDosing({ agent: andexAgent, lastDoseMg, hoursSinceLastDose });
   }
 
   // 5. Targeted Reversal: Idarucizumab
