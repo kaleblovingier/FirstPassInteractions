@@ -1046,7 +1046,7 @@ export const STREET_SAFETY_PROTOCOL = [
   },
   {
     step: "2. Administer Naloxone (Narcan)",
-    action: "Spray 1 dose (4 mg) into one nostril. If no response within 2 to 3 minutes, give a second dose in the opposite nostril. Naloxone only reverses opioids (fentanyl, heroin, oxycodone).",
+    action: "Follow the package directions: spray into one nostril. If there is no response within 2 to 3 minutes, give a second spray in the other nostril. Naloxone only reverses opioids (fentanyl, heroin, oxycodone).",
   },
   {
     step: "3. Rescue breathing for Xylazine (Tranq)",

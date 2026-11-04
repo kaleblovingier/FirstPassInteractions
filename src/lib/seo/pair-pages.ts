@@ -161,6 +161,7 @@ export function sitemapXml(): string {
     `${SITE_URL}/for-programs`,
     `${SITE_URL}/practice`,
     `${SITE_URL}/trust`,
+    `${SITE_URL}/help`,
     `${SITE_URL}/privacy`,
     `${SITE_URL}/terms`,
     `${SITE_URL}/cookies`,

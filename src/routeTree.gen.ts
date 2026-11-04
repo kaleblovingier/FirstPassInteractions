@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as EnzymesRouteImport } from './routes/enzymes'
 import { Route as ForProgramsRouteImport } from './routes/for-programs'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -46,6 +47,11 @@ const EnzymesRoute = EnzymesRouteImport.update({
 const ForProgramsRoute = ForProgramsRouteImport.update({
   id: '/for-programs',
   path: '/for-programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PairsRoute = PairsRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/enzymes'
     | '/for-programs'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/enzymes'
     | '/for-programs'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/enzymes'
     | '/for-programs'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   EnzymesRoute: typeof EnzymesRoute
   ForProgramsRoute: typeof ForProgramsRoute
+  HelpRoute: typeof HelpRoute
   PairsRoute: typeof PairsRoute
   PracticeRoute: typeof PracticeRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/for-programs'
       fullPath: '/for-programs'
       preLoaderRoute: typeof ForProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pairs': {
@@ -400,6 +420,7 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   EnzymesRoute: EnzymesRoute,
   ForProgramsRoute: ForProgramsRoute,
+  HelpRoute: HelpRoute,
   PairsRoute: PairsRoute,
   PracticeRoute: PracticeRoute,
   PrivacyRoute: PrivacyRoute,
