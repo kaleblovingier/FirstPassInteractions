@@ -25,3 +25,5 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      # The production build without db:migrate, which needs DATABASE_URL.
+      - run: node scripts/with-app-env.mjs vite build
