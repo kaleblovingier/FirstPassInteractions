@@ -53,6 +53,10 @@ export const TRIPSIT_NOTE =
 export const BEERS_CREDIT =
   "Paraphrased from the 2023 AGS Beers Criteria®. Not affiliated with or endorsed by the American Geriatrics Society.";
 
+/** CPIC asks users to credit cpicpgx.org as the primary source and say its guidelines are updated. */
+export const CPIC_CREDIT =
+  "Paraphrased from CPIC guidelines (cpicpgx.org). CPIC guidelines are updated; check cpicpgx.org for the current version.";
+
 export const PRIVACY_DOC: LegalDoc = {
   path: "/privacy",
   title: "Privacy policy | FirstPass",
