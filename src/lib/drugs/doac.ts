@@ -954,11 +954,12 @@ export function evaluateReversal(
       agentId,
       agentName,
       bleedSeverity: severity,
-      headline: "Major Bleed / Urgent Surgery: Andexanet alfa (Andexxa) is no longer sold in the US",
+      headline: "Major Bleed / Urgent Surgery: Andexanet alfa (Andexxa, no longer sold in the US) or 4F-PCC",
       immediateActions: [
         `DISCONTINUE ${agentName} immediately.`,
         "Establish aggressive volume / red cell resuscitation; maintain mean arterial pressure.",
         `Andexanet alfa (Andexxa): ${ANDEXXA_REVERSAL_NOTE}`,
+        "4-Factor PCC (Kcentra) per hospital emergency protocol.",
         "Consider activated charcoal 50 g PO if ingested within the last 2 hours.",
       ],
       specificAntidote: {
