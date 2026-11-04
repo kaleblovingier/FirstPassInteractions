@@ -1665,6 +1665,11 @@ function AlertsPanel({ rows }: { rows: ReturnType<typeof alertsOnDesk> }) {
                 <li key={f.kind}>
                   <Badge tone={f.kind === "rems" ? "danger" : f.kind === "niosh" ? "warn" : "info"}>{f.label}</Badge>
                   <p className="mt-1 text-sm leading-relaxed text-fg">{f.note}</p>
+                  {f.kind === "ismp" ? (
+                    <a className="text-xs text-accent underline" href="https://www.ismp.org/" target="_blank" rel="noreferrer">
+                      ismp.org
+                    </a>
+                  ) : null}
                 </li>
               ))}
             </ul>
