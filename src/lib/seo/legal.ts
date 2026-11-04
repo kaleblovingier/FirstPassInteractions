@@ -49,6 +49,10 @@ export const PSYCHONAUTWIKI_CREDIT =
 export const TRIPSIT_NOTE =
   "Combination ratings: TripSit (combo.tripsit.me). TripSit's chart is only meant as a quick overview and reference; do more individual research before making a decision.";
 
+/** "AGS Beers Criteria" is a registered mark; shown wherever the paraphrased Beers rows appear. */
+export const BEERS_CREDIT =
+  "Paraphrased from the 2023 AGS Beers Criteria®. Not affiliated with or endorsed by the American Geriatrics Society.";
+
 export const PRIVACY_DOC: LegalDoc = {
   path: "/privacy",
   title: "Privacy policy | FirstPass",
