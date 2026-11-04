@@ -3,7 +3,8 @@ import test from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ClinicalPacketDialog } from "@/components/desk/clinical-packet-dialog";
-import { buildClinicalPacket } from "./clinical-packet";
+import { buildClinicalPacket, DOSE_PER_PI, withoutDose } from "./clinical-packet";
+import { DOSE_PATTERN } from "../guards/dose-rule";
 import { analyze } from "./engine";
 import { DEFAULT_HOST } from "./types";
 import { EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "./brief";
@@ -89,7 +90,7 @@ test("buildClinicalPacket: evaluates anticoagulants, DOAC renal rails, and bleed
   };
   const ids = ["apixaban", "aspirin"];
   const findings = analyze(ids, host).findings;
-  const packet = buildClinicalPacket(ids, host, findings, { apixaban: "5 mg BID" });
+  const packet = buildClinicalPacket(ids, host, findings, { apixaban: "5 mg BID" }, { activeBleeding: true });
 
   assert.equal(packet.riskIndexes.anticoagulation.hasAnticoagulant, true);
   assert.equal(packet.riskIndexes.anticoagulation.hasDoac, true);
@@ -155,7 +156,7 @@ test("buildClinicalPacket: evaluates Tisdale QTc score, inpatient telemetry, and
   };
   const ids = ["methadone", "ondansetron", "furosemide"];
   const findings = analyze(ids, host).findings;
-  const packet = buildClinicalPacket(ids, host, findings, {});
+  const packet = buildClinicalPacket(ids, host, findings, {}, { activeTdp: true });
 
   assert.ok(packet.riskIndexes.qt !== null);
   assert.ok(packet.riskIndexes.qt.tisdale !== undefined);
@@ -221,4 +222,57 @@ test("ClinicalPacketDialog: the printed packet carries sources and the not-clear
   );
   assert.ok(html.includes("Source: "));
   for (const s of [EXPORT_NOT_A_DOSE, NOT_CLEARED, PI_FOOTER]) assert.ok(html.includes(s.replace(/&/g, "&amp;")), s);
+});
+
+const DOAC_DESKS: [string[], typeof DEFAULT_HOST][] = [
+  [["apixaban", "aspirin"], { ...DEFAULT_HOST, age: "geriatric", kidney: "ckd" }],
+  [["rivaroxaban", "clarithromycin"], DEFAULT_HOST],
+  [["dabigatran", "amiodarone"], { ...DEFAULT_HOST, kidney: "ckd" }],
+  [["warfarin", "fluconazole"], DEFAULT_HOST],
+  [["edoxaban"], DEFAULT_HOST],
+];
+const doseIn = (s: string) => new RegExp(DOSE_PATTERN.source).test(s);
+
+test("withoutDose: keeps guidance sentences and replaces only the ones with a dose", () => {
+  assert.equal(withoutDose("5 g IV administered as two consecutive 2.5 g / 50 mL IV infusions or boluses."), DOSE_PER_PI);
+  assert.equal(withoutDose("Avoid use (CrCl <30 mL/min in acute VTE)"), "Avoid use (CrCl <30 mL/min in acute VTE)");
+  assert.equal(
+    withoutDose("Dose reduction indicated: Patient meets 2 of 3 criteria. Recommended dose is 2.5 mg PO BID."),
+    `Dose reduction indicated: Patient meets 2 of 3 criteria. ${DOSE_PER_PI}`,
+  );
+});
+
+test("buildClinicalPacket: reversal and TdP lines print only when the clinician marks bleeding or TdP", () => {
+  const ids = ["apixaban", "methadone", "ondansetron"];
+  const host = { ...DEFAULT_HOST, age: "geriatric" as const };
+  const findings = analyze(ids, host).findings;
+  const quiet = buildClinicalPacket(ids, host, findings, {});
+  assert.doesNotMatch(quiet.ehrNoteText, /Emergency Reversal|Resuscitation Directive/);
+  const marked = buildClinicalPacket(ids, host, findings, {}, { activeBleeding: true, activeTdp: true });
+  assert.match(marked.ehrNoteText, /Emergency Reversal: Andexanet alfa \(Andexxa\) — No longer sold in the US/);
+  assert.match(marked.ehrNoteText, /Acute TdP Resuscitation Directive/);
+});
+
+test("buildClinicalPacket: renal rails and reversal lines keep agent and status but never a computed dose", () => {
+  for (const [ids, host] of DOAC_DESKS) {
+    const p = buildClinicalPacket(ids, host, analyze(ids, host).findings, {}, { activeBleeding: true, activeTdp: true });
+    const rails = p.ehrNoteText.split("\n").filter((l) => / Renal Rail: /.test(l));
+    for (const l of rails) assert.match(l, /^ {2}\S.* Renal Rail: .+ \[[A-Z_-]+\]$/, l);
+    // Only the static label line on which tablet strengths go with food may still name a strength.
+    const dosed = p.ehrNoteText.split("\n").filter((l) => doseIn(l) && !/Administration Note:/.test(l));
+    assert.deepEqual(dosed, [], ids.join("+"));
+    assert.ok(p.ehrNoteText.includes("Emergency Reversal: "), ids.join("+"));
+  }
+});
+
+test("ClinicalPacketDialog: bleeding and TdP marks start off and the printed card shows no computed dose", () => {
+  for (const [ids, host] of DOAC_DESKS) {
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host, findings: analyze(ids, host).findings }),
+    );
+    assert.ok(html.includes("Active bleeding") && html.includes("Torsades de pointes (TdP)"));
+    assert.doesNotMatch(html, /Emergency Reversal Pathway/);
+    const text = html.replace(/<[^>]+>/g, "\n").split("\n").filter(doseIn);
+    assert.deepEqual(text, [], ids.join("+"));
+  }
 });
