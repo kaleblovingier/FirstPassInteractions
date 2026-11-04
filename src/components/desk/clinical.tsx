@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { CheckSquare, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
+import { ANDEXXA_FDA_URL, ANDEXXA_US_STATUS } from "@/lib/drugs/catalog-label-names";
 import { alertsOnDesk } from "@/lib/drugs/alerts";
 import {
   anionGapOf,
@@ -5683,7 +5684,7 @@ function DoacPanel({ ids, host }: { ids: string[]; host: HostContext }) {
         <div>
           <h3 className="font-serif text-lg tracking-tight text-fg">DOAC & Bleed Management Desk</h3>
           <p className="mt-1 text-xs text-muted">
-            Apixaban ABC criteria, renal rails, Edoxaban Black Box alert, Dabigatran capsule integrity, perioperative hold schedules, and reversal nomograms (Andexxa, Praxbind, 4F-PCC).
+            Apixaban ABC criteria, renal rails, Edoxaban Black Box alert, Dabigatran capsule integrity, perioperative hold schedules, and reversal nomograms (Andexxa, no longer sold in the US; Praxbind; 4F-PCC).
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
@@ -5947,7 +5948,7 @@ function DoacPanel({ ids, host }: { ids: string[]; host: HostContext }) {
           <div>
             <h4 className="font-serif text-base font-semibold text-fg">Acute Bleed Management & Reversal Nomogram</h4>
             <p className="text-xs text-muted mt-0.5">
-              Specific antidotes (Andexxa, Praxbind), 4F-PCC rescue, dialysis role, and laboratory assays.
+              Specific antidotes (Andexxa, no longer sold in the US; Praxbind), 4F-PCC rescue, dialysis role, and laboratory assays.
             </p>
           </div>
         </div>
@@ -5987,6 +5988,13 @@ function DoacPanel({ ids, host }: { ids: string[]; host: HostContext }) {
                 {andexxaCalc.isHighDose ? "High-Dose Protocol" : "Low-Dose Protocol"}
               </span>
             </div>
+
+            <p className="text-[11px] leading-relaxed text-danger">
+              {ANDEXXA_US_STATUS}{" "}
+              <a className="underline underline-offset-2" href={ANDEXXA_FDA_URL} target="_blank" rel="noreferrer">
+                FDA safety communication
+              </a>
+            </p>
 
             <div className="grid gap-2 sm:grid-cols-2">
               <label className="text-muted text-[11px]">

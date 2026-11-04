@@ -327,7 +327,7 @@ export const DIALYSIS_CATALOG: Record<string, DialysisEntry> = {
     proteinBindingPct: 92,
     volumeDistributionLKg: 0.7,
     mechanism: "Very high protein binding (92–95%) virtually eliminates dialytic extraction.",
-    pearl: "Not cleared by hemodialysis. Hemodialysis is ineffective for overdose removal. 4-factor PCC or Andexxa is the reversal consideration.",
+    pearl: "Not cleared by hemodialysis. Hemodialysis is ineffective for overdose removal. 4-factor PCC or Andexxa (no longer sold in the US, FDA safety communication, December 18, 2025) is the reversal consideration.",
   },
   warfarin: {
     id: "warfarin",

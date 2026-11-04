@@ -12,8 +12,11 @@ const CISAPRIDE =
   "Removed from general US sale in 2000; available only through a limited-access program. Shown because a current label still names it.";
 
 test("withdrawn and restricted label-named drugs carry their US market status", () => {
-  assert.deepEqual(MARKET_STATUS, { terfenadine: WITHDRAWN, astemizole: WITHDRAWN, cisapride: CISAPRIDE });
-  for (const [id, status] of Object.entries(MARKET_STATUS)) {
+  // Andexxa is a current-shelf row, not a label-named one; andexxa-status.test.ts covers it.
+  const { "andexanet-alfa": andexxa, ...labelNamed } = MARKET_STATUS;
+  assert.match(andexxa ?? "", /^No longer sold in the US\./);
+  assert.deepEqual(labelNamed, { terfenadine: WITHDRAWN, astemizole: WITHDRAWN, cisapride: CISAPRIDE });
+  for (const [id, status] of Object.entries(labelNamed)) {
     const d = DRUG_BY_ID[id];
     assert.ok(d, id);
     assert.ok(d.note?.startsWith(status), id);
