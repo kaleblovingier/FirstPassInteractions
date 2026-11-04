@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
-import { searchDrugs } from "@/lib/drugs/catalog";
+import { DRUG_BY_ID, searchDrugs } from "@/lib/drugs/catalog";
+import { combinationParts, findCombination, planCombination, type CombinationHit } from "@/lib/drugs/combos";
 import { availableQuickChips } from "@/lib/drugs/quick-chips";
 import { ITEM_KIND_LABEL, type EnzymeRole } from "@/lib/drugs/types";
 import { isMatDesk } from "@/lib/drugs/window";
@@ -43,11 +44,16 @@ export function DrugSearch() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [slashOff, setSlashOff] = useState(false);
+  const [note, setNote] = useState("");
   const slashOffRef = useRef(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const results = useMemo(() => searchDrugs(q), [q]);
+  // A combination name (Percocet) leads the list as one option that adds every ingredient.
+  const combo = useMemo(() => findCombination(q), [q]);
+  const lead = combo ? 1 : 0;
+  const comboOnDesk = combo ? combo.ids.every((id) => selected.includes(id)) : false;
 
   useEffect(() => {
     setActive(0);
@@ -88,7 +94,17 @@ export function DrugSearch() {
 
   function pick(id: string) {
     add(id);
+    setNote("");
     setQ("");
+    setOpen(false);
+    inputRef.current?.focus();
+  }
+
+  function pickCombo(c: CombinationHit) {
+    const plan = planCombination(c, selected, cap);
+    for (const id of plan.add) add(id);
+    setNote(plan.message);
+    if (plan.add.length) setQ("");
     setOpen(false);
     inputRef.current?.focus();
   }
@@ -133,6 +149,7 @@ export function DrugSearch() {
         disabled={full}
         onChange={(e) => {
           setQ(e.target.value);
+          setNote("");
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
@@ -140,17 +157,29 @@ export function DrugSearch() {
         aria-autocomplete="list"
         aria-expanded={open && !full && (results.length > 0 || Boolean(q.trim()))}
         aria-controls="drug-search-results"
-        aria-activedescendant={open && results[active] ? `drug-option-${results[active].id}` : undefined}
+        aria-activedescendant={
+          !open
+            ? undefined
+            : combo && active === 0
+              ? "drug-option-combination"
+              : results[active - lead]
+                ? `drug-option-${results[active - lead].id}`
+                : undefined
+        }
         onKeyDown={(e) => {
           if (e.key === "ArrowDown") {
             e.preventDefault();
-            setActive((i) => Math.min(i + 1, Math.max(results.length - 1, 0)));
+            setActive((i) => Math.min(i + 1, Math.max(results.length + lead - 1, 0)));
           } else if (e.key === "ArrowUp") {
             e.preventDefault();
             setActive((i) => Math.max(i - 1, 0));
           } else if (e.key === "Enter") {
             e.preventDefault();
-            const hit = results[active];
+            if (combo && active === 0) {
+              pickCombo(combo);
+              return;
+            }
+            const hit = results[active - lead];
             if (hit && !selected.includes(hit.id)) pick(hit.id);
           } else if (e.key === "Escape") {
             // Close the list but keep focus in the field (blurring dropped focus to <body>).
@@ -188,13 +217,48 @@ export function DrugSearch() {
           </kbd>
         )}
 
-      {open && results.length > 0 && !full ? (
+      {open && (results.length > 0 || combo) && !full ? (
         <ul
           id="drug-search-results"
           role="listbox"
           aria-label="Matching medicines and substances"
           className="absolute z-30 mt-2 max-h-80 w-full overflow-auto rounded-lg bg-surface-2 py-1 shadow-[var(--shadow-border)]"
         >
+          {combo ? (
+            <li>
+              <button
+                id="drug-option-combination"
+                type="button"
+                role="option"
+                tabIndex={-1}
+                aria-selected={active === 0}
+                aria-disabled={comboOnDesk ? true : undefined}
+                className={cn(
+                  "flex w-full items-start gap-3 px-3 py-2.5 text-left",
+                  active === 0 ? "bg-accent-soft" : "hover:bg-bg-sunken",
+                )}
+                onMouseEnter={() => setActive(0)}
+                onClick={() => pickCombo(combo)}
+              >
+                <img
+                  src={plateForDrug(DRUG_BY_ID[combo.ids[0]])}
+                  alt=""
+                  className="mt-0.5 size-10 shrink-0 rounded-sm object-cover"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium text-fg">
+                    {combo.name} → {combinationParts(combo.ids)}
+                  </span>
+                  <span className="block truncate text-xs text-muted" title={combo.source}>
+                    Combination · label: {combo.source}
+                  </span>
+                </span>
+                <span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-subtle">
+                  {comboOnDesk ? "On desk" : combo.ids.length > 1 ? `Adds ${combo.ids.length}` : "Own row"}
+                </span>
+              </button>
+            </li>
+          ) : null}
           {results.map((drug, i) => {
             const onDesk = selected.includes(drug.id);
             return (
@@ -204,14 +268,14 @@ export function DrugSearch() {
                 type="button"
                 role="option"
                 tabIndex={-1}
-                aria-selected={i === active}
+                aria-selected={i + lead === active}
                 aria-disabled={onDesk ? true : undefined}
                 aria-label={onDesk ? `${drug.name}, already on the desk` : undefined}
                 className={cn(
                   "flex w-full items-start gap-3 px-3 py-2.5 text-left",
-                  i === active ? "bg-accent-soft" : "hover:bg-bg-sunken",
+                  i + lead === active ? "bg-accent-soft" : "hover:bg-bg-sunken",
                 )}
-                onMouseEnter={() => setActive(i)}
+                onMouseEnter={() => setActive(i + lead)}
                 onClick={() => {
                   if (onDesk) return;
                   pick(drug.id);
@@ -263,7 +327,7 @@ export function DrugSearch() {
           })}
         </ul>
       ) : null}
-        {open && !full && q.trim() && results.length === 0 ? (
+        {open && !full && q.trim() && results.length === 0 && !combo ? (
           <div
             role="status"
             className="absolute z-30 mt-2 w-full rounded-lg bg-surface-2 px-4 py-3 text-sm leading-relaxed text-muted shadow-[var(--shadow-border)]"
@@ -305,6 +369,11 @@ export function DrugSearch() {
           {slashOff ? "Turn on / key" : "Turn off / key"}
         </button>
       </div>
+      {note ? (
+        <p role="status" className="mt-2 px-1 text-xs leading-relaxed text-fg">
+          {note}
+        </p>
+      ) : null}
       {!q && !full ? (
         <div className="mt-2 space-y-2 px-1">
           {selected.length < 2 ? (

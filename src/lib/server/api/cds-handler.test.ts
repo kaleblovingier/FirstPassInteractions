@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   handleCdsRequest,
   CDS_MODULES_COUNT,
+  TOO_MANY_ITEMS,
   type CdsHealthResponse,
 } from "./cds-handler.server";
 import { ClinicalDecisionService, STATUTORY_CDS_DISCLAIMER } from "./cds-service";
@@ -157,6 +158,19 @@ test("handleCdsRequest: POST /api/cds/check caches identical queries", async () 
   assert.equal(res2.status, 200);
   const data2 = (await res2.json()) as { meta: { cached: boolean } };
   assert.equal(data2.meta.cached, true);
+});
+
+test("handleCdsRequest: refuses oversized check and kinetics bodies before validating them", async () => {
+  for (const path of ["/api/cds/check", "/api/cds/kinetics"]) {
+    const started = Date.now();
+    const res = await handleCdsRequest(
+      jsonRequest(`http://localhost${path}`, "POST", `{"drugs":[${"1,".repeat(1_999_999)}1]}`),
+    );
+    assert.equal(res.status, 400);
+    const problem = (await res.json()) as ProblemDetails;
+    assert.equal(problem.detail, TOO_MANY_ITEMS);
+    assert.ok(Date.now() - started < 3_000, `${path} answered without walking every element`);
+  }
 });
 
 test("handleCdsRequest: POST /api/cds/check returns 422 on validation failure", async () => {

@@ -15,6 +15,7 @@ import {
   searchDrugs,
   saltFormKeys,
 } from "../../drugs/catalog";
+import { COMBINATION_BY_KEY } from "../../drugs/combos";
 import { analyze } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
 import {
@@ -110,11 +111,19 @@ export interface ApiDrugRef {
   hostFactor?: true;
 }
 
-export type DrugMatch = "id" | "name" | "brand-or-alias";
+export type DrugMatch = "id" | "name" | "brand-or-alias" | "combination";
 
-/** How one requested string was read. Only an exact id, name, brand, or alias match resolves. */
+/** How one requested string was read. Only an exact id, name, brand, alias, or combination name resolves. */
 export type DrugResolution =
-  | { query: string; status: "resolved"; drugId: string; matchedBy: DrugMatch }
+  | {
+      query: string;
+      status: "resolved";
+      drugId: string;
+      matchedBy: DrugMatch;
+      /** Combination products only: every catalog row analyzed for it (drugId first) and its label. */
+      drugIds?: string[];
+      source?: string;
+    }
   | { query: string; status: "ambiguous" | "not-found"; candidates: ApiDrugRef[] };
 
 export type ApiWarningCode =
@@ -350,7 +359,7 @@ function drugRef(id: string): ApiDrugRef {
   return { id, name: catalogDrug(id)?.name ?? id };
 }
 
-type ExactIndex = Record<DrugMatch, Map<string, string[]>>;
+type ExactIndex = Record<Exclude<DrugMatch, "combination">, Map<string, string[]>>;
 
 let exactIndex: ExactIndex | undefined;
 
@@ -376,7 +385,7 @@ function getExactIndex(): ExactIndex {
   return index;
 }
 
-const MATCH_ORDER: readonly DrugMatch[] = ["id", "name", "brand-or-alias"];
+const MATCH_ORDER: readonly (keyof ExactIndex)[] = ["id", "name", "brand-or-alias"];
 const MAX_CANDIDATES = 5;
 
 /** Suggestions only; a search failure must not fail the check that asked for them. */
@@ -393,7 +402,8 @@ function searchCandidates(query: string): ApiDrugRef[] {
 
 /**
  * Reads one requested string as an exact catalog id, generic name, brand, or alias (case,
- * punctuation, and trailing salt/release tokens ignored). A key shared by more than one entry is
+ * punctuation, and trailing salt/release tokens ignored), or as a combination product name, which
+ * resolves to every cataloged ingredient (`drugIds`). A key shared by more than one entry is
  * ambiguous. Partial and misspelled strings never resolve, because a near miss can name a
  * different drug; they come back with search candidates instead.
  */
@@ -402,6 +412,11 @@ export function resolveDrugQuery(query: string): DrugResolution {
   const normalized = normalizeSearchText(query);
   for (const key of saltFormKeys(normalized)) {
     if (!key) continue;
+    // A combination name (Percocet) reads as all of its ingredients; no such name is an id or generic name.
+    const combo = COMBINATION_BY_KEY.get(key);
+    if (combo) {
+      return { query, status: "resolved", drugId: combo.ids[0], matchedBy: "combination", drugIds: [...combo.ids], source: combo.source };
+    }
     for (const matchedBy of MATCH_ORDER) {
       const ids = index[matchedBy].get(key);
       if (!ids) continue;
@@ -443,7 +458,8 @@ function resolveRequestedDrugs(requested: string[]): RequestedDrugs {
   const resolution = requested.map(resolveDrugQuery);
   const ordered: string[] = [];
   for (const r of resolution) {
-    if (r.status === "resolved" && !ordered.includes(r.drugId)) ordered.push(r.drugId);
+    if (r.status !== "resolved") continue;
+    for (const id of r.drugIds ?? [r.drugId]) if (!ordered.includes(id)) ordered.push(id);
   }
   return {
     ids: [...ordered].sort(),

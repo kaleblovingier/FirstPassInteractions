@@ -11,6 +11,7 @@
  */
 
 import { SOFTWARE } from "../../regulatory";
+import { withinNodeBudget } from "../rpc-input";
 import {
   ClinicalDecisionService,
   STATUTORY_CDS_DISCLAIMER,
@@ -25,6 +26,8 @@ import {
 } from "./problem";
 
 export const CDS_MODULES_COUNT = 32;
+
+export const TOO_MANY_ITEMS = "Request body has too many items.";
 
 export interface CdsHealthResponse {
   status: "ok";
@@ -111,6 +114,9 @@ export async function handleCdsRequest(request: Request): Promise<Response> {
           ),
         );
       }
+      if (!withinNodeBudget(body)) {
+        return toProblemResponse(problemBadRequest(TOO_MANY_ITEMS, undefined, pathname));
+      }
       const result = await ClinicalDecisionService.checkInteractions(body);
       if (!result.success) {
         return toProblemResponse(result.problem);
@@ -139,6 +145,9 @@ export async function handleCdsRequest(request: Request): Promise<Response> {
             pathname,
           ),
         );
+      }
+      if (!withinNodeBudget(body)) {
+        return toProblemResponse(problemBadRequest(TOO_MANY_ITEMS, undefined, pathname));
       }
       const result = await ClinicalDecisionService.evaluateKinetics(body);
       if (!result.success) {
