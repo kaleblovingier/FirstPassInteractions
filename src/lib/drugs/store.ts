@@ -78,6 +78,8 @@ interface DeskState {
   libraryShelf: string;
   justActivated: boolean;
   hcpAck: boolean;
+  /** Clinician attestation in front of the dose calculators: the version confirmed and when (ms). */
+  doseAttest: { v: number; at: number } | null;
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
   add: (id: string) => boolean;
   remove: (id: string) => void;
@@ -109,8 +111,14 @@ interface DeskState {
   dismissProgramNote: () => void;
   dismissActivated: () => void;
   ackHcp: () => void;
+  attestDose: () => void;
   downgrade: () => void;
 }
+
+/** Bump when the attestation wording changes: every browser is asked again. */
+export const DOSE_ATTEST_VERSION = 1;
+
+export const doseAttested = (s: Pick<DeskState, "doseAttest">) => s.doseAttest?.v === DOSE_ATTEST_VERSION;
 
 function activePlan(
   s: { plan: PlanId; previewUntil: number | null; program?: ProgramGrant | null },
@@ -198,6 +206,7 @@ export const useDesk = create<DeskState>()(
       libraryShelf: "",
       justActivated: false,
       hcpAck: false,
+      doseAttest: null,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
       add: (id) => {
         if (!DRUG_BY_ID[id] || id.startsWith("__")) return false;
@@ -430,6 +439,7 @@ export const useDesk = create<DeskState>()(
       dismissProgramNote: () => set({ programNote: null }),
       dismissActivated: () => set({ justActivated: false }),
       ackHcp: () => set({ hcpAck: true }),
+      attestDose: () => set({ doseAttest: { v: DOSE_ATTEST_VERSION, at: Date.now() } }),
       downgrade: () =>
         set({
           plan: "free",
@@ -499,6 +509,7 @@ export const useDesk = create<DeskState>()(
         previewUntil: s.previewUntil,
         previewUsed: s.previewUsed,
         hcpAck: s.hcpAck,
+        doseAttest: s.doseAttest,
       }),
     },
   ),
