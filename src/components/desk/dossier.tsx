@@ -807,7 +807,8 @@ function StahlPanel({ name, card }: { name: string; card: StahlCard }) {
       <p className="text-[11px] leading-relaxed text-subtle">
         Educational receptor sketch (spectrum first, then how hard it sits on each target, then side
         effects that follow). Original language — not a quotation of Stahl’s Essential
-        Psychopharmacology. Not a dose and not a prescription.
+        Psychopharmacology. Not a dose and not a prescription. Not affiliated with or endorsed by Dr.
+        Stephen M. Stahl, the Neuroscience Education Institute or Cambridge University Press.
       </p>
     </div>
   );

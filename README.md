@@ -35,7 +35,7 @@ Shareable desk links: `?case=gf-oral-ketamine` loads a sample; `?case=today` loa
 1. **Oral ketamine × grapefruit** — F rises. Half-life does not. Overlay IV: the ghost is untouched.
 2. **DXM in a 2D6 poor metabolizer, q8h** — accumulation Rac ~2.7×. Dextrorphan falls.
 3. **Azathioprine × allopurinol** — xanthine oxidase, not CYP. Pancytopenia. Search `clinic` or `imuran`.
-4. **Fluoxetine** — Stahl occupancy (SERT, long washout) plus DrugBank `DB00472`. Flip 2D6 PM: CPIC has no dose cut for Prozac, but it still locks 2D6 for codeine and tamoxifen. Search `stahl` / `pgx`.
+4. **Fluoxetine** — receptor sketch (SERT, long washout) plus DrugBank `DB00472`. Flip 2D6 PM: CPIC has no dose cut for Prozac, but it still locks 2D6 for codeine and tamoxifen. Search `stahl` / `pgx`.
 5. **Berberine × simvastatin** — the glucose capsule is a 3A4/P-gp bully, not goldenseal tea. Search `supplement` or `berberine`.
 6. **Activated charcoal × levothyroxine** — the binder. The dose never arrives. Metamucil does the same.
 7. **Valproate, then flip Pregnant** — teratogen card. Search `pubmed` or open Cites for Bailey, Mega, Krantz, Hunter.
