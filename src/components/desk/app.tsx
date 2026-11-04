@@ -1532,8 +1532,8 @@ function HowCard() {
           mycophenolate. Teaching notes, not a label. Search beers / pregnant.
         </li>
         <li>
-          <span className="text-fg">Sources.</span> DrugBank is identity and targets — open the
-          accession. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching
+          <span className="text-fg">Sources.</span> DrugBank accession ids (CC0 vocabulary) for lookup;
+          target labels are FirstPass summaries. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching
           row highlights. Stahl is a receptor sketch (spectrum, occupancy, side effects from those
           receptors) in original language, not a quotation of the book. PubMed is a curated PMID
           shelf plus a live NCBI search for the pair on the desk. Search pgx / stahl / drugbank /
