@@ -242,7 +242,7 @@ export const MECHANISM_PATHWAYS: readonly MechanismPathway[] = [
     summary:
       "The cell-based coagulation cascade coordinates intrinsic and extrinsic enzymatic cascades converging upon Factor Xa generation. Factor Xa integrates with Factor Va into the prothrombinase complex to convert Prothrombin (Factor II) into Thrombin (Factor IIa), which cleaves Fibrinogen into crosslinked Fibrin. Targeted anticoagulants and their direct reversal antidotes act at discrete molecular nodes.",
     clinicalRelevance:
-      "Crucial for distinguishing mechanism-specific reversal pathways: Idarucizumab specifically binds Dabigatran with zero effect on Factor Xa; Andexanet alfa specifically sequesters Factor Xa inhibitors; Protamine neutralizes polyanionic Heparin via electrostatic complexation; 4-Factor PCC replenishes vitamin K-dependent clotting factors.",
+      "Crucial for distinguishing mechanism-specific reversal pathways: Idarucizumab specifically binds Dabigatran with zero effect on Factor Xa; Andexanet alfa (no longer sold in the US, FDA safety communication, December 18, 2025) specifically sequesters Factor Xa inhibitors; Protamine neutralizes polyanionic Heparin via electrostatic complexation; 4-Factor PCC replenishes vitamin K-dependent clotting factors.",
     keyDrugIds: [
       "warfarin",
       "apixaban",
@@ -263,7 +263,7 @@ export const MECHANISM_PATHWAYS: readonly MechanismPathway[] = [
         title: "Reversal Specificity and Cross-Class Inefficacy",
         collisionOrMechanism: "Idarucizumab vs Andexanet Alfa Target Exclusivity",
         rationale:
-          "Idarucizumab is a humanized Fab fragment that binds dabigatran with ~350-fold higher affinity than thrombin, but has no interaction with Factor Xa or its inhibitors. Andexanet alfa is a catalytically inactive recombinant Factor Xa decoy that binds Factor Xa inhibitors (apixaban, rivaroxaban, edoxaban), but does not bind direct thrombin inhibitors. Reversal agent choice must align strictly with anticoagulant mechanism.",
+          "Idarucizumab is a humanized Fab fragment that binds dabigatran with ~350-fold higher affinity than thrombin, but has no interaction with Factor Xa or its inhibitors. Andexanet alfa is a catalytically inactive recombinant Factor Xa decoy that binds Factor Xa inhibitors (apixaban, rivaroxaban, edoxaban), but does not bind direct thrombin inhibitors. Reversal agent choice must align strictly with anticoagulant mechanism. Andexxa is no longer sold in the US (FDA safety communication, December 18, 2025).",
         citation: "Pollack CV Jr, et al. Idarucizumab for Dabigatran Reversal. N Engl J Med. 2017;377(5):431-441.",
       },
       {
@@ -327,7 +327,7 @@ export const MECHANISM_PATHWAYS: readonly MechanismPathway[] = [
           },
           {
             drugId: "andexanet-alfa",
-            drugName: "Andexanet Alfa",
+            drugName: "Andexanet Alfa (no longer sold in the US)",
             drugClass: "Decoy Reversal Agent for FXa Inhibitors",
             action: "Recombinant modified human factor Xa decoy lacking catalytic serine and membrane anchor domain",
             effect:

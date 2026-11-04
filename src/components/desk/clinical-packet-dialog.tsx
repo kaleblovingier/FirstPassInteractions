@@ -14,7 +14,7 @@ import {
   Square,
   X,
 } from "lucide-react";
-import { buildClinicalPacket, type ClinicalPacketData } from "@/lib/drugs/clinical-packet";
+import { buildClinicalPacket, reversalLine, withoutDose, type ClinicalPacketData } from "@/lib/drugs/clinical-packet";
 import { EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
 import { NOT_CLEARED, PI_FOOTER } from "@/lib/regulatory";
 import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
@@ -54,13 +54,16 @@ export function ClinicalPacketDialog({
   const [copiedState, setCopiedState] = useState<"ehr" | "handout" | null>(null);
   // Starts empty: only the reviewing clinician ticks an attestation.
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  // Off until the clinician marks them: reversal and TdP lines print only for a present event.
+  const [activeBleeding, setActiveBleeding] = useState(false);
+  const [activeTdp, setActiveTdp] = useState(false);
   const [reviewerName, setReviewerName] = useState("");
   const [reviewerRole, setReviewerRole] = useState("PharmD");
   const [clinicalNotes, setClinicalNotes] = useState("");
 
   const packet: ClinicalPacketData = useMemo(() => {
-    return buildClinicalPacket(selected, host, findings, doses);
-  }, [selected.join("|"), JSON.stringify(host), findings, JSON.stringify(doses)]);
+    return buildClinicalPacket(selected, host, findings, doses, { activeBleeding, activeTdp });
+  }, [selected.join("|"), JSON.stringify(host), findings, JSON.stringify(doses), activeBleeding, activeTdp]);
 
   // Focus moves in on open, Tab stays inside, Escape closes, focus returns to the opener.
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -197,6 +200,28 @@ export function ClinicalPacketDialog({
 
         {/* Scrollable Packet Body */}
         <div className="space-y-6 overflow-y-auto p-5 sm:p-7 text-fg leading-relaxed">
+          <div className="no-print flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-muted">Mark only if present now:</span>
+            {([
+              ["Active bleeding", activeBleeding, setActiveBleeding],
+              ["Torsades de pointes (TdP)", activeTdp, setActiveTdp],
+            ] as const).map(([label, on, set]) => (
+              <button
+                key={label}
+                type="button"
+                aria-pressed={on}
+                onClick={() => set(!on)}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 font-medium",
+                  on ? "border-danger bg-danger-soft text-danger" : "border-border bg-bg-sunken text-muted",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+            <span className="text-subtle">Reversal and TdP lines print only when marked.</span>
+          </div>
+
           {/* Document Header & Regulatory Guardrail */}
           <div className="border-b border-border pb-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -500,15 +525,15 @@ export function ClinicalPacketDialog({
                   {packet.riskIndexes.anticoagulation.report.apixabanAbc && (
                     <div className="mt-2 rounded bg-surface/60 p-2 border border-border/50 text-[11px]">
                       <span className="font-mono font-bold text-accent">Apixaban ABC Criteria: </span>
-                      {packet.riskIndexes.anticoagulation.report.apixabanAbc.rationale}
+                      {withoutDose(packet.riskIndexes.anticoagulation.report.apixabanAbc.rationale)}
                     </div>
                   )}
-                  {packet.riskIndexes.anticoagulation.report.reversals.length > 0 && (
+                  {activeBleeding && packet.riskIndexes.anticoagulation.report.reversals.length > 0 && (
                     <div className="mt-2 text-[11px] text-muted">
                       <span className="font-semibold text-fg">Emergency Reversal Pathway: </span>
                       {packet.riskIndexes.anticoagulation.report.reversals.map((rev) => (
                         <span key={rev.agentId} className="block mt-0.5 font-mono">
-                          • {rev.agentName}: {rev.specificAntidote ? `${rev.specificAntidote.name} (${rev.specificAntidote.brand}) — ${rev.specificAntidote.regimen}` : `${rev.nonSpecificAlternative.agent} (${rev.nonSpecificAlternative.dosing})`}
+                          • {rev.agentName}: {reversalLine(rev)}
                         </span>
                       ))}
                     </div>

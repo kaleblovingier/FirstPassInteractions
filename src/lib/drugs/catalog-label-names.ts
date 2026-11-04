@@ -30,8 +30,21 @@ function d(
 const NOTE =
   "Named on a stored current label as contraindicated with another drug. No enzyme grade is stored. Not a milligram.";
 
-/** US market status for label-named shelf rows that are no longer sold normally. Not a dose. */
+/** FDA Safety Communication on Andexxa, December 18, 2025. */
+export const ANDEXXA_FDA_URL =
+  "https://www.fda.gov/safety/medical-product-safety-information/update-safety-andexxa-astrazeneca-fda-safety-communication";
+
+/** Andexxa's US status, quoted from that communication. */
+export const ANDEXXA_US_STATUS =
+  'No longer sold in the US. FDA safety communication, December 18, 2025: the FDA "considers the risks of the product to outweigh its benefits", and Andexxa "will no longer be manufactured for or sold in the U.S. by AstraZeneca after December 22, 2025."';
+
+/** Where Andexxa was the lead specific antidote. Deliberately names no replacement agent. */
+export const ANDEXXA_REVERSAL_NOTE =
+  "No longer sold in the US (FDA safety communication, December 18, 2025). Reversal follows the institution's protocol and the Prescribing Information.";
+
+/** US market status for shelf rows that are no longer sold normally. Not a dose. */
 export const MARKET_STATUS: Record<string, string> = {
+  "andexanet-alfa": `${ANDEXXA_US_STATUS} ${ANDEXXA_FDA_URL}`,
   terfenadine: "Withdrawn from the US market; shown only because a current label still names it.",
   astemizole: "Withdrawn from the US market; shown only because a current label still names it.",
   cisapride:

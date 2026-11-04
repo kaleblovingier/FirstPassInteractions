@@ -5,6 +5,7 @@
  */
 
 import type { Drug, Enzyme, EnzymeRole, PdFlag, Strength, SubstrateSensitivity } from "./types";
+import { MARKET_STATUS } from "./catalog-label-names";
 
 type Row = [string, string, string[], string, string, PdFlag[], string, string[]];
 
@@ -33,7 +34,8 @@ export function enz(s: string): EnzymeRole[] {
 
 function row(r: Row): Drug {
   const [id, name, brands, cls, e, pd, toxicityHint, aliases] = r;
-  return { id, name, brands, cls, aliases, enzymes: enz(e), pd, toxicityHint, kind: "drug" };
+  const note = MARKET_STATUS[id];
+  return { id, name, brands, cls, aliases, enzymes: enz(e), pd, toxicityHint, kind: "drug", ...(note ? { note } : {}) };
 }
 
 const ROWS: Row[] = [

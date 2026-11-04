@@ -293,6 +293,9 @@ export interface Phase1Evaluation {
   transitionTrigger: string;
 }
 
+/** RAMPART midazolam IM bands, picked by weight. */
+const MIDAZOLAM_IM_BANDS = ["10 mg fixed IM (>40 kg)", "5 mg fixed IM (13-40 kg)"] as const;
+
 export function calculatePhase1Dosing(weightKg: number): Phase1Evaluation {
   const safeWeight = Math.max(10, Math.min(200, weightKg || 70));
 
@@ -326,7 +329,7 @@ export function calculatePhase1Dosing(weightKg: number): Phase1Evaluation {
     drugId: "midazolam",
     name: "Midazolam (Versed) IM",
     route: "IM",
-    dosePerKgText: safeWeight > 40 ? "10 mg fixed IM (>40 kg)" : "5 mg fixed IM (13-40 kg)",
+    dosePerKgText: safeWeight > 40 ? MIDAZOLAM_IM_BANDS[0] : MIDAZOLAM_IM_BANDS[1],
     maxSingleDoseMg: 10.0,
     calculatedDoseMg: mdzImDose,
     maxCumulativeDoseMg: 20.0,
@@ -1258,13 +1261,64 @@ export interface StatusEpilepticusReport {
   citations: Citation[];
 }
 
+/** Fields that hold arithmetic on the patient's weight. */
+type WeightMathKey = `calculated${string}` | "patientWeightKg";
+
+/** A report with every weight-derived field removed; the cited per-kg ranges stay. */
+export type WithoutWeightMath<T> = T extends readonly (infer U)[]
+  ? WithoutWeightMath<U>[]
+  : T extends object
+    ? { [K in keyof T as K extends WeightMathKey ? never : K]: WithoutWeightMath<T[K]> }
+    : T;
+
+function withoutWeightMath<T>(v: T): WithoutWeightMath<T> {
+  if (Array.isArray(v)) return v.map(withoutWeightMath) as WithoutWeightMath<T>;
+  if (v && typeof v === "object") {
+    const kept = Object.entries(v).filter(([k]) => !/^calculated|^patientWeightKg$/.test(k));
+    return Object.fromEntries(kept.map(([k, x]) => [k, withoutWeightMath(x)])) as WithoutWeightMath<T>;
+  }
+  return v as WithoutWeightMath<T>;
+}
+
+export const SE_WEIGHT_NEEDED =
+  "No weight was entered, so no weight-based dose is computed. Each regimen keeps its cited per-kg range; enter the patient's weight to size it.";
+
+export type StatusEpilepticusWeightNeeded = WithoutWeightMath<StatusEpilepticusReport> & { weightNeeded: string };
+
+/** With an entered weight the report sizes each regimen; without one (e.g. an API call) it computes no dose. */
 export function statusEpilepticusReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
+  options: StatusEpilepticusReportOptions & { weightKg: number },
+): StatusEpilepticusReport;
+export function statusEpilepticusReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
+  options?: StatusEpilepticusReportOptions,
+): StatusEpilepticusReport | StatusEpilepticusWeightNeeded;
+export function statusEpilepticusReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
+  options?: StatusEpilepticusReportOptions,
+): StatusEpilepticusReport | StatusEpilepticusWeightNeeded {
+  const report = sizedReport(drugIds, host, options);
+  if (options?.weightKg !== undefined) return report;
+  const bare = withoutWeightMath(report);
+  for (const r of bare.phase1.firstLineRegimens) {
+    // The IM band was picked from the weight; with no weight, show both cited bands.
+    if (r.drugId === "midazolam" && r.route === "IM") r.dosePerKgText = MIDAZOLAM_IM_BANDS.join(" or ");
+  }
+  return { ...bare, weightNeeded: SE_WEIGHT_NEEDED };
+}
+
+function sizedReport(
   drugIds: string[],
   host: HostContext,
   options?: StatusEpilepticusReportOptions,
 ): StatusEpilepticusReport {
   const onDesk = statusEpilepticusOnDesk(drugIds);
 
+  // 70 kg only feeds arithmetic that the caller drops when no weight was entered.
   const weightKg = options?.weightKg ?? 70;
   const seizureDuration = options?.seizureDurationMinutes ?? (onDesk.hasPhase3Anesthetic ? 45 : onDesk.hasPhase2Asm ? 25 : 10);
   const crcl = options?.crclMlMin ?? (host.kidney === "ckd" ? 35 : 90);

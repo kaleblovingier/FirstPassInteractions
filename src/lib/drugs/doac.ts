@@ -19,6 +19,7 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
+import { ANDEXXA_REVERSAL_NOTE } from "./catalog-label-names";
 import { type HostContext } from "./types";
 import { crclOf, type CrclResult, type Sex } from "./bedside";
 import { PI_FOOTER, NOT_CLEARED } from "../regulatory";
@@ -944,31 +945,30 @@ export function evaluateReversal(
   }
 
   if (agentId === "apixaban" || agentId === "rivaroxaban") {
-    const lastMg = andexxaParams?.lastDoseMg ?? (agentId === "apixaban" ? 5 : 20);
-    const lastHrs = andexxaParams?.hoursSinceLastDose ?? 4;
-    const andexxaCalc = calculateAndexxaDose(agentId, lastMg, lastHrs);
+    // Size nothing from an assumed last dose: the calculator runs only on entered values.
+    const andexxaCalc = andexxaParams
+      ? calculateAndexxaDose(agentId, andexxaParams.lastDoseMg, andexxaParams.hoursSinceLastDose)
+      : undefined;
 
     return {
       agentId,
       agentName,
       bleedSeverity: severity,
-      headline: `Major Bleed / Urgent Surgery: Andexanet alfa (Andexxa) or 4F-PCC`,
+      headline: "Major Bleed / Urgent Surgery: Andexanet alfa (Andexxa) is no longer sold in the US",
       immediateActions: [
         `DISCONTINUE ${agentName} immediately.`,
         "Establish aggressive volume / red cell resuscitation; maintain mean arterial pressure.",
-        "Administer specific reversal agent (Andexanet alfa) OR 4-Factor PCC (Kcentra) per hospital emergency protocol.",
+        `Andexanet alfa (Andexxa): ${ANDEXXA_REVERSAL_NOTE}`,
         "Consider activated charcoal 50 g PO if ingested within the last 2 hours.",
       ],
       specificAntidote: {
         name: "Andexanet alfa",
         brand: "Andexxa",
         mechanism: "Recombinant modified human factor Xa decoy protein that binds and sequesters factor Xa inhibitors (apixaban, rivaroxaban) with high affinity.",
-        regimen: andexxaCalc.isHighDose
-          ? "High-Dose: 800 mg IV bolus @ 30 mg/min + 8 mg/min IV infusion × 120 min (total 1,760 mg)"
-          : "Low-Dose: 400 mg IV bolus @ 30 mg/min + 4 mg/min IV infusion × 120 min (total 880 mg)",
+        regimen: ANDEXXA_REVERSAL_NOTE,
         fdaApproved: true,
       },
-      andexxaCalc,
+      ...(andexxaCalc ? { andexxaCalc } : {}),
       nonSpecificAlternative: {
         agent: "4-Factor Prothrombin Complex Concentrate (4F-PCC / Kcentra)",
         dosing: "50 units/kg IV (max 5,000 units) OR fixed dose 2,000 units IV over 10–15 minutes.",
@@ -1001,7 +1001,7 @@ export function evaluateReversal(
         "DISCONTINUE edoxaban immediately.",
         "Establish hemodynamic resuscitation.",
         "Administer 4-Factor PCC 50 units/kg (max 5,000 units).",
-        "Note: Andexanet alfa is not FDA-approved for edoxaban, though off-label use is reported in select registries.",
+        "Note: Andexanet alfa is not FDA-approved for edoxaban, though off-label use is reported in select registries. It is no longer sold in the US (FDA safety communication, December 18, 2025).",
       ],
       specificAntidote: null,
       nonSpecificAlternative: {

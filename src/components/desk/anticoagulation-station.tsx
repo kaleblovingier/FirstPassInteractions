@@ -1144,6 +1144,8 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
               </Badge>
             </div>
 
+            <p className="text-[11px] leading-relaxed text-danger">{andexCalc.marketStatus}</p>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-medium text-muted">Target Agent</label>
