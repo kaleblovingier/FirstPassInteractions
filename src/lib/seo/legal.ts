@@ -81,7 +81,7 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "browser",
       title: "What stays in your browser",
       paras: [
-        "The drugs on your desk, host toggles, any amounts you type, study marks, lab-book answers, saved briefs, recent trays, watch pins, a search-shortcut setting and your license key are kept in your browser's local storage. They are not sent to a FirstPass database (there is none). Clearing site data for this site removes them.",
+        "The drugs on your desk, host toggles, any amounts you type, study marks, practice scores, lab-book answers, saved briefs, recent trays, watch pins, a search-shortcut setting and your license key are kept in your browser's local storage. They are not sent to a FirstPass database (there is none). Clearing site data for this site removes them.",
         "Your license key is sent to the server when it is checked. The server checks its signature and does not store it.",
       ],
     },
@@ -92,7 +92,7 @@ export const PRIVACY_DOC: LegalDoc = {
         "Live lookups: catalog drug names or ids. The server asks public sources (OpenFDA, NLM RxNorm and RxClass, PubChem, DailyMed, ClinicalTrials.gov, PubMed, CPIC, PsychonautWiki, TripSit) by drug name. Host toggles and typed amounts are not sent.",
         "\"Ask the three readers\": only when you press it, a short brief built from the check on screen (drug names, top rows, sources) is sent to xAI's API. Answers are kept in server memory for up to 10 minutes.",
         "Interaction API: software that calls FirstPass's interaction API sends drug names and, if it chooses, context such as age, sex, weight, kidney function or eGFR, urine pH, pregnancy, breastfeeding or smoking status. Do not send names, record numbers, dates or any other identifier. The server uses the context to compute the answer and keeps the context and the computed answer in server memory for up to 10 minutes so a repeat request is fast. It does not write them to disk or a database, and FirstPass's own logs do not record the request body. The desk itself does not use this API.",
-        "Program inquiry form (/for-programs): your name, work email, organization and message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
+        "Program inquiry form (/for-programs): your name, work email, organization, role, program type, seat count, years and start date, and your message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
         "Lost-key recovery (/recover): Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent.",
         "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
         "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
@@ -161,7 +161,8 @@ export const COOKIES_DOC: LegalDoc = {
       id: "storage",
       title: "Local and session storage",
       paras: [
-        "The desk keeps your work (drugs on the desk, toggles, study marks, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and stays in your browser. FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored. Clear site data to remove it.",
+        "The desk keeps your work (drugs on the desk, toggles, study marks, practice scores, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and stays in your browser. FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored. Clear site data to remove it.",
+        "The desk also uses your browser's cache storage (a service worker) so pages open offline. It holds copies of FirstPass pages and files, not your desk.",
       ],
     },
     { id: "changes", title: "Changes", paras: [`Effective ${LEGAL_EFFECTIVE}.`] },
