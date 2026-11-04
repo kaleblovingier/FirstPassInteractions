@@ -111,7 +111,7 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "processors",
       title: "Who else handles data",
       paras: [
-        "Vercel (hosting and request logs), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI (only when you use the readers), and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
+        "Vercel (hosting and request logs), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI, when you use the readers, and xAI's Grok connector service, which the operator may use to read payment emails and draft key emails in the FirstPass Gmail inbox, and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
       ],
     },
     {
