@@ -16,7 +16,7 @@ public summary is the `/trust` page (`src/routes/trust.tsx`, copy in `src/lib/se
 
 Related documents elsewhere in the repo:
 
-- Accessibility Conformance Report (draft): `docs/accessibility/ACR-WCAG22.md`
+- Accessibility Conformance Report (draft, refreshed 2026-11-05): `docs/accessibility/ACR-WCAG22.md`
 - Validation reports: `docs/validation/label-gold-set.md`, `docs/validation/fda-ddi-agreement.md`, `docs/validation/severity-whatif.md`
 - Pharmacist sign-off packet: `docs/clinical-review/signoff-packet.md`
 - Regulatory self-assessment: `docs/regulatory/gap-assessment.md`
@@ -46,7 +46,7 @@ The operator must confirm or fix each of these. The HECVAT draft marks each one
 17. **The public `/api/cds/*` API.** Whether it should stay public without authentication or rate limits (9.7).
 18. **Change management.** Review steps before a push to `main`, which deploys straight to production (9.8).
 19. **Subprocessor list.** Complete for the accounts in use; provider terms accepted (section 10).
-20. **ACR.** The ACR says not to send it until Kaleb has reviewed every row. Its contact email differs from FirstPassInteractions@gmail.com, and its 2.1.4 row may be stale (11.1, 11.3).
+20. **ACR.** Refreshed 2026-11-05 against main after #222. Still a draft: do not send it until Kaleb has reviewed every row. The contact line is still kaleblovingier@gmail.com, not FirstPassInteractions@gmail.com. HECVAT section 11 and the public trust blurb still quote the 2026-10-12 row counts (11.1, 11.3).
 21. **PCI SAQ type** with Stripe (section 13).
 22. **SLA, disaster recovery, key-person risk.** Do not quote uptime numbers (12.3, 12.4).
 
