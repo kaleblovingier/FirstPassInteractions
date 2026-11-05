@@ -4,6 +4,7 @@ import type {
   DailyMedHit,
   FaersHit,
   FdaLabel,
+  LiveSource,
   LiveSources,
   NdcHit,
   PubchemCard,
@@ -29,17 +30,18 @@ import { BoundedLRUCache } from "../server/cache";
 import { fetchJson, joinNames, sharedFailurePhrase } from "../server/http";
 import { errorKind, logEvent } from "../server/log";
 
-export type { DailyMedHit, FaersHit, FdaLabel, LiveSources, NdcHit, PubchemCard, RecallHit, RxnormCard, ShortageHit };
-
-export type LiveSource =
-  | "label"
-  | "faers"
-  | "rxnorm"
-  | "pubchem"
-  | "dailymed"
-  | "shortage"
-  | "ndc"
-  | "recalls";
+export type {
+  DailyMedHit,
+  FaersHit,
+  FdaLabel,
+  LiveSource,
+  LiveSources,
+  NdcHit,
+  PubchemCard,
+  RecallHit,
+  RxnormCard,
+  ShortageHit,
+};
 
 /** A lookup plus the sources that failed to answer — "no match" is an answer, not a failure. */
 export interface LiveOutcome {
@@ -295,27 +297,56 @@ async function fetchNdc(name: string, signal: AbortSignal): Promise<NdcHit[]> {
     }));
 }
 
+/** UTC midnight for YYYYMMDD or YYYY-MM-DD. Anything else, including an impossible calendar day, is unparsed. */
+function initiationMillis(date: string): number | null {
+  const compact = /^(\d{4})(\d{2})(\d{2})$/.exec(date.trim());
+  const dashed = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date.trim());
+  const hit = compact ?? dashed;
+  if (!hit) return null;
+  const year = Number(hit[1]);
+  const month = Number(hit[2]);
+  const day = Number(hit[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  const ms = Date.UTC(year, month - 1, day);
+  const parsed = new Date(ms);
+  if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) return null;
+  return ms;
+}
+
+/** Newest parseable initiation date first. Unparsed dates keep their relative order after the dated rows. */
+export function orderEnforcementByInitiation<T extends { date: string }>(rows: readonly T[]): T[] {
+  return rows
+    .map((row, index) => ({ row, index, ms: initiationMillis(row.date) }))
+    .sort((a, b) => {
+      if (a.ms == null && b.ms == null) return a.index - b.index;
+      if (a.ms == null) return 1;
+      if (b.ms == null) return -1;
+      if (a.ms !== b.ms) return b.ms - a.ms;
+      return a.index - b.index;
+    })
+    .map((item) => item.row);
+}
+
 async function fetchRecalls(name: string, signal: AbortSignal): Promise<RecallHit[]> {
   const q = encodeURIComponent(`product_description:"${name}"`);
   const json = (await getJson(
-    `https://api.fda.gov/drug/enforcement.json?search=${q}&limit=4`,
+    `https://api.fda.gov/drug/enforcement.json?search=${q}&sort=recall_initiation_date:desc&limit=4`,
     "openfda.enforcement",
     signal,
     true,
   )) as { results?: unknown } | null;
-  return rowsOf<{
+  const hits = rowsOf<{
     reason_for_recall?: string;
     status?: string;
     recall_initiation_date?: string;
     classification?: string;
-  }>(json?.results)
-    .slice(0, 3)
-    .map((r) => ({
-      reason: clip(String(r?.reason_for_recall ?? "Recall"), 180),
-      status: String(r?.status ?? ""),
-      date: String(r?.recall_initiation_date ?? "").slice(0, 10),
-      classification: String(r?.classification ?? ""),
-    }));
+  }>(json?.results).map((r) => ({
+    reason: clip(String(r?.reason_for_recall ?? "Recall"), 180),
+    status: String(r?.status ?? ""),
+    date: String(r?.recall_initiation_date ?? "").slice(0, 10),
+    classification: String(r?.classification ?? ""),
+  }));
+  return orderEnforcementByInitiation(hits).slice(0, 3);
 }
 
 const ALIAS: Record<string, string> = {
@@ -369,6 +400,13 @@ function failedReason(labeled: boolean, failures: Failure[]): string {
   return `Live sources ${failedPhrase(failures)} — the label excerpt is unavailable; the Prescribing Information still governs.`;
 }
 
+function pulled(sources: LiveSources, failed: LiveSource[]): LiveOutcome {
+  return {
+    sources: { ...sources, failed, fetchedAt: new Date().toISOString() },
+    failed,
+  };
+}
+
 async function pullLive(query: string, chem: string, preferred: readonly string[]): Promise<LiveOutcome> {
   const signal = AbortSignal.timeout(LOOKUP_BUDGET_MS);
   const labeled = Boolean(query);
@@ -397,13 +435,13 @@ async function pullLive(query: string, chem: string, preferred: readonly string[
   const attempted = labeled ? LABELED_SOURCES : UNLABELED_SOURCES;
   const failed = attempted.filter((s) => failures.some((f) => f.source === s));
   if (failed.length === attempted.length) {
-    return {
-      sources: { ok: false, query: query || chem, ...EMPTY_LIVE, reason: failedReason(labeled, failures) },
+    return pulled(
+      { ok: false, query: query || chem, ...EMPTY_LIVE, reason: failedReason(labeled, failures) },
       failed,
-    };
+    );
   }
-  return {
-    sources: {
+  return pulled(
+    {
       ok: true,
       query: query || chem,
       label,
@@ -417,7 +455,7 @@ async function pullLive(query: string, chem: string, preferred: readonly string[
       reason: partialReason(labeled, failures),
     },
     failed,
-  };
+  );
 }
 
 /** Full answers keep for 30 minutes, partial ones briefly, total failures not at all. */
@@ -435,27 +473,37 @@ function logLookup(cache: "hit" | "miss", started: number, outcome: LiveOutcome)
   });
 }
 
+export interface LiveLookupOptions {
+  /** Skip liveCache for this pin and pull again. The RxClass cache is not touched. */
+  bypassCache?: boolean;
+}
+
 /** Like lookupLive, plus which sources failed — rxnav needs to know a label went unscanned. */
-export async function lookupLiveOutcome(id: string, name: string): Promise<LiveOutcome> {
+export async function lookupLiveOutcome(
+  id: string,
+  name: string,
+  options?: LiveLookupOptions,
+): Promise<LiveOutcome> {
   const query = liveQueryName(id, name);
   const chem = (query || name)
     .replace(/\(.*?\)/g, "")
     .replace(/[\u2010-\u2015]/g, "-")
     .trim();
   if (!chem) {
-    return {
-      sources: { ok: true, query: name, ...EMPTY_LIVE, reason: "No live label for this item." },
-      failed: [],
-    };
+    return pulled({ ok: true, query: name, ...EMPTY_LIVE, reason: "No live label for this item." }, []);
   }
 
   const preferred = noteSetids(id);
   const cacheKey = liveCacheKey(chem, preferred);
   const started = Date.now();
-  const cached = liveCache.get(cacheKey);
-  if (cached) {
-    logLookup("hit", started, cached);
-    return cached;
+  if (options?.bypassCache) {
+    liveCache.delete(cacheKey);
+  } else {
+    const cached = liveCache.get(cacheKey);
+    if (cached) {
+      logLookup("hit", started, cached);
+      return cached;
+    }
   }
   try {
     const outcome = await liveCache.getOrFetch(cacheKey, () => pullLive(query, chem, preferred), liveTtl);
@@ -469,13 +517,13 @@ export async function lookupLiveOutcome(id: string, name: string): Promise<LiveO
     });
     const labeled = Boolean(query);
     const failures = (labeled ? LABELED_SOURCES : UNLABELED_SOURCES).map((source) => ({ source, error }));
-    return {
-      sources: { ok: false, query: query || chem, ...EMPTY_LIVE, reason: failedReason(labeled, failures) },
-      failed: failures.map((f) => f.source),
-    };
+    return pulled(
+      { ok: false, query: query || chem, ...EMPTY_LIVE, reason: failedReason(labeled, failures) },
+      failures.map((f) => f.source),
+    );
   }
 }
 
-export async function lookupLive(id: string, name: string): Promise<LiveSources> {
-  return (await lookupLiveOutcome(id, name)).sources;
+export async function lookupLive(id: string, name: string, options?: LiveLookupOptions): Promise<LiveSources> {
+  return (await lookupLiveOutcome(id, name, options)).sources;
 }

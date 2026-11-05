@@ -13,7 +13,7 @@ export const lookupLiveSources = createServerFn({ method: "POST" })
     if (!data.ok) return miss("", "Not on this shelf.");
     const drug = DRUG_BY_ID[data.value.id]!;
     const { lookupLive } = await import("./live.server");
-    return lookupLive(drug.id, drug.name);
+    return lookupLive(drug.id, drug.name, { bypassCache: data.value.refresh === true });
   });
 
 export const lookupRxnavInteractions = createServerFn({ method: "POST" })
