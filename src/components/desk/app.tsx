@@ -53,6 +53,7 @@ import { feedbackMailto } from "@/lib/drugs/feedback";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { MonographNote } from "@/components/label-freshness";
 import { DrugSearch } from "./search";
 import { FindingList } from "./findings";
 import { DeskCoach } from "./coach";
@@ -1095,7 +1096,7 @@ function SingleDrug({ id }: { id: string }) {
         {nmda ? ` · ${KETAMINE_ROUTE_LABEL[route]}` : ""}
         {thc ? ` · ${CANNABIS_ROUTE_LABEL[cannabisRoute]}` : ""}
       </p>
-      {drug.note ? <p className="mt-3 text-sm leading-relaxed text-fg">{drug.note}</p> : null}
+      {drug.note ? <MonographNote note={drug.note} /> : null}
       <div className="mt-5 grid gap-4 sm:grid-cols-3">
         <RoleList title="Substrate of" rows={subs} empty="No mapped CYP substrate" />
         <RoleList title="Inhibits" rows={inhs} empty="Not a mapped inhibitor" />

@@ -171,6 +171,18 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     assert.equal(urls.length, 9, "second lookup is served from cache");
   });
 
+  it("reads OpenFDA effective_time as a day and does not invent one", async () => {
+    stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      const row = { ...WARFARIN_LABEL.results[0], effective_time: "20240501" };
+      return json({ results: [row] });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.equal(live.label?.effectiveTime, "2024-05-01");
+    assert.equal(live.label?.setId, "set-warfarin");
+    assert.equal(live.label?.boxed, "WARNING: BLEEDING RISK");
+  });
+
   it("keeps the other sources and names the label failure when OpenFDA's label call fails", async () => {
     stubFetch((url) => (url.includes("label.json") ? json({ error: "boom" }, 500) : healthyRoute(url)));
     const outcome = await lookupLiveOutcome("warfarin", "Warfarin");
@@ -279,7 +291,12 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     assert.match(live.label?.identity ?? "", new RegExp(noteSet.toUpperCase()));
     assert.match(live.label?.identity ?? "", /OpenFDA id openfda-note/);
     assert.match(live.label?.identity ?? "", new RegExp(OPENFDA_NO_DATE));
-    assert.doesNotMatch(live.label?.identity ?? "", /which differs/);
+    const stored = labelVersions.labels[noteSet]?.effective;
+    assert.equal(stored, "2026-02-10");
+    assert.match(
+      live.label?.identity ?? "",
+      new RegExp(`Stored label version for this setid is dated ${stored}, which differs`),
+    );
     const labelUrl = urls.find((u) => u.includes("label.json")) ?? "";
     assert.match(labelUrl, /[?&]limit=(?:[2-9]|\d{2,})\b/);
   });

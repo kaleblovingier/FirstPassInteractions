@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LiveLabelDates } from "@/components/label-freshness";
 
 type Tab = "drugbank" | "pgx" | "stahl" | "pubmed" | "fda" | "rxnorm" | "liver" | "pubchem" | "trials" | "lactmed";
 
@@ -310,9 +311,12 @@ function FdaPanel({ id }: { id: string }) {
             </p>
           ) : null}
           {label.setId ? (
-            <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(label.setId)}`}>
-              Open DailyMed
-            </Out>
+            <>
+              <LiveLabelDates setid={label.setId} liveDate={label.effectiveTime} />
+              <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(label.setId)}`}>
+                Open DailyMed
+              </Out>
+            </>
           ) : (
             <Out href={`https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=${encodeURIComponent(drug.name)}`}>
               Search DailyMed
@@ -328,6 +332,7 @@ function FdaPanel({ id }: { id: string }) {
               <li key={d.setId} className="rounded-md bg-bg-sunken px-3 py-2">
                 <p className="text-sm text-fg">{d.title}</p>
                 {d.published ? <p className="font-mono text-[11px] text-muted">{d.published}</p> : null}
+                <LiveLabelDates setid={d.setId} liveDate={d.published} />
                 <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(d.setId)}`}>
                   Open SPL
                 </Out>
