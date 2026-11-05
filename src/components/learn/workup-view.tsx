@@ -293,7 +293,7 @@ function PairOutcomeView({ r }: { r: PairResult }) {
   );
 }
 
-/** A desk finding: grade, kind, headline and mechanism; with `sourceFor`, its lead source too. */
+/** A desk finding: grade, kind, headline and mechanism; with `sourceFor`, the desk's "Why this grade" basis too. */
 function FindingLine({ f, sourceFor }: { f: Finding; sourceFor?: string }) {
   const b = sourceFor ? leadGradeBasis(f) : null;
   return (
@@ -311,7 +311,8 @@ function FindingLine({ f, sourceFor }: { f: Finding; sourceFor?: string }) {
       </p>
       {b ? (
         <div className="mt-2 border-t border-border pt-2" data-testid="workup-source" data-basis-kind={b.kind}>
-          <p className="text-xs font-medium text-fg">Source: {b.title}</p>
+          <p className={KICKER}>Why this grade</p>
+          <p className="mt-1 text-xs font-medium text-fg">{b.title}</p>
           <p className="mt-0.5 text-xs leading-relaxed text-muted">{b.detail}</p>
           {b.href ? (
             <a
