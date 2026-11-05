@@ -14,6 +14,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as EnzymesRouteImport } from './routes/enzymes'
 import { Route as ForProgramsRouteImport } from './routes/for-programs'
 import { Route as GlossaryRouteImport } from './routes/glossary'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -53,6 +54,11 @@ const ForProgramsRoute = ForProgramsRouteImport.update({
 const GlossaryRoute = GlossaryRouteImport.update({
   id: '/glossary',
   path: '/glossary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PairsRoute = PairsRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/glossary': typeof GlossaryRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/glossary': typeof GlossaryRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/glossary': typeof GlossaryRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/enzymes'
     | '/for-programs'
     | '/glossary'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/enzymes'
     | '/for-programs'
     | '/glossary'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/enzymes'
     | '/for-programs'
     | '/glossary'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   EnzymesRoute: typeof EnzymesRoute
   ForProgramsRoute: typeof ForProgramsRoute
   GlossaryRoute: typeof GlossaryRoute
+  HelpRoute: typeof HelpRoute
   PairsRoute: typeof PairsRoute
   PracticeRoute: typeof PracticeRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/glossary'
       fullPath: '/glossary'
       preLoaderRoute: typeof GlossaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pairs': {
@@ -441,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnzymesRoute: EnzymesRoute,
   ForProgramsRoute: ForProgramsRoute,
   GlossaryRoute: GlossaryRoute,
+  HelpRoute: HelpRoute,
   PairsRoute: PairsRoute,
   PracticeRoute: PracticeRoute,
   PrivacyRoute: PrivacyRoute,
