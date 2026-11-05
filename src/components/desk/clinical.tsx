@@ -1157,7 +1157,7 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
             <dt className="text-[10px] uppercase tracking-wide text-muted">De-indexed eGFR</dt>
             <dd className="font-mono text-lg text-fg">{renal?.absolute ?? "—"}</dd>
             <dd className="text-[11px] text-muted">
-              {renal?.bsa ? `mL/min · Du Bois BSA ${renal.bsa} m²` : renal ? "mL/min · needs height and weight" : "mL/min"}
+              {renal?.bsa ? `mL/min · Du Bois BSA ${renal.bsa} m²` : renal ? "mL/min · needs height and weight" : "mL/min"}
             </dd>
           </div>
           <div className="rounded bg-bg-sunken p-2">
