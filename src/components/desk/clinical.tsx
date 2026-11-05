@@ -11,6 +11,8 @@ import {
   correctedSodiumOf,
   crclOf,
   crclWeightComparisonOf,
+  egfrBlockedReason,
+  egfrOf,
   osmolarGapOf,
   phenytoinCorrected,
   qtcOf,
@@ -1031,8 +1033,18 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
   const [wt, setWt] = useState("70");
   const [scr, setScr] = useState("1.0");
   const [sex, setSex] = useState<Sex>("male");
+  const [ht, setHt] = useState("175");
+  const [cysC, setCysC] = useState("");
   const qtc = qtcOf({ qtMs: Number(qt), hr: Number(hr) });
   const crcl = crclOf({ age: Number(age), weightKg: Number(wt), scr: Number(scr), sex });
+  const renal = egfrOf({
+    age: Number(age),
+    sex,
+    scr: Number(scr),
+    cystatinC: cysC.trim() ? Number(cysC) : undefined,
+    heightCm: Number(ht),
+    weightKg: Number(wt),
+  });
   const showCows = cowsWanted(ids) || ids.length === 0;
   const showCiwa = ciwaWanted(ids, host.alcohol) || ids.includes("ethanol");
   const precip = ids.includes("buprenorphine") && ids.some((id) =>
@@ -1075,8 +1087,10 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
         {qtc ? <p className="mt-2 text-sm leading-relaxed text-fg">{qtc.note}</p> : null}
       </article>
       <article>
-        <h3 className="font-serif text-lg tracking-tight text-fg">CrCl</h3>
-        <p className="mt-1 text-xs text-muted">Cockcroft–Gault. Flip CKD on the host to score the clinic cards.</p>
+        <h3 className="font-serif text-lg tracking-tight text-fg">CrCl and eGFR</h3>
+        <p className="mt-1 text-xs text-muted">
+          Cockcroft–Gault beside the race-free CKD-EPI 2021 eGFR, adults only. Flip CKD on the host to score the clinic cards.
+        </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <label className="text-xs text-muted">
             Age
@@ -1100,7 +1114,7 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
                   aria-pressed={sex === s}
                   onClick={() => setSex(s)}
                   className={cn(
-                    "h-10 flex-1 rounded-full text-xs font-medium",
+                    "h-11 flex-1 rounded-full text-xs font-medium",
                     sex === s ? "bg-ink text-bg" : "bg-bg-sunken text-muted",
                   )}
                 >
@@ -1109,20 +1123,71 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
               ))}
             </div>
           </div>
+          <label className="text-xs text-muted">
+            Height (cm)
+            <Input className="mt-1" inputMode="decimal" value={ht} onChange={(e) => setHt(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Cystatin C (mg/L)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              placeholder="optional"
+              value={cysC}
+              onChange={(e) => setCysC(e.target.value)}
+            />
+          </label>
         </div>
-        {crcl ? (
-          <p className="mt-3 text-sm text-fg">
-            CrCl ≈ <span className="font-mono">{crcl.crcl}</span> mL/min
-            {crcl.band !== "usual" ? (
-              <Badge className="ml-2" tone={crcl.band === "severe" ? "danger" : "warn"}>
-                {crcl.band}
-              </Badge>
-            ) : null}
+        <dl aria-live="polite" className="mt-3 grid grid-cols-2 gap-2">
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">Cockcroft–Gault CrCl</dt>
+            <dd className="font-mono text-lg text-fg">{crcl ? crcl.crcl : "—"}</dd>
+            <dd className="text-[11px] text-muted">
+              mL/min
+              {crcl && crcl.band !== "usual" ? (
+                <Badge className="ml-2" tone={crcl.band === "severe" ? "danger" : "warn"}>
+                  {crcl.band}
+                </Badge>
+              ) : null}
+            </dd>
+          </div>
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">CKD-EPI 2021 eGFR</dt>
+            <dd className="font-mono text-lg text-fg">{renal ? renal.egfr : "—"}</dd>
+            <dd className="text-[11px] text-muted">mL/min/1.73 m²{renal ? ` · ${renal.equation}` : ""}</dd>
+          </div>
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">De-indexed eGFR</dt>
+            <dd className="font-mono text-lg text-fg">{renal?.absolute ?? "—"}</dd>
+            <dd className="text-[11px] text-muted">
+              {renal?.bsa ? `mL/min · Du Bois BSA ${renal.bsa} m²` : renal ? "mL/min · needs height and weight" : "mL/min"}
+            </dd>
+          </div>
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">KDIGO G category</dt>
+            <dd className="font-mono text-lg text-fg">{renal ? renal.g.category : "—"}</dd>
+            <dd className="text-[11px] text-muted">{renal ? renal.g.label : "Needs an eGFR"}</dd>
+          </div>
+        </dl>
+        {crcl ? null : <p className="mt-2 text-sm text-muted">Age 18–110, weight 30–250 kg, SCr {'>'} 0.</p>}
+        {renal ? null : <p className="mt-2 text-sm text-muted">{egfrBlockedReason(Number(age))}</p>}
+        {renal?.byMarker ? (
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
+            Creatinine alone {renal.byMarker.cr} · cystatin C alone {renal.byMarker.cys} · both {renal.byMarker.both} (mL/min/1.73 m²)
           </p>
-        ) : (
-          <p className="mt-3 text-sm text-muted">Age 18–110, weight 30–250 kg, SCr {'>'} 0.</p>
-        )}
+        ) : null}
         {crcl ? <p className="mt-2 text-sm leading-relaxed text-fg">{crcl.note}</p> : null}
+        <p className="mt-2 text-sm leading-relaxed text-fg">
+          Why they differ: Cockcroft–Gault estimates creatinine clearance in mL/min and uses body weight. CKD-EPI estimates
+          GFR from creatinine (and cystatin C, if entered), age and sex, scaled to a standard body size of 1.73 m², with no
+          race term. For a much larger or smaller person, the de-indexed eGFR in mL/min is the fair comparison with CrCl. Drug
+          labels may set kidney cutoffs on either number, so check which one the label uses.
+        </p>
+        <p className="mt-1 text-[11px] leading-relaxed text-subtle">
+          A G category describes this one value; CKD needs kidney abnormalities lasting 3 months or more. Sources: Inker,
+          NEJM 2021; KDIGO 2024 CKD guideline (G categories, Practice Point 4.2.4); FDA renal impairment PK guidance (March
+          2024).
+        </p>
         {host.kidney === "ckd" ? (
           <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-accent">CKD is already on this host</p>
         ) : null}
