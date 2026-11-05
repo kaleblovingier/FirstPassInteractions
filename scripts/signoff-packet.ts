@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 import { DRUGS, DRUG_BY_ID } from "../src/lib/drugs/catalog.ts";
 import { analyze } from "../src/lib/drugs/engine.ts";
 import { basisFor } from "../src/lib/drugs/basis.ts";
+import { LABEL_CONTRAINDICATED_TAG } from "../src/lib/drugs/label-contraindications.ts";
 import type { Drug, Finding, Severity } from "../src/lib/drugs/types.ts";
 
 type Section = "pd" | "pk" | "clock" | "washout";
@@ -34,6 +35,8 @@ interface RuleAgg {
   pubmedPairs: number;
   /** PK only: per-enzyme finding counts. */
   enzymes: Map<string, number>;
+  /** Findings in this row tagged label-contraindicated. */
+  labelPinned: number;
 }
 
 const HIGH: Severity[] = ["contraindicated", "major"];
@@ -54,7 +57,7 @@ function pkParse(f: Finding) {
   return { kind, strength, sens, nti, pathway };
 }
 
-function pkTrigger(p: ReturnType<typeof pkParse>): { title: string; trigger: string; key: string } {
+function pkTrigger(p: ReturnType<typeof pkParse>, pinned: boolean): { title: string; trigger: string; key: string } {
   const victim =
     p.pathway === "activation"
       ? "a prodrug that needs the enzyme for activation"
@@ -77,12 +80,25 @@ function pkTrigger(p: ReturnType<typeof pkParse>): { title: string; trigger: str
         : `a substrate graded "${ntiGroup}" on the same enzyme`;
   const prodrugNote = p.kind === "inhibitor" ? " Prodrug (activation) substrates are graded the same way for inhibitors." : "";
   void victim;
+  const setup = `One drug is a ${p.strength} ${p.kind} of an enzyme (CYP or P-gp) and the other is ${victimGroup}.`;
+  // pkSeverity() never returns contraindicated. A row at that tier is the label pin.
+  const trigger = pinned
+    ? `${setup} This row reads Avoid together only because the finding is tagged \`${LABEL_CONTRAINDICATED_TAG}\` (\`applyLabelPins\`). \`pkSeverity()\` does not return contraindicated.${prodrugNote}`
+    : `${setup} Severity comes from pkSeverity() in engine.ts, not from a label lookup.${prodrugNote}`;
   return {
     key,
     title: `CYP/P-gp ${p.kind === "inhibitor" ? "inhibition" : "induction"}: ${p.strength} ${p.kind} × ${ntiGroup === "sensitive-or-NTI" ? "sensitive/NTI" : ntiGroup} substrate`,
-    trigger: `One drug is a ${p.strength} ${p.kind} of an enzyme (CYP or P-gp) and the other is ${victimGroup}. Severity comes from pkSeverity() in engine.ts, not from a label lookup.${prodrugNote}`,
+    trigger,
   };
 }
+
+/** Section 2 legend. Mirrors pkSeverity() in engine.ts; that function has no contraindicated branch. */
+export const PK_SEVERITY_LEGEND = [
+  `\`pkSeverity()\` never returns contraindicated. It stops at major (Serious concern) or lower. Avoid together on a CYP or P-gp row in this section is a \`${LABEL_CONTRAINDICATED_TAG}\` pin (\`applyLabelPins\`), not enzyme math.`,
+  "Inhibitors, including prodrug (activation) substrates: strong × sensitive or narrow-index → major; strong × major substrate → major; strong × otherwise → moderate; moderate × sensitive or narrow-index → major; moderate × major substrate → moderate; moderate × otherwise → minor; weak × sensitive or narrow-index → moderate; weak × otherwise → minor.",
+  "Inducers on a clearance pathway: strong × any substrate, including minor → major; moderate × sensitive, narrow-index, or major → major; moderate × otherwise → moderate; weak → minor.",
+  "Inducers on a prodrug (activation) pathway ignore sensitivity: strong → major; moderate → moderate; weak → minor.",
+].join(" ");
 
 function sourceFor(f: Finding): { label?: string; pubmed: boolean } {
   const basis = basisFor(f);
@@ -103,7 +119,7 @@ export interface PacketData {
   rules: RuleAgg[];
   pairsScanned: number;
   drugs: number;
-  pkContra: { findings: number; pgp: number; pairs: number; pairsOnlyPk: number };
+  pkContra: { findings: number; pgp: number; pairs: number; pairsOnlyPk: number; tagged: number };
   ghb: { pairs: number; hypnoticOrAlcohol: number; other: number };
   pgp: { strong: number; moderate: number; weak: number; contraFindings: number; majorFindings: number };
 }
@@ -114,6 +130,7 @@ export function collect(): PacketData {
   let pairsScanned = 0;
   let pkContraFindings = 0;
   let pkContraPgp = 0;
+  let pkContraTagged = 0;
   const pkContraPairs = new Set<string>();
   const pairsOtherContra = new Set<string>();
   const ghbPartners = { pairs: 0, hypnoticOrAlcohol: 0, other: 0 };
@@ -133,14 +150,17 @@ export function collect(): PacketData {
         let title: string;
         let trigger: string;
         if (f.kind === "pk" && suffix.startsWith("pk-") && !suffix.startsWith("pk-comp")) {
+          const pinned = f.severity === "contraindicated" && f.tags.includes(LABEL_CONTRAINDICATED_TAG);
           const p = pkParse(f);
-          const t = pkTrigger(p);
-          key = `${t.key}|${f.severity}`;
+          const t = pkTrigger(p, pinned);
+          // Pinned Avoid-together rows are not a pkSeverity() return. Keep them off the math key.
+          key = pinned ? `${t.key}|${LABEL_CONTRAINDICATED_TAG}` : `${t.key}|${f.severity}`;
           section = "pk";
           title = t.title;
           trigger = t.trigger;
           if (f.severity === "contraindicated") {
             pkContraFindings++;
+            if (f.tags.includes(LABEL_CONTRAINDICATED_TAG)) pkContraTagged++;
             if (f.enzymes.includes("P-gp")) pkContraPgp++;
             pkContraPairs.add(pairKey);
           }
@@ -157,11 +177,25 @@ export function collect(): PacketData {
               ? "protocolFindings() in cyp-protocol.ts: a perpetrator on the clock index list has a victim on the desk. Major when the card's grade is strong or its tone is danger."
               : "protocolFindings(): the perpetrator card is flagged as hitting both CYP3A4 and P-gp, and a victim is on the desk.";
         } else if (suffix.startsWith("washout-")) {
-          key = `washout|${f.severity}`;
+          const lifted = f.severity === "contraindicated" && f.tags.includes(LABEL_CONTRAINDICATED_TAG);
           section = "washout";
-          title = "Washout clock with a serotonergic / stimulant / MAOI partner";
-          trigger =
-            "washoutFindings(): a drug with a WASHOUT entry (host.ts) is on the desk with another real drug, and some other drug is serotonergic, a stimulant, or an MAOI. Major in that case, moderate otherwise.";
+          if (lifted) {
+            key = "washout|holdWashoutLabelPins";
+            title = "Washout clock lifted by holdWashoutLabelPins()";
+            trigger = `washoutFindings() returns major when a drug with a WASHOUT entry (host.ts) shares the desk with a serotonergic, stimulant, or MAOI partner, and moderate otherwise. It does not return contraindicated. These pairs read Avoid together because holdWashoutLabelPins() lifted that clock for a pharmacodynamic label pin (origin pd, no enzyme, no kind) and tagged the finding \`${LABEL_CONTRAINDICATED_TAG}\`.`;
+          } else {
+            key = `washout|${f.severity}`;
+            title = "Washout clock with a serotonergic / stimulant / MAOI partner";
+            trigger =
+              "washoutFindings(): a drug with a WASHOUT entry (host.ts) is on the desk with another real drug, and some other drug is serotonergic, a stimulant, or an MAOI. Major in that case, moderate otherwise.";
+          }
+        } else if (suffix.startsWith("label-ci")) {
+          const g = genericKey(suffix, a, b);
+          key = `${g}|${f.severity}`;
+          section = "pd";
+          title = `${f.mechanism}`;
+          trigger = `${f.mechanism}: ${f.effect}. This card is Avoid together only because the finding is tagged \`${LABEL_CONTRAINDICATED_TAG}\` (\`applyLabelPins\`). Rule id \`${g}\` in engine.ts.`;
+          if (f.severity === "contraindicated") pairsOtherContra.add(pairKey);
         } else {
           const g = genericKey(suffix, a, b);
           key = `${g}|${f.severity}`;
@@ -178,10 +212,11 @@ export function collect(): PacketData {
         }
         let r = rules.get(key);
         if (!r) {
-          r = { key, section, severity: f.severity, title, trigger, pairs: new Set(), findings: 0, examples: [], pubmedPairs: 0, enzymes: new Map() };
+          r = { key, section, severity: f.severity, title, trigger, pairs: new Set(), findings: 0, examples: [], pubmedPairs: 0, enzymes: new Map(), labelPinned: 0 };
           rules.set(key, r);
         }
         r.findings++;
+        if (f.tags.includes(LABEL_CONTRAINDICATED_TAG)) r.labelPinned++;
         if (section === "pk") for (const e of f.enzymes) r.enzymes.set(e, (r.enzymes.get(e) ?? 0) + 1);
         if (!r.pairs.has(pairKey)) {
           r.pairs.add(pairKey);
@@ -216,7 +251,7 @@ export function collect(): PacketData {
     rules: sorted,
     pairsScanned,
     drugs: ids.length,
-    pkContra: { findings: pkContraFindings, pgp: pkContraPgp, pairs: pkContraPairs.size, pairsOnlyPk },
+    pkContra: { findings: pkContraFindings, pgp: pkContraPgp, pairs: pkContraPairs.size, pairsOnlyPk, tagged: pkContraTagged },
     ghb: ghbPartners,
     pgp: { strong, moderate, weak, contraFindings: pgpCounts.contra, majorFindings: pgpCounts.major },
   };
@@ -263,7 +298,7 @@ export function renderPacket(data: PacketData = collect()): string {
   L.push("");
   L.push(`- Every unordered pair of the ${fmt(data.drugs)} catalog entries (${fmt(data.pairsScanned)} pairs) was run through \`analyze([a, b])\` with no host context (no phenotypes, smoking, alcohol, renal, pregnancy) and no entered amounts. Host-, phenotype-, and dose-driven rules are therefore **not** counted here.`);
   L.push("- \"Pairs\" = distinct drug pairs on which the rule produced a contraindicated/major finding. One pair can appear under several rules.");
-  L.push("- PK rules are grouped by the escalation branch in `pkSeverity()` (perpetrator strength × victim grade), across all enzymes; the per-enzyme finding split is in the trigger column.");
+  L.push(`- PK rows are grouped by perpetrator strength × victim grade (the inputs to \`pkSeverity()\`), across all enzymes. A contraindicated row in that section is that grouping when the finding is tagged \`${LABEL_CONTRAINDICATED_TAG}\`; \`pkSeverity()\` does not emit that tier. The per-enzyme finding split is in the trigger column.`);
   L.push("- \"Current cited source\" is what `basisFor()` in `src/lib/drugs/basis.ts` attaches today: a label/PI paraphrase keyed to the rule, or a drug-level PubMed cite, or nothing (\"curated map only\").");
   L.push("");
   L.push("## Summary");
@@ -286,7 +321,7 @@ export function renderPacket(data: PacketData = collect()): string {
   L.push("");
   L.push("## 2. CYP / P-gp escalation (pkSeverity)");
   L.push("");
-  L.push("Inhibitors: strong × sensitive/NTI → contraindicated; strong × major → major; moderate × sensitive/NTI → major. Inducers (clearance): strong × sensitive/NTI → contraindicated; strong × any → major; moderate × sensitive/NTI/major → major. Inducers on a prodrug (activation): strong → major.");
+  L.push(PK_SEVERITY_LEGEND);
   L.push("");
   L.push(...table(bySec("pk"), n, true));
   n += bySec("pk").length;
@@ -302,7 +337,11 @@ export function renderPacket(data: PacketData = collect()): string {
   L.push("");
   L.push("## Known open questions");
   L.push("");
-  L.push(`1. **CYP escalation to "contraindicated" is now label-only.** Since Ship 1.51 (7bdfa95), \`pkSeverity()\` returns major ("Serious concern") when a strong inhibitor or strong inducer meets a sensitive or narrow-therapeutic-index substrate, so "Avoid together" on a CYP or P-gp finding comes from a named label pin. On current main **${fmt(data.pkContra.findings)} PK findings** (${fmt(data.pkContra.findings - data.pkContra.pgp)} CYP, ${fmt(data.pkContra.pgp)} P-gp) across **${fmt(data.pkContra.pairs)} drug pairs** read contraindicated in this scan; on **${fmt(data.pkContra.pairsOnlyPk)}** of those pairs no class/PD contraindicated rule also fires. Kaleb approved pinning the 91 label-quoted pairs that had fallen to Serious concern, each quoting its current DailyMed label. No severity is changed by this packet.`);
+  const tagClause =
+    data.pkContra.tagged === data.pkContra.findings
+      ? `All **${fmt(data.pkContra.tagged)}** of those findings are tagged \`${LABEL_CONTRAINDICATED_TAG}\` by \`applyLabelPins()\`.`
+      : `**${fmt(data.pkContra.tagged)}** of those **${fmt(data.pkContra.findings)}** findings are tagged \`${LABEL_CONTRAINDICATED_TAG}\` by \`applyLabelPins()\`; the rest are not.`;
+  L.push(`1. **CYP escalation to "contraindicated" is now label-only.** Since Ship 1.51 (7bdfa95), \`pkSeverity()\` never returns contraindicated. A strong inhibitor or strong inducer with a sensitive or narrow-therapeutic-index substrate stops at major ("Serious concern"), and every other branch stops at major or lower. "Avoid together" on a CYP or P-gp finding in this scan comes from a named label pin. On this scan **${fmt(data.pkContra.findings)} PK findings** (${fmt(data.pkContra.findings - data.pkContra.pgp)} CYP, ${fmt(data.pkContra.pgp)} P-gp) across **${fmt(data.pkContra.pairs)} drug pairs** read contraindicated. ${tagClause} On **${fmt(data.pkContra.pairsOnlyPk)}** of those pairs no class/PD contraindicated rule also fires. Kaleb approved pinning the 91 label-quoted pairs that had fallen to Serious concern, each quoting its current DailyMed label. No severity is changed by this packet.`);
   L.push(`2. **Sodium oxybate (GHB) × non-hypnotic CNS depressants.** Rule \`pd-ghb-cns\` marks sodium oxybate with any CNS depressant, benzodiazepine, opioid, or alcohol as contraindicated (${fmt(data.ghb.pairs)} pairs). The oxybate labels contraindicate use with sedative hypnotics and alcohol; other CNS depressants are a warning. Of the ${fmt(data.ghb.pairs)} pairs, about ${fmt(data.ghb.hypnoticOrAlcohol)} have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner and about ${fmt(data.ghb.other)} have some other CNS depressant partner (heuristic split by PD flag and class name). Those others may belong at major.`);
   L.push(`3. **P-gp strength gaps.** FDA's reference table lists P-gp inhibitors without a potency grade, but the catalog stores a grade on every P-gp inhibitor role (currently ${fmt(data.pgp.strong)} strong, ${fmt(data.pgp.moderate)} moderate, ${fmt(data.pgp.weak)} weak), and \`pkSeverity()\` uses it exactly like a CYP grade. That drives ${fmt(data.pgp.contraFindings)} contraindicated and ${fmt(data.pgp.majorFindings)} major P-gp findings on this scan. Several drugs FDA lists as P-gp inhibitors (capmatinib, lapatinib, lopinavir/ritonavir, pirtobrutinib, propafenone, sofosbuvir/velpatasvir/voxilaprevir, tucatinib) have no P-gp inhibitor role here because a grade would have to be invented. A reviewer should decide how P-gp should be graded, or whether P-gp findings should be capped.`);
   L.push("");
