@@ -149,7 +149,8 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
     setScore(z);
     saveScore(deviceStorage(), z);
   };
-  const mark = (ok: boolean | null) => (ok === null ? "" : ok ? " ✓ correct" : " ✗ not quite");
+  const mark = (ok: boolean | null) =>
+    ok === null ? null : <span className={ok ? "text-ok" : "text-danger"}>{ok ? " ✓ correct" : " ✗ not quite"}</span>;
   const reviewMark = q ? marks[q.slug] : undefined;
 
   return (
@@ -229,7 +230,7 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
           </form>
 
           {result ? (
-            <div ref={resultRef} tabIndex={-1} className="mt-4 rounded-md" data-testid="practice-answer">
+            <div ref={resultRef} tabIndex={-1} className="mt-4 rounded-lg bg-surface-2 p-3 shadow-[var(--shadow-border)] sm:p-4" data-testid="practice-answer">
               <p className="text-sm"><strong>Grade:</strong> {q.gradeLabel}{mark(result.grade)}</p>
               {q.enzymes.length ? <p className="text-sm"><strong>Enzyme:</strong> {q.enzymes.join(", ")}{mark(result.enzyme)}</p> : null}
               {q.roleA ? <p className="text-sm"><strong>{q.nameA}:</strong> {q.roleA}{mark(result.role)}</p> : null}
