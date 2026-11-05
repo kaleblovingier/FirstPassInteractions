@@ -165,7 +165,7 @@ import {
 } from "@/lib/drugs/cyp-protocol";
 import { glossWithTerm, plainClockKind, plainLine } from "@/lib/drugs/plain-huddle";
 import { ENZYMES, type Enzyme, type HostContext } from "@/lib/drugs/types";
-import { useDesk } from "@/lib/drugs/store";
+import { doseAttested, useDesk } from "@/lib/drugs/store";
 import {
   guessLastAgonist,
   ID_SCREENS,
@@ -220,6 +220,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { StationPicker } from "./station-picker";
+import { DoseGate } from "./dose-gate";
 import type { ClinicalTabId } from "@/lib/drugs/station-groups";
 import { OncologyPanel } from "./oncology-station";
 import { oncologyOnDesk } from "@/lib/drugs/oncology-kinetics";
@@ -415,41 +416,41 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "uds" && uds.length ? <UdsPanel ids={ids} /> : null}
         {live === "anc" && ancOn ? <AncPanel /> : null}
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
-        {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoacPanel ids={ids} host={host} /> : null}
-        {live === "valproate" && valproateOn.hasValproate ? <ValproatePanel ids={ids} host={host} /> : null}
+        {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoseGate><DoacPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "valproate" && valproateOn.hasValproate ? <DoseGate><ValproatePanel ids={ids} host={host} /></DoseGate> : null}
         {live === "potassium" ? <PotassiumPanel ids={ids} host={host} /> : null}
         {live === "sglt2" && sglt2On.hasSglt2 ? <Sglt2Panel ids={ids} host={host} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
-        {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
+        {live === "steroids" && steroids.hasSteroid ? <DoseGate><SteroidsPanel report={steroids} /></DoseGate> : null}
         {live === "apap" && apapOn ? <ApapPanel ids={ids} /> : null}
-        {live === "iron" && ironOn ? <IronPanel ids={ids} /> : null}
-        {live === "digoxin" && digOn ? <DigoxinPanel ids={ids} /> : null}
-        {live === "phenobarbital" && phenoBarbiturateOn ? <PhenobarbitalPanel ids={ids} /> : null}
-        {live === "aminoglycosides" && agOn ? <AminoglycosidesPanel ids={ids} /> : null}
+        {live === "iron" && ironOn ? <DoseGate><IronPanel ids={ids} /></DoseGate> : null}
+        {live === "digoxin" && digOn ? <DoseGate><DigoxinPanel ids={ids} /></DoseGate> : null}
+        {live === "phenobarbital" && phenoBarbiturateOn ? <DoseGate><PhenobarbitalPanel ids={ids} /></DoseGate> : null}
+        {live === "aminoglycosides" && agOn ? <DoseGate><AminoglycosidesPanel ids={ids} /></DoseGate> : null}
         {live === "lithium" && lithiumOn ? <LithiumPanel ids={ids} host={host} /> : null}
         {live === "oncology" ? <OncologyPanel ids={ids} host={host} /> : null}
-        {live === "antimicrobial" ? <AntimicrobialPanel ids={ids} host={host} /> : null}
-        {live === "phenytoin" ? <PhenytoinPanel ids={ids} host={host} /> : null}
+        {live === "antimicrobial" ? <DoseGate><AntimicrobialPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "phenytoin" ? <DoseGate><PhenytoinPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "pregnancy" ? <PregnancyPanel ids={ids} host={host} /> : null}
         {live === "obstetrickinetics" ? <ObstetricPanel ids={ids} host={host} /> : null}
         {live === "vasoactive" ? <VasoactivePanel ids={ids} host={host} /> : null}
         {live === "transplant" ? <TransplantPanel ids={ids} host={host} /> : null}
         {live === "neuropsych" ? <NeuropsychPanel ids={ids} host={host} /> : null}
-        {live === "anticoagulation" ? <AnticoagulationPanel ids={ids} host={host} /> : null}
-        {live === "toxicology" ? <ToxicologyPanel ids={ids} host={host} /> : null}
-        {live === "antiarrhythmic" ? <AntiarrhythmicPanel ids={ids} host={host} /> : null}
-        {live === "acidbase" ? <AcidBasePanel ids={ids} host={host} /> : null}
-        {live === "anesthesia" ? <AnesthesiaPanel ids={ids} host={host} /> : null}
-        {live === "epilepsy" ? <EpilepsyPanel ids={ids} host={host} /> : null}
-        {live === "moud" ? <MoudPanel ids={ids} host={host} /> : null}
-        {live === "glycemic" ? <GlycemicPanel ids={ids} host={host} /> : null}
-        {live === "pediatric" ? <PediatricPanel ids={ids} host={host} /> : null}
+        {live === "anticoagulation" ? <DoseGate><AnticoagulationPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "toxicology" ? <DoseGate><ToxicologyPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "antiarrhythmic" ? <DoseGate><AntiarrhythmicPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "acidbase" ? <DoseGate><AcidBasePanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "anesthesia" ? <DoseGate><AnesthesiaPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "epilepsy" ? <DoseGate><EpilepsyPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "moud" ? <DoseGate><MoudPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "glycemic" ? <DoseGate><GlycemicPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "pediatric" ? <DoseGate><PediatricPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "separation" && separationOn ? <SeparationPanel ids={ids} /> : null}
-        {live === "rotation" ? <RotationPanel ids={ids} host={host} /> : null}
+        {live === "rotation" ? <DoseGate><RotationPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "hepatic" ? <HepaticPanel ids={ids} host={host} /> : null}
         {live === "allergy" ? <AllergyPanel ids={ids} host={host} /> : null}
-        {live === "af" ? <AfPanel ids={ids} host={host} /> : null}
+        {live === "af" ? <DoseGate><AfPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "dili" ? <DiliPanel ids={ids} host={host} /> : null}
         {live === "resources" ? <ResourcePanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
@@ -1022,6 +1023,8 @@ function UdsPanel({ ids }: { ids: string[] }) {
 }
 
 function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContext; steroids?: SteroidReport }) {
+  // The dose blocks share one gate, shown in the first one's place.
+  const doseOk = useDesk(doseAttested);
   const [qt, setQt] = useState("400");
   const [hr, setHr] = useState("60");
   const [age, setAge] = useState(host.age === "geriatric" ? "78" : "42");
@@ -1130,25 +1133,25 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
 
       <BodyMetricsBlock age={Number(age)} sex={sex} scr={Number(scr)} defaultWeight={Number(wt)} />
 
-      <CalvertBlock defaultGfr={crcl?.crcl} isHot={ids.some((id) => ["carboplatin", "cisplatin"].includes(id))} />
+      <DoseGate><CalvertBlock defaultGfr={crcl?.crcl} isHot={ids.some((id) => ["carboplatin", "cisplatin"].includes(id))} /></DoseGate>
 
       <AnionGapBlock isHot={ids.some((id) => ["metformin", "aspirin", "acetaminophen", "ethanol"].includes(id))} />
 
       <CorrectedSodiumBlock isHot={ids.some((id) => ["insulin-glargine", "metformin", "glipizide"].includes(id))} />
 
-      <SteroidEquivBlock isHot={Boolean(steroids?.hasSteroid)} defaultDrugId={steroids?.present[0]?.id} />
+      {doseOk ? <SteroidEquivBlock isHot={Boolean(steroids?.hasSteroid)} defaultDrugId={steroids?.present[0]?.id} /> : null}
 
-      <GanzoniBlock isHot={ironOnDesk(ids).hasIron} defaultWeight={Number(wt)} defaultSex={sex} />
+      {doseOk ? <GanzoniBlock isHot={ironOnDesk(ids).hasIron} defaultWeight={Number(wt)} defaultSex={sex} /> : null}
 
-      <DigoxinBlock isHot={digoxinOnDesk(ids).hasDigoxin} defaultWeight={Number(wt)} />
+      {doseOk ? <DigoxinBlock isHot={digoxinOnDesk(ids).hasDigoxin} defaultWeight={Number(wt)} /> : null}
 
       <ChildPughBlock />
 
       <VancoAucBlock defaultCrcl={crcl?.crcl} isHot={ids.includes("vancomycin")} />
 
-      <PhenobarbitalBlock isHot={phenobarbitalOnDesk(ids)} defaultWeight={Number(wt)} />
+      {doseOk ? <PhenobarbitalBlock isHot={phenobarbitalOnDesk(ids)} defaultWeight={Number(wt)} /> : null}
 
-      <AminoglycosideBlock isHot={aminoglycosidesOnDesk(ids)} defaultWeight={Number(wt)} defaultSex={sex} />
+      {doseOk ? <AminoglycosideBlock isHot={aminoglycosidesOnDesk(ids)} defaultWeight={Number(wt)} defaultSex={sex} /> : null}
 
       <LithiumBlock isHot={lithiumReportOnDesk(ids).hasLithium} defaultWeight={Number(wt)} defaultCrcl={crcl?.crcl} />
 
