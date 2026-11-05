@@ -18,11 +18,13 @@ export const BILLING_INPUT_REASON = "That request was not understood.";
 export type BillingChecked<T> = { ok: true; value: T } | { ok: false };
 
 /** One field, no control characters. Newlines are rejected rather than trimmed into a value. */
+// eslint-disable-next-line no-control-regex -- refusing control characters is the point.
 const oneLine = (max: number) => z.string().max(max).refine((s) => !/[\u0000-\u001f\u007f]/.test(s));
 
 const pin = oneLine(256);
 const soldTo = oneLine(240);
 /** Name lists are one string, many lines. Other controls are still refused. */
+// eslint-disable-next-line no-control-regex -- refusing control characters is the point.
 const nameList = z.string().max(12_000).refine((s) => !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(s));
 export const issuedPlan = z.enum(["pro", "lab", "life"]);
 const checkoutPlan = z.enum(["pro", "lab"]);
