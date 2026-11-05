@@ -31,6 +31,8 @@ jobs:
   # scripts/a11y-gate.mjs and scripts/wcag22-checks.mjs. Widths are 320 and 1280
   # inside those scripts. The gate also runs wcag22-checks on the sitemap routes
   # it selects; the second step runs wcag22-checks on its own default paths.
+  # Keyboard journeys and the search/compare/export smoke are the `journeys`
+  # job. This job stays the sitemap pass.
   a11y:
     runs-on: ubuntu-latest
     timeout-minutes: 180
@@ -73,3 +75,58 @@ jobs:
           fi
           npm run a11y:gate -- http://127.0.0.1:8081
           npm run a11y:wcag22 -- http://127.0.0.1:8081
+
+  # Desk keyboard journeys, then search, compare, and export end-to-end.
+  # scripts/e2e/license.e2e.mjs is not in this list. Export still imports
+  # testKey() from that file; the runner does not execute its default journey.
+  # These are a few desk flows. They do not read the sitemap. The `a11y` job
+  # keeps that pass and its 180 minute timeout. Against a local production
+  # preview the keyboard script took about 50 seconds and the three e2e
+  # files about 40 seconds. npm ci, Playwright's Chromium, and the build
+  # sit on top of that. Timeout is 20 minutes so a hang stops here.
+  journeys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Production build
+        # Same as the check and a11y jobs: skip db:migrate, which needs DATABASE_URL.
+        run: node scripts/with-app-env.mjs vite build
+      - name: Keyboard journeys
+        run: |
+          set -euo pipefail
+          npm run preview > preview.log 2>&1 &
+          preview_pid=$!
+          cleanup() { kill "$preview_pid" 2>/dev/null || true; }
+          trap cleanup EXIT
+          ready=0
+          for _ in $(seq 1 90); do
+            # Same readiness probe as the a11y job. This step does not crawl the sitemap.
+            if curl -fsS -o /dev/null http://127.0.0.1:8081/sitemap.xml; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then
+              echo "preview exited before it was ready"
+              cat preview.log
+              exit 1
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "preview did not serve /sitemap.xml on http://127.0.0.1:8081"
+            cat preview.log
+            exit 1
+          fi
+          npm run a11y:keyboard -- http://127.0.0.1:8081
+      - name: Search, compare, and export end-to-end
+        # scripts/e2e/run.mjs serves the build itself, on a free port, with the
+        # test pepper. It does not use the preview from the previous step.
+        run: npm run e2e:smoke
