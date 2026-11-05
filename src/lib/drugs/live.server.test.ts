@@ -291,7 +291,7 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     assert.match(live.label?.identity ?? "", new RegExp(noteSet.toUpperCase()));
     assert.match(live.label?.identity ?? "", /OpenFDA id openfda-note/);
     assert.match(live.label?.identity ?? "", new RegExp(OPENFDA_NO_DATE));
-    const stored = labelVersions.labels[noteSet]?.effective;
+    const stored = labelVersions.labels[noteSet as keyof typeof labelVersions.labels]?.effective;
     assert.equal(stored, "2026-02-10");
     assert.match(
       live.label?.identity ?? "",
