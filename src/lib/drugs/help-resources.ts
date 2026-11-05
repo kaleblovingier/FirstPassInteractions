@@ -1001,7 +1001,7 @@ export const MEDICATION_OPTIONS: readonly MedicationOption[] = [
     name: "Buprenorphine (Suboxone, Subutex)",
     type: "Partial μ-opioid agonist + naloxone",
     howItWorks: "Binds tightly to opioid receptors, eliminating cravings and withdrawal with a ceiling effect that prevents fatal respiratory depression.",
-    setting: "Any doctor, NP, or PA can prescribe it under the federal MAT Act. Pick up at your local pharmacy.",
+    setting: "Any doctor, NP, or PA can prescribe it under the federal MAT Act. Filled at a community pharmacy.",
     pearls: "Wait until mild-to-moderate withdrawal before starting the first dose to prevent precipitated withdrawal, or use micro-induction (Bernese method) under clinical guidance.",
   },
   {
@@ -1026,7 +1026,7 @@ export const MEDICATION_OPTIONS: readonly MedicationOption[] = [
     type: "Opioid antagonist (blocker)",
     howItWorks: "Blocks opioid receptors completely so opioids cannot bind. Also reduces the neurochemical reward of alcohol in Alcohol Use Disorder.",
     setting: "Monthly intramuscular injection in a clinic, or once-daily oral tablet.",
-    pearls: "CRITICAL: Requires 7–14 days of complete opioid abstinence before starting. Taking naltrexone while opioids are in your system causes severe precipitated withdrawal. Highly effective for alcohol.",
+    pearls: "CRITICAL: Requires 7–14 days of complete opioid abstinence before starting. Starting naltrexone while opioids are still in the system causes severe precipitated withdrawal. Highly effective for alcohol.",
   },
   {
     id: "medical-detox",

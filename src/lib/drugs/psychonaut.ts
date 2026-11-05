@@ -732,10 +732,10 @@ export function sanitizeWiki(text: string): { text: string; stripped: boolean } 
 export const PW_PRINCIPLES: { title: string; body: string }[] = [
   {
     title: "There is no safe use — only safer use",
-    body: "PsychonautWiki: research the molecule, test the solid, do not eyeball, do not drive, do not swim, do not be responsible for someone else's body while you are intoxicated. Abstinence is valid. So is reducing the next harm.",
+    body: "PsychonautWiki: research the molecule, test the solid, do not eyeball, do not drive, do not swim, do not be responsible for someone else's body while intoxicated. Abstinence is valid. So is reducing the next harm.",
   },
   {
-    title: "You can always take more; you cannot take less",
+    title: "Delayed onset punishes a redose",
     body: "Unknown supply, delayed onset (PMA, oral ketamine, edible cannabis), and steep curves (GHB, nitazenes) punish a redose. This desk still does not pick the milligram.",
   },
   {
@@ -752,7 +752,7 @@ export const PW_PRINCIPLES: { title: string; body: string }[] = [
   },
   {
     title: "Set, setting, sitter",
-    body: "Hallucinogens amplify the room you already walked into. A positive mindset gets louder; a bad one does too. Familiar indoor room, no one to be responsible for, a sober sitter, an exit that is not more drug.",
+    body: "Hallucinogens amplify the room the person is already in. A positive mindset gets louder; a bad one does too. Familiar indoor room, no one to be responsible for, a sober sitter, an exit that is not more drug.",
   },
   {
     title: "A sitter for the unfamiliar",
