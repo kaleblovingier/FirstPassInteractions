@@ -12,6 +12,8 @@ export interface FdaLabel {
   unii: string[];
   classes: string[];
   setId: string;
+  /** SPL effective day (YYYY-MM-DD) from OpenFDA `effective_time`, or empty. */
+  effective: string;
 }
 
 export interface FaersHit {

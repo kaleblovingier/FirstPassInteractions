@@ -123,7 +123,15 @@ async function fetchLabel(name: string, signal: AbortSignal): Promise<FdaLabel |
     unii: stringList(open.unii, 2),
     classes: stringList(open.pharm_class_epc, 4),
     setId: typeof row.set_id === "string" ? row.set_id : "",
+    effective: splEffectiveDay(row.effective_time),
   };
+}
+
+/** OpenFDA sends SPL effectiveTime as YYYYMMDD. Anything else stays blank. */
+function splEffectiveDay(value: unknown): string {
+  const raw = typeof value === "number" ? String(value) : typeof value === "string" ? value.trim() : "";
+  const m = /^(\d{4})(\d{2})(\d{2})$/.exec(raw);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : "";
 }
 
 async function fetchFaers(name: string, signal: AbortSignal): Promise<FaersHit[]> {

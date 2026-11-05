@@ -147,6 +147,7 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     assert.equal(live.ok, true);
     assert.equal(live.reason, undefined);
     assert.equal(live.label?.boxed, "WARNING: BLEEDING RISK");
+    assert.equal(live.label?.effective, "");
     assert.deepEqual(live.label?.rxcui, ["11289"]);
     assert.deepEqual(live.faers, [{ term: "HAEMORRHAGE", count: 42 }]);
     assert.deepEqual(live.rxnorm, { rxcui: "11289", name: "Warfarin", brands: ["Coumadin", "Jantoven"] });
@@ -161,6 +162,18 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     const outcome = await lookupLiveOutcome("warfarin", "Warfarin");
     assert.deepEqual(outcome.failed, []);
     assert.equal(urls.length, 9, "second lookup is served from cache");
+  });
+
+  it("reads OpenFDA effective_time as a day and does not invent one", async () => {
+    stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      const row = { ...WARFARIN_LABEL.results[0], effective_time: "20240501" };
+      return json({ results: [row] });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.equal(live.label?.effective, "2024-05-01");
+    assert.equal(live.label?.setId, "set-warfarin");
+    assert.equal(live.label?.boxed, "WARNING: BLEEDING RISK");
   });
 
   it("keeps the other sources and names the label failure when OpenFDA's label call fails", async () => {
