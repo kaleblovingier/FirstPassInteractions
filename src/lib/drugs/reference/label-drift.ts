@@ -235,7 +235,10 @@ export interface LabelVersion {
 export interface DriftFixture {
   retrieved: string;
   source: string;
-  labels: Record<string, { meta: SplMeta; sections: SplSection[] } | { error: string }>;
+  labels: Record<
+    string,
+    { meta: SplMeta; sections: SplSection[]; checkedOn?: string } | { error: string }
+  >;
 }
 
 /** Results for every row from a fixture (offline). */

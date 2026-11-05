@@ -72,6 +72,17 @@ export interface RecallHit {
   classification: string;
 }
 
+/** One upstream the live pack asked. An empty list is an answer; a name here means that call failed. */
+export type LiveSource =
+  | "label"
+  | "faers"
+  | "rxnorm"
+  | "pubchem"
+  | "dailymed"
+  | "shortage"
+  | "ndc"
+  | "recalls";
+
 export interface LiveSources {
   ok: boolean;
   query: string;
@@ -84,6 +95,10 @@ export interface LiveSources {
   ndc: NdcHit[];
   recalls: RecallHit[];
   reason?: string;
+  /** Sources that threw. Missing on an older cached pack; an empty array is a full answer. */
+  failed?: LiveSource[];
+  /** When this pack was pulled, ISO-8601. A cache hit keeps the original pull. */
+  fetchedAt?: string;
 }
 
 export const EMPTY_LIVE = {

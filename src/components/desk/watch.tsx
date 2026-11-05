@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshCw, Trash2, Plus, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { lookupLiveSources } from "@/lib/drugs/live-rpc";
 import type { LiveSources } from "@/lib/drugs/live";
+import { formatFetchedAt, watchRecallCopy, watchShortageCopy } from "@/components/desk/watch-copy";
 import {
   readWatchlist,
   saveAdd,
@@ -50,27 +51,33 @@ export function WatchPage() {
   const [rows, setRows] = useState<Record<string, RowStatus>>({});
   const [epoch, setEpoch] = useState(0);
   const [note, setNote] = useState<string | null>(null);
+  const pullGen = useRef<Record<string, number>>({});
 
-  const refreshOne = useCallback(async (id: string) => {
+  const refreshOne = useCallback(async (id: string, refresh = false) => {
+    const gen = (pullGen.current[id] ?? 0) + 1;
+    pullGen.current[id] = gen;
     setRows((prev) => ({
       ...prev,
       [id]: { busy: true, err: null, pack: prev[id]?.pack ?? null },
     }));
     try {
-      const pack = await lookupLiveSources({ data: { id } });
-      setRows((prev) => ({
-        ...prev,
-        [id]: {
-          busy: false,
-          err: pack.ok ? null : (pack.reason ?? "Did not answer."),
-          pack,
-        },
-      }));
+      const pack = await lookupLiveSources({ data: refresh ? { id, refresh: true } : { id } });
+      setRows((prev) => {
+        if (pullGen.current[id] !== gen) return prev;
+        return {
+          ...prev,
+          [id]: {
+            busy: false,
+            err: pack.ok ? null : (pack.reason ?? "Did not answer."),
+            pack,
+          },
+        };
+      });
     } catch {
-      setRows((prev) => ({
-        ...prev,
-        [id]: { busy: false, err: "Did not answer.", pack: null },
-      }));
+      setRows((prev) => {
+        if (pullGen.current[id] !== gen) return prev;
+        return { ...prev, [id]: { busy: false, err: "Did not answer.", pack: null } };
+      });
     }
   }, []);
 
@@ -128,7 +135,7 @@ export function WatchPage() {
   }
 
   function refreshAll() {
-    setEpoch((e) => e + 1);
+    for (const id of book.ids) void refreshOne(id, true);
   }
 
   function openOnDesk(id: string) {
@@ -143,7 +150,7 @@ export function WatchPage() {
         <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">Recent shortage and recall notes to read</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
           Pin the medicines on your tray. When you open this page, we ask OpenFDA for shortage rows and
-          the top recall or enforcement note for each pin. The excerpts are shortened for teaching, the
+          the newest dated enforcement note for each pin. The excerpts are shortened for teaching, the
           same as the dossier. These are recent label, shortage, and recall notes to read, not safety
           alerts. Nothing here is a push notification, a real-time alert, or dosing advice. The Prescribing Information and the{" "}
           <a
@@ -189,7 +196,10 @@ export function WatchPage() {
             const enzymeLine = enzymes?.[0] ? watchEnzymeLine(enzymes) : null;
             const row = rows[id];
             const shortage = row?.pack?.shortage ?? [];
-            const recall = row?.pack?.recalls?.[0];
+            const settled = Boolean(row?.pack) && !row?.busy;
+            const shortageCopy = settled && row?.pack ? watchShortageCopy(row.pack) : null;
+            const recallCopy = settled && row?.pack ? watchRecallCopy(row.pack) : null;
+            const recall = recallCopy ? undefined : row?.pack?.recalls?.[0];
             return (
               <li
                 key={id}
@@ -223,7 +233,7 @@ export function WatchPage() {
                     >
                       Study this pin
                     </Button>
-                    <Button variant="secondary" size="sm" onClick={() => void refreshOne(id)}>
+                    <Button variant="secondary" size="sm" onClick={() => void refreshOne(id, true)}>
                       <RefreshCw className={cn("size-3.5", row?.busy && "animate-spin")} />
                       Refresh
                     </Button>
@@ -261,18 +271,15 @@ export function WatchPage() {
                         ))}
                       </ul>
                     </div>
-                  ) : row?.pack && !row.busy ? (
-                    <p className="text-sm text-muted">
-                      No OpenFDA shortage rows came back this time. Empty is not a green light: check the FDA
-                      shortage page and the label.
-                    </p>
+                  ) : shortageCopy ? (
+                    <p className="text-sm text-muted">{shortageCopy}</p>
                   ) : null}
 
                   {recall ? (
                     <div className="rounded-md bg-bg-sunken px-3 py-2.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-mono text-[10px] uppercase tracking-wide text-muted">
-                          Top recall / enforcement
+                          FDA enforcement
                         </p>
                         {recall.classification ? (
                           <Badge tone="warn">{recall.classification}</Badge>
@@ -286,6 +293,14 @@ export function WatchPage() {
                         ) : null}
                       </p>
                     </div>
+                  ) : recallCopy ? (
+                    <p className="text-sm text-muted">{recallCopy}</p>
+                  ) : null}
+
+                  {row?.pack?.fetchedAt ? (
+                    <p className="font-mono text-[11px] text-muted">
+                      FDA pull {formatFetchedAt(row.pack.fetchedAt)}
+                    </p>
                   ) : null}
 
                   <a

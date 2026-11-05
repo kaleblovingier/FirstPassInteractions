@@ -45,7 +45,11 @@ const shelfIds = z
   .default([])
   .transform((ids) => [...new Set(ids)].filter(onShelf));
 
-export const LiveInput = z.strictObject({ id: z.string().max(MAX_ID_LENGTH).refine(onShelf) });
+export const LiveInput = z.strictObject({
+  id: z.string().max(MAX_ID_LENGTH).refine(onShelf),
+  /** Watch Refresh sets this so that pin skips liveCache. Absent on an ordinary open. */
+  refresh: z.boolean().optional(),
+});
 
 export const IdsInput = z.strictObject({ ids: shelfIds });
 
