@@ -3,7 +3,6 @@ import {
   defaultPinSet,
   mintKeyFromNote,
   mintKeyFromPaid,
-  parseIssuedPlan,
   parseNameList,
   pinRefusal,
   type IssuedPlan,
@@ -62,13 +61,13 @@ async function scanMail(): Promise<{
 
 export async function collectLicenses(opts: {
   pin: string;
-  plan: string;
+  plan: IssuedPlan;
   names: string;
   hunt: string;
 }) {
   const refused = await pinRefusal(opts.pin);
   if (refused) return { ok: false as const, reason: refused };
-  const fallback = parseIssuedPlan(opts.plan);
+  const fallback = opts.plan;
   const rows: CollectRow[] = [];
   const seenKey = new Set<string>();
   const seenName = new Set<string>();
