@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -34,14 +34,21 @@ export function StationPicker<T extends string>({
   tabs,
   active,
   onSelect,
+  focusKey,
 }: {
   tabs: readonly StationTab<T>[];
   active: T;
   onSelect: (id: T) => void;
+  /** Each new value moves focus to the active station (a Ctrl+K palette pick). */
+  focusKey?: number;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const activeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (focusKey) activeRef.current?.focus({ preventScroll: true });
+  }, [focusKey]);
   const baseId = useId();
   const rowLabelId = `${baseId}-row`;
   const panelId = `${baseId}-panel`;
@@ -106,6 +113,7 @@ export function StationPicker<T extends string>({
         {row.map((t) => (
           <li key={t.id}>
             <button
+              ref={active === t.id ? activeRef : undefined}
               type="button"
               aria-pressed={active === t.id}
               title={stationAlias(t.id)}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CheckSquare, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { ANDEXXA_FDA_URL, ANDEXXA_US_STATUS } from "@/lib/drugs/catalog-label-names";
@@ -223,7 +223,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { StationPicker } from "./station-picker";
 import { DoseGate } from "./dose-gate";
-import type { ClinicalTabId } from "@/lib/drugs/station-groups";
+import { STATION_LABELS, type ClinicalTabId, type StationId } from "@/lib/drugs/station-groups";
 import { OncologyPanel } from "./oncology-station";
 import { oncologyOnDesk } from "@/lib/drugs/oncology-kinetics";
 import { AntimicrobialPanel } from "./antimicrobial-station";
@@ -329,78 +329,96 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const afOn = useMemo(() => afOnDesk(ids), [ids.join("|")]);
   const diliOn = useMemo(() => diliOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
-    const t: { id: Tab; label: string; on: boolean }[] = [
-      { id: "otp", label: "OTP", on: otp },
-      { id: "hr", label: "HR", on: hrOn },
-      { id: "wards", label: "Wards", on: wardsOn },
-      { id: "dose", label: "Dose", on: doseOn },
-      { id: "cyp", label: "CYP", on: cypOn },
-      { id: "qt", label: "QT", on: Boolean(qt) },
-      { id: "levels", label: "Levels", on: levels.length > 0 },
-      { id: "liver", label: "LiverTox", on: liver.length > 0 },
-      { id: "pheno", label: "Pheno", on: hasPhenoConvert(ids, host) || pheno.some((r) => r.shifted) },
-      { id: "reversal", label: "Reversal", on: reversal.length > 0 },
-      { id: "mme", label: "MME", on: mme.length > 0 },
-      { id: "hunter", label: "Hunter", on: hunterOn },
-      { id: "uds", label: "UDS", on: uds.length > 0 },
-      { id: "anc", label: "ANC", on: ancOn },
-      { id: "inr", label: "INR", on: Boolean(inr) },
-      { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
-      { id: "anticoagulation", label: "Anticoagulation", on: Boolean(anticoagOn.hasAnticoagulant || anticoagOn.hasReversalAgent) },
-      { id: "valproate", label: "Valproate", on: valproateOn.hasValproate },
-      { id: "potassium", label: "Potassium", on: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent },
-      { id: "sglt2", label: "SGLT2", on: sglt2On.hasSglt2 },
-      { id: "acb", label: "ACB", on: Boolean(acb) },
-      { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
-      { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
-      { id: "apap", label: "APAP", on: apapOn },
-      { id: "iron", label: "Iron", on: ironOn },
-      { id: "digoxin", label: "Digoxin", on: digOn },
-      { id: "phenobarbital", label: "Phenobarb", on: phenoBarbiturateOn },
-      { id: "aminoglycosides", label: "Aminoglycosides", on: agOn },
-      { id: "lithium", label: "Lithium", on: lithiumOn },
-      { id: "oncology", label: "Oncology", on: oncologyOn },
-      { id: "antimicrobial", label: "Stewardship", on: Boolean(antimicrobialOn.hasAntimicrobial || antimicrobialOn.matchedInteractingAgents.length > 0) },
-      { id: "phenytoin", label: "Phenytoin", on: Boolean(phenytoinOn.hasPhenytoin || phenytoinOn.hasFosphenytoin) },
-      { id: "pregnancy", label: "Obstetrics", on: Boolean(pregnancyOn.hasHighYieldTeratogen || pregnancyOn.hasLactationRisk || pregnancyOn.hasRaasBlocker || pregnancyOn.hasNsaid || pregnancyOn.hasWarfarin || pregnancyOn.hasRetinoid || pregnancyOn.hasImid || pregnancyOn.hasFolateAntagonist) },
-      { id: "obstetrickinetics", label: "Obstetric Station", on: Boolean(obstetricOn.hasObstetricDrug || host.preg === "pregnant") },
-      { id: "vasoactive", label: "Vasoactive", on: Boolean(vasoactiveOn.hasVasoactive || vasoactiveOn.hasInotrope || vasoactiveOn.hasVasopressor) },
-      { id: "transplant", label: "Transplant", on: Boolean(transplantOn.hasCni || transplantOn.hasAntimetabolite || transplantOn.hasMtorInhibitor || transplantOn.hasTransplant) },
-      { id: "neuropsych", label: "Neuropsych", on: neuropsychOn },
-      { id: "toxicology", label: "Toxicology", on: Boolean(toxOn.hasToxicologyAgent) },
-      { id: "antiarrhythmic", label: "Antiarrhythmic", on: Boolean(antiarrhythmicOn.hasAntiarrhythmic || antiarrhythmicOn.hasDigoxin || antiarrhythmicOn.hasPgpInhibitor) },
-      { id: "acidbase", label: "Acid-Base", on: Boolean(acidBaseOn.matchedDrugIds.length > 0) },
-      { id: "anesthesia", label: "Anesthesia & NMB", on: Boolean(anesthesiaOn.hasNmba || anesthesiaOn.hasReversal || anesthesiaOn.hasSedative) },
-      { id: "epilepsy", label: "Status Epilepticus", on: Boolean(epilepsyOn.hasStatusEpilepticusAgent) },
-      { id: "moud", label: "MOUD & Harm Reduction", on: Boolean(moudOn.hasMoud || moudOn.hasFullAgonist) },
-      { id: "glycemic", label: "Glycemic & DKA", on: Boolean(glycemicOn.hasGlycemicAgent) },
-      { id: "pediatric", label: "Pediatric & Neonatal", on: Boolean(pediatricOn.hasPediatricTargetDrug) },
-      { id: "separation", label: "Separate", on: separationOn },
-      { id: "rotation", label: "Opioid Rotation", on: rotationOn.hasOpioid },
-      { id: "hepatic", label: "Hepatic Clearance", on: hepaticOn.hasHepaticPreset },
-      { id: "allergy", label: "Allergy & ADR", on: allergyOn.hasAllergyRelevant },
-      { id: "af", label: "AF Stroke & Bleed", on: afOn.hasAfRelevant },
-      { id: "dili", label: "Liver Injury", on: diliOn.hasHepatotoxic },
-      { id: "resources", label: "Resources", on: true },
-      { id: "bedside", label: "Bedside", on: true },
-      { id: "alerts", label: "Alerts", on: alerts.length > 0 },
-    ];
-    return t;
+    // Every station in STATION_LABELS needs an open flag here, so the picker and the Ctrl+K palette list the same stations.
+    const on: Record<StationId, boolean> = {
+      otp,
+      hr: hrOn,
+      wards: wardsOn,
+      dose: doseOn,
+      cyp: cypOn,
+      qt: Boolean(qt),
+      levels: levels.length > 0,
+      liver: liver.length > 0,
+      pheno: hasPhenoConvert(ids, host) || pheno.some((r) => r.shifted),
+      reversal: reversal.length > 0,
+      mme: mme.length > 0,
+      hunter: hunterOn,
+      uds: uds.length > 0,
+      anc: ancOn,
+      inr: Boolean(inr),
+      doac: doacOn.hasAnticoagulant || doacOn.hasReversal,
+      anticoagulation: Boolean(anticoagOn.hasAnticoagulant || anticoagOn.hasReversalAgent),
+      valproate: valproateOn.hasValproate,
+      potassium: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent,
+      sglt2: sglt2On.hasSglt2,
+      acb: Boolean(acb),
+      dialysis: Boolean(dialysis),
+      steroids: Boolean(steroids.hasSteroid),
+      apap: apapOn,
+      iron: ironOn,
+      digoxin: digOn,
+      phenobarbital: phenoBarbiturateOn,
+      aminoglycosides: agOn,
+      lithium: lithiumOn,
+      oncology: oncologyOn,
+      antimicrobial: Boolean(antimicrobialOn.hasAntimicrobial || antimicrobialOn.matchedInteractingAgents.length > 0),
+      phenytoin: Boolean(phenytoinOn.hasPhenytoin || phenytoinOn.hasFosphenytoin),
+      pregnancy: Boolean(pregnancyOn.hasHighYieldTeratogen || pregnancyOn.hasLactationRisk || pregnancyOn.hasRaasBlocker || pregnancyOn.hasNsaid || pregnancyOn.hasWarfarin || pregnancyOn.hasRetinoid || pregnancyOn.hasImid || pregnancyOn.hasFolateAntagonist),
+      obstetrickinetics: Boolean(obstetricOn.hasObstetricDrug || host.preg === "pregnant"),
+      vasoactive: Boolean(vasoactiveOn.hasVasoactive || vasoactiveOn.hasInotrope || vasoactiveOn.hasVasopressor),
+      transplant: Boolean(transplantOn.hasCni || transplantOn.hasAntimetabolite || transplantOn.hasMtorInhibitor || transplantOn.hasTransplant),
+      neuropsych: neuropsychOn,
+      toxicology: Boolean(toxOn.hasToxicologyAgent),
+      antiarrhythmic: Boolean(antiarrhythmicOn.hasAntiarrhythmic || antiarrhythmicOn.hasDigoxin || antiarrhythmicOn.hasPgpInhibitor),
+      acidbase: Boolean(acidBaseOn.matchedDrugIds.length > 0),
+      anesthesia: Boolean(anesthesiaOn.hasNmba || anesthesiaOn.hasReversal || anesthesiaOn.hasSedative),
+      epilepsy: Boolean(epilepsyOn.hasStatusEpilepticusAgent),
+      moud: Boolean(moudOn.hasMoud || moudOn.hasFullAgonist),
+      glycemic: Boolean(glycemicOn.hasGlycemicAgent),
+      pediatric: Boolean(pediatricOn.hasPediatricTargetDrug),
+      separation: separationOn,
+      rotation: rotationOn.hasOpioid,
+      hepatic: hepaticOn.hasHepaticPreset,
+      allergy: allergyOn.hasAllergyRelevant,
+      af: afOn.hasAfRelevant,
+      dili: diliOn.hasHepatotoxic,
+      resources: true,
+      bedside: true,
+      alerts: alerts.length > 0,
+    };
+    return (Object.keys(STATION_LABELS) as StationId[]).map((id) => ({ id, label: STATION_LABELS[id], on: on[id] }));
   }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, obstetricOn.hasObstetricDrug, vasoactiveOn.hasVasoactive, vasoactiveOn.hasInotrope, vasoactiveOn.hasVasopressor, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent, antiarrhythmicOn.hasAntiarrhythmic, antiarrhythmicOn.hasDigoxin, antiarrhythmicOn.hasPgpInhibitor, acidBaseOn.matchedDrugIds.length, anesthesiaOn.hasNmba, anesthesiaOn.hasReversal, anesthesiaOn.hasSedative, epilepsyOn.hasStatusEpilepticusAgent, moudOn.hasMoud, moudOn.hasFullAgonist, glycemicOn.hasGlycemicAgent, pediatricOn.hasPediatricTargetDrug, separationOn, rotationOn.hasOpioid, hepaticOn.hasHepaticPreset, allergyOn.hasAllergyRelevant, afOn.hasAfRelevant, diliOn.hasHepatotoxic]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
+  // A station picked in the Ctrl+K palette: select it, then bring the board into view with focus on the open station.
+  const station = useDesk((s) => s.station);
+  const [asked, setAsked] = useState<{ id: StationId; n: number } | null>(null);
+  const boardRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!station) return;
+    setTab(station);
+    setAsked((a) => ({ id: station, n: (a?.n ?? 0) + 1 }));
+    useDesk.setState({ station: null });
+  }, [station]);
+  useEffect(() => {
+    if (asked) boardRef.current?.scrollIntoView({ block: "start" });
+  }, [asked]);
+  const missed = asked && asked.id === tab && live !== tab ? asked.id : null;
 
   if (!tabs.some((t) => t.on && t.id !== "bedside") && ids.length === 0) return null;
 
   return (
-    <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
+    <section ref={boardRef} className="scroll-mt-4 rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div>
         <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
         <p className="mt-1 text-xs text-muted">
           Stations open when a matching drug is on the tray. This is teaching, not a protocol, and the PI governs the milligram.
         </p>
       </div>
-      <StationPicker tabs={tabs} active={live} onSelect={setTab} />
+      <StationPicker tabs={tabs} active={live} onSelect={setTab} focusKey={asked?.n} />
+      <p role="status" className={cn("text-xs text-muted", missed && "mt-2")}>
+        {missed ? `${STATION_LABELS[missed]} opens when a matching drug is on the tray.` : null}
+      </p>
 
       <div className="mt-4">
         {live === "otp" && otp ? <OtpPanel ids={ids} qtPartner={Boolean(qt?.rows.some((r) => r.id !== "methadone"))} /> : null}

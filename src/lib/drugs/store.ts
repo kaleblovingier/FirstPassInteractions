@@ -4,6 +4,7 @@ import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState
 import { DRUG_BY_ID } from "./catalog";
 import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
+import type { StationId } from "./station-groups";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import {
@@ -76,6 +77,8 @@ interface DeskState {
   previewUsed: boolean;
   /** Class name to open on the formulary. Not saved. */
   libraryShelf: string;
+  /** Station the clinical board opens next, picked in the Ctrl+K palette. Not saved. */
+  station: StationId | null;
   justActivated: boolean;
   hcpAck: boolean;
   /** Clinician attestation in front of the dose calculators: the version confirmed and when (ms). */
@@ -88,6 +91,7 @@ interface DeskState {
   setView: (view: View) => void;
   setAtlasEnzyme: (id: string | null) => void;
   openShelf: (cls: string) => void;
+  openStation: (id: StationId) => void;
   setPhenotype: (enzyme: PhenotypeEnzyme, value: Metabolizer) => void;
   setSmoking: (smoking: boolean) => void;
   setKetamineRoute: (route: KetamineRoute) => void;
@@ -211,6 +215,7 @@ export const useDesk = create<DeskState>()(
       previewUntil: null,
       previewUsed: false,
       libraryShelf: "",
+      station: null,
       justActivated: false,
       hcpAck: false,
       doseAttest: null,
@@ -322,6 +327,7 @@ export const useDesk = create<DeskState>()(
         set({ atlasEnzyme, view: "atlas" });
       },
       openShelf: (cls) => set({ libraryShelf: cls, view: "library" }),
+      openStation: (station) => set({ station, view: "desk" }),
       setPhenotype: (enzyme, value) => {
         if (activePlan(get()) === "free") {
           get().openCheckout("lab", foundingGateCopy("host").reason, "life");
