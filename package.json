@@ -19,6 +19,8 @@
     "check:label-drift": "tsx scripts/label-drift-check.ts --check",
     "smoke:sale": "node scripts/sale-smoke.mjs",
     "test": "node scripts/run-tests.mjs",
+    "a11y:gate": "node scripts/a11y-gate.mjs",
+    "a11y:wcag22": "node scripts/wcag22-checks.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "lms:scorm": "tsx scripts/lms/build-scorm.ts && node scripts/lms/validate-scorm.mjs dist-lms/firstpass-pairs-scorm12.zip"
@@ -86,6 +88,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.2.0",
+    "axe-core": "^4.14.0",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
