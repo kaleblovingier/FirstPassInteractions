@@ -21,6 +21,7 @@ import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrustRouteImport } from './routes/trust'
+import { Route as WorkupRouteImport } from './routes/workup'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
@@ -89,6 +90,11 @@ const TrustRoute = TrustRouteImport.update({
   path: '/trust',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkupRoute = WorkupRouteImport.update({
+  id: '/workup',
+  path: '/workup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DrugSlugRoute = DrugSlugRouteImport.update({
   id: '/drug/$slug',
   path: '/drug/$slug',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/pair/$slug'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/pair/$slug'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/pair/$slug'
@@ -268,6 +280,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
+  WorkupRoute: typeof WorkupRoute
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
   PairSlugRoute: typeof PairSlugRoute
@@ -363,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrustRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workup': {
+      id: '/workup'
+      path: '/workup'
+      fullPath: '/workup'
+      preLoaderRoute: typeof WorkupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drug/$slug': {
       id: '/drug/$slug'
       path: '/drug/$slug'
@@ -428,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
+  WorkupRoute: WorkupRoute,
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
   PairSlugRoute: PairSlugRoute,
