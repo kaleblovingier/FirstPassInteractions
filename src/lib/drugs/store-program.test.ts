@@ -245,3 +245,74 @@ describe("desk store: program licenses", () => {
     assert.equal(useDesk.getState().plan, "free");
   });
 });
+
+describe("desk store: corrupt localStorage", () => {
+  it("replaces a non-array selected and rewrites the blob", async () => {
+    const s = await load({ ...OLD_FOUNDING, selected: "ketamine" });
+    assert.deepEqual(s.selected, []);
+    assert.equal(s.plan, "lab");
+    assert.equal(s.license, LIFE);
+    assert.equal(typeof s.add, "function");
+    assert.doesNotThrow(() => s.selected.map((id) => id));
+    assert.ok(Array.isArray(saved()?.state.selected));
+    assert.deepEqual(saved()?.state.selected, []);
+  });
+
+  it("drops a paid plan that is not backed by a key", async () => {
+    const s = await load({ ...OLD_FOUNDING, plan: "owner", license: "please", lifetime: true });
+    assert.equal(s.plan, "free");
+    assert.equal(s.license, null);
+    assert.equal(s.lifetime, false);
+    assert.equal(saved()?.state.plan, "free");
+    assert.equal(saved()?.state.license, null);
+    assert.equal(saved()?.state.lifetime, false);
+  });
+
+  it("lets the key shape correct a mismatched plan", async () => {
+    const pro = "FP-PRO-73CEF708-49A01A63";
+    const s = await load({ ...OLD_FOUNDING, plan: "lab", license: pro, lifetime: true });
+    assert.equal(s.plan, "pro");
+    assert.equal(s.lifetime, false);
+    assert.equal(s.license, pro);
+    assert.equal(saved()?.state.plan, "pro");
+  });
+
+  it("defaults bad host fields instead of throwing", async () => {
+    const s = await load({
+      ...OLD_FOUNDING,
+      phenotypes: 4,
+      doses: ["50 mg"],
+      studyMarks: "got",
+      smoking: "yes",
+      add: null,
+    });
+    assert.deepEqual(s.phenotypes, { CYP2D6: "NM", CYP2C19: "NM", CYP2C9: "NM", CYP2B6: "NM" });
+    assert.deepEqual(s.doses, {});
+    assert.deepEqual(s.studyMarks, {});
+    assert.equal(s.smoking, false);
+    assert.equal(typeof s.add, "function");
+    assert.equal(s.add("ketamine"), true);
+    assert.ok(useDesk.getState().selected.includes("ketamine"));
+    assert.doesNotThrow(() => useDesk.getState().selected.map((id) => id.toUpperCase()));
+  });
+
+  it("clears a blob that is not JSON", async () => {
+    mem.set(KEY, "{not json");
+    await useDesk.persist.rehydrate();
+    assert.equal(useDesk.getState().plan, "free");
+    assert.deepEqual(useDesk.getState().selected, []);
+    assert.equal(typeof useDesk.getState().add, "function");
+    assert.equal(mem.has(KEY), false);
+  });
+
+  it("resets when the saved state is not an object", async () => {
+    mem.set(KEY, JSON.stringify({ state: "nope", version: 0 }));
+    await useDesk.persist.rehydrate();
+    assert.equal(useDesk.getState().plan, "free");
+    assert.deepEqual(useDesk.getState().selected, []);
+    const next = saved();
+    assert.ok(next);
+    assert.deepEqual(next?.state.selected, []);
+    assert.equal(next?.state.plan, "free");
+  });
+});
