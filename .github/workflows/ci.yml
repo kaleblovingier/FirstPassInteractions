@@ -27,3 +27,49 @@ jobs:
       - run: npm test
       # The production build without db:migrate, which needs DATABASE_URL.
       - run: node scripts/with-app-env.mjs vite build
+
+  # scripts/a11y-gate.mjs and scripts/wcag22-checks.mjs. Widths are 320 and 1280
+  # inside those scripts. The gate also runs wcag22-checks on the sitemap routes
+  # it selects; the second step runs wcag22-checks on its own default paths.
+  a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Production build
+        # Same as the check job: skip db:migrate, which needs DATABASE_URL.
+        run: node scripts/with-app-env.mjs vite build
+      - name: Preview and browser checks
+        run: |
+          set -euo pipefail
+          npm run preview > preview.log 2>&1 &
+          preview_pid=$!
+          cleanup() { kill "$preview_pid" 2>/dev/null || true; }
+          trap cleanup EXIT
+          ready=0
+          for _ in $(seq 1 90); do
+            if curl -fsS -o /dev/null http://127.0.0.1:8081/sitemap.xml; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then
+              echo "preview exited before it was ready"
+              cat preview.log
+              exit 1
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "preview did not serve /sitemap.xml on http://127.0.0.1:8081"
+            cat preview.log
+            exit 1
+          fi
+          npm run a11y:gate -- http://127.0.0.1:8081
+          npm run a11y:wcag22 -- http://127.0.0.1:8081
