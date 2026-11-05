@@ -12,9 +12,11 @@ import {
   labelContraindicationFor,
 } from "./label-contraindications";
 import { PERPETRATOR_LABELS } from "./reference/label-perpetrators";
+import { pgxFor } from "./pgx";
 import type { Finding } from "./types";
 
-export type BasisKind = "fda-boxed" | "fda-pi" | "fda-warning" | "fda-ddi" | "cpic" | "pubmed" | "scale" | "desk";
+export type BasisKind =
+  "fda-boxed" | "fda-pi" | "fda-warning" | "fda-ddi" | "cpic" | "pubmed" | "scale" | "desk";
 
 export interface FindingBasis {
   kind: BasisKind;
@@ -35,13 +37,16 @@ const BOXED: Record<string, { detail: string; href?: string }> = {
     href: "https://www.fda.gov/drugs/drug-safety-and-availability/fda-warns-about-serious-breathing-problems-seizure-and-nerve-pain-medicines-gabapentin-neurontin",
   },
   "pd-nitrate-pde5": {
-    detail: "Sildenafil / tadalafil / vardenafil labels contraindicate organic nitrates. Refractory hypotension.",
+    detail:
+      "Sildenafil / tadalafil / vardenafil labels contraindicate organic nitrates. Refractory hypotension.",
   },
   "pd-maoi-sero": {
-    detail: "MAOI labels contraindicate serotonergic agents. Serotonin toxicity, hypertensive crisis.",
+    detail:
+      "MAOI labels contraindicate serotonergic agents. Serotonin toxicity, hypertensive crisis.",
   },
   "pd-antag-opioid": {
-    detail: "Naltrexone / naloxone labels: precipitated withdrawal in opioid-dependent patients; blockade of agonists.",
+    detail:
+      "Naltrexone / naloxone labels: precipitated withdrawal in opioid-dependent patients; blockade of agonists.",
   },
   "pd-arni-acei": {
     detail:
@@ -57,7 +62,8 @@ const BOXED: Record<string, { detail: string; href?: string }> = {
       "Clozapine boxed warning / PI: respiratory arrest and collapse with concomitant benzodiazepines, including deaths. Not generic stacked sedation.",
   },
   "pd-isotret-tetra": {
-    detail: "Isotretinoin (iPLEDGE) and tetracycline class labels: intracranial hypertension / pseudotumor cerebri.",
+    detail:
+      "Isotretinoin (iPLEDGE) and tetracycline class labels: intracranial hypertension / pseudotumor cerebri.",
   },
   "pd-fq-steroid": {
     detail:
@@ -87,18 +93,25 @@ const BOXED: Record<string, { detail: string; href?: string }> = {
 const PI: Record<string, string> = {
   "pd-methadone-ritonavir":
     "Methadone and ritonavir / Paxlovid labels: mixed PK — methadone may fall (withdrawal); fentanyl and other 3A4 opioids may rise.",
-  "pd-bup-ritonavir": "Buprenorphine labels: 3A4 inhibitors can raise exposure. Opposite arrow from methadone on the same booster.",
-  "pd-bup-precip": "Buprenorphine labels: precipitated withdrawal if a full agonist is still occupying μ receptors.",
+  "pd-bup-ritonavir":
+    "Buprenorphine labels: 3A4 inhibitors can raise exposure. Opposite arrow from methadone on the same booster.",
+  "pd-bup-precip":
+    "Buprenorphine labels: precipitated withdrawal if a full agonist is still occupying μ receptors.",
   "pd-opioid-stack": "Opioid labels: additive respiratory depression with another full agonist.",
   "pd-qt": "CredibleMeds-class QT plus methadone / citalopram / ondansetron labels. Not a QTc.",
-  "pd-sero": "SSRI / SNRI / MAOI / opioid labels flag serotonergic combinations. Hunter is the published screen.",
-  "clinic-preg-avoid": "Label: boxed or contraindicated in pregnancy. Open the PI. This desk is not obstetric advice.",
+  "pd-sero":
+    "SSRI / SNRI / MAOI / opioid labels flag serotonergic combinations. Hunter is the published screen.",
+  "clinic-preg-avoid":
+    "Label: boxed or contraindicated in pregnancy. Open the PI. This desk is not obstetric advice.",
   "clinic-preg-caution": "Label: use in pregnancy is a specialist call. Open the PI.",
-  "clinic-beers": "AGS Beers 2023. Not an FDA box. Confirm against the PI and the geriatric indication.",
-  "clinic-renal": "Many labels dose-adjust on Cockcroft–Gault or eGFR. This desk flags CKD; it does not pick a dose.",
+  "clinic-beers":
+    "AGS Beers 2023. Not an FDA box. Confirm against the PI and the geriatric indication.",
+  "clinic-renal":
+    "Many labels dose-adjust on Cockcroft–Gault or eGFR. This desk flags CKD; it does not pick a dose.",
   "cyp-clock":
     "FDA 2020 Clinical Drug Interaction Studies / Huang CPT 2007. Strong ≥5× AUC; strong inducer lowers AUC by 80% or more. Start and stop are different clocks. Not a milligram.",
-  "cyp-dual": "FDA example inhibitors often hit both CYP3A4 and P-gp. Gut first-pass victims move more than a CYP-only row.",
+  "cyp-dual":
+    "FDA example inhibitors often hit both CYP3A4 and P-gp. Gut first-pass victims move more than a CYP-only row.",
   "pd-carbapenem-vpa":
     "Carbapenem labels (meropenem, ertapenem, imipenem): concomitant valproate — loss of seizure control. UGT / glucuronide recycling, not a CYP isoform. Switch the antibiotic or the AED.",
   "pd-vanco-zosyn":
@@ -154,7 +167,10 @@ function fdaRows(drugId: string, enzyme: string): FdaDdiEntry[] {
   return FDA_INDEX.get(`${drugId}|${enzyme}`) ?? [];
 }
 
-const SUBSTRATE_WORD = { sensitive: "sensitive", "moderate-sensitive": "moderately sensitive" } as const;
+const SUBSTRATE_WORD = {
+  sensitive: "sensitive",
+  "moderate-sensitive": "moderately sensitive",
+} as const;
 
 /** FDA Table 1 basis for a pk inhibitor/inducer row, only when FDA lists the perpetrator in that role. */
 function fdaDdiBasis(finding: Finding): FindingBasis | null {
@@ -211,11 +227,13 @@ function labelQuoteBasis(finding: Finding): FindingBasis | null {
 
 /** Verbatim label sentence for a finding held at contraindicated by a label pin. */
 function labelPinBasis(finding: Finding): FindingBasis | null {
-  if (!finding.tags.includes(LABEL_CONTRAINDICATED_TAG) || finding.drugIds.length !== 2) return null;
+  if (!finding.tags.includes(LABEL_CONTRAINDICATED_TAG) || finding.drugIds.length !== 2)
+    return null;
   const pin = labelContraindicationFor(finding.drugIds[0], finding.drugIds[1]);
   if (!pin) return null;
   const parts = [`The ${pin.labelDrug} label lists this combination under Contraindications.`];
-  if (pin.contraindicationsSentence) parts.push(`Contraindications: "${pin.contraindicationsSentence}"`);
+  if (pin.contraindicationsSentence)
+    parts.push(`Contraindications: "${pin.contraindicationsSentence}"`);
   parts.push(`${pin.labelSection}: "${pin.quote}"`);
   if (pin.labelExample) parts.push(`Named in the label: "${pin.labelExample}"`);
   parts.push(`Retrieved from DailyMed ${pin.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED}.`);
@@ -271,6 +289,83 @@ function suffixOf(id: string) {
   return parts[parts.length - 1] ?? id;
 }
 
+/** Bare CPIC guidelines index. Not a source for one drug–gene pair. */
+const CPIC_GUIDELINES_INDEX = "https://cpicpgx.org/guidelines/";
+
+function isGenericCpicIndex(href: string): boolean {
+  try {
+    const url = new URL(href);
+    return url.hostname === "cpicpgx.org" && /^\/guidelines\/?$/.test(url.pathname);
+  } catch {
+    return href.replace(/\/+$/, "") === CPIC_GUIDELINES_INDEX.replace(/\/+$/, "");
+  }
+}
+
+function isSpecificCpicGuideline(href: string): boolean {
+  try {
+    const url = new URL(href);
+    const path = url.pathname.replace(/\/+$/, "");
+    return (
+      url.hostname === "cpicpgx.org" && path.startsWith("/guidelines/") && path !== "/guidelines"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function geneHits(cardGene: string, enzyme: string): boolean {
+  const needle = enzyme.trim().toUpperCase();
+  if (!needle) return false;
+  return cardGene.split(/[/+,]/).some((part) => part.trim().toUpperCase() === needle);
+}
+
+function isPhenoConvertFinding(finding: Finding): boolean {
+  return finding.tags.includes("phenoconversion") || finding.id.startsWith("pheno-");
+}
+
+function teachingMapBasis(): FindingBasis {
+  return {
+    kind: "desk",
+    label: "Basis: catalog rule",
+    detail:
+      "The shift is the desk's teaching map. A blocker or inducer on the tray changes how this enzyme acts for teaching. The lab genotype is unchanged. This desk is not a PGx report.",
+  };
+}
+
+function analogyBasis(): FindingBasis {
+  return {
+    kind: "desk",
+    label: "Basis: catalog rule",
+    detail:
+      "The tier is the inhibitor/inducer analogy on this desk. No teaching card matches this drug and gene. This desk is not a PGx report.",
+  };
+}
+
+/** A phenotype row may cite a guideline only when pgx.ts has a card for that drug and gene. */
+function phenotypeGuidelineBasis(finding: Finding): FindingBasis | null {
+  const drugId = finding.drugIds[0];
+  const enzyme = finding.enzymes[0];
+  if (!drugId || !enzyme) return null;
+  const card = pgxFor(drugId).find((c) => geneHits(c.gene, enzyme));
+  if (!card || isGenericCpicIndex(card.guideline)) return null;
+  const specific = isSpecificCpicGuideline(card.guideline);
+  return {
+    kind: "cpic",
+    label: specific ? "CPIC guideline" : "Teaching card",
+    detail: specific
+      ? "The tier is the inhibitor/inducer analogy on this desk. A teaching card for this drug and gene links one CPIC guideline to read beside the row. This desk is not a PGx report."
+      : "The tier is the inhibitor/inducer analogy on this desk. A teaching card for this drug and gene links a page to read beside the row. This desk is not a PGx report.",
+    href: card.guideline,
+  };
+}
+
+function genoBasis(finding: Finding): FindingBasis | null {
+  if (isPhenoConvertFinding(finding)) return teachingMapBasis();
+  if (finding.kind !== "geno") return null;
+  if (finding.tags.includes("phenotype")) return phenotypeGuidelineBasis(finding) ?? analogyBasis();
+  return analogyBasis();
+}
+
 export function basisFor(finding: Finding): FindingBasis[] {
   const suffix = suffixOf(finding.id);
   const out: FindingBasis[] = [];
@@ -303,7 +398,8 @@ export function basisFor(finding: Finding): FindingBasis[] {
   const perpLabel = perpetratorLabelBasis(finding);
   // FDA Table 1 already covers the role. Still quote a named contraindication.
   // A role-only line would only repeat that the tier is the desk's rule.
-  if (perpLabel && (!fda || perpLabel.detail.includes("calls this combination contraindicated"))) out.push(perpLabel);
+  if (perpLabel && (!fda || perpLabel.detail.includes("calls this combination contraindicated")))
+    out.push(perpLabel);
   const cites = citesFor(finding.drugIds).slice(0, 1);
   if (cites[0]) {
     out.push({
@@ -313,21 +409,20 @@ export function basisFor(finding: Finding): FindingBasis[] {
       href: pubmedUrl(cites[0].pmid),
     });
   }
-  if (finding.kind === "geno" || suffix.includes("pheno")) {
-    out.push({
-      kind: "cpic",
-      label: "CPIC / ClinPGx",
-      detail: "Phenotype rows paraphrase published CPIC tables. Open the guideline. This desk is not a PGx report.",
-      href: "https://cpicpgx.org/guidelines/",
-    });
-  }
+  // Phenoconversion is the desk's teaching map. A phenotype row may link a
+  // guideline only when pgx.ts has a card for that drug and gene. The CPIC
+  // guidelines index is not a source for the pair.
+  const geno = genoBasis(finding);
+  if (geno) out.unshift(geno);
   if (out.length === 0) {
     out.push({
       kind: "desk",
       label: "Curated map — no external source verified",
       detail:
         "Curated CYP / PD map. Independently review the Prescribing Information and primary literature before acting. Absence of an FDA box here is not absence of risk.",
-      href: finding.drugIds[0] ? dailymedSearchUrl(DRUG_BY_ID[finding.drugIds[0]]?.name ?? "") : undefined,
+      href: finding.drugIds[0]
+        ? dailymedSearchUrl(DRUG_BY_ID[finding.drugIds[0]]?.name ?? "")
+        : undefined,
     });
   }
   // Two rules can cite the same label page (e.g. a pinned label rule and the gold-set quote).

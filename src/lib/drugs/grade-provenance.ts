@@ -34,12 +34,26 @@ export function ruleNote(finding: Finding): GradeBasis {
   };
 }
 
+/** Desk words for a phenoconversion shift or an uncited phenotype analogy.
+ *  Those sentences are the tier. A drug-level paper may follow; it does not replace them. */
+function isDeskTierNote(detail: string): boolean {
+  return /teaching map/i.test(detail) || /inhibitor\/inducer analogy/i.test(detail);
+}
+
 /** Every basis for a finding, in basisFor() order, as one-click "Why this grade" rows. */
 export function gradeBases(finding: Finding): GradeBasis[] {
+  const raw = basisFor(finding);
   const out: GradeBasis[] = [];
-  for (const b of basisFor(finding)) {
+  const tier = raw.find((b) => b.kind === "desk" && isDeskTierNote(b.detail));
+  if (tier) out.push({ kind: "rule", title: tier.label, detail: tier.detail });
+  for (const b of raw) {
     if (b.kind === "desk") continue;
-    out.push({ kind: LABEL_KINDS.has(b.kind) ? "label" : "source", title: b.label, detail: b.detail, ...(b.href ? { href: b.href } : {}) });
+    out.push({
+      kind: LABEL_KINDS.has(b.kind) ? "label" : "source",
+      title: b.label,
+      detail: b.detail,
+      ...(b.href ? { href: b.href } : {}),
+    });
   }
   return out.length ? out : [{ ...ruleNote(finding), ...deskHref(finding) }];
 }
@@ -123,12 +137,14 @@ export function sourceLinkText(title: string, href: string): string {
   if (host.endsWith("dailymed.nlm.nih.gov")) {
     const query = url?.searchParams.get("query")?.trim();
     const owner = labelOwner ?? (query ? cap(query) : "");
-    if (url?.pathname.includes("search.cfm")) return owner ? `Search DailyMed for ${owner}` : "Search DailyMed";
+    if (url?.pathname.includes("search.cfm"))
+      return owner ? `Search DailyMed for ${owner}` : "Search DailyMed";
     return owner ? `${owner} label on DailyMed` : "Label on DailyMed";
   }
   if (labelOwner) return `${labelOwner} label`;
   if (host.endsWith("pubmed.ncbi.nlm.nih.gov") || /^PMID /.test(title)) return `${title} on PubMed`;
   if (host.endsWith("cpicpgx.org")) return "CPIC guideline";
-  if (host.endsWith("fda.gov")) return /interaction table/i.test(title) ? "FDA interaction table" : "FDA safety notice";
+  if (host.endsWith("fda.gov"))
+    return /interaction table/i.test(title) ? "FDA interaction table" : "FDA safety notice";
   return title;
 }
