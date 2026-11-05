@@ -1,5 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { GlossaryView } from "@/components/learn/glossary-view";
 import { FDA_GRADES } from "@/lib/drugs/cyp-protocol";
 import { DOSE_PATTERN } from "@/lib/guards/dose-rule";
 import { enzymeHubBySlug } from "@/lib/seo/enzyme-hubs";
@@ -99,4 +102,14 @@ test("JSON-LD is a DefinedTermSet with one DefinedTerm per entry", () => {
     assert.equal(d.inDefinedTermSet, GLOSSARY_URL);
   });
   assert.deepEqual(JSON.parse(JSON.stringify(ld)), ld);
+});
+
+test("server render lists every term as a heading anchor, the same way every time", () => {
+  const html = renderToStaticMarkup(createElement(GlossaryView));
+  assert.equal(renderToStaticMarkup(createElement(GlossaryView)), html);
+  for (const t of GLOSSARY) assert.ok(html.includes(`<h3 id="${t.id}"`), t.id);
+  for (const g of groupByLetter(GLOSSARY)) assert.ok(html.includes(`href="#letter-${g.letter.toLowerCase()}"`), g.letter);
+  assert.ok(html.includes(`Showing ${GLOSSARY.length} of ${GLOSSARY.length} terms`));
+  assert.ok(html.includes('data-testid="pair-disclaimer"'));
+  assert.equal(html.match(DOSE_PATTERN), null);
 });
