@@ -30,12 +30,16 @@ import {
   PIPE_LIMIT,
   directorySliceLabel,
   pipeExportName,
+  pipeLicenseExportName,
+  pipeLicensesToCsv,
+  pipeLicensesToJson,
   pipeStatusCounts,
   pipeToCsv,
   pipeToJson,
   stepStatus,
   storedPipeIsReadable,
   type PipeExportRow,
+  type PipeLicenseExportRow,
   type PipeSaveOpts,
 } from "@/lib/billing/operator-desk";
 import { Button } from "@/components/ui/button";
@@ -221,6 +225,19 @@ export function HuntDesk() {
     downloadText(pipeExportName(kind), text, mime);
   }
 
+  function exportKeys(kind: "csv" | "json") {
+    const rows: PipeLicenseExportRow[] = pipe.flatMap((row) =>
+      row.licenseKey
+        ? [{ name: row.name, who: row.who, status: row.status, licenseKey: row.licenseKey }]
+        : [],
+    );
+    const text = kind === "csv" ? pipeLicensesToCsv(rows) : pipeLicensesToJson(rows);
+    const mime = kind === "csv" ? "text/csv;charset=utf-8" : "application/json";
+    downloadText(pipeLicenseExportName(kind), text, mime);
+  }
+
+  const keyCount = pipe.filter((row) => row.licenseKey).length;
+
   const slice = directorySliceLabel(listed.length, DIRECTORY.length, PARKED.length);
   const filterBits = [
     prey === "all" ? "" : PREY_LABEL[prey],
@@ -400,7 +417,34 @@ export function HuntDesk() {
           </Button>
         </div>
         <p className="mt-2 text-xs text-muted">
-          Backup of this browser’s book. Downloading does not change it.
+          Backup of this browser’s book. Downloading does not change it. License keys are not in
+          this file.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={!bookReady || keyCount === 0}
+            onClick={() => exportKeys("csv")}
+          >
+            Download keys CSV
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={!bookReady || keyCount === 0}
+            onClick={() => exportKeys("json")}
+          >
+            Download keys JSON
+          </Button>
+        </div>
+        <p className="mt-2 text-xs text-muted">
+          License keys only, in a separate file.
+          {bookReady
+            ? keyCount === 0
+              ? " None collected into this book yet."
+              : ` ${keyCount} ${keyCount === 1 ? "key" : "keys"} in this book.`
+            : ""}
         </p>
         {pipe.length >= PIPE_LIMIT ? (
           <p className="mt-2 text-sm text-warn">
@@ -566,6 +610,11 @@ export function HuntDesk() {
                   aria-label={`Note for ${row.name}`}
                   disabled={!canEdit}
                 />
+                {row.licenseKey ? (
+                  <p className="mt-2 break-all font-mono text-xs text-fg">
+                    License key · {row.licenseKey}
+                  </p>
+                ) : null}
               </li>
             ))}
           </ul>
