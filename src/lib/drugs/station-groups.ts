@@ -170,7 +170,7 @@ export const STATION_ALIASES: Partial<Record<ClinicalTabId, string>> = {
   separation: "Binders",
   af: "Atrial fibrillation",
   dili: "Drug-induced liver injury",
-  bedside: "Bedside math CrCl QTc Child-Pugh",
+  bedside: "Bedside math CrCl eGFR CKD-EPI QTc Child-Pugh",
 };
 
 export function isAlwaysOnStation(id: string): boolean {
