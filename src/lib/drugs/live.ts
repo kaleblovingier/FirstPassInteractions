@@ -3,7 +3,13 @@
 export interface FdaLabel {
   boxed: string;
   pregnancy: string;
+  /** Short on-screen excerpt of the interactions section. */
   interactions: string;
+  /**
+   * Plain interactions text the partner scan reads. Longer than `interactions`
+   * so a partner named later in the section can still match. Not shown in full.
+   */
+  interactionsScan: string;
   contraindications: string;
   warnings: string;
   indications: string;
@@ -11,7 +17,14 @@ export interface FdaLabel {
   rxcui: string[];
   unii: string[];
   classes: string[];
+  /** DailyMed setid of the SPL that was shown. Empty when OpenFDA omitted it. */
   setId: string;
+  /** OpenFDA document id of the SPL that was shown. Empty when omitted. */
+  openFdaId: string;
+  /** Normalized effective_time, or "" when OpenFDA did not send one. */
+  effectiveTime: string;
+  /** Setid, OpenFDA id, effective date, and a stored-date mismatch when one exists. */
+  identity: string;
 }
 
 export interface FaersHit {
@@ -104,6 +117,8 @@ export interface RxnavPair {
   source: string;
   severity: string;
   description: string;
+  /** Which SPL was scanned for this pair, including its effective date. */
+  identity: string;
 }
 
 export interface RxclassHit {
