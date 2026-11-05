@@ -65,7 +65,7 @@ export function crclOf({ age, weightKg, scr, sex }: CrclInput): CrclResult | nul
   const crcl = ((140 - age) * weightKg * (sex === "female" ? 0.85 : 1)) / (72 * scr);
   const rounded = Math.round(crcl);
   let band: CrclResult["band"] = "usual";
-  let note = "Cockcroft–Gault estimates creatinine clearance in mL/min from weight; CKD-EPI eGFR is a different estimate. Many labels still dose on this number. IBW vs total weight is a separate argument for obesity.";
+  let note = "Many labels still dose on this number. IBW vs total weight is a separate argument for obesity.";
   if (rounded < 30) {
     band = "severe";
     note = "CrCl <30 — several NTI and DOAC rows on this desk become avoid or specialist-only. Flip CKD on the host to score them.";
