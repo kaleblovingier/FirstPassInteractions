@@ -12,6 +12,19 @@ import type {
   ShortageHit,
 } from "./live";
 import { EMPTY_LIVE } from "./live";
+import { DRUG_BY_ID } from "./catalog";
+import {
+  INTERACTIONS_EXCERPT_CHARS,
+  INTERACTIONS_SCAN_CHARS,
+  LABEL_CANDIDATE_LIMIT,
+  formatEffectiveTime,
+  labelIdentityLine,
+  pickSpl,
+  setidsInText,
+  splOpenFdaId,
+  splSetId,
+  storedLabelEffective,
+} from "./label-identity";
 import { BoundedLRUCache } from "../server/cache";
 import { fetchJson, joinNames, sharedFailurePhrase } from "../server/http";
 import { errorKind, logEvent } from "../server/log";
@@ -76,6 +89,21 @@ function clip(s: string, n = 720) {
   return `${t.slice(0, n).replace(/\s+\S*$/, "")}…`;
 }
 
+/** Full plain interactions text, capped so one huge SPL cannot fill the cache. */
+function scanText(s: string, n: number) {
+  const t = plain(s);
+  return t.length <= n ? t : t.slice(0, n);
+}
+
+/** Setids cited on this drug's catalog note. Not a grade and not a quote. */
+function noteSetids(id: string): string[] {
+  return setidsInText(DRUG_BY_ID[id]?.note);
+}
+
+function liveCacheKey(chem: string, preferred: readonly string[]) {
+  return preferred.length ? `${chem}\n${preferred.join(",")}` : chem;
+}
+
 /** OpenFDA and PubChem answer "no match" with a 404 — that resolves as null, not a failure. */
 function getJson(url: string, source: string, signal: AbortSignal, notFoundAsEmpty = false) {
   return fetchJson(url, {
@@ -102,19 +130,24 @@ function rowsOf<T>(v: unknown): T[] {
   return Array.isArray(v) ? (v as T[]) : [];
 }
 
-async function fetchLabel(name: string, signal: AbortSignal): Promise<FdaLabel | null> {
+async function fetchLabel(name: string, signal: AbortSignal, preferred: readonly string[]): Promise<FdaLabel | null> {
   const q = encodeURIComponent(`openfda.generic_name:"${name}"`);
-  const url = `https://api.fda.gov/drug/label.json?search=${q}&limit=1`;
+  const url = `https://api.fda.gov/drug/label.json?search=${q}&limit=${LABEL_CANDIDATE_LIMIT}`;
   const json = (await getJson(url, "openfda.label", signal, true)) as {
     results?: unknown;
   } | null;
-  const row = rowsOf<Record<string, unknown>>(json?.results)[0];
+  const row = pickSpl(rowsOf<Record<string, unknown>>(json?.results), preferred);
   if (!row || typeof row !== "object") return null;
   const open = (row.openfda ?? {}) as Record<string, unknown>;
+  const interactionsRaw = firstString(row.drug_interactions);
+  const setId = splSetId(row);
+  const openFdaId = splOpenFdaId(row);
+  const effectiveTime = formatEffectiveTime(row.effective_time);
   return {
     boxed: clip(firstString(row.boxed_warning), 900),
     pregnancy: clip(firstString(row.pregnancy) || firstString(row.pregnancy_or_breast_feeding), 420),
-    interactions: clip(firstString(row.drug_interactions), 520),
+    interactions: clip(interactionsRaw, INTERACTIONS_EXCERPT_CHARS),
+    interactionsScan: scanText(interactionsRaw, INTERACTIONS_SCAN_CHARS),
     contraindications: clip(firstString(row.contraindications), 420),
     warnings: clip(firstString(row.warnings_and_cautions) || firstString(row.warnings), 520),
     indications: clip(firstString(row.indications_and_usage), 360),
@@ -122,16 +155,16 @@ async function fetchLabel(name: string, signal: AbortSignal): Promise<FdaLabel |
     rxcui: stringList(open.rxcui, 4),
     unii: stringList(open.unii, 2),
     classes: stringList(open.pharm_class_epc, 4),
-    setId: typeof row.set_id === "string" ? row.set_id : "",
-    effective: splEffectiveDay(row.effective_time),
+    setId,
+    openFdaId,
+    effectiveTime,
+    identity: labelIdentityLine({
+      setId,
+      openFdaId,
+      effectiveTime,
+      storedEffective: storedLabelEffective(setId),
+    }),
   };
-}
-
-/** OpenFDA sends SPL effectiveTime as YYYYMMDD. Anything else stays blank. */
-function splEffectiveDay(value: unknown): string {
-  const raw = typeof value === "number" ? String(value) : typeof value === "string" ? value.trim() : "";
-  const m = /^(\d{4})(\d{2})(\d{2})$/.exec(raw);
-  return m ? `${m[1]}-${m[2]}-${m[3]}` : "";
 }
 
 async function fetchFaers(name: string, signal: AbortSignal): Promise<FaersHit[]> {
@@ -336,7 +369,7 @@ function failedReason(labeled: boolean, failures: Failure[]): string {
   return `Live sources ${failedPhrase(failures)} — the label excerpt is unavailable; the Prescribing Information still governs.`;
 }
 
-async function pullLive(query: string, chem: string): Promise<LiveOutcome> {
+async function pullLive(query: string, chem: string, preferred: readonly string[]): Promise<LiveOutcome> {
   const signal = AbortSignal.timeout(LOOKUP_BUDGET_MS);
   const labeled = Boolean(query);
   const failures: Failure[] = [];
@@ -351,7 +384,7 @@ async function pullLive(query: string, chem: string): Promise<LiveOutcome> {
 
   // Each source settles on its own; one slow or failed source leaves the others intact.
   const [label, faers, rxnorm, pubchem, dailymed, shortage, ndc, recalls] = await Promise.all([
-    labeled ? guard("label", () => fetchLabel(query, signal), null) : null,
+    labeled ? guard("label", () => fetchLabel(query, signal, preferred), null) : null,
     labeled ? guard("faers", () => fetchFaers(query, signal), []) : [],
     guard("rxnorm", () => fetchRxnorm(labeled ? query : chem, signal), null),
     guard("pubchem", () => fetchPubchem(chem, signal), null),
@@ -416,14 +449,16 @@ export async function lookupLiveOutcome(id: string, name: string): Promise<LiveO
     };
   }
 
+  const preferred = noteSetids(id);
+  const cacheKey = liveCacheKey(chem, preferred);
   const started = Date.now();
-  const cached = liveCache.get(chem);
+  const cached = liveCache.get(cacheKey);
   if (cached) {
     logLookup("hit", started, cached);
     return cached;
   }
   try {
-    const outcome = await liveCache.getOrFetch(chem, () => pullLive(query, chem), liveTtl);
+    const outcome = await liveCache.getOrFetch(cacheKey, () => pullLive(query, chem, preferred), liveTtl);
     logLookup("miss", started, outcome);
     return outcome;
   } catch (error) {

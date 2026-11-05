@@ -271,6 +271,7 @@ function FdaPanel({ id }: { id: string }) {
             ))}
             {label.unii[0] ? <span className="font-mono text-[11px] text-muted">UNII {label.unii[0]}</span> : null}
           </div>
+          <p className="font-mono text-[11px] leading-relaxed text-muted">{label.identity}</p>
           {label.boxed ? (
             <div className="rounded-md bg-danger-soft px-3 py-3">
               <p className="font-mono text-[10px] uppercase tracking-wide text-danger">Boxed warning</p>
@@ -311,7 +312,7 @@ function FdaPanel({ id }: { id: string }) {
           ) : null}
           {label.setId ? (
             <>
-              <LiveLabelDates setid={label.setId} liveDate={label.effective} />
+              <LiveLabelDates setid={label.setId} liveDate={label.effectiveTime} />
               <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(label.setId)}`}>
                 Open DailyMed
               </Out>

@@ -132,8 +132,9 @@ async function buildReport(unique: string[]): Promise<{ report: RxnavReport; com
     for (let j = i + 1; j < packs.length; j++) {
       const a = packs[i]!;
       const b = packs[j]!;
-      const textA = a.live.sources.label?.interactions ?? "";
-      const textB = b.live.sources.label?.interactions ?? "";
+      // Match on the long scan. The on-screen excerpt stays short.
+      const textA = a.live.sources.label?.interactionsScan || a.live.sources.label?.interactions || "";
+      const textB = b.live.sources.label?.interactionsScan || b.live.sources.label?.interactions || "";
       const foundA = needles(b.drug.id).find((n) => textA.toLowerCase().includes(n));
       const foundB = needles(a.drug.id).find((n) => textB.toLowerCase().includes(n));
       if (foundA && textA) {
@@ -143,6 +144,7 @@ async function buildReport(unique: string[]): Promise<{ report: RxnavReport; com
           source: "OpenFDA label",
           severity: "named",
           description: clipAround(textA, foundA),
+          identity: a.live.sources.label?.identity ?? "",
         });
       }
       if (foundB && textB) {
@@ -152,6 +154,7 @@ async function buildReport(unique: string[]): Promise<{ report: RxnavReport; com
           source: "OpenFDA label",
           severity: "named",
           description: clipAround(textB, foundB),
+          identity: b.live.sources.label?.identity ?? "",
         });
       }
     }

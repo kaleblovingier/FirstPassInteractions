@@ -86,7 +86,7 @@ describe("modern catalog DailyMed setids", () => {
 
   it("names both dates when a live FDA or DailyMed day differs, and stays quiet otherwise", () => {
     const dossier = readFileSync("src/components/desk/dossier.tsx", "utf8");
-    assert.match(dossier, /LiveLabelDates setid=\{label\.setId\} liveDate=\{label\.effective\}/);
+    assert.match(dossier, /LiveLabelDates setid=\{label\.setId\} liveDate=\{label\.effectiveTime\}/);
     assert.match(dossier, /LiveLabelDates setid=\{d\.setId\} liveDate=\{d\.published\}/);
     const id = "80b57cfe-7819-4d95-a57d-014af42f118d";
     const row = versions.labels[id];

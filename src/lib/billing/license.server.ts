@@ -178,6 +178,11 @@ export function defaultPepperSet() {
   return !env("LICENSE_PEPPER");
 }
 
+/**
+ * Maps a known issued plan. Unknown text becomes "life".
+ * Public server functions must not call this with request input — their zod
+ * schemas reject anything other than "pro" | "lab" | "life" before minting.
+ */
 export function parseIssuedPlan(raw: string): IssuedPlan {
   if (raw === "lab" || raw === "life" || raw === "pro") return raw;
   return "life";

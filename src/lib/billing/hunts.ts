@@ -26,6 +26,8 @@ export interface PipeRow extends Target {
   status: PipeStatus;
   note: string;
   added: string;
+  /** Collected license key for this name. Omitted from the book CSV and JSON. */
+  licenseKey?: string;
 }
 
 export const PREY_LABEL: Record<Prey, string> = {
@@ -1087,6 +1089,7 @@ export function loadPipe(): PipeRow[] {
         status: (r.status as PipeStatus) ?? "queued",
         note: typeof r.note === "string" ? r.note : "",
         added: typeof r.added === "string" ? r.added : new Date().toISOString(),
+        licenseKey: typeof r.licenseKey === "string" && r.licenseKey ? r.licenseKey : undefined,
       }));
   } catch {
     return [];

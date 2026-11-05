@@ -21,6 +21,8 @@
     "test": "node scripts/run-tests.mjs",
     "a11y:gate": "node scripts/a11y-gate.mjs",
     "a11y:wcag22": "node scripts/wcag22-checks.mjs",
+    "a11y:keyboard": "node scripts/keyboard-journeys.mjs",
+    "e2e:smoke": "tsx scripts/e2e/run.mjs search compare export",
     "lint": "eslint .",
     "format": "prettier --write .",
     "lms:scorm": "tsx scripts/lms/build-scorm.ts && node scripts/lms/validate-scorm.mjs dist-lms/firstpass-pairs-scorm12.zip"
