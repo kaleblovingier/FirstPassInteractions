@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { z } from "zod";
 import { env } from "@/lib/env.server";
 import { mailConfigured, sendLicenseMail } from "@/lib/billing/license-mail.server";
 import { mintKeyFromPaid, verifyKey, type IssuedPlan } from "@/lib/billing/license.server";
@@ -57,12 +58,22 @@ export function clientIp(request: Request): string {
   return raw.split(",")[0]!.trim() || "unknown";
 }
 
+/** Trim and lowercase strings only. Numbers and objects are not coerced into addresses. */
+const recoveryEmail = z.preprocess(
+  (v) => (typeof v === "string" ? v.trim().toLowerCase() : v),
+  z
+    .string()
+    .min(3)
+    .max(254)
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+);
+
+/** The lost-key body. Unknown keys are a 400, not silently ignored. */
+export const RecoveryRequestSchema = z.strictObject({ email: recoveryEmail });
+
 export function normalizeEmail(raw: unknown): string | null {
-  if (typeof raw !== "string") return null;
-  const e = raw.trim().toLowerCase();
-  if (e.length < 3 || e.length > 254) return null;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return null;
-  return e;
+  const parsed = recoveryEmail.safeParse(raw);
+  return parsed.success ? parsed.data : null;
 }
 
 /* ---------------- lookup + send ---------------- */
@@ -134,8 +145,9 @@ export async function handleRecoverRequest(
   } catch {
     /* handled below */
   }
-  const email = normalizeEmail(body?.email);
-  if (!email) return json(400, RECOVERY_BAD_EMAIL);
+  const parsed = RecoveryRequestSchema.safeParse(body);
+  if (!parsed.success) return json(400, RECOVERY_BAD_EMAIL);
+  const email = parsed.data.email;
 
   const ip = clientIp(request);
   if (!hit(`ip:${ip}`, LIMITS.ip.max, LIMITS.ip.windowMs)) return json(429, RECOVERY_LIMITED);
