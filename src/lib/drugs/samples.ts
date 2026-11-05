@@ -1779,8 +1779,8 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
   },
   {
     id: "hr-mdma-maoi",
-    title: "MDMA × Nardil — wiki deadly",
-    blurb: "HR tab — TripSit deadly. Serotonin toxicity, not a blunted roll.",
+    title: "MDMA × Nardil — wiki Dangerous",
+    blurb: "HR tab — TripSit Dangerous. Serotonin toxicity, not a blunted roll.",
     drugIds: ["mdma", "phenelzine"],
     lane: "entactogen",
   },

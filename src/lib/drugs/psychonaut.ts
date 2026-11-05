@@ -323,7 +323,7 @@ const PAIR_COPY: Record<string, { body: string; watch: string }> = {
     watch: "Naloxone for the μ. It will not reverse the benzo. Stay.",
   },
   "empathogen|maoi": {
-    body: "MDMA, MDA, and the cathinone cousins plus an MAOI are serotonin toxicity — clonus, rigidity, deadly fever — not a blunted roll. TripSit rates this deadly.",
+    body: "MDMA, MDA, and the cathinone cousins plus an MAOI are serotonin toxicity — clonus, rigidity, deadly fever — not a blunted roll. TripSit rates this Dangerous.",
     watch: "Hunter tab. This desk does not treat the syndrome and does not pick a milligram.",
   },
   "dxm|maoi": {
@@ -478,30 +478,39 @@ function pairCopy(a: string, b: string, rating: ComboRating) {
   return COMBO_COPY[rating];
 }
 
+/** TripSit's own category words for the badge; the keys are internal ranks, not labels. */
+export const COMBO_LABEL: Record<ComboRating, string> = {
+  deadly: "Dangerous",
+  dangerous: "Unsafe",
+  caution: "Caution",
+  decrease: "Low Risk & Decrease",
+  low: "Not on the TripSit chart",
+};
+
 const COMBO_COPY: Record<ComboRating, { title: string; body: string; watch: string }> = {
   deadly: {
-    title: "TripSit — deadly combination",
-    body: "PsychonautWiki / TripSit rate this pair as a combination that kills on the mix: multiplicative respiratory depression, serotonin toxicity, or a pressor crisis — not two separate prescriptions. Effects are not additive.",
+    title: "TripSit — Dangerous",
+    body: "TripSit rates this pair Dangerous: multiplicative respiratory depression, serotonin toxicity, or a pressor crisis — not two separate prescriptions. Effects are not additive.",
     watch: "Do not stack to 'take the edge off.' Recovery position if they are breathing and unresponsive. This desk does not pick a milligram and does not abort the mix.",
   },
   dangerous: {
-    title: "TripSit — dangerous combination",
-    body: "The wiki flags this pair as dangerous: airway loss, seizure, unpredictable vasoconstriction, or a cardiotoxin the stimulant was hiding. Independently review before anyone treats it as a vibe.",
+    title: "TripSit — Unsafe",
+    body: "The wiki flags this pair as Unsafe: airway loss, seizure, unpredictable vasoconstriction, or a cardiotoxin the stimulant was hiding. Independently review before anyone treats it as a vibe.",
     watch: "A stimulant on a depressant only masks apnea until it wears off. Naloxone for the opioid; it will not reverse the rest.",
   },
   caution: {
-    title: "TripSit — caution",
+    title: "TripSit — Caution",
     body: "Unpredictable potentiation, anxiety, dehydration, or a delayed crash. Not 'low risk.' The room, the heat, and the second substance all count.",
     watch: "A sitter who can call 911 is the intervention. This desk is not that sitter.",
   },
   decrease: {
-    title: "TripSit — decreased effect, not a free pass",
+    title: "TripSit — Low Risk & Decrease",
     body: "SSRIs / SNRIs often blunt the subjective effect of MDMA while leaving heat, blood pressure, and serotonin-toxicity risk on the table. People redose because 'nothing is happening.' That is the trap.",
     watch: "Do not chase a blunted roll. Hunter tab if they look serotonergic. This desk does not pick a milligram.",
   },
   low: {
-    title: "TripSit — low risk is not no risk",
-    body: "The chart does not list this pair as deadly. Absence of a red cell is not proof of safety. Set, setting, and the rest of the fold still apply.",
+    title: "Not on the TripSit chart",
+    body: "The chart does not list this pair as Dangerous. Absence of a red cell is not proof of safety. Set, setting, and the rest of the fold still apply.",
     watch: "Wiki, not a label. Independently review.",
   },
 };

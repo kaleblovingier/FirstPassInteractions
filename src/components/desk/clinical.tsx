@@ -146,7 +146,7 @@ import {
   responseSteps,
   stripsFor,
 } from "@/lib/drugs/harm";
-import { comboOnDesk, comboTone, wikiOnDesk, type LiveCombo, type WikiPage } from "@/lib/drugs/psychonaut";
+import { COMBO_LABEL, comboOnDesk, comboTone, wikiOnDesk, type LiveCombo, type WikiPage } from "@/lib/drugs/psychonaut";
 import { lookupPsychonaut } from "@/lib/drugs/psychonaut-rpc";
 import { PSYCHONAUTWIKI_CREDIT, TRIPSIT_NOTE } from "@/lib/seo/legal";
 import {
@@ -1341,7 +1341,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-sm font-medium text-fg">{row.title}</h3>
             <Badge tone={comboTone(row.rating) === "ok" ? "ok" : comboTone(row.rating) === "warn" ? "warn" : "danger"}>
-              {row.rating}
+              {COMBO_LABEL[row.rating]}
             </Badge>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-fg">{row.body}</p>
@@ -1665,6 +1665,11 @@ function AlertsPanel({ rows }: { rows: ReturnType<typeof alertsOnDesk> }) {
                 <li key={f.kind}>
                   <Badge tone={f.kind === "rems" ? "danger" : f.kind === "niosh" ? "warn" : "info"}>{f.label}</Badge>
                   <p className="mt-1 text-sm leading-relaxed text-fg">{f.note}</p>
+                  {f.kind === "ismp" ? (
+                    <a className="text-xs text-accent underline" href="https://www.ismp.org/" target="_blank" rel="noreferrer">
+                      ismp.org
+                    </a>
+                  ) : null}
                 </li>
               ))}
             </ul>
