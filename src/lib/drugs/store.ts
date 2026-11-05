@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState } from "./desk-persist";
 import { DRUG_BY_ID } from "./catalog";
-import { normalizeStudyMarks, scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
+import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
@@ -9,7 +10,6 @@ import {
   normalizeProgramGrant,
   programEnded,
   programEndedNote,
-  programFromLicense,
   type ProgramGrant,
 } from "@/lib/billing/program-license";
 import {
@@ -147,7 +147,10 @@ type ProgramState = Pick<
  */
 export function programFallback(s: ProgramState, now: number = Date.now()): Partial<DeskState> | null {
   if (!s.program || !programEnded(s.program, now)) return null;
-  const selected = s.selected.slice(0, maxDrugs("free"));
+  const selected = (Array.isArray(s.selected) ? s.selected : [])
+    .filter((id): id is string => typeof id === "string")
+    .slice(0, maxDrugs("free"));
+  const doses = s.doses && typeof s.doses === "object" && !Array.isArray(s.doses) ? s.doses : {};
   return {
     plan: "free",
     license: null,
@@ -157,7 +160,9 @@ export function programFallback(s: ProgramState, now: number = Date.now()): Part
     justActivated: false,
     selected,
     doses: Object.fromEntries(
-      selected.map((id) => [id, s.doses[id]]).filter((row): row is [string, string] => Boolean(row[1])),
+      selected
+        .map((id) => [id, doses[id]] as const)
+        .filter((row): row is [string, string] => typeof row[1] === "string" && row[1].length > 0),
     ),
     phenotypes: { ...DEFAULT_PHENOTYPES },
     smoking: false,
@@ -171,6 +176,8 @@ export function programFallback(s: ProgramState, now: number = Date.now()): Part
 
 /** Set by the persist merge when a saved program license had already ended. */
 let endedOnLoad = false;
+/** Set when the blob was corrupt or a field was repaired, so the bad JSON is replaced. */
+let rewriteOnLoad = false;
 
 export const useDesk = create<DeskState>()(
   persist(
@@ -448,58 +455,30 @@ export const useDesk = create<DeskState>()(
         }),
     }),
     {
-      name: "firstpass.desk.v7",
+      name: DESK_STORAGE_KEY,
       skipHydration: true,
+      storage: createJSONStorage(deskJsonStorage),
       merge: (persisted, current) => {
-        const p = (persisted ?? {}) as Partial<DeskState>;
+        const read = readDeskStorageState(persisted, partializeDesk(current));
+        rewriteOnLoad = read.rewrite;
         const merged: DeskState = {
           ...current,
-          ...p,
-          phenotypes: { ...DEFAULT_PHENOTYPES, ...p.phenotypes },
-          age: p.age === "geriatric" ? "geriatric" : "adult",
-          kidney: p.kidney === "ckd" ? "ckd" : "ok",
-          preg: p.preg === "pregnant" || p.preg === "lactating" ? p.preg : "off",
-          doses: p.doses && typeof p.doses === "object" ? p.doses : {},
-          studyMarks: normalizeStudyMarks(p.studyMarks),
+          ...read.state,
           justActivated: false,
-          hcpAck: Boolean(p.hcpAck),
-          previewUsed: Boolean(p.previewUsed) || typeof p.previewUntil === "number",
-          // Program fields are optional: state saved before program keys has neither.
-          // A program key carries its own end month, so it is the fallback source.
-          program: normalizeProgramGrant(p.program) ?? programFromLicense(p.license),
-          programNote: typeof p.programNote === "string" && p.programNote ? p.programNote : null,
         };
         const ended = programFallback(merged);
         endedOnLoad = Boolean(ended);
         return { ...merged, ...ended };
       },
-      // Save the free desk right away when a program term ended while the tab was closed.
+      // Replace a bad blob, and save the free desk when a program term ended while the tab was closed.
       onRehydrateStorage: () => (state) => {
-        if (!endedOnLoad || !state) return;
+        const write = Boolean(state) && (endedOnLoad || rewriteOnLoad);
         endedOnLoad = false;
+        rewriteOnLoad = false;
+        if (!write) return;
         useDesk.setState({});
       },
-      partialize: (s) => ({
-        selected: s.selected,
-        phenotypes: s.phenotypes,
-        smoking: s.smoking,
-        ketamineRoute: s.ketamineRoute,
-        cannabisRoute: s.cannabisRoute,
-        alcohol: s.alcohol,
-        age: s.age,
-        kidney: s.kidney,
-        preg: s.preg,
-        doses: s.doses,
-        studyMarks: s.studyMarks,
-        plan: s.plan,
-        license: s.license,
-        lifetime: s.lifetime,
-        program: s.program,
-        programNote: s.programNote,
-        previewUntil: s.previewUntil,
-        previewUsed: s.previewUsed,
-        hcpAck: s.hcpAck,
-      }),
+      partialize: (s) => partializeDesk(s),
     },
   ),
 );
