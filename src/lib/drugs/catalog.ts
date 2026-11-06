@@ -98,7 +98,7 @@ const raw: Drug[] = [
   d("tmp-smx", "Trimethoprim–sulfamethoxazole", ["Bactrim", "Septra"], "Sulfonamide antibiotic",
     [inh("CYP2C9", "moderate"), inh("CYP2C8", "moderate")],
     ["k-sparing", "nephrotoxic"], "Hyperkalemia, marrow suppression, INR rise",
-    { aliases: ["bactrim", "cotrimoxazole", "sulfamethoxazole"] }),
+    { aliases: ["bactrim", "cotrimoxazole", "sulfamethoxazole", "smx-tmp", "sulfamethoxazole-trimethoprim"] }),
   d("isoniazid", "Isoniazid", ["Nydrazid"], "Antimycobacterial",
     [inh("CYP2C19", "moderate"), inh("CYP3A4", "weak"), inh("CYP2D6", "weak"), inh("CYP2E1", "weak")],
     ["hepatotoxic", "seizure-lowering"], "Hepatitis, neuropathy",
@@ -156,7 +156,8 @@ const raw: Drug[] = [
     ["antiplatelet"], "Loss of antiplatelet effect or bleeding",
     { note: "Prodrug. Bioactivation is CYP2C19-dependent; omeprazole/esomeprazole blunt it." }),
   d("aspirin", "Aspirin", ["Bayer", "Ecotrin"], "Antiplatelet / NSAID",
-    [], ["antiplatelet", "nsaid", "nephrotoxic"], "Bleeding, GI ulcer, renal injury"),
+    [], ["antiplatelet", "nsaid", "nephrotoxic"], "Bleeding, GI ulcer, renal injury",
+    { aliases: ["asa", "acetylsalicylic acid"] }),
   d("atorvastatin", "Atorvastatin", ["Lipitor"], "Statin",
     [sub("CYP3A4", "major")],
     ["statin", "hepatotoxic"], "Myopathy / rhabdomyolysis"),
@@ -270,7 +271,7 @@ const raw: Drug[] = [
     "TCA toxicity, arrhythmia"),
   d("lithium", "Lithium", ["Lithobid"], "Mood stabilizer",
     [], ["serotonergic", "seizure-lowering", "nephrotoxic"], "Lithium toxicity (narrow index)",
-    { note: "Renally cleared, not CYP. NSAIDs, ACE inhibitors, and thiazides raise levels." }),
+    { aliases: ["lithium carbonate"], note: "Renally cleared, not CYP. NSAIDs, ACE inhibitors, and thiazides raise levels." }),
   d("quetiapine", "Quetiapine", ["Seroquel"], "Atypical antipsychotic",
     [sub("CYP3A4", "sensitive")],
     ["cns-depressant", "qt-possible", "anticholinergic"], "Sedation, QT, hypotension"),
@@ -409,10 +410,12 @@ const raw: Drug[] = [
   // —— GI / endocrine / immuno / other ———————————————
   d("omeprazole", "Omeprazole", ["Prilosec"], "PPI",
     [sub("CYP2C19", "major"), inh("CYP2C19", "weak"), inh("CYP3A4", "weak")],
-    [], "Reduced clopidogrel activation, B12/Mg loss"),
+    [], "Reduced clopidogrel activation, B12/Mg loss",
+    { aliases: ["prilosec otc", "omeprazole magnesium"] }),
   d("esomeprazole", "Esomeprazole", ["Nexium"], "PPI",
     [sub("CYP2C19", "major"), inh("CYP2C19", "moderate")],
-    [], "Reduced clopidogrel activation"),
+    [], "Reduced clopidogrel activation",
+    { aliases: ["esomeprazole magnesium"] }),
   d("pantoprazole", "Pantoprazole", ["Protonix"], "PPI",
     [sub("CYP2C19", "minor")],
     [], "Hypomagnesemia",
@@ -448,7 +451,7 @@ const raw: Drug[] = [
     ["immunosuppressant", "nephrotoxic"], "Nephrotoxicity, infection"),
   d("methotrexate", "Methotrexate", ["Trexall", "Rheumatrex"], "Antimetabolite",
     [], ["nephrotoxic", "hepatotoxic"], "Marrow suppression, mucositis, AKI",
-    { note: "NSAIDs and TMP-SMX raise toxicity via renal/transporter effects." }),
+    { aliases: ["mtx"], note: "NSAIDs and TMP-SMX raise toxicity via renal/transporter effects." }),
   d("colchicine", "Colchicine", ["Colcrys", "Mitigare"], "Antigout",
     [sub("CYP3A4", "sensitive", "clearance", true), sub("P-gp", "sensitive")],
     [], "Myelosuppression, myopathy, GI toxicity",
@@ -466,7 +469,8 @@ const raw: Drug[] = [
     [sub("CYP3A4", "major")],
     ["pde5"], "Severe hypotension with nitrates"),
   d("nitroglycerin", "Nitroglycerin", ["Nitrostat", "Nitro-Dur"], "Nitrate",
-    [], ["nitrate"], "Catastrophic hypotension with PDE5 inhibitors"),
+    [], ["nitrate"], "Catastrophic hypotension with PDE5 inhibitors",
+    { aliases: ["ntg"] }),
   d("ondansetron", "Ondansetron", ["Zofran"], "5-HT3 antagonist",
     [sub("CYP3A4", "major"), sub("CYP1A2", "minor"), sub("CYP2D6", "minor")],
     ["qt-known", "serotonergic"], "QT prolongation"),
@@ -653,7 +657,7 @@ const raw: Drug[] = [
     [sub("CYP2C9", "major"), sub("CYP3A4", "major")],
     ["cannabinoid", "cns-depressant"],
     "Sedation, tachycardia, 2C9/3A4 victim toxicity",
-    { aliases: ["thc", "delta-9-thc", "cannabis"] }),
+    { aliases: ["thc", "delta-9-thc", "cannabis", "marijuana"] }),
   d("cannabidiol", "Cannabidiol", ["Epidiolex"], "Cannabinoid (CBD)",
     [sub("CYP2C19", "major"), sub("CYP3A4", "major"), inh("CYP2C19", "strong"), inh("CYP3A4", "moderate"), inh("CYP2C9", "moderate"), inh("CYP2D6", "weak")],
     ["cannabinoid", "cns-depressant", "hepatotoxic"],
@@ -1031,7 +1035,7 @@ const raw: Drug[] = [
     ["cns-depressant", "anticholinergic", "qt-possible"],
     "Additive sedation and QT with other CNS / QT drugs",
     {
-      aliases: ["atarax", "vistaril"],
+      aliases: ["atarax", "vistaril", "hydroxyzine pamoate"],
       note: "The OTP 'not a benzo' for anxiety still prolongs QT and sedates. Next to methadone that is a TdP and airway row, not a free extra.",
     }),
   d("poppers", "Alkyl nitrites (poppers)", [], "Volatile nitrite vasodilator",
@@ -1532,7 +1536,7 @@ const raw: Drug[] = [
     [],
     "Not a CYP perpetrator — the switch when cimetidine is the problem",
     {
-      aliases: ["pepcid"],
+      aliases: ["pepcid", "pepcid ac"],
       note: "Unlike cimetidine, famotidine does not meaningfully inhibit 1A2/2D6/3A4. Put both on the materia when someone asks 'which H2 is safe next to tizanidine.'",
     }),
   d("oxymorphone", "Oxymorphone", ["Opana"], "Opioid analgesic",
@@ -1818,7 +1822,7 @@ const raw: Drug[] = [
     ["anticholinergic", "cns-depressant"],
     "Delirium, retention — stacked anticholinergic burden",
     {
-      aliases: ["ditropan", "oxytrol"],
+      aliases: ["ditropan", "oxytrol", "oxybutynin chloride"],
       note: "3A4 to N-desethyloxybutynin. Strong inhibitors raise parent. PD with diphenhydramine, hydroxyzine, TCAs, and benztropine is delirium in older adults. Mirabegron is the non-anticholinergic OAB switch.",
     }),
   d("enoxaparin", "Enoxaparin", ["Lovenox"], "LMWH",
@@ -3198,7 +3202,7 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       "empagliflozin",
       "furosemide",
     ];
-    return wardOrder
+    return ownRowFirst(q, wardOrder)
       .map((id) => DRUG_BY_ID[id])
       .filter((d): d is Drug => Boolean(d) && !excluded.has(d.id))
       .slice(0, 24);
@@ -3336,7 +3340,7 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   }
   if (q === "reversal" || q === "antidote" || q === "naloxone" || q === "narcan" || q === "opvee") {
     const order = ["naloxone", "nalmefene", "nac", "vitamin-k", "fentanyl", "methadone", "acetaminophen", "warfarin", "xylazine", "dabigatran", "digoxin"];
-    return order
+    return ownRowFirst(q, order)
       .map((id) => DRUG_BY_ID[id])
       .filter((d): d is Drug => Boolean(d) && !excluded.has(d.id))
       .slice(0, 16);
@@ -3446,10 +3450,7 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   if (q === "rxnav" || q === "pubchem" || q === "trials" || q === "dailymed" || q === "shortage" || q === "shortages") {
     return DRUGS.filter((d) => !excluded.has(d.id) && d.kind === "drug" && !d.id.startsWith("__")).slice(0, 16);
   }
-  const coreQuery = stripSaltFormTokens(normalizedQuery);
-  const matchQueries = (
-    coreQuery !== normalizedQuery ? [normalizedQuery, coreQuery] : [normalizedQuery]
-  ).map((mq) => {
+  const matchQueries = saltFormKeys(normalizedQuery).map((mq) => {
     const enzymeKey = compactEnzymeQuery(mq);
     return {
       mq,
@@ -3459,7 +3460,7 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       enzymeDigits: enzymeKey?.replace(/^cyp/, "") ?? "",
       teach: enzymeKey ? (TEACHING_ENZYME_HITS[enzymeKey] ?? []) : [],
       // Prefer the plain-generic hit when the user typed a salt/release suffix.
-      saltBonus: mq === coreQuery && mq !== normalizedQuery,
+      saltBonus: mq !== normalizedQuery,
     };
   });
 
@@ -3469,7 +3470,9 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
     let score = 0;
     for (const { mq, tokens, compactQuery, enzymeKey, enzymeDigits, teach, saltBonus } of matchQueries) {
       let s = 0;
-      if (searchable.some((value) => value === mq)) s = 100;
+      // A row's own id or name outranks another row's identical brand or alias, as in the API.
+      if (name === mq || id === mq) s = 100;
+      else if (searchable.some((value) => value === mq)) s = 99;
       else if (name.startsWith(mq) || id.startsWith(mq)) s = 80;
       else if (brands.some((b) => b.startsWith(mq)) || aliases.some((a) => a.startsWith(mq))) s = 70;
       else if (name.includes(mq) || id.includes(mq)) s = 60;
@@ -3498,7 +3501,25 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   }
 
   scored.sort((a, b) => b.score - a.score || a.drug.name.localeCompare(b.drug.name));
+  if (scored.length === 0) {
+    // A pasted strength ("lisinopril 10 mg", "Synthroid 50 mcg") still finds the name typed before it.
+    const named = withoutStrength(normalizedQuery);
+    if (named !== normalizedQuery) return searchDrugs(named, excludeIds);
+  }
   return scored.slice(0, 24).map((s) => s.drug);
+}
+
+/** A shelf keyword that is also a brand (Zosyn, Entresto, Opvee) still lists that brand's row first. */
+function ownRowFirst(q: string, ids: string[]): string[] {
+  const own = searchIndex().find((e) => e.brands.includes(q))?.drug.id;
+  return own ? [own, ...ids.filter((id) => id !== own)] : ids;
+}
+
+/** The words before the first number that follows the name: "lisinopril 10 mg" → "lisinopril". */
+export function withoutStrength(normalized: string): string {
+  const parts = normalized.split(" ");
+  const at = parts.findIndex((t, i) => i > 0 && /^\d/.test(t));
+  return at > 0 ? parts.slice(0, at).join(" ") : normalized;
 }
 
 /**
@@ -3515,6 +3536,9 @@ export function normalizeSearchText(value: string): string {
     .trim()
     .replace(/\s+/g, " ");
 }
+
+/** Release-form tokens (Toprol XL, Cardizem CD, Bactrim DS). */
+const RELEASE_FORM_TOKENS = ["xr", "er", "sr", "cr", "la", "odt", "ir", "xl", "cd", "dr", "ec", "ds"];
 
 /** Common salt / release tokens users paste after a generic (e.g. metformin hcl). */
 export const SALT_FORM_TOKENS = new Set([
@@ -3541,14 +3565,14 @@ export const SALT_FORM_TOKENS = new Set([
   "dihydrate",
   "monohydrate",
   "anhydrous",
-  "xr",
-  "er",
-  "sr",
-  "cr",
-  "la",
-  "odt",
-  "ir",
-  "xl",
+  "trihydrate",
+  "hyclate",
+  "bitartrate",
+  "bisulfate",
+  "oxalate",
+  "bromide",
+  "propionate",
+  ...RELEASE_FORM_TOKENS,
 ]);
 
 /** Drop trailing salt/release tokens so "metformin hcl" still finds metformin. */
@@ -3557,6 +3581,16 @@ export function stripSaltFormTokens(normalized: string): string {
   if (parts.length < 2) return normalized;
   const kept = parts.filter((t) => !SALT_FORM_TOKENS.has(t));
   return kept.length ? kept.join(" ") : normalized;
+}
+
+/**
+ * Lookup keys for a normalized query, most literal first: as typed, without release words, then
+ * without salt words too. The middle key keeps a salt that is the drug ("potassium chloride er").
+ */
+export function saltFormKeys(normalized: string): string[] {
+  const parts = normalized.split(" ");
+  const named = parts.length > 1 ? parts.filter((t) => !RELEASE_FORM_TOKENS.includes(t)).join(" ") : "";
+  return [...new Set([normalized, named || normalized, stripSaltFormTokens(normalized)])];
 }
 
 

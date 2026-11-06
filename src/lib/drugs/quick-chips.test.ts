@@ -26,3 +26,10 @@ test("plain words report includes disclaimer and findings", () => {
   assert.match(text, /Educational interaction reference/);
   assert.match(text, /plain English/);
 });
+
+test("plain words report says not a dose and PI governs, empty or not", async () => {
+  const { EXPORT_NOT_A_DOSE } = await import("./brief.ts");
+  assert.ok(plainWordsReport("Ondansetron", [], "Not mapped").includes(EXPORT_NOT_A_DOSE));
+  const full = plainWordsReport("A + B", [{ severity: "Use care", headline: "A and B", plain: "x" }], "Use care");
+  assert.ok(full.includes(EXPORT_NOT_A_DOSE));
+});

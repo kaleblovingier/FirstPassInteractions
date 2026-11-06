@@ -732,7 +732,7 @@ export function findPhenytoinCollisions(drugIds: string[]): PhenytoinCollision[]
       mechanism:
         "Valproic acid exerts a synergistic dual collision: 1) Competitively displaces phenytoin from albumin binding sites, expanding the unbound (free) fraction fu from 10% to 25–35%; 2) Inhibits CYP2C9 hepatic metabolism of phenytoin. Total phenytoin level appears artificially normal or subtherapeutic while active free phenytoin reaches severe neurotoxic concentrations.",
       clinicalAction:
-        "CRITICAL PARADOX ALERT: NEVER titrate phenytoin based on total serum levels when valproate is co-administered. Order a direct FREE (unbound) phenytoin level immediately. Target free level 1.0–2.0 mcg/mL. Be prepared to reduce phenytoin dose despite a 'low' total level.",
+        "VALPROATE PARADOX: Published guidance is to never titrate phenytoin based on total serum levels when valproate is co-administered, and to draw a direct FREE (unbound) phenytoin level promptly. Usual free target 1.0–2.0 mcg/mL. A phenytoin dose reduction can be needed despite a 'low' total level.",
       monitoringRecommendation: "Monitor free phenytoin and serum ammonia regularly. Monitor for ataxia, nystagmus, and cognitive slowing.",
     });
   }

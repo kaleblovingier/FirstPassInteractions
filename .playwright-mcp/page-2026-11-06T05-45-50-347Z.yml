@@ -1,0 +1,2255 @@
+- generic [ref=f4e2]:
+  - link "Skip to content" [ref=f4e3] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e7]:
+        - button "FirstPass" [ref=f4e8] [cursor=pointer]
+        - generic [ref=f4e14]:
+          - generic [ref=f4e15]: FirstPass
+          - generic [ref=f4e17]: Liver enzymes (CYP) · not FDA-cleared
+      - generic [ref=f4e18]:
+        - navigation "Main navigation" [ref=f4e19]:
+          - button "Desk" [ref=f4e20] [cursor=pointer]
+          - button "Library" [ref=f4e21] [cursor=pointer]
+          - button "Sources" [ref=f4e22] [cursor=pointer]
+          - button "Enzyme map" [ref=f4e23] [cursor=pointer]
+          - button "Learn" [ref=f4e24] [cursor=pointer]
+          - button "Cases" [ref=f4e25] [cursor=pointer]
+          - button "Compare" [ref=f4e26] [cursor=pointer]
+          - button "Watch" [ref=f4e27] [cursor=pointer]
+          - button "Safety" [ref=f4e28] [cursor=pointer]
+          - button "Find help" [ref=f4e29] [cursor=pointer]
+          - button "Plans" [ref=f4e30] [cursor=pointer]
+          - link "Practice" [ref=f4e31] [cursor=pointer]:
+            - /url: /practice
+        - button "Search everything" [ref=f4e32] [cursor=pointer]:
+          - text: Search everything
+          - generic [aria-hidden] [ref=f4e33]: Ctrl K
+        - button "Unlock" [ref=f4e34] [cursor=pointer]
+  - complementary "Clinical education disclaimer" [ref=f4e35]:
+    - generic [ref=f4e36]:
+      - paragraph [ref=f4e38]:
+        - strong [ref=f4e39]: For licensed healthcare professionals and supervised health-professions students.
+        - text: Not for personal treatment, dose changes, or deciding whether to combine substances. This educational checker can miss risks and cannot test what is in a product. If someone is seriously unwell or may be overdosing, contact local emergency services or a poison center immediately; do not wait for this checker.
+      - generic [ref=f4e40]:
+        - button "Safety notes" [ref=f4e41] [cursor=pointer]
+        - button "Find help" [ref=f4e42] [cursor=pointer]
+        - button "Continue" [ref=f4e43] [cursor=pointer]
+  - main [ref=f4e44]:
+    - generic [ref=f4e45]:
+      - generic [ref=f4e46]:
+        - generic [ref=f4e47]:
+          - generic [ref=f4e48]:
+            - generic [ref=f4e49]:
+              - generic [ref=f4e50]: Search medicines and other substances
+              - combobox "Search medicines and other substances" [ref=f4e51]
+              - generic: /
+            - button "Turn off / key" [ref=f4e52] [cursor=pointer]
+          - generic [ref=f4e53]:
+            - paragraph [ref=f4e54]: Press / to focus. Search a name, or tap a starter below — add two items to see mapped pair findings.
+            - generic "Quick-add teaching starters" [ref=f4e55]:
+              - button "KetamineFirst-pass victim" [ref=f4e56] [cursor=pointer]
+              - button "GrapefruitGut 3A4" [ref=f4e57] [cursor=pointer]
+              - button "ClarithromycinStrong 3A4" [ref=f4e58] [cursor=pointer]
+              - button "ParoxetineStrong 2D6" [ref=f4e59] [cursor=pointer]
+              - button "Xylazineα2 street" [ref=f4e60] [cursor=pointer]
+              - button "FentanylOpioid" [ref=f4e61] [cursor=pointer]
+        - status [ref=f4e62]
+        - generic [ref=f4e63]:
+          - generic [ref=f4e66]:
+            - paragraph [ref=f4e67]: Educational interaction checker
+            - heading "Explore possible medicine and substance interactions." [level=1] [ref=f4e68]
+          - generic [ref=f4e69]:
+            - paragraph [ref=f4e70]: Add two or more medicines, supplements, foods, or other substances to see possible concerns in everyday language, with clinical details and sources for review. This is a learning aid for clinicians and supervised education—not personal medical advice. It can miss interactions; no result does not mean a combination is safe.
+            - list [ref=f4e71]:
+              - listitem [ref=f4e72]:
+                - generic [ref=f4e73]: "1"
+                - generic [ref=f4e74]:
+                  - generic [ref=f4e75]: Search
+                  - generic [ref=f4e76]: Use a generic name, brand, or common name.
+              - listitem [ref=f4e77]:
+                - generic [ref=f4e78]: "2"
+                - generic [ref=f4e79]:
+                  - generic [ref=f4e80]: Add another
+                  - generic [ref=f4e81]: Choose a second item to check the pair.
+              - listitem [ref=f4e82]:
+                - generic [ref=f4e83]: "3"
+                - generic [ref=f4e84]:
+                  - generic [ref=f4e85]: Review
+                  - generic [ref=f4e86]: Start with the everyday-language summary; open sources for context.
+            - generic [ref=f4e87]:
+              - button "Browse drug library" [ref=f4e88] [cursor=pointer]
+              - button "Opioid treatment (MAT / OTP) board" [ref=f4e89] [cursor=pointer]
+              - button "Clinic staples" [ref=f4e90] [cursor=pointer]
+              - button "Kitchen & herbs" [ref=f4e91] [cursor=pointer]
+              - button "PubMed shelf" [ref=f4e92] [cursor=pointer]
+              - button "Teaching rounds" [ref=f4e93] [cursor=pointer]
+              - button "Study drill" [ref=f4e94] [cursor=pointer]
+            - generic [ref=f4e95]:
+              - button "Ketamine & related Ketamine, DXM, DCK" [ref=f4e96] [cursor=pointer]:
+                - generic [ref=f4e98]:
+                  - generic [ref=f4e99]: Ketamine & related
+                  - generic [ref=f4e100]: Ketamine, DXM, DCK
+              - button "MDMA & stimulants MDMA, cathinones" [ref=f4e101] [cursor=pointer]:
+                - generic [ref=f4e103]:
+                  - generic [ref=f4e104]: MDMA & stimulants
+                  - generic [ref=f4e105]: MDMA, cathinones
+              - button "Sedatives & alcohol Alcohol, GHB, benzos" [ref=f4e106] [cursor=pointer]:
+                - generic [ref=f4e108]:
+                  - generic [ref=f4e109]: Sedatives & alcohol
+                  - generic [ref=f4e110]: Alcohol, GHB, benzos
+              - button "Opioid treatment (MAT) Suboxone, methadone, Vivitrol" [ref=f4e111] [cursor=pointer]:
+                - generic [ref=f4e113]:
+                  - generic [ref=f4e114]: Opioid treatment (MAT)
+                  - generic [ref=f4e115]: Suboxone, methadone, Vivitrol
+              - button "Clinic staples Named pairs, label teaching, antibiotics" [ref=f4e116] [cursor=pointer]:
+                - generic [ref=f4e118]:
+                  - generic [ref=f4e119]: Clinic staples
+                  - generic [ref=f4e120]: Named pairs, label teaching, antibiotics
+              - button "Food & herbs Grapefruit, dairy, kale, juice" [ref=f4e121] [cursor=pointer]:
+                - generic [ref=f4e123]:
+                  - generic [ref=f4e124]: Food & herbs
+                  - generic [ref=f4e125]: Grapefruit, dairy, kale, juice
+              - button "Smoking effects Clozapine and smoking-sensitive medicines" [ref=f4e126] [cursor=pointer]:
+                - generic [ref=f4e128]:
+                  - generic [ref=f4e129]: Smoking effects
+                  - generic [ref=f4e130]: Clozapine and smoking-sensitive medicines
+              - 'button "Street supply Harm reduction: xylazine, pressed pills, adulterants" [ref=f4e131] [cursor=pointer]':
+                - generic [ref=f4e133]:
+                  - generic [ref=f4e134]: Street supply
+                  - generic [ref=f4e135]: "Harm reduction: xylazine, pressed pills, adulterants"
+            - generic [ref=f4e136]:
+              - button "All" [ref=f4e137] [cursor=pointer]
+              - button "Ketamine & related" [ref=f4e138] [cursor=pointer]
+              - button "MDMA & stimulants" [ref=f4e139] [cursor=pointer]
+              - button "Sedatives & alcohol" [ref=f4e140] [cursor=pointer]
+              - button "Metabolizer status" [ref=f4e141] [cursor=pointer]
+              - button "Smoking effects" [ref=f4e142] [cursor=pointer]
+              - button "Opioid treatment (MAT)" [ref=f4e143] [cursor=pointer]
+              - button "Food & herbs" [ref=f4e144] [cursor=pointer]
+              - button "Street supply" [ref=f4e145] [cursor=pointer]
+              - button "Clinic staples" [ref=f4e146] [cursor=pointer]
+            - generic [ref=f4e147]:
+              - heading "Try an example" [level=2] [ref=f4e148]
+              - paragraph [ref=f4e149]: Examples load into the checker so you can see how its summaries and source links work.
+            - list [ref=f4e150]:
+              - listitem [ref=f4e151]:
+                - button "Oral ketamine + clarithromycin Swallowed ketamine meets a gut enzyme — often a stronger interaction than IV" [disabled] [ref=f4e152]:
+                  - generic [ref=f4e154]:
+                    - generic [ref=f4e155]: Oral ketamine + clarithromycin
+                    - generic [ref=f4e156]: Swallowed ketamine meets a gut enzyme — often a stronger interaction than IV
+                - button "Copy link" [ref=f4e157] [cursor=pointer]
+                - status [ref=f4e161]
+              - listitem [ref=f4e162]:
+                - button "Ketamine + alprazolam NMDA plus a GABA sedative — airway risk; antidepressant effect may blunt" [disabled] [ref=f4e163]:
+                  - generic [ref=f4e165]:
+                    - generic [ref=f4e166]: Ketamine + alprazolam
+                    - generic [ref=f4e167]: NMDA plus a GABA sedative — airway risk; antidepressant effect may blunt
+                - button "Copy link" [ref=f4e168] [cursor=pointer]
+                - status [ref=f4e172]
+              - listitem [ref=f4e173]:
+                - button "Esketamine + rifampin Strong 2B6/3A4 induction — esketamine exposure can fall" [disabled] [ref=f4e174]:
+                  - generic [ref=f4e176]:
+                    - generic [ref=f4e177]: Esketamine + rifampin
+                    - generic [ref=f4e178]: Strong 2B6/3A4 induction — esketamine exposure can fall
+                - button "Copy link" [ref=f4e179] [cursor=pointer]
+                - status [ref=f4e183]
+              - listitem [ref=f4e184]:
+                - button "MDMA + phenelzine MDMA-class drug with an irreversible MAOI — do not combine" [disabled] [ref=f4e185]:
+                  - generic [ref=f4e187]:
+                    - generic [ref=f4e188]: MDMA + phenelzine
+                    - generic [ref=f4e189]: MDMA-class drug with an irreversible MAOI — do not combine
+                - button "Copy link" [ref=f4e190] [cursor=pointer]
+                - status [ref=f4e194]
+              - listitem [ref=f4e195]:
+                - button "MDMA + paroxetine A strong 2D6 blocker with stacked serotonin risk" [disabled] [ref=f4e196]:
+                  - generic [ref=f4e198]:
+                    - generic [ref=f4e199]: MDMA + paroxetine
+                    - generic [ref=f4e200]: A strong 2D6 blocker with stacked serotonin risk
+                - button "Copy link" [ref=f4e201] [cursor=pointer]
+                - status [ref=f4e205]
+              - listitem [ref=f4e206]:
+                - button "DXM + sertraline A 2D6-sensitive drug meets an SSRI that can slow its clearance" [disabled] [ref=f4e207]:
+                  - generic [ref=f4e209]:
+                    - generic [ref=f4e210]: DXM + sertraline
+                    - generic [ref=f4e211]: A 2D6-sensitive drug meets an SSRI that can slow its clearance
+                - button "Copy link" [ref=f4e212] [cursor=pointer]
+                - status [ref=f4e216]
+              - listitem [ref=f4e217]:
+                - button "DXM + quinidine Nuedexta pair — DXM stays high when 2D6 is blocked" [disabled] [ref=f4e218]:
+                  - generic [ref=f4e220]:
+                    - generic [ref=f4e221]: DXM + quinidine
+                    - generic [ref=f4e222]: Nuedexta pair — DXM stays high when 2D6 is blocked
+                - button "Copy link" [ref=f4e223] [cursor=pointer]
+                - status [ref=f4e227]
+              - listitem [ref=f4e228]:
+                - button "Alcohol + opioid + benzo Three sedating drugs together — breathing risk" [disabled] [ref=f4e229]:
+                  - generic [ref=f4e231]:
+                    - generic [ref=f4e232]: Alcohol + opioid + benzo
+                    - generic [ref=f4e233]: Three sedating drugs together — breathing risk
+                - button "Copy link" [ref=f4e234] [cursor=pointer]
+                - status [ref=f4e238]
+              - listitem [ref=f4e239]:
+                - button "CBD + clobazam A strong CYP2C19 blocker with a benzo that needs that pathway" [disabled] [ref=f4e240]:
+                  - generic [ref=f4e242]:
+                    - generic [ref=f4e243]: CBD + clobazam
+                    - generic [ref=f4e244]: A strong CYP2C19 blocker with a benzo that needs that pathway
+                - button "Copy link" [ref=f4e245] [cursor=pointer]
+                - status [ref=f4e249]
+              - listitem [ref=f4e250]:
+                - button "Cocaine + ethanol Cocaine + alcohol makes cocaethylene — longer heart stress" [disabled] [ref=f4e251]:
+                  - generic [ref=f4e253]:
+                    - generic [ref=f4e254]: Cocaine + ethanol
+                    - generic [ref=f4e255]: Cocaine + alcohol makes cocaethylene — longer heart stress
+                - button "Copy link" [ref=f4e256] [cursor=pointer]
+                - status [ref=f4e260]
+              - listitem [ref=f4e261]:
+                - button "Lithium + psilocybin Classic psychedelic with lithium — seizure teaching signal" [disabled] [ref=f4e262]:
+                  - generic [ref=f4e264]:
+                    - generic [ref=f4e265]: Lithium + psilocybin
+                    - generic [ref=f4e266]: Classic psychedelic with lithium — seizure teaching signal
+                - button "Copy link" [ref=f4e267] [cursor=pointer]
+                - status [ref=f4e271]
+              - listitem [ref=f4e272]:
+                - button "Naltrexone + oxycodone Opioid blocker can precipitate withdrawal and erase analgesia" [disabled] [ref=f4e273]:
+                  - generic [ref=f4e275]:
+                    - generic [ref=f4e276]: Naltrexone + oxycodone
+                    - generic [ref=f4e277]: Opioid blocker can precipitate withdrawal and erase analgesia
+                - button "Copy link" [ref=f4e278] [cursor=pointer]
+                - status [ref=f4e282]
+              - listitem [ref=f4e283]:
+                - button "Sodium oxybate + alcohol Labeled avoid-together — coma / apnea risk in teaching maps" [disabled] [ref=f4e284]:
+                  - generic [ref=f4e286]:
+                    - generic [ref=f4e287]: Sodium oxybate + alcohol
+                    - generic [ref=f4e288]: Labeled avoid-together — coma / apnea risk in teaching maps
+                - button "Copy link" [ref=f4e289] [cursor=pointer]
+                - status [ref=f4e293]
+              - listitem [ref=f4e294]:
+                - button "DXM in a 2D6 PM Founding Poor metabolizer stacks the parent drug even with no second med" [disabled] [ref=f4e295]:
+                  - generic [ref=f4e297]:
+                    - generic [ref=f4e298]:
+                      - text: DXM in a 2D6 PM
+                      - generic [ref=f4e299]: Founding
+                    - generic [ref=f4e300]: Poor metabolizer stacks the parent drug even with no second med
+                - button "Copy link" [ref=f4e301] [cursor=pointer]
+                - status [ref=f4e305]
+              - listitem [ref=f4e306]:
+                - button "Ketamine in a 2B6 PM Founding Slow conversion to norketamine — more parent NMDA effect" [disabled] [ref=f4e307]:
+                  - generic [ref=f4e309]:
+                    - generic [ref=f4e310]:
+                      - text: Ketamine in a 2B6 PM
+                      - generic [ref=f4e311]: Founding
+                    - generic [ref=f4e312]: Slow conversion to norketamine — more parent NMDA effect
+                - button "Copy link" [ref=f4e313] [cursor=pointer]
+                - status [ref=f4e317]
+              - listitem [ref=f4e318]:
+                - button "Codeine in a 2D6 UM Founding Ultrarapid activation to morphine — labeled teaching risk" [disabled] [ref=f4e319]:
+                  - generic [ref=f4e321]:
+                    - generic [ref=f4e322]:
+                      - text: Codeine in a 2D6 UM
+                      - generic [ref=f4e323]: Founding
+                    - generic [ref=f4e324]: Ultrarapid activation to morphine — labeled teaching risk
+                - button "Copy link" [ref=f4e325] [cursor=pointer]
+                - status [ref=f4e329]
+              - listitem [ref=f4e330]:
+                - button "Clozapine + daily smoke Founding Smoke induces 1A2 — clozapine can fall, then rebound on quit" [disabled] [ref=f4e331]:
+                  - generic [ref=f4e333]:
+                    - generic [ref=f4e334]:
+                      - text: Clozapine + daily smoke
+                      - generic [ref=f4e335]: Founding
+                    - generic [ref=f4e336]: Smoke induces 1A2 — clozapine can fall, then rebound on quit
+                - button "Copy link" [ref=f4e337] [cursor=pointer]
+                - status [ref=f4e341]
+              - listitem [ref=f4e342]:
+                - button "Ibogaine + methadone A 2D6 victim plus stacked QT — documented fatality teaching pattern" [disabled] [ref=f4e343]:
+                  - generic [ref=f4e345]:
+                    - generic [ref=f4e346]: Ibogaine + methadone
+                    - generic [ref=f4e347]: A 2D6 victim plus stacked QT — documented fatality teaching pattern
+                - button "Copy link" [ref=f4e348] [cursor=pointer]
+                - status [ref=f4e352]
+              - listitem [ref=f4e353]:
+                - button "Grapefruit + oral ketamine Gut 3A4 blocked — IV barely moves, oral exposure rises" [disabled] [ref=f4e354]:
+                  - generic [ref=f4e356]:
+                    - generic [ref=f4e357]: Grapefruit + oral ketamine
+                    - generic [ref=f4e358]: Gut 3A4 blocked — IV barely moves, oral exposure rises
+                - button "Copy link" [ref=f4e359] [cursor=pointer]
+                - status [ref=f4e363]
+              - listitem [ref=f4e364]:
+                - button "Grapefruit + buspirone Grapefruit with a sensitive 3A4 anxiety med" [disabled] [ref=f4e365]:
+                  - generic [ref=f4e367]:
+                    - generic [ref=f4e368]: Grapefruit + buspirone
+                    - generic [ref=f4e369]: Grapefruit with a sensitive 3A4 anxiety med
+                - button "Copy link" [ref=f4e370] [cursor=pointer]
+                - status [ref=f4e374]
+              - listitem [ref=f4e375]:
+                - button "Tacrolimus + grapefruit Narrow-index 3A4 drug with gut knockout — more absorbed, half-life unchanged" [disabled] [ref=f4e376]:
+                  - generic [ref=f4e378]:
+                    - generic [ref=f4e379]: Tacrolimus + grapefruit
+                    - generic [ref=f4e380]: Narrow-index 3A4 drug with gut knockout — more absorbed, half-life unchanged
+                - button "Copy link" [ref=f4e381] [cursor=pointer]
+                - status [ref=f4e385]
+              - listitem [ref=f4e386]:
+                - button "Tyramine foods + phenelzine Aged cheese or tap beer with an irreversible MAOI" [disabled] [ref=f4e387]:
+                  - generic [ref=f4e389]:
+                    - generic [ref=f4e390]: Tyramine foods + phenelzine
+                    - generic [ref=f4e391]: Aged cheese or tap beer with an irreversible MAOI
+                - button "Copy link" [ref=f4e392] [cursor=pointer]
+                - status [ref=f4e396]
+              - listitem [ref=f4e397]:
+                - button "Milk + ciprofloxacin Dietary calcium — the antibiotic course never absorbs" [disabled] [ref=f4e398]:
+                  - generic [ref=f4e400]:
+                    - generic [ref=f4e401]: Milk + ciprofloxacin
+                    - generic [ref=f4e402]: Dietary calcium — the antibiotic course never absorbs
+                - button "Copy link" [ref=f4e403] [cursor=pointer]
+                - status [ref=f4e407]
+              - listitem [ref=f4e408]:
+                - button "Kale + warfarin Vitamin K smoothie — INR falls (not a CYP2C9 story)" [disabled] [ref=f4e409]:
+                  - generic [ref=f4e411]:
+                    - generic [ref=f4e412]: Kale + warfarin
+                    - generic [ref=f4e413]: Vitamin K smoothie — INR falls (not a CYP2C9 story)
+                - button "Copy link" [ref=f4e414] [cursor=pointer]
+                - status [ref=f4e418]
+              - listitem [ref=f4e419]:
+                - button "Apple juice + fexofenadine OATP transporter block — Allegra never arrives (not CYP)" [disabled] [ref=f4e420]:
+                  - generic [ref=f4e422]:
+                    - generic [ref=f4e423]: Apple juice + fexofenadine
+                    - generic [ref=f4e424]: OATP transporter block — Allegra never arrives (not CYP)
+                - button "Copy link" [ref=f4e425] [cursor=pointer]
+                - status [ref=f4e429]
+              - listitem [ref=f4e430]:
+                - button "Coffee + levothyroxine Espresso with the morning thyroid dose — TSH teaching miss" [disabled] [ref=f4e431]:
+                  - generic [ref=f4e433]:
+                    - generic [ref=f4e434]: Coffee + levothyroxine
+                    - generic [ref=f4e435]: Espresso with the morning thyroid dose — TSH teaching miss
+                - button "Copy link" [ref=f4e436] [cursor=pointer]
+                - status [ref=f4e440]
+              - listitem [ref=f4e441]:
+                - button "Protein meal + levodopa LAT1 competition — lost “on” time for levodopa, not CYP" [disabled] [ref=f4e442]:
+                  - generic [ref=f4e444]:
+                    - generic [ref=f4e445]: Protein meal + levodopa
+                    - generic [ref=f4e446]: LAT1 competition — lost “on” time for levodopa, not CYP
+                - button "Copy link" [ref=f4e447] [cursor=pointer]
+                - status [ref=f4e451]
+              - listitem [ref=f4e452]:
+                - button "Grapefruit + felodipine Bailey 1991 — the paper that put grapefruit on the CYP map" [disabled] [ref=f4e453]:
+                  - generic [ref=f4e455]:
+                    - generic [ref=f4e456]: Grapefruit + felodipine
+                    - generic [ref=f4e457]: Bailey 1991 — the paper that put grapefruit on the CYP map
+                - button "Copy link" [ref=f4e458] [cursor=pointer]
+                - status [ref=f4e462]
+              - listitem [ref=f4e463]:
+                - button "St. John's wort + sertraline 3A4 induction plus stacked serotonin risk" [disabled] [ref=f4e464]:
+                  - generic [ref=f4e466]:
+                    - generic [ref=f4e467]: St. John's wort + sertraline
+                    - generic [ref=f4e468]: 3A4 induction plus stacked serotonin risk
+                - button "Copy link" [ref=f4e469] [cursor=pointer]
+                - status [ref=f4e473]
+              - listitem [ref=f4e474]:
+                - button "High-fat meal + THC Food jump in how much oral cannabinoid is absorbed" [disabled] [ref=f4e475]:
+                  - generic [ref=f4e477]:
+                    - generic [ref=f4e478]: High-fat meal + THC
+                    - generic [ref=f4e479]: Food jump in how much oral cannabinoid is absorbed
+                - button "Copy link" [ref=f4e480] [cursor=pointer]
+                - status [ref=f4e484]
+              - listitem [ref=f4e485]:
+                - button "Lithium + low salt Low salt retains lithium" [disabled] [ref=f4e486]:
+                  - generic [ref=f4e488]:
+                    - generic [ref=f4e489]: Lithium + low salt
+                    - generic [ref=f4e490]: Low salt retains lithium
+                - button "Copy link" [ref=f4e491] [cursor=pointer]
+                - status [ref=f4e495]
+              - listitem [ref=f4e496]:
+                - button "Lithium + ibuprofen NSAID retains lithium — watch levels, not a CYP story" [disabled] [ref=f4e497]:
+                  - generic [ref=f4e499]:
+                    - generic [ref=f4e500]: Lithium + ibuprofen
+                    - generic [ref=f4e501]: NSAID retains lithium — watch levels, not a CYP story
+                - button "Copy link" [ref=f4e502] [cursor=pointer]
+                - status [ref=f4e506]
+              - listitem [ref=f4e507]:
+                - button "Kratom + alprazolam Atypical opioid with a benzo — airway stack" [disabled] [ref=f4e508]:
+                  - generic [ref=f4e510]:
+                    - generic [ref=f4e511]: Kratom + alprazolam
+                    - generic [ref=f4e512]: Atypical opioid with a benzo — airway stack
+                - button "Copy link" [ref=f4e513] [cursor=pointer]
+                - status [ref=f4e517]
+              - listitem [ref=f4e518]:
+                - button "Phenibut + alcohol Gabapentinoid plus alcohol — stacked sedation" [disabled] [ref=f4e519]:
+                  - generic [ref=f4e521]:
+                    - generic [ref=f4e522]: Phenibut + alcohol
+                    - generic [ref=f4e523]: Gabapentinoid plus alcohol — stacked sedation
+                - button "Copy link" [ref=f4e524] [cursor=pointer]
+                - status [ref=f4e528]
+              - listitem [ref=f4e529]:
+                - button "Acetaminophen + chronic alcohol Founding Induced 2E1 makes more NAPQI when glutathione is already low" [disabled] [ref=f4e530]:
+                  - generic [ref=f4e532]:
+                    - generic [ref=f4e533]:
+                      - text: Acetaminophen + chronic alcohol
+                      - generic [ref=f4e534]: Founding
+                    - generic [ref=f4e535]: Induced 2E1 makes more NAPQI when glutathione is already low
+                - button "Copy link" [ref=f4e536] [cursor=pointer]
+                - status [ref=f4e540]
+              - listitem [ref=f4e541]:
+                - button "Edible THC + fluconazole Founding Oral THC first-pass meets a strong CYP2C9 blocker" [disabled] [ref=f4e542]:
+                  - generic [ref=f4e544]:
+                    - generic [ref=f4e545]:
+                      - text: Edible THC + fluconazole
+                      - generic [ref=f4e546]: Founding
+                    - generic [ref=f4e547]: Oral THC first-pass meets a strong CYP2C9 blocker
+                - button "Copy link" [ref=f4e548] [cursor=pointer]
+                - status [ref=f4e552]
+              - listitem [ref=f4e553]:
+                - button "Xylazine + fentanyl Alpha-2 sedation that naloxone will not reverse" [disabled] [ref=f4e554]:
+                  - generic [ref=f4e556]:
+                    - generic [ref=f4e557]: Xylazine + fentanyl
+                    - generic [ref=f4e558]: Alpha-2 sedation that naloxone will not reverse
+                - button "Copy link" [ref=f4e559] [cursor=pointer]
+                - status [ref=f4e563]
+              - listitem [ref=f4e564]:
+                - button "GBL + alcohol GHB prodrug with alcohol — labeled apnea risk" [disabled] [ref=f4e565]:
+                  - generic [ref=f4e567]:
+                    - generic [ref=f4e568]: GBL + alcohol
+                    - generic [ref=f4e569]: GHB prodrug with alcohol — labeled apnea risk
+                - button "Copy link" [ref=f4e570] [cursor=pointer]
+                - status [ref=f4e574]
+              - listitem [ref=f4e575]:
+                - button "Mephedrone + phenelzine Cathinone stimulant with an irreversible MAOI" [disabled] [ref=f4e576]:
+                  - generic [ref=f4e578]:
+                    - generic [ref=f4e579]: Mephedrone + phenelzine
+                    - generic [ref=f4e580]: Cathinone stimulant with an irreversible MAOI
+                - button "Copy link" [ref=f4e581] [cursor=pointer]
+                - status [ref=f4e585]
+              - listitem [ref=f4e586]:
+                - button "Bromazolam + oxycodone Designer benzo with an opioid — boxed airway warning" [disabled] [ref=f4e587]:
+                  - generic [ref=f4e589]:
+                    - generic [ref=f4e590]: Bromazolam + oxycodone
+                    - generic [ref=f4e591]: Designer benzo with an opioid — boxed airway warning
+                - button "Copy link" [ref=f4e592] [cursor=pointer]
+                - status [ref=f4e596]
+              - listitem [ref=f4e597]:
+                - button "N-Pyrrolidino etonitazene + bromazolam Hot nitazene × designer benzo — airway stack naloxone only partly covers" [disabled] [ref=f4e598]:
+                  - generic [ref=f4e600]:
+                    - generic [ref=f4e601]: N-Pyrrolidino etonitazene + bromazolam
+                    - generic [ref=f4e602]: Hot nitazene × designer benzo — airway stack naloxone only partly covers
+                - button "Copy link" [ref=f4e603] [cursor=pointer]
+                - status [ref=f4e607]
+              - listitem [ref=f4e608]:
+                - button "Brorphine + xylazine Pressed-tablet opioid × α2 — naloxone will not reverse the xylazine" [disabled] [ref=f4e609]:
+                  - generic [ref=f4e611]:
+                    - generic [ref=f4e612]: Brorphine + xylazine
+                    - generic [ref=f4e613]: Pressed-tablet opioid × α2 — naloxone will not reverse the xylazine
+                - button "Copy link" [ref=f4e614] [cursor=pointer]
+                - status [ref=f4e618]
+              - listitem [ref=f4e619]:
+                - button "Eutylone + phenelzine Molly adulterant cathinone × irreversible MAOI" [disabled] [ref=f4e620]:
+                  - generic [ref=f4e622]:
+                    - generic [ref=f4e623]: Eutylone + phenelzine
+                    - generic [ref=f4e624]: Molly adulterant cathinone × irreversible MAOI
+                - button "Copy link" [ref=f4e625] [cursor=pointer]
+                - status [ref=f4e629]
+              - listitem [ref=f4e630]:
+                - button "Flubromazepam + oxycodone Long RC benzo × opioid — delayed blackout and airway risk" [disabled] [ref=f4e631]:
+                  - generic [ref=f4e633]:
+                    - generic [ref=f4e634]: Flubromazepam + oxycodone
+                    - generic [ref=f4e635]: Long RC benzo × opioid — delayed blackout and airway risk
+                - button "Copy link" [ref=f4e636] [cursor=pointer]
+                - status [ref=f4e640]
+              - listitem [ref=f4e641]:
+                - button "U-47700 + alprazolam RC opioid × benzo airway stack" [disabled] [ref=f4e642]:
+                  - generic [ref=f4e644]:
+                    - generic [ref=f4e645]: U-47700 + alprazolam
+                    - generic [ref=f4e646]: RC opioid × benzo airway stack
+                - button "Copy link" [ref=f4e647] [cursor=pointer]
+                - status [ref=f4e651]
+              - listitem [ref=f4e652]:
+                - button "Cariprazine + clarithromycin Vraylar meets a strong 3A4 macrolide" [disabled] [ref=f4e653]:
+                  - generic [ref=f4e655]:
+                    - generic [ref=f4e656]: Cariprazine + clarithromycin
+                    - generic [ref=f4e657]: Vraylar meets a strong 3A4 macrolide
+                - button "Copy link" [ref=f4e658] [cursor=pointer]
+                - status [ref=f4e662]
+              - listitem [ref=f4e663]:
+                - button "Daridorexant + ritonavir Orexin sleep drug meets a strong 3A4 booster" [disabled] [ref=f4e664]:
+                  - generic [ref=f4e666]:
+                    - generic [ref=f4e667]: Daridorexant + ritonavir
+                    - generic [ref=f4e668]: Orexin sleep drug meets a strong 3A4 booster
+                - button "Copy link" [ref=f4e669] [cursor=pointer]
+                - status [ref=f4e673]
+              - listitem [ref=f4e674]:
+                - button "Letermovir + tacrolimus CMV prophylaxis raises calcineurin exposure — TDM story" [disabled] [ref=f4e675]:
+                  - generic [ref=f4e677]:
+                    - generic [ref=f4e678]: Letermovir + tacrolimus
+                    - generic [ref=f4e679]: CMV prophylaxis raises calcineurin exposure — TDM story
+                - button "Copy link" [ref=f4e680] [cursor=pointer]
+                - status [ref=f4e684]
+              - listitem [ref=f4e685]:
+                - button "Zuranolone + oxycodone Neurosteroid GABA PAM × opioid CNS depression" [disabled] [ref=f4e686]:
+                  - generic [ref=f4e688]:
+                    - generic [ref=f4e689]: Zuranolone + oxycodone
+                    - generic [ref=f4e690]: Neurosteroid GABA PAM × opioid CNS depression
+                - button "Copy link" [ref=f4e691] [cursor=pointer]
+                - status [ref=f4e695]
+              - listitem [ref=f4e696]:
+                - button "Lenacapavir + oral midazolam Long-acting capsid inhibitor as a moderate 3A4 perpetrator" [disabled] [ref=f4e697]:
+                  - generic [ref=f4e699]:
+                    - generic [ref=f4e700]: Lenacapavir + oral midazolam
+                    - generic [ref=f4e701]: Long-acting capsid inhibitor as a moderate 3A4 perpetrator
+                - button "Copy link" [ref=f4e702] [cursor=pointer]
+                - status [ref=f4e706]
+              - listitem [ref=f4e707]:
+                - button "Loperamide + quinidine P-gp block turns loperamide into a central opioid" [disabled] [ref=f4e708]:
+                  - generic [ref=f4e710]:
+                    - generic [ref=f4e711]: Loperamide + quinidine
+                    - generic [ref=f4e712]: P-gp block turns loperamide into a central opioid
+                - button "Copy link" [ref=f4e713] [cursor=pointer]
+                - status [ref=f4e717]
+              - listitem [ref=f4e718]:
+                - button "2-FDCK + grapefruit Oral arylcyclohexylamine with gut 3A4 blocked" [disabled] [ref=f4e719]:
+                  - generic [ref=f4e721]:
+                    - generic [ref=f4e722]: 2-FDCK + grapefruit
+                    - generic [ref=f4e723]: Oral arylcyclohexylamine with gut 3A4 blocked
+                - button "Copy link" [ref=f4e724] [cursor=pointer]
+                - status [ref=f4e728]
+              - listitem [ref=f4e729]:
+                - button "Poppers + sildenafil Nitrate with a PDE5 inhibitor — labeled blood-pressure collapse" [disabled] [ref=f4e730]:
+                  - generic [ref=f4e732]:
+                    - generic [ref=f4e733]: Poppers + sildenafil
+                    - generic [ref=f4e734]: Nitrate with a PDE5 inhibitor — labeled blood-pressure collapse
+                - button "Copy link" [ref=f4e735] [cursor=pointer]
+                - status [ref=f4e739]
+              - listitem [ref=f4e740]:
+                - button "MXE + alprazolam Long NMDA dissociative with a benzo — airway stack" [disabled] [ref=f4e741]:
+                  - generic [ref=f4e743]:
+                    - generic [ref=f4e744]: MXE + alprazolam
+                    - generic [ref=f4e745]: Long NMDA dissociative with a benzo — airway stack
+                - button "Copy link" [ref=f4e746] [cursor=pointer]
+                - status [ref=f4e750]
+              - listitem [ref=f4e751]:
+                - button "DCK + grapefruit Oral deschloroketamine with gut 3A4 blocked" [disabled] [ref=f4e752]:
+                  - generic [ref=f4e754]:
+                    - generic [ref=f4e755]: DCK + grapefruit
+                    - generic [ref=f4e756]: Oral deschloroketamine with gut 3A4 blocked
+                - button "Copy link" [ref=f4e757] [cursor=pointer]
+                - status [ref=f4e761]
+              - listitem [ref=f4e762]:
+                - button "3-MeO-PCP + alprazolam Long arylcyclohexylamine × benzo airway stack" [disabled] [ref=f4e763]:
+                  - generic [ref=f4e765]:
+                    - generic [ref=f4e766]: 3-MeO-PCP + alprazolam
+                    - generic [ref=f4e767]: Long arylcyclohexylamine × benzo airway stack
+                - button "Copy link" [ref=f4e768] [cursor=pointer]
+                - status [ref=f4e772]
+              - listitem [ref=f4e773]:
+                - button "MDA + phenelzine MDMA cousin × irreversible MAOI" [disabled] [ref=f4e774]:
+                  - generic [ref=f4e776]:
+                    - generic [ref=f4e777]: MDA + phenelzine
+                    - generic [ref=f4e778]: MDMA cousin × irreversible MAOI
+                - button "Copy link" [ref=f4e779] [cursor=pointer]
+                - status [ref=f4e783]
+              - listitem [ref=f4e784]:
+                - button "Methylone + paroxetine Cathinone 2D6 victim plus stacked serotonin" [disabled] [ref=f4e785]:
+                  - generic [ref=f4e787]:
+                    - generic [ref=f4e788]: Methylone + paroxetine
+                    - generic [ref=f4e789]: Cathinone 2D6 victim plus stacked serotonin
+                - button "Copy link" [ref=f4e790] [cursor=pointer]
+                - status [ref=f4e794]
+              - listitem [ref=f4e795]:
+                - button "25I-NBOMe + lithium Street blotter × lithium seizure signal" [disabled] [ref=f4e796]:
+                  - generic [ref=f4e798]:
+                    - generic [ref=f4e799]: 25I-NBOMe + lithium
+                    - generic [ref=f4e800]: Street blotter × lithium seizure signal
+                - button "Copy link" [ref=f4e801] [cursor=pointer]
+                - status [ref=f4e805]
+              - listitem [ref=f4e806]:
+                - button "Clonazolam + fentanyl High-potency RC benzo × opioid — boxed airway" [disabled] [ref=f4e807]:
+                  - generic [ref=f4e809]:
+                    - generic [ref=f4e810]: Clonazolam + fentanyl
+                    - generic [ref=f4e811]: High-potency RC benzo × opioid — boxed airway
+                - button "Copy link" [ref=f4e812] [cursor=pointer]
+                - status [ref=f4e816]
+              - listitem [ref=f4e817]:
+                - button "α-PVP + phenelzine Pyrovalerone stimulant × irreversible MAOI" [disabled] [ref=f4e818]:
+                  - generic [ref=f4e820]:
+                    - generic [ref=f4e821]: α-PVP + phenelzine
+                    - generic [ref=f4e822]: Pyrovalerone stimulant × irreversible MAOI
+                - button "Copy link" [ref=f4e823] [cursor=pointer]
+                - status [ref=f4e827]
+              - listitem [ref=f4e828]:
+                - button "Scopolamine + diphenhydramine Tropane × antihistamine — stacked delirium" [disabled] [ref=f4e829]:
+                  - generic [ref=f4e831]:
+                    - generic [ref=f4e832]: Scopolamine + diphenhydramine
+                    - generic [ref=f4e833]: Tropane × antihistamine — stacked delirium
+                - button "Copy link" [ref=f4e834] [cursor=pointer]
+                - status [ref=f4e838]
+              - listitem [ref=f4e839]:
+                - button "Meperidine + phenelzine Labeled MAOI contraindication — serotonin + seizures" [disabled] [ref=f4e840]:
+                  - generic [ref=f4e842]:
+                    - generic [ref=f4e843]: Meperidine + phenelzine
+                    - generic [ref=f4e844]: Labeled MAOI contraindication — serotonin + seizures
+                - button "Copy link" [ref=f4e845] [cursor=pointer]
+                - status [ref=f4e849]
+              - listitem [ref=f4e850]:
+                - button "Cimetidine + tizanidine OTC 1A2 bully × sensitive 1A2 muscle relaxant" [disabled] [ref=f4e851]:
+                  - generic [ref=f4e853]:
+                    - generic [ref=f4e854]: Cimetidine + tizanidine
+                    - generic [ref=f4e855]: OTC 1A2 bully × sensitive 1A2 muscle relaxant
+                - button "Copy link" [ref=f4e856] [cursor=pointer]
+                - status [ref=f4e860]
+              - listitem [ref=f4e861]:
+                - button "Phenobarbital + OCP Broad CYP induction — contraceptive failure" [disabled] [ref=f4e862]:
+                  - generic [ref=f4e864]:
+                    - generic [ref=f4e865]: Phenobarbital + OCP
+                    - generic [ref=f4e866]: Broad CYP induction — contraceptive failure
+                - button "Copy link" [ref=f4e867] [cursor=pointer]
+                - status [ref=f4e871]
+              - listitem [ref=f4e872]:
+                - button "Efavirenz + methadone 2B6/3A4 induction precipitates opioid withdrawal" [disabled] [ref=f4e873]:
+                  - generic [ref=f4e875]:
+                    - generic [ref=f4e876]: Efavirenz + methadone
+                    - generic [ref=f4e877]: 2B6/3A4 induction precipitates opioid withdrawal
+                - button "Copy link" [ref=f4e878] [cursor=pointer]
+                - status [ref=f4e882]
+              - listitem [ref=f4e883]:
+                - button "Pimozide + clarithromycin Sensitive 3A4 QT drug × strong 3A4 inhibitor" [disabled] [ref=f4e884]:
+                  - generic [ref=f4e886]:
+                    - generic [ref=f4e887]: Pimozide + clarithromycin
+                    - generic [ref=f4e888]: Sensitive 3A4 QT drug × strong 3A4 inhibitor
+                - button "Copy link" [ref=f4e889] [cursor=pointer]
+                - status [ref=f4e893]
+              - listitem [ref=f4e894]:
+                - button "Thioridazine + fluoxetine 2D6 PM-like blockade of a boxed QT drug" [disabled] [ref=f4e895]:
+                  - generic [ref=f4e897]:
+                    - generic [ref=f4e898]: Thioridazine + fluoxetine
+                    - generic [ref=f4e899]: 2D6 PM-like blockade of a boxed QT drug
+                - button "Copy link" [ref=f4e900] [cursor=pointer]
+                - status [ref=f4e904]
+              - listitem [ref=f4e905]:
+                - button "Tapentadol + sertraline μ-agonist plus NRI meets an SSRI" [disabled] [ref=f4e906]:
+                  - generic [ref=f4e908]:
+                    - generic [ref=f4e909]: Tapentadol + sertraline
+                    - generic [ref=f4e910]: μ-agonist plus NRI meets an SSRI
+                - button "Copy link" [ref=f4e911] [cursor=pointer]
+                - status [ref=f4e915]
+              - listitem [ref=f4e916]:
+                - button "Disulfiram + alcohol ALDH block — the acetaldehyde reaction" [disabled] [ref=f4e917]:
+                  - generic [ref=f4e919]:
+                    - generic [ref=f4e920]: Disulfiram + alcohol
+                    - generic [ref=f4e921]: ALDH block — the acetaldehyde reaction
+                - button "Copy link" [ref=f4e922] [cursor=pointer]
+                - status [ref=f4e926]
+              - listitem [ref=f4e927]:
+                - button "Warfarin in a 2C9 PM Founding Sensitive 2C9 substrate without a perpetrator drug" [disabled] [ref=f4e928]:
+                  - generic [ref=f4e930]:
+                    - generic [ref=f4e931]:
+                      - text: Warfarin in a 2C9 PM
+                      - generic [ref=f4e932]: Founding
+                    - generic [ref=f4e933]: Sensitive 2C9 substrate without a perpetrator drug
+                - button "Copy link" [ref=f4e934] [cursor=pointer]
+                - status [ref=f4e938]
+              - listitem [ref=f4e939]:
+                - button "Carisoprodol in a 2C19 PM Founding Meprobamate activation plus stacked parent" [disabled] [ref=f4e940]:
+                  - generic [ref=f4e942]:
+                    - generic [ref=f4e943]:
+                      - text: Carisoprodol in a 2C19 PM
+                      - generic [ref=f4e944]: Founding
+                    - generic [ref=f4e945]: Meprobamate activation plus stacked parent
+                - button "Copy link" [ref=f4e946] [cursor=pointer]
+                - status [ref=f4e950]
+              - listitem [ref=f4e951]:
+                - button "Piperine + oral ketamine Black-pepper 3A4/P-gp block on a first-pass victim" [disabled] [ref=f4e952]:
+                  - generic [ref=f4e954]:
+                    - generic [ref=f4e955]: Piperine + oral ketamine
+                    - generic [ref=f4e956]: Black-pepper 3A4/P-gp block on a first-pass victim
+                - button "Copy link" [ref=f4e957] [cursor=pointer]
+                - status [ref=f4e961]
+              - listitem [ref=f4e962]:
+                - button "Licorice + sotalol Glycyrrhizin hypokalemia plus a known QT drug" [disabled] [ref=f4e963]:
+                  - generic [ref=f4e965]:
+                    - generic [ref=f4e966]: Licorice + sotalol
+                    - generic [ref=f4e967]: Glycyrrhizin hypokalemia plus a known QT drug
+                - button "Copy link" [ref=f4e968] [cursor=pointer]
+                - status [ref=f4e972]
+              - listitem [ref=f4e973]:
+                - button "Star fruit + simvastatin Furanocoumarin-adjacent 3A4 hit on a sensitive statin" [disabled] [ref=f4e974]:
+                  - generic [ref=f4e976]:
+                    - generic [ref=f4e977]: Star fruit + simvastatin
+                    - generic [ref=f4e978]: Furanocoumarin-adjacent 3A4 hit on a sensitive statin
+                - button "Copy link" [ref=f4e979] [cursor=pointer]
+                - status [ref=f4e983]
+              - listitem [ref=f4e984]:
+                - button "Ginkgo + warfarin Herbal antiplatelet on a narrow-index anticoagulant" [disabled] [ref=f4e985]:
+                  - generic [ref=f4e987]:
+                    - generic [ref=f4e988]: Ginkgo + warfarin
+                    - generic [ref=f4e989]: Herbal antiplatelet on a narrow-index anticoagulant
+                - button "Copy link" [ref=f4e990] [cursor=pointer]
+                - status [ref=f4e994]
+              - listitem [ref=f4e995]:
+                - button "Clonidine + oxycodone Clinical α2 agonist — naloxone will not fully reverse" [disabled] [ref=f4e996]:
+                  - generic [ref=f4e998]:
+                    - generic [ref=f4e999]: Clonidine + oxycodone
+                    - generic [ref=f4e1000]: Clinical α2 agonist — naloxone will not fully reverse
+                - button "Copy link" [ref=f4e1001] [cursor=pointer]
+                - status [ref=f4e1005]
+              - listitem [ref=f4e1006]:
+                - button "Dexmedetomidine + fentanyl Precedex α2 × opioid — naloxone will not reverse the α2" [disabled] [ref=f4e1007]:
+                  - generic [ref=f4e1009]:
+                    - generic [ref=f4e1010]: Dexmedetomidine + fentanyl
+                    - generic [ref=f4e1011]: Precedex α2 × opioid — naloxone will not reverse the α2
+                - button "Copy link" [ref=f4e1012] [cursor=pointer]
+                - status [ref=f4e1016]
+              - listitem [ref=f4e1017]:
+                - button "Propofol + midazolam IV anesthetic plus 3A4 benzo — stacked apnea" [disabled] [ref=f4e1018]:
+                  - generic [ref=f4e1020]:
+                    - generic [ref=f4e1021]: Propofol + midazolam
+                    - generic [ref=f4e1022]: IV anesthetic plus 3A4 benzo — stacked apnea
+                - button "Copy link" [ref=f4e1023] [cursor=pointer]
+                - status [ref=f4e1027]
+              - listitem [ref=f4e1028]:
+                - button "Prazosin + alcohol α1 blockade plus ethanol — orthostatic syncope" [disabled] [ref=f4e1029]:
+                  - generic [ref=f4e1031]:
+                    - generic [ref=f4e1032]: Prazosin + alcohol
+                    - generic [ref=f4e1033]: α1 blockade plus ethanol — orthostatic syncope
+                - button "Copy link" [ref=f4e1034] [cursor=pointer]
+                - status [ref=f4e1038]
+              - listitem [ref=f4e1039]:
+                - button "7-OH + alprazolam Hot kratom μ-agonist × benzo airway stack" [disabled] [ref=f4e1040]:
+                  - generic [ref=f4e1042]:
+                    - generic [ref=f4e1043]: 7-OH + alprazolam
+                    - generic [ref=f4e1044]: Hot kratom μ-agonist × benzo airway stack
+                - button "Copy link" [ref=f4e1045] [cursor=pointer]
+                - status [ref=f4e1049]
+              - listitem [ref=f4e1050]:
+                - button "Primidone + OCP Barbiturate prodrug — contraceptive failure" [disabled] [ref=f4e1051]:
+                  - generic [ref=f4e1053]:
+                    - generic [ref=f4e1054]: Primidone + OCP
+                    - generic [ref=f4e1055]: Barbiturate prodrug — contraceptive failure
+                - button "Copy link" [ref=f4e1056] [cursor=pointer]
+                - status [ref=f4e1060]
+              - listitem [ref=f4e1061]:
+                - button "Famotidine + tizanidine The H2 that is not cimetidine — CYP row should stay quiet" [disabled] [ref=f4e1062]:
+                  - generic [ref=f4e1064]:
+                    - generic [ref=f4e1065]: Famotidine + tizanidine
+                    - generic [ref=f4e1066]: The H2 that is not cimetidine — CYP row should stay quiet
+                - button "Copy link" [ref=f4e1067] [cursor=pointer]
+                - status [ref=f4e1071]
+              - listitem [ref=f4e1072]:
+                - button "Etonitazene + xylazine Nitazene plus α2 — naloxone will not finish the job" [disabled] [ref=f4e1073]:
+                  - generic [ref=f4e1075]:
+                    - generic [ref=f4e1076]: Etonitazene + xylazine
+                    - generic [ref=f4e1077]: Nitazene plus α2 — naloxone will not finish the job
+                - button "Copy link" [ref=f4e1078] [cursor=pointer]
+                - status [ref=f4e1082]
+              - listitem [ref=f4e1083]:
+                - button "Guanfacine + ritonavir ADHD α2 meets a strong 3A4 inhibitor" [disabled] [ref=f4e1084]:
+                  - generic [ref=f4e1086]:
+                    - generic [ref=f4e1087]: Guanfacine + ritonavir
+                    - generic [ref=f4e1088]: ADHD α2 meets a strong 3A4 inhibitor
+                - button "Copy link" [ref=f4e1089] [cursor=pointer]
+                - status [ref=f4e1093]
+              - listitem [ref=f4e1094]:
+                - button "Aprepitant + oral ketamine NK1 antiemetic as a 3A4 perpetrator on a first-pass victim" [disabled] [ref=f4e1095]:
+                  - generic [ref=f4e1097]:
+                    - generic [ref=f4e1098]: Aprepitant + oral ketamine
+                    - generic [ref=f4e1099]: NK1 antiemetic as a 3A4 perpetrator on a first-pass victim
+                - button "Copy link" [ref=f4e1100] [cursor=pointer]
+                - status [ref=f4e1104]
+              - listitem [ref=f4e1105]:
+                - button "Speedball — cocaine + fentanyl Stimulant masks apnea; the opioid still stops the breathing" [disabled] [ref=f4e1106]:
+                  - generic [ref=f4e1108]:
+                    - generic [ref=f4e1109]: Speedball — cocaine + fentanyl
+                    - generic [ref=f4e1110]: Stimulant masks apnea; the opioid still stops the breathing
+                - button "Copy link" [ref=f4e1111] [cursor=pointer]
+                - status [ref=f4e1115]
+              - listitem [ref=f4e1116]:
+                - button "Percocet + chronic alcohol Founding Oxycodone + APAP on induced 2E1 — airway plus NAPQI" [disabled] [ref=f4e1117]:
+                  - generic [ref=f4e1119]:
+                    - generic [ref=f4e1120]:
+                      - text: Percocet + chronic alcohol
+                      - generic [ref=f4e1121]: Founding
+                    - generic [ref=f4e1122]: Oxycodone + APAP on induced 2E1 — airway plus NAPQI
+                - button "Copy link" [ref=f4e1123] [cursor=pointer]
+                - status [ref=f4e1127]
+              - listitem [ref=f4e1128]:
+                - button "Dirty 30s (pressed M30 + xylazine) The stamp is oxycodone. The contents are not." [disabled] [ref=f4e1129]:
+                  - generic [ref=f4e1131]:
+                    - generic [ref=f4e1132]: Dirty 30s (pressed M30 + xylazine)
+                    - generic [ref=f4e1133]: The stamp is oxycodone. The contents are not.
+                - button "Copy link" [ref=f4e1134] [cursor=pointer]
+                - status [ref=f4e1138]
+              - listitem [ref=f4e1139]:
+                - button "Perc 30 vs pressed 30 Pharmaceutical oxycodone next to illicit fentanyl + tranq" [disabled] [ref=f4e1140]:
+                  - generic [ref=f4e1142]:
+                    - generic [ref=f4e1143]: Perc 30 vs pressed 30
+                    - generic [ref=f4e1144]: Pharmaceutical oxycodone next to illicit fentanyl + tranq
+                - button "Copy link" [ref=f4e1145] [cursor=pointer]
+                - status [ref=f4e1149]
+              - listitem [ref=f4e1150]:
+                - button "Classic speedball — cocaine + heroin The original mixer. Stimulant wears off first." [disabled] [ref=f4e1151]:
+                  - generic [ref=f4e1153]:
+                    - generic [ref=f4e1154]: Classic speedball — cocaine + heroin
+                    - generic [ref=f4e1155]: The original mixer. Stimulant wears off first.
+                - button "Copy link" [ref=f4e1156] [cursor=pointer]
+                - status [ref=f4e1160]
+              - listitem [ref=f4e1161]:
+                - button "Buprenorphine + fentanyl Partial agonist on a fentanyl load — precipitated withdrawal, not stacked mg" [disabled] [ref=f4e1162]:
+                  - generic [ref=f4e1164]:
+                    - generic [ref=f4e1165]: Buprenorphine + fentanyl
+                    - generic [ref=f4e1166]: Partial agonist on a fentanyl load — precipitated withdrawal, not stacked mg
+                - button "Copy link" [ref=f4e1167] [cursor=pointer]
+                - status [ref=f4e1171]
+              - listitem [ref=f4e1172]:
+                - button "Methadone + alprazolam OTP boxed warning — street benzo on a long μ agonist" [disabled] [ref=f4e1173]:
+                  - generic [ref=f4e1175]:
+                    - generic [ref=f4e1176]: Methadone + alprazolam
+                    - generic [ref=f4e1177]: OTP boxed warning — street benzo on a long μ agonist
+                - button "Copy link" [ref=f4e1178] [cursor=pointer]
+                - status [ref=f4e1182]
+              - listitem [ref=f4e1183]:
+                - button "Methadone + quetiapine Seroquel-for-sleep on a known-QT opioid" [disabled] [ref=f4e1184]:
+                  - generic [ref=f4e1186]:
+                    - generic [ref=f4e1187]: Methadone + quetiapine
+                    - generic [ref=f4e1188]: Seroquel-for-sleep on a known-QT opioid
+                - button "Copy link" [ref=f4e1189] [cursor=pointer]
+                - status [ref=f4e1193]
+              - listitem [ref=f4e1194]:
+                - button "Methadone + rifampin 3A4/2B6 induction looks like a stolen dose" [disabled] [ref=f4e1195]:
+                  - generic [ref=f4e1197]:
+                    - generic [ref=f4e1198]: Methadone + rifampin
+                    - generic [ref=f4e1199]: 3A4/2B6 induction looks like a stolen dose
+                - button "Copy link" [ref=f4e1200] [cursor=pointer]
+                - status [ref=f4e1204]
+              - listitem [ref=f4e1205]:
+                - button "Buprenorphine + ritonavir HIV booster raises a 3A4 partial agonist" [disabled] [ref=f4e1206]:
+                  - generic [ref=f4e1208]:
+                    - generic [ref=f4e1209]: Buprenorphine + ritonavir
+                    - generic [ref=f4e1210]: HIV booster raises a 3A4 partial agonist
+                - button "Copy link" [ref=f4e1211] [cursor=pointer]
+                - status [ref=f4e1215]
+              - listitem [ref=f4e1216]:
+                - button "Methadone + gabapentin The 'nerve pain' that still hits the airway" [disabled] [ref=f4e1217]:
+                  - generic [ref=f4e1219]:
+                    - generic [ref=f4e1220]: Methadone + gabapentin
+                    - generic [ref=f4e1221]: The 'nerve pain' that still hits the airway
+                - button "Copy link" [ref=f4e1222] [cursor=pointer]
+                - status [ref=f4e1226]
+              - listitem [ref=f4e1227]:
+                - button "Methadone + cocaine OTP speedball — QT plus masked apnea" [disabled] [ref=f4e1228]:
+                  - generic [ref=f4e1230]:
+                    - generic [ref=f4e1231]: Methadone + cocaine
+                    - generic [ref=f4e1232]: OTP speedball — QT plus masked apnea
+                - button "Copy link" [ref=f4e1233] [cursor=pointer]
+                - status [ref=f4e1237]
+              - listitem [ref=f4e1238]:
+                - button "Buprenorphine + bromazolam Street benzo on a Suboxone desk — boxed airway" [disabled] [ref=f4e1239]:
+                  - generic [ref=f4e1241]:
+                    - generic [ref=f4e1242]: Buprenorphine + bromazolam
+                    - generic [ref=f4e1243]: Street benzo on a Suboxone desk — boxed airway
+                - button "Copy link" [ref=f4e1244] [cursor=pointer]
+                - status [ref=f4e1248]
+              - listitem [ref=f4e1249]:
+                - button "Lofexidine + fentanyl Lucemyra is α2 — naloxone will not finish withdrawal sedation" [disabled] [ref=f4e1250]:
+                  - generic [ref=f4e1252]:
+                    - generic [ref=f4e1253]: Lofexidine + fentanyl
+                    - generic [ref=f4e1254]: Lucemyra is α2 — naloxone will not finish withdrawal sedation
+                - button "Copy link" [ref=f4e1255] [cursor=pointer]
+                - status [ref=f4e1259]
+              - listitem [ref=f4e1260]:
+                - button "Acamprosate + naltrexone Alcohol MAT pair — the CYP/PD rows should stay quiet" [disabled] [ref=f4e1261]:
+                  - generic [ref=f4e1263]:
+                    - generic [ref=f4e1264]: Acamprosate + naltrexone
+                    - generic [ref=f4e1265]: Alcohol MAT pair — the CYP/PD rows should stay quiet
+                - button "Copy link" [ref=f4e1266] [cursor=pointer]
+                - status [ref=f4e1270]
+              - listitem [ref=f4e1271]:
+                - button "Methadone + citalopram Two known-QT drugs on an OTP board" [disabled] [ref=f4e1272]:
+                  - generic [ref=f4e1274]:
+                    - generic [ref=f4e1275]: Methadone + citalopram
+                    - generic [ref=f4e1276]: Two known-QT drugs on an OTP board
+                - button "Copy link" [ref=f4e1277] [cursor=pointer]
+                - status [ref=f4e1281]
+              - listitem [ref=f4e1282]:
+                - button "Methadone + fluconazole Azole 3A4 block — they nod, and the QT climbs" [disabled] [ref=f4e1283]:
+                  - generic [ref=f4e1285]:
+                    - generic [ref=f4e1286]: Methadone + fluconazole
+                    - generic [ref=f4e1287]: Azole 3A4 block — they nod, and the QT climbs
+                - button "Copy link" [ref=f4e1288] [cursor=pointer]
+                - status [ref=f4e1292]
+              - listitem [ref=f4e1293]:
+                - button "Methadone + hydroxyzine Vistaril is not a free benzo-alternative on a known-QT opioid" [disabled] [ref=f4e1294]:
+                  - generic [ref=f4e1296]:
+                    - generic [ref=f4e1297]: Methadone + hydroxyzine
+                    - generic [ref=f4e1298]: Vistaril is not a free benzo-alternative on a known-QT opioid
+                - button "Copy link" [ref=f4e1299] [cursor=pointer]
+                - status [ref=f4e1303]
+              - listitem [ref=f4e1304]:
+                - button "Methadone + ondansetron Zofran at the window — two known-QT drugs" [disabled] [ref=f4e1305]:
+                  - generic [ref=f4e1307]:
+                    - generic [ref=f4e1308]: Methadone + ondansetron
+                    - generic [ref=f4e1309]: Zofran at the window — two known-QT drugs
+                - button "Copy link" [ref=f4e1310] [cursor=pointer]
+                - status [ref=f4e1314]
+              - listitem [ref=f4e1315]:
+                - button "Methadone + xylazine Today's supply on a take-home — α2 naloxone will not reverse" [disabled] [ref=f4e1316]:
+                  - generic [ref=f4e1318]:
+                    - generic [ref=f4e1319]: Methadone + xylazine
+                    - generic [ref=f4e1320]: Today's supply on a take-home — α2 naloxone will not reverse
+                - button "Copy link" [ref=f4e1321] [cursor=pointer]
+                - status [ref=f4e1325]
+              - listitem [ref=f4e1326]:
+                - button "Naltrexone + fentanyl Leftover agonist after the Vivitrol shot" [disabled] [ref=f4e1327]:
+                  - generic [ref=f4e1329]:
+                    - generic [ref=f4e1330]: Naltrexone + fentanyl
+                    - generic [ref=f4e1331]: Leftover agonist after the Vivitrol shot
+                - button "Copy link" [ref=f4e1332] [cursor=pointer]
+                - status [ref=f4e1336]
+              - listitem [ref=f4e1337]:
+                - button "Buprenorphine + methadone Transfer day — partial on a full agonist is precipitated withdrawal" [disabled] [ref=f4e1338]:
+                  - generic [ref=f4e1340]:
+                    - generic [ref=f4e1341]: Buprenorphine + methadone
+                    - generic [ref=f4e1342]: Transfer day — partial on a full agonist is precipitated withdrawal
+                - button "Copy link" [ref=f4e1343] [cursor=pointer]
+                - status [ref=f4e1347]
+              - listitem [ref=f4e1348]:
+                - button "Buprenorphine + 7-OH Smoke-shop μ-agonist on a Suboxone film — occupancy conflict" [disabled] [ref=f4e1349]:
+                  - generic [ref=f4e1351]:
+                    - generic [ref=f4e1352]: Buprenorphine + 7-OH
+                    - generic [ref=f4e1353]: Smoke-shop μ-agonist on a Suboxone film — occupancy conflict
+                - button "Copy link" [ref=f4e1354] [cursor=pointer]
+                - status [ref=f4e1358]
+              - listitem [ref=f4e1359]:
+                - button "Lofexidine + paroxetine Lucemyra is a 2D6 victim — the SSRI raises bradycardia" [disabled] [ref=f4e1360]:
+                  - generic [ref=f4e1362]:
+                    - generic [ref=f4e1363]: Lofexidine + paroxetine
+                    - generic [ref=f4e1364]: Lucemyra is a 2D6 victim — the SSRI raises bradycardia
+                - button "Copy link" [ref=f4e1365] [cursor=pointer]
+                - status [ref=f4e1369]
+              - listitem [ref=f4e1370]:
+                - button "Methadone + Epclusa HCV on the OTP — this pair should stay quiet; rifampin should not" [disabled] [ref=f4e1371]:
+                  - generic [ref=f4e1373]:
+                    - generic [ref=f4e1374]: Methadone + Epclusa
+                    - generic [ref=f4e1375]: HCV on the OTP — this pair should stay quiet; rifampin should not
+                - button "Copy link" [ref=f4e1376] [cursor=pointer]
+                - status [ref=f4e1380]
+              - listitem [ref=f4e1381]:
+                - button "Naltrexone + loperamide Imodium while waiting for Vivitrol — the μ is blocked, the QT is not" [disabled] [ref=f4e1382]:
+                  - generic [ref=f4e1384]:
+                    - generic [ref=f4e1385]: Naltrexone + loperamide
+                    - generic [ref=f4e1386]: Imodium while waiting for Vivitrol — the μ is blocked, the QT is not
+                - button "Copy link" [ref=f4e1387] [cursor=pointer]
+                - status [ref=f4e1391]
+              - listitem [ref=f4e1392]:
+                - button "Methadone + fentanyl Take-home plus today's supply — stacked μ, one airway" [disabled] [ref=f4e1393]:
+                  - generic [ref=f4e1395]:
+                    - generic [ref=f4e1396]: Methadone + fentanyl
+                    - generic [ref=f4e1397]: Take-home plus today's supply — stacked μ, one airway
+                - button "Copy link" [ref=f4e1398] [cursor=pointer]
+                - status [ref=f4e1402]
+              - listitem [ref=f4e1403]:
+                - button "Methadone + fentanyl + xylazine The 2026 take-home triad — naloxone will not finish the α2" [disabled] [ref=f4e1404]:
+                  - generic [ref=f4e1406]:
+                    - generic [ref=f4e1407]: Methadone + fentanyl + xylazine
+                    - generic [ref=f4e1408]: The 2026 take-home triad — naloxone will not finish the α2
+                - button "Copy link" [ref=f4e1409] [cursor=pointer]
+                - status [ref=f4e1413]
+              - listitem [ref=f4e1414]:
+                - button "Methadone + Paxlovid Five-day ritonavir — methadone falls, watch withdrawal not nod" [disabled] [ref=f4e1415]:
+                  - generic [ref=f4e1417]:
+                    - generic [ref=f4e1418]: Methadone + Paxlovid
+                    - generic [ref=f4e1419]: Five-day ritonavir — methadone falls, watch withdrawal not nod
+                - button "Copy link" [ref=f4e1420] [cursor=pointer]
+                - status [ref=f4e1424]
+              - listitem [ref=f4e1425]:
+                - button "Fentanyl + Paxlovid Opposite arrow — 3A4 boost raises parent, airway risk climbs" [disabled] [ref=f4e1426]:
+                  - generic [ref=f4e1428]:
+                    - generic [ref=f4e1429]: Fentanyl + Paxlovid
+                    - generic [ref=f4e1430]: Opposite arrow — 3A4 boost raises parent, airway risk climbs
+                - button "Copy link" [ref=f4e1431] [cursor=pointer]
+                - status [ref=f4e1435]
+              - listitem [ref=f4e1436]:
+                - button "Methadone + fluvoxamine The OTP Luvox bump — parent and QT climb; stopping looks stolen" [disabled] [ref=f4e1437]:
+                  - generic [ref=f4e1439]:
+                    - generic [ref=f4e1440]: Methadone + fluvoxamine
+                    - generic [ref=f4e1441]: The OTP Luvox bump — parent and QT climb; stopping looks stolen
+                - button "Copy link" [ref=f4e1442] [cursor=pointer]
+                - status [ref=f4e1446]
+              - listitem [ref=f4e1447]:
+                - button "Methadone + phenytoin Tong 1981 — Dilantin looks like a stolen take-home in days" [disabled] [ref=f4e1448]:
+                  - generic [ref=f4e1450]:
+                    - generic [ref=f4e1451]: Methadone + phenytoin
+                    - generic [ref=f4e1452]: Tong 1981 — Dilantin looks like a stolen take-home in days
+                - button "Copy link" [ref=f4e1453] [cursor=pointer]
+                - status [ref=f4e1457]
+              - listitem [ref=f4e1458]:
+                - button "Methadone + clonazepam The prescribed Klonopin — boxed airway, not a street benzo" [disabled] [ref=f4e1459]:
+                  - generic [ref=f4e1461]:
+                    - generic [ref=f4e1462]: Methadone + clonazepam
+                    - generic [ref=f4e1463]: The prescribed Klonopin — boxed airway, not a street benzo
+                - button "Copy link" [ref=f4e1464] [cursor=pointer]
+                - status [ref=f4e1468]
+              - listitem [ref=f4e1469]:
+                - button "Methadone + cyclobenzaprine The 'back spasm' that still hits the airway" [disabled] [ref=f4e1470]:
+                  - generic [ref=f4e1472]:
+                    - generic [ref=f4e1473]: Methadone + cyclobenzaprine
+                    - generic [ref=f4e1474]: The 'back spasm' that still hits the airway
+                - button "Copy link" [ref=f4e1475] [cursor=pointer]
+                - status [ref=f4e1479]
+              - listitem [ref=f4e1480]:
+                - button "Methadone + promethazine Window antiemetic — sedation plus a possible QT drug" [disabled] [ref=f4e1481]:
+                  - generic [ref=f4e1483]:
+                    - generic [ref=f4e1484]: Methadone + promethazine
+                    - generic [ref=f4e1485]: Window antiemetic — sedation plus a possible QT drug
+                - button "Copy link" [ref=f4e1486] [cursor=pointer]
+                - status [ref=f4e1490]
+              - listitem [ref=f4e1491]:
+                - button "Methadone + trazodone Sleep at the OTP — 3A4 victim plus a possible QT stack" [disabled] [ref=f4e1492]:
+                  - generic [ref=f4e1494]:
+                    - generic [ref=f4e1495]: Methadone + trazodone
+                    - generic [ref=f4e1496]: Sleep at the OTP — 3A4 victim plus a possible QT stack
+                - button "Copy link" [ref=f4e1497] [cursor=pointer]
+                - status [ref=f4e1501]
+              - listitem [ref=f4e1502]:
+                - button "Methadone + CBD Epidiolex-dose 3A4/2C19 block on a known-QT opioid" [disabled] [ref=f4e1503]:
+                  - generic [ref=f4e1505]:
+                    - generic [ref=f4e1506]: Methadone + CBD
+                    - generic [ref=f4e1507]: Epidiolex-dose 3A4/2C19 block on a known-QT opioid
+                - button "Copy link" [ref=f4e1508] [cursor=pointer]
+                - status [ref=f4e1512]
+              - listitem [ref=f4e1513]:
+                - button "Fentanyl + medetomidine The newer α2 in the supply — naloxone will not reverse it" [disabled] [ref=f4e1514]:
+                  - generic [ref=f4e1516]:
+                    - generic [ref=f4e1517]: Fentanyl + medetomidine
+                    - generic [ref=f4e1518]: The newer α2 in the supply — naloxone will not reverse it
+                - button "Copy link" [ref=f4e1519] [cursor=pointer]
+                - status [ref=f4e1523]
+              - listitem [ref=f4e1524]:
+                - button "Methadone + methamphetamine OTP goofball — stimulant masks apnea; QT is still there" [disabled] [ref=f4e1525]:
+                  - generic [ref=f4e1527]:
+                    - generic [ref=f4e1528]: Methadone + methamphetamine
+                    - generic [ref=f4e1529]: OTP goofball — stimulant masks apnea; QT is still there
+                - button "Copy link" [ref=f4e1530] [cursor=pointer]
+                - status [ref=f4e1534]
+              - listitem [ref=f4e1535]:
+                - button "Fentanyl + fluconazole Azole 3A4 block on a sensitive μ-agonist — parent and airway" [disabled] [ref=f4e1536]:
+                  - generic [ref=f4e1538]:
+                    - generic [ref=f4e1539]: Fentanyl + fluconazole
+                    - generic [ref=f4e1540]: Azole 3A4 block on a sensitive μ-agonist — parent and airway
+                - button "Copy link" [ref=f4e1541] [cursor=pointer]
+                - status [ref=f4e1545]
+              - listitem [ref=f4e1546]:
+                - button "Methadone + nevirapine NNRTI stolen dose — same map as efavirenz, different rash" [disabled] [ref=f4e1547]:
+                  - generic [ref=f4e1549]:
+                    - generic [ref=f4e1550]: Methadone + nevirapine
+                    - generic [ref=f4e1551]: NNRTI stolen dose — same map as efavirenz, different rash
+                - button "Copy link" [ref=f4e1552] [cursor=pointer]
+                - status [ref=f4e1556]
+              - listitem [ref=f4e1557]:
+                - button "Methadone + naltrexone Vivitrol on a full agonist — precipitated withdrawal" [disabled] [ref=f4e1558]:
+                  - generic [ref=f4e1560]:
+                    - generic [ref=f4e1561]: Methadone + naltrexone
+                    - generic [ref=f4e1562]: Vivitrol on a full agonist — precipitated withdrawal
+                - button "Copy link" [ref=f4e1563] [cursor=pointer]
+                - status [ref=f4e1567]
+              - listitem [ref=f4e1568]:
+                - button "Methadone + pregabalin Lyrica is the other gabapentinoid — still an airway warning" [disabled] [ref=f4e1569]:
+                  - generic [ref=f4e1571]:
+                    - generic [ref=f4e1572]: Methadone + pregabalin
+                    - generic [ref=f4e1573]: Lyrica is the other gabapentinoid — still an airway warning
+                - button "Copy link" [ref=f4e1574] [cursor=pointer]
+                - status [ref=f4e1578]
+              - listitem [ref=f4e1579]:
+                - button "Methadone + ethanol A drink on a take-home — boxed airway, not a CYP row" [disabled] [ref=f4e1580]:
+                  - generic [ref=f4e1582]:
+                    - generic [ref=f4e1583]: Methadone + ethanol
+                    - generic [ref=f4e1584]: A drink on a take-home — boxed airway, not a CYP row
+                - button "Copy link" [ref=f4e1585] [cursor=pointer]
+                - status [ref=f4e1589]
+              - listitem [ref=f4e1590]:
+                - button "Methadone + clarithromycin Biaxin raises parent via 3A4 and stacks QT — not a Z-Pak" [disabled] [ref=f4e1591]:
+                  - generic [ref=f4e1593]:
+                    - generic [ref=f4e1594]: Methadone + clarithromycin
+                    - generic [ref=f4e1595]: Biaxin raises parent via 3A4 and stacks QT — not a Z-Pak
+                - button "Copy link" [ref=f4e1596] [cursor=pointer]
+                - status [ref=f4e1600]
+              - listitem [ref=f4e1601]:
+                - button "Methadone + azithromycin Z-Pak is the quieter macrolide on CYP — it still stacks QT" [disabled] [ref=f4e1602]:
+                  - generic [ref=f4e1604]:
+                    - generic [ref=f4e1605]: Methadone + azithromycin
+                    - generic [ref=f4e1606]: Z-Pak is the quieter macrolide on CYP — it still stacks QT
+                - button "Copy link" [ref=f4e1607] [cursor=pointer]
+                - status [ref=f4e1611]
+              - listitem [ref=f4e1612]:
+                - button "Methadone + grapefruit Gut 3A4 knockout on a known-QT opioid — nod, not stolen" [disabled] [ref=f4e1613]:
+                  - generic [ref=f4e1615]:
+                    - generic [ref=f4e1616]: Methadone + grapefruit
+                    - generic [ref=f4e1617]: Gut 3A4 knockout on a known-QT opioid — nod, not stolen
+                - button "Copy link" [ref=f4e1618] [cursor=pointer]
+                - status [ref=f4e1622]
+              - listitem [ref=f4e1623]:
+                - button "Buprenorphine + gabapentin Office-based MAT — the nerve-pain extra still hits the airway" [disabled] [ref=f4e1624]:
+                  - generic [ref=f4e1626]:
+                    - generic [ref=f4e1627]: Buprenorphine + gabapentin
+                    - generic [ref=f4e1628]: Office-based MAT — the nerve-pain extra still hits the airway
+                - button "Copy link" [ref=f4e1629] [cursor=pointer]
+                - status [ref=f4e1633]
+              - listitem [ref=f4e1634]:
+                - button "Methadone + fluoxetine Not the Luvox map — 2D6, not the OTP bump" [disabled] [ref=f4e1635]:
+                  - generic [ref=f4e1637]:
+                    - generic [ref=f4e1638]: Methadone + fluoxetine
+                    - generic [ref=f4e1639]: Not the Luvox map — 2D6, not the OTP bump
+                - button "Copy link" [ref=f4e1640] [cursor=pointer]
+                - status [ref=f4e1644]
+              - listitem [ref=f4e1645]:
+                - button "Methadone + carbamazepine Tegretol stolen dose — 3A4/2B6 induction in 7–10 days" [disabled] [ref=f4e1646]:
+                  - generic [ref=f4e1648]:
+                    - generic [ref=f4e1649]: Methadone + carbamazepine
+                    - generic [ref=f4e1650]: Tegretol stolen dose — 3A4/2B6 induction in 7–10 days
+                - button "Copy link" [ref=f4e1651] [cursor=pointer]
+                - status [ref=f4e1655]
+              - listitem [ref=f4e1656]:
+                - button "Methadone + St. John's wort The tea that looks like rifampin-lite on a take-home" [disabled] [ref=f4e1657]:
+                  - generic [ref=f4e1659]:
+                    - generic [ref=f4e1660]: Methadone + St. John's wort
+                    - generic [ref=f4e1661]: The tea that looks like rifampin-lite on a take-home
+                - button "Copy link" [ref=f4e1662] [cursor=pointer]
+                - status [ref=f4e1666]
+              - listitem [ref=f4e1667]:
+                - button "Methadone + ciprofloxacin Herrlin 2000 — Cipro is not a free UTI pill on a known-QT opioid" [disabled] [ref=f4e1668]:
+                  - generic [ref=f4e1670]:
+                    - generic [ref=f4e1671]: Methadone + ciprofloxacin
+                    - generic [ref=f4e1672]: Herrlin 2000 — Cipro is not a free UTI pill on a known-QT opioid
+                - button "Copy link" [ref=f4e1673] [cursor=pointer]
+                - status [ref=f4e1677]
+              - listitem [ref=f4e1678]:
+                - button "Buprenorphine + Paxlovid Opposite of methadone — 3A4 raise, usually no cut in the tolerant" [disabled] [ref=f4e1679]:
+                  - generic [ref=f4e1681]:
+                    - generic [ref=f4e1682]: Buprenorphine + Paxlovid
+                    - generic [ref=f4e1683]: Opposite of methadone — 3A4 raise, usually no cut in the tolerant
+                - button "Copy link" [ref=f4e1684] [cursor=pointer]
+                - status [ref=f4e1688]
+              - listitem [ref=f4e1689]:
+                - button "Methadone + cimetidine Tagamet is the H2 that still bullies 3A4 — famotidine is the switch" [disabled] [ref=f4e1690]:
+                  - generic [ref=f4e1692]:
+                    - generic [ref=f4e1693]: Methadone + cimetidine
+                    - generic [ref=f4e1694]: Tagamet is the H2 that still bullies 3A4 — famotidine is the switch
+                - button "Copy link" [ref=f4e1695] [cursor=pointer]
+                - status [ref=f4e1699]
+              - listitem [ref=f4e1700]:
+                - button "Methadone + amiodarone Weeks of 3A4 block plus two known-QT drugs" [disabled] [ref=f4e1701]:
+                  - generic [ref=f4e1703]:
+                    - generic [ref=f4e1704]: Methadone + amiodarone
+                    - generic [ref=f4e1705]: Weeks of 3A4 block plus two known-QT drugs
+                - button "Copy link" [ref=f4e1706] [cursor=pointer]
+                - status [ref=f4e1710]
+              - listitem [ref=f4e1711]:
+                - button "Methadone + sertraline Zoloft is not Luvox — 2D6, still serotonin" [disabled] [ref=f4e1712]:
+                  - generic [ref=f4e1714]:
+                    - generic [ref=f4e1715]: Methadone + sertraline
+                    - generic [ref=f4e1716]: Zoloft is not Luvox — 2D6, still serotonin
+                - button "Copy link" [ref=f4e1717] [cursor=pointer]
+                - status [ref=f4e1721]
+              - listitem [ref=f4e1722]:
+                - button "Methadone + cobicistat Tybost is not Norvir — 3A4 raise, no 2B6 dump" [disabled] [ref=f4e1723]:
+                  - generic [ref=f4e1725]:
+                    - generic [ref=f4e1726]: Methadone + cobicistat
+                    - generic [ref=f4e1727]: Tybost is not Norvir — 3A4 raise, no 2B6 dump
+                - button "Copy link" [ref=f4e1728] [cursor=pointer]
+                - status [ref=f4e1732]
+              - listitem [ref=f4e1733]:
+                - button "Buprenorphine + naltrexone Vivitrol on a film — occupancy conflict, not a failed shot" [disabled] [ref=f4e1734]:
+                  - generic [ref=f4e1736]:
+                    - generic [ref=f4e1737]: Buprenorphine + naltrexone
+                    - generic [ref=f4e1738]: Vivitrol on a film — occupancy conflict, not a failed shot
+                - button "Copy link" [ref=f4e1739] [cursor=pointer]
+                - status [ref=f4e1743]
+              - listitem [ref=f4e1744]:
+                - button "Methadone + phenobarbital Barbiturate stolen dose plus stacked apnea" [disabled] [ref=f4e1745]:
+                  - generic [ref=f4e1747]:
+                    - generic [ref=f4e1748]: Methadone + phenobarbital
+                    - generic [ref=f4e1749]: Barbiturate stolen dose plus stacked apnea
+                - button "Copy link" [ref=f4e1750] [cursor=pointer]
+                - status [ref=f4e1754]
+              - listitem [ref=f4e1755]:
+                - button "Azathioprine + allopurinol XO block of 6-MP — pancytopenia, not a gout footnote" [disabled] [ref=f4e1756]:
+                  - generic [ref=f4e1758]:
+                    - generic [ref=f4e1759]: Azathioprine + allopurinol
+                    - generic [ref=f4e1760]: XO block of 6-MP — pancytopenia, not a gout footnote
+                - button "Copy link" [ref=f4e1761] [cursor=pointer]
+                - status [ref=f4e1765]
+              - listitem [ref=f4e1766]:
+                - button "Isosorbide + sildenafil Daily nitrate × PDE5 — the labeled hypotension" [disabled] [ref=f4e1767]:
+                  - generic [ref=f4e1769]:
+                    - generic [ref=f4e1770]: Isosorbide + sildenafil
+                    - generic [ref=f4e1771]: Daily nitrate × PDE5 — the labeled hypotension
+                - button "Copy link" [ref=f4e1772] [cursor=pointer]
+                - status [ref=f4e1776]
+              - listitem [ref=f4e1777]:
+                - button "Clopidogrel + omeprazole 2C19 activation of a prodrug — the PPI that blunts Plavix" [disabled] [ref=f4e1778]:
+                  - generic [ref=f4e1780]:
+                    - generic [ref=f4e1781]: Clopidogrel + omeprazole
+                    - generic [ref=f4e1782]: 2C19 activation of a prodrug — the PPI that blunts Plavix
+                - button "Copy link" [ref=f4e1783] [cursor=pointer]
+                - status [ref=f4e1787]
+              - listitem [ref=f4e1788]:
+                - button "Eletriptan + clarithromycin The CYP triptan × strong 3A4 — labeled 72-hour hold" [disabled] [ref=f4e1789]:
+                  - generic [ref=f4e1791]:
+                    - generic [ref=f4e1792]: Eletriptan + clarithromycin
+                    - generic [ref=f4e1793]: The CYP triptan × strong 3A4 — labeled 72-hour hold
+                - button "Copy link" [ref=f4e1794] [cursor=pointer]
+                - status [ref=f4e1798]
+              - listitem [ref=f4e1799]:
+                - button "Oral budesonide + ketoconazole Gut 3A4 first-pass — a 'local' steroid goes systemic" [disabled] [ref=f4e1800]:
+                  - generic [ref=f4e1802]:
+                    - generic [ref=f4e1803]: Oral budesonide + ketoconazole
+                    - generic [ref=f4e1804]: Gut 3A4 first-pass — a 'local' steroid goes systemic
+                - button "Copy link" [ref=f4e1805] [cursor=pointer]
+                - status [ref=f4e1809]
+              - listitem [ref=f4e1810]:
+                - button "Eplerenone + clarithromycin Sensitive 3A4 K-sparing — labeled with strong inhibitors" [disabled] [ref=f4e1811]:
+                  - generic [ref=f4e1813]:
+                    - generic [ref=f4e1814]: Eplerenone + clarithromycin
+                    - generic [ref=f4e1815]: Sensitive 3A4 K-sparing — labeled with strong inhibitors
+                - button "Copy link" [ref=f4e1816] [cursor=pointer]
+                - status [ref=f4e1820]
+              - listitem [ref=f4e1821]:
+                - button "Terbinafine + metoprolol Nail-fungus 2D6 block on a beta blocker" [disabled] [ref=f4e1822]:
+                  - generic [ref=f4e1824]:
+                    - generic [ref=f4e1825]: Terbinafine + metoprolol
+                    - generic [ref=f4e1826]: Nail-fungus 2D6 block on a beta blocker
+                - button "Copy link" [ref=f4e1827] [cursor=pointer]
+                - status [ref=f4e1831]
+              - listitem [ref=f4e1832]:
+                - button "Pioglitazone + gemfibrozil Sensitive 2C8 × the strong 2C8 fibrate" [disabled] [ref=f4e1833]:
+                  - generic [ref=f4e1835]:
+                    - generic [ref=f4e1836]: Pioglitazone + gemfibrozil
+                    - generic [ref=f4e1837]: Sensitive 2C8 × the strong 2C8 fibrate
+                - button "Copy link" [ref=f4e1838] [cursor=pointer]
+                - status [ref=f4e1842]
+              - listitem [ref=f4e1843]:
+                - button "Fluticasone + ritonavir The spray that becomes Cushing next to a booster" [disabled] [ref=f4e1844]:
+                  - generic [ref=f4e1846]:
+                    - generic [ref=f4e1847]: Fluticasone + ritonavir
+                    - generic [ref=f4e1848]: The spray that becomes Cushing next to a booster
+                - button "Copy link" [ref=f4e1849] [cursor=pointer]
+                - status [ref=f4e1853]
+              - listitem [ref=f4e1854]:
+                - button "Semaglutide + glimepiride GLP-1 plus a sulfonylurea — stacked hypoglycemia" [disabled] [ref=f4e1855]:
+                  - generic [ref=f4e1857]:
+                    - generic [ref=f4e1858]: Semaglutide + glimepiride
+                    - generic [ref=f4e1859]: GLP-1 plus a sulfonylurea — stacked hypoglycemia
+                - button "Copy link" [ref=f4e1860] [cursor=pointer]
+                - status [ref=f4e1864]
+              - listitem [ref=f4e1865]:
+                - button "Fenofibrate + simvastatin Statin × fibrate — major, not the gemfibrozil contraindication" [disabled] [ref=f4e1866]:
+                  - generic [ref=f4e1868]:
+                    - generic [ref=f4e1869]: Fenofibrate + simvastatin
+                    - generic [ref=f4e1870]: Statin × fibrate — major, not the gemfibrozil contraindication
+                - button "Copy link" [ref=f4e1871] [cursor=pointer]
+                - status [ref=f4e1875]
+              - listitem [ref=f4e1876]:
+                - button "6-MP + febuxostat Same XO enzyme as allopurinol — still marrow" [disabled] [ref=f4e1877]:
+                  - generic [ref=f4e1879]:
+                    - generic [ref=f4e1880]: 6-MP + febuxostat
+                    - generic [ref=f4e1881]: Same XO enzyme as allopurinol — still marrow
+                - button "Copy link" [ref=f4e1882] [cursor=pointer]
+                - status [ref=f4e1886]
+              - listitem [ref=f4e1887]:
+                - button "Red yeast rice + gemfibrozil Monacolin K is lovastatin — this is the labeled statin–fibrate hold" [disabled] [ref=f4e1888]:
+                  - generic [ref=f4e1890]:
+                    - generic [ref=f4e1891]: Red yeast rice + gemfibrozil
+                    - generic [ref=f4e1892]: Monacolin K is lovastatin — this is the labeled statin–fibrate hold
+                - button "Copy link" [ref=f4e1893] [cursor=pointer]
+                - status [ref=f4e1897]
+              - listitem [ref=f4e1898]:
+                - button "Vitamin K + warfarin The antidote in a gummy — INR falls, not a 2C9 story" [disabled] [ref=f4e1899]:
+                  - generic [ref=f4e1901]:
+                    - generic [ref=f4e1902]: Vitamin K + warfarin
+                    - generic [ref=f4e1903]: The antidote in a gummy — INR falls, not a 2C9 story
+                - button "Copy link" [ref=f4e1904] [cursor=pointer]
+                - status [ref=f4e1908]
+              - listitem [ref=f4e1909]:
+                - button "Fish oil + warfarin High-dose EPA/DHA on a VKA — bleed, not CYP" [disabled] [ref=f4e1910]:
+                  - generic [ref=f4e1912]:
+                    - generic [ref=f4e1913]: Fish oil + warfarin
+                    - generic [ref=f4e1914]: High-dose EPA/DHA on a VKA — bleed, not CYP
+                - button "Copy link" [ref=f4e1915] [cursor=pointer]
+                - status [ref=f4e1919]
+              - listitem [ref=f4e1920]:
+                - button "SAM-e + sertraline Methyl donor meets an SSRI — stacked serotonin" [disabled] [ref=f4e1921]:
+                  - generic [ref=f4e1923]:
+                    - generic [ref=f4e1924]: SAM-e + sertraline
+                    - generic [ref=f4e1925]: Methyl donor meets an SSRI — stacked serotonin
+                - button "Copy link" [ref=f4e1926] [cursor=pointer]
+                - status [ref=f4e1930]
+              - listitem [ref=f4e1931]:
+                - button "Calcium + levothyroxine Gut chelation — the morning Tums empties the TSH" [disabled] [ref=f4e1932]:
+                  - generic [ref=f4e1934]:
+                    - generic [ref=f4e1935]: Calcium + levothyroxine
+                    - generic [ref=f4e1936]: Gut chelation — the morning Tums empties the TSH
+                - button "Copy link" [ref=f4e1937] [cursor=pointer]
+                - status [ref=f4e1941]
+              - listitem [ref=f4e1942]:
+                - button "Iron + ciprofloxacin Divalent cation — the course can fail" [disabled] [ref=f4e1943]:
+                  - generic [ref=f4e1945]:
+                    - generic [ref=f4e1946]: Iron + ciprofloxacin
+                    - generic [ref=f4e1947]: Divalent cation — the course can fail
+                - button "Copy link" [ref=f4e1948] [cursor=pointer]
+                - status [ref=f4e1952]
+              - listitem [ref=f4e1953]:
+                - button "Yohimbine + phenelzine α2 block plus irreversible MAOI — pressor crisis" [disabled] [ref=f4e1954]:
+                  - generic [ref=f4e1956]:
+                    - generic [ref=f4e1957]: Yohimbine + phenelzine
+                    - generic [ref=f4e1958]: α2 block plus irreversible MAOI — pressor crisis
+                - button "Copy link" [ref=f4e1959] [cursor=pointer]
+                - status [ref=f4e1963]
+              - listitem [ref=f4e1964]:
+                - button "Niacin + simvastatin Gram-dose B3 on a 3A4 statin — muscle" [disabled] [ref=f4e1965]:
+                  - generic [ref=f4e1967]:
+                    - generic [ref=f4e1968]: Niacin + simvastatin
+                    - generic [ref=f4e1969]: Gram-dose B3 on a 3A4 statin — muscle
+                - button "Copy link" [ref=f4e1970] [cursor=pointer]
+                - status [ref=f4e1974]
+              - listitem [ref=f4e1975]:
+                - button "L-arginine + sildenafil Pre-workout NO plus PDE5 — stacked hypotension" [disabled] [ref=f4e1976]:
+                  - generic [ref=f4e1978]:
+                    - generic [ref=f4e1979]: L-arginine + sildenafil
+                    - generic [ref=f4e1980]: Pre-workout NO plus PDE5 — stacked hypotension
+                - button "Copy link" [ref=f4e1981] [cursor=pointer]
+                - status [ref=f4e1985]
+              - listitem [ref=f4e1986]:
+                - button "Quercetin + simvastatin Flavonol 3A4/P-gp block on a sensitive statin" [disabled] [ref=f4e1987]:
+                  - generic [ref=f4e1989]:
+                    - generic [ref=f4e1990]: Quercetin + simvastatin
+                    - generic [ref=f4e1991]: Flavonol 3A4/P-gp block on a sensitive statin
+                - button "Copy link" [ref=f4e1992] [cursor=pointer]
+                - status [ref=f4e1996]
+              - listitem [ref=f4e1997]:
+                - button "Potassium + lisinopril Salt-substitute K plus an ACEI — hyperkalemia" [disabled] [ref=f4e1998]:
+                  - generic [ref=f4e2000]:
+                    - generic [ref=f4e2001]: Potassium + lisinopril
+                    - generic [ref=f4e2002]: Salt-substitute K plus an ACEI — hyperkalemia
+                - button "Copy link" [ref=f4e2003] [cursor=pointer]
+                - status [ref=f4e2007]
+              - listitem [ref=f4e2008]:
+                - button "Senna + sotalol Stimulant laxative hypokalemia plus a known QT drug" [disabled] [ref=f4e2009]:
+                  - generic [ref=f4e2011]:
+                    - generic [ref=f4e2012]: Senna + sotalol
+                    - generic [ref=f4e2013]: Stimulant laxative hypokalemia plus a known QT drug
+                - button "Copy link" [ref=f4e2014] [cursor=pointer]
+                - status [ref=f4e2018]
+              - listitem [ref=f4e2019]:
+                - button "Berberine + simvastatin The glucose capsule is a 3A4/P-gp bully — not goldenseal tea" [disabled] [ref=f4e2020]:
+                  - generic [ref=f4e2022]:
+                    - generic [ref=f4e2023]: Berberine + simvastatin
+                    - generic [ref=f4e2024]: The glucose capsule is a 3A4/P-gp bully — not goldenseal tea
+                - button "Copy link" [ref=f4e2025] [cursor=pointer]
+                - status [ref=f4e2029]
+              - listitem [ref=f4e2030]:
+                - button "Berberine + glipizide Metformin-like herb plus a sulfonylurea — stacked hypoglycemia" [disabled] [ref=f4e2031]:
+                  - generic [ref=f4e2033]:
+                    - generic [ref=f4e2034]: Berberine + glipizide
+                    - generic [ref=f4e2035]: Metformin-like herb plus a sulfonylurea — stacked hypoglycemia
+                - button "Copy link" [ref=f4e2036] [cursor=pointer]
+                - status [ref=f4e2040]
+              - listitem [ref=f4e2041]:
+                - button "Echinacea + tizanidine Cold-and-flu 1A2 block on a sensitive muscle relaxant" [disabled] [ref=f4e2042]:
+                  - generic [ref=f4e2044]:
+                    - generic [ref=f4e2045]: Echinacea + tizanidine
+                    - generic [ref=f4e2046]: Cold-and-flu 1A2 block on a sensitive muscle relaxant
+                - button "Copy link" [ref=f4e2047] [cursor=pointer]
+                - status [ref=f4e2051]
+              - listitem [ref=f4e2052]:
+                - button "Bitter orange + phenelzine Synephrine fat-burner plus irreversible MAOI — pressor" [disabled] [ref=f4e2053]:
+                  - generic [ref=f4e2055]:
+                    - generic [ref=f4e2056]: Bitter orange + phenelzine
+                    - generic [ref=f4e2057]: Synephrine fat-burner plus irreversible MAOI — pressor
+                - button "Copy link" [ref=f4e2058] [cursor=pointer]
+                - status [ref=f4e2062]
+              - listitem [ref=f4e2063]:
+                - button "Activated charcoal + levothyroxine The binder — the dose never arrives" [disabled] [ref=f4e2064]:
+                  - generic [ref=f4e2066]:
+                    - generic [ref=f4e2067]: Activated charcoal + levothyroxine
+                    - generic [ref=f4e2068]: The binder — the dose never arrives
+                - button "Copy link" [ref=f4e2069] [cursor=pointer]
+                - status [ref=f4e2073]
+              - listitem [ref=f4e2074]:
+                - button "Alpha-lipoic acid + glipizide Neuropathy bottle plus a sulfonylurea — hypoglycemia" [disabled] [ref=f4e2075]:
+                  - generic [ref=f4e2077]:
+                    - generic [ref=f4e2078]: Alpha-lipoic acid + glipizide
+                    - generic [ref=f4e2079]: Neuropathy bottle plus a sulfonylurea — hypoglycemia
+                - button "Copy link" [ref=f4e2080] [cursor=pointer]
+                - status [ref=f4e2084]
+              - listitem [ref=f4e2085]:
+                - button "Resveratrol + simvastatin Gram stilbene 3A4 block on a sensitive statin" [disabled] [ref=f4e2086]:
+                  - generic [ref=f4e2088]:
+                    - generic [ref=f4e2089]: Resveratrol + simvastatin
+                    - generic [ref=f4e2090]: Gram stilbene 3A4 block on a sensitive statin
+                - button "Copy link" [ref=f4e2091] [cursor=pointer]
+                - status [ref=f4e2095]
+              - listitem [ref=f4e2096]:
+                - button "Nattokinase + warfarin The 'clot buster' bottle next to a vitamin-K antagonist" [disabled] [ref=f4e2097]:
+                  - generic [ref=f4e2099]:
+                    - generic [ref=f4e2100]: Nattokinase + warfarin
+                    - generic [ref=f4e2101]: The 'clot buster' bottle next to a vitamin-K antagonist
+                - button "Copy link" [ref=f4e2102] [cursor=pointer]
+                - status [ref=f4e2106]
+              - listitem [ref=f4e2107]:
+                - button "Psyllium + levothyroxine Metamucil with the morning dose — empty TSH" [disabled] [ref=f4e2108]:
+                  - generic [ref=f4e2110]:
+                    - generic [ref=f4e2111]: Psyllium + levothyroxine
+                    - generic [ref=f4e2112]: Metamucil with the morning dose — empty TSH
+                - button "Copy link" [ref=f4e2113] [cursor=pointer]
+                - status [ref=f4e2117]
+              - listitem [ref=f4e2118]:
+                - button "L-citrulline + sildenafil Pre-workout NO plus PDE5 — stacked hypotension" [disabled] [ref=f4e2119]:
+                  - generic [ref=f4e2121]:
+                    - generic [ref=f4e2122]: L-citrulline + sildenafil
+                    - generic [ref=f4e2123]: Pre-workout NO plus PDE5 — stacked hypotension
+                - button "Copy link" [ref=f4e2124] [cursor=pointer]
+                - status [ref=f4e2128]
+              - listitem [ref=f4e2129]:
+                - button "Chromium + glipizide Blood-sugar bottle plus a sulfonylurea — hypoglycemia" [disabled] [ref=f4e2130]:
+                  - generic [ref=f4e2132]:
+                    - generic [ref=f4e2133]: Chromium + glipizide
+                    - generic [ref=f4e2134]: Blood-sugar bottle plus a sulfonylurea — hypoglycemia
+                - button "Copy link" [ref=f4e2135] [cursor=pointer]
+                - status [ref=f4e2139]
+              - listitem [ref=f4e2140]:
+                - button "Horny goat weed + nitroglycerin Herbal PDE5 next to a nitrate — not labeled like Viagra" [disabled] [ref=f4e2141]:
+                  - generic [ref=f4e2143]:
+                    - generic [ref=f4e2144]: Horny goat weed + nitroglycerin
+                    - generic [ref=f4e2145]: Herbal PDE5 next to a nitrate — not labeled like Viagra
+                - button "Copy link" [ref=f4e2146] [cursor=pointer]
+                - status [ref=f4e2150]
+              - listitem [ref=f4e2151]:
+                - button "Milk + tetracycline The original dairy trap — worse than doxycycline" [disabled] [ref=f4e2152]:
+                  - generic [ref=f4e2154]:
+                    - generic [ref=f4e2155]: Milk + tetracycline
+                    - generic [ref=f4e2156]: The original dairy trap — worse than doxycycline
+                - button "Copy link" [ref=f4e2157] [cursor=pointer]
+                - status [ref=f4e2161]
+              - listitem [ref=f4e2162]:
+                - button "Orange juice + atenolol OATP2B1 — Tenormin AUC falls" [disabled] [ref=f4e2163]:
+                  - generic [ref=f4e2165]:
+                    - generic [ref=f4e2166]: Orange juice + atenolol
+                    - generic [ref=f4e2167]: OATP2B1 — Tenormin AUC falls
+                - button "Copy link" [ref=f4e2168] [cursor=pointer]
+                - status [ref=f4e2172]
+              - listitem [ref=f4e2173]:
+                - button "Green tea + nadolol Misaka — catechins dump Corgard via OATP" [disabled] [ref=f4e2174]:
+                  - generic [ref=f4e2176]:
+                    - generic [ref=f4e2177]: Green tea + nadolol
+                    - generic [ref=f4e2178]: Misaka — catechins dump Corgard via OATP
+                - button "Copy link" [ref=f4e2179] [cursor=pointer]
+                - status [ref=f4e2183]
+              - listitem [ref=f4e2184]:
+                - button "Soy milk + levothyroxine Formula and protein shakes bind T4" [disabled] [ref=f4e2185]:
+                  - generic [ref=f4e2187]:
+                    - generic [ref=f4e2188]: Soy milk + levothyroxine
+                    - generic [ref=f4e2189]: Formula and protein shakes bind T4
+                - button "Copy link" [ref=f4e2190] [cursor=pointer]
+                - status [ref=f4e2194]
+              - listitem [ref=f4e2195]:
+                - button "Salt substitute + lisinopril Dietary potassium plus an ACEI — hyperK without Slow-K" [disabled] [ref=f4e2196]:
+                  - generic [ref=f4e2198]:
+                    - generic [ref=f4e2199]: Salt substitute + lisinopril
+                    - generic [ref=f4e2200]: Dietary potassium plus an ACEI — hyperK without Slow-K
+                - button "Copy link" [ref=f4e2201] [cursor=pointer]
+                - status [ref=f4e2205]
+              - listitem [ref=f4e2206]:
+                - button "Tuna + isoniazid Diamine oxidase — scombroid on a TB pill" [disabled] [ref=f4e2207]:
+                  - generic [ref=f4e2209]:
+                    - generic [ref=f4e2210]: Tuna + isoniazid
+                    - generic [ref=f4e2211]: Diamine oxidase — scombroid on a TB pill
+                - button "Copy link" [ref=f4e2212] [cursor=pointer]
+                - status [ref=f4e2216]
+              - listitem [ref=f4e2217]:
+                - button "Tube feed + phenytoin Bauer 1982 — continuous feeds bind Dilantin" [disabled] [ref=f4e2218]:
+                  - generic [ref=f4e2220]:
+                    - generic [ref=f4e2221]: Tube feed + phenytoin
+                    - generic [ref=f4e2222]: Bauer 1982 — continuous feeds bind Dilantin
+                - button "Copy link" [ref=f4e2223] [cursor=pointer]
+                - status [ref=f4e2227]
+              - listitem [ref=f4e2228]:
+                - button "High-fat meal + lurasidone Latuda is labeled with ~350 kcal — F collapses fasted" [disabled] [ref=f4e2229]:
+                  - generic [ref=f4e2231]:
+                    - generic [ref=f4e2232]: High-fat meal + lurasidone
+                    - generic [ref=f4e2233]: Latuda is labeled with ~350 kcal — F collapses fasted
+                - button "Copy link" [ref=f4e2234] [cursor=pointer]
+                - status [ref=f4e2238]
+              - listitem [ref=f4e2239]:
+                - button "High-fat meal + ziprasidone Geodon wants ~500 kcal or AUC falls by half" [disabled] [ref=f4e2240]:
+                  - generic [ref=f4e2242]:
+                    - generic [ref=f4e2243]: High-fat meal + ziprasidone
+                    - generic [ref=f4e2244]: Geodon wants ~500 kcal or AUC falls by half
+                - button "Copy link" [ref=f4e2245] [cursor=pointer]
+                - status [ref=f4e2249]
+              - listitem [ref=f4e2250]:
+                - button "A meal + alendronate Anything in the stomach kills Fosamax F" [disabled] [ref=f4e2251]:
+                  - generic [ref=f4e2253]:
+                    - generic [ref=f4e2254]: A meal + alendronate
+                    - generic [ref=f4e2255]: Anything in the stomach kills Fosamax F
+                - button "Copy link" [ref=f4e2256] [cursor=pointer]
+                - status [ref=f4e2260]
+              - listitem [ref=f4e2261]:
+                - button "Apple juice + aliskiren OATP2B1 — Tekturna never arrives" [disabled] [ref=f4e2262]:
+                  - generic [ref=f4e2264]:
+                    - generic [ref=f4e2265]: Apple juice + aliskiren
+                    - generic [ref=f4e2266]: OATP2B1 — Tekturna never arrives
+                - button "Copy link" [ref=f4e2267] [cursor=pointer]
+                - status [ref=f4e2271]
+              - listitem [ref=f4e2272]:
+                - button "Caffeine + lithium Caffeine dumps lithium; stopping it retains it" [disabled] [ref=f4e2273]:
+                  - generic [ref=f4e2275]:
+                    - generic [ref=f4e2276]: Caffeine + lithium
+                    - generic [ref=f4e2277]: Caffeine dumps lithium; stopping it retains it
+                - button "Copy link" [ref=f4e2278] [cursor=pointer]
+                - status [ref=f4e2282]
+              - listitem [ref=f4e2283]:
+                - button "Paroxetine + codeine 2D6 phenoconversion — NM on paper, PM on the enzyme" [disabled] [ref=f4e2284]:
+                  - generic [ref=f4e2286]:
+                    - generic [ref=f4e2287]: Paroxetine + codeine
+                    - generic [ref=f4e2288]: 2D6 phenoconversion — NM on paper, PM on the enzyme
+                - button "Copy link" [ref=f4e2289] [cursor=pointer]
+                - status [ref=f4e2293]
+              - listitem [ref=f4e2294]:
+                - button "Bupropion + DXM Wellbutrin locks 2D6; dextromethorphan accumulates" [disabled] [ref=f4e2295]:
+                  - generic [ref=f4e2297]:
+                    - generic [ref=f4e2298]: Bupropion + DXM
+                    - generic [ref=f4e2299]: Wellbutrin locks 2D6; dextromethorphan accumulates
+                - button "Copy link" [ref=f4e2300] [cursor=pointer]
+                - status [ref=f4e2304]
+              - listitem [ref=f4e2305]:
+                - button "Methadone + oxycodone MME is not two prescriptions. One airway, banded methadone factor" [disabled] [ref=f4e2306]:
+                  - generic [ref=f4e2308]:
+                    - generic [ref=f4e2309]: Methadone + oxycodone
+                    - generic [ref=f4e2310]: MME is not two prescriptions. One airway, banded methadone factor
+                - button "Copy link" [ref=f4e2311] [cursor=pointer]
+                - status [ref=f4e2315]
+              - listitem [ref=f4e2316]:
+                - button "MDMA + sertraline Hunter screen — clonus, not a Sternbach plus-table" [disabled] [ref=f4e2317]:
+                  - generic [ref=f4e2319]:
+                    - generic [ref=f4e2320]: MDMA + sertraline
+                    - generic [ref=f4e2321]: Hunter screen — clonus, not a Sternbach plus-table
+                - button "Copy link" [ref=f4e2322] [cursor=pointer]
+                - status [ref=f4e2326]
+              - listitem [ref=f4e2327]:
+                - button "Acetaminophen + NAC The antidote on the desk. Rumack is the nomogram" [disabled] [ref=f4e2328]:
+                  - generic [ref=f4e2330]:
+                    - generic [ref=f4e2331]: Acetaminophen + NAC
+                    - generic [ref=f4e2332]: The antidote on the desk. Rumack is the nomogram
+                - button "Copy link" [ref=f4e2333] [cursor=pointer]
+                - status [ref=f4e2337]
+              - listitem [ref=f4e2338]:
+                - button "Methadone cup Opiate EIA stays negative on a take-home. That's the assay. Ask EDDP." [disabled] [ref=f4e2339]:
+                  - generic [ref=f4e2341]:
+                    - generic [ref=f4e2342]: Methadone cup
+                    - generic [ref=f4e2343]: Opiate EIA stays negative on a take-home. That's the assay. Ask EDDP.
+                - button "Copy link" [ref=f4e2344] [cursor=pointer]
+                - status [ref=f4e2348]
+              - listitem [ref=f4e2349]:
+                - button "Seroquel vs the TCA cup Window sleep med lights TCA. Methadone does not light opiates." [disabled] [ref=f4e2350]:
+                  - generic [ref=f4e2352]:
+                    - generic [ref=f4e2353]: Seroquel vs the TCA cup
+                    - generic [ref=f4e2354]: Window sleep med lights TCA. Methadone does not light opiates.
+                - button "Copy link" [ref=f4e2355] [cursor=pointer]
+                - status [ref=f4e2359]
+              - listitem [ref=f4e2360]:
+                - button "Wellbutrin vs the amphetamine cup Bupropion is the classic amphetamine EIA false-positive" [disabled] [ref=f4e2361]:
+                  - generic [ref=f4e2363]:
+                    - generic [ref=f4e2364]: Wellbutrin vs the amphetamine cup
+                    - generic [ref=f4e2365]: Bupropion is the classic amphetamine EIA false-positive
+                - button "Copy link" [ref=f4e2366] [cursor=pointer]
+                - status [ref=f4e2370]
+              - listitem [ref=f4e2371]:
+                - button "Zoloft vs the benzo cup Sertraline can light a benzodiazepine immunoassay" [disabled] [ref=f4e2372]:
+                  - generic [ref=f4e2374]:
+                    - generic [ref=f4e2375]: Zoloft vs the benzo cup
+                    - generic [ref=f4e2376]: Sertraline can light a benzodiazepine immunoassay
+                - button "Copy link" [ref=f4e2377] [cursor=pointer]
+                - status [ref=f4e2381]
+              - listitem [ref=f4e2382]:
+                - button "DXM vs the PCP cup Dextromethorphan fools many PCP EIAs. 2D6 is the other board." [disabled] [ref=f4e2383]:
+                  - generic [ref=f4e2385]:
+                    - generic [ref=f4e2386]: DXM vs the PCP cup
+                    - generic [ref=f4e2387]: Dextromethorphan fools many PCP EIAs. 2D6 is the other board.
+                - button "Copy link" [ref=f4e2388] [cursor=pointer]
+                - status [ref=f4e2392]
+              - listitem [ref=f4e2393]:
+                - button "Lofexidine on the COWS α2 for withdrawal. Naloxone will not reverse it." [disabled] [ref=f4e2394]:
+                  - generic [ref=f4e2396]:
+                    - generic [ref=f4e2397]: Lofexidine on the COWS
+                    - generic [ref=f4e2398]: α2 for withdrawal. Naloxone will not reverse it.
+                - button "Copy link" [ref=f4e2399] [cursor=pointer]
+                - status [ref=f4e2403]
+              - listitem [ref=f4e2404]:
+                - button "Opvee after a fold Nalmefene occupies μ longer than naloxone — re-narcotize vs over-reverse" [disabled] [ref=f4e2405]:
+                  - generic [ref=f4e2407]:
+                    - generic [ref=f4e2408]: Opvee after a fold
+                    - generic [ref=f4e2409]: Nalmefene occupies μ longer than naloxone — re-narcotize vs over-reverse
+                - button "Copy link" [ref=f4e2410] [cursor=pointer]
+                - status [ref=f4e2414]
+              - listitem [ref=f4e2415]:
+                - button "Methadone + breastfeeding LactMed compatible. RID ~1–3%. Do not stop OTP to feed." [disabled] [ref=f4e2416]:
+                  - generic [ref=f4e2418]:
+                    - generic [ref=f4e2419]: Methadone + breastfeeding
+                    - generic [ref=f4e2420]: LactMed compatible. RID ~1–3%. Do not stop OTP to feed.
+                - button "Copy link" [ref=f4e2421] [cursor=pointer]
+                - status [ref=f4e2425]
+              - listitem [ref=f4e2426]:
+                - button "Buprenorphine after fentanyl OTP tab — occupancy vs COWS. The integer is not the receptor." [disabled] [ref=f4e2427]:
+                  - generic [ref=f4e2429]:
+                    - generic [ref=f4e2430]: Buprenorphine after fentanyl
+                    - generic [ref=f4e2431]: OTP tab — occupancy vs COWS. The integer is not the receptor.
+                - button "Copy link" [ref=f4e2432] [cursor=pointer]
+                - status [ref=f4e2436]
+              - listitem [ref=f4e2437]:
+                - button "Vivitrol after methadone Washout clock. Labels discuss ~10–14 days after a long agonist." [disabled] [ref=f4e2438]:
+                  - generic [ref=f4e2440]:
+                    - generic [ref=f4e2441]: Vivitrol after methadone
+                    - generic [ref=f4e2442]: Washout clock. Labels discuss ~10–14 days after a long agonist.
+                - button "Copy link" [ref=f4e2443] [cursor=pointer]
+                - status [ref=f4e2447]
+              - listitem [ref=f4e2448]:
+                - button "Clozapine ANC REMS green / yellow / interrupt. Smoke is the other board." [disabled] [ref=f4e2449]:
+                  - generic [ref=f4e2451]:
+                    - generic [ref=f4e2452]: Clozapine ANC
+                    - generic [ref=f4e2453]: REMS green / yellow / interrupt. Smoke is the other board.
+                - button "Copy link" [ref=f4e2454] [cursor=pointer]
+                - status [ref=f4e2458]
+              - listitem [ref=f4e2459]:
+                - button "Warfarin + amiodarone INR tab — 2C9 block over weeks, not overnight." [disabled] [ref=f4e2460]:
+                  - generic [ref=f4e2462]:
+                    - generic [ref=f4e2463]: Warfarin + amiodarone
+                    - generic [ref=f4e2464]: INR tab — 2C9 block over weeks, not overnight.
+                - button "Copy link" [ref=f4e2465] [cursor=pointer]
+                - status [ref=f4e2469]
+              - listitem [ref=f4e2470]:
+                - button "Clarithromycin + midazolam CYP tab — TDI 3A4. Stopping yesterday does not restore Versed." [disabled] [ref=f4e2471]:
+                  - generic [ref=f4e2473]:
+                    - generic [ref=f4e2474]: Clarithromycin + midazolam
+                    - generic [ref=f4e2475]: CYP tab — TDI 3A4. Stopping yesterday does not restore Versed.
+                - button "Copy link" [ref=f4e2476] [cursor=pointer]
+                - status [ref=f4e2480]
+              - listitem [ref=f4e2481]:
+                - button "Rifampin + midazolam CYP tab — 96% AUC dump. Stop is rebound, not a completed course." [disabled] [ref=f4e2482]:
+                  - generic [ref=f4e2484]:
+                    - generic [ref=f4e2485]: Rifampin + midazolam
+                    - generic [ref=f4e2486]: CYP tab — 96% AUC dump. Stop is rebound, not a completed course.
+                - button "Copy link" [ref=f4e2487] [cursor=pointer]
+                - status [ref=f4e2491]
+              - listitem [ref=f4e2492]:
+                - button "Cipro + tizanidine Labeled 1A2 knockout. Sensitive index substrate. Start is hypotension." [disabled] [ref=f4e2493]:
+                  - generic [ref=f4e2495]:
+                    - generic [ref=f4e2496]: Cipro + tizanidine
+                    - generic [ref=f4e2497]: Labeled 1A2 knockout. Sensitive index substrate. Start is hypotension.
+                - button "Copy link" [ref=f4e2498] [cursor=pointer]
+                - status [ref=f4e2502]
+              - listitem [ref=f4e2503]:
+                - button "Fluoxetine + codeine 5-week 2D6 TDI clock. Stopping Prozac yesterday is not a clear." [disabled] [ref=f4e2504]:
+                  - generic [ref=f4e2506]:
+                    - generic [ref=f4e2507]: Fluoxetine + codeine
+                    - generic [ref=f4e2508]: 5-week 2D6 TDI clock. Stopping Prozac yesterday is not a clear.
+                - button "Copy link" [ref=f4e2509] [cursor=pointer]
+                - status [ref=f4e2513]
+              - listitem [ref=f4e2514]:
+                - button "Itraconazole + simvastatin Strong 3A4 + P-gp. Dual-hit first-pass. Labeled hold." [disabled] [ref=f4e2515]:
+                  - generic [ref=f4e2517]:
+                    - generic [ref=f4e2518]: Itraconazole + simvastatin
+                    - generic [ref=f4e2519]: Strong 3A4 + P-gp. Dual-hit first-pass. Labeled hold.
+                - button "Copy link" [ref=f4e2520] [cursor=pointer]
+                - status [ref=f4e2524]
+              - listitem [ref=f4e2525]:
+                - button "Meropenem + valproate Wards tab — carbapenem crashes valproate. UGT, not stacked seizure-lowering." [disabled] [ref=f4e2526]:
+                  - generic [ref=f4e2528]:
+                    - generic [ref=f4e2529]: Meropenem + valproate
+                    - generic [ref=f4e2530]: Wards tab — carbapenem crashes valproate. UGT, not stacked seizure-lowering.
+                - button "Copy link" [ref=f4e2531] [cursor=pointer]
+                - status [ref=f4e2535]
+              - listitem [ref=f4e2536]:
+                - button "Vancomycin + Zosyn Wards tab — observational AKI vs vanco + cefepime. Oral vanco is different." [disabled] [ref=f4e2537]:
+                  - generic [ref=f4e2539]:
+                    - generic [ref=f4e2540]: Vancomycin + Zosyn
+                    - generic [ref=f4e2541]: Wards tab — observational AKI vs vanco + cefepime. Oral vanco is different.
+                - button "Copy link" [ref=f4e2542] [cursor=pointer]
+                - status [ref=f4e2546]
+              - listitem [ref=f4e2547]:
+                - button "Entresto + lisinopril Wards tab — ARNI × ACEI. 36-hour washout. Angioedema, not a potassium footnote." [disabled] [ref=f4e2548]:
+                  - generic [ref=f4e2550]:
+                    - generic [ref=f4e2551]: Entresto + lisinopril
+                    - generic [ref=f4e2552]: Wards tab — ARNI × ACEI. 36-hour washout. Angioedema, not a potassium footnote.
+                - button "Copy link" [ref=f4e2553] [cursor=pointer]
+                - status [ref=f4e2557]
+              - listitem [ref=f4e2558]:
+                - button "Capecitabine + warfarin Wards / INR — fluoropyrimidine raises INR. Recheck. Not a 2C9 bully on this map." [disabled] [ref=f4e2559]:
+                  - generic [ref=f4e2561]:
+                    - generic [ref=f4e2562]: Capecitabine + warfarin
+                    - generic [ref=f4e2563]: Wards / INR — fluoropyrimidine raises INR. Recheck. Not a 2C9 bully on this map.
+                - button "Copy link" [ref=f4e2564] [cursor=pointer]
+                - status [ref=f4e2568]
+              - listitem [ref=f4e2569]:
+                - button "Dicloxacillin + warfarin Wards / INR — 3A4 induction steals warfarin. INR falls. Recheck after stop too." [disabled] [ref=f4e2570]:
+                  - generic [ref=f4e2572]:
+                    - generic [ref=f4e2573]: Dicloxacillin + warfarin
+                    - generic [ref=f4e2574]: Wards / INR — 3A4 induction steals warfarin. INR falls. Recheck after stop too.
+                - button "Copy link" [ref=f4e2575] [cursor=pointer]
+                - status [ref=f4e2579]
+              - listitem [ref=f4e2580]:
+                - button "Letermovir + tacrolimus Wards / TDM — moderate 3A4 × sensitive NTI. CMV prophylaxis is not a free add-on." [disabled] [ref=f4e2581]:
+                  - generic [ref=f4e2583]:
+                    - generic [ref=f4e2584]: Letermovir + tacrolimus
+                    - generic [ref=f4e2585]: Wards / TDM — moderate 3A4 × sensitive NTI. CMV prophylaxis is not a free add-on.
+                - button "Copy link" [ref=f4e2586] [cursor=pointer]
+                - status [ref=f4e2590]
+              - listitem [ref=f4e2591]:
+                - button "Semaglutide + insulin aspart Wards tab — GLP-1 next to insulin is stacked hypo. Metformin stays quieter." [disabled] [ref=f4e2592]:
+                  - generic [ref=f4e2594]:
+                    - generic [ref=f4e2595]: Semaglutide + insulin aspart
+                    - generic [ref=f4e2596]: Wards tab — GLP-1 next to insulin is stacked hypo. Metformin stays quieter.
+                - button "Copy link" [ref=f4e2597] [cursor=pointer]
+                - status [ref=f4e2601]
+              - listitem [ref=f4e2602]:
+                - button "Simvastatin 40 + amiodarone Dose tab — labeled 20 mg cap. Type 40; the PI, not this desk, caps it." [disabled] [ref=f4e2603]:
+                  - generic [ref=f4e2605]:
+                    - generic [ref=f4e2606]: Simvastatin 40 + amiodarone
+                    - generic [ref=f4e2607]: Dose tab — labeled 20 mg cap. Type 40; the PI, not this desk, caps it.
+                - button "Copy link" [ref=f4e2608] [cursor=pointer]
+                - status [ref=f4e2612]
+              - listitem [ref=f4e2613]:
+                - button "Methotrexate weekly rail Dose tab — 7.5–25 mg once weekly. Daily RA methotrexate is the ISMP trap." [disabled] [ref=f4e2614]:
+                  - generic [ref=f4e2616]:
+                    - generic [ref=f4e2617]: Methotrexate weekly rail
+                    - generic [ref=f4e2618]: Dose tab — 7.5–25 mg once weekly. Daily RA methotrexate is the ISMP trap.
+                - button "Copy link" [ref=f4e2619] [cursor=pointer]
+                - status [ref=f4e2623]
+              - listitem [ref=f4e2624]:
+                - button "Epclusa + amiodarone Wards — boxed sofosbuvir bradycardia. Not additive nodal PD." [disabled] [ref=f4e2625]:
+                  - generic [ref=f4e2627]:
+                    - generic [ref=f4e2628]: Epclusa + amiodarone
+                    - generic [ref=f4e2629]: Wards — boxed sofosbuvir bradycardia. Not additive nodal PD.
+                - button "Copy link" [ref=f4e2630] [cursor=pointer]
+                - status [ref=f4e2634]
+              - listitem [ref=f4e2635]:
+                - button "Clozapine + lorazepam Wards — boxed respiratory collapse. Not generic CNS." [disabled] [ref=f4e2636]:
+                  - generic [ref=f4e2638]:
+                    - generic [ref=f4e2639]: Clozapine + lorazepam
+                    - generic [ref=f4e2640]: Wards — boxed respiratory collapse. Not generic CNS.
+                - button "Copy link" [ref=f4e2641] [cursor=pointer]
+                - status [ref=f4e2645]
+              - listitem [ref=f4e2646]:
+                - button "Aspirin + ibuprofen Wards — ibuprofen attenuates ASA. Lost cardioprotection, not two NSAIDs." [disabled] [ref=f4e2647]:
+                  - generic [ref=f4e2649]:
+                    - generic [ref=f4e2650]: Aspirin + ibuprofen
+                    - generic [ref=f4e2651]: Wards — ibuprofen attenuates ASA. Lost cardioprotection, not two NSAIDs.
+                - button "Copy link" [ref=f4e2652] [cursor=pointer]
+                - status [ref=f4e2656]
+              - listitem [ref=f4e2657]:
+                - button "Lamotrigine + valproate Wards — UGT blockade, SJS. Labeled starter kit. Not stacked GABA." [disabled] [ref=f4e2658]:
+                  - generic [ref=f4e2660]:
+                    - generic [ref=f4e2661]: Lamotrigine + valproate
+                    - generic [ref=f4e2662]: Wards — UGT blockade, SJS. Labeled starter kit. Not stacked GABA.
+                - button "Copy link" [ref=f4e2663] [cursor=pointer]
+                - status [ref=f4e2667]
+              - listitem [ref=f4e2668]:
+                - button "Lamotrigine + OCP Wards — EE induces UGT. Lamotrigine falls. Stop of the pill can spike." [disabled] [ref=f4e2669]:
+                  - generic [ref=f4e2671]:
+                    - generic [ref=f4e2672]: Lamotrigine + OCP
+                    - generic [ref=f4e2673]: Wards — EE induces UGT. Lamotrigine falls. Stop of the pill can spike.
+                - button "Copy link" [ref=f4e2674] [cursor=pointer]
+                - status [ref=f4e2678]
+              - listitem [ref=f4e2679]:
+                - button "Tamoxifen + paroxetine Wards / CYP — lost endoxifen. Switch the SSRI. CPIC, not more tamoxifen." [disabled] [ref=f4e2680]:
+                  - generic [ref=f4e2682]:
+                    - generic [ref=f4e2683]: Tamoxifen + paroxetine
+                    - generic [ref=f4e2684]: Wards / CYP — lost endoxifen. Switch the SSRI. CPIC, not more tamoxifen.
+                - button "Copy link" [ref=f4e2685] [cursor=pointer]
+                - status [ref=f4e2689]
+              - listitem [ref=f4e2690]:
+                - button "OCP + rifampin Wards — contraceptive failure. Backup, not a quieter pill." [disabled] [ref=f4e2691]:
+                  - generic [ref=f4e2693]:
+                    - generic [ref=f4e2694]: OCP + rifampin
+                    - generic [ref=f4e2695]: Wards — contraceptive failure. Backup, not a quieter pill.
+                - button "Copy link" [ref=f4e2696] [cursor=pointer]
+                - status [ref=f4e2700]
+              - listitem [ref=f4e2701]:
+                - button "Isotretinoin + doxycycline Wards — pseudotumor cerebri. iPLEDGE still applies." [disabled] [ref=f4e2702]:
+                  - generic [ref=f4e2704]:
+                    - generic [ref=f4e2705]: Isotretinoin + doxycycline
+                    - generic [ref=f4e2706]: Wards — pseudotumor cerebri. iPLEDGE still applies.
+                - button "Copy link" [ref=f4e2707] [cursor=pointer]
+                - status [ref=f4e2711]
+              - listitem [ref=f4e2712]:
+                - button "Ciprofloxacin + prednisone Wards — FQ boxed tendon. Prednisone is empty PD on purpose." [disabled] [ref=f4e2713]:
+                  - generic [ref=f4e2715]:
+                    - generic [ref=f4e2716]: Ciprofloxacin + prednisone
+                    - generic [ref=f4e2717]: Wards — FQ boxed tendon. Prednisone is empty PD on purpose.
+                - button "Copy link" [ref=f4e2718] [cursor=pointer]
+                - status [ref=f4e2722]
+              - listitem [ref=f4e2723]:
+                - button "Lisinopril + losartan Wards — dual RAAS. Not the Entresto 36-hour ACEI washout." [disabled] [ref=f4e2724]:
+                  - generic [ref=f4e2726]:
+                    - generic [ref=f4e2727]: Lisinopril + losartan
+                    - generic [ref=f4e2728]: Wards — dual RAAS. Not the Entresto 36-hour ACEI washout.
+                - button "Copy link" [ref=f4e2729] [cursor=pointer]
+                - status [ref=f4e2733]
+              - listitem [ref=f4e2734]:
+                - button "Omeprazole + rilpivirine Wards — PPI avoid-together. Gastric pH story, not CYP3A4." [disabled] [ref=f4e2735]:
+                  - generic [ref=f4e2737]:
+                    - generic [ref=f4e2738]: Omeprazole + rilpivirine
+                    - generic [ref=f4e2739]: Wards — PPI avoid-together. Gastric pH story, not CYP3A4.
+                - button "Copy link" [ref=f4e2740] [cursor=pointer]
+                - status [ref=f4e2744]
+              - listitem [ref=f4e2745]:
+                - button "Empagliflozin + furosemide Wards — volume / euglycemic DKA. A normal fingerstick does not clear ketones." [disabled] [ref=f4e2746]:
+                  - generic [ref=f4e2748]:
+                    - generic [ref=f4e2749]: Empagliflozin + furosemide
+                    - generic [ref=f4e2750]: Wards — volume / euglycemic DKA. A normal fingerstick does not clear ketones.
+                - button "Copy link" [ref=f4e2751] [cursor=pointer]
+                - status [ref=f4e2755]
+              - listitem [ref=f4e2756]:
+                - button "Fentanyl + xylazine + naloxone HR tab — naloxone reverses μ, not the α2. Stay. Do not use alone." [disabled] [ref=f4e2757]:
+                  - generic [ref=f4e2759]:
+                    - generic [ref=f4e2760]: Fentanyl + xylazine + naloxone
+                    - generic [ref=f4e2761]: HR tab — naloxone reverses μ, not the α2. Stay. Do not use alone.
+                - button "Copy link" [ref=f4e2762] [cursor=pointer]
+                - status [ref=f4e2766]
+              - listitem [ref=f4e2767]:
+                - button "MDMA on a hot night HR tab — sip, don't chug. Test the pill. PMA delayed onset is the deadly redose." [disabled] [ref=f4e2768]:
+                  - generic [ref=f4e2770]:
+                    - generic [ref=f4e2771]: MDMA on a hot night
+                    - generic [ref=f4e2772]: HR tab — sip, don't chug. Test the pill. PMA delayed onset is the deadly redose.
+                - button "Copy link" [ref=f4e2773] [cursor=pointer]
+                - status [ref=f4e2777]
+              - listitem [ref=f4e2778]:
+                - button "GHB + alcohol HR tab — steep curve, no reversal. Recovery position. Labeled avoid-together." [disabled] [ref=f4e2779]:
+                  - generic [ref=f4e2781]:
+                    - generic [ref=f4e2782]: GHB + alcohol
+                    - generic [ref=f4e2783]: HR tab — steep curve, no reversal. Recovery position. Labeled avoid-together.
+                - button "Copy link" [ref=f4e2784] [cursor=pointer]
+                - status [ref=f4e2788]
+              - listitem [ref=f4e2789]:
+                - button "25I-NBOMe sold as LSD HR tab — Ehrlich often quiet on NBOMe. Vasoconstriction, not a gentle blotter." [disabled] [ref=f4e2790]:
+                  - generic [ref=f4e2792]:
+                    - generic [ref=f4e2793]: 25I-NBOMe sold as LSD
+                    - generic [ref=f4e2794]: HR tab — Ehrlich often quiet on NBOMe. Vasoconstriction, not a gentle blotter.
+                - button "Copy link" [ref=f4e2795] [cursor=pointer]
+                - status [ref=f4e2799]
+              - listitem [ref=f4e2800]:
+                - button "Ketamine + alcohol HR tab — TripSit dangerous. Do not swim. Airway, not a k-hole milligram." [disabled] [ref=f4e2801]:
+                  - generic [ref=f4e2803]:
+                    - generic [ref=f4e2804]: Ketamine + alcohol
+                    - generic [ref=f4e2805]: HR tab — TripSit dangerous. Do not swim. Airway, not a k-hole milligram.
+                - button "Copy link" [ref=f4e2806] [cursor=pointer]
+                - status [ref=f4e2810]
+              - listitem [ref=f4e2811]:
+                - button "MDMA × Nardil — wiki Dangerous HR tab — TripSit Dangerous. Serotonin toxicity, not a blunted roll." [disabled] [ref=f4e2812]:
+                  - generic [ref=f4e2814]:
+                    - generic [ref=f4e2815]: MDMA × Nardil — wiki Dangerous
+                    - generic [ref=f4e2816]: HR tab — TripSit Dangerous. Serotonin toxicity, not a blunted roll.
+                - button "Copy link" [ref=f4e2817] [cursor=pointer]
+                - status [ref=f4e2821]
+              - listitem [ref=f4e2822]:
+                - button "Auvelity + phenelzine DXM/bupropion combo × irreversible MAOI — labeled serotonin crisis" [disabled] [ref=f4e2823]:
+                  - generic [ref=f4e2825]:
+                    - generic [ref=f4e2826]: Auvelity + phenelzine
+                    - generic [ref=f4e2827]: DXM/bupropion combo × irreversible MAOI — labeled serotonin crisis
+                - button "Copy link" [ref=f4e2828] [cursor=pointer]
+                - status [ref=f4e2832]
+              - listitem [ref=f4e2833]:
+                - button "Lybalvi + oxycodone Samidorphan precipitates withdrawal — μ antagonist on an antipsychotic" [disabled] [ref=f4e2834]:
+                  - generic [ref=f4e2836]:
+                    - generic [ref=f4e2837]: Lybalvi + oxycodone
+                    - generic [ref=f4e2838]: Samidorphan precipitates withdrawal — μ antagonist on an antipsychotic
+                - button "Copy link" [ref=f4e2839] [cursor=pointer]
+                - status [ref=f4e2843]
+              - listitem [ref=f4e2844]:
+                - button "Mavacamten + fluconazole Camzyos REMS — 2C19/3A4 victim; desk does not pick the milligram" [disabled] [ref=f4e2845]:
+                  - generic [ref=f4e2847]:
+                    - generic [ref=f4e2848]: Mavacamten + fluconazole
+                    - generic [ref=f4e2849]: Camzyos REMS — 2C19/3A4 victim; desk does not pick the milligram
+                - button "Copy link" [ref=f4e2850] [cursor=pointer]
+                - status [ref=f4e2854]
+              - listitem [ref=f4e2855]:
+                - button "Finerenone + clarithromycin Kerendia × strong 3A4 inhibitor — labeled hard stop" [disabled] [ref=f4e2856]:
+                  - generic [ref=f4e2858]:
+                    - generic [ref=f4e2859]: Finerenone + clarithromycin
+                    - generic [ref=f4e2860]: Kerendia × strong 3A4 inhibitor — labeled hard stop
+                - button "Copy link" [ref=f4e2861] [cursor=pointer]
+                - status [ref=f4e2865]
+              - listitem [ref=f4e2866]:
+                - button "Adagrasib + methadone Strong 3A4 inhibitor KRAS drug × QT opioid stack" [disabled] [ref=f4e2867]:
+                  - generic [ref=f4e2869]:
+                    - generic [ref=f4e2870]: Adagrasib + methadone
+                    - generic [ref=f4e2871]: Strong 3A4 inhibitor KRAS drug × QT opioid stack
+                - button "Copy link" [ref=f4e2872] [cursor=pointer]
+                - status [ref=f4e2876]
+              - listitem [ref=f4e2877]:
+                - button "Fezolinetant + fluvoxamine Veozah × strong 1A2 inhibitor — labeled avoid" [disabled] [ref=f4e2878]:
+                  - generic [ref=f4e2880]:
+                    - generic [ref=f4e2881]: Fezolinetant + fluvoxamine
+                    - generic [ref=f4e2882]: Veozah × strong 1A2 inhibitor — labeled avoid
+                - button "Copy link" [ref=f4e2883] [cursor=pointer]
+                - status [ref=f4e2887]
+              - listitem [ref=f4e2888]:
+                - button "Rimegepant + ritonavir Nurtec × strong 3A4 booster — gepant victim teaching" [disabled] [ref=f4e2889]:
+                  - generic [ref=f4e2891]:
+                    - generic [ref=f4e2892]: Rimegepant + ritonavir
+                    - generic [ref=f4e2893]: Nurtec × strong 3A4 booster — gepant victim teaching
+                - button "Copy link" [ref=f4e2894] [cursor=pointer]
+                - status [ref=f4e2898]
+              - listitem [ref=f4e2899]:
+                - button "Alfentanil + ritonavir Sensitive 3A4 opioid × strong booster — classic anesthesia teaching pair" [disabled] [ref=f4e2900]:
+                  - generic [ref=f4e2902]:
+                    - generic [ref=f4e2903]: Alfentanil + ritonavir
+                    - generic [ref=f4e2904]: Sensitive 3A4 opioid × strong booster — classic anesthesia teaching pair
+                - button "Copy link" [ref=f4e2905] [cursor=pointer]
+                - status [ref=f4e2909]
+              - listitem [ref=f4e2910]:
+                - button "Acrylfentanyl + bromazolam Illicit fentanyl analog × designer benzo — naloxone is μ-only" [disabled] [ref=f4e2911]:
+                  - generic [ref=f4e2913]:
+                    - generic [ref=f4e2914]: Acrylfentanyl + bromazolam
+                    - generic [ref=f4e2915]: Illicit fentanyl analog × designer benzo — naloxone is μ-only
+                - button "Copy link" [ref=f4e2916] [cursor=pointer]
+                - status [ref=f4e2920]
+              - listitem [ref=f4e2921]:
+                - button "O-DSMT + phenelzine Tramadol metabolite sold alone × MAOI — serotonin + opioid" [disabled] [ref=f4e2922]:
+                  - generic [ref=f4e2924]:
+                    - generic [ref=f4e2925]: O-DSMT + phenelzine
+                    - generic [ref=f4e2926]: Tramadol metabolite sold alone × MAOI — serotonin + opioid
+                - button "Copy link" [ref=f4e2927] [cursor=pointer]
+                - status [ref=f4e2931]
+              - listitem [ref=f4e2932]:
+                - button "MDPV + phenelzine Pyrovalerone bath salt × irreversible MAOI — pressor crisis" [disabled] [ref=f4e2933]:
+                  - generic [ref=f4e2935]:
+                    - generic [ref=f4e2936]: MDPV + phenelzine
+                    - generic [ref=f4e2937]: Pyrovalerone bath salt × irreversible MAOI — pressor crisis
+                - button "Copy link" [ref=f4e2938] [cursor=pointer]
+                - status [ref=f4e2942]
+              - listitem [ref=f4e2943]:
+                - button "2-FDCK + alprazolam Street ketamine analog × benzo — airway, not a free k-hole" [disabled] [ref=f4e2944]:
+                  - generic [ref=f4e2946]:
+                    - generic [ref=f4e2947]: 2-FDCK + alprazolam
+                    - generic [ref=f4e2948]: Street ketamine analog × benzo — airway, not a free k-hole
+                - button "Copy link" [ref=f4e2949] [cursor=pointer]
+                - status [ref=f4e2953]
+              - listitem [ref=f4e2954]:
+                - button "Suzetrigine + clarithromycin Non-opioid NaV1.8 analgesic × strong 3A4 inhibitor" [disabled] [ref=f4e2955]:
+                  - generic [ref=f4e2957]:
+                    - generic [ref=f4e2958]: Suzetrigine + clarithromycin
+                    - generic [ref=f4e2959]: Non-opioid NaV1.8 analgesic × strong 3A4 inhibitor
+                - button "Copy link" [ref=f4e2960] [cursor=pointer]
+                - status [ref=f4e2964]
+              - listitem [ref=f4e2965]:
+                - button "Colchicine + clarithromycin Sensitive CYP3A4 and P-gp substrate. Strong 3A4/P-gp inhibitors are contraindicated with colchicine when kidney or liver is impaired. The label still caps the dose when organs are fine. This desk does not calculate that cap. Not a milligram." [disabled] [ref=f4e2966]:
+                  - generic [ref=f4e2968]:
+                    - generic [ref=f4e2969]: Colchicine + clarithromycin
+                    - generic [ref=f4e2970]: Sensitive CYP3A4 and P-gp substrate. Strong 3A4/P-gp inhibitors are contraindicated with colchicine when kidney or liver is impaired. The label still caps the dose when organs are fine. This desk does not calculate that cap. Not a milligram.
+                - button "Copy link" [ref=f4e2971] [cursor=pointer]
+                - status [ref=f4e2975]
+              - listitem [ref=f4e2976]:
+                - button "Colchicine + ritonavir Sensitive CYP3A4 and P-gp substrate. Ritonavir is a strong 3A4 and P-gp inhibitor. The pair is contraindicated when kidney or liver is impaired, and the label still caps the dose when organs are fine. This desk does not calculate that cap. Not a milligram." [disabled] [ref=f4e2977]:
+                  - generic [ref=f4e2979]:
+                    - generic [ref=f4e2980]: Colchicine + ritonavir
+                    - generic [ref=f4e2981]: Sensitive CYP3A4 and P-gp substrate. Ritonavir is a strong 3A4 and P-gp inhibitor. The pair is contraindicated when kidney or liver is impaired, and the label still caps the dose when organs are fine. This desk does not calculate that cap. Not a milligram.
+                - button "Copy link" [ref=f4e2982] [cursor=pointer]
+                - status [ref=f4e2986]
+              - listitem [ref=f4e2987]:
+                - button "Sildenafil + nitroglycerin PDE5 plus a nitrate. Catastrophic hypotension. Not a protocol." [disabled] [ref=f4e2988]:
+                  - generic [ref=f4e2990]:
+                    - generic [ref=f4e2991]: Sildenafil + nitroglycerin
+                    - generic [ref=f4e2992]: PDE5 plus a nitrate. Catastrophic hypotension. Not a protocol.
+                - button "Copy link" [ref=f4e2993] [cursor=pointer]
+                - status [ref=f4e2997]
+              - listitem [ref=f4e2998]:
+                - button "Metonitazene + bromazolam Nitazene-class opioid × designer benzo — same FDA boxed-warning airway risk as any opioid-benzo pair" [disabled] [ref=f4e2999]:
+                  - generic [ref=f4e3001]:
+                    - generic [ref=f4e3002]: Metonitazene + bromazolam
+                    - generic [ref=f4e3003]: Nitazene-class opioid × designer benzo — same FDA boxed-warning airway risk as any opioid-benzo pair
+                - button "Copy link" [ref=f4e3004] [cursor=pointer]
+                - status [ref=f4e3008]
+              - listitem [ref=f4e3009]:
+                - button "Protonitazene + naltrexone A nitazene full agonist meets an antagonist already on the receptor — precipitated withdrawal or blocked effect, not a stronger high" [disabled] [ref=f4e3010]:
+                  - generic [ref=f4e3012]:
+                    - generic [ref=f4e3013]: Protonitazene + naltrexone
+                    - generic [ref=f4e3014]: A nitazene full agonist meets an antagonist already on the receptor — precipitated withdrawal or blocked effect, not a stronger high
+                - button "Copy link" [ref=f4e3015] [cursor=pointer]
+                - status [ref=f4e3019]
+              - listitem [ref=f4e3020]:
+                - button "Methylene blue + cocaine An MAOI-class antidote next to a stimulant — hypertensive crisis, not just a serotonin-syndrome story" [disabled] [ref=f4e3021]:
+                  - generic [ref=f4e3023]:
+                    - generic [ref=f4e3024]: Methylene blue + cocaine
+                    - generic [ref=f4e3025]: An MAOI-class antidote next to a stimulant — hypertensive crisis, not just a serotonin-syndrome story
+                - button "Copy link" [ref=f4e3026] [cursor=pointer]
+                - status [ref=f4e3030]
+              - listitem [ref=f4e3031]:
+                - button "Phenibut + alprazolam Two GABA-ergic sedatives with no CYP role between them — additive sedation an interaction checker keyed to CYP alone can miss" [disabled] [ref=f4e3032]:
+                  - generic [ref=f4e3034]:
+                    - generic [ref=f4e3035]: Phenibut + alprazolam
+                    - generic [ref=f4e3036]: Two GABA-ergic sedatives with no CYP role between them — additive sedation an interaction checker keyed to CYP alone can miss
+                - button "Copy link" [ref=f4e3037] [cursor=pointer]
+                - status [ref=f4e3041]
+              - listitem [ref=f4e3042]:
+                - button "Tirzepatide + insulin glargine GLP-1/GIP agonist next to basal insulin — stacked hypoglycemia, not a tirzepatide-alone risk" [disabled] [ref=f4e3043]:
+                  - generic [ref=f4e3045]:
+                    - generic [ref=f4e3046]: Tirzepatide + insulin glargine
+                    - generic [ref=f4e3047]: GLP-1/GIP agonist next to basal insulin — stacked hypoglycemia, not a tirzepatide-alone risk
+                - button "Copy link" [ref=f4e3048] [cursor=pointer]
+                - status [ref=f4e3052]
+              - listitem [ref=f4e3053]:
+                - button "Suzetrigine + fluconazole A moderate 3A4 inhibitor, not a strong one — a smaller exposure rise than the clarithromycin pairing, still worth a look" [disabled] [ref=f4e3054]:
+                  - generic [ref=f4e3056]:
+                    - generic [ref=f4e3057]: Suzetrigine + fluconazole
+                    - generic [ref=f4e3058]: A moderate 3A4 inhibitor, not a strong one — a smaller exposure rise than the clarithromycin pairing, still worth a look
+                - button "Copy link" [ref=f4e3059] [cursor=pointer]
+                - status [ref=f4e3063]
+              - listitem [ref=f4e3064]:
+                - button "Tapentadol + buprenorphine A full-agonist analgesic layered onto stable buprenorphine — occupancy conflict, not better pain control" [disabled] [ref=f4e3065]:
+                  - generic [ref=f4e3067]:
+                    - generic [ref=f4e3068]: Tapentadol + buprenorphine
+                    - generic [ref=f4e3069]: A full-agonist analgesic layered onto stable buprenorphine — occupancy conflict, not better pain control
+                - button "Copy link" [ref=f4e3070] [cursor=pointer]
+                - status [ref=f4e3074]
+      - complementary [ref=f4e3075]:
+        - generic [ref=f4e3076]:
+          - heading "Desk" [level=2] [ref=f4e3077]
+          - generic [ref=f4e3078]:
+            - generic [ref=f4e3079]:
+              - term [ref=f4e3080]: Formulary
+              - definition [ref=f4e3081]: "1911"
+            - generic [ref=f4e3082]:
+              - term [ref=f4e3083]: On desk
+              - definition [ref=f4e3084]: 0/5
+            - generic [ref=f4e3085]:
+              - term [ref=f4e3086]: Findings
+              - definition [ref=f4e3087]: "0"
+            - generic [ref=f4e3088]:
+              - term [ref=f4e3089]: License
+              - definition [ref=f4e3090]: Free
+          - generic [ref=f4e3091]: Ceiling — · Founding license unlocks host factors / atlas / export
+        - generic [ref=f4e3092]:
+          - heading "How ketamine goes in Ketamine route" [level=2] [ref=f4e3093]:
+            - generic [ref=f4e3094]: How ketamine goes in
+            - generic [ref=f4e3095]: Ketamine route
+          - paragraph [ref=f4e3096]: Free on this desk. Ketamine by mouth with grapefruit is the teaching demo for the gut first pass. The other host factors come with founding.
+          - group "How ketamine goes in Ketamine route" [ref=f4e3097]:
+            - button "Shot or drip" [pressed] [ref=f4e3098] [cursor=pointer]
+            - button "Nose spray" [ref=f4e3099] [cursor=pointer]
+            - button "By mouth" [ref=f4e3100] [cursor=pointer]
+          - paragraph [ref=f4e3101]: IV / IM mostly skips gut first-pass; hepatic CYP2B6 still clears it.
+        - generic [ref=f4e3102]:
+          - generic [aria-hidden]:
+            - generic:
+              - generic:
+                - heading [level=2]:
+                  - generic: About this person
+                  - generic: Host factors
+              - note:
+                - paragraph: How this works
+                - paragraph: The same drugs can act differently in different people. Pick only what you already know about this person (a metabolizer status from their chart, smoking, drinking, age, kidneys, pregnancy) and the desk re-reads every pair with that in mind.
+                - paragraph: A slow built-in enzyme acts a lot like a drug that blocks that enzyme. Smoking speeds up the 1A2 enzyme. Heavy long-term drinking speeds up the 2E1 enzyme. Older age, weaker kidneys, and pregnancy open extra teaching cards (Beers list, kidney, and pregnancy notes).
+              - paragraph: "Everything is set to typical. A typical person, or a quiet result, is not a green light: real people vary, and genetics are rarely known at the desk. Product labeling and the clinician govern."
+              - generic:
+                - generic:
+                  - generic: Built-in enzyme speed
+                  - generic: Metabolizer phenotype · CPIC paraphrase
+                - paragraph: Pick a metabolizer status you already know. This is a teaching summary of CPIC guidance, not a genetic test result.
+              - list:
+                - listitem:
+                  - generic:
+                    - generic:
+                      - generic: CYP2D6
+                      - button: Atlas
+                    - generic: DXM, MDMA, codeine, atomoxetine
+                  - group:
+                    - button:
+                      - generic: Slow
+                      - generic: PM
+                    - button:
+                      - generic: A bit slow
+                      - generic: IM
+                    - button [pressed]:
+                      - generic: Typical
+                      - generic: NM
+                    - button:
+                      - generic: Fast
+                      - generic: UM
+                - listitem:
+                  - generic:
+                    - generic:
+                      - generic: CYP2C19
+                      - button: Atlas
+                    - generic: Clobazam, diazepam, citalopram
+                  - group:
+                    - button:
+                      - generic: Slow
+                      - generic: PM
+                    - button:
+                      - generic: A bit slow
+                      - generic: IM
+                    - button [pressed]:
+                      - generic: Typical
+                      - generic: NM
+                    - button:
+                      - generic: Fast
+                      - generic: UM
+                - listitem:
+                  - generic:
+                    - generic:
+                      - generic: CYP2C9
+                      - button: Atlas
+                    - generic: Warfarin, phenytoin, edible THC
+                  - group:
+                    - button:
+                      - generic: Slow
+                      - generic: PM
+                    - button:
+                      - generic: A bit slow
+                      - generic: IM
+                    - button [pressed]:
+                      - generic: Typical
+                      - generic: NM
+                    - button:
+                      - generic: Fast
+                      - generic: UM
+                - listitem:
+                  - generic:
+                    - generic:
+                      - generic: CYP2B6
+                      - button: Atlas
+                    - generic: Ketamine, bupropion, methadone
+                  - group:
+                    - button:
+                      - generic: Slow
+                      - generic: PM
+                    - button:
+                      - generic: A bit slow
+                      - generic: IM
+                    - button [pressed]:
+                      - generic: Typical
+                      - generic: NM
+                    - button:
+                      - generic: Fast
+                      - generic: UM
+              - generic:
+                - generic:
+                  - generic: Smoking
+                  - generic: Tobacco smoke · CYP1A2 inducer
+                - group:
+                  - button [pressed]: Doesn't smoke
+                  - button: Smokes daily
+                - paragraph: Unlocking this teaches how smoke speeds CYP1A2 clearance — the classic clozapine / olanzapine lesson.
+              - generic:
+                - generic:
+                  - generic: Drinking
+                  - generic: Alcohol pattern · CYP2E1
+                - group:
+                  - button [pressed]: None
+                  - button: Drinking today
+                  - button: Heavy, long-term
+                - paragraph: Unlocking this teaches acute sedation stacking and chronic CYP2E1 induction — two different alcohol stories.
+              - generic:
+                - generic:
+                  - generic: How cannabis is taken
+                  - generic: Cannabis route
+                - group:
+                  - button [pressed]: Smoked
+                  - button: Edible
+                - paragraph: Smoked THC mostly skips the edible first-pass that makes 11-OH-THC.
+              - generic:
+                - generic:
+                  - generic: Age
+                  - generic: Age band · Beers list
+                - group:
+                  - button [pressed]: Adult
+                  - button: Older adult
+              - generic:
+                - generic:
+                  - generic: Kidneys
+                  - generic: Renal function · GFR
+                - group:
+                  - button [pressed]: Usual
+                  - button: Filter slower
+              - generic:
+                - generic:
+                  - generic: Pregnancy or breastfeeding
+                  - generic: Pregnancy / lactation
+                - group:
+                  - button [pressed]: "No"
+                  - button: Pregnant
+                  - button: Breastfeeding
+              - paragraph: Teaching only. The enzyme speed rows are a plain summary of CPIC guidance for a status you already know. They are not a genetic test result, not a gene report reading, and not a reason to change any medicine.
+          - generic [ref=f4e3103]:
+            - generic [ref=f4e3107]:
+              - paragraph [ref=f4e3108]: Host factors need founding
+              - paragraph [ref=f4e3109]: Teaching cards for metabolizer status (phenotype), smoking, alcohol pattern, cannabis route, age, kidney function, and pregnancy sit behind founding. The ketamine route stays free for the oral teaching demo.
+              - paragraph [ref=f4e3110]: "Free desk: up to five drugs, no card needed. Founding is $79 once."
+              - paragraph [ref=f4e3111]:
+                - text: Pay, get your key, Redeem
+                - generic [ref=f4e3112]: · Pay $79 once, Get your key, Redeem on this desk
+              - paragraph [ref=f4e3113]: Founding unlocks host factors, enzyme atlas, metabolite maps, full report, and JSON/CSV export — $79 once. Educational model; not FDA-cleared.
+            - generic [ref=f4e3114]:
+              - button "Founding · $79 once" [ref=f4e3115] [cursor=pointer]
+              - button "Plans" [ref=f4e3116] [cursor=pointer]
+              - button "Try 1 day free" [ref=f4e3117] [cursor=pointer]
+            - paragraph [ref=f4e3118]: Pay, get your key, Redeem · Venmo @kaleblovingier · Cash App $kaleblovingier7 · PayPal FirstPassInteractions@gmail.com · card when Stripe is live
+        - generic [ref=f4e3119]:
+          - heading "How it scores" [level=2] [ref=f4e3120]
+          - list [ref=f4e3121]:
+            - listitem [ref=f4e3122]: PK. Strong inhibitors of sensitive or narrow-index substrates grade contraindicated; induction of clearance is loss of efficacy.
+            - listitem [ref=f4e3123]: Curve. Grey is this route, normal metabolizer, no blockers. Teal is this desk. q8h / q12h / q24h show how doses stack (build-up / Rac). Overlay IV vs oral on first-pass victims. Not a plasma level. Five-drug exposure (AUCR) stays free.
+            - listitem [ref=f4e3124]: 2D6. Blockade of codeine or tamoxifen is lost activation; of DXM or MDMA it is stacked parent plus serotonin.
+            - listitem [ref=f4e3125]: Phenotype. Flip CYP2D6 / 2C19 / 2C9 / 2B6 to poor or ultrarapid — a poor metabolizer scores like a strong inhibitor of that enzyme. Poor 2C9 metabolizers make warfarin and edible THC hotter.
+            - listitem [ref=f4e3126]: Host. Daily smoke induces CYP1A2. Chronic alcohol induces CYP2E1 (NAPQI from acetaminophen). Oral ketamine and edible THC are first-pass victims; IV and smoked mostly skip it.
+            - listitem [ref=f4e3127]: Food. Grapefruit knocks out intestinal 3A4. Tyramine plus an MAOI is a pressor crisis. Piperine and pomegranate are quieter 3A4 hits. Licorice drops potassium. Fat meals raise oral THC/CBD. Salt and urine pH move lithium and amphetamine.
+            - listitem [ref=f4e3128]: Supplement. Red yeast rice is lovastatin. Berberine is a 3A4/P-gp bully plus a glucose drop. SAM-e and 5-HTP are serotonergic. Vitamin K dumps INR; nattokinase and fish oil bleed. Calcium/iron chelate Cipro and Synthroid. Charcoal and psyllium bind the morning dose. Niacin plus a statin is muscle. Search supplement / vitamin / otc.
+            - listitem [ref=f4e3129]: "Street. Cocaine plus ethanol is cocaethylene. Stimulant plus opioid is a speedball — the stimulant masks apnea. Dirty 30s are pressed fentanyl ± xylazine, not oxycodone; naloxone will not reverse the α2. Percocet is oxy + APAP. HR tab: never use alone, recovery position, test-strip limits, GHB steep curve, MDMA heat/water, TripSit combo ratings, live PsychonautWiki intros with milligrams stripped. A wiki is not a label — independently review. Not a cooking guide."
+            - listitem [ref=f4e3130]: MAT. Put methadone or a film on the desk, then tap today's extra on the window tray. Buprenorphine on a fentanyl load is precipitated withdrawal, not stacked milligrams. Methadone lives on 3A4/2B6 — inducers look like a stolen dose; azoles, Vistaril, and Zofran are the QT traps. Paxlovid dumps methadone and raises fentanyl; cobicistat (Tybost) is the opposite arrow on methadone. Gabapentinoids are not free extras on an opioid airway. Lofexidine is α2 — naloxone will not reverse it. Epclusa next to methadone should stay quiet; rifampin should not. The window briefing is watch / counsel / hold — copy the huddle onto a note. Not a protocol.
+            - listitem [ref=f4e3131]: CYP clock. Strong / moderate / weak are FDA fold-change grades (Huang 2007 / 2020 guidance), not vibes. Mechanism-based inhibitors (clarithromycin, grapefruit, ritonavir, paroxetine, fluoxetine) destroy the enzyme — stopping yesterday does not restore it. Inducers take a week to land and two weeks to leave; the stop is rebound toxicity. Open the CYP tab. Plan the stop on the start day. Not a milligram.
+            - listitem [ref=f4e3132]: Clinic. Allopurinol × azathioprine is xanthine oxidase, not CYP — pancytopenia. Nitrates × PDE5 are labeled hypotension. Omeprazole blunts clopidogrel activation (2C19 prodrug); pantoprazole is the quieter switch. Oral budesonide and swallowed fluticasone are gut 3A4 first-pass victims — azoles and ritonavir make a 'local' steroid systemic. Terbinafine is a strong 2D6 inhibitor, not an azole. Ozempic next to a sulfonylurea is hypoglycemia; next to metformin it should stay quieter. Search clinic / primary / ozempic / imuran.
+            - listitem [ref=f4e3133]: Host clinic. Flip geriatric for Beers 2023. CKD scores renally cleared NTI drugs and NSAIDs. Pregnant flags ACEI/ARB, warfarin, valproate, MTX, mycophenolate. Teaching notes, not a label. Search beers / pregnant.
+            - listitem [ref=f4e3134]: Sources. DrugBank accession ids (CC0 vocabulary) for lookup; target labels are FirstPass summaries. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching row highlights. The receptor sketch (spectrum, occupancy, side effects from those receptors) is in original language, not a quotation of a textbook. PubMed is a curated PMID shelf plus a live NCBI search for the pair on the desk. Search pgx / stahl / drugbank / pubmed.
+        - generic [ref=f4e3135]:
+          - paragraph [ref=f4e3136]: About this desk
+          - paragraph [ref=f4e3137]: Built for learning and clinical review — not a personal treatment guide. FirstPass 1.79.0 is an educational clinical decision-support aid for licensed healthcare professionals and supervised health-professions students. This software has not been cleared or approved by the U.S. Food and Drug Administration. Display of FDA-label text does not make FirstPass an FDA-cleared device. It can miss risks; an empty result is not proof that a combination is safe. It does not identify product contents, diagnose, or tell anyone what to start, stop, or change. For care decisions, consult a qualified clinician and current FDA-approved labeling. Street-supply entries are teaching examples, not product identification.
+          - paragraph [ref=f4e3138]:
+            - text: Something missing or wrong?
+            - link "Send feedback" [ref=f4e3139] [cursor=pointer]:
+              - /url: mailto:FirstPassInteractions@gmail.com?subject=FirstPass%20desk%20feedback&body=What%20were%20you%20trying%20to%20do%3F%0A%0A%0AWhat%20was%20missing%2C%20confusing%2C%20or%20wrong%3F%0A%0A%0AWho%20are%20you%20%28student%2C%20clinic%2C%20pharmacy%2C%20other%29%3F%20Optional%3A%0A%0A%0A---%0APlease%20do%20not%20include%20patient%20names%20or%20other%20identifying%20health%20information.%0AFirstPass%20is%20educational%20only%20and%20not%20FDA-cleared.
+            - text: — opens your own email, nothing is tracked. Please leave out patient information.
+  - contentinfo [ref=f4e3140]:
+    - generic [ref=f4e3141]:
+      - generic [ref=f4e3142]:
+        - paragraph [ref=f4e3143]: Pay & write
+        - paragraph [ref=f4e3144]: Kaleb Lovingier
+        - list [ref=f4e3145]:
+          - listitem [ref=f4e3146]:
+            - link "Venmo @kaleblovingier" [ref=f4e3147] [cursor=pointer]:
+              - /url: https://venmo.com/u/kaleblovingier
+            - text: · Founding $79 one-time license
+          - listitem [ref=f4e3148]:
+            - link "Cash App $kaleblovingier7" [ref=f4e3149] [cursor=pointer]:
+              - /url: https://cash.app/$kaleblovingier7
+          - listitem [ref=f4e3150]:
+            - link "PayPal FirstPassInteractions@gmail.com" [ref=f4e3151] [cursor=pointer]:
+              - /url: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=FirstPassInteractions%40gmail.com&item_name=FirstPass%20founding&amount=79&currency_code=USD
+          - listitem [ref=f4e3152]:
+            - link "FirstPassInteractions@gmail.com" [ref=f4e3153] [cursor=pointer]:
+              - /url: mailto:FirstPassInteractions@gmail.com
+          - listitem [ref=f4e3154]:
+            - link "360-707-8923" [ref=f4e3155] [cursor=pointer]:
+              - /url: tel:+13607078923
+          - listitem [ref=f4e3156]: "@badbird · @kaleblovingier"
+      - generic [ref=f4e3157]:
+        - button "Struggling with substance use? Find help near you" [ref=f4e3158] [cursor=pointer]
+        - paragraph [ref=f4e3159]: FirstPass 1.79.0. FirstPass 1.79.0 · Not FDA-cleared · Confirm against the FDA-approved Prescribing Information · Labeled ranges are not a prescription · Independent review required.
+        - paragraph [ref=f4e3160]:
+          - link "Privacy" [ref=f4e3161] [cursor=pointer]:
+            - /url: /privacy
+          - text: ·
+          - link "Terms" [ref=f4e3162] [cursor=pointer]:
+            - /url: /terms
+          - text: ·
+          - link "Cookies" [ref=f4e3163] [cursor=pointer]:
+            - /url: /cookies
+          - text: ·
+          - link "Practice" [ref=f4e3164] [cursor=pointer]:
+            - /url: /practice
+        - paragraph [ref=f4e3165]: Drug and product names are trademarks of their owners and are used only to identify the products.

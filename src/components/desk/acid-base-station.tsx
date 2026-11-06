@@ -246,7 +246,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
             )}
             {hypo.isHighRiskForOds && hypo.hyponatremiaSeverity !== "normonatremic" && (
               <Badge tone="danger" className="font-mono uppercase text-[10px]">
-                ODS High-Risk (Ceiling 6 mEq/24h)
+                ODS High-Risk (Ceiling 6 mEq/L in 24h)
               </Badge>
             )}
             <Badge tone="accent" className="font-mono uppercase text-[10px]">
@@ -298,7 +298,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
           )}
         >
           <Zap className="h-3.5 w-3.5" />
-          Emergency Protocols (3% NaCl &amp; DDAVP)
+          Rescue References (3% NaCl &amp; DDAVP)
         </button>
         <button
           type="button"
@@ -364,7 +364,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
                   <div className="space-y-1">
                     <span className="font-bold">{alert.title}</span>
                     <p className="text-[11px] opacity-90">{alert.rationale}</p>
-                    <p className="text-[11px] font-semibold opacity-95">Action Guidance: {alert.actionGuidance}</p>
+                    <p className="text-[11px] font-semibold opacity-95">Reference note: {alert.actionGuidance}</p>
                   </div>
                 </div>
               ))}
@@ -697,7 +697,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
 
             {targetExceedsCeiling && (
               <div className="p-2 rounded bg-danger text-bg text-[11px] font-bold">
-                DANGER: Correcting serum sodium faster than 8 mEq/L in 24 hours (or 6 mEq/L in high risk) risks irreversible central pontine myelinolysis, pseudobulbar palsy, quadriplegia, and locked-in syndrome. Immediately lower target or prepare DDAVP clamp!
+                Above the published correction limit: correcting serum sodium faster than 8 mEq/L in 24 hours (or 6 mEq/L in high risk) risks irreversible central pontine myelinolysis, pseudobulbar palsy, quadriplegia, and locked-in syndrome. Published approaches lower the target or use a DDAVP clamp.
               </div>
             )}
           </div>
@@ -961,7 +961,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
                   <Flame className="h-4 w-4 text-danger" />
                   <span className="font-semibold text-fg text-sm">{HYPERTONIC_SALINE_RESCUE_PROTOCOL.title}</span>
                 </div>
-                <Badge tone="danger">EMERGENCY RESCUE</Badge>
+                <Badge tone="danger">RESCUE REFERENCE</Badge>
               </div>
 
               <div className="p-2.5 rounded bg-surface-sunken border border-border text-[11px] space-y-1">
@@ -1017,7 +1017,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <div className="p-2.5 rounded bg-danger-soft border border-danger text-[11px] space-y-1.5 text-danger">
                 <div className="flex items-center justify-between">
                   <span className="font-bold">{RELOWERING_PROTOCOL.title}</span>
-                  <span className="font-mono text-[10px]">TRIGGER: &gt; 8 mEq/24h</span>
+                  <span className="font-mono text-[10px]">TRIGGER: &gt; 8 mEq/L in 24h</span>
                 </div>
                 <p className="text-[10px] opacity-90">{RELOWERING_PROTOCOL.neuroprotectiveRationale}</p>
                 <ul className="list-disc list-inside space-y-0.5 text-[10px] font-medium pt-1">

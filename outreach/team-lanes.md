@@ -2,7 +2,7 @@
 
 ## Canon (do not drift)
 - Free core: up to **five** drugs on the desk
-- Founding license: **$79 once** (lifetime)
+- Founding license: **$79 once**, for as long as FirstPass offers the desk (the `/terms` meaning of "lifetime"; never promise more)
 - Educational interaction checker — **not FDA-cleared**; empty ≠ safe; PI / clinician govern
 - Intended users: licensed healthcare professionals and supervised students (see `WHO_FOR`). No public or patient venues.
 

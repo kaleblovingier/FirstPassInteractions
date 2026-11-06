@@ -92,7 +92,7 @@ export function QtStation({ ids, host }: QtStationProps) {
           <div className="flex items-center gap-2">
             <Activity className="size-5 text-accent" />
             <h3 className="font-serif text-lg font-medium text-fg">
-              Cardiac QTc Risk & Torsades de Pointes (TdP) Emergency Station
+              Cardiac QTc Risk & Torsades de Pointes (TdP) Reference Station
             </h3>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -398,7 +398,7 @@ export function QtStation({ ids, host }: QtStationProps) {
                 </div>
                 <p className="mt-1 text-muted">{multiQtc.rateTrap.explanation}</p>
                 <p className="mt-1.5 font-medium text-fg">
-                  Clinical Action: {multiQtc.rateTrap.recommendation}
+                  Reference note: {multiQtc.rateTrap.recommendation}
                 </p>
               </div>
             )}
@@ -453,7 +453,7 @@ export function QtStation({ ids, host }: QtStationProps) {
 
           <div className="rounded-lg border border-border bg-bg-sunken p-3">
             <span className="font-mono text-[10px] uppercase tracking-wider text-muted">
-              Telemetry Directive
+              Telemetry Reference
             </span>
             <div className="mt-1 font-serif text-base font-semibold text-fg">
               {tisdaleResult.telemetryRequirement}
@@ -543,7 +543,7 @@ export function QtStation({ ids, host }: QtStationProps) {
           <div className="flex items-center gap-2">
             <Zap className="size-4 text-danger" />
             <h4 className="font-serif text-base font-semibold text-fg">
-              3. Acute Torsades de Pointes (TdP) Emergency Resuscitation Nomogram
+              3. Acute Torsades de Pointes (TdP) Resuscitation Reference (Published Nomogram)
             </h4>
           </div>
 
@@ -652,7 +652,7 @@ export function QtStation({ ids, host }: QtStationProps) {
         <div className="mt-4 rounded-lg border border-danger/40 bg-danger-soft/20 p-3 text-xs">
           <div className="flex items-center gap-1.5 font-semibold text-danger">
             <ShieldAlert className="size-4" />
-            <span>Antiarrhythmic Blacklist in Drug-Induced TdP (DO NOT ADMINISTER):</span>
+            <span>Antiarrhythmics Avoided in Drug-Induced TdP (Published Guidance):</span>
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {nomogram.antiarrhythmicAvoidanceList.map((item, idx) => (

@@ -5,6 +5,7 @@
  */
 
 import type { Drug, Enzyme, EnzymeRole, PdFlag, Strength, SubstrateSensitivity } from "./types";
+import { MARKET_STATUS } from "./catalog-label-names";
 
 type Row = [string, string, string[], string, string, PdFlag[], string, string[]];
 
@@ -33,7 +34,8 @@ export function enz(s: string): EnzymeRole[] {
 
 function row(r: Row): Drug {
   const [id, name, brands, cls, e, pd, toxicityHint, aliases] = r;
-  return { id, name, brands, cls, aliases, enzymes: enz(e), pd, toxicityHint, kind: "drug" };
+  const note = MARKET_STATUS[id];
+  return { id, name, brands, cls, aliases, enzymes: enz(e), pd, toxicityHint, kind: "drug", ...(note ? { note } : {}) };
 }
 
 const ROWS: Row[] = [
@@ -46,7 +48,7 @@ const ROWS: Row[] = [
   ["meropenem", "Meropenem", ["Merrem"], "Carbapenem", "", ["seizure-lowering"], "Lowers valproate. Seizure threshold.", []],
   ["ertapenem", "Ertapenem", ["Invanz"], "Carbapenem", "", ["seizure-lowering"], "Lowers valproate", []],
   ["imipenem-cilastatin", "Imipenem–cilastatin", ["Primaxin"], "Carbapenem", "", ["seizure-lowering"], "Seizure risk; valproate fall", ["primaxin"]],
-  ["vancomycin", "Vancomycin", ["Vancocin"], "Glycopeptide", "", ["nephrotoxic"], "Nephrotoxicity, infusion reaction", ["vanco"]],
+  ["vancomycin", "Vancomycin", ["Vancocin"], "Glycopeptide", "", ["nephrotoxic"], "Nephrotoxicity, infusion reaction", ["vanco", "vanc"]],
   ["daptomycin", "Daptomycin", ["Cubicin"], "Lipopeptide antibiotic", "", [], "CK rise, eosinophilic pneumonia", []],
   ["clindamycin", "Clindamycin", ["Cleocin"], "Lincosamide", "", [], "C. difficile", ["cleocin"]],
   ["nitrofurantoin", "Nitrofurantoin", ["Macrobid", "Macrodantin"], "Nitrofuran", "", ["hepatotoxic"], "Pulmonary toxicity, neuropathy", ["macrobid"]],
@@ -639,7 +641,7 @@ const ROWS: Row[] = [
   ["tildrakizumab", "Tildrakizumab", ["Ilumya"], "IBD biologic / small molecule", "", ["immunosuppressant"], "Infection, malignancy; JAK boxed MACE/clot", []],
   ["etrasimod", "Etrasimod", ["Velsipity"], "IBD biologic / small molecule", "", ["immunosuppressant"], "Infection, malignancy; JAK boxed MACE/clot", []],
   ["ozanimod-uc", "Ozanimod UC", ["Zeposia"], "IBD biologic / small molecule", "", ["immunosuppressant"], "Infection, malignancy; JAK boxed MACE/clot", []],
-  ["polyethylene-glycol-3350", "Polyethylene glycol 3350", ["MiraLAX"], "Laxative / secretagogue / PAMORA", "", [], "Electrolytes; PAMORAs can precipitate if BBB is leaky", ["miralax", "peg-3350"]],
+  ["polyethylene-glycol-3350", "Polyethylene glycol 3350", ["MiraLAX"], "Laxative / secretagogue / PAMORA", "", [], "Electrolytes; PAMORAs can precipitate if BBB is leaky", ["miralax", "peg-3350", "polyethylene glycol"]],
   ["lactulose", "Lactulose", ["Enulose", "Kristalose"], "Laxative / secretagogue / PAMORA", "", [], "Electrolytes; PAMORAs can precipitate if BBB is leaky", []],
   ["lubiprostone", "Lubiprostone", ["Amitiza"], "Laxative / secretagogue / PAMORA", "", [], "Electrolytes; PAMORAs can precipitate if BBB is leaky", []],
   ["linaclotide", "Linaclotide", ["Linzess"], "Laxative / secretagogue / PAMORA", "", [], "Electrolytes; PAMORAs can precipitate if BBB is leaky", []],
@@ -1176,7 +1178,7 @@ const ROWS: Row[] = [
   ["glucagon", "Glucagon", ["GlucaGen", "Baqsimi", "Gvoke"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
   ["calcium-gluconate", "Calcium gluconate", [], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
   ["calcium-chloride", "Calcium chloride", [], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
-  ["sodium-bicarbonate", "Sodium bicarbonate", [], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
+  ["sodium-bicarbonate", "Sodium bicarbonate", [], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", ["bicarb"]],
   ["lipid-emulsion", "Lipid emulsion", ["Intralipid"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", ["ile"]],
   ["methylene-blue", "Methylene blue", ["ProvayBlue"], "Antidote / tox", "", ["maoi", "serotonergic"], "Not a milligram. The labeled reversal.", []],
   ["hydroxocobalamin-cyanide", "Hydroxocobalamin cyanide", ["Cyanokit"], "Antidote / tox", "", [], "Not a milligram. The labeled reversal.", []],
@@ -1307,7 +1309,7 @@ const ROWS: Row[] = [
   ["thiamine-iv", "Thiamine IV", [], "Hospital electrolyte / fluid", "", [], "Not a CYP. The bag still changes lithium, AKI, and QT via K/Mg.", []],
   ["multivitamin-iv", "Multivitamin IV", ["MVI-12"], "Hospital electrolyte / fluid", "", [], "Not a CYP. The bag still changes lithium, AKI, and QT via K/Mg.", []],
   ["lipid-emulsion-nutrition", "Lipid emulsion nutrition", ["SMOFlipid", "Intralipid"], "Hospital electrolyte / fluid", "", [], "Not a CYP. The bag still changes lithium, AKI, and QT via K/Mg.", []],
-  ["parenteral-nutrition", "Parenteral nutrition", ["TPA", "TNA"], "Hospital electrolyte / fluid", "", [], "Not a CYP. The bag still changes lithium, AKI, and QT via K/Mg.", []],
+  ["parenteral-nutrition", "Parenteral nutrition", ["TPN", "TNA"], "Hospital electrolyte / fluid", "", [], "Not a CYP. The bag still changes lithium, AKI, and QT via K/Mg.", []],
   ["immune-globulin-iv", "Immune globulin IV", ["Privigen", "Gamunex", "Gammagard"], "Vaccine / immunoglobulin (selected)", "", [], "Not a CYP. Live vaccines vs immunosuppression is the desk lesson.", ["ivig"]],
   ["immune-globulin-sc", "Immune globulin SC", ["Hizentra", "Cuvitru"], "Vaccine / immunoglobulin (selected)", "", [], "Not a CYP. Live vaccines vs immunosuppression is the desk lesson.", []],
   ["palivizumab", "Palivizumab", ["Synagis"], "Vaccine / immunoglobulin (selected)", "", [], "Not a CYP. Live vaccines vs immunosuppression is the desk lesson.", []],

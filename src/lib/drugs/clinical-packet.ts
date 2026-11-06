@@ -14,7 +14,7 @@ import { acbOnDesk, type AcbReport } from "./acb";
 import { mmeOnDesk, type MmeFactor } from "./mme";
 import { qtReport, type QtReport } from "./qt";
 import { deriveTisdaleDefaults, evaluateTisdaleScore, type TisdaleResult } from "./qt-resus";
-import { doacReportOnDesk, type DoacReport } from "./doac";
+import { doacReportOnDesk, type DoacReport, type ReversalEvaluation } from "./doac";
 import { potassiumReportOnDesk, potassiumOnDesk, type PotassiumEvaluation } from "./potassium";
 import { sglt2ReportOnDesk, sglt2OnDesk, type Sglt2Report } from "./sglt2";
 import { plainLanguageSummary } from "./interaction-summary";
@@ -35,6 +35,32 @@ import {
   type Severity,
 } from "./types";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "../regulatory";
+import { EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "./brief";
+import { DOSE_PATTERN } from "../guards/dose-rule";
+
+/** What the packet prints in place of a sentence that carries a computed dose. */
+export const DOSE_PER_PI = "Dose per the Prescribing Information.";
+
+/** Keeps the guidance sentences; any sentence with a milligram, unit or rate becomes DOSE_PER_PI. */
+export function withoutDose(text: string): string {
+  const dose = new RegExp(DOSE_PATTERN.source);
+  const out = text.split(/(?<=\.)\s+/).map((s) => (dose.test(s) ? DOSE_PER_PI : s));
+  return out.filter((s, i) => s !== DOSE_PER_PI || out[i - 1] !== DOSE_PER_PI).join(" ");
+}
+
+/** One reversal option for the note and the printed packet, with no dose. */
+export function reversalLine(rev: ReversalEvaluation): string {
+  const a = rev.specificAntidote;
+  return a
+    ? `${a.name} (${a.brand}) — ${withoutDose(a.regimen)}`
+    : `${rev.nonSpecificAlternative.agent} — ${withoutDose(rev.nonSpecificAlternative.dosing)}`;
+}
+
+/** Situations only the clinician can mark; reversal and TdP lines print only when marked. */
+export interface PacketMarks {
+  activeBleeding?: boolean;
+  activeTdp?: boolean;
+}
 
 export interface RegimenItemDetail {
   id: string;
@@ -142,6 +168,7 @@ export function buildClinicalPacket(
   host: HostContext,
   findings: Finding[],
   doses: Record<string, string> = {},
+  marks: PacketMarks = {},
 ): ClinicalPacketData {
   const now = new Date();
   const dateFormatted = now.toLocaleDateString("en-US", {
@@ -219,7 +246,7 @@ export function buildClinicalPacket(
   let mmeWarning: string | null = null;
   if (opioidDrugs.length > 0) {
     mmeWarning =
-      "CDC Clinical Practice Guideline (2022): Exercise extra caution when evaluating cumulative daily dosage. Dosages ≥50 MME/day warrant overdose risk discussion and naloxone co-prescription; dosages ≥90 MME/day require careful justification. Note that transdermal fentanyl, buprenorphine, and illicit opioids cannot be directly modeled with standard linear oral conversion.";
+      "CDC 2022: at ≥50 MME/day from all sources, add precautions including offering naloxone (Rec. 4 and 8); the 2022 guideline drops fixed upper thresholds. Note that transdermal fentanyl, buprenorphine, and illicit opioids cannot be directly modeled with standard linear oral conversion. Source: https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm";
   }
 
   // 3b. Anticholinergic Cognitive Burden
@@ -515,7 +542,7 @@ export function buildClinicalPacket(
       `  Contributors: ${riskIndexes.acb.contributors.map((c) => `${c.name} (+${c.score})`).join(", ")}`,
     );
   } else {
-    ehrLines.push(`- Anticholinergic Cognitive Burden: 0 (No scored anticholinergic agents mapped)`);
+    ehrLines.push(`- Anticholinergic Cognitive Burden: not scored. No agent on this regimen is on the mapped ACB list; that is not a computed zero.`);
   }
 
   if (riskIndexes.qt && riskIndexes.qt.rows.length > 0) {
@@ -528,11 +555,15 @@ export function buildClinicalPacket(
       ehrLines.push(
         `  Tisdale Inpatient QTc Risk: Score ${riskIndexes.qt.tisdale.score}/21 (${riskIndexes.qt.tisdale.tierLabel.toUpperCase()}) — ${riskIndexes.qt.tisdale.predictedRiskPercentage}`,
         `  Telemetry Protocol: ${riskIndexes.qt.tisdale.telemetryRequirement} | Electrolyte Goals: K+ ${riskIndexes.qt.tisdale.electrolyteTargets.potassiumMeqL}, Mg2+ ${riskIndexes.qt.tisdale.electrolyteTargets.magnesiumMgDl}`,
-        `  Acute TdP Resuscitation Directive: Magnesium Sulfate (See the Prescribing Information) over 1–2 min (suppresses EADs regardless of baseline Mg) | Avoid Class Ia/III antiarrhythmics`,
       );
+      if (marks.activeTdp) {
+        ehrLines.push(
+          `  Acute TdP Resuscitation Directive: Magnesium Sulfate (See the Prescribing Information) over 1–2 min (suppresses EADs regardless of baseline Mg) | Avoid Class Ia/III antiarrhythmics`,
+        );
+      }
     }
   } else {
-    ehrLines.push(`- Cardiac QTc Prolongation Burden: No additive QTc prolonging agents identified`);
+    ehrLines.push(`- Cardiac QTc Prolongation Burden: no QTc-prolonging agent in the mapped set. Not proof of absent QT risk.`);
   }
 
   if (riskIndexes.cnsDepression.hasSynergy) {
@@ -561,16 +592,12 @@ export function buildClinicalPacket(
       );
     }
     for (const rail of r.renalRails) {
-      ehrLines.push(`  ${rail.agentName} Renal Rail: ${rail.doseRecommendation} [${rail.status.toUpperCase()}]`);
+      ehrLines.push(`  ${rail.agentName} Renal Rail: ${withoutDose(rail.doseRecommendation)} [${rail.status.toUpperCase()}]`);
       if (rail.foodRequirement) ehrLines.push(`    Administration Note: ${rail.foodRequirement}`);
       if (rail.capsuleIntegrityWarning) ehrLines.push(`    Capsule Integrity: ${rail.capsuleIntegrityWarning}`);
     }
-    for (const rev of r.reversals) {
-      if (rev.specificAntidote) {
-        ehrLines.push(`  Emergency Reversal: ${rev.specificAntidote.name} (${rev.specificAntidote.brand}) — ${rev.specificAntidote.regimen}`);
-      } else {
-        ehrLines.push(`  Emergency Reversal: ${rev.nonSpecificAlternative.agent} — ${rev.nonSpecificAlternative.dosing}`);
-      }
+    if (marks.activeBleeding) {
+      for (const rev of r.reversals) ehrLines.push(`  Emergency Reversal: ${reversalLine(rev)}`);
     }
   }
 
@@ -601,7 +628,7 @@ export function buildClinicalPacket(
     if (pr.elimination.hemodialysis.emergentIndicated) {
       ehrLines.push(`  Definitive Elimination: Emergent Hemodialysis Indicated (${pr.elimination.hemodialysis.triggersPresent.join("; ")})`);
     } else if (pr.elimination.loopDiuretic.candidate) {
-      ehrLines.push(`  Kaliuresis: ${pr.elimination.loopDiuretic.recommendedDose}`);
+      ehrLines.push(`  Kaliuresis: ${withoutDose(pr.elimination.loopDiuretic.recommendedDose)}`);
     }
     if (pr.activeBindersOnRegimen.length > 0) {
       ehrLines.push(`  Active GI Binders: ${pr.activeBindersOnRegimen.join(", ")}`);
@@ -628,7 +655,7 @@ export function buildClinicalPacket(
   );
 
   if (findings.length === 0) {
-    ehrLines.push("No mapped collisions identified for the current active regimen.");
+    ehrLines.push(EXPORT_EMPTY);
   } else {
     if (collisions.contraindicated.length > 0) {
       ehrLines.push(`[CONTRAINDICATED / AVOID TOGETHER]`);
@@ -636,6 +663,7 @@ export function buildClinicalPacket(
         ehrLines.push(`• ${f.headline}`);
         ehrLines.push(`  Mechanism: ${f.mechanism}`);
         ehrLines.push(`  Clinical Watch: ${f.clinical}`);
+        ehrLines.push(`  Source: ${findingSourceLine(f)}`);
       }
       ehrLines.push("");
     }
@@ -645,13 +673,14 @@ export function buildClinicalPacket(
         ehrLines.push(`• ${f.headline}`);
         ehrLines.push(`  Mechanism: ${f.mechanism}`);
         ehrLines.push(`  Clinical Watch: ${f.clinical}`);
+        ehrLines.push(`  Source: ${findingSourceLine(f)}`);
       }
       ehrLines.push("");
     }
     if (collisions.moderate.length > 0) {
       ehrLines.push(`[MODERATE / USE CARE]`);
       for (const f of collisions.moderate) {
-        ehrLines.push(`• ${f.headline} — ${f.clinical}`);
+        ehrLines.push(`• ${f.headline} — ${f.clinical}`, `  Source: ${findingSourceLine(f)}`);
       }
       ehrLines.push("");
     }
@@ -666,17 +695,18 @@ export function buildClinicalPacket(
     `==================================================================`,
     `6. CLINICIAN ATTESTATION & REVIEW CHECKLIST`,
     `==================================================================`,
-    `[X] Active regimen reconciled with external pharmacy / clinical records`,
-    `[X] CYP450 pharmacokinetic and pharmacodynamic collisions evaluated`,
-    `[X] Organ clearance (renal/hepatic) dosing parameters reviewed`,
-    `[X] Multi-agent toxicity (ACB, QTc, Sedation, MME) evaluated`,
-    `[X] Patient counseling delivered & naloxone co-prescription offered/verified`,
+    `[ ] Active regimen reconciled with external pharmacy / clinical records`,
+    `[ ] CYP450 pharmacokinetic and pharmacodynamic collisions evaluated`,
+    `[ ] Organ clearance (renal/hepatic) dosing parameters reviewed`,
+    `[ ] Multi-agent toxicity (ACB, QTc, Sedation, MME) evaluated`,
+    `[ ] Patient counseling delivered & naloxone co-prescription offered/verified`,
     "",
     `Reviewed By: ___________________________________ [MD/DO/PharmD/NP/PA]`,
     `Date & Time: ___________________________________`,
     `Notes: _________________________________________________________________`,
     "",
     `------------------------------------------------------------------`,
+    EXPORT_NOT_A_DOSE,
     PI_FOOTER,
   );
 
@@ -700,6 +730,7 @@ export function buildClinicalPacket(
     `• Poison Help Center: 1-800-222-1222`,
     "",
     `Notice: This document is for educational review. Always talk with your pharmacist or doctor before changing or stopping any medication.`,
+    `This guide does not set or change any dose. Your prescriber and the medicine's FDA-approved label (Prescribing Information) govern. ${SOFTWARE.name} ${SOFTWARE.version} is not FDA-cleared.`,
   ];
   const patientHandoutText = handoutLines.join("\n");
 

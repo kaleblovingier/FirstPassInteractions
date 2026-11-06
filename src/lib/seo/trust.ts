@@ -77,6 +77,10 @@ export const PRIVACY: TrustSection = {
       text: "When you open a live lookup, the browser sends catalog drug ids or names to the FirstPass server. The server then asks public sources by drug name: OpenFDA, NLM RxNorm and RxClass, PubChem, DailyMed, ClinicalTrials.gov, NCBI PubMed, the CPIC API, PsychonautWiki and TripSit. Host toggles and typed amounts are not part of these lookups. Because the server makes the calls, those sources see the server, not your browser.",
     },
     {
+      lead: "The interaction API takes context from the software that calls it.",
+      text: "Software that calls FirstPass's interaction API sends drug names and, if it chooses, context such as age, sex, weight, kidney function or eGFR, urine pH, pregnancy, breastfeeding or smoking status. The server keeps that context and the computed answer in memory for up to 10 minutes, never writes them to disk or a database, and does not log the request body. Callers should not send names, record numbers, dates or other identifiers. The desk itself does not use this API.",
+    },
+    {
       lead: "The three readers use an AI service.",
       text: "Only when you press \"Ask the three readers\", the server sends a short brief built from the check on screen (drug names, the top rows and their mechanisms, the source name and blank-pair reasons) to xAI's API, which runs a Grok model. Answers are screened for doses and held in server memory for 10 minutes. The readers are off when no xAI key is set.",
     },

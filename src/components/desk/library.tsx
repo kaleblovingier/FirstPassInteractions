@@ -794,7 +794,7 @@ function CompoundsShelf() {
                           : sub
                             ? `${sub.sensitivity} ${sub.enzyme.replace("CYP", "")} sub${sub.pathway === "activation" ? " activation" : ""}`
                             : "PD only"}
-                      {!on && hasStahl(d.id) ? " · Stahl" : ""}
+                      {!on && hasStahl(d.id) ? " · Receptor sketch" : ""}
                       {!on && hasPgx(d.id) ? " · PGx" : ""}
                       {!on && hasCite(d.id) ? " · PMID" : ""}
                       {!on && hasClinic(d.id) ? " · Clinic" : ""}

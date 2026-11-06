@@ -87,3 +87,36 @@ describe("lost-key recovery wording", () => {
     assert.ok(trust.includes("The operator issues each Founding key after matching the payment, and the key is sent in an email to the buyer."));
   });
 });
+
+describe("third-party credit lines", () => {
+  it("carry the wording each source asks for and show where its data appears", async () => {
+    const { ATC_CREDIT, NLM_ATTRIBUTION, PSYCHONAUTWIKI_CREDIT, TRIPSIT_NOTE } = await import("@/lib/seo/legal");
+    const { readFileSync } = await import("node:fs");
+    assert.match(NLM_ATTRIBUTION, /^This product uses publicly available data from the U\.S\. National Library of Medicine \(NLM\), National Institutes of Health, Department of Health and Human Services; NLM is not responsible for the product and does not endorse or recommend this or any other product\.$/);
+    assert.match(ATC_CREDIT, /WHO Collaborating Centre for Drug Statistics Methodology/);
+    assert.match(PSYCHONAUTWIKI_CREDIT, /CC BY-SA 4\.0 \(https:\/\/creativecommons\.org\/licenses\/by-sa\/4\.0\/\)/);
+    assert.match(PSYCHONAUTWIKI_CREDIT, /shortened/i);
+    assert.match(TRIPSIT_NOTE, /combo\.tripsit\.me/);
+    assert.match(TRIPSIT_NOTE, /quick overview and reference; do more individual research before making a decision/);
+    const shown: Record<string, string[]> = {
+      "src/components/desk/rxnav.tsx": ["{ATC_CREDIT}", "{NLM_ATTRIBUTION}"],
+      "src/components/desk/dossier.tsx": ["{NLM_ATTRIBUTION}"],
+      "src/components/desk/clinical.tsx": ["{PSYCHONAUTWIKI_CREDIT}", "{TRIPSIT_NOTE}"],
+    };
+    for (const [file, needles] of Object.entries(shown)) {
+      const src = readFileSync(file, "utf8");
+      for (const n of needles) assert.ok(src.includes(n), `${file} renders ${n}`);
+    }
+  });
+});
+
+describe("lifetime wording in public docs", () => {
+  it("README and outreach canon use the /terms meaning, never a bare lifetime promise", async () => {
+    const { readFileSync } = await import("node:fs");
+    for (const file of ["README.md", "outreach/team-lanes.md"]) {
+      const s = readFileSync(file, "utf8");
+      assert.match(s, /for as long as FirstPass offers the desk/, file);
+      assert.doesNotMatch(s, /Founding lifetime is|\(lifetime\)/, file);
+    }
+  });
+});

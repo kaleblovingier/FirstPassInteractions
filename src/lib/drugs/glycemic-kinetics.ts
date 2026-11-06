@@ -360,7 +360,7 @@ export function evaluatePotassiumSafetyGate(serumK: number): PotassiumSafetyGate
       monitoringFrequency: "Check serum potassium every 1 hour until >= 3.3 mEq/L",
       warningSeverity: "critical",
       warningBanner:
-        "CRITICAL POTASSIUM SAFETY GATE: Serum K+ < 3.3 mEq/L! HOLD ALL INSULIN IMMEDIATELY! Administer IV potassium (20-40 mEq/h) until K+ >= 3.3 mEq/L. Starting insulin in severe hypokalemia drives potassium into cells, causing lethal cardiac arrhythmias and respiratory arrest!",
+        "POTASSIUM GATE (published DKA/HHS protocols): Serum K+ < 3.3 mEq/L. Protocols hold all insulin and give IV potassium (20-40 mEq/h) until K+ >= 3.3 mEq/L, because starting insulin in severe hypokalemia drives potassium into cells, causing lethal cardiac arrhythmias and respiratory arrest.",
       physiologicalRationale:
         "Insulin binding to its tyrosine kinase receptor activates membrane-bound Na+/K+-ATPase transporters, triggering rapid massive cellular influx of potassium. If administered in profound hypokalemia (<3.3 mEq/L), extracellular potassium drops precipitously, provoking lethal ventricular arrhythmias (ventricular fibrillation, torsades de pointes), asystole, and acute diaphragmatic failure.",
     };
@@ -378,7 +378,7 @@ export function evaluatePotassiumSafetyGate(serumK: number): PotassiumSafetyGate
       monitoringFrequency: "Check serum potassium every 2 to 4 hours",
       warningSeverity: "caution",
       warningBanner:
-        "POTASSIUM REPLETION MANDATORY: Serum K+ is 3.3 to 5.3 mEq/L. Add 20-30 mEq K+ per liter of IV fluid to maintain serum K+ 4.0-5.0 mEq/L while running insulin.",
+        "POTASSIUM REPLETION (published DKA/HHS protocols): Serum K+ is 3.3 to 5.3 mEq/L. Protocols add 20-30 mEq K+ per liter of IV fluid to keep serum K+ 4.0-5.0 mEq/L while insulin runs.",
       physiologicalRationale:
         "Total body potassium stores are profoundly depleted (typically by 3 to 6 mEq/kg) in DKA/HHS via osmotic diuresis and urinary loss of ketoacid salts. Ongoing insulin infusion and volume expansion will rapidly shift potassium intracellularly; maintenance K+ repletion prevents iatrogenic hypokalemic cardiac collapse.",
     };
@@ -396,7 +396,7 @@ export function evaluatePotassiumSafetyGate(serumK: number): PotassiumSafetyGate
     monitoringFrequency: "Check serum potassium every 2 hours",
     warningSeverity: "safe",
     warningBanner:
-      "HOLD POTASSIUM: Serum K+ > 5.3 mEq/L. Do not add potassium to IV fluids. Initiate/continue insulin infusion and monitor serum potassium every 2 hours.",
+      "POTASSIUM ABOVE 5.3 (published DKA/HHS protocols): Serum K+ > 5.3 mEq/L. Protocols add no potassium to IV fluids, start or continue the insulin infusion, and recheck serum potassium every 2 hours.",
     physiologicalRationale:
       "Initial hyperkalemia is common in DKA due to acidemia-induced transcellular H+/K+ exchange, insulinopenia, and hyperosmolality, despite profound whole-body potassium depletion. As insulin drives potassium into cells and volume resuscitation corrects hemoconcentration, serum potassium will fall reliably.",
   };

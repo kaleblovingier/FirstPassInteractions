@@ -451,7 +451,7 @@ describe("Obstetric Kinetics, Maternal Resuscitation & Perinatal Pharmacotherapy
 
       // Active alerts count
       assert.ok(report.activeAlerts.length >= 3);
-      assert.ok(report.activeAlerts.some((a) => a.includes("CRITICAL MAGNESIUM TOXICITY")));
+      assert.ok(report.activeAlerts.some((a) => a.includes("MAGNESIUM TOXICITY:")));
       assert.ok(report.activeAlerts.some((a) => a.includes("RENAL FAILURE MAGNESIUM ACCUMULATION TRAP")));
       assert.ok(report.activeAlerts.some((a) => a.includes("ACUTE SEVERE HYPERTENSION")));
       assert.ok(report.activeAlerts.some((a) => a.includes("Methylergonovine on desk in a patient with maternal hypertension")));

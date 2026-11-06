@@ -89,8 +89,8 @@ export function alertsFor(id: string): AlertFlag[] {
   if (ISMP.has(id) || id.startsWith("insulin-")) {
     out.push({
       kind: "ismp",
-      label: "ISMP high-alert",
-      note: "Heightened risk of significant harm when used in error. Independent double-check culture, not a CYP finding.",
+      label: "On ISMP's high-alert list (see ismp.org)",
+      note: "When an error happens with this drug, the harm tends to be severe. Independent double-check culture, not a CYP finding.",
     });
   }
   if (NIOSH.has(id)) {

@@ -15,6 +15,8 @@ export default tseslint.config(
       ".nitro/**",
       "node_modules/**",
       "src/routeTree.gen.ts",
+      // Local agent worktrees (.claude/worktrees/*) are full repo copies; lint them in place, not from here.
+      ".claude/**",
     ],
   },
   js.configs.recommended,

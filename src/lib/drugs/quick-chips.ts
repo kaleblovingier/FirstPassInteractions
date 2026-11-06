@@ -1,4 +1,5 @@
 import { DRUG_BY_ID } from "./catalog";
+import { EXPORT_NOT_A_DOSE } from "./brief";
 
 export type QuickChip = { id: string; label: string; hint: string };
 
@@ -32,6 +33,7 @@ export function plainWordsReport(
       "No mapped findings on this tray.",
       "An empty result is not proof a combination is safe.",
       "Educational interaction reference. Not a substitute for clinical judgment.",
+      EXPORT_NOT_A_DOSE,
     ].join("\n");
   }
   return [
@@ -41,5 +43,6 @@ export function plainWordsReport(
     ...findings.map((f) => `• ${f.severity} — ${f.headline}. ${f.plain}`),
     "",
     "Educational interaction reference. Not a substitute for clinical judgment. An empty or partial map is not clearance.",
+    EXPORT_NOT_A_DOSE,
   ].join("\n");
 }
