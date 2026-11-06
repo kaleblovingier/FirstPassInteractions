@@ -49,6 +49,13 @@ export const MARKET_STATUS: Record<string, string> = {
   astemizole: "Withdrawn from the US market; shown only because a current label still names it.",
   cisapride:
     "Removed from general US sale in 2000; available only through a limited-access program. Shown because a current label still names it.",
+  // Sources fetched 2026-11-04. Ranitidine is absent on purpose: FDA approved reformulated ranitidine tablets on 2025-11-24.
+  voxelotor:
+    'Withdrawn from the market. FDA alert, September 26, 2024: Oxbryta (voxelotor) "is being voluntarily withdrawn from the market by the manufacturer due to safety concerns", and "Health care professionals should stop prescribing Oxbryta." https://www.fda.gov/drugs/drug-alerts-and-statements/fda-alerting-patients-and-health-care-professionals-about-voluntary-withdrawal-oxbryta-market-due',
+  lorcaserin:
+    'Withdrawn from the US market. FDA drug safety communication, February 13, 2020: the FDA "has requested that the manufacturer of Belviq, Belviq XR (lorcaserin) voluntarily withdraw the weight-loss drug from the U.S. market because a safety clinical trial shows an increased occurrence of cancer." https://www.fda.gov/drugs/drug-safety-communications/fda-requests-withdrawal-weight-loss-drug-belviq-belviq-xr-lorcaserin-market',
+  tegaserod:
+    'Discontinued in the US. Drugs@FDA lists both Zelnorm (tegaserod maleate) tablet strengths, NDA 021200, with marketing status "Discontinued". https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=021200',
 };
 const withStatus = (id: string) => (MARKET_STATUS[id] ? `${MARKET_STATUS[id]} ${NOTE}` : NOTE);
 

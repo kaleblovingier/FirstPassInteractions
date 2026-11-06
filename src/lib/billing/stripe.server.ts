@@ -375,6 +375,10 @@ export async function listPaidSessions(): Promise<
   }
 }
 
+/**
+ * Stripe signs the raw body. The trust check is `constructEventAsync`, not a zod
+ * parse: reading the JSON first would change the bytes the signature covers.
+ */
 export async function handleStripeWebhook(request: Request): Promise<Response> {
   const stripe = client();
   const hookSecret = env("STRIPE_WEBHOOK_SECRET");

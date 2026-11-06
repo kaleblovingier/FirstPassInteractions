@@ -1,15 +1,16 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState } from "./desk-persist";
 import { DRUG_BY_ID } from "./catalog";
-import { normalizeStudyMarks, scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
+import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
+import type { StationId } from "./station-groups";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import {
   normalizeProgramGrant,
   programEnded,
   programEndedNote,
-  programFromLicense,
   type ProgramGrant,
 } from "@/lib/billing/program-license";
 import {
@@ -76,8 +77,12 @@ interface DeskState {
   previewUsed: boolean;
   /** Class name to open on the formulary. Not saved. */
   libraryShelf: string;
+  /** Station the clinical board opens next, picked in the Ctrl+K palette. Not saved. */
+  station: StationId | null;
   justActivated: boolean;
   hcpAck: boolean;
+  /** Clinician attestation in front of the dose calculators: the version confirmed and when (ms). */
+  doseAttest: { v: number; at: number } | null;
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
   add: (id: string) => boolean;
   remove: (id: string) => void;
@@ -86,6 +91,7 @@ interface DeskState {
   setView: (view: View) => void;
   setAtlasEnzyme: (id: string | null) => void;
   openShelf: (cls: string) => void;
+  openStation: (id: StationId) => void;
   setPhenotype: (enzyme: PhenotypeEnzyme, value: Metabolizer) => void;
   setSmoking: (smoking: boolean) => void;
   setKetamineRoute: (route: KetamineRoute) => void;
@@ -109,8 +115,14 @@ interface DeskState {
   dismissProgramNote: () => void;
   dismissActivated: () => void;
   ackHcp: () => void;
+  attestDose: () => void;
   downgrade: () => void;
 }
+
+/** Bump when the attestation wording changes: every browser is asked again. */
+export const DOSE_ATTEST_VERSION = 1;
+
+export const doseAttested = (s: Pick<DeskState, "doseAttest">) => s.doseAttest?.v === DOSE_ATTEST_VERSION;
 
 function activePlan(
   s: { plan: PlanId; previewUntil: number | null; program?: ProgramGrant | null },
@@ -147,7 +159,10 @@ type ProgramState = Pick<
  */
 export function programFallback(s: ProgramState, now: number = Date.now()): Partial<DeskState> | null {
   if (!s.program || !programEnded(s.program, now)) return null;
-  const selected = s.selected.slice(0, maxDrugs("free"));
+  const selected = (Array.isArray(s.selected) ? s.selected : [])
+    .filter((id): id is string => typeof id === "string")
+    .slice(0, maxDrugs("free"));
+  const doses = s.doses && typeof s.doses === "object" && !Array.isArray(s.doses) ? s.doses : {};
   return {
     plan: "free",
     license: null,
@@ -157,7 +172,9 @@ export function programFallback(s: ProgramState, now: number = Date.now()): Part
     justActivated: false,
     selected,
     doses: Object.fromEntries(
-      selected.map((id) => [id, s.doses[id]]).filter((row): row is [string, string] => Boolean(row[1])),
+      selected
+        .map((id) => [id, doses[id]] as const)
+        .filter((row): row is [string, string] => typeof row[1] === "string" && row[1].length > 0),
     ),
     phenotypes: { ...DEFAULT_PHENOTYPES },
     smoking: false,
@@ -171,6 +188,8 @@ export function programFallback(s: ProgramState, now: number = Date.now()): Part
 
 /** Set by the persist merge when a saved program license had already ended. */
 let endedOnLoad = false;
+/** Set when the blob was corrupt or a field was repaired, so the bad JSON is replaced. */
+let rewriteOnLoad = false;
 
 export const useDesk = create<DeskState>()(
   persist(
@@ -196,8 +215,10 @@ export const useDesk = create<DeskState>()(
       previewUntil: null,
       previewUsed: false,
       libraryShelf: "",
+      station: null,
       justActivated: false,
       hcpAck: false,
+      doseAttest: null,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
       add: (id) => {
         if (!DRUG_BY_ID[id] || id.startsWith("__")) return false;
@@ -306,6 +327,7 @@ export const useDesk = create<DeskState>()(
         set({ atlasEnzyme, view: "atlas" });
       },
       openShelf: (cls) => set({ libraryShelf: cls, view: "library" }),
+      openStation: (station) => set({ station, view: "desk" }),
       setPhenotype: (enzyme, value) => {
         if (activePlan(get()) === "free") {
           get().openCheckout("lab", foundingGateCopy("host").reason, "life");
@@ -430,6 +452,7 @@ export const useDesk = create<DeskState>()(
       dismissProgramNote: () => set({ programNote: null }),
       dismissActivated: () => set({ justActivated: false }),
       ackHcp: () => set({ hcpAck: true }),
+      attestDose: () => set({ doseAttest: { v: DOSE_ATTEST_VERSION, at: Date.now() } }),
       downgrade: () =>
         set({
           plan: "free",
@@ -448,58 +471,30 @@ export const useDesk = create<DeskState>()(
         }),
     }),
     {
-      name: "firstpass.desk.v7",
+      name: DESK_STORAGE_KEY,
       skipHydration: true,
+      storage: createJSONStorage(deskJsonStorage),
       merge: (persisted, current) => {
-        const p = (persisted ?? {}) as Partial<DeskState>;
+        const read = readDeskStorageState(persisted, partializeDesk(current));
+        rewriteOnLoad = read.rewrite;
         const merged: DeskState = {
           ...current,
-          ...p,
-          phenotypes: { ...DEFAULT_PHENOTYPES, ...p.phenotypes },
-          age: p.age === "geriatric" ? "geriatric" : "adult",
-          kidney: p.kidney === "ckd" ? "ckd" : "ok",
-          preg: p.preg === "pregnant" || p.preg === "lactating" ? p.preg : "off",
-          doses: p.doses && typeof p.doses === "object" ? p.doses : {},
-          studyMarks: normalizeStudyMarks(p.studyMarks),
+          ...read.state,
           justActivated: false,
-          hcpAck: Boolean(p.hcpAck),
-          previewUsed: Boolean(p.previewUsed) || typeof p.previewUntil === "number",
-          // Program fields are optional: state saved before program keys has neither.
-          // A program key carries its own end month, so it is the fallback source.
-          program: normalizeProgramGrant(p.program) ?? programFromLicense(p.license),
-          programNote: typeof p.programNote === "string" && p.programNote ? p.programNote : null,
         };
         const ended = programFallback(merged);
         endedOnLoad = Boolean(ended);
         return { ...merged, ...ended };
       },
-      // Save the free desk right away when a program term ended while the tab was closed.
+      // Replace a bad blob, and save the free desk when a program term ended while the tab was closed.
       onRehydrateStorage: () => (state) => {
-        if (!endedOnLoad || !state) return;
+        const write = Boolean(state) && (endedOnLoad || rewriteOnLoad);
         endedOnLoad = false;
+        rewriteOnLoad = false;
+        if (!write) return;
         useDesk.setState({});
       },
-      partialize: (s) => ({
-        selected: s.selected,
-        phenotypes: s.phenotypes,
-        smoking: s.smoking,
-        ketamineRoute: s.ketamineRoute,
-        cannabisRoute: s.cannabisRoute,
-        alcohol: s.alcohol,
-        age: s.age,
-        kidney: s.kidney,
-        preg: s.preg,
-        doses: s.doses,
-        studyMarks: s.studyMarks,
-        plan: s.plan,
-        license: s.license,
-        lifetime: s.lifetime,
-        program: s.program,
-        programNote: s.programNote,
-        previewUntil: s.previewUntil,
-        previewUsed: s.previewUsed,
-        hcpAck: s.hcpAck,
-      }),
+      partialize: (s) => partializeDesk(s),
     },
   ),
 );

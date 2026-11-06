@@ -104,6 +104,13 @@ describe("rpc-input - checkInput", () => {
 describe("rpc-input - LiveInput", () => {
   it("accepts a catalog id and refuses unknown, inherited, oversize or missing ids", () => {
     assert.deepEqual(checkInput("t", LiveInput, { id: "warfarin" }), { ok: true, value: { id: "warfarin" } });
+    assert.deepEqual(checkInput("t", LiveInput, { id: "warfarin", refresh: true }), {
+      ok: true,
+      value: { id: "warfarin", refresh: true },
+    });
+    assert.equal(checkInput("t", LiveInput, { id: "warfarin", refresh: false }).ok, true);
+    assert.equal(checkInput("t", LiveInput, { id: "warfarin", refresh: "yes" }).ok, false);
+    assert.equal(checkInput("t", LiveInput, { id: "warfarin", note: "extra" }).ok, false);
     for (const input of [{ id: "not-a-drug" }, { id: "constructor" }, { id: "__proto__" }, { id: "w".repeat(65) }, {}, ...JUNK]) {
       assert.equal(checkInput("t", LiveInput, input).ok, false, JSON.stringify(input) ?? String(input));
     }
@@ -122,11 +129,12 @@ describe("rpc-input - IdsInput", () => {
     assert.deepEqual(checkInput("t", IdsInput, {}), { ok: true, value: { ids: [] } });
   });
 
-  it("refuses oversize lists, oversize ids and non-string entries", () => {
+  it("refuses oversize lists, oversize ids, non-string entries and unknown keys", () => {
     assert.equal(checkInput("t", IdsInput, { ids: Array.from({ length: 17 }, () => "warfarin") }).ok, false);
     assert.equal(checkInput("t", IdsInput, { ids: ["w".repeat(65)] }).ok, false);
     assert.equal(checkInput("t", IdsInput, { ids: ["warfarin", 3] }).ok, false);
     assert.equal(checkInput("t", IdsInput, { ids: "warfarin" }).ok, false);
+    assert.equal(checkInput("t", IdsInput, { ids: ["warfarin"], extra: true }).ok, false);
   });
 });
 
@@ -138,12 +146,14 @@ describe("rpc-input - SearchInput", () => {
     });
     assert.equal(checkInput("t", SearchInput, { query: "x".repeat(301), ids: [] }).ok, false);
     assert.equal(checkInput("t", SearchInput, { query: 5, ids: [] }).ok, false);
+    assert.equal(checkInput("t", SearchInput, { query: "warfarin", ids: [], limit: 99 }).ok, false);
   });
 });
 
 describe("rpc-input - CpicInput", () => {
   it("accepts a catalog drug name and refuses free text", () => {
     assert.equal(checkInput("t", CpicInput, { name: "Clopidogrel" }).ok, true);
+    assert.equal(checkInput("t", CpicInput, { name: "Clopidogrel", extra: 1 }).ok, false);
     assert.equal(checkInput("t", CpicInput, { name: "anything at all" }).ok, false);
     assert.equal(checkInput("t", CpicInput, { name: "x".repeat(121) }).ok, false);
     assert.equal(checkInput("t", CpicInput, {}).ok, false);
@@ -177,6 +187,14 @@ describe("rpc-input - ReaderBriefInput", () => {
     const sparse = checkInput("t", ReaderBriefInput, { names: ["Warfarin"] });
     assert.equal(sparse.ok, true);
     if (sparse.ok) assert.deepEqual(sparse.value.rows, []);
+    assert.equal(checkInput("t", ReaderBriefInput, { ...brief, extra: "nope" }).ok, false);
+    assert.equal(
+      checkInput("t", ReaderBriefInput, {
+        ...brief,
+        rows: [{ severity: "Major", line: "x", why: "y", dose: "10mg" }],
+      }).ok,
+      false,
+    );
     assert.equal(checkInput("t", ReaderBriefInput, { ...brief, lead: 3 }).ok, false);
     assert.equal(checkInput("t", ReaderBriefInput, { ...brief, lead: "x".repeat(2001) }).ok, false);
     assert.equal(checkInput("t", ReaderBriefInput, { ...brief, quiet: Array.from({ length: 41 }, () => "q") }).ok, false);

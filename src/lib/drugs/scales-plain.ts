@@ -106,4 +106,4 @@ export const HUNTER_NMS_WATCH =
 
 /** Footer under bedside math + scales. */
 export const BEDSIDE_SCALES_FOOTER =
-  "Formulas and published scores only. Not an ECG machine, not CKD-EPI, not IBW, not a milligram, not a COWS induction, not a CIWA benzo protocol. Empty ≠ diagnosis.";
+  "Formulas and published scores only. Not an ECG machine, not a measured GFR, not IBW, not a milligram, not a COWS induction, not a CIWA benzo protocol. Empty ≠ diagnosis.";

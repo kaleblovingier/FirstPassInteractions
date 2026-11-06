@@ -34,14 +34,20 @@ export const authMiddleware = createMiddleware({ type: "function" })
     return next({ sendContext: { bearerToken: getBearerToken() ?? undefined } });
   })
   .server(async ({ next, context }) => {
-    // ONLY import `*.server` modules here. This file is dual client/server
+    // ONLY import `*.server` modules here, plus `./bearer` which is zod-only
+    // (no `@tanstack/react-start/server`). This file is dual client/server
     // (bearer hook on the client). A plain `./isolation` path was renamed to
     // `isolation.server.ts` — keep this import in sync so image `tsc` resolves
     // it, and so Vite does not ship `@tanstack/react-start/server` to the browser.
+    // A bearer that is not a short visible-ASCII token is refused before it can
+    // be copied into an Authorization header.
+    const { acceptBearerToken } = await import("./bearer");
     const { assertSameSiteRequest } = await import("./isolation.server");
-    const { requireUserId } = await import("./verify.server");
+    const { requireUserId, UnauthorizedError } = await import("./verify.server");
     // Reject scripted cross-site/sibling requests before touching per-user data.
     assertSameSiteRequest();
-    const userId = await requireUserId(context.bearerToken);
+    const bearer = acceptBearerToken(context.bearerToken);
+    if (!bearer.ok) throw new UnauthorizedError();
+    const userId = await requireUserId(bearer.token);
     return next({ context: { userId } });
   });
