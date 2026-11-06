@@ -2,6 +2,8 @@
 
 Status: **proposal for Kaleb.** No pin, grade, catalog strength, or test is changed. Applying the pin described here would raise both pair cards to Avoid together. Do not merge this until Kaleb says yes.
 
+Rechecked against `main` at `d700a9a` on 2026-11-06 (repo only; DailyMed was not re-fetched): the catalog roles, the Varubi perpetrator row, the partner setids, the finding ids, and both card tiers below are unchanged, and no rolapitant pin exists on `main`. The decision is still open.
+
 Source row: the severity-change table in [unsourced-avoid-candidates.md](./unsourced-avoid-candidates.md) (wave 12 follow-up). The desk already records the two names on the Varubi perpetrator row in `src/lib/drugs/reference/label-perpetrators.ts` and withholds the contraindication quote there, because the cards do not read Avoid together.
 
 ## Source
