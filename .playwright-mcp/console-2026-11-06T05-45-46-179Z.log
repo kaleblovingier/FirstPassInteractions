@@ -1,0 +1,30 @@
+[   10642ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:14335
+[   16256ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://127.0.0.1:8315/@vite/client:532
+[   16276ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://127.0.0.1:8315/@vite/client:532
+[   16300ms] [ERROR] %o
+
+%s
+
+%s
+ TypeError: Cannot read properties of null (reading 'useContext')
+    at exports.useContext (http://127.0.0.1:8315/node_modules/.vite/deps/react.js?v=2bee95fd:706:22)
+    at useRouter (http://127.0.0.1:8315/node_modules/@tanstack/react-router/dist/esm/useRouter.js?v=2bee95fd:16:24)
+    at PreviewHostBridge (http://127.0.0.1:8315/src/components/preview-host-bridge.tsx:11:17)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:12866:12)
+    at renderWithHooks (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:5569:16)
+    at beginWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:851:66)
+    at performUnitOfWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:8429:92)
+    at workLoopSync (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=3efabaa9:8325:37) The above error occurred in the <PreviewHostBridge> component. React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundary. @ http://127.0.0.1:8315/@vite/client:532
+[   16301ms] [WARNING] Warning: Error in route match: __root__/ @ http://127.0.0.1:8315/@vite/client:532
+[   43217ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:14335
+[   50364ms] [ERROR] The result of getSnapshot should be cached to avoid an infinite loop @ http://127.0.0.1:8315/@vite/client:532
