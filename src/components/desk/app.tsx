@@ -58,6 +58,11 @@ import { DrugSearch } from "./search";
 import { FindingList } from "./findings";
 import { DeskCoach } from "./coach";
 import { CheckBoard } from "./check";
+import {
+  monographRoleEmpty,
+  ungradedPerpetratorsFor,
+  UNGRADED_DISCLAIMER,
+} from "@/lib/drugs/ungraded-perpetrators";
 import { CypHeatmap } from "./heatmap";
 import { EnzymeAtlas } from "./atlas";
 import { HemeMark } from "./mark";
@@ -1088,9 +1093,10 @@ function SingleDrug({ id }: { id: string }) {
       {drug.note ? <MonographNote note={drug.note} /> : null}
       <div className="mt-5 grid gap-4 sm:grid-cols-3">
         <RoleList title="Substrate of" rows={subs} empty="No mapped CYP substrate" />
-        <RoleList title="Inhibits" rows={inhs} empty="Not a mapped inhibitor" />
-        <RoleList title="Induces" rows={inds} empty="Not a mapped inducer" />
+        <RoleList title="Inhibits" rows={inhs} empty={monographRoleEmpty(id, "inhibitor")} />
+        <RoleList title="Induces" rows={inds} empty={monographRoleEmpty(id, "inducer")} />
       </div>
+      <UngradedMonograph id={id} />
       {drug.pd.length > 0 ? (
         <div className="mt-5 flex flex-wrap gap-1.5">
           {drug.pd.map((p) => (
@@ -1103,6 +1109,67 @@ function SingleDrug({ id }: { id: string }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function UngradedMonograph({ id }: { id: string }) {
+  const rows = ungradedPerpetratorsFor(id);
+  if (!rows.length) return null;
+  const grouped = new Map<
+    string,
+    { enzymes: string; directions: string[]; sentence: string; href: string; linkLabel: string }
+  >();
+  for (const row of rows) {
+    const key = `${row.sentence}\n${row.href}`;
+    const word = row.direction === "inhibitor" ? "inhibitor" : "inducer";
+    const existing = grouped.get(key);
+    if (!existing) {
+      grouped.set(key, {
+        enzymes: row.enzymes.join(", "),
+        directions: [word],
+        sentence: row.sentence,
+        href: row.href,
+        linkLabel: row.linkLabel,
+      });
+    } else if (!existing.directions.includes(word)) {
+      existing.directions.push(word);
+    }
+  }
+  const blocks = [...grouped.values()];
+  const links = [...new Map(blocks.map((row) => [row.href, row])).values()];
+  return (
+    <div className="mt-4 rounded-md bg-bg-sunken px-3 py-2.5">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted">
+        Label named a perpetrator · no strength assigned
+      </p>
+      <ul className="mt-2 space-y-2">
+        {blocks.map((row) => (
+          <li key={`${row.directions.join("-")}-${row.enzymes}`}>
+            <p className="font-mono text-sm text-fg">
+              {row.enzymes}
+              <span className="ml-2 font-sans text-xs text-muted">
+                {row.directions.join(" and ")} · no strength assigned
+              </span>
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-fg">{row.sentence}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {links.map((row) => (
+          <a
+            key={row.href}
+            href={row.href}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-10 items-center text-xs font-medium text-accent underline underline-offset-2"
+          >
+            {row.linkLabel}
+          </a>
+        ))}
+      </div>
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">{UNGRADED_DISCLAIMER}</p>
+    </div>
   );
 }
 
