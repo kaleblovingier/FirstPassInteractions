@@ -12,3 +12,6 @@ node_modules/
 .vercel
 public/og/
 dist-lms/
+
+# Local Playwright MCP session logs and page snapshots
+.playwright-mcp/
