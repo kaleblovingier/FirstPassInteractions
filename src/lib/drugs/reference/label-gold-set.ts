@@ -226,6 +226,9 @@ export const LABEL_SETIDS = {
   febuxostat: "d1969ea8-5178-42ee-97fc-feee8595e677",
   // Disulfiram tablets. Alvogen. SPL version 16, effective 2026-01-29.
   disulfiram: "b90f8ff4-4fb3-46ab-8149-cb55f24a4044",
+  // wave 12 severity change (#209), DailyMed v2 SPL retrieved 2026-10-19.
+  // Varubi (rolapitant) tablets. Luria Therapeutics. SPL version 3, effective 2026-09-08.
+  varubi: "8670c3cf-82d9-466d-be49-de33d8c8742b",
 } as const;
 type LabelKey = keyof typeof LABEL_SETIDS;
 
@@ -3737,6 +3740,9 @@ export const WAVE_4_COUNT = WAVE_4.length;
  * in the Contraindications section, where the MAOI card already reads Avoid
  * together. Partners named only in Warnings, Drug Interactions or a dietary
  * section are in DROPPED_CANDIDATES for Kaleb and are not pinned.
+ * Varubi (rolapitant) + thioridazine and + pimozide are the exception: section 4
+ * names both, the cards read below Avoid together, and the pin is a severity
+ * change made on Kaleb's decision on #209.
  */
 function row12(r: Row): GoldPair {
   return { ...row7(r), wave: 12, retrieved: "2026-10-19" };
@@ -3755,6 +3761,20 @@ const WAVE_12: GoldPair[] = [
     labelDrug: "Marplan (isocarboxazid)", label: "marplan", labelSection: "CONTRAINDICATIONS",
     quote: "Marplan (isocarboxazid) should not be administered in combination with any of the following: … cheese or other foods with a high tyramine content", labelExample: "cheese or other foods with a high tyramine content",
     labelClass: "contraindicated", mechanism: "PD", domain: "psychiatry",
+  }),
+  // Severity change (#209). Varubi section 4 names both drugs. Before this pin the
+  // CYP2D6 inhibitor card read major (thioridazine) and moderate (pimozide).
+  row12({
+    drugA: "rolapitant", drugB: "thioridazine", queries: ["varubi", "thioridazine"],
+    labelDrug: "Varubi (rolapitant)", label: "varubi", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide.", labelExample: "thioridazine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
+  }),
+  row12({
+    drugA: "rolapitant", drugB: "pimozide", queries: ["varubi", "pimozide"],
+    labelDrug: "Varubi (rolapitant)", label: "varubi", labelSection: "4 CONTRAINDICATIONS",
+    quote: "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide.", labelExample: "pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "psychiatry",
   }),
 ];
 
@@ -4615,14 +4635,6 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: 'wave 12 (no FDA label): moclobemide, harmaline + 5-HTP / L-tryptophan and Tyramine foods',
     reason: 'No US-approved DailyMed label for moclobemide or harmaline, and 5-HTP / L-tryptophan and tyramine foods are supplements or foods. Not pinned; grade unchanged.',
-  },
-  {
-    pair: 'wave 12 (severity change, for Kaleb): Varubi (rolapitant) + thioridazine',
-    reason: 'Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads major (Serious concern). A pin would raise it to Avoid together, so not pinned.',
-  },
-  {
-    pair: 'wave 12 (severity change, for Kaleb): Varubi (rolapitant) + pimozide',
-    reason: 'Varubi 4 CONTRAINDICATIONS (setid 8670c3cf-82d9-466d-be49-de33d8c8742b, retrieved 2026-10-19): "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." The pair card reads moderate (Use care). A pin would raise it to Avoid together, so not pinned.',
   },
   {
     pair: "wave 13: Parnate (tranylcypromine) + norepinephrine; Xadago (safinamide) + norepinephrine",

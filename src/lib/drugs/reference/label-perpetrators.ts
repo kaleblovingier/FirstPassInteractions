@@ -826,7 +826,7 @@ export const PERPETRATOR_LABELS: readonly PerpetratorLabel[] = [
     role: "inhibitor",
     section: "7 Drug Interactions",
     roleQuote: "Rolapitant is a moderate CYP2D6 inhibitor.",
-    // Section 4 names thioridazine and pimozide, but the desk cards do not read contraindicated, so they are not quoted here.
+    // Section 4 names thioridazine and pimozide. The rolapitant+thioridazine and rolapitant+pimozide label pins quote it, so it is not repeated here.
     alsoNamed: ["thioridazine", "pimozide"],
     url: DM("8670c3cf-82d9-466d-be49-de33d8c8742b"),
     labelEffective: "2026-09-08",
