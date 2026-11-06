@@ -2,8 +2,11 @@
  * Practice mode: quiz questions built only from existing pair pages (gold set + label pins).
  * Adds no pairs, grades, enzyme strengths or dose text. Educational recall practice only.
  */
+import { z } from "zod";
 import { pairPages, type PairPage } from "@/lib/seo/pair-pages";
 import { analyze } from "@/lib/drugs/engine";
+import { bySeed } from "@/lib/drugs/learn/learn-order";
+import { isDue, normalizeStudyMarks, scheduleStudyMark, type StudyMark } from "@/lib/drugs/study-marks";
 import { SEVERITY_LABEL, type Severity } from "@/lib/drugs/types";
 
 export type EnzymeRole = "inhibitor" | "inducer" | "substrate";
@@ -20,7 +23,8 @@ export interface PracticeQuestion {
   quote: { labelDrug: string; labelSection: string; quote: string; url: string } | null;
 }
 
-export const GRADE_CHOICES: string[] = (["contraindicated", "major", "moderate", "minor"] as Severity[]).map((s) => SEVERITY_LABEL[s]);
+const GRADES = ["contraindicated", "major", "moderate", "minor"] as const satisfies readonly Severity[];
+export const GRADE_CHOICES: string[] = GRADES.map((s) => SEVERITY_LABEL[s]);
 export const ROLE_CHOICES: EnzymeRole[] = ["inhibitor", "inducer", "substrate"];
 
 /** Dose-unit guard shared by the question filter and the tests. */
@@ -92,6 +96,86 @@ export function scoreAnswer(q: PracticeQuestion, a: { grade: string; enzyme?: st
   const enzyme = q.enzymes.length ? a.enzyme === q.enzymes[0] : null;
   const role = q.roleA ? a.role === q.roleA : null;
   return { grade, enzyme, role, all: grade && enzyme !== false && role !== false };
+}
+
+const PRACTICE_SEARCH = z
+  .object({ enzyme: z.string().optional().catch(undefined), grade: z.enum(GRADES).optional().catch(undefined) })
+  .catch({});
+export type PracticeSearch = z.infer<typeof PRACTICE_SEARCH>;
+
+/** Deck filters from the URL, e.g. `?enzyme=CYP3A4&grade=major`. Malformed values are dropped, never thrown. */
+export function parsePracticeSearch(raw: unknown): PracticeSearch {
+  return PRACTICE_SEARCH.parse(raw);
+}
+
+/** Enzymes and grades that occur in the question set: the only values the deck filters offer. */
+export function deckFacets(qs: PracticeQuestion[]): { enzymes: string[]; grades: Severity[] } {
+  return {
+    enzymes: [...new Set(qs.flatMap((q) => q.enzymes))].sort((a, b) => a.localeCompare(b, "en", { numeric: true })),
+    grades: GRADES.filter((g) => qs.some((q) => q.gradeLabel === SEVERITY_LABEL[g])),
+  };
+}
+
+/** The cards a search selects. A value that no card has is ignored, so an old or mistyped link still opens a deck. */
+export function practiceDeck(qs: PracticeQuestion[], search: PracticeSearch): { enzyme?: string; grade?: Severity; cards: PracticeQuestion[] } {
+  const facets = deckFacets(qs);
+  const enzyme = facets.enzymes.find((e) => e === search.enzyme);
+  const grade = facets.grades.find((g) => g === search.grade);
+  const cards = qs.filter((q) => (!enzyme || q.enzymes.includes(enzyme)) && (!grade || q.gradeLabel === SEVERITY_LABEL[grade]));
+  return { enzyme, grade, cards };
+}
+
+export const SESSION_SIZE = 10;
+/** Fixed seed for the first session, so the server and the browser render the same first card. */
+export const FIRST_SESSION_SEED = "practice";
+
+/** Up to SESSION_SIZE cards in seeded order. Cards due in `marks` come first, most overdue first. */
+export function sessionCards(deck: PracticeQuestion[], seed: string, marks: Record<string, StudyMark> = {}, now = Date.now()): PracticeQuestion[] {
+  const order = bySeed(deck.map((q) => ({ id: q.slug, q })), seed).map((r) => r.q);
+  const due = order.filter((q) => isDue(marks[q.slug], now)).sort((a, b) => marks[a.slug]!.nextReview - marks[b.slug]!.nextReview);
+  return [...due, ...order.filter((q) => !isDue(marks[q.slug], now))].slice(0, SESSION_SIZE);
+}
+
+export interface CardResult { q: PracticeQuestion; all: boolean }
+export interface EnzymeAccuracy { enzyme: string; correct: number; answered: number }
+export const NO_ENZYME = "No enzyme listed";
+
+/** End-of-session score, accuracy per enzyme (weakest first, then most misses), and the missed cards in session order. */
+export function sessionSummary(results: CardResult[]): { correct: number; answered: number; byEnzyme: EnzymeAccuracy[]; missed: PracticeQuestion[] } {
+  const groups = new Map<string, EnzymeAccuracy>();
+  for (const { q, all } of results) {
+    const enzyme = q.enzymes[0] ?? NO_ENZYME;
+    const g = groups.get(enzyme) ?? { enzyme, correct: 0, answered: 0 };
+    g.answered++;
+    if (all) g.correct++;
+    groups.set(enzyme, g);
+  }
+  const misses = (g: EnzymeAccuracy) => g.answered - g.correct;
+  const byEnzyme = [...groups.values()].sort(
+    (a, b) => a.correct * b.answered - b.correct * a.answered || misses(b) - misses(a) || a.enzyme.localeCompare(b.enzyme),
+  );
+  const missed = results.filter((r) => !r.all).map((r) => r.q);
+  return { correct: results.length - missed.length, answered: results.length, byEnzyme, missed };
+}
+
+/** Spaced review per pair: a card answered fully right is "got", anything wrong is "miss" (due again now). */
+export function markAnswer(marks: Record<string, StudyMark>, slug: string, all: boolean, now = Date.now()): Record<string, StudyMark> {
+  return { ...marks, [slug]: scheduleStudyMark(marks[slug], all ? "got" : "miss", now) };
+}
+
+export const MARKS_KEY = "firstpass.practice.marks.v1";
+
+export function loadMarks(storage: Pick<Storage, "getItem"> | undefined, now = Date.now()): Record<string, StudyMark> {
+  try {
+    const raw = storage?.getItem(MARKS_KEY);
+    return raw ? normalizeStudyMarks(JSON.parse(raw), now) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveMarks(storage: Pick<Storage, "setItem"> | undefined, marks: Record<string, StudyMark>): void {
+  try { storage?.setItem(MARKS_KEY, JSON.stringify(marks)); } catch { /* private mode etc. */ }
 }
 
 export const PRACTICE_TITLE = "Practice: drug-pair recall | FirstPass";

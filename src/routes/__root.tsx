@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { DESK_PREHYDRATE_SCRIPT } from "@/lib/drugs/desk-persist";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { siteOgMeta } from "@/lib/seo/og-meta";
@@ -44,10 +45,10 @@ export const Route = createRootRoute({
       },
       {
         // Before first paint: hide server-rendered placeholders that this visitor's saved desk
-        // state would remove after hydration (disclaimer already acknowledged, paid plan), so the
-        // page does not shift. Read-only; the store remains the source of truth after hydration.
-        children:
-          "(function(){try{var s=JSON.parse(localStorage.getItem('firstpass.desk.v7')||'{}').state||{},d=document.documentElement;if(s.hcpAck)d.setAttribute('data-fp-ack','');if(s.plan&&s.plan!=='free')d.setAttribute('data-fp-paid','')}catch(e){}})();",
+        // state would remove after hydration (disclaimer already acknowledged, a key-shaped
+        // license), so the page does not shift. A plan string alone is not enough. Read-only;
+        // the store remains the source of truth after hydration.
+        children: DESK_PREHYDRATE_SCRIPT,
       },
       {
         // Offline reading of published reference pages (public/sw.js). Skipped inside frames (previews).

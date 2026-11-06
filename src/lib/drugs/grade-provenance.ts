@@ -97,6 +97,17 @@ function isoDate(value: unknown): string | null {
 
 const NO_LABEL_VERSION = "No label version date is on file.";
 
+/** Label basis for a monograph note that cites a DailyMed `setid=`. Null when
+ *  the note has no setid. Display only — the note text is not a grade. */
+export function noteLabelBasis(note: string): Pick<GradeBasis, "kind" | "href"> | null {
+  const setid = note.match(/setid=([0-9a-f-]+)/i)?.[1]?.trim();
+  if (!setid) return null;
+  return {
+    kind: "label",
+    href: `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`,
+  };
+}
+
 /** Freshness line for a label cite, matched by DailyMed `setid` (the key in
  *  label-versions.json). Omits the line when this row is not a specific label
  *  we can look up. Says plainly when the setid is on the cite but not on file.
@@ -116,6 +127,22 @@ export function labelFreshnessLine(
   if (effective) return `Label version dated ${effective}.`;
   if (checkedOn) return `Last checked ${checkedOn}.`;
   return NO_LABEL_VERSION;
+}
+
+/** When a live FDA or DailyMed setid is already in label-versions.json and the
+ *  live date is a different day, name both dates. Same day, unknown setid, or
+ *  no parseable live date: nothing. Does not read or write a grade. */
+export function liveLabelDateLine(
+  setid: string,
+  liveDate: string | null | undefined,
+  versions: Record<string, StoredLabelVersion> = LABEL_VERSIONS,
+): string | null {
+  const id = setid.trim().toLowerCase();
+  if (!id) return null;
+  const stored = isoDate(versions[id]?.effective);
+  const live = isoDate(liveDate?.trim().slice(0, 10));
+  if (!stored || !live || stored === live) return null;
+  return `Live label dated ${live}. Label version on file dated ${stored}.`;
 }
 
 function cap(s: string): string {

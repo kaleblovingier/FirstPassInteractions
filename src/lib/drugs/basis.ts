@@ -341,27 +341,29 @@ function analogyBasis(): FindingBasis {
   };
 }
 
-/** A phenotype row may cite a guideline only when pgx.ts has a card for that drug and gene. */
+/** A phenotype row may link a page only when pgx.ts has a card for that drug and gene.
+ *  The link is the card's own page. Some cards link a CPIC guideline written for a related
+ *  drug class, so the copy never says the guideline covers this drug or that the row follows it. */
 function phenotypeGuidelineBasis(finding: Finding): FindingBasis | null {
   const drugId = finding.drugIds[0];
   const enzyme = finding.enzymes[0];
   if (!drugId || !enzyme) return null;
   const card = pgxFor(drugId).find((c) => geneHits(c.gene, enzyme));
   if (!card || isGenericCpicIndex(card.guideline)) return null;
-  const specific = isSpecificCpicGuideline(card.guideline);
+  const linked = isSpecificCpicGuideline(card.guideline)
+    ? "a CPIC guideline page. Check that the guideline names this drug before you rely on it."
+    : "a page to read beside the row.";
   return {
     kind: "cpic",
-    label: specific ? "CPIC guideline" : "Teaching card",
-    detail: specific
-      ? "The tier is the inhibitor/inducer analogy on this desk. A teaching card for this drug and gene links one CPIC guideline to read beside the row. This desk is not a PGx report."
-      : "The tier is the inhibitor/inducer analogy on this desk. A teaching card for this drug and gene links a page to read beside the row. This desk is not a PGx report.",
+    label: "Teaching card",
+    detail: `The tier is the inhibitor/inducer analogy on this desk. The teaching card for this drug and gene links ${linked} This desk is not a PGx report.`,
     href: card.guideline,
   };
 }
 
 function genoBasis(finding: Finding): FindingBasis | null {
-  if (isPhenoConvertFinding(finding)) return teachingMapBasis();
   if (finding.kind !== "geno") return null;
+  if (isPhenoConvertFinding(finding)) return teachingMapBasis();
   if (finding.tags.includes("phenotype")) return phenotypeGuidelineBasis(finding) ?? analogyBasis();
   return analogyBasis();
 }
@@ -398,15 +400,22 @@ export function basisFor(finding: Finding): FindingBasis[] {
   const perpLabel = perpetratorLabelBasis(finding);
   // FDA Table 1 already covers the role. Still quote a named contraindication.
   // A role-only line would only repeat that the tier is the desk's rule.
-  if (perpLabel && (!fda || perpLabel.detail.includes("calls this combination contraindicated")))
-    out.push(perpLabel);
-  const cites = citesFor(finding.drugIds).slice(0, 1);
-  if (cites[0]) {
+  if (perpLabel && (!fda || perpLabel.detail.includes("calls this combination contraindicated"))) out.push(perpLabel);
+  // citesFor also lists papers on either drug alone (the dossier wants those). A finding on two or
+  // more drugs cites a paper only when the paper is about at least two of them.
+  const ids = new Set(finding.drugIds);
+  const cite = citesFor(finding.drugIds).find(
+    (c) =>
+      ids.size < 2 ||
+      Boolean(c.pair && ids.has(c.pair[0]) && ids.has(c.pair[1])) ||
+      [...ids].filter((id) => c.drugIds.includes(id)).length >= 2,
+  );
+  if (cite) {
     out.push({
       kind: "pubmed",
-      label: `PMID ${cites[0].pmid}`,
-      detail: `${cites[0].year} ${cites[0].journal}. ${cites[0].why}`,
-      href: pubmedUrl(cites[0].pmid),
+      label: `PMID ${cite.pmid}`,
+      detail: `${cite.year} ${cite.journal}. ${cite.why}`,
+      href: pubmedUrl(cite.pmid),
     });
   }
   // Phenoconversion is the desk's teaching map. A phenotype row may link a

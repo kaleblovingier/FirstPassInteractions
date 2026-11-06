@@ -15,7 +15,19 @@ import {
 } from "@/lib/billing/commerce";
 import { collectLicenses, draftCollected } from "@/lib/billing/collect";
 import { loadPipe, savePipe } from "@/lib/billing/hunts";
-import { filterIssued, issuedPlanLabel } from "@/lib/billing/operator-desk";
+import {
+  ISSUED_STORAGE_KEY,
+  PAY_NOTE_STORAGE_KEY,
+  PIPE_LIMIT,
+  attachHuntLicenseKeys,
+  copyDeskText,
+  filterIssued,
+  issuedPlanLabel,
+  saveIssuedList,
+  savePayNoteText,
+  storedPipeIsReadable,
+  type PipeSaveOpts,
+} from "@/lib/billing/operator-desk";
 import { mintLicenseKey, mintProgramLicense } from "@/lib/billing/license";
 import { priceFor } from "@/lib/billing/plans";
 import {
@@ -55,14 +67,13 @@ type Collected = {
   mailed: boolean;
 };
 
-const ISSUED_KEY = "firstpass.issued.v1";
-const PAY_NOTE_KEY = "firstpass.payNote";
 const PIN_KEY = "firstpass.foundry.pin";
 
 function loadIssued(): Issued[] {
   try {
-    const raw = localStorage.getItem(ISSUED_KEY);
+    const raw = localStorage.getItem(ISSUED_STORAGE_KEY);
     const rows = raw ? (JSON.parse(raw) as Partial<Issued>[]) : [];
+    if (!Array.isArray(rows)) return [];
     return rows
       .filter((r) => typeof r.key === "string")
       .map((r) => ({
@@ -76,8 +87,10 @@ function loadIssued(): Issued[] {
   }
 }
 
-function persistIssued(rows: Issued[]) {
-  localStorage.setItem(ISSUED_KEY, JSON.stringify(rows.slice(0, 80)));
+function mergeIssued(current: Issued[], rows: Issued[]): Issued[] {
+  return [...rows, ...current]
+    .filter((row, i, all) => all.findIndex((r) => r.key === row.key) === i)
+    .slice(0, PIPE_LIMIT);
 }
 
 /** Rebuild the program-lead note from a key kept on this browser. */
@@ -108,6 +121,13 @@ export function Foundry() {
   const [packet, setPacket] = useState("");
   const [copied, setCopied] = useState("");
   const [issued, setIssued] = useState<Issued[]>([]);
+  const issuedRef = useRef<Issued[]>([]);
+  const [issuedUnreadable, setIssuedUnreadable] = useState(false);
+  const [issuedReplaceArmed, setIssuedReplaceArmed] = useState(false);
+  const [storageNotice, setStorageNotice] = useState("");
+  const [payNotice, setPayNotice] = useState("");
+  const [copyNotice, setCopyNotice] = useState("");
+  const [fulfillCopied, setFulfillCopied] = useState(false);
   const [payNote, setPayNote] = useState("");
   const [soldTo, setSoldTo] = useState("");
   const [names, setNames] = useState("");
@@ -117,8 +137,26 @@ export function Foundry() {
   const [mailNote, setMailNote] = useState("");
   const [tab, setTab] = useState<"hunt" | "launch" | "close">("close");
   useEffect(() => {
-    setIssued(loadIssued());
-    setPayNote(localStorage.getItem(PAY_NOTE_KEY) || OPERATOR.payLine);
+    let issuedRaw: string | null = null;
+    let blocked = false;
+    try {
+      issuedRaw = localStorage.getItem(ISSUED_STORAGE_KEY);
+      blocked = issuedRaw != null && issuedRaw.trim() !== "" && !storedPipeIsReadable(issuedRaw);
+    } catch {
+      blocked = true;
+    }
+    setIssuedUnreadable(blocked);
+    if (!blocked) {
+      const loaded = loadIssued();
+      issuedRef.current = loaded;
+      setIssued(loaded);
+    }
+    try {
+      setPayNote(localStorage.getItem(PAY_NOTE_STORAGE_KEY) || OPERATOR.payLine);
+    } catch {
+      setPayNote(OPERATOR.payLine);
+      setPayNotice("The pay note stays on screen. This browser did not store it.");
+    }
     setWaiting(loadPipe().filter((p) => p.status === "waiting").length);
     try {
       setPinState(sessionStorage.getItem(PIN_KEY) || "");
@@ -163,24 +201,64 @@ export function Foundry() {
     }
   }
 
-  function remember(rows: Issued[]) {
-    setIssued((current) => {
-      const next = [...rows, ...current]
-        .filter((row, i, all) => all.findIndex((r) => r.key === row.key) === i)
-        .slice(0, 80);
-      persistIssued(next);
-      return next;
+  function remember(rows: Issued[], opts?: PipeSaveOpts) {
+    const next = mergeIssued(issuedRef.current, rows);
+    issuedRef.current = next;
+    setIssued(next);
+    if (issuedUnreadable && !opts?.replaceUnreadable) {
+      setStorageNotice(
+        "The key stays on this screen. The saved issued keys could not be read, so they were not replaced.",
+      );
+      return false;
+    }
+    const ok = saveIssuedList(localStorage, next, opts);
+    if (!ok) {
+      setStorageNotice("The key stays on this screen. The saved list was left unchanged.");
+      return false;
+    }
+    setStorageNotice("");
+    if (opts?.replaceUnreadable) setIssuedUnreadable(false);
+    return true;
+  }
+
+  function onPayNote(value: string) {
+    setPayNote(value);
+    if (!savePayNoteText(localStorage, value)) {
+      setPayNotice("The pay note stays on screen. This browser did not store it.");
+      return;
+    }
+    setPayNotice("");
+  }
+
+  function replaceIssued() {
+    const ok = saveIssuedList(localStorage, issuedRef.current, {
+      replaceUnreadable: true,
+      allowEmpty: true,
     });
+    if (!ok) {
+      setStorageNotice("Could not replace the saved issued keys.");
+      return;
+    }
+    setIssuedUnreadable(false);
+    setIssuedReplaceArmed(false);
+    setStorageNotice(
+      issuedRef.current.length
+        ? "Replaced the unreadable issued-key list with the keys on this screen."
+        : "Replaced the unreadable issued-key list. It is empty now.",
+    );
   }
 
   async function copy(label: string, text: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(label);
-      window.setTimeout(() => setCopied(""), 1600);
-    } catch {
-      /* clipboard */
+    const ok = await copyDeskText((value) => navigator.clipboard.writeText(value), text);
+    if (!ok) {
+      if (label === "fulfill") setFulfillCopied(false);
+      setCopyNotice("Clipboard was blocked. Use Download instead.");
+      return;
     }
+    if (label === "fulfill") setFulfillCopied(true);
+    setCopyNotice("");
+    setCopied(label);
+    window.setTimeout(() => setCopied(""), 1600);
   }
 
   async function collect() {
@@ -239,13 +317,9 @@ export function Foundry() {
         setLast(res.rows[0]?.key ?? null);
         const text = fulfillKeys(res.rows.map((row) => ({ key: row.key, soldTo: row.soldTo })));
         setPacket(text);
+        setFulfillCopied(false);
         const byName = new Map(res.rows.map((row) => [row.soldTo.toLowerCase(), row.key]));
-        const pipe = loadPipe().map((p) => {
-          if (p.status !== "waiting") return p;
-          const key = byName.get(p.name.toLowerCase());
-          if (!key) return p;
-          return { ...p, status: "keyed" as const, note: key };
-        });
+        const pipe = attachHuntLicenseKeys(loadPipe(), byName);
         if (savePipe(pipe)) {
           setWaiting(pipe.filter((p) => p.status === "waiting").length);
         } else {
@@ -292,6 +366,7 @@ export function Foundry() {
       setLast(res.key);
       const text = fulfillKey({ key: res.key, soldTo });
       setPacket(text);
+      setFulfillCopied(false);
       await copy("fulfill", text);
     } catch {
       setErr("Could not mint. Try again.");
@@ -391,7 +466,7 @@ export function Foundry() {
           copied={copied}
           issued={issued}
           payNote={payNote}
-          setPayNote={setPayNote}
+          onPayNote={onPayNote}
           soldTo={soldTo}
           setSoldTo={setSoldTo}
           names={names}
@@ -410,6 +485,15 @@ export function Foundry() {
           collect={() => void collect()}
           draftMail={() => void draftMail()}
           onIssued={(row) => remember([row])}
+          fulfillCopied={fulfillCopied}
+          copyNotice={copyNotice}
+          storageNotice={storageNotice}
+          payNotice={payNotice}
+          issuedUnreadable={issuedUnreadable}
+          issuedReplaceArmed={issuedReplaceArmed}
+          armIssuedReplace={() => setIssuedReplaceArmed(true)}
+          cancelIssuedReplace={() => setIssuedReplaceArmed(false)}
+          replaceIssued={replaceIssued}
         />
       )}
     </div>
@@ -428,7 +512,7 @@ function CloseDesk({
   copied,
   issued,
   payNote,
-  setPayNote,
+  onPayNote,
   soldTo,
   setSoldTo,
   names,
@@ -447,6 +531,15 @@ function CloseDesk({
   collect,
   draftMail,
   onIssued,
+  fulfillCopied,
+  copyNotice,
+  storageNotice,
+  payNotice,
+  issuedUnreadable,
+  issuedReplaceArmed,
+  armIssuedReplace,
+  cancelIssuedReplace,
+  replaceIssued,
 }: {
   pin: string;
   setPin: (v: string) => void;
@@ -459,7 +552,7 @@ function CloseDesk({
   copied: string;
   issued: Issued[];
   payNote: string;
-  setPayNote: (v: string) => void;
+  onPayNote: (v: string) => void;
   soldTo: string;
   setSoldTo: (v: string) => void;
   names: string;
@@ -478,6 +571,15 @@ function CloseDesk({
   collect: () => void;
   draftMail: () => void;
   onIssued: (row: Issued) => void;
+  fulfillCopied: boolean;
+  copyNotice: string;
+  storageNotice: string;
+  payNotice: string;
+  issuedUnreadable: boolean;
+  issuedReplaceArmed: boolean;
+  armIssuedReplace: () => void;
+  cancelIssuedReplace: () => void;
+  replaceIssued: () => void;
 }) {
   const [showPin, setShowPin] = useState(false);
   const [issuedQuery, setIssuedQuery] = useState("");
@@ -491,6 +593,11 @@ function CloseDesk({
   const canDraft = collected.some((r) => r.email && !r.mailed && r.source !== "stripe");
   return (
     <>
+      {copyNotice ? (
+        <p className="text-sm text-warn" aria-hidden="true">
+          {copyNotice}
+        </p>
+      ) : null}
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
           <h2 className="font-serif text-xl tracking-tight text-fg">Who pays — copy their DM</h2>
@@ -601,11 +708,13 @@ function CloseDesk({
           className="mt-1.5"
           value={payNote}
           placeholder={OPERATOR.payLine}
-          onChange={(e) => {
-            setPayNote(e.target.value);
-            localStorage.setItem(PAY_NOTE_KEY, e.target.value);
-          }}
+          onChange={(e) => onPayNote(e.target.value)}
         />
+        {payNotice ? (
+          <p className="mt-3 text-sm text-warn" role="status">
+            {payNotice}
+          </p>
+        ) : null}
       </section>
 
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
@@ -714,7 +823,19 @@ function CloseDesk({
         {last ? (
           <p className="mt-3 rounded-md bg-ok-soft px-3 py-2 font-mono text-sm text-ok">
             {last}
-            <span className="ml-2 font-sans text-xs">fulfillment copied</span>
+            {fulfillCopied ? (
+              <span className="ml-2 font-sans text-xs">fulfillment copied</span>
+            ) : null}
+          </p>
+        ) : null}
+        {copyNotice ? (
+          <p className="mt-3 text-sm text-warn" role="status">
+            {copyNotice}
+          </p>
+        ) : null}
+        {storageNotice ? (
+          <p className="mt-3 text-sm text-warn" role="status">
+            {storageNotice}
           </p>
         ) : null}
 
@@ -818,6 +939,29 @@ function CloseDesk({
             ? "Keys you mint stay on this browser. Nothing issued here yet."
             : `${issued.length} ${issued.length === 1 ? "key" : "keys"} on this browser. They are not stored on the server.`}
         </p>
+        {issuedUnreadable ? (
+          <div className="mt-4 rounded-md bg-bg-sunken px-3 py-3">
+            <p className="text-sm text-fg">
+              The saved issued keys could not be read, so the list was not replaced. A key minted
+              here stays on this screen until you replace that saved list.
+            </p>
+            {issuedReplaceArmed ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button size="sm" variant="danger" onClick={replaceIssued}>
+                  {issued.length ? "Replace with the keys on screen" : "Replace with an empty list"}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={cancelIssuedReplace}>
+                  Keep it
+                </Button>
+              </div>
+            ) : (
+              <Button size="sm" variant="secondary" className="mt-3" onClick={armIssuedReplace}>
+                Replace unreadable issued keys…
+              </Button>
+            )}
+          </div>
+        ) : null}
+        {storageNotice ? <p className="mt-3 text-sm text-warn">{storageNotice}</p> : null}
         {issued.length > 0 ? (
           <Input
             className="mt-3"

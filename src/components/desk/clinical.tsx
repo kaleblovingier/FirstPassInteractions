@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CheckSquare, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { ANDEXXA_FDA_URL, ANDEXXA_US_STATUS } from "@/lib/drugs/catalog-label-names";
@@ -11,6 +11,8 @@ import {
   correctedSodiumOf,
   crclOf,
   crclWeightComparisonOf,
+  egfrBlockedReason,
+  egfrOf,
   osmolarGapOf,
   phenytoinCorrected,
   qtcOf,
@@ -146,7 +148,7 @@ import {
   responseSteps,
   stripsFor,
 } from "@/lib/drugs/harm";
-import { comboOnDesk, comboTone, wikiOnDesk, type LiveCombo, type WikiPage } from "@/lib/drugs/psychonaut";
+import { COMBO_LABEL, comboOnDesk, comboTone, wikiOnDesk, type LiveCombo, type WikiPage } from "@/lib/drugs/psychonaut";
 import { lookupPsychonaut } from "@/lib/drugs/psychonaut-rpc";
 import { PSYCHONAUTWIKI_CREDIT, TRIPSIT_NOTE } from "@/lib/seo/legal";
 import {
@@ -165,7 +167,7 @@ import {
 } from "@/lib/drugs/cyp-protocol";
 import { glossWithTerm, plainClockKind, plainLine } from "@/lib/drugs/plain-huddle";
 import { ENZYMES, type Enzyme, type HostContext } from "@/lib/drugs/types";
-import { useDesk } from "@/lib/drugs/store";
+import { doseAttested, useDesk } from "@/lib/drugs/store";
 import {
   guessLastAgonist,
   ID_SCREENS,
@@ -220,7 +222,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { StationPicker } from "./station-picker";
-import type { ClinicalTabId } from "@/lib/drugs/station-groups";
+import { DoseGate } from "./dose-gate";
+import { STATION_LABELS, type ClinicalTabId, type StationId } from "@/lib/drugs/station-groups";
 import { OncologyPanel } from "./oncology-station";
 import { oncologyOnDesk } from "@/lib/drugs/oncology-kinetics";
 import { AntimicrobialPanel } from "./antimicrobial-station";
@@ -326,78 +329,96 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
   const afOn = useMemo(() => afOnDesk(ids), [ids.join("|")]);
   const diliOn = useMemo(() => diliOnDesk(ids), [ids.join("|")]);
   const tabs = useMemo(() => {
-    const t: { id: Tab; label: string; on: boolean }[] = [
-      { id: "otp", label: "OTP", on: otp },
-      { id: "hr", label: "HR", on: hrOn },
-      { id: "wards", label: "Wards", on: wardsOn },
-      { id: "dose", label: "Dose", on: doseOn },
-      { id: "cyp", label: "CYP", on: cypOn },
-      { id: "qt", label: "QT", on: Boolean(qt) },
-      { id: "levels", label: "Levels", on: levels.length > 0 },
-      { id: "liver", label: "LiverTox", on: liver.length > 0 },
-      { id: "pheno", label: "Pheno", on: hasPhenoConvert(ids, host) || pheno.some((r) => r.shifted) },
-      { id: "reversal", label: "Reversal", on: reversal.length > 0 },
-      { id: "mme", label: "MME", on: mme.length > 0 },
-      { id: "hunter", label: "Hunter", on: hunterOn },
-      { id: "uds", label: "UDS", on: uds.length > 0 },
-      { id: "anc", label: "ANC", on: ancOn },
-      { id: "inr", label: "INR", on: Boolean(inr) },
-      { id: "doac", label: "DOAC", on: doacOn.hasAnticoagulant || doacOn.hasReversal },
-      { id: "anticoagulation", label: "Anticoagulation", on: Boolean(anticoagOn.hasAnticoagulant || anticoagOn.hasReversalAgent) },
-      { id: "valproate", label: "Valproate", on: valproateOn.hasValproate },
-      { id: "potassium", label: "Potassium", on: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent },
-      { id: "sglt2", label: "SGLT2", on: sglt2On.hasSglt2 },
-      { id: "acb", label: "ACB", on: Boolean(acb) },
-      { id: "dialysis", label: "Dialysis", on: Boolean(dialysis) },
-      { id: "steroids", label: "Steroids", on: Boolean(steroids.hasSteroid) },
-      { id: "apap", label: "APAP", on: apapOn },
-      { id: "iron", label: "Iron", on: ironOn },
-      { id: "digoxin", label: "Digoxin", on: digOn },
-      { id: "phenobarbital", label: "Phenobarb", on: phenoBarbiturateOn },
-      { id: "aminoglycosides", label: "Aminoglycosides", on: agOn },
-      { id: "lithium", label: "Lithium", on: lithiumOn },
-      { id: "oncology", label: "Oncology", on: oncologyOn },
-      { id: "antimicrobial", label: "Stewardship", on: Boolean(antimicrobialOn.hasAntimicrobial || antimicrobialOn.matchedInteractingAgents.length > 0) },
-      { id: "phenytoin", label: "Phenytoin", on: Boolean(phenytoinOn.hasPhenytoin || phenytoinOn.hasFosphenytoin) },
-      { id: "pregnancy", label: "Obstetrics", on: Boolean(pregnancyOn.hasHighYieldTeratogen || pregnancyOn.hasLactationRisk || pregnancyOn.hasRaasBlocker || pregnancyOn.hasNsaid || pregnancyOn.hasWarfarin || pregnancyOn.hasRetinoid || pregnancyOn.hasImid || pregnancyOn.hasFolateAntagonist) },
-      { id: "obstetrickinetics", label: "Obstetric Station", on: Boolean(obstetricOn.hasObstetricDrug || host.preg === "pregnant") },
-      { id: "vasoactive", label: "Vasoactive", on: Boolean(vasoactiveOn.hasVasoactive || vasoactiveOn.hasInotrope || vasoactiveOn.hasVasopressor) },
-      { id: "transplant", label: "Transplant", on: Boolean(transplantOn.hasCni || transplantOn.hasAntimetabolite || transplantOn.hasMtorInhibitor || transplantOn.hasTransplant) },
-      { id: "neuropsych", label: "Neuropsych", on: neuropsychOn },
-      { id: "toxicology", label: "Toxicology", on: Boolean(toxOn.hasToxicologyAgent) },
-      { id: "antiarrhythmic", label: "Antiarrhythmic", on: Boolean(antiarrhythmicOn.hasAntiarrhythmic || antiarrhythmicOn.hasDigoxin || antiarrhythmicOn.hasPgpInhibitor) },
-      { id: "acidbase", label: "Acid-Base", on: Boolean(acidBaseOn.matchedDrugIds.length > 0) },
-      { id: "anesthesia", label: "Anesthesia & NMB", on: Boolean(anesthesiaOn.hasNmba || anesthesiaOn.hasReversal || anesthesiaOn.hasSedative) },
-      { id: "epilepsy", label: "Status Epilepticus", on: Boolean(epilepsyOn.hasStatusEpilepticusAgent) },
-      { id: "moud", label: "MOUD & Harm Reduction", on: Boolean(moudOn.hasMoud || moudOn.hasFullAgonist) },
-      { id: "glycemic", label: "Glycemic & DKA", on: Boolean(glycemicOn.hasGlycemicAgent) },
-      { id: "pediatric", label: "Pediatric & Neonatal", on: Boolean(pediatricOn.hasPediatricTargetDrug) },
-      { id: "separation", label: "Separate", on: separationOn },
-      { id: "rotation", label: "Opioid Rotation", on: rotationOn.hasOpioid },
-      { id: "hepatic", label: "Hepatic Clearance", on: hepaticOn.hasHepaticPreset },
-      { id: "allergy", label: "Allergy & ADR", on: allergyOn.hasAllergyRelevant },
-      { id: "af", label: "AF Stroke & Bleed", on: afOn.hasAfRelevant },
-      { id: "dili", label: "Liver Injury", on: diliOn.hasHepatotoxic },
-      { id: "resources", label: "Resources", on: true },
-      { id: "bedside", label: "Bedside", on: true },
-      { id: "alerts", label: "Alerts", on: alerts.length > 0 },
-    ];
-    return t;
+    // Every station in STATION_LABELS needs an open flag here, so the picker and the Ctrl+K palette list the same stations.
+    const on: Record<StationId, boolean> = {
+      otp,
+      hr: hrOn,
+      wards: wardsOn,
+      dose: doseOn,
+      cyp: cypOn,
+      qt: Boolean(qt),
+      levels: levels.length > 0,
+      liver: liver.length > 0,
+      pheno: hasPhenoConvert(ids, host) || pheno.some((r) => r.shifted),
+      reversal: reversal.length > 0,
+      mme: mme.length > 0,
+      hunter: hunterOn,
+      uds: uds.length > 0,
+      anc: ancOn,
+      inr: Boolean(inr),
+      doac: doacOn.hasAnticoagulant || doacOn.hasReversal,
+      anticoagulation: Boolean(anticoagOn.hasAnticoagulant || anticoagOn.hasReversalAgent),
+      valproate: valproateOn.hasValproate,
+      potassium: potassiumOn.hasPerpetrator || potassiumOn.hasBinder || potassiumOn.hasSupplement || potassiumOn.hasShiftAgent,
+      sglt2: sglt2On.hasSglt2,
+      acb: Boolean(acb),
+      dialysis: Boolean(dialysis),
+      steroids: Boolean(steroids.hasSteroid),
+      apap: apapOn,
+      iron: ironOn,
+      digoxin: digOn,
+      phenobarbital: phenoBarbiturateOn,
+      aminoglycosides: agOn,
+      lithium: lithiumOn,
+      oncology: oncologyOn,
+      antimicrobial: Boolean(antimicrobialOn.hasAntimicrobial || antimicrobialOn.matchedInteractingAgents.length > 0),
+      phenytoin: Boolean(phenytoinOn.hasPhenytoin || phenytoinOn.hasFosphenytoin),
+      pregnancy: Boolean(pregnancyOn.hasHighYieldTeratogen || pregnancyOn.hasLactationRisk || pregnancyOn.hasRaasBlocker || pregnancyOn.hasNsaid || pregnancyOn.hasWarfarin || pregnancyOn.hasRetinoid || pregnancyOn.hasImid || pregnancyOn.hasFolateAntagonist),
+      obstetrickinetics: Boolean(obstetricOn.hasObstetricDrug || host.preg === "pregnant"),
+      vasoactive: Boolean(vasoactiveOn.hasVasoactive || vasoactiveOn.hasInotrope || vasoactiveOn.hasVasopressor),
+      transplant: Boolean(transplantOn.hasCni || transplantOn.hasAntimetabolite || transplantOn.hasMtorInhibitor || transplantOn.hasTransplant),
+      neuropsych: neuropsychOn,
+      toxicology: Boolean(toxOn.hasToxicologyAgent),
+      antiarrhythmic: Boolean(antiarrhythmicOn.hasAntiarrhythmic || antiarrhythmicOn.hasDigoxin || antiarrhythmicOn.hasPgpInhibitor),
+      acidbase: Boolean(acidBaseOn.matchedDrugIds.length > 0),
+      anesthesia: Boolean(anesthesiaOn.hasNmba || anesthesiaOn.hasReversal || anesthesiaOn.hasSedative),
+      epilepsy: Boolean(epilepsyOn.hasStatusEpilepticusAgent),
+      moud: Boolean(moudOn.hasMoud || moudOn.hasFullAgonist),
+      glycemic: Boolean(glycemicOn.hasGlycemicAgent),
+      pediatric: Boolean(pediatricOn.hasPediatricTargetDrug),
+      separation: separationOn,
+      rotation: rotationOn.hasOpioid,
+      hepatic: hepaticOn.hasHepaticPreset,
+      allergy: allergyOn.hasAllergyRelevant,
+      af: afOn.hasAfRelevant,
+      dili: diliOn.hasHepatotoxic,
+      resources: true,
+      bedside: true,
+      alerts: alerts.length > 0,
+    };
+    return (Object.keys(STATION_LABELS) as StationId[]).map((id) => ({ id, label: STATION_LABELS[id], on: on[id] }));
   }, [qt, levels.length, liver.length, pheno, reversal.length, mme.length, hunterOn, uds.length, alerts.length, ids, host, otp, hrOn, cypOn, ancOn, inr, doacOn.hasAnticoagulant, doacOn.hasReversal, anticoagOn.hasAnticoagulant, anticoagOn.hasReversalAgent, valproateOn.hasValproate, potassiumOn.hasPerpetrator, potassiumOn.hasBinder, potassiumOn.hasSupplement, potassiumOn.hasShiftAgent, sglt2On.hasSglt2, acb, dialysis, steroids.hasSteroid, apapOn, ironOn, digOn, phenoBarbiturateOn, agOn, lithiumOn, wardsOn, doseOn, oncologyOn, antimicrobialOn.hasAntimicrobial, antimicrobialOn.matchedInteractingAgents.length, phenytoinOn.hasPhenytoin, phenytoinOn.hasFosphenytoin, pregnancyOn.hasHighYieldTeratogen, pregnancyOn.hasLactationRisk, pregnancyOn.hasRaasBlocker, pregnancyOn.hasNsaid, pregnancyOn.hasWarfarin, pregnancyOn.hasRetinoid, pregnancyOn.hasImid, pregnancyOn.hasFolateAntagonist, obstetricOn.hasObstetricDrug, vasoactiveOn.hasVasoactive, vasoactiveOn.hasInotrope, vasoactiveOn.hasVasopressor, transplantOn.hasCni, transplantOn.hasAntimetabolite, transplantOn.hasMtorInhibitor, transplantOn.hasTransplant, neuropsychOn, toxOn.hasToxicologyAgent, antiarrhythmicOn.hasAntiarrhythmic, antiarrhythmicOn.hasDigoxin, antiarrhythmicOn.hasPgpInhibitor, acidBaseOn.matchedDrugIds.length, anesthesiaOn.hasNmba, anesthesiaOn.hasReversal, anesthesiaOn.hasSedative, epilepsyOn.hasStatusEpilepticusAgent, moudOn.hasMoud, moudOn.hasFullAgonist, glycemicOn.hasGlycemicAgent, pediatricOn.hasPediatricTargetDrug, separationOn, rotationOn.hasOpioid, hepaticOn.hasHepaticPreset, allergyOn.hasAllergyRelevant, afOn.hasAfRelevant, diliOn.hasHepatotoxic]);
   const [tab, setTab] = useState<Tab>("otp");
   const live = tabs.some((t) => t.id === tab && t.on) ? tab : (tabs.find((t) => t.on)?.id ?? "bedside");
+  // A station picked in the Ctrl+K palette: select it, then bring the board into view with focus on the open station.
+  const station = useDesk((s) => s.station);
+  const [asked, setAsked] = useState<{ id: StationId; n: number } | null>(null);
+  const boardRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!station) return;
+    setTab(station);
+    setAsked((a) => ({ id: station, n: (a?.n ?? 0) + 1 }));
+    useDesk.setState({ station: null });
+  }, [station]);
+  useEffect(() => {
+    if (asked) boardRef.current?.scrollIntoView({ block: "start" });
+  }, [asked]);
+  const missed = asked && asked.id === tab && live !== tab ? asked.id : null;
 
   if (!tabs.some((t) => t.on && t.id !== "bedside") && ids.length === 0) return null;
 
   return (
-    <section className="rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
+    <section ref={boardRef} className="scroll-mt-4 rounded-xl bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5">
       <div>
         <h2 className="font-serif text-lg tracking-tight text-fg">Clinical board</h2>
         <p className="mt-1 text-xs text-muted">
           Stations open when a matching drug is on the tray. This is teaching, not a protocol, and the PI governs the milligram.
         </p>
       </div>
-      <StationPicker tabs={tabs} active={live} onSelect={setTab} />
+      <StationPicker tabs={tabs} active={live} onSelect={setTab} focusKey={asked?.n} />
+      <p role="status" className={cn("text-xs text-muted", missed && "mt-2")}>
+        {missed ? `${STATION_LABELS[missed]} opens when a matching drug is on the tray.` : null}
+      </p>
 
       <div className="mt-4">
         {live === "otp" && otp ? <OtpPanel ids={ids} qtPartner={Boolean(qt?.rows.some((r) => r.id !== "methadone"))} /> : null}
@@ -415,41 +436,41 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "uds" && uds.length ? <UdsPanel ids={ids} /> : null}
         {live === "anc" && ancOn ? <AncPanel /> : null}
         {live === "inr" && inr ? <InrPanel report={inr} /> : null}
-        {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoacPanel ids={ids} host={host} /> : null}
-        {live === "valproate" && valproateOn.hasValproate ? <ValproatePanel ids={ids} host={host} /> : null}
+        {live === "doac" && (doacOn.hasAnticoagulant || doacOn.hasReversal) ? <DoseGate><DoacPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "valproate" && valproateOn.hasValproate ? <DoseGate><ValproatePanel ids={ids} host={host} /></DoseGate> : null}
         {live === "potassium" ? <PotassiumPanel ids={ids} host={host} /> : null}
         {live === "sglt2" && sglt2On.hasSglt2 ? <Sglt2Panel ids={ids} host={host} /> : null}
         {live === "acb" && acb ? <AcbPanel report={acb} /> : null}
         {live === "dialysis" && dialysis ? <DialysisPanel report={dialysis} /> : null}
-        {live === "steroids" && steroids.hasSteroid ? <SteroidsPanel report={steroids} /> : null}
+        {live === "steroids" && steroids.hasSteroid ? <DoseGate><SteroidsPanel report={steroids} /></DoseGate> : null}
         {live === "apap" && apapOn ? <ApapPanel ids={ids} /> : null}
-        {live === "iron" && ironOn ? <IronPanel ids={ids} /> : null}
-        {live === "digoxin" && digOn ? <DigoxinPanel ids={ids} /> : null}
-        {live === "phenobarbital" && phenoBarbiturateOn ? <PhenobarbitalPanel ids={ids} /> : null}
-        {live === "aminoglycosides" && agOn ? <AminoglycosidesPanel ids={ids} /> : null}
+        {live === "iron" && ironOn ? <DoseGate><IronPanel ids={ids} /></DoseGate> : null}
+        {live === "digoxin" && digOn ? <DoseGate><DigoxinPanel ids={ids} /></DoseGate> : null}
+        {live === "phenobarbital" && phenoBarbiturateOn ? <DoseGate><PhenobarbitalPanel ids={ids} /></DoseGate> : null}
+        {live === "aminoglycosides" && agOn ? <DoseGate><AminoglycosidesPanel ids={ids} /></DoseGate> : null}
         {live === "lithium" && lithiumOn ? <LithiumPanel ids={ids} host={host} /> : null}
         {live === "oncology" ? <OncologyPanel ids={ids} host={host} /> : null}
-        {live === "antimicrobial" ? <AntimicrobialPanel ids={ids} host={host} /> : null}
-        {live === "phenytoin" ? <PhenytoinPanel ids={ids} host={host} /> : null}
+        {live === "antimicrobial" ? <DoseGate><AntimicrobialPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "phenytoin" ? <DoseGate><PhenytoinPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "pregnancy" ? <PregnancyPanel ids={ids} host={host} /> : null}
         {live === "obstetrickinetics" ? <ObstetricPanel ids={ids} host={host} /> : null}
         {live === "vasoactive" ? <VasoactivePanel ids={ids} host={host} /> : null}
         {live === "transplant" ? <TransplantPanel ids={ids} host={host} /> : null}
         {live === "neuropsych" ? <NeuropsychPanel ids={ids} host={host} /> : null}
-        {live === "anticoagulation" ? <AnticoagulationPanel ids={ids} host={host} /> : null}
-        {live === "toxicology" ? <ToxicologyPanel ids={ids} host={host} /> : null}
-        {live === "antiarrhythmic" ? <AntiarrhythmicPanel ids={ids} host={host} /> : null}
-        {live === "acidbase" ? <AcidBasePanel ids={ids} host={host} /> : null}
-        {live === "anesthesia" ? <AnesthesiaPanel ids={ids} host={host} /> : null}
-        {live === "epilepsy" ? <EpilepsyPanel ids={ids} host={host} /> : null}
-        {live === "moud" ? <MoudPanel ids={ids} host={host} /> : null}
-        {live === "glycemic" ? <GlycemicPanel ids={ids} host={host} /> : null}
-        {live === "pediatric" ? <PediatricPanel ids={ids} host={host} /> : null}
+        {live === "anticoagulation" ? <DoseGate><AnticoagulationPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "toxicology" ? <DoseGate><ToxicologyPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "antiarrhythmic" ? <DoseGate><AntiarrhythmicPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "acidbase" ? <DoseGate><AcidBasePanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "anesthesia" ? <DoseGate><AnesthesiaPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "epilepsy" ? <DoseGate><EpilepsyPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "moud" ? <DoseGate><MoudPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "glycemic" ? <DoseGate><GlycemicPanel ids={ids} host={host} /></DoseGate> : null}
+        {live === "pediatric" ? <DoseGate><PediatricPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "separation" && separationOn ? <SeparationPanel ids={ids} /> : null}
-        {live === "rotation" ? <RotationPanel ids={ids} host={host} /> : null}
+        {live === "rotation" ? <DoseGate><RotationPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "hepatic" ? <HepaticPanel ids={ids} host={host} /> : null}
         {live === "allergy" ? <AllergyPanel ids={ids} host={host} /> : null}
-        {live === "af" ? <AfPanel ids={ids} host={host} /> : null}
+        {live === "af" ? <DoseGate><AfPanel ids={ids} host={host} /></DoseGate> : null}
         {live === "dili" ? <DiliPanel ids={ids} host={host} /> : null}
         {live === "resources" ? <ResourcePanel ids={ids} host={host} /> : null}
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
@@ -1022,14 +1043,26 @@ function UdsPanel({ ids }: { ids: string[] }) {
 }
 
 function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContext; steroids?: SteroidReport }) {
+  // The dose blocks share one gate, shown in the first one's place.
+  const doseOk = useDesk(doseAttested);
   const [qt, setQt] = useState("400");
   const [hr, setHr] = useState("60");
   const [age, setAge] = useState(host.age === "geriatric" ? "78" : "42");
   const [wt, setWt] = useState("70");
   const [scr, setScr] = useState("1.0");
   const [sex, setSex] = useState<Sex>("male");
+  const [ht, setHt] = useState("175");
+  const [cysC, setCysC] = useState("");
   const qtc = qtcOf({ qtMs: Number(qt), hr: Number(hr) });
   const crcl = crclOf({ age: Number(age), weightKg: Number(wt), scr: Number(scr), sex });
+  const renal = egfrOf({
+    age: Number(age),
+    sex,
+    scr: Number(scr),
+    cystatinC: cysC.trim() ? Number(cysC) : undefined,
+    heightCm: Number(ht),
+    weightKg: Number(wt),
+  });
   const showCows = cowsWanted(ids) || ids.length === 0;
   const showCiwa = ciwaWanted(ids, host.alcohol) || ids.includes("ethanol");
   const precip = ids.includes("buprenorphine") && ids.some((id) =>
@@ -1072,8 +1105,10 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
         {qtc ? <p className="mt-2 text-sm leading-relaxed text-fg">{qtc.note}</p> : null}
       </article>
       <article>
-        <h3 className="font-serif text-lg tracking-tight text-fg">CrCl</h3>
-        <p className="mt-1 text-xs text-muted">Cockcroft–Gault. Flip CKD on the host to score the clinic cards.</p>
+        <h3 className="font-serif text-lg tracking-tight text-fg">CrCl and eGFR</h3>
+        <p className="mt-1 text-xs text-muted">
+          Cockcroft–Gault beside the race-free CKD-EPI 2021 eGFR, adults only. Flip CKD on the host to score the clinic cards.
+        </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <label className="text-xs text-muted">
             Age
@@ -1097,7 +1132,7 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
                   aria-pressed={sex === s}
                   onClick={() => setSex(s)}
                   className={cn(
-                    "h-10 flex-1 rounded-full text-xs font-medium",
+                    "h-11 flex-1 rounded-full text-xs font-medium",
                     sex === s ? "bg-ink text-bg" : "bg-bg-sunken text-muted",
                   )}
                 >
@@ -1106,20 +1141,71 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
               ))}
             </div>
           </div>
+          <label className="text-xs text-muted">
+            Height (cm)
+            <Input className="mt-1" inputMode="decimal" value={ht} onChange={(e) => setHt(e.target.value)} />
+          </label>
+          <label className="text-xs text-muted">
+            Cystatin C (mg/L)
+            <Input
+              className="mt-1"
+              inputMode="decimal"
+              placeholder="optional"
+              value={cysC}
+              onChange={(e) => setCysC(e.target.value)}
+            />
+          </label>
         </div>
-        {crcl ? (
-          <p className="mt-3 text-sm text-fg">
-            CrCl ≈ <span className="font-mono">{crcl.crcl}</span> mL/min
-            {crcl.band !== "usual" ? (
-              <Badge className="ml-2" tone={crcl.band === "severe" ? "danger" : "warn"}>
-                {crcl.band}
-              </Badge>
-            ) : null}
+        <dl aria-live="polite" className="mt-3 grid grid-cols-2 gap-2">
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">Cockcroft–Gault CrCl</dt>
+            <dd className="font-mono text-lg text-fg">{crcl ? crcl.crcl : "—"}</dd>
+            <dd className="text-[11px] text-muted">
+              mL/min
+              {crcl && crcl.band !== "usual" ? (
+                <Badge className="ml-2" tone={crcl.band === "severe" ? "danger" : "warn"}>
+                  {crcl.band}
+                </Badge>
+              ) : null}
+            </dd>
+          </div>
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">CKD-EPI 2021 eGFR</dt>
+            <dd className="font-mono text-lg text-fg">{renal ? renal.egfr : "—"}</dd>
+            <dd className="text-[11px] text-muted">mL/min/1.73 m²{renal ? ` · ${renal.equation}` : ""}</dd>
+          </div>
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">De-indexed eGFR</dt>
+            <dd className="font-mono text-lg text-fg">{renal?.absolute ?? "—"}</dd>
+            <dd className="text-[11px] text-muted">
+              {renal?.bsa ? `mL/min · Du Bois BSA ${renal.bsa}\u00A0m²` : renal ? "mL/min · needs height and weight" : "mL/min"}
+            </dd>
+          </div>
+          <div className="rounded bg-bg-sunken p-2">
+            <dt className="text-[10px] uppercase tracking-wide text-muted">KDIGO G category</dt>
+            <dd className="font-mono text-lg text-fg">{renal ? renal.g.category : "—"}</dd>
+            <dd className="text-[11px] text-muted">{renal ? renal.g.label : "Needs an eGFR"}</dd>
+          </div>
+        </dl>
+        {crcl ? null : <p className="mt-2 text-sm text-muted">Age 18–110, weight 30–250 kg, SCr {'>'} 0.</p>}
+        {renal ? null : <p className="mt-2 text-sm text-muted">{egfrBlockedReason(Number(age))}</p>}
+        {renal?.byMarker ? (
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
+            Creatinine alone {renal.byMarker.cr} · cystatin C alone {renal.byMarker.cys} · both {renal.byMarker.both} (mL/min/1.73 m²)
           </p>
-        ) : (
-          <p className="mt-3 text-sm text-muted">Age 18–110, weight 30–250 kg, SCr {'>'} 0.</p>
-        )}
+        ) : null}
         {crcl ? <p className="mt-2 text-sm leading-relaxed text-fg">{crcl.note}</p> : null}
+        <p className="mt-2 text-sm leading-relaxed text-fg">
+          Why they differ: Cockcroft–Gault estimates creatinine clearance in mL/min and uses body weight. CKD-EPI estimates
+          GFR from creatinine (and cystatin C, if entered), age and sex, scaled to a standard body size of 1.73 m², with no
+          race term. For a much larger or smaller person, the de-indexed eGFR in mL/min is the fair comparison with CrCl. Drug
+          labels may set kidney cutoffs on either number, so check which one the label uses.
+        </p>
+        <p className="mt-1 text-[11px] leading-relaxed text-subtle">
+          A G category describes this one value; CKD needs kidney abnormalities lasting 3 months or more. Sources: Inker,
+          NEJM 2021; KDIGO 2024 CKD guideline (G categories, Practice Point 4.2.4); FDA renal impairment PK guidance (March
+          2024).
+        </p>
         {host.kidney === "ckd" ? (
           <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-accent">CKD is already on this host</p>
         ) : null}
@@ -1130,25 +1216,25 @@ function BedsidePanel({ ids, host, steroids }: { ids: string[]; host: HostContex
 
       <BodyMetricsBlock age={Number(age)} sex={sex} scr={Number(scr)} defaultWeight={Number(wt)} />
 
-      <CalvertBlock defaultGfr={crcl?.crcl} isHot={ids.some((id) => ["carboplatin", "cisplatin"].includes(id))} />
+      <DoseGate><CalvertBlock defaultGfr={crcl?.crcl} isHot={ids.some((id) => ["carboplatin", "cisplatin"].includes(id))} /></DoseGate>
 
       <AnionGapBlock isHot={ids.some((id) => ["metformin", "aspirin", "acetaminophen", "ethanol"].includes(id))} />
 
       <CorrectedSodiumBlock isHot={ids.some((id) => ["insulin-glargine", "metformin", "glipizide"].includes(id))} />
 
-      <SteroidEquivBlock isHot={Boolean(steroids?.hasSteroid)} defaultDrugId={steroids?.present[0]?.id} />
+      {doseOk ? <SteroidEquivBlock isHot={Boolean(steroids?.hasSteroid)} defaultDrugId={steroids?.present[0]?.id} /> : null}
 
-      <GanzoniBlock isHot={ironOnDesk(ids).hasIron} defaultWeight={Number(wt)} defaultSex={sex} />
+      {doseOk ? <GanzoniBlock isHot={ironOnDesk(ids).hasIron} defaultWeight={Number(wt)} defaultSex={sex} /> : null}
 
-      <DigoxinBlock isHot={digoxinOnDesk(ids).hasDigoxin} defaultWeight={Number(wt)} />
+      {doseOk ? <DigoxinBlock isHot={digoxinOnDesk(ids).hasDigoxin} defaultWeight={Number(wt)} /> : null}
 
       <ChildPughBlock />
 
       <VancoAucBlock defaultCrcl={crcl?.crcl} isHot={ids.includes("vancomycin")} />
 
-      <PhenobarbitalBlock isHot={phenobarbitalOnDesk(ids)} defaultWeight={Number(wt)} />
+      {doseOk ? <PhenobarbitalBlock isHot={phenobarbitalOnDesk(ids)} defaultWeight={Number(wt)} /> : null}
 
-      <AminoglycosideBlock isHot={aminoglycosidesOnDesk(ids)} defaultWeight={Number(wt)} defaultSex={sex} />
+      {doseOk ? <AminoglycosideBlock isHot={aminoglycosidesOnDesk(ids)} defaultWeight={Number(wt)} defaultSex={sex} /> : null}
 
       <LithiumBlock isHot={lithiumReportOnDesk(ids).hasLithium} defaultWeight={Number(wt)} defaultCrcl={crcl?.crcl} />
 
@@ -1341,7 +1427,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-sm font-medium text-fg">{row.title}</h3>
             <Badge tone={comboTone(row.rating) === "ok" ? "ok" : comboTone(row.rating) === "warn" ? "warn" : "danger"}>
-              {row.rating}
+              {COMBO_LABEL[row.rating]}
             </Badge>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-fg">{row.body}</p>
@@ -1665,6 +1751,11 @@ function AlertsPanel({ rows }: { rows: ReturnType<typeof alertsOnDesk> }) {
                 <li key={f.kind}>
                   <Badge tone={f.kind === "rems" ? "danger" : f.kind === "niosh" ? "warn" : "info"}>{f.label}</Badge>
                   <p className="mt-1 text-sm leading-relaxed text-fg">{f.note}</p>
+                  {f.kind === "ismp" ? (
+                    <a className="text-xs text-accent underline" href="https://www.ismp.org/" target="_blank" rel="noreferrer">
+                      ismp.org
+                    </a>
+                  ) : null}
                 </li>
               ))}
             </ul>

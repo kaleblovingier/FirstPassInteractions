@@ -106,3 +106,38 @@ test("a phenotype card that is not a CPIC guideline page does not use the guidel
   assert.doesNotMatch(`${lead.title} ${lead.detail}`, /paraphrase|CPIC-aligned|CPIC guideline/i);
   assert.ok(!basisFor(f).some((b) => (b.href ?? "").includes("cpicpgx.org/guidelines")));
 });
+
+test("a card that links a CPIC page does not claim the guideline covers the drug", () => {
+  const card = pgxFor("aripiprazole").find((c) => c.gene === "CYP2D6");
+  assert.ok(card);
+  assert.match(card.guideline, /^https:\/\/cpicpgx\.org\/guidelines\/.+/);
+  const f = analyze(["aripiprazole"], pmHost()).findings.find(
+    (x) => x.id === "geno-CYP2D6-PM-aripiprazole",
+  );
+  assert.ok(f);
+  const lead = leadGradeBasis(f);
+  assert.equal(lead.title, "Teaching card");
+  assert.equal(lead.href, card.guideline);
+  assert.match(lead.detail, /inhibitor\/inducer analogy/);
+  assert.match(lead.detail, /Check that the guideline names this drug/);
+  assert.doesNotMatch(lead.detail, /paraphrase|CPIC-aligned|follows CPIC/i);
+});
+
+test("a non-genotype row tagged or named pheno gets no genotype basis", () => {
+  const f: Finding = {
+    id: "pheno-pd-mycophenolate-check",
+    severity: "moderate",
+    kind: "pd",
+    drugIds: ["mycophenolate"],
+    headline: "test",
+    enzymes: [],
+    effect: "",
+    mechanism: "",
+    clinical: "",
+    tags: ["phenoconversion"],
+  };
+  for (const b of basisFor(f)) {
+    assert.notEqual(b.kind, "cpic");
+    assert.doesNotMatch(b.detail, /teaching map|inhibitor\/inducer analogy/);
+  }
+});

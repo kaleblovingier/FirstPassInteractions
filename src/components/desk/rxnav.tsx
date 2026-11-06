@@ -114,6 +114,7 @@ export function RxnavBoard({ ids }: { ids: string[] }) {
                 <Badge tone="info">{plainSource(p.source)}</Badge>
               </div>
               <p className="mt-1 text-sm leading-relaxed text-muted">{p.description}</p>
+              {p.identity ? <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted">{p.identity}</p> : null}
             </li>
           ))}
         </ul>
