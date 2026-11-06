@@ -157,6 +157,8 @@ for (const name of ["Unlock", "Plans"]) {
   await page.getByRole("button", { name: "Library", exact: true }).first().click();
   await page.waitForTimeout(500);
   const filters = page.locator("main [aria-pressed]");
+  // The formulary loads on demand; wait for it instead of a fixed pause.
+  await filters.first().waitFor({ timeout: 15000 }).catch(() => {});
   const n = await filters.count();
   check(n > 0, `library: filters expose pressed state (${n} found)`);
   if (n > 1) {
