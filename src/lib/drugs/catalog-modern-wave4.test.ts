@@ -25,6 +25,11 @@ const WAVE4_IDS = [
   "acoramidis",
   "crinecerfont",
   "tovorafenib",
+  "seladelpar",
+  "deuruxolitinib",
+  "momelotinib",
+  "nirogacestat",
+  "elacestrant",
 ] as const;
 
 const versions = JSON.parse(readFileSync("src/lib/drugs/reference/label-versions.json", "utf8")) as {
@@ -115,6 +120,12 @@ const PK_CASES: { drug: string; partner: string; enzyme: string; kind: "inhibito
   { drug: "crinecerfont", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Crenessity 7.1 dose increase with strong CYP3A4 inducers" },
   { drug: "crinecerfont", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "moderate", label: "Crenessity 7.1 dose increase with moderate CYP3A4 inducers" },
   { drug: "tovorafenib", partner: "gemfibrozil", enzyme: "CYP2C8", kind: "inhibitor", severity: "major", label: "Ojemda 7.1 avoid strong CYP2C8 inhibitors" },
+  { drug: "seladelpar", partner: "fluconazole", enzyme: "CYP2C9", kind: "inhibitor", severity: "moderate", label: "Livdelzi 7.1 monitor with dual inhibitors such as fluconazole" },
+  { drug: "deuruxolitinib", partner: "rifampin", enzyme: "CYP2C9", kind: "inducer", severity: "major", label: "Leqselvi 7 avoid strong CYP3A and moderate CYP2C9 inducers" },
+  { drug: "nirogacestat", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Ogsiveo 7.1 avoid strong CYP3A inhibitors" },
+  { drug: "nirogacestat", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Ogsiveo 7.1 avoid strong CYP3A inducers" },
+  { drug: "elacestrant", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Orserdu 7.1 avoid strong CYP3A inhibitors" },
+  { drug: "elacestrant", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Orserdu 7.1 avoid moderate CYP3A inducers" },
 ];
 
 test("known label partners produce the finding the label describes", () => {
@@ -128,6 +139,20 @@ test("known label partners produce the finding the label describes", () => {
 test("zongertinib does not read major with a strong CYP3A inhibitor, where Hernexeos 12.3 reports no clinically significant change", () => {
   const hit = analyze(["zongertinib", "itraconazole"]).findings.find((f) => f.id.includes("pk-CYP3A4-inhibitor-itraconazole"));
   assert.notEqual(hit?.severity, "major");
+});
+
+test("deuruxolitinib keeps its class-stated contraindication in prose and unpinned, and the hint says so plainly", () => {
+  const hit = analyze(["deuruxolitinib", "fluconazole"]).findings.find((f) => f.id.includes("pk-CYP2C9-inhibitor-fluconazole"));
+  assert.ok(hit, "fluconazole is the moderate CYP2C9 inhibitor Leqselvi 12.3 studied");
+  assert.notEqual(hit.severity, "contraindicated", "section 4 names a class, not fluconazole, so no pin holds the tier there");
+  assert.match(DRUG_BY_ID.deuruxolitinib!.toxicityHint, /contraindicated in CYP2C9 poor metabolizers and with moderate or strong CYP2C9 inhibitors/);
+});
+
+test("deuruxolitinib and momelotinib do not read as CYP3A4 victims, where their labels report a negative study", () => {
+  for (const [id, partner] of [["deuruxolitinib", "itraconazole"], ["momelotinib", "ritonavir"]] as const) {
+    const hit = analyze([id, partner]).findings.find((f) => f.enzymes.includes("CYP3A4"));
+    assert.equal(hit, undefined, `${id} with ${partner}`);
+  }
 });
 
 test("remibrutinib reaches the additive bleeding rule, which Rhapsido 5.1 and 7.2 describe for antithrombotics", () => {

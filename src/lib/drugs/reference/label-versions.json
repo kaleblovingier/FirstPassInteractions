@@ -290,11 +290,23 @@
    "effective": "2025-01-31",
    "checkedOn": "2026-10-28"
   },
+  "a603f231-d09e-4bad-ad5e-b55f865da095": {
+   "labelDrug": "Leqselvi (deuruxolitinib)",
+   "version": 14,
+   "effective": "2026-09-28",
+   "checkedOn": "2026-11-05"
+  },
   "13bb8267-1cab-43e5-acae-55a4d957630a": {
    "labelDrug": "Lexapro (escitalopram)",
    "version": 45,
    "effective": "2023-10-01",
    "checkedOn": "2026-10-28"
+  },
+  "89f79d98-135c-40b2-a585-6996c04e599c": {
+   "labelDrug": "Livdelzi (seladelpar)",
+   "version": 3,
+   "effective": "2026-02-03",
+   "checkedOn": "2026-11-05"
   },
   "35cbb9d5-639b-207a-e054-00144ff88e88": {
    "labelDrug": "Lotronex (alosetron)",
@@ -386,6 +398,12 @@
    "effective": "2026-02-13",
    "checkedOn": "2026-10-28"
   },
+  "f172e6ff-3190-41b0-b95a-58a7ef9e9e1e": {
+   "labelDrug": "Ogsiveo (nirogacestat)",
+   "version": 16,
+   "effective": "2026-09-01",
+   "checkedOn": "2026-11-05"
+  },
   "e6433c98-41a0-4f99-8f7f-d0e9db6e3f40": {
    "labelDrug": "Ohtuvayre (ensifentrine)",
    "version": 7,
@@ -396,6 +414,18 @@
    "labelDrug": "Ojemda (tovorafenib)",
    "version": 9,
    "effective": "2025-09-02",
+   "checkedOn": "2026-11-05"
+  },
+  "4a672fd1-eb7b-4aa9-9b23-845e4b5dc400": {
+   "labelDrug": "Ojjaara (momelotinib)",
+   "version": 9,
+   "effective": "2026-07-20",
+   "checkedOn": "2026-11-05"
+  },
+  "aa66ae5c-2bd2-4444-8178-b55651e054ef": {
+   "labelDrug": "Orserdu (elacestrant)",
+   "version": 9,
+   "effective": "2026-06-24",
    "checkedOn": "2026-11-05"
   },
   "8a6d2ce0-a621-4ee7-983c-977cd948ff4d": {
