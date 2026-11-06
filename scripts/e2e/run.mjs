@@ -20,13 +20,13 @@ const base = `http://127.0.0.1:${port}`;
 for (let i = 0; i < 60; i++) { try { if ((await fetch(base + "/")).ok) break; } catch { /* server not up yet */ } await new Promise((r) => setTimeout(r, 500)); }
 process.env.E2E_BASE = base;
 process.env.E2E_LICENSE_PEPPER = pepper;
-const { launch, failures } = await import("./lib.mjs");
+const { check, launch, failures } = await import("./lib.mjs");
 const wanted = process.argv.slice(2);
 const files = fs.readdirSync(here).filter((f) => f.endsWith(".e2e.mjs")).filter((f) => !wanted.length || wanted.some((w) => f.startsWith(w)));
 const browser = await launch();
 for (const f of files) {
   console.log(`\n# ${f}`);
-  try { await (await import(pathToFileURL(path.join(here, f)).href)).default(browser); } catch (e) { console.log(`FAIL ${f} threw: ${String(e.message).split("\n")[0]}`); process.exitCode = 1; }
+  try { await (await import(pathToFileURL(path.join(here, f)).href)).default(browser); } catch (e) { check(false, `${f} threw: ${String(e.message).split("\n")[0]}`); }
 }
 await browser.close();
 try { if (win) spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"]); else process.kill(-server.pid); } catch { /* server already exited */ }
