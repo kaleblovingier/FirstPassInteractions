@@ -304,13 +304,21 @@ export function basisFor(finding: Finding): FindingBasis[] {
   // FDA Table 1 already covers the role. Still quote a named contraindication.
   // A role-only line would only repeat that the tier is the desk's rule.
   if (perpLabel && (!fda || perpLabel.detail.includes("calls this combination contraindicated"))) out.push(perpLabel);
-  const cites = citesFor(finding.drugIds).slice(0, 1);
-  if (cites[0]) {
+  // citesFor also lists papers on either drug alone (the dossier wants those). A finding on two or
+  // more drugs cites a paper only when the paper is about at least two of them.
+  const ids = new Set(finding.drugIds);
+  const cite = citesFor(finding.drugIds).find(
+    (c) =>
+      ids.size < 2 ||
+      Boolean(c.pair && ids.has(c.pair[0]) && ids.has(c.pair[1])) ||
+      [...ids].filter((id) => c.drugIds.includes(id)).length >= 2,
+  );
+  if (cite) {
     out.push({
       kind: "pubmed",
-      label: `PMID ${cites[0].pmid}`,
-      detail: `${cites[0].year} ${cites[0].journal}. ${cites[0].why}`,
-      href: pubmedUrl(cites[0].pmid),
+      label: `PMID ${cite.pmid}`,
+      detail: `${cite.year} ${cite.journal}. ${cite.why}`,
+      href: pubmedUrl(cite.pmid),
     });
   }
   if (finding.kind === "geno" || suffix.includes("pheno")) {

@@ -246,7 +246,7 @@ export function buildClinicalPacket(
   let mmeWarning: string | null = null;
   if (opioidDrugs.length > 0) {
     mmeWarning =
-      "CDC Clinical Practice Guideline (2022): Exercise extra caution when evaluating cumulative daily dosage. Dosages ≥50 MME/day warrant overdose risk discussion and naloxone co-prescription; dosages ≥90 MME/day require careful justification. Note that transdermal fentanyl, buprenorphine, and illicit opioids cannot be directly modeled with standard linear oral conversion.";
+      "CDC 2022: at ≥50 MME/day from all sources, add precautions including offering naloxone (Rec. 4 and 8); the 2022 guideline drops fixed upper thresholds. Note that transdermal fentanyl, buprenorphine, and illicit opioids cannot be directly modeled with standard linear oral conversion. Source: https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm";
   }
 
   // 3b. Anticholinergic Cognitive Burden

@@ -90,9 +90,10 @@ import { vancomycinReportOnDesk } from "../../drugs/vancomycin";
 import { aminoglycosideReportOnDesk } from "../../drugs/aminoglycosides";
 import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
+import { EXPORT_EMPTY } from "../../drugs/brief";
 
 export const STATUTORY_CDS_DISCLAIMER =
-  "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice. Provided AS IS with all faults pursuant to UCC § 2-316.";
+  "FirstPass API output is educational interaction reference information for licensed healthcare professionals. It is not FDA-cleared. Each finding carries its basis; an integration must show that basis next to the finding. Not for time-critical use, patient-facing display, or automated ordering. The FDA-approved Prescribing Information governs.";
 
 export interface ApiDrugSummary {
   id: string;
@@ -131,7 +132,8 @@ export type ApiWarningCode =
   | "host-field-not-modeled"
   | "pediatric-age-not-modeled"
   | "lactation-not-applied"
-  | "module-failed";
+  | "module-failed"
+  | "no-mapped-findings";
 
 /** Something the result does not reflect, stated instead of silently dropped. */
 export interface ApiWarning {
@@ -797,7 +799,12 @@ export class ClinicalDecisionService {
             },
           },
           query: { ...drugs.query, host },
-          warnings: [...unresolvedWarnings(drugs.query), ...warnings],
+          warnings: [
+            ...unresolvedWarnings(drugs.query),
+            ...warnings,
+            // An empty list must not read as a clearance (highestSeverity "None").
+            ...(payload.findings.length ? [] : [{ code: "no-mapped-findings" as const, detail: EXPORT_EMPTY }]),
+          ],
           summary: payload.summary,
           findings: payload.findings,
         },

@@ -4,6 +4,7 @@ import { DRUG_BY_ID, searchDrugs } from "@/lib/drugs/catalog";
 import { combinationParts, findCombination, planCombination, type CombinationHit } from "@/lib/drugs/combos";
 import { availableQuickChips } from "@/lib/drugs/quick-chips";
 import { ITEM_KIND_LABEL, type EnzymeRole } from "@/lib/drugs/types";
+import { suggestSpellings } from "@/lib/drugs/spelling";
 import { isMatDesk } from "@/lib/drugs/window";
 import { plateForDrug } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
@@ -54,6 +55,11 @@ export function DrugSearch() {
   const combo = useMemo(() => findCombination(q), [q]);
   const lead = combo ? 1 : 0;
   const comboOnDesk = combo ? combo.ids.every((id) => selected.includes(id)) : false;
+  // Click-only "Did you mean": kept out of the listbox so Enter never adds a look-alike guess.
+  const suggestions = useMemo(
+    () => (q.trim() && results.length === 0 && !combo ? suggestSpellings(q) : []),
+    [q, results, combo],
+  );
 
   useEffect(() => {
     setActive(0);
@@ -334,22 +340,56 @@ export function DrugSearch() {
           >
             <p>No match for “{q.trim()}”. Try the generic, a brand, or drop the salt (HCl, XL, ER).</p>
             <p className="mt-1 text-xs">No match does not mean an interaction is absent or a combination is safe.</p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {["grapefruit", "clarithromycin", "xylazine", "semaglutide"].map((hint) => (
-                <button
-                  key={hint}
-                  type="button"
-                  className="rounded-full bg-bg-sunken px-2.5 py-1 text-xs font-medium text-fg hover:bg-accent-soft"
-                  onClick={() => {
-                    setQ(hint);
-                    setOpen(true);
-                    inputRef.current?.focus();
-                  }}
-                >
-                  Try {hint}
-                </button>
-              ))}
-            </div>
+            {suggestions.length ? (
+              <div className="mt-2">
+                <p className="text-xs font-medium text-fg">
+                  Did you mean {suggestions.length === 1 ? "this" : `one of these ${suggestions.length}`}? Click to add;
+                  Enter won’t pick a guess.
+                  {suggestions.length > 1 ? " These names look alike: check the class before you add one." : ""}
+                </p>
+                <ul aria-label="Spelling suggestions" className="mt-1.5 flex flex-wrap gap-1.5">
+                  {suggestions.map((s) => {
+                    const ids = s.drug ? [s.drug.id] : s.combo.ids;
+                    const onDesk = ids.every((id) => selected.includes(id));
+                    return (
+                      <li key={ids.join("+")}>
+                        <button
+                          type="button"
+                          disabled={onDesk}
+                          className="min-h-9 rounded-md bg-bg-sunken px-2.5 py-1 text-left text-xs text-fg hover:bg-accent-soft disabled:opacity-60"
+                          onClick={() => (s.drug ? pick(s.drug.id) : pickCombo(s.combo))}
+                        >
+                          <span className="font-medium">{s.label}</span>
+                          <span className="text-muted">
+                            {s.drug
+                              ? ` · ${s.label === s.drug.name ? "" : `${s.drug.name} · `}${s.drug.cls}`
+                              : ` · Combination: ${combinationParts(s.combo.ids)}`}
+                            {onDesk ? " · on desk" : ""}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {["grapefruit", "clarithromycin", "xylazine", "semaglutide"].map((hint) => (
+                  <button
+                    key={hint}
+                    type="button"
+                    className="rounded-full bg-bg-sunken px-2.5 py-1 text-xs font-medium text-fg hover:bg-accent-soft"
+                    onClick={() => {
+                      setQ(hint);
+                      setOpen(true);
+                      inputRef.current?.focus();
+                    }}
+                  >
+                    Try {hint}
+                  </button>
+                ))}
+              </div>
+            )}
             <button
               type="button"
               className="mt-2 min-h-10 rounded-md px-2 text-sm font-medium text-accent underline underline-offset-2 hover:bg-accent-soft"

@@ -1,5 +1,7 @@
 # Accessibility conformance report (draft, start of a VPAT)
 
+> **Earlier note, not the current report.** This file records the contrast, focus and reflow checks that led into the draft ACR. The current draft is [ACR-WCAG22.md](ACR-WCAG22.md) (refreshed 2026-11-05). Nothing here is a conformance claim.
+
 **Product:** FirstPass desk (https://firstpass-desk.vercel.app/)
 **Standards:** WCAG 2.1 Level A and AA; Section 508 (which incorporates WCAG 2.0 AA)
 **Status:** Draft. Automated checks pass. Manual checks listed below have not been done yet, so this is not a conformance claim.

@@ -177,7 +177,7 @@ export const HAZARDS: { id: string; hazard: string; control: string }[] = [
   {
     id: "H4",
     hazard: "Patient uses the desk without an HCP.",
-    control: "Intended-use statement and an HCP notice that stays up until the user acknowledges it. The desk does not verify licensure. Dose rails are HCP-directed labeled ranges, not a prescription writer.",
+    control: "Intended-use statement and an HCP notice that stays up until the user acknowledges it. Dose and infusion-rate calculators open only after the user confirms they are a licensed HCP or a supervised health-professions student and will not use them for time-critical decisions. The confirmation is saved with its version in that browser and asked again when the version changes. The desk does not verify licensure. Dose rails are HCP-directed labeled ranges, not a prescription writer.",
   },
   {
     id: "H5",

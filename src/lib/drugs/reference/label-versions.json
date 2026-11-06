@@ -14,6 +14,12 @@
    "effective": "2026-08-13",
    "checkedOn": "2026-10-28"
   },
+  "7e635909-c6fd-4f0d-ae77-cdff03653a20": {
+   "labelDrug": "Alyftrek (vanzacaftor–tezacaftor–deutivacaftor)",
+   "version": 9,
+   "effective": "2026-08-26",
+   "checkedOn": "2026-11-04"
+  },
   "4074b555-7635-41a9-809d-fae3b3610059": {
    "labelDrug": "Anafranil (clomipramine)",
    "version": 22,
@@ -56,6 +62,12 @@
    "effective": "2026-08-27",
    "checkedOn": "2026-10-28"
   },
+  "80b57cfe-7819-4d95-a57d-014af42f118d": {
+   "labelDrug": "Blujepa (gepotidacin)",
+   "version": 3,
+   "effective": "2026-02-10",
+   "checkedOn": "2026-11-04"
+  },
   "f7b3f443-e83d-4bf2-0e96-023448fed9a8": {
    "labelDrug": "Brilinta (ticagrelor)",
    "version": 56,
@@ -79,6 +91,12 @@
    "version": 1,
    "effective": "2026-03-23",
    "checkedOn": "2026-10-28"
+  },
+  "669c936b-3ee6-4e36-8a22-79dd11b1255b": {
+   "labelDrug": "Camzyos (mavacamten)",
+   "version": 9,
+   "effective": "2026-09-30",
+   "checkedOn": "2026-11-04"
   },
   "4259d9b1-de34-43a4-85a8-41dd214e9177": {
    "labelDrug": "Celexa (citalopram)",
@@ -236,6 +254,12 @@
    "effective": "2026-07-23",
    "checkedOn": "2026-10-28"
   },
+  "f42884ff-7dff-419c-8a0c-affe2ed73818": {
+   "labelDrug": "Lynkuet (elinzanetant)",
+   "version": 10,
+   "effective": "2026-06-16",
+   "checkedOn": "2026-11-04"
+  },
   "95fde749-44ad-4668-86c4-0ff17bca0074": {
    "labelDrug": "Marplan (isocarboxazid)",
    "version": 1,
@@ -302,6 +326,12 @@
    "effective": "2026-02-13",
    "checkedOn": "2026-10-28"
   },
+  "e6433c98-41a0-4f99-8f7f-d0e9db6e3f40": {
+   "labelDrug": "Ohtuvayre (ensifentrine)",
+   "version": 7,
+   "effective": "2026-10-13",
+   "checkedOn": "2026-11-04"
+  },
   "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27": {
    "labelDrug": "Parnate (tranylcypromine)",
    "version": 11,
@@ -325,6 +355,12 @@
    "version": 5,
    "effective": "2026-08-12",
    "checkedOn": "2026-10-28"
+  },
+  "440a5f17-ab11-0fc8-e063-6394a90a58e9": {
+   "labelDrug": "Pivya (pivmecillinam)",
+   "version": 1,
+   "effective": "2025-10-10",
+   "checkedOn": "2026-11-04"
   },
   "de8b0b67-eb25-4684-83b5-7ad785314227": {
    "labelDrug": "Plavix (clopidogrel)",
@@ -530,6 +566,12 @@
    "effective": "2026-04-30",
    "checkedOn": "2026-10-28"
   },
+  "21693ee2-cd23-4137-ac67-066bb3a4a9b7": {
+   "labelDrug": "Winrevair (sotatercept)",
+   "version": 13,
+   "effective": "2026-09-21",
+   "checkedOn": "2026-11-04"
+  },
   "c4d65f28-983f-42b4-bb23-023ae0fe81b2": {
    "labelDrug": "Xadago (safinamide)",
    "version": 22,
@@ -547,6 +589,12 @@
    "version": 21,
    "effective": "2019-11-01",
    "checkedOn": "2026-10-28"
+  },
+  "7f3a5ee3-ca73-4876-85a0-ed1e108a2237": {
+   "labelDrug": "Xolremdi (mavorixafor)",
+   "version": 7,
+   "effective": "2024-11-12",
+   "checkedOn": "2026-11-04"
   },
   "926eb076-a4a8-45e4-91ef-411f0aa4f3ca": {
    "labelDrug": "Xyrem (sodium oxybate)",

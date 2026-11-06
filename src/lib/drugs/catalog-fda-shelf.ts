@@ -4,6 +4,7 @@
  * Not a dose. Not a therapeutic class. Not a new finding.
  */
 import type { Drug, Enzyme, EnzymeRole, ItemKind, PdFlag, Strength, SubstrateSensitivity } from "./types";
+import { MARKET_STATUS } from "./catalog-label-names";
 
 function sub(
   enzyme: Enzyme,
@@ -88,7 +89,7 @@ export const FDA_TABLE_SHELF: Drug[] = [
     [inh("CYP2D6", "moderate")],
     [],
     "FDA Table 1 role only. Not a dose.",
-    { note: NOTE }),
+    { note: `${MARKET_STATUS.lorcaserin} ${NOTE}` }),
   d("methoxsalen", "methoxsalen", [], "FDA Table 1 example",
     [inh("CYP1A2", "moderate")],
     [],
