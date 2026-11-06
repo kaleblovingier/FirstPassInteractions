@@ -21,7 +21,7 @@ const files = readdirSync(DIR);
 for (const [name, limit] of Object.entries(BUDGET)) {
   // The entry is the largest index-*.js; catalog-*.js is the catalog chunk, not catalog-clinic etc.
   const hits = files
-    .filter((f) => new RegExp(`^${name}-[A-Za-z0-9_-]+\.js$`).test(f))
+    .filter((f) => new RegExp(`^${name}-[A-Za-z0-9_-]+[.]js$`).test(f))
     .map((f) => ({ f, buf: readFileSync(join(DIR, f)) }))
     .sort((a, b) => b.buf.length - a.buf.length);
   assert.ok(hits.length, `no ${name}-*.js chunk in ${DIR}; build first`);
