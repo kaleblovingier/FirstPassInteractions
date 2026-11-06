@@ -10,7 +10,7 @@ import { pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
-import { NLM_ATTRIBUTION } from "@/lib/seo/legal";
+import { CPIC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
   ITEM_KIND_LABEL,
   PHENOTYPE_ENZYMES,
@@ -736,6 +736,7 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
         genetic test result or a reading of one. Open the guideline for the official algorithm. Not a
         test order, not a dose, and not a green light if a row is quiet.
       </p>
+      <p className="text-[11px] leading-relaxed text-subtle">{CPIC_CREDIT}</p>
     </div>
   );
 }
@@ -813,7 +814,8 @@ function StahlPanel({ name, card }: { name: string; card: StahlCard }) {
       <p className="text-[11px] leading-relaxed text-subtle">
         Educational receptor sketch (spectrum first, then how hard it sits on each target, then side
         effects that follow). Original language — not a quotation of Stahl’s Essential
-        Psychopharmacology. Not a dose and not a prescription.
+        Psychopharmacology. Not a dose and not a prescription. Not affiliated with or endorsed by Dr.
+        Stephen M. Stahl, the Neuroscience Education Institute or Cambridge University Press.
       </p>
     </div>
   );

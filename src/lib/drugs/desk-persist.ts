@@ -70,6 +70,7 @@ const PERSISTED_KEYS = [
   "previewUntil",
   "previewUsed",
   "hcpAck",
+  "doseAttest",
 ] as const;
 
 const persistedKeySet = new Set<string>(PERSISTED_KEYS);
@@ -111,6 +112,7 @@ export const DeskPersistedSchema = z.object({
   previewUntil: z.number().finite().nullable(),
   previewUsed: z.boolean(),
   hcpAck: z.boolean(),
+  doseAttest: z.object({ v: z.number().finite(), at: z.number().finite() }).nullable(),
 });
 
 export type DeskPersisted = z.infer<typeof DeskPersistedSchema>;
@@ -142,6 +144,7 @@ export function defaultPersistedDesk(): DeskPersisted {
     previewUntil: null,
     previewUsed: false,
     hcpAck: false,
+    doseAttest: null,
   };
 }
 
@@ -166,6 +169,7 @@ export function partializeDesk(s: DeskPersisted): DeskPersisted {
     previewUntil: s.previewUntil,
     previewUsed: s.previewUsed,
     hcpAck: s.hcpAck,
+    doseAttest: s.doseAttest,
   };
 }
 
@@ -385,6 +389,13 @@ function readBool(raw: unknown, present: boolean, fallback: boolean): { value: b
   return { value: fallback, corrected: true };
 }
 
+/** The calculator attestation: a malformed record reads as not attested, so the gate asks again. */
+function readDoseAttest(raw: unknown, present: boolean): { value: DeskPersisted["doseAttest"]; corrected: boolean } {
+  if (!present || raw === null) return { value: null, corrected: false };
+  const parsed = DeskPersistedSchema.shape.doseAttest.safeParse(raw);
+  return parsed.success ? { value: parsed.data, corrected: false } : { value: null, corrected: true };
+}
+
 function readPreviewUntil(raw: unknown, present: boolean, current: number | null): { value: number | null; corrected: boolean } {
   if (!present) return { value: current, corrected: false };
   if (raw === null) return { value: null, corrected: false };
@@ -417,6 +428,7 @@ function emptyHydration(current: DeskPersisted): DeskHydration {
       programNote: null,
       previewUsed: false,
       hcpAck: false,
+      doseAttest: null,
     },
   };
 }
@@ -481,6 +493,7 @@ export function readDeskStorageState(persisted: unknown, current: DeskPersisted 
   );
   const previewUsed = readBool(persisted.previewUsed, Object.hasOwn(persisted, "previewUsed"), false);
   const hcpAck = readBool(persisted.hcpAck, Object.hasOwn(persisted, "hcpAck"), false);
+  const doseAttest = readDoseAttest(persisted.doseAttest, Object.hasOwn(persisted, "doseAttest"));
   const previewUsedValue = previewUsed.value || typeof previewUntil.value === "number";
 
   rewrite =
@@ -500,7 +513,8 @@ export function readDeskStorageState(persisted: unknown, current: DeskPersisted 
     programNote.corrected ||
     previewUntil.corrected ||
     previewUsed.corrected ||
-    hcpAck.corrected;
+    hcpAck.corrected ||
+    doseAttest.corrected;
 
   return seal(
     {
@@ -523,6 +537,7 @@ export function readDeskStorageState(persisted: unknown, current: DeskPersisted 
       previewUntil: previewUntil.value,
       previewUsed: previewUsedValue,
       hcpAck: hcpAck.value,
+      doseAttest: doseAttest.value,
     },
     rewrite,
   );

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { searchDrugs } from "./catalog";
 import { findCombination } from "./combos";
+import { suggestSpellings } from "./spelling";
 import { resolveDrugQuery } from "../server/api/cds-service";
 
 /**
@@ -280,6 +281,16 @@ test("desk search puts the intended row first for at least the floor", () => {
   const missed = misses(deskAdds);
   const hit = QUERIES.length - missed.length;
   assert.ok(hit >= DESK_FLOOR, `desk ${hit}/${QUERIES.length} below floor ${DESK_FLOOR}:\n${missed.join("\n")}`);
+});
+
+test("every misspelling the desk misses offers the intended row first, and Enter still adds nothing", () => {
+  const missed = QUERIES.filter(([query, want, kind]) => kind === "misspelling" && !hits(want, deskAdds(query)));
+  assert.ok(missed.length >= 19, `${missed.length} desk-missed misspellings`);
+  for (const [query, want] of missed) {
+    assert.deepEqual(deskAdds(query), [], `${query}: Enter must not add a guess`);
+    const first = suggestSpellings(query)[0];
+    assert.equal(first?.drug?.id ?? first?.combo?.ids.join("+"), want, `${query}: first suggestion`);
+  }
 });
 
 test("API resolves the intended rows for at least the floor", () => {

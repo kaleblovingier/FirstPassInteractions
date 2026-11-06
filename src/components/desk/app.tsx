@@ -89,6 +89,8 @@ import { WindowExtras } from "./tray";
 import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
 import { PrescribingStrip } from "./pi";
+import { CommandPalette } from "./command-palette";
+import { DESK_VIEWS } from "@/lib/drugs/palette";
 
 const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
 const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
@@ -330,21 +332,7 @@ export function DeskApp() {
           </div>
           <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:justify-end">
             <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap xl:flex-nowrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:rounded-full">
-              {(
-                [
-                  ["desk", "Desk"],
-                  ["library", "Library"],
-                  ["cites", "Sources"],
-                  ["atlas", "Enzyme map"],
-                  ["study", "Learn"],
-                  ["rounds", "Cases"],
-                  ["compare", "Compare"],
-                  ["watch", "Watch"],
-                  ["label", "Safety"],
-                  ["help", "Find help"],
-                  ["plans", "Plans"],
-                ] as const
-              ).map(([id, label]) => (
+              {DESK_VIEWS.map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
@@ -366,6 +354,7 @@ export function DeskApp() {
                 Practice
               </a>
             </nav>
+            <CommandPalette />
             {!hydrated || !pro ? (
               <Button size="sm" className="hidden shrink-0 sm:inline-flex" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
@@ -1600,10 +1589,10 @@ function HowCard() {
           mycophenolate. Teaching notes, not a label. Search beers / pregnant.
         </li>
         <li>
-          <span className="text-fg">Sources.</span> DrugBank is identity and targets — open the
-          accession. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching
-          row highlights. Stahl is a receptor sketch (spectrum, occupancy, side effects from those
-          receptors) in original language, not a quotation of the book. PubMed is a curated PMID
+          <span className="text-fg">Sources.</span> DrugBank accession ids (CC0 vocabulary) for lookup;
+          target labels are FirstPass summaries. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching
+          row highlights. The receptor sketch (spectrum, occupancy, side effects from those
+          receptors) is in original language, not a quotation of a textbook. PubMed is a curated PMID
           shelf plus a live NCBI search for the pair on the desk. Search pgx / stahl / drugbank /
           pubmed.
         </li>

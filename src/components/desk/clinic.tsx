@@ -2,6 +2,7 @@ import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { alertsFor } from "@/lib/drugs/alerts";
 import { clinicFor, type ClinicCard, type ClinicFlag } from "@/lib/drugs/clinic";
 import type { HostContext } from "@/lib/drugs/types";
+import { BEERS_CREDIT } from "@/lib/seo/legal";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -174,6 +175,7 @@ export function ClinicPanel({ ids, host }: { ids: string[]; host: HostContext })
             Steer clear / Watch / Usually fine are teaching bins for these notes — not a personal clearance.
             Quiet flags still need the full label.
           </p>
+          <p className="mt-2 text-xs leading-relaxed text-muted">{BEERS_CREDIT}</p>
         </>
       )}
     </section>
