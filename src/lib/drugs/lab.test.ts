@@ -7,8 +7,32 @@ import {
   labReceiptCsv,
   sampleForLab,
   type LabReceipt,
+  writeLabAnswer,
 } from "./lab.ts";
 import { sampleNeedsPro } from "./samples.ts";
+import { writeWatchlist } from "./watchlist.ts";
+
+test("lab answers and the watchlist survive storage that refuses writes", () => {
+  const g = globalThis as { window?: unknown };
+  const had = Object.hasOwn(g, "window");
+  const prev = g.window;
+  g.window = {
+    localStorage: {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error("QuotaExceededError");
+      },
+    },
+  };
+  try {
+    assert.doesNotThrow(() => writeLabAnswer(LAB_ASSIGNMENTS[0]!.id, "draft"));
+    assert.equal(writeLabAnswer(LAB_ASSIGNMENTS[0]!.id, "draft").text, "draft");
+    assert.deepEqual(writeWatchlist({ ids: ["ketamine"] }).ids, ["ketamine"]);
+  } finally {
+    if (had) g.window = prev;
+    else delete g.window;
+  }
+});
 
 test("eight seeded lab assignments resolve to real samples", () => {
   assert.equal(LAB_ASSIGNMENTS.length, 8);

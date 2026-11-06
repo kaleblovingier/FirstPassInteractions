@@ -150,7 +150,11 @@ export function writeLabAnswer(assignmentId: string, text: string): LabAnswer {
   if (typeof window === "undefined") return next;
   const book = readLabBook();
   book[assignmentId] = next;
-  window.localStorage.setItem(LAB_STORAGE_KEY, JSON.stringify(book));
+  try {
+    window.localStorage.setItem(LAB_STORAGE_KEY, JSON.stringify(book));
+  } catch {
+    // Private mode or full quota: the answer still shows for this session.
+  }
   return next;
 }
 

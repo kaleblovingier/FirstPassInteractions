@@ -307,6 +307,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                   step="0.1"
                   min="0.1"
                   max="15.0"
+                  aria-label="Serum digoxin (ng/mL)"
                   value={sdcInput}
                   onChange={(e) => setSdcInput(e.target.value)}
                   className="font-mono text-center font-bold text-xs"
@@ -316,6 +317,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                   min="0.1"
                   max="6.0"
                   step="0.1"
+                  aria-label="Serum digoxin (ng/mL)"
                   value={numSdc}
                   onChange={(e) => setSdcInput(e.target.value)}
                   className="w-full mt-2 accent-accent cursor-pointer"
@@ -334,6 +336,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                   step="1"
                   min="1"
                   max="48"
+                  aria-label="Hours post-dose"
                   value={hoursPostDoseInput}
                   onChange={(e) => setHoursPostDoseInput(e.target.value)}
                   className={cn(
@@ -346,6 +349,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                   min="1"
                   max="24"
                   step="1"
+                  aria-label="Hours post-dose"
                   value={numHours}
                   onChange={(e) => setHoursPostDoseInput(e.target.value)}
                   className="w-full mt-2 accent-accent cursor-pointer"
@@ -362,6 +366,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                   step="1"
                   min="30"
                   max="180"
+                  aria-label="Patient weight (kg)"
                   value={weightKgInput}
                   onChange={(e) => setWeightKgInput(e.target.value)}
                   className="font-mono text-center font-bold text-xs"
@@ -371,6 +376,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                   min="40"
                   max="140"
                   step="1"
+                  aria-label="Patient weight (kg)"
                   value={numWeight}
                   onChange={(e) => setWeightKgInput(e.target.value)}
                   className="w-full mt-2 accent-accent cursor-pointer"

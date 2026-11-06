@@ -278,6 +278,7 @@ describe("POST /api/programs/inquiry", () => {
   });
 
   it("limits each IP", async () => {
+    process.env.VERCEL = "1";
     const { max } = INQUIRY_RATE_LIMITS.ip;
     for (let i = 0; i < max; i += 1) assert.equal((await call({ ...GOOD, email: `p${i}@school.example.edu` })).status, 200);
     const r = await call({ ...GOOD, email: "another@school.example.edu" });

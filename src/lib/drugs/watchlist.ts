@@ -3,7 +3,7 @@
  * localStorage only — no PHI. Educational truncated surface; PI / FDA shortage page wins.
  */
 
-import { DRUG_BY_ID } from "./catalog";
+import { isCatalogId } from "./catalog";
 import { isVirtual } from "./host";
 import type { PlanId } from "@/lib/billing/plans";
 
@@ -22,7 +22,7 @@ export function watchCap(plan: PlanId | "free" | "pro" | "lab"): number {
 }
 
 function cleanId(id: string): string | null {
-  if (!id || isVirtual(id) || !DRUG_BY_ID[id]) return null;
+  if (!id || isVirtual(id) || !isCatalogId(id)) return null;
   return id;
 }
 
@@ -64,7 +64,11 @@ export function writeWatchlist(state: WatchlistState): WatchlistState {
     updatedAt: new Date().toISOString(),
   };
   if (typeof window === "undefined") return next;
-  window.localStorage.setItem(WATCH_STORAGE_KEY, JSON.stringify(next));
+  try {
+    window.localStorage.setItem(WATCH_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // Private mode or full quota: keep the in-memory list for this session.
+  }
   return next;
 }
 

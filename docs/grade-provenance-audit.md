@@ -9,34 +9,34 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 
 | | Before | After |
 |---|---|---|
-| Pages | 542 | 542 |
-| Verbatim label quote + DailyMed link visible (0 clicks) | 542 | 542 (quote block unchanged) |
-| Graded finding's own basis + link shown ("Why this grade", open) | 0 | 542 |
-| ...of which a label quote/section with DailyMed link | 0 | 542 |
+| Pages | 545 | 545 |
+| Verbatim label quote + DailyMed link visible (0 clicks) | 545 | 545 (quote block unchanged) |
+| Graded finding's own basis + link shown ("Why this grade", open) | 0 | 545 |
+| ...of which a label quote/section with DailyMed link | 0 | 545 |
 | Grade rests only on a catalog rule (shown as such) | not stated | 0 |
 
 ## Drug pages (/drug/...)
 
 | | Before | After |
 |---|---|---|
-| Graded pair rows | 1084 | 1084 |
-| Basis + source link in one click | 0 (two clicks, via the pair page) | 1084 |
+| Graded pair rows | 1090 | 1090 |
+| Basis + source link in one click | 0 (two clicks, via the pair page) | 1090 |
 | Rows with an honest catalog-rule note instead | 0 | 0 |
 
 ## Desk check row (pairs behind the pair pages)
 
 | | Before | After |
 |---|---|---|
-| Pair findings | 1257 | 1257 |
-| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1190 |
+| Pair findings | 1262 | 1262 |
+| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1195 |
 | Lead basis is a catalog-rule note | not stated | 67 |
 
 ## Whole catalog: grades resting only on an engine rule
 
 | Tier | Findings | Rule-only | Share |
 |---|---|---|---|
-| Avoid together | 3038 | 25 | 0.8% |
-| Serious concern | 75310 | 21253 | 28.2% |
+| Avoid together | 3041 | 25 | 0.8% |
+| Serious concern | 75309 | 21253 | 28.2% |
 
 Top rule-only rules:
 

@@ -2,7 +2,7 @@ import { labAssignment, sampleForLab, type LabAssignment } from "./lab";
 import { SAMPLE_REGIMENS, type SampleRegimen } from "./samples";
 import type { LoadExtras } from "./store";
 import type { KetamineRoute } from "./types";
-import { DRUG_BY_ID } from "./catalog";
+import { isCatalogId } from "./catalog";
 import { buildBriefUrl as briefUrlFromIds } from "./brief";
 import { isVirtual } from "./host";
 import { CASE_OF_THE_DAY_PARAM, caseOfTheDay } from "./case-of-the-day";
@@ -230,9 +230,10 @@ export function parseBriefIds(raw: string | null | undefined): string[] {
   const out: string[] = [];
   const seen = new Set<string>();
   for (const part of raw.split(",")) {
-    const id = decodeURIComponent(part.trim());
+    // URLSearchParams.get already decoded the value; decoding again throws on a bare "%".
+    const id = part.trim();
     if (!id || isVirtual(id) || seen.has(id)) continue;
-    if (!DRUG_BY_ID[id]) continue;
+    if (!isCatalogId(id)) continue;
     seen.add(id);
     out.push(id);
     if (out.length >= 8) break;

@@ -424,6 +424,7 @@ const EXPECTED_PINS = [
   "naltrexone-bupropion+linezolid",
   "naltrexone-bupropion+methylene-blue",
   "dofetilide+tmp-smx",
+  "dofetilide+trimethoprim",
   "dofetilide+hctz",
   "thioridazine+pindolol",
   "sildenafil-pah+riociguat",
@@ -575,7 +576,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 60);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 61);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 155);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 51);
@@ -833,5 +834,23 @@ test("Varubi pins hold the existing CYP2D6 inhibitor card and stay on the two na
   for (const other of ["atomoxetine", "desipramine", "nortriptyline"]) {
     assert.equal(labelContraindicationFor("rolapitant", other), undefined, other);
     assert.equal(pairSeverity("rolapitant", other), "major", other);
+  }
+});
+
+test("Tikosyn names trimethoprim alone or with sulfamethoxazole: both catalog rows read contraindicated", () => {
+  const tmp = labelContraindicationById("dofetilide+trimethoprim");
+  const combo = labelContraindicationById("dofetilide+tmp-smx");
+  assert.ok(tmp && combo);
+  // One label sentence covers both rows; the two pins quote it identically.
+  assert.equal(tmp.quote, combo.quote);
+  assert.equal(tmp.labelExample, combo.labelExample);
+  assert.equal(tmp.url, combo.url);
+  assert.match(tmp.quote, /trimethoprim \(alone or in combination with sulfamethoxazole\)/);
+  for (const other of ["trimethoprim", "tmp-smx"]) {
+    assert.equal(pairSeverity("dofetilide", other), "contraindicated", other);
+    assert.equal(pairSeverity(other, "dofetilide"), "contraindicated", other);
+    const pinned = pairFindings("dofetilide", other).filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+    assert.equal(pinned.length, 1, other);
+    assert.deepEqual(pinned[0].enzymes, [], `${other}: no CYP grade on this pin`);
   }
 });
