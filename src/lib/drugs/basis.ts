@@ -114,7 +114,7 @@ const PI: Record<string, string> = {
   "dose-over-max":
     "Prescribing Information labeled maximum. Above this number is off-label unless a different indication says otherwise. Open the PI.",
   "pd-asa-nsaid":
-    "Aspirin and ibuprofen labels. Ibuprofen occupies COX-1 and can block aspirin acetylation if taken around the ASA dose. Catella-Lawson 2001 (PMID 11248154). GI bleed is a separate row.",
+    "Aspirin and ibuprofen labels. Ibuprofen occupies COX-1 and can block aspirin acetylation if taken around the ASA dose. Catella-Lawson 2001 (PMID 11752357). GI bleed is a separate row.",
   "pd-lamo-vpa":
     "Lamictal PI: valproate roughly doubles lamotrigine via UGT. Labeled starter kits. SJS/TEN boxed. Yuen 1992 (PMID 1524964). This desk does not pick the milligram.",
   "pd-lamo-ee":

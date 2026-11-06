@@ -441,6 +441,7 @@ describe("Glycemic Kinetics, DKA/HHS Protocols, Potassium Safety Gate & Inpatien
         patientWeightKg: 75,
         serumPotassium: 3.1,
         bloodGlucose: 420,
+        measuredSodium: 134,
       });
 
       assert.equal(report.potassiumGate.status, "critical-hold-insulin");

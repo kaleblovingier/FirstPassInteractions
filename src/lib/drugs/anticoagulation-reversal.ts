@@ -23,6 +23,7 @@ import { DRUG_BY_ID } from "./catalog";
 import { ANDEXXA_FDA_URL, ANDEXXA_REVERSAL_NOTE, ANDEXXA_US_STATUS } from "./catalog-label-names";
 import { type HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
+import { withoutWeightMath, type WithoutWeightMath } from "./status-epilepticus";
 
 // ============================================================================
 // 1. STATUTORY REGULATORY DISCLAIMER (FD&C Act § 520(o)(1)(E))
@@ -1725,16 +1726,17 @@ export interface AnticoagulationReportOptions {
 
 export interface AnticoagulationReport {
   onDesk: AnticoagulationOnDeskResult;
+  /** Only values the caller entered; none is assumed. */
   patientParameters: {
-    weightKg: number;
-    baselineInr: number;
-    lastDoseMg: number;
-    hoursSinceLastDose: number;
-    crClMlMin: number;
+    weightKg?: number;
+    baselineInr?: number;
+    lastDoseMg?: number;
+    hoursSinceLastDose?: number;
+    crClMlMin?: number;
   };
   hit4TsEvaluation?: Hit4TsResult;
-  argatrobanKinetics?: ArgatrobanKineticsResult;
-  bivalirudinKinetics?: BivalirudinKineticsResult;
+  argatrobanKinetics?: ArgatrobanKineticsResult | WithoutWeightMath<ArgatrobanKineticsResult>;
+  bivalirudinKinetics?: BivalirudinKineticsResult | WithoutWeightMath<BivalirudinKineticsResult>;
   argatrobanWarfarinCrossover?: ArgatrobanWarfarinCrossoverEvaluation;
   andexanetDosing?: AndexanetAlfaProtocolResult;
   idarucizumabProtocol?: IdarucizumabProtocolResult;
@@ -1744,8 +1746,14 @@ export interface AnticoagulationReport {
   activeDrugProfiles: AnticoagulantProfile[];
   relevantLabTraps: LabTrapItem[];
   highYieldClinicalPearls: string[];
+  /** Which inputs were not entered, so what they would size is left out. */
+  inputsNeeded?: string;
   disclaimer: string;
 }
+
+/** What each missing input would have sized; nothing is computed from an assumed value. */
+export const ANTICOAG_SIZING_RULE =
+  "Nothing is sized from a value that was not entered: weight sizes the argatroban and bivalirudin rates (each keeps its cited per-kg rate) and the 4F-PCC units; an INR picks the 4F-PCC tier and the argatroban–warfarin crossover step; the last dose and the hours since it size protamine and andexanet; a 4Ts score needs entered platelet counts or findings. Enter them to size those sections.";
 
 /**
  * Comprehensive clinical report generator for anticoagulation reversal, HIT triage,
@@ -1758,22 +1766,26 @@ export function anticoagulationReportOnDesk(
 ): AnticoagulationReport {
   const onDesk = anticoagulationOnDesk(drugIds);
 
-  const weightKg = options?.weightKg ?? 70;
-  const baselineInr = options?.baselineInr ?? (onDesk.hasVka ? 3.8 : 1.1);
-  const lastDoseMg = options?.lastDoseMg ?? (drugIds.includes("apixaban") ? 5 : drugIds.includes("rivaroxaban") ? 20 : 100);
-  const hoursSinceLastDose = options?.hoursSinceLastDose ?? 4;
-  const crClMlMin = options?.crClMlMin ?? (host.kidney === "ckd" ? 25 : 85);
+  // Entered values only (an API call enters none); each section below needs its own.
+  const weightKg = options?.weightKg;
+  const baselineInr = options?.baselineInr;
+  const lastDoseMg = options?.lastDoseMg;
+  const hoursSinceLastDose = options?.hoursSinceLastDose;
+  const crClMlMin = options?.crClMlMin;
 
   // 1. HIT 4Ts Evaluation
   let hit4TsEvaluation: Hit4TsResult | undefined;
   if (options?.hit4TsInput) {
     hit4TsEvaluation = calculateHit4TsScore(options.hit4TsInput);
   } else if (
-    drugIds.includes("heparin") ||
-    drugIds.includes("enoxaparin") ||
-    drugIds.includes("dalteparin") ||
-    options?.plateletNadir !== undefined ||
-    options?.hitThrombocytopeniaScore !== undefined
+    // With nothing entered every domain would score 0 and read as a "Low" probability.
+    [
+      options?.plateletNadir,
+      options?.hitThrombocytopeniaScore,
+      options?.hitTimingScore,
+      options?.hitThrombosisScore,
+      options?.hitOtherCausesScore,
+    ].some((entered) => entered !== undefined)
   ) {
     hit4TsEvaluation = calculateHit4TsScore({
       thrombocytopeniaScore: options?.hitThrombocytopeniaScore,
@@ -1785,31 +1797,29 @@ export function anticoagulationReportOnDesk(
     });
   }
 
-  // 2. Direct Thrombin Inhibitor Kinetics
-  let argatrobanKinetics: ArgatrobanKineticsResult | undefined;
+  // 2. Direct Thrombin Inhibitor Kinetics. With no entered weight, the rate arithmetic (fed 0 kg) is dropped
+  // and the cited per-kg rate stays.
+  let argatrobanKinetics: AnticoagulationReport["argatrobanKinetics"];
   if (drugIds.includes("argatroban") || options?.hepaticImpairment !== undefined) {
-    argatrobanKinetics = calculateArgatrobanKinetics({
-      weightKg,
-      hepaticImpairment: options?.hepaticImpairment,
-    });
+    const k = calculateArgatrobanKinetics({ weightKg: weightKg ?? 0, hepaticImpairment: options?.hepaticImpairment });
+    argatrobanKinetics = weightKg === undefined ? withoutWeightMath(k) : k;
   }
 
-  let bivalirudinKinetics: BivalirudinKineticsResult | undefined;
+  let bivalirudinKinetics: AnticoagulationReport["bivalirudinKinetics"];
   if (drugIds.includes("bivalirudin") || options?.renalStatus !== undefined) {
-    bivalirudinKinetics = calculateBivalirudinKinetics({
-      weightKg,
-      renalStatus: options?.renalStatus,
-    });
+    const k = calculateBivalirudinKinetics({ weightKg: weightKg ?? 0, renalStatus: options?.renalStatus });
+    bivalirudinKinetics = weightKg === undefined ? withoutWeightMath(k) : k;
   }
 
-  // 3. Argatroban-Warfarin Crossover Trap
+  // 3. Argatroban-Warfarin Crossover Trap: the step needs an entered INR.
   let argatrobanWarfarinCrossover: ArgatrobanWarfarinCrossoverEvaluation | undefined;
+  const crossoverInr = options?.combinedInr ?? baselineInr;
   if (
-    (drugIds.includes("argatroban") && drugIds.includes("warfarin")) ||
-    options?.combinedInr !== undefined
+    crossoverInr !== undefined &&
+    ((drugIds.includes("argatroban") && drugIds.includes("warfarin")) || options?.combinedInr !== undefined)
   ) {
     argatrobanWarfarinCrossover = evaluateArgatrobanWarfarinCrossover({
-      combinedInr: options?.combinedInr ?? baselineInr,
+      combinedInr: crossoverInr,
       daysOnCombinedTherapy: options?.daysOnCombinedTherapy ?? 1,
     });
   }
@@ -1817,7 +1827,7 @@ export function anticoagulationReportOnDesk(
   // 4. Targeted Reversal: Andexanet alfa — sized only from an entered last dose and time, never assumed ones.
   let andexanetDosing: AndexanetAlfaProtocolResult | undefined;
   const andexAgent = drugIds.includes("apixaban") ? "apixaban" : drugIds.includes("rivaroxaban") ? "rivaroxaban" : null;
-  if (andexAgent && options?.lastDoseMg !== undefined && options?.hoursSinceLastDose !== undefined) {
+  if (andexAgent && lastDoseMg !== undefined && hoursSinceLastDose !== undefined) {
     andexanetDosing = calculateAndexanetAlfaDosing({ agent: andexAgent, lastDoseMg, hoursSinceLastDose });
   }
 
@@ -1827,9 +1837,9 @@ export function anticoagulationReportOnDesk(
     idarucizumabProtocol = getIdarucizumabProtocol();
   }
 
-  // 6. Urgent Warfarin Reversal: 4F-PCC + Vitamin K
+  // 6. Urgent Warfarin Reversal: 4F-PCC + Vitamin K. The tier needs an entered INR, the units an entered weight.
   let fourFactorPccWarfarinDosing: FourFactorPccWarfarinDosingResult | undefined;
-  if (drugIds.includes("warfarin") || baselineInr >= 2.0) {
+  if (baselineInr !== undefined && weightKg !== undefined && (drugIds.includes("warfarin") || baselineInr >= 2.0)) {
     fourFactorPccWarfarinDosing = calculate4FPccWarfarinDosing({
       baselineInr,
       weightKg,
@@ -1842,29 +1852,14 @@ export function anticoagulationReportOnDesk(
     fourFactorPccDoacGuidance = get4FPccOffLabelDoacGuidance();
   }
 
-  // 8. Protamine Sulfate Heparin Neutralization
+  // 8. Protamine Sulfate Heparin Neutralization — sized only from an entered last dose and time.
   let protamineDosing: ProtamineDosingResult | undefined;
-  if (drugIds.includes("heparin")) {
+  const protamineAgent = (["heparin", "enoxaparin", "fondaparinux"] as const).find((id) => drugIds.includes(id));
+  // A heparin dose is entered in units; 100 or less is the mg of another agent, so it sizes nothing here.
+  const noHeparinUnits = protamineAgent === "heparin" && lastDoseMg !== undefined && lastDoseMg <= 100;
+  if (protamineAgent && lastDoseMg !== undefined && hoursSinceLastDose !== undefined && !noHeparinUnits) {
     protamineDosing = calculateProtamineDosing({
-      agent: "heparin",
-      doseUnitsOrMg: lastDoseMg > 100 ? lastDoseMg : 5000,
-      hoursElapsed: hoursSinceLastDose,
-      fishAllergy: options?.fishAllergy,
-      priorNphInsulin: options?.priorNphInsulin,
-      priorVasectomy: options?.priorVasectomy,
-    });
-  } else if (drugIds.includes("enoxaparin")) {
-    protamineDosing = calculateProtamineDosing({
-      agent: "enoxaparin",
-      doseUnitsOrMg: lastDoseMg,
-      hoursElapsed: hoursSinceLastDose,
-      fishAllergy: options?.fishAllergy,
-      priorNphInsulin: options?.priorNphInsulin,
-      priorVasectomy: options?.priorVasectomy,
-    });
-  } else if (drugIds.includes("fondaparinux")) {
-    protamineDosing = calculateProtamineDosing({
-      agent: "fondaparinux",
+      agent: protamineAgent,
       doseUnitsOrMg: lastDoseMg,
       hoursElapsed: hoursSinceLastDose,
       fishAllergy: options?.fishAllergy,
@@ -1934,6 +1929,16 @@ export function anticoagulationReportOnDesk(
     );
   }
 
+  const missing = Object.entries({
+    weight: weightKg,
+    INR: baselineInr,
+    "last dose": noHeparinUnits ? undefined : lastDoseMg,
+    "hours since the last dose": hoursSinceLastDose,
+    "platelet counts or 4Ts findings": onDesk.hasHeparinoid ? hit4TsEvaluation : true,
+  })
+    .filter(([, entered]) => entered === undefined)
+    .map(([input]) => input);
+
   return {
     onDesk,
     patientParameters: {
@@ -1955,6 +1960,7 @@ export function anticoagulationReportOnDesk(
     activeDrugProfiles,
     relevantLabTraps: relevantLabTraps.length > 0 ? relevantLabTraps : COAGULATION_LAB_TRAPS,
     highYieldClinicalPearls,
+    inputsNeeded: onDesk.hasAnticoagulant && missing.length ? `Not entered: ${missing.join(", ")}. ${ANTICOAG_SIZING_RULE}` : undefined,
     disclaimer: `${ANTICOAGULATION_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
   };
 }

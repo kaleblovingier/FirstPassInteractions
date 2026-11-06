@@ -39,5 +39,5 @@ test("new flavonoid rows do not invent CYP, PD, or interaction grades", () => {
 
 test("naringin distinguishes isolated flavonoid supplements from grapefruit juice", () => {
   assert.match(DRUG_BY_ID.naringin.note ?? "", /furanocoumarins, not naringin/i);
-  assert.match(DRUG_BY_ID.naringin.note ?? "", /PMID 23297394/);
+  assert.match(DRUG_BY_ID.naringin.note ?? "", /PMID 23184849/);
 });

@@ -22,6 +22,7 @@
  *   evaluation, institutional critical care protocols, or the FDA-approved Prescribing Information.
  */
 
+import { type Unsized, withoutUnentered } from "./assumed-inputs";
 import type { HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 
@@ -49,7 +50,7 @@ export const GLYCEMIC_CITATIONS: Citation[] = [
     id: "ada-standards-care-2024",
     citation:
       "American Diabetes Association Professional Practice Committee. 16. Diabetes Care in the Hospital: Standards of Care in Diabetes-2024. Diabetes Care. 2024;47(Suppl 1):S295-S306.",
-    pmid: "38078575",
+    pmid: "38078585",
     doi: "10.2337/dc24-S016",
     relevance:
       "Definitive ADA recommendations for inpatient glycemic management, basal-bolus-correction regimens, glycemic targets (140-180 mg/dL), and avoidance of sliding-scale insulin monotherapy.",
@@ -66,8 +67,8 @@ export const GLYCEMIC_CITATIONS: Citation[] = [
   {
     id: "dhatariya-dka-review-2020",
     citation:
-      "Dhatariya KK, Glaser NS, Codner E, Dunger DB. Diabetic ketoacidosis. Nat Rev Dis Primers. 2020;6(1):40.",
-    pmid: "32439898",
+      "Dhatariya KK, Glaser NS, Codner E, Umpierrez GE. Diabetic ketoacidosis. Nat Rev Dis Primers. 2020;6(1):40.",
+    pmid: "32409703",
     doi: "10.1038/s41572-020-0165-1",
     relevance:
       "Comprehensive review of DKA pathophysiology, ketone body kinetics, risk factors for cerebral edema during over-rapid osmolality drops, and subcutaneous basal insulin transition bridge.",
@@ -75,17 +76,17 @@ export const GLYCEMIC_CITATIONS: Citation[] = [
   {
     id: "hillier-corrected-sodium-1999",
     citation:
-      "Hillier TA, Abbott RD, Barrett-Connor E. Hyponatremia evaluated: reconsidering the role of serum glucose in the calculation of serum sodium. Am J Med. 1999;106(4):399-403.",
+      "Hillier TA, Abbott RD, Barrett EJ. Hyponatremia: evaluating the correction factor for hyperglycemia. Am J Med. 1999;106(4):399-403.",
     pmid: "10225241",
     doi: "10.1016/s0002-9343(99)00055-8",
     relevance:
-      "Established the refined 2.0 mEq/L sodium correction factor for each 100 mg/dL elevation in blood glucose above baseline in marked hyperglycemia, complementing the classic 1.6 factor by Katz.",
+      "Six healthy subjects under somatostatin: serum sodium fell 2.4 mEq/L per 100 mg/dL of glucose overall, nonlinear above 400 mg/dL (factor 4.0), against the classic 1.6 factor by Katz.",
   },
   {
     id: "katz-hyperglycemia-sodium-1973",
     citation:
-      "Katz MA. Hyperglycemia-induced hypovolemia -- sodium and water balance. N Engl J Med. 1973;289(16):843-848.",
-    pmid: "4742240",
+      "Katz MA. Hyperglycemia-induced hyponatremia--calculation of expected serum sodium depression. N Engl J Med. 1973;289(16):843-844.",
+    pmid: "4763428",
     doi: "10.1056/NEJM197310182891607",
     relevance:
       "Classic derivation of corrected sodium formula: Corrected Na = Measured Na + 0.016 * (Glucose - 100), accounting for transcellular osmotic water shifting.",
@@ -102,20 +103,20 @@ export const GLYCEMIC_CITATIONS: Citation[] = [
   {
     id: "klein-schwartz-octreotide-2016",
     citation:
-      "Klein-Schwartz W, Stassinos GL, Isbister GK. Treatment of sulfonylurea-induced hypoglycemia with octreotide: a systematic review. Clin Toxicol (Phila). 2016;54(7):582-593.",
-    pmid: "27203362",
-    doi: "10.1080/15563650.2016.1180387",
+      "Klein-Schwartz W, Stassinos GL, Isbister GK. Treatment of sulfonylurea and insulin overdose. Br J Clin Pharmacol. 2016;81(3):496-504.",
+    pmid: "26551662",
+    doi: "10.1111/bcp.12822",
     relevance:
-      "Systematic review establishing octreotide (50-100 mcg SubQ/IV q8-12h) efficacy in halting refractory sulfonylurea-induced hypoglycemia and mitigating the paradoxical dextrose stimulation trap.",
+      "Review of overdose management: after initial IV dextrose, octreotide is the main treatment for sulfonylurea-induced hypoglycemia, preventing insulin secretion and maintaining euglycemia. Prophylactic IV dextrose is not recommended.",
   },
   {
     id: "boyle-octreotide-su-1993",
     citation:
-      "Boyle PJ, Justice K, Krentz AJ, Nagy RJ, Schade DS. Octreotide reverses hyperinsulinemia and prevents hypoglycemia induced by sulfonylurea overdoses. Ann Intern Med. 1993;119(6):463-469.",
-    pmid: "8357112",
-    doi: "10.7326/0003-4819-119-6-199309150-00003",
+      "Boyle PJ, Justice K, Krentz AJ, Nagy RJ, Schade DS. Octreotide reverses hyperinsulinemia and prevents hypoglycemia induced by sulfonylurea overdoses. J Clin Endocrinol Metab. 1993;76(3):752-756.",
+    pmid: "8445035",
+    doi: "10.1210/jcem.76.3.8445035",
     relevance:
-      "Elucidated the cellular mechanism of somatostatin analog SSTR2 binding, closure of voltage-dependent calcium channels, and complete arrest of SUR1-mediated insulin exocytosis.",
+      "Eight healthy volunteers after a glipizide overdose: insulin ran 4-5 times higher on dextrose alone or with diazoxide than on octreotide, and octreotide cut the dextrose requirement, eliminating it in four of eight.",
   },
   {
     id: "fayfman-hyperglycemic-crises-update-2017",
@@ -127,13 +128,13 @@ export const GLYCEMIC_CITATIONS: Citation[] = [
       "Modern clinical algorithm detailing two-bag fluid replacement, cerebral edema mitigation, and 2-hour subcutaneous basal insulin overlap prior to discontinuing intravenous insulin.",
   },
   {
-    id: "edge-cerebral-edema-2001",
+    id: "edge-cerebral-edema-2006",
     citation:
-      "Edge JA, Jakes RW, Roy Y, et al. The UK risk factor study of cerebral oedema in children and young adults with diabetic ketoacidosis. Arch Dis Child. 2001;85(1):16-22.",
-    pmid: "11420190",
-    doi: "10.1136/adc.85.1.16",
+      "Edge JA, Jakes RW, Roy Y, et al. The UK case-control study of cerebral oedema complicating diabetic ketoacidosis in children. Diabetologia. 2006;49(9):2002-2009.",
+    pmid: "16847700",
+    doi: "10.1007/s00125-006-0363-8",
     relevance:
-      "Identified precipitous reductions in effective serum osmolality and excessive early fluid administration as leading contributors to life-threatening cerebral edema in hyperglycemic crises.",
+      "UK case-control study in children: baseline acidosis and sodium, potassium and urea abnormalities predicted cerebral oedema, as did insulin in the first hour and higher fluid volumes over the first 4 hours. Baseline osmolality and glucose did not differ.",
   },
 ];
 
@@ -302,6 +303,15 @@ export interface GlycemicDeskDetection {
   matchedDrugIds: string[];
   summary: string;
 }
+
+type GlycemicSizedSection =
+  | "patientWeightKg"
+  | "serumPotassium"
+  | "bloodGlucose"
+  | "potassiumGate"
+  | "fluidTitration"
+  | "insulinProtocol"
+  | "inpatientRegimen";
 
 export interface GlycemicReportOptions {
   patientWeightKg?: number;
@@ -895,8 +905,14 @@ export function glycemicOnDesk(drugIds: string[]): GlycemicDeskDetection {
 export function glycemicReportOnDesk(
   drugIds: string[],
   host: HostContext,
+  options: GlycemicReportOptions & { patientWeightKg: number; serumPotassium: number; bloodGlucose: number; measuredSodium: number },
+): GlycemicReport;
+export function glycemicReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
   options?: GlycemicReportOptions,
-): GlycemicReport {
+): GlycemicReport | Unsized<GlycemicReport, GlycemicSizedSection>;
+export function glycemicReportOnDesk(drugIds: string[], host: HostContext, options?: GlycemicReportOptions) {
   const onDesk = glycemicOnDesk(drugIds);
 
   const weight = options?.patientWeightKg ?? 70;
@@ -987,7 +1003,7 @@ export function glycemicReportOnDesk(
     "Subcutaneous Basal Insulin 2-Hour Overlap: Intravenous regular insulin clears in minutes (half-life 5-9 min). Administering subcutaneous basal insulin 2 hours before stopping the infusion maintains plasma insulin levels while subcutaneous depot absorbs, preventing rapid ketoacidosis relapse.",
   ];
 
-  return {
+  const report: GlycemicReport = {
     onDesk,
     patientWeightKg: weight,
     serumPotassium: serumK,
@@ -1002,4 +1018,10 @@ export function glycemicReportOnDesk(
     disclaimer: `${GLYCEMIC_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
     citations: GLYCEMIC_CITATIONS,
   };
+  return withoutUnentered(report, [
+    ["weight", options?.patientWeightKg, ["patientWeightKg", "insulinProtocol", "inpatientRegimen"]],
+    ["serum potassium", options?.serumPotassium, ["serumPotassium", "potassiumGate", "insulinProtocol"]],
+    ["blood glucose", options?.bloodGlucose, ["bloodGlucose", "fluidTitration", "insulinProtocol"]],
+    ["measured sodium", options?.measuredSodium, ["fluidTitration"]],
+  ]);
 }

@@ -2065,7 +2065,7 @@ const raw: Drug[] = [
     {
       kind: "herb",
       aliases: ["naringenin-7-neohesperidoside", "grapefruit flavonoid", "bitter-orange flavonoid", "flavonoid", "bioflavonoid"],
-      note: "The clinically important intestinal CYP3A4 effect of grapefruit is attributed to furanocoumarins, not naringin (Bailey et al., CMAJ 2013; PMID 23297394). An isolated naringin product is not interchangeable with grapefruit juice; no CYP grade is assigned.",
+      note: "The clinically important intestinal CYP3A4 effect of grapefruit is attributed to furanocoumarins, not naringin (Bailey et al., CMAJ 2013; PMID 23184849). An isolated naringin product is not interchangeable with grapefruit juice; no CYP grade is assigned.",
     }),
   d("hesperidin", "Hesperidin", [], "Citrus flavanone supplement",
     [],

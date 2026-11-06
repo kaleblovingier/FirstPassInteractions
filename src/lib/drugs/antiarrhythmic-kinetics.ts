@@ -15,6 +15,7 @@
  *   or definitive treatment decisions.
  */
 
+import { notEntered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import { type HostContext, DEFAULT_HOST } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -363,6 +364,17 @@ export interface DigiFabCalculationResult {
   clinicalConsiderations: string[];
 }
 
+const POST_FAB_MONITORING_TRAP = {
+  totalDigoxinSpikeExplanation:
+    "CRITICAL POST-FAB IMMUNOASSAY TRAP: Standard clinical immunoassays (chemiluminescent, EMIT, RIA) measure TOTAL digoxin (both free pharmacologically active drug and inactive Fab-bound complexes). Following DigiFab administration, reported serum digoxin levels typically spike by 10- to 20-fold (e.g. from 3.5 ng/mL to 30–50 ng/mL)! This reflects circulating inert Fab-digoxin complexes awaiting renal clearance, NOT ongoing or worsening clinical toxicity.",
+  uninterpretableWindowDuration:
+    "Serum total digoxin levels remain completely uninterpretable for 1 to 2 weeks post-DigiFab (and up to 3–4 weeks in severe renal impairment / ESRD). Clinicians must NEVER re-administer DigiFab based solely on a high post-reversal total digoxin lab result.",
+  telemetryAndEkgDirective:
+    "Patient stabilization must be guided entirely by continuous cardiac telemetry, 12-lead EKG (resolution of AV block, normalization of PR/QRS, suppression of ventricular ectopy), and hemodynamic parameters.",
+  potassiumShiftWarning:
+    "RAPID REBOUND HYPOKALEMIA HAZARD: As DigiFab reactivates myocyte and skeletal muscle Na+/K+ ATPase pumps, potassium is transported rapidly from the extracellular space into cells. Pre-existing digitalis hyperkalemia resolves precipitously, and patients frequently plummet into severe hypokalemia within 1 to 4 hours post-infusion. Serial serum potassium monitoring every 1–2 hours and proactive K+ repletion (target 4.0–4.5 mEq/L) are mandatory to prevent hypokalemic ventricular tachydysrhythmias.",
+};
+
 /**
  * Calculates Digoxin Immune Fab (DigiFab) vial requirements:
  * 1. Acute Ingestion: Vials = (mg ingested * 0.8) / 0.5 mg/vial
@@ -410,17 +422,6 @@ export function calculateDigiFabVials(input: DigiFabCalculationInput): DigiFabCa
   const reversalMechanism =
     "DigiFab consists of sterile, lyophilized decoy antigen-binding fragments (Fab) derived from sheep immunized with digoxin-albumin conjugate. Possesses a ~10-fold higher affinity for digoxin than the myocyte Na+/K+ ATPase pump. Injected Fab fragments rapidly bind free circulating digoxin, dropping free plasma concentrations to near zero within minutes and establishing a concentration gradient that draws tissue-bound digitalis off myocardial receptors into the vascular space for immune neutralization.";
 
-  const postFabMonitoringTrap = {
-    totalDigoxinSpikeExplanation:
-      "CRITICAL POST-FAB IMMUNOASSAY TRAP: Standard clinical immunoassays (chemiluminescent, EMIT, RIA) measure TOTAL digoxin (both free pharmacologically active drug and inactive Fab-bound complexes). Following DigiFab administration, reported serum digoxin levels typically spike by 10- to 20-fold (e.g. from 3.5 ng/mL to 30–50 ng/mL)! This reflects circulating inert Fab-digoxin complexes awaiting renal clearance, NOT ongoing or worsening clinical toxicity.",
-    uninterpretableWindowDuration:
-      "Serum total digoxin levels remain completely uninterpretable for 1 to 2 weeks post-DigiFab (and up to 3–4 weeks in severe renal impairment / ESRD). Clinicians must NEVER re-administer DigiFab based solely on a high post-reversal total digoxin lab result.",
-    telemetryAndEkgDirective:
-      "Patient stabilization must be guided entirely by continuous cardiac telemetry, 12-lead EKG (resolution of AV block, normalization of PR/QRS, suppression of ventricular ectopy), and hemodynamic parameters.",
-    potassiumShiftWarning:
-      "RAPID REBOUND HYPOKALEMIA HAZARD: As DigiFab reactivates myocyte and skeletal muscle Na+/K+ ATPase pumps, potassium is transported rapidly from the extracellular space into cells. Pre-existing digitalis hyperkalemia resolves precipitously, and patients frequently plummet into severe hypokalemia within 1 to 4 hours post-infusion. Serial serum potassium monitoring every 1–2 hours and proactive K+ repletion (target 4.0–4.5 mEq/L) are mandatory to prevent hypokalemic ventricular tachydysrhythmias.",
-  };
-
   const clinicalConsiderations = [
     "Infuse over 30 minutes diluted in 0.9% NaCl, or give rapid IV push in cardiac arrest.",
     "Monitor for non-IgE anaphylactoid reactions or sheep protein hypersensitivity (rare with purified Fab fragments).",
@@ -436,7 +437,7 @@ export function calculateDigiFabVials(input: DigiFabCalculationInput): DigiFabCa
     stoichiometricRationale,
     mgDigoxinNeutralized,
     reversalMechanism,
-    postFabMonitoringTrap,
+    postFabMonitoringTrap: POST_FAB_MONITORING_TRAP,
     clinicalConsiderations,
   };
 }
@@ -879,13 +880,15 @@ export interface AntiarrhythmicReport {
     summary: string;
     actionGuidance: string;
   }>;
+  /** Which inputs were not entered, so what they would size is left out. */
+  inputsNeeded?: string;
   dofetilideRemsAdvisory?: {
     drugId: string;
     isIndicated: boolean;
     inpatientRule: string;
     baselineQtcMs?: number;
     measuredCrClMlMin?: number;
-    recommendedStartingDose: string;
+    recommendedStartingDose?: string;
     titrationInstructions: string;
   };
   alerts: AntiarrhythmicAlert[];
@@ -1061,17 +1064,10 @@ export function antiarrhythmicReportOnDesk(
 
   const alerts: AntiarrhythmicAlert[] = [];
 
-  // 1. Digoxin TDM Evaluation
+  // 1. Digoxin TDM Evaluation. Only an entered level is read; the P-gp collision below needs none.
   let digoxinEvaluation: DigoxinTdmEvaluation | undefined;
-  if (onDesk.hasDigoxin || options?.digoxinTdm) {
-    const input: DigoxinTdmInput = options?.digoxinTdm ?? {
-      serumDigoxinNgMl: 1.0,
-      indication: "hfref",
-      hoursPostDose: 12,
-      hasPgpInhibitor: onDesk.hasPgpInhibitor,
-      pgpInhibitorIds: onDesk.detectedPgpInhibitorIds,
-      patientWeightKg: 70,
-    };
+  if (options?.digoxinTdm) {
+    const input: DigoxinTdmInput = options.digoxinTdm;
     // Ensure P-gp inhibitors detected on desk are wired into evaluation if not explicitly provided
     if (onDesk.hasPgpInhibitor && (!input.pgpInhibitorIds || input.pgpInhibitorIds.length === 0)) {
       input.hasPgpInhibitor = true;
@@ -1126,37 +1122,51 @@ export function antiarrhythmicReportOnDesk(
       });
     }
 
-    if (digoxinEvaluation.pgpCollisionAlert) {
-      alerts.push({
-        tier: "critical",
-        category: "PgpCollision",
-        title: `P-gp Collision: Digoxin + ${digoxinEvaluation.pgpCollisionAlert.perpetrators.join(", ")}`,
-        rationale: digoxinEvaluation.pgpCollisionAlert.aucImpact,
-        actionGuidance: digoxinEvaluation.pgpCollisionAlert.doseAdjustmentGuidance,
-      });
-    }
+  }
+
+  // The collision wording depends on the inhibitors alone, so the level passed here is never read.
+  const pgpCollision =
+    digoxinEvaluation?.pgpCollisionAlert ??
+    (onDesk.hasDigoxin && onDesk.hasPgpInhibitor
+      ? evaluateDigoxinTdm({
+          serumDigoxinNgMl: 0,
+          indication: "hfref",
+          hasPgpInhibitor: true,
+          pgpInhibitorIds: onDesk.detectedPgpInhibitorIds,
+        }).pgpCollisionAlert
+      : undefined);
+  if (pgpCollision) {
+    alerts.push({
+      tier: "critical",
+      category: "PgpCollision",
+      title: `P-gp Collision: Digoxin + ${pgpCollision.perpetrators.join(", ")}`,
+      rationale: pgpCollision.aucImpact,
+      actionGuidance: pgpCollision.doseAdjustmentGuidance,
+    });
   }
 
   // 2. DigiFab Calculation
   let digiFabCalculation: DigiFabCalculationResult | undefined;
   if (onDesk.hasDigiFab || options?.digiFabCalc || digoxinEvaluation?.isToxic) {
-    const defaultScenario: DigiFabDosingScenario = digoxinEvaluation?.isLifeThreatening
-      ? "steady-state-serum-concentration"
-      : "steady-state-serum-concentration";
-
-    const calcInput: DigiFabCalculationInput = options?.digiFabCalc ?? {
-      scenario: defaultScenario,
-      serumDigoxinNgMl: digoxinEvaluation?.serumDigoxinNgMl ?? 4.0,
-      patientWeightKg: options?.digoxinTdm?.patientWeightKg ?? 70,
-    };
-    digiFabCalculation = calculateDigiFabVials(calcInput);
+    // Vials come only from an entered level and weight; the monitoring trap holds either way.
+    const enteredWeightKg = options?.digoxinTdm?.patientWeightKg;
+    const calcInput: DigiFabCalculationInput | undefined =
+      options?.digiFabCalc ??
+      (digoxinEvaluation && enteredWeightKg !== undefined
+        ? {
+            scenario: "steady-state-serum-concentration",
+            serumDigoxinNgMl: digoxinEvaluation.serumDigoxinNgMl,
+            patientWeightKg: enteredWeightKg,
+          }
+        : undefined);
+    if (calcInput) digiFabCalculation = calculateDigiFabVials(calcInput);
 
     alerts.push({
       tier: "critical",
       category: "DigiFab",
       title: "Mandatory Post-Fab Immunoassay Trap & Rebound Hypokalemia Alert",
-      rationale: digiFabCalculation.postFabMonitoringTrap.totalDigoxinSpikeExplanation,
-      actionGuidance: `${digiFabCalculation.postFabMonitoringTrap.uninterpretableWindowDuration} ${digiFabCalculation.postFabMonitoringTrap.telemetryAndEkgDirective} ${digiFabCalculation.postFabMonitoringTrap.potassiumShiftWarning}`,
+      rationale: POST_FAB_MONITORING_TRAP.totalDigoxinSpikeExplanation,
+      actionGuidance: `${POST_FAB_MONITORING_TRAP.uninterpretableWindowDuration} ${POST_FAB_MONITORING_TRAP.telemetryAndEkgDirective} ${POST_FAB_MONITORING_TRAP.potassiumShiftWarning}`,
     });
   }
 
@@ -1192,13 +1202,17 @@ export function antiarrhythmicReportOnDesk(
   if (onDesk.detectedDofetilideRemsIds.includes("dofetilide")) {
     const prof = ANTIARRHYTHMIC_PROFILES["dofetilide"];
     const rems = prof?.dofetilideRemsProfile;
-    const crCl = options?.measuredCrClMlMin ?? (host.kidney === "ckd" ? 35 : 85);
-    const qtc = options?.baselineQtcMs ?? 420;
+    // The CrCl band and the QTc gate read entered values only.
+    const crCl = options?.measuredCrClMlMin;
+    const qtc = options?.baselineQtcMs;
 
-    let recDose = "500 mcg PO BID";
-    if (crCl < 20) recDose = "CONTRAINDICATED (CrCl < 20 mL/min)";
-    else if (crCl < 40) recDose = "125 mcg PO BID";
-    else if (crCl <= 60) recDose = "250 mcg PO BID";
+    let recDose: string | undefined;
+    if (crCl !== undefined) {
+      if (crCl < 20) recDose = "CONTRAINDICATED (CrCl < 20 mL/min)";
+      else if (crCl < 40) recDose = "125 mcg PO BID";
+      else if (crCl <= 60) recDose = "250 mcg PO BID";
+      else recDose = "500 mcg PO BID";
+    }
 
     dofetilideRemsAdvisory = {
       drugId: "dofetilide",
@@ -1210,7 +1224,7 @@ export function antiarrhythmicReportOnDesk(
       titrationInstructions: rems?.titrationRule ?? "Monitor QTc at 2-3 hours post-dose.",
     };
 
-    if (qtc > 440) {
+    if (qtc !== undefined && qtc > 440) {
       alerts.push({
         tier: "critical",
         category: "DofetilideREMS",
@@ -1220,7 +1234,7 @@ export function antiarrhythmicReportOnDesk(
       });
     }
 
-    if (crCl < 20) {
+    if (crCl !== undefined && crCl < 20) {
       alerts.push({
         tier: "critical",
         category: "DofetilideREMS",
@@ -1233,7 +1247,7 @@ export function antiarrhythmicReportOnDesk(
         tier: "warning",
         category: "DofetilideREMS",
         title: "Dofetilide FDA REMS Inpatient Mandate Active",
-        rationale: `${rems?.inpatientRequirement} Recommended starting dose based on Cockcroft-Gault CrCl (${crCl} mL/min): ${recDose}.`,
+        rationale: `${rems?.inpatientRequirement} ${crCl === undefined ? "Enter a Cockcroft-Gault CrCl to read the starting dose from the labeled bands." : `Recommended starting dose based on Cockcroft-Gault CrCl (${crCl} mL/min): ${recDose}.`}`,
         actionGuidance: rems?.titrationRule ?? "Check 12-lead EKG at 2-3 hours post-dose.",
       });
     }
@@ -1257,6 +1271,12 @@ export function antiarrhythmicReportOnDesk(
     digiFabCalculation,
     castTrialAdvisories,
     dofetilideRemsAdvisory,
+    inputsNeeded: notEntered([
+      onDesk.hasDigoxin && !digoxinEvaluation && "digoxin level",
+      onDesk.hasDigiFab && !digiFabCalculation && "digoxin level and weight (DigiFab vials)",
+      Boolean(dofetilideRemsAdvisory) && options?.measuredCrClMlMin === undefined && "Cockcroft-Gault CrCl",
+      Boolean(dofetilideRemsAdvisory) && options?.baselineQtcMs === undefined && "baseline QTc",
+    ]),
     alerts,
     disclaimer: `${ANTIARRHYTHMIC_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
     citations: ANTIARRHYTHMIC_CITATIONS,

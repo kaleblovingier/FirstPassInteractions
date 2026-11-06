@@ -56,7 +56,7 @@ export const SE_CITATIONS: Citation[] = [
     id: "esett-trial-nejm-2019",
     citation:
       "Kapur J, Elm J, Chamberlain JM, et al.; ESETT Investigative Team. Randomized Trial of Three Anticonvulsant Medications for Status Epilepticus (ESETT). N Engl J Med. 2019;381(22):2103-2113.",
-    pmid: "31774953",
+    pmid: "31774955",
     doi: "10.1056/NEJMoa1905795",
     relevance:
       "Landmark multicenter blinded RCT establishing non-inferiority of levetiracetam (60 mg/kg), fosphenytoin (20 mg PE/kg), and valproate (40 mg/kg) in benzodiazepine-refractory convulsive SE (~45-47% cessation at 60 min).",
@@ -82,11 +82,11 @@ export const SE_CITATIONS: Citation[] = [
   {
     id: "goodkin-gaba-trafficking-2008",
     citation:
-      "Goodkin HP, Joshi S, Mtchedlishvili Z, et al. Subunit-specific trafficking of GABA(A) receptors during status epilepticus. J Neurosci. 2008;28(18):4696-4704.",
-    pmid: "18448646",
+      "Goodkin HP, Joshi S, Mtchedlishvili Z, et al. Subunit-specific trafficking of GABA(A) receptors during status epilepticus. J Neurosci. 2008;28(10):2527-2538.",
+    pmid: "18322097",
     doi: "10.1523/JNEUROSCI.3426-07.2008",
     relevance:
-      "Demonstrates clathrin-dependent endocytosis and dephosphorylation of beta-2/3 and gamma-2 synaptic GABA-A receptor subunits during continuous seizing.",
+      "Shows subunit-specific loss during status epilepticus: surface beta-2/3 and gamma-2 GABA-A receptor subunits fall while delta does not, independent of ligand binding.",
   },
   {
     id: "naylor-gaba-pharmacoresistance-2005",
@@ -100,11 +100,11 @@ export const SE_CITATIONS: Citation[] = [
   {
     id: "koenig-hypertonic-saline-2008",
     citation:
-      "Koenig MA, Bryan M, Lewin JL 3rd, et al. Use of 23.4% hypertonic saline for the treatment of cerebral edema and refractory intracranial hypertension. Crit Care Med. 2008;36(1):205-210.",
-    pmid: "18090370",
-    doi: "10.1097/01.CCM.0000295595.63242.06",
+      "Koenig MA, Bryan M, Lewin JL 3rd, et al. Reversal of transtentorial herniation with hypertonic saline. Neurology. 2008;70(13):1023-1029.",
+    pmid: "18272864",
+    doi: "10.1212/01.wnl.0000304042.05557.60",
     relevance:
-      "Pivotal neurocritical care study demonstrating rapid ICP reduction via 30 mL bolus of 23.4% NaCl given via central line for transtentorial herniation and refractory edema.",
+      "Retrospective cohort: 23.4% saline was associated with reversal of transtentorial herniation in 75% of events and lower ICP at 1 and 24 hours, with few adverse effects. Outcomes stayed poor.",
   },
   {
     id: "cook-cerebral-edema-guidelines-2020",
@@ -1271,7 +1271,7 @@ export type WithoutWeightMath<T> = T extends readonly (infer U)[]
     ? { [K in keyof T as K extends WeightMathKey ? never : K]: WithoutWeightMath<T[K]> }
     : T;
 
-function withoutWeightMath<T>(v: T): WithoutWeightMath<T> {
+export function withoutWeightMath<T>(v: T): WithoutWeightMath<T> {
   if (Array.isArray(v)) return v.map(withoutWeightMath) as WithoutWeightMath<T>;
   if (v && typeof v === "object") {
     const kept = Object.entries(v).filter(([k]) => !/^calculated|^patientWeightKg$/.test(k));

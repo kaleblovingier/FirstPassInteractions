@@ -169,7 +169,7 @@ export function wardsOnDesk(ids: string[]): WardHit[] {
         "carbapenem × valproate (UGT / glucuronide recycling)",
         "Carbapenems crash valproate levels within a day — not a CYP isoform, not stacked seizure threshold. Labels treat the pair as a loss of seizure control. Switch the antibiotic or the AED; do not 'give a bit more Depakote.'",
         "Levels fall fast. This desk does not pick a milligram or a replacement AED.",
-        "Meropenem / ertapenem / imipenem labels. Spriet 2007 (PMID 17381386).",
+        "Meropenem / ertapenem / imipenem labels. Spriet 2007 (PMID 17609232).",
       ),
     );
   }
@@ -186,7 +186,7 @@ export function wardsOnDesk(ids: string[]): WardHit[] {
         "vancomycin × piperacillin–tazobactam AKI",
         "The combination is associated with more acute kidney injury than vancomycin plus cefepime or a carbapenem. Observational, still a ward row. Volume, trough, and a narrower beta-lactam are the conversation — not a free Zosyn piggyback.",
         "Creatinine, urine output. Oral vancomycin is a different exposure.",
-        "Luther 2018 meta-analysis (PMID 29126268). Not a boxed contraindication.",
+        "Luther 2018 meta-analysis (PMID 29088001). Not a boxed contraindication.",
       ),
     );
   }

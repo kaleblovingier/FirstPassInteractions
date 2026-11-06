@@ -133,8 +133,8 @@ test("valproateReportOnDesk integrates patient context, pregnancy warnings, and 
   });
 
   assert.equal(report.hasValproate, true);
-  assert.equal(report.vheEval.riskTier, "confirmed-vhe");
-  assert.equal(report.levelEval.saturationWarning, true);
+  assert.equal(report.vheEval?.riskTier, "confirmed-vhe");
+  assert.equal(report.levelEval?.saturationWarning, true);
   assert.ok(report.clinicalPearls.some((p) => p.includes("BLACK BOX TERATOGENICITY")));
   assert.ok(report.clinicalPearls.some((p) => p.includes("Normal LFT Diagnostic Trap")));
   assert.ok(report.collisions.length > 0);

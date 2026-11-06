@@ -23,6 +23,7 @@
  * Information, medical toxicology consultation, and attending clinician govern.
  */
 
+import { type Unsized, withoutUnentered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import { type HostContext } from "./types";
 import { PI_FOOTER, NOT_CLEARED } from "../regulatory";
@@ -434,7 +435,7 @@ export function valproateReportOnDesk(
     astAltElevated?: boolean;
     hasEncephalopathySymptoms?: boolean;
   },
-): ValproateReport {
+): ValproateReport | Unsized<ValproateReport, "levelEval" | "vheEval" | "carnitineDosing"> {
   const hasValproate = ids.includes("valproate");
   const onDeskIds = ids.filter((id) => VALPROATE_IDS.has(id));
 
@@ -470,7 +471,7 @@ export function valproateReportOnDesk(
     );
   }
 
-  return {
+  const report: ValproateReport = {
     hasValproate,
     onDeskIds,
     levelEval,
@@ -480,5 +481,10 @@ export function valproateReportOnDesk(
     clinicalPearls,
     disclaimer: `${NOT_CLEARED} ${PI_FOOTER}`,
   };
+  return withoutUnentered(report, [
+    ["total valproate level", params?.totalMcgMl, ["levelEval"]],
+    ["ammonia", params?.ammoniaUmolL, ["vheEval", "carnitineDosing"]],
+    ["weight", params?.weightKg, ["carnitineDosing"]],
+  ]);
 }
 
