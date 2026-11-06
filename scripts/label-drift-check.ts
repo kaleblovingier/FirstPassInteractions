@@ -10,7 +10,7 @@
  * Writes docs/validation/label-drift.md, src/lib/drugs/reference/label-versions.json
  * (setid → SPL version and effective date, for "last checked" lines) and
  * scripts/fixtures/label-drift-spl.json (the cited sections only, so CI stays offline).
- * DailyMed setids cited from catalog-modern.ts and wave 2/3 are recorded in
+ * DailyMed setids cited from catalog-modern.ts and waves 2 to 4 are recorded in
  * label-versions.json the same way (version, effective, checkedOn). They are
  * not quote rows, so they do not enter the drift report. A later full fetch
  * uses the run date as checkedOn. A catalog row checked on its own day keeps
@@ -25,6 +25,7 @@ import { LABEL_CONTRAINDICATIONS } from "../src/lib/drugs/label-contraindication
 import { MODERN_FORMULARY } from "../src/lib/drugs/catalog-modern.ts";
 import { MODERN_WAVE2_FORMULARY } from "../src/lib/drugs/catalog-modern-wave2.ts";
 import { MODERN_WAVE3_FORMULARY } from "../src/lib/drugs/catalog-modern-wave3.ts";
+import { MODERN_WAVE4_FORMULARY } from "../src/lib/drugs/catalog-modern-wave4.ts";
 import {
   driftReport,
   fixtureSections,
@@ -78,12 +79,18 @@ const CATALOG_LABEL_FILES = [
   "src/lib/drugs/catalog-modern.ts",
   "src/lib/drugs/catalog-modern-wave2.ts",
   "src/lib/drugs/catalog-modern-wave3.ts",
+  "src/lib/drugs/catalog-modern-wave4.ts",
 ];
 
 /** DailyMed setids cited from the modern catalogs, with a desk label name.
  *  These are not gold quotes. label-versions.json still records their SPL date. */
 export function catalogLabelCites(): { setid: string; labelDrug: string }[] {
-  const drugs = [...MODERN_FORMULARY, ...MODERN_WAVE2_FORMULARY, ...MODERN_WAVE3_FORMULARY];
+  const drugs = [
+    ...MODERN_FORMULARY,
+    ...MODERN_WAVE2_FORMULARY,
+    ...MODERN_WAVE3_FORMULARY,
+    ...MODERN_WAVE4_FORMULARY,
+  ];
   const seen = new Set<string>();
   const out: { setid: string; labelDrug: string }[] = [];
   for (const rel of CATALOG_LABEL_FILES) {

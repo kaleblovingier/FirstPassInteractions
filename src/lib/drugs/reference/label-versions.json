@@ -158,11 +158,23 @@
    "effective": "2023-08-15",
    "checkedOn": "2026-10-28"
   },
+  "1d145e2f-8e7e-2e90-e063-6294a90a4449": {
+   "labelDrug": "Ekterly (sebetralstat)",
+   "version": 4,
+   "effective": "2026-04-01",
+   "checkedOn": "2026-11-05"
+  },
   "41a133ef-e461-48ad-8221-b735bdd0ec25": {
    "labelDrug": "Eliquis (apixaban)",
    "version": 5,
    "effective": "2026-09-24",
    "checkedOn": "2026-10-28"
+  },
+  "1e1b2f79-678a-472a-b924-66909c8a4b2e": {
+   "labelDrug": "Ensacove (ensartinib)",
+   "version": 5,
+   "effective": "2026-02-17",
+   "checkedOn": "2026-11-05"
   },
   "0c05e1f7-a3d4-8e69-e063-6394a90aecc3": {
    "labelDrug": "Erythromycin",
@@ -200,6 +212,12 @@
    "effective": "2025-01-13",
    "checkedOn": "2026-10-28"
   },
+  "d3fabf12-354e-4e5c-b5de-20fdb579b783": {
+   "labelDrug": "Hernexeos (zongertinib)",
+   "version": 7,
+   "effective": "2026-08-13",
+   "checkedOn": "2026-11-05"
+  },
   "1a52bedc-8e2c-4116-a296-a87770676b4a": {
    "labelDrug": "Inspra (eplerenone)",
    "version": 6,
@@ -211,6 +229,12 @@
    "version": 18,
    "effective": "2026-07-31",
    "checkedOn": "2026-10-28"
+  },
+  "5de59f5b-e5db-410f-b692-658686ef4107": {
+   "labelDrug": "Itovebi (inavolisib)",
+   "version": 10,
+   "effective": "2026-04-21",
+   "checkedOn": "2026-11-05"
   },
   "8290add3-4449-4e58-6c97-8fe1eec972e3": {
    "labelDrug": "Kaletra (lopinavir/ritonavir)",
@@ -536,6 +560,12 @@
    "effective": "2025-03-05",
    "checkedOn": "2026-10-28"
   },
+  "9a7e7f85-bfd0-44a0-beda-3bcfa8215c64": {
+   "labelDrug": "Vanrafia (atrasentan)",
+   "version": 3,
+   "effective": "2026-06-12",
+   "checkedOn": "2026-11-05"
+  },
   "08d08721-1f4c-478a-8abf-d9c402d50553": {
    "labelDrug": "Vfend (voriconazole)",
    "version": 33,
@@ -553,6 +583,12 @@
    "version": 39,
    "effective": "2026-05-31",
    "checkedOn": "2026-10-28"
+  },
+  "31405fee-55b7-4857-987e-2724ee76be84": {
+   "labelDrug": "Voranigo (vorasidenib)",
+   "version": 9,
+   "effective": "2026-06-20",
+   "checkedOn": "2026-11-05"
   },
   "17ffc094-8ca7-45d2-80d8-fd043bc9a221": {
    "labelDrug": "Vosevi (sofosbuvir/velpatasvir/voxilaprevir)",
