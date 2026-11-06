@@ -333,6 +333,9 @@ export function StudyPage() {
             </li>
           ))}
         </ul>
+        <a href="/glossary" className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-accent underline sm:min-h-0">
+          Full glossary
+        </a>
         <p className="mt-3 text-[11px] leading-relaxed text-subtle">
           Enzyme map cards ask these words back. A blank answer is not a clearance. Not a milligram.
         </p>

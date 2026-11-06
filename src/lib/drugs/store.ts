@@ -4,6 +4,7 @@ import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState
 import { DRUG_BY_ID } from "./catalog";
 import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
+import type { StationId } from "./station-groups";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
 import {
@@ -76,8 +77,12 @@ interface DeskState {
   previewUsed: boolean;
   /** Class name to open on the formulary. Not saved. */
   libraryShelf: string;
+  /** Station the clinical board opens next, picked in the Ctrl+K palette. Not saved. */
+  station: StationId | null;
   justActivated: boolean;
   hcpAck: boolean;
+  /** Clinician attestation in front of the dose calculators: the version confirmed and when (ms). */
+  doseAttest: { v: number; at: number } | null;
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
   add: (id: string) => boolean;
   remove: (id: string) => void;
@@ -86,6 +91,7 @@ interface DeskState {
   setView: (view: View) => void;
   setAtlasEnzyme: (id: string | null) => void;
   openShelf: (cls: string) => void;
+  openStation: (id: StationId) => void;
   setPhenotype: (enzyme: PhenotypeEnzyme, value: Metabolizer) => void;
   setSmoking: (smoking: boolean) => void;
   setKetamineRoute: (route: KetamineRoute) => void;
@@ -109,8 +115,14 @@ interface DeskState {
   dismissProgramNote: () => void;
   dismissActivated: () => void;
   ackHcp: () => void;
+  attestDose: () => void;
   downgrade: () => void;
 }
+
+/** Bump when the attestation wording changes: every browser is asked again. */
+export const DOSE_ATTEST_VERSION = 1;
+
+export const doseAttested = (s: Pick<DeskState, "doseAttest">) => s.doseAttest?.v === DOSE_ATTEST_VERSION;
 
 function activePlan(
   s: { plan: PlanId; previewUntil: number | null; program?: ProgramGrant | null },
@@ -203,8 +215,10 @@ export const useDesk = create<DeskState>()(
       previewUntil: null,
       previewUsed: false,
       libraryShelf: "",
+      station: null,
       justActivated: false,
       hcpAck: false,
+      doseAttest: null,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
       add: (id) => {
         if (!DRUG_BY_ID[id] || id.startsWith("__")) return false;
@@ -313,6 +327,7 @@ export const useDesk = create<DeskState>()(
         set({ atlasEnzyme, view: "atlas" });
       },
       openShelf: (cls) => set({ libraryShelf: cls, view: "library" }),
+      openStation: (station) => set({ station, view: "desk" }),
       setPhenotype: (enzyme, value) => {
         if (activePlan(get()) === "free") {
           get().openCheckout("lab", foundingGateCopy("host").reason, "life");
@@ -437,6 +452,7 @@ export const useDesk = create<DeskState>()(
       dismissProgramNote: () => set({ programNote: null }),
       dismissActivated: () => set({ justActivated: false }),
       ackHcp: () => set({ hcpAck: true }),
+      attestDose: () => set({ doseAttest: { v: DOSE_ATTEST_VERSION, at: Date.now() } }),
       downgrade: () =>
         set({
           plan: "free",

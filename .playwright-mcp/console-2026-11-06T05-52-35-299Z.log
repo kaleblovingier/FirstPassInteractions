@@ -1,0 +1,134 @@
+[    2257ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:14335
+[    3285ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <MatchImpl routeId="/">
+      <MatchView router={{...}} match={{id:"//",ssr:true, ...}}>
+        <CatchBoundary getResetKey={function getResetKey} errorComponent={function AppErrorComponent} ...>
+          <MatchInnerImpl match={{id:"//",ssr:true, ...}}>
+            <Lazy>
+              <Home>
+                <DeskApp>
+                  <div className="min-h-dvh ...">
+                    <a>
+                    <StripeReturn>
+                    <header>
+                    <aside>
+                    <main id="main" tabIndex={-1} className="mx-auto ma...">
+                      <div className="grid min-w...">
+                        <div className="space-y-4">
+                          <DrugSearch>
+                          <span>
+                          <EmptyState onLoad={function load} onLoadSample={function onLoadSample} ready={false} ...>
+                            <section className="overflow-h...">
+                              <div>
+                              <div className="px-5 py-6 ...">
+                                <p>
++                               <div
++                                 className="mt-4 flex flex-col gap-3 rounded-lg bg-bg px-3 py-3 sm:flex-row sm:items-..."
++                               >
+-                               <ol className="mt-5 grid gap-3 sm:grid-cols-3">
+                                ...
+                        ...
+                    ...
+
+    at throwOnHydrationMismatch (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:2968:51)
+    at beginWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:6200:914)
+    at runWithFiberInDEV (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:851:66)
+    at performUnitOfWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:8429:92)
+    at workLoopConcurrentByScheduler (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:8425:55)
+    at renderRootConcurrent (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:8408:64)
+    at performWorkOnRoot (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:7957:145)
+    at performWorkOnRootViaSchedulerTask (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:9059:4)
+    at MessagePort.performWorkUntilDeadline (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:36:38)
+[    5435ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://127.0.0.1:8315/@vite/client:532
+[    5467ms] [ERROR] Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem. @ http://127.0.0.1:8315/@vite/client:532
+[    5473ms] [ERROR] %o
+
+%s
+
+%s
+ TypeError: Cannot read properties of null (reading 'useRef')
+    at exports.useRef (http://127.0.0.1:8315/node_modules/.vite/deps/react.js?v=2aea22d7:745:30)
+    at useShallow (http://127.0.0.1:8315/node_modules/.vite/deps/zustand_react_shallow.js?v=c954f821:39:28)
+    at ResourcePanel (http://127.0.0.1:8315/src/components/desk/resource-navigator.tsx?t=1793944352496:42:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:12866:12)
+    at renderWithHooks (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:5569:16)
+    at beginWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:851:66)
+    at performUnitOfWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:8429:92)
+    at workLoopSync (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2bee95fd:8325:37) The above error occurred in the <ResourcePanel> component. React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundary. @ http://127.0.0.1:8315/@vite/client:532
+[    5474ms] [WARNING] Warning: Error in route match: // @ http://127.0.0.1:8315/@vite/client:532
+[   10813ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:14335
+[   13397ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <MatchImpl routeId="/">
+      <MatchView router={{...}} match={{id:"//",ssr:true, ...}}>
+        <CatchBoundary getResetKey={function getResetKey} errorComponent={function AppErrorComponent} ...>
+          <MatchInnerImpl match={{id:"//",ssr:true, ...}}>
+            <Lazy>
+              <Home>
+                <DeskApp>
+                  <div className="min-h-dvh ...">
+                    <a>
+                    <StripeReturn>
+                    <header>
+                    <aside>
+                    <main id="main" tabIndex={-1} className="mx-auto ma...">
+                      <div className="grid min-w...">
+                        <div className="space-y-4">
+                          <DrugSearch>
+                          <span>
+                          <EmptyState onLoad={function load} onLoadSample={function onLoadSample} ready={false} ...>
+                            <section className="overflow-h...">
+                              <div>
+                              <div className="px-5 py-6 ...">
+                                <p>
++                               <div
++                                 className="mt-4 flex flex-col gap-3 rounded-lg bg-bg px-3 py-3 sm:flex-row sm:items-..."
++                               >
+-                               <ol className="mt-5 grid gap-3 sm:grid-cols-3">
+                                ...
+                        ...
+                    ...
+
+    at throwOnHydrationMismatch (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:2968:51)
+    at beginWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:6200:914)
+    at runWithFiberInDEV (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:851:66)
+    at performUnitOfWork (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:8429:92)
+    at workLoopConcurrentByScheduler (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:8425:55)
+    at renderRootConcurrent (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:8408:64)
+    at performWorkOnRoot (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:7957:145)
+    at performWorkOnRootViaSchedulerTask (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:9059:4)
+    at MessagePort.performWorkUntilDeadline (http://127.0.0.1:8315/node_modules/.vite/deps/react-dom_client.js?v=2aea22d7:36:38)
+[   32929ms] [LOG] [vite] server connection lost. Polling for restart... @ http://127.0.0.1:8315/@vite/client:1002

@@ -104,6 +104,12 @@ describe("rpc-input - checkInput", () => {
 describe("rpc-input - LiveInput", () => {
   it("accepts a catalog id and refuses unknown, inherited, oversize or missing ids", () => {
     assert.deepEqual(checkInput("t", LiveInput, { id: "warfarin" }), { ok: true, value: { id: "warfarin" } });
+    assert.deepEqual(checkInput("t", LiveInput, { id: "warfarin", refresh: true }), {
+      ok: true,
+      value: { id: "warfarin", refresh: true },
+    });
+    assert.equal(checkInput("t", LiveInput, { id: "warfarin", refresh: false }).ok, true);
+    assert.equal(checkInput("t", LiveInput, { id: "warfarin", refresh: "yes" }).ok, false);
     assert.equal(checkInput("t", LiveInput, { id: "warfarin", note: "extra" }).ok, false);
     for (const input of [{ id: "not-a-drug" }, { id: "constructor" }, { id: "__proto__" }, { id: "w".repeat(65) }, {}, ...JUNK]) {
       assert.equal(checkInput("t", LiveInput, input).ok, false, JSON.stringify(input) ?? String(input));

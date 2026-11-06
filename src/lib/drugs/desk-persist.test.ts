@@ -283,3 +283,18 @@ describe("desk prehydrate script", () => {
     assert.equal(paint(JSON.stringify({ state: "nope" })).size, 0);
   });
 });
+
+describe("calculator attestation", () => {
+  const current = defaultPersistedDesk();
+
+  it("survives a reload with its version", () => {
+    const doseAttest = { v: 1, at: 1_790_000_000_000 };
+    assert.deepEqual(readDeskStorageState({ doseAttest }, current).state.doseAttest, doseAttest);
+  });
+
+  it("reads a malformed record as not attested, so the gate asks again", () => {
+    for (const doseAttest of [true, "1", { v: "1", at: 1 }, { v: 1 }, []]) {
+      assert.equal(readDeskStorageState({ doseAttest }, current).state.doseAttest, null);
+    }
+  });
+});

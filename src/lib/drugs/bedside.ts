@@ -65,7 +65,7 @@ export function crclOf({ age, weightKg, scr, sex }: CrclInput): CrclResult | nul
   const crcl = ((140 - age) * weightKg * (sex === "female" ? 0.85 : 1)) / (72 * scr);
   const rounded = Math.round(crcl);
   let band: CrclResult["band"] = "usual";
-  let note = "Cockcroft–Gault, not CKD-EPI. Many labels still dose on this number. IBW vs total weight is a separate argument for obesity.";
+  let note = "Many labels still dose on this number. IBW vs total weight is a separate argument for obesity.";
   if (rounded < 30) {
     band = "severe";
     note = "CrCl <30 — several NTI and DOAC rows on this desk become avoid or specialist-only. Flip CKD on the host to score them.";
@@ -74,6 +74,133 @@ export function crclOf({ age, weightKg, scr, sex }: CrclInput): CrclResult | nul
     note = "CrCl 30–59. Dose-cuts live here for dabigatran, gabapentin, lithium, enoxaparin. Flip CKD on the host.";
   }
   return { crcl: rounded, band, note };
+}
+
+/**
+ * Race-free CKD-EPI eGFR for adults (18+), in mL/min/1.73 m². Standardized creatinine in mg/dL,
+ * standardized cystatin C in mg/L. 2021 equations: Inker LA et al. N Engl J Med 2021;385:1737-49, Table 2.
+ * 2012 cystatin C: Inker LA et al. N Engl J Med 2012;367:20-9, Table 2. Same coefficients on the NIDDK page:
+ * https://www.niddk.nih.gov/research-funding/research-programs/kidney-clinical-research-epidemiology/laboratory/glomerular-filtration-rate-equations/adults
+ * The equation functions return unrounded values; egfrOf rounds to whole numbers like crclOf.
+ */
+export interface EgfrInput {
+  age: number;
+  sex: Sex;
+  scr: number;
+  cystatinC?: number;
+}
+
+const egfrAge = (age: number) => Number.isFinite(age) && age >= 18 && age <= 110;
+const egfrScr = (scr: number) => Number.isFinite(scr) && scr > 0 && scr <= 20;
+const egfrCys = (cys: number | undefined): cys is number => cys !== undefined && Number.isFinite(cys) && cys > 0 && cys <= 10;
+
+/** CKD-EPI 2021 creatinine: 142 × min(Scr/κ,1)^α × max(Scr/κ,1)^−1.200 × 0.9938^age × 1.012 if female; κ 0.7 F / 0.9 M, α −0.241 F / −0.302 M. */
+export function egfrCr2021({ age, sex, scr }: EgfrInput): number | null {
+  if (!egfrAge(age) || !egfrScr(scr)) return null;
+  const female = sex === "female";
+  const k = female ? 0.7 : 0.9;
+  return 142 * Math.min(scr / k, 1) ** (female ? -0.241 : -0.302) * Math.max(scr / k, 1) ** -1.2 * 0.9938 ** age * (female ? 1.012 : 1);
+}
+
+/** CKD-EPI 2021 creatinine–cystatin C: 135 × min(Scr/κ,1)^α × max(Scr/κ,1)^−0.544 × min(Scys/0.8,1)^−0.323 × max(Scys/0.8,1)^−0.778 × 0.9961^age × 0.963 if female; α −0.219 F / −0.144 M. */
+export function egfrCrCys2021({ age, sex, scr, cystatinC }: EgfrInput): number | null {
+  if (!egfrAge(age) || !egfrScr(scr) || !egfrCys(cystatinC)) return null;
+  const female = sex === "female";
+  const k = female ? 0.7 : 0.9;
+  return (
+    135 *
+    Math.min(scr / k, 1) ** (female ? -0.219 : -0.144) *
+    Math.max(scr / k, 1) ** -0.544 *
+    Math.min(cystatinC / 0.8, 1) ** -0.323 *
+    Math.max(cystatinC / 0.8, 1) ** -0.778 *
+    0.9961 ** age *
+    (female ? 0.963 : 1)
+  );
+}
+
+/** CKD-EPI 2012 cystatin C: 133 × min(Scys/0.8,1)^−0.499 × max(Scys/0.8,1)^−1.328 × 0.996^age × 0.932 if female. */
+export function egfrCys2012({ age, sex, cystatinC }: Pick<EgfrInput, "age" | "sex" | "cystatinC">): number | null {
+  if (!egfrAge(age) || !egfrCys(cystatinC)) return null;
+  return 133 * Math.min(cystatinC / 0.8, 1) ** -0.499 * Math.max(cystatinC / 0.8, 1) ** -1.328 * 0.996 ** age * (sex === "female" ? 0.932 : 1);
+}
+
+/** eGFR in mL/min for this body: indexed eGFR × BSA / 1.73 (KDIGO 2024 Practice Point 4.2.4; FDA renal impairment guidance, March 2024). */
+export function deindexEgfr(egfr: number, bsaM2: number): number | null {
+  if (!Number.isFinite(egfr) || !Number.isFinite(bsaM2) || egfr < 0 || bsaM2 <= 0) return null;
+  return (egfr * bsaM2) / 1.73;
+}
+
+export type KdigoG = "G1" | "G2" | "G3a" | "G3b" | "G4" | "G5";
+
+// KDIGO 2024 CKD guideline, Table 2 (GFR categories, mL/min/1.73 m²).
+const KDIGO_G: readonly { min: number; category: KdigoG; label: string }[] = [
+  { min: 90, category: "G1", label: "Normal or high" },
+  { min: 60, category: "G2", label: "Mildly decreased" },
+  { min: 45, category: "G3a", label: "Mildly to moderately decreased" },
+  { min: 30, category: "G3b", label: "Moderately to severely decreased" },
+  { min: 15, category: "G4", label: "Severely decreased" },
+  { min: 0, category: "G5", label: "Kidney failure" },
+];
+
+/** KDIGO G category, read from the whole-number eGFR a lab reports (89.5 shows as 90, so G1). */
+export function kdigoGOf(egfr: number): { category: KdigoG; label: string } | null {
+  if (!Number.isFinite(egfr) || egfr < 0) return null;
+  const shown = Math.round(egfr);
+  const row = KDIGO_G.find((g) => shown >= g.min);
+  return row ? { category: row.category, label: row.label } : null;
+}
+
+export interface EgfrCardInput extends EgfrInput {
+  heightCm: number;
+  weightKg: number;
+}
+
+export interface EgfrCardResult {
+  equation: "creatinine" | "creatinine + cystatin C";
+  /** mL/min/1.73 m², whole number. */
+  egfr: number;
+  g: { category: KdigoG; label: string };
+  /** Du Bois BSA (m², 2 dp); null without a valid height and weight. */
+  bsa: number | null;
+  /** De-indexed eGFR, mL/min, whole number. */
+  absolute: number | null;
+  /** Each marker alone and together, when cystatin C is entered. */
+  byMarker: { cr: number; cys: number; both: number } | null;
+}
+
+/** Bedside eGFR: creatinine alone, or creatinine + cystatin C when entered. Null for children or out-of-range input. */
+export function egfrOf(input: EgfrCardInput): EgfrCardResult | null {
+  const cr = egfrCr2021(input);
+  if (cr === null) return null;
+  let exact = cr;
+  let byMarker: EgfrCardResult["byMarker"] = null;
+  if (input.cystatinC !== undefined) {
+    const both = egfrCrCys2021(input);
+    const cys = egfrCys2012(input);
+    if (both === null || cys === null) return null;
+    exact = both;
+    byMarker = { cr: Math.round(cr), cys: Math.round(cys), both: Math.round(both) };
+  }
+  const g = kdigoGOf(exact);
+  if (!g) return null;
+  const body = bodyMetricsOf({ heightCm: input.heightCm, weightKg: input.weightKg, sex: input.sex });
+  // Unrounded BSA, as the NKF calculator de-indexes; the card shows BSA to 0.01 m².
+  const absolute = body ? deindexEgfr(exact, duBoisBsa(input.heightCm, input.weightKg)) : null;
+  return {
+    equation: byMarker ? "creatinine + cystatin C" : "creatinine",
+    egfr: Math.round(exact),
+    g,
+    bsa: body?.bsaDuBois ?? null,
+    absolute: absolute === null ? null : Math.round(absolute),
+    byMarker,
+  };
+}
+
+/** What the card shows when egfrOf returns null. */
+export function egfrBlockedReason(age: number): string {
+  return Number.isFinite(age) && age < 18
+    ? "CKD-EPI is for adults 18 and older. Children need a pediatric equation, which this card does not run."
+    : "Age 18–110, SCr 0–20 mg/dL, cystatin C 0–10 mg/L or blank.";
 }
 
 /** Sheiner–Tozer total-to-corrected phenytoin. Hypoalbuminemia teaching — not a free level. */
@@ -489,6 +616,11 @@ export interface BodyMetricsResult {
   dosingWeightAdvice: string;
 }
 
+/** Du Bois BSA (m²) = 0.007184 × kg^0.425 × cm^0.725, unrounded. */
+function duBoisBsa(heightCm: number, weightKg: number): number {
+  return 0.007184 * Math.pow(weightKg, 0.425) * Math.pow(heightCm, 0.725);
+}
+
 export function bodyMetricsOf({ heightCm, weightKg, sex }: BodyMetricsInput): BodyMetricsResult | null {
   if (
     !Number.isFinite(heightCm) ||
@@ -519,9 +651,7 @@ export function bodyMetricsOf({ heightCm, weightKg, sex }: BodyMetricsInput): Bo
   // Mosteller BSA = sqrt(cm * kg / 3600)
   const bsaMosteller = Math.round(Math.sqrt((heightCm * weightKg) / 3600) * 100) / 100;
 
-  // Du Bois BSA = 0.007184 * kg^0.425 * cm^0.725
-  const bsaDuBois =
-    Math.round(0.007184 * Math.pow(weightKg, 0.425) * Math.pow(heightCm, 0.725) * 100) / 100;
+  const bsaDuBois = Math.round(duBoisBsa(heightCm, weightKg) * 100) / 100;
 
   const weightToIbwRatio = Math.round((weightKg / ibwKg) * 100) / 100;
 

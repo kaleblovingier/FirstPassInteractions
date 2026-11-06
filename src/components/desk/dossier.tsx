@@ -10,7 +10,7 @@ import { pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
-import { NLM_ATTRIBUTION } from "@/lib/seo/legal";
+import { CPIC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
   ITEM_KIND_LABEL,
   PHENOTYPE_ENZYMES,
@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { LiveLabelDates } from "@/components/label-freshness";
 
 type Tab = "drugbank" | "pgx" | "stahl" | "pubmed" | "fda" | "rxnorm" | "liver" | "pubchem" | "trials" | "lactmed";
 
@@ -310,9 +311,12 @@ function FdaPanel({ id }: { id: string }) {
             </p>
           ) : null}
           {label.setId ? (
-            <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(label.setId)}`}>
-              Open DailyMed
-            </Out>
+            <>
+              <LiveLabelDates setid={label.setId} liveDate={label.effectiveTime} />
+              <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(label.setId)}`}>
+                Open DailyMed
+              </Out>
+            </>
           ) : (
             <Out href={`https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=${encodeURIComponent(drug.name)}`}>
               Search DailyMed
@@ -328,6 +332,7 @@ function FdaPanel({ id }: { id: string }) {
               <li key={d.setId} className="rounded-md bg-bg-sunken px-3 py-2">
                 <p className="text-sm text-fg">{d.title}</p>
                 {d.published ? <p className="font-mono text-[11px] text-muted">{d.published}</p> : null}
+                <LiveLabelDates setid={d.setId} liveDate={d.published} />
                 <Out href={`https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${encodeURIComponent(d.setId)}`}>
                   Open SPL
                 </Out>
@@ -731,6 +736,7 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
         genetic test result or a reading of one. Open the guideline for the official algorithm. Not a
         test order, not a dose, and not a green light if a row is quiet.
       </p>
+      <p className="text-[11px] leading-relaxed text-subtle">{CPIC_CREDIT}</p>
     </div>
   );
 }
@@ -808,7 +814,8 @@ function StahlPanel({ name, card }: { name: string; card: StahlCard }) {
       <p className="text-[11px] leading-relaxed text-subtle">
         Educational receptor sketch (spectrum first, then how hard it sits on each target, then side
         effects that follow). Original language — not a quotation of Stahl’s Essential
-        Psychopharmacology. Not a dose and not a prescription.
+        Psychopharmacology. Not a dose and not a prescription. Not affiliated with or endorsed by Dr.
+        Stephen M. Stahl, the Neuroscience Education Institute or Cambridge University Press.
       </p>
     </div>
   );

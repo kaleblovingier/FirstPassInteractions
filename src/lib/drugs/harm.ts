@@ -243,11 +243,11 @@ export function harmOnDesk(ids: string[]): HrCard[] {
   if (anyMdma(ids)) {
     out.push({
       id: "mdma-heat",
-      title: "MDMA — heat, water, and the pill you did not test",
+      title: "MDMA — heat, water, and the untested pill",
       tone: "warn",
       kicker: "PsychonautWiki / festival safety",
-      body: "Hyperthermia and hyponatremia kill more people on this molecule than a 'usual' milligram. Sip to thirst, do not chug. Cool the room, not ice-water shock. Pressed 'Mitsubishi' pills have carried PMA/PMMA — delayed onset, then a deadly redose. Test the solid. Crystal is not a guarantee. PsychonautWiki: frequent redose and stacked nights are the toxicity pattern.",
-      watch: "MAOIs and some SSRIs are a serotonin-toxicity row on this desk. Do not redose because 'nothing is happening yet.' This desk does not pick a milligram.",
+      body: "Hyperthermia and hyponatremia kill more people on this molecule than a 'usual' milligram. Counsel sipping to thirst, not chugging, and cooling the room, not ice-water shock. Pressed 'Mitsubishi' pills have carried PMA/PMMA — delayed onset, then a deadly redose. Testing the solid helps; crystal is not a guarantee. PsychonautWiki: frequent redose and stacked nights are the toxicity pattern.",
+      watch: "MAOIs and some SSRIs are a serotonin-toxicity row on this desk. A redose because 'nothing is happening yet' is the trap to counsel against. This desk does not pick a milligram.",
       source: "PsychonautWiki MDMA / Responsible drug use. DanceSafe / reagent teaching. Hunter tab if they look serotonergic.",
     });
   }
@@ -310,7 +310,7 @@ export function harmOnDesk(ids: string[]): HrCard[] {
     tone: "warn",
     kicker: "Reagents / immunoassay strips",
     body: "Fentanyl strips catch many illicit fentanyls and miss nitazenes, xylazine, and most benzos. Xylazine strips exist and still miss medetomidine. Reagents (Marquis, Ehrlich) name a chemical class, not a milligram and not a hidden fentanyl. PsychonautWiki: chemically test; do not eyeball.",
-    watch: "You can always take less of an unknown fold; you cannot take it back. This desk does not pick the milligram and does not read a strip for you.",
+    watch: "This desk does not pick the milligram and does not read a strip.",
     source: "PsychonautWiki Reagent testing kits / Responsible drug use. CDC fentanyl test-strip guidance.",
   });
 
@@ -376,14 +376,14 @@ export function kitFor(ids: string[]): KitItem[] {
   if (anyOpioid(ids) || anyMdma(ids) || ids.some((id) => STREET.has(id))) {
     items.push({
       id: "strips",
-      label: "Test strips if you have them",
+      label: "Test strips, if on hand",
       hint: "A tool, not a certificate of purity. Nitazenes miss fentanyl strips.",
     });
   }
   items.push({
     id: "ssp",
     label: "Sterile works / SSP",
-    hint: "Do not share. HCV is 60–80% among people who inject. Needle exchange exists. This desk is not a cooking guide.",
+    hint: "Counsel against sharing. HCV is 60–80% among people who inject. Needle exchange exists. This desk is not a cooking guide.",
   });
   if (anyAlpha2(ids)) {
     items.push({
@@ -395,7 +395,7 @@ export function kitFor(ids: string[]): KitItem[] {
   if (anyMdma(ids) || anyStim(ids)) {
     items.push({
       id: "cool",
-      label: "Cool / sip, do not chug",
+      label: "Cooling, and sips not chugging",
       hint: "Heat stroke and hyponatremia are different deaths. Water is not a contest.",
     });
   }
@@ -420,7 +420,7 @@ export function responseSteps(ids: string[]): ResponseStep[] {
     {
       n: 3,
       title: "Airway",
-      body: "Head tilt, look listen feel. Rescue breaths if you know them. Do not put a still person on their back and walk away.",
+      body: "Head tilt, look listen feel. Rescue breaths if trained. Do not put a still person on their back and walk away.",
     },
     {
       n: 4,
@@ -454,7 +454,7 @@ export function hrResourcesFor(ids: string[]) {
     {
       name: "Never Use Alone (US)",
       href: "https://neverusealone.com/",
-      why: "800-484-3731 — an operator stays on the line while you use.",
+      why: "800-484-3731. An operator stays on the line while the person uses.",
     },
     {
       name: "SAMHSA national helpline",
@@ -469,7 +469,7 @@ export function hrResourcesFor(ids: string[]) {
     {
       name: "NASEN / syringe services",
       href: "https://nasen.org/",
-      why: "Find a syringe service. Do not share. This desk is not a cooking guide.",
+      why: "Find a syringe service. Counsel against sharing. This desk is not a cooking guide.",
     },
     ...PW_STATIC_RESOURCES,
   ];

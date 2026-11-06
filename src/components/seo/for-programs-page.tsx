@@ -657,9 +657,9 @@ export function InquiryForm({ values, onChange }: { values: InquiryValues; onCha
           <Input {...fieldProps("start")} autoComplete="off" placeholder="Spring 2027" maxLength={INQUIRY_LIMITS.start} className={cn(FIELD, "mt-1")} value={values.start} onChange={(e) => set("start")(e.target.value)} />
         </Field>
         <div className="sm:col-span-2">
-          <Field label="Message" f="message" optional errors={errors}>
+          <Field label="Message" f="message" optional errors={errors} hint="inq-message-hint" hintText="Please don't include patient information.">
             <textarea
-              {...fieldProps("message")}
+              {...fieldProps("message", "inq-message-hint")}
               rows={5}
               maxLength={INQUIRY_LIMITS.message}
               placeholder="Courses, sites, purchase-order steps, anything we should know."
