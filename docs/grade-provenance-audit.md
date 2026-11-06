@@ -28,15 +28,15 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 | | Before | After |
 |---|---|---|
 | Pair findings | 1257 | 1257 |
-| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1197 |
-| Lead basis is a catalog-rule note | not stated | 60 |
+| Quote/basis text + link in one click (open the row) | 0 (source chips only; text took a second click) | 1190 |
+| Lead basis is a catalog-rule note | not stated | 67 |
 
 ## Whole catalog: grades resting only on an engine rule
 
 | Tier | Findings | Rule-only | Share |
 |---|---|---|---|
 | Avoid together | 3038 | 25 | 0.8% |
-| Serious concern | 75310 | 21010 | 27.9% |
+| Serious concern | 75310 | 21253 | 28.2% |
 
 Top rule-only rules:
 
@@ -44,17 +44,17 @@ Top rule-only rules:
 |---|---|
 | Serious concern · pd | 14287 |
 | Serious concern · pk-CYP3A4-inducer | 2669 |
-| Serious concern · washout | 1528 |
+| Serious concern · washout | 1662 |
 | Serious concern · pk-CYP3A4-inhibitor | 857 |
 | Serious concern · pd-alpha2 | 288 |
 | Serious concern · pk-CYP2D6-inhibitor | 180 |
+| Serious concern · pk-P-gp-inducer | 141 |
 | Serious concern · washout-st-johns | 132 |
-| Serious concern · pk-P-gp-inducer | 114 |
+| Serious concern · pk-CYP2C19-inducer | 113 |
+| Serious concern · pk-CYP2C9-inducer | 112 |
+| Serious concern · pk-CYP1A2-inducer | 108 |
 | Serious concern · pk-CYP2C19-inhibitor | 93 |
-| Serious concern · pk-CYP2C19-inducer | 92 |
 | Serious concern · pk-P-gp-inhibitor | 90 |
-| Serious concern · pk-CYP1A2-inducer | 81 |
-| Serious concern · pk-CYP2C9-inducer | 78 |
 | Serious concern · pd-lithium | 66 |
 | Serious concern · pd-nmda | 66 |
 

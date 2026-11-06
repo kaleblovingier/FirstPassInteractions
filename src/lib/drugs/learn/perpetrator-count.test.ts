@@ -33,4 +33,16 @@ test("azithromycin perpetrator count is 0", () => {
   const card = perpetratorCountCard(DRUG_BY_ID.azithromycin);
   assert.equal(card.correct, "0");
   assert.ok(card.choices?.some((choice) => choice.id === card.correct));
+  assert.doesNotMatch(card.answer, /unscored perpetrator/);
+});
+
+test("mavorixafor stored count stays 0 and says the label names an unscored perpetrator", () => {
+  const card = perpetratorCountCard(DRUG_BY_ID.mavorixafor);
+  assert.equal(card.correct, "0");
+  assert.match(card.answer, /stores 0 perpetrator rows/);
+  assert.match(card.answer, /label names an unscored perpetrator/);
+  assert.match(card.answer, /did not assign a strength/);
+  assert.match(card.answer, /not the whole story/);
+  assert.match(card.answer, /Not FDA-cleared/);
+  assert.doesNotMatch(card.answer, /\bsafe\b/i);
 });
