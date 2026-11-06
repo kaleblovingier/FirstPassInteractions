@@ -4,6 +4,7 @@ import { env } from "@/lib/env.server";
 import { mailConfigured, sendLicenseMail } from "@/lib/billing/license-mail.server";
 import { mintKeyFromPaid, verifyKey, type IssuedPlan } from "@/lib/billing/license.server";
 import { checkListPrice, issuedFor, stripeMode, validatePaidSession } from "@/lib/billing/stripe.server";
+import { SHARED_CLIENT, clientKey } from "@/lib/server/rate-limit";
 
 /**
  * Self-serve "lost my key" recovery. A buyer types their purchase email; if a paid
@@ -49,13 +50,6 @@ export function hit(key: string, max: number, windowMs: number, now = Date.now()
 
 export function resetRecoveryLimits() {
   buckets.clear();
-}
-
-export function clientIp(request: Request): string {
-  const h = request.headers;
-  const raw =
-    h.get("x-vercel-forwarded-for") || h.get("x-forwarded-for") || h.get("x-real-ip") || "unknown";
-  return raw.split(",")[0]!.trim() || "unknown";
 }
 
 /** Trim and lowercase strings only. Numbers and objects are not coerced into addresses. */
@@ -149,8 +143,10 @@ export async function handleRecoverRequest(
   if (!parsed.success) return json(400, RECOVERY_BAD_EMAIL);
   const email = parsed.data.email;
 
-  const ip = clientIp(request);
-  if (!hit(`ip:${ip}`, LIMITS.ip.max, LIMITS.ip.windowMs)) return json(429, RECOVERY_LIMITED);
+  // Same caller key as the other limits: forwarded headers count only on Vercel. Callers we cannot
+  // tell apart share one key, which must never refuse, so they meet only the per-email limit.
+  const ip = clientKey(request);
+  if (ip !== SHARED_CLIENT && !hit(`ip:${ip}`, LIMITS.ip.max, LIMITS.ip.windowMs)) return json(429, RECOVERY_LIMITED);
   if (!hit(`email:${email}`, LIMITS.email.max, LIMITS.email.windowMs)) return json(429, RECOVERY_LIMITED);
 
   const stripe = deps.stripe ?? new Stripe(env("STRIPE_SECRET_KEY")!);

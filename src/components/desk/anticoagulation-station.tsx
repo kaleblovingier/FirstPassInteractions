@@ -23,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useDraftNumber } from "@/lib/forms/draft-number";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
@@ -83,6 +84,12 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
   // --- 5. Reversals: Protamine Sulfate State ---
   const [protamineAgent, setProtamineAgent] = useState<"heparin" | "enoxaparin" | "fondaparinux" | "dalteparin">("heparin");
   const [protamineDoseInput, setProtamineDoseInput] = useState<number>(5000);
+  // Same floors and defaults the fields always had; the text is kept while typing and clamped on blur.
+  const baselinePlateletsField = useDraftNumber(baselinePlatelets, setBaselinePlatelets, { min: 1, fallback: 100 });
+  const nadirPlateletsField = useDraftNumber(nadirPlatelets, setNadirPlatelets, { min: 0, fallback: 20 });
+  const dtiWeightField = useDraftNumber(dtiWeightKg, setDtiWeightKg, { min: 30, fallback: 70 });
+  const protamineDoseField = useDraftNumber(protamineDoseInput, setProtamineDoseInput, { min: 1, fallback: 100 });
+  const andexDoseField = useDraftNumber(andexDoseMg, setAndexDoseMg, { min: 1, fallback: 5 });
   const [protamineHours, setProtamineHours] = useState<number>(0.8);
   const [hasFishAllergy, setHasFishAllergy] = useState<boolean>(false);
   const [hasPriorNph, setHasPriorNph] = useState<boolean>(false);
@@ -344,8 +351,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                     type="number"
                     min="10"
                     max="1000"
-                    value={baselinePlatelets}
-                    onChange={(e) => setBaselinePlatelets(Math.max(1, Number(e.target.value) || 100))}
+                    {...baselinePlateletsField}
                     className="h-8 text-xs font-mono"
                   />
                 </div>
@@ -358,8 +364,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                     type="number"
                     min="1"
                     max="1000"
-                    value={nadirPlatelets}
-                    onChange={(e) => setNadirPlatelets(Math.max(0, Number(e.target.value) || 20))}
+                    {...nadirPlateletsField}
                     className="h-8 text-xs font-mono"
                   />
                 </div>
@@ -588,8 +593,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                   type="number"
                   min="40"
                   max="160"
-                  value={dtiWeightKg}
-                  onChange={(e) => setDtiWeightKg(Math.max(30, Number(e.target.value) || 70))}
+                  {...dtiWeightField}
                   className="w-20 h-8 font-mono text-center text-xs"
                 />
                 <span className="text-muted text-[11px]">kg</span>
@@ -1028,8 +1032,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                 </div>
                 <Input
                   type="number"
-                  value={protamineDoseInput}
-                  onChange={(e) => setProtamineDoseInput(Math.max(1, Number(e.target.value) || 100))}
+                  {...protamineDoseField}
                   className="h-9 text-xs font-mono"
                 />
                 <span className="text-[10px] text-muted">
@@ -1184,8 +1187,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                 </div>
                 <Input
                   type="number"
-                  value={andexDoseMg}
-                  onChange={(e) => setAndexDoseMg(Math.max(1, Number(e.target.value) || 5))}
+                  {...andexDoseField}
                   className="h-9 text-xs font-mono"
                 />
               </div>

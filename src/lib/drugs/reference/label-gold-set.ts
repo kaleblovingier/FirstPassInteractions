@@ -4132,7 +4132,7 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "wave 7: dofetilide + prochlorperazine / dolutegravir / megestrol (Tikosyn)",
     reason:
-      "Tikosyn says these 'should not be used', not 'contraindicated'. dolutegravir + dofetilide is carried by the Tivicay section 4 sentence instead. Trimethoprim, megestrol and hydrochlorothiazide are not catalog rows.",
+      "Tikosyn says these 'should not be used', not 'contraindicated'. dolutegravir + dofetilide is carried by the Tivicay section 4 sentence instead. Megestrol is not a catalog row. Trimethoprim and hydrochlorothiazide are contraindicated in Tikosyn's Contraindications section and are pinned there (dofetilide+trimethoprim, dofetilide+tmp-smx, dofetilide+hctz).",
   },
   {
     pair: "wave 7: rilpivirine + dexamethasone (Edurant Table 2)",

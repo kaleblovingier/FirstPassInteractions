@@ -392,7 +392,7 @@ export const PGX: Record<string, PgxCard[]> = {
         { pheno: "IM", action: "25% reduction." },
         { pheno: "PM", action: "50% reduction; nonlinear kinetics still apply." },
       ],
-      pearl: "HLA-B*15:02 is a separate SJS story in ancestry with that allele — avoid like carbamazepine.",
+      pearl: "HLA-B*15:02 is a separate SJS story: the genotype, not ancestry, decides it — a carrier avoids it like carbamazepine. Ancestry-based screening can miss carriers.",
     },
   ],
   celecoxib: [
@@ -549,11 +549,11 @@ export const PGX: Record<string, PgxCard[]> = {
       guideline: g("guideline-for-tacrolimus-and-cyp3a5/"),
       clinpgx: c("tacrolimus"),
       rows: [
-        { pheno: "non-expresser (*3/*3)", action: "Usual labeled start (most European ancestry)." },
-        { pheno: "expresser (*1 carrier)", action: "Increase start ~1.5–2× with TDM — they clear it." },
+        { pheno: "non-expresser (*3/*3)", action: "CPIC: standard recommended start, with TDM." },
+        { pheno: "expresser (*1 carrier)", action: "CPIC recommends a start ~1.5–2× the standard one, with TDM — they clear it faster." },
       ],
       pearl:
-        "Most European patients are 3A5 non-expressers. Expressers (more common in African ancestry) look like they were underdosed. Grapefruit and azoles are a separate gut-3A4 trap on the curve.",
+        "Genotype, not ancestry, decides the row: on a standard start, expressers look underdosed. Expresser frequency varies by ancestry, so ancestry-based screening can miss carriers. Grapefruit and azoles are a separate gut-3A4 trap on the curve.",
     },
   ],
   efavirenz: [

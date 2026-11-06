@@ -174,7 +174,7 @@ export function harmOnDesk(ids: string[]): HrCard[] {
     title: "Do not use alone",
     tone: "danger",
     kicker: "Stay / witness",
-    body: "A person who is not breathing cannot naloxone themselves. Someone sober enough to call 911, put them on their side, and stay is the intervention that actually lands. Never Use Alone (US) is a phone that stays on the line.",
+    body: "A person who is not breathing cannot give themselves naloxone. Someone sober enough to call 911, put them on their side, and stay is the intervention that actually lands. Never Use Alone (US) is a phone that stays on the line.",
     watch: "If they must use alone, a live person on the phone is still a person. This desk is not a sitter.",
     source: "SAMHSA overdose education. PsychonautWiki Responsible drug use. Never Use Alone.",
   });

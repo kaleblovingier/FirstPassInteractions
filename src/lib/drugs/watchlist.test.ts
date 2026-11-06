@@ -18,6 +18,13 @@ test("watchCap is 5 free and 12 founding/pro/lab", () => {
   assert.equal(WATCH_CAP_FOUNDING, 12);
 });
 
+test("prototype-key ids never join the watchlist", () => {
+  const { state, added } = addToWatchlist(emptyWatchlist(), ["constructor", "toString", "ketamine"]);
+  assert.deepEqual(added, ["ketamine"]);
+  assert.deepEqual(state.ids, ["ketamine"]);
+  assert.equal(toggleWatchlist(emptyWatchlist(), "constructor").rejected, true);
+});
+
 test("addToWatchlist dedupes and respects cap", () => {
   let state = emptyWatchlist();
   const first = addToWatchlist(state, ["ketamine", "alprazolam", "ketamine"], 5);

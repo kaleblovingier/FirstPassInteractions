@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState } from "./desk-persist";
-import { DRUG_BY_ID } from "./catalog";
+import { isCatalogId } from "./catalog";
 import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray } from "./tray-history";
 import type { StationId } from "./station-groups";
@@ -221,7 +221,7 @@ export const useDesk = create<DeskState>()(
       doseAttest: null,
       checkout: { open: false, plan: "pro", interval: "life", reason: "" },
       add: (id) => {
-        if (!DRUG_BY_ID[id] || id.startsWith("__")) return false;
+        if (!isCatalogId(id) || id.startsWith("__")) return false;
         const cur = get().selected;
         if (cur.includes(id)) return true;
         const cap = maxDrugs(activePlan(get()));
@@ -268,7 +268,7 @@ export const useDesk = create<DeskState>()(
           rememberTray(s0.selected, { ketamineRoute: s0.ketamineRoute });
         }
         const cap = maxDrugs(activePlan(get()));
-        const next = ids.filter((id) => DRUG_BY_ID[id] && !id.startsWith("__")).slice(0, cap);
+        const next = ids.filter((id) => isCatalogId(id) && !id.startsWith("__")).slice(0, cap);
         // Oral/IN ketamine route is free for the teaching demo (grapefruit × oral K).
         // Phenotype, smoke, alcohol, and cannabis route come with founding.
         const wantsHost = Boolean(

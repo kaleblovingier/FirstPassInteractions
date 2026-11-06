@@ -11,6 +11,7 @@ import {
   type ProgramInquiry,
 } from "@/lib/billing/program-inquiry";
 import { FOR_PROGRAMS_EMAIL } from "@/lib/seo/for-programs";
+import { SHARED_CLIENT, clientKey } from "@/lib/server/rate-limit";
 
 /**
  * POST /api/programs/inquiry. Sends ONE email, to the operator only, with
@@ -54,12 +55,6 @@ export function inquiryHit(key: string, max: number, windowMs: number, now = Dat
 
 export function resetInquiryLimits() {
   buckets.clear();
-}
-
-function clientIp(request: Request): string {
-  const h = request.headers;
-  const raw = h.get("x-vercel-forwarded-for") || h.get("x-forwarded-for") || h.get("x-real-ip") || "unknown";
-  return raw.split(",")[0]!.trim() || "unknown";
 }
 
 /* ---------------- mail ---------------- */
@@ -138,7 +133,10 @@ export async function handleInquiryRequest(request: Request): Promise<Response> 
   if (!inquiryConfigured()) return json(503, INQUIRY_UNCONFIGURED);
 
   const { ip, email } = INQUIRY_RATE_LIMITS;
-  if (!inquiryHit(`ip:${clientIp(request)}`, ip.max, ip.windowMs)) return json(429, INQUIRY_LIMITED);
+  // Same caller key as the other limits: forwarded headers count only on Vercel. Callers we cannot
+  // tell apart share one key, which must never refuse, so they meet only the per-email limit.
+  const caller = clientKey(request);
+  if (caller !== SHARED_CLIENT && !inquiryHit(`ip:${caller}`, ip.max, ip.windowMs)) return json(429, INQUIRY_LIMITED);
   if (!inquiryHit(`email:${data.email}`, email.max, email.windowMs)) return json(429, INQUIRY_LIMITED);
 
   return (await sendInquiryMail(data)) ? json(200, INQUIRY_SENT) : json(502, INQUIRY_FAILED);

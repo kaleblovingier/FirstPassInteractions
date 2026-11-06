@@ -2868,6 +2868,11 @@ export const DRUGS: Drug[] = [
 ];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 
+/** Own catalog keys only: "constructor" or "toString" are truthy lookups on a plain object. */
+export function isCatalogId(id: string): boolean {
+  return Object.hasOwn(DRUG_BY_ID, id);
+}
+
 const PSYCH_CLS =
   /SSRI|SNRI|MAOI|antipsychotic|antidepressant|Benzodiazepine|Opioid|Gabapentinoid|Mood stabilizer|NMDA|Dissociative|Psychedelic|Entactogen|Stimulant|Cannabinoid|Alcohol|GHB|Z-hypnotic|Anxiolytic|ADHD|NRI|Nicotine|Methylxanthine|Tricyclic|NaSSA|SARI|NDRI|hypnotic|orexin|Melatonin|kratom|GABA|MAT|Wake-promoting|Pineal|Partial opioid|Opioid antagonist|Atypical opioid|aldehyde|NMDA \/ GABA|nicotinic|Anticonvulsant|Central muscle|AChE|α2-agonist|Nitazene|Designer benzodiazepine|Thienodiazepine|Cathinone|neuroactive steroid|Arylcyclohexylamine|GHB prodrug|Alkyl nitrite|Antidiarrheal|Sedating antihistamine|Veterinary|Barbiturate|NNRTI|NBOMe|Salvinorin|Tropane|H2 blocker|Carbamate|oneirogen|pyrovalerone|NRI analgesic|IV anesthetic|NK1|SPAR|mixed opioid|7-OH|Diacetylmorphine|Street pressed|Local anesthetic/i;
 

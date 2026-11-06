@@ -107,6 +107,15 @@ describe("readDeskStorageState", () => {
     assert.deepEqual(read.state.selected, ["ketamine", "grapefruit"]);
   });
 
+  it("drops prototype-key ids from selected", () => {
+    const read = readDeskStorageState({
+      ...FOUNDING,
+      selected: ["constructor", "ketamine", "toString", "__proto__"],
+    });
+    assert.equal(read.rewrite, true);
+    assert.deepEqual(read.state.selected, ["ketamine"]);
+  });
+
   it("defaults bad host objects", () => {
     const read = readDeskStorageState({
       ...FOUNDING,

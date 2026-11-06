@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { PairPage } from "@/lib/seo/pair-pages";
-import { DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
+import { DISCLAIMER_ACTION, DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
 import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
@@ -38,7 +38,7 @@ export function PairDisclaimer() {
   return (
     <>
       <p data-testid="pair-disclaimer" className="mt-8 text-xs text-muted">
-        {PAIR_DISCLAIMER}
+        {PAIR_DISCLAIMER} {DISCLAIMER_ACTION}
       </p>
       <LegalLinks className="mt-2 text-xs text-muted" />
       <p data-testid="trademark-line" className="mt-1 text-xs text-muted">{TRADEMARK_LINE}</p>
