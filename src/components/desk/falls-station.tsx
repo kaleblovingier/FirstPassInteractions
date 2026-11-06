@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { BEERS_CREDIT } from "@/lib/seo/legal";
 import type { HostContext } from "@/lib/drugs/types";
 import {
   DEPRESCRIBE_QUESTIONS,
@@ -360,6 +361,7 @@ export function FallsPanel({ ids, host }: { ids: string[]; host: HostContext }) 
           </ol>
         </details>
         <p className="text-xs leading-relaxed text-subtle">{FALLS_DISCLAIMER}</p>
+        <p className="text-xs leading-relaxed text-subtle">{BEERS_CREDIT}</p>
       </footer>
     </div>
   );

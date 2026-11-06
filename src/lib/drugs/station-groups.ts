@@ -70,6 +70,69 @@ export const CLINICAL_TAB_IDS = [
 
 export type ClinicalTabId = (typeof CLINICAL_TAB_IDS)[number];
 
+/**
+ * Stations the clinical board shows, in board order, with the names the picker and
+ * the Ctrl+K palette use. Ids still left out here have no station on the board yet.
+ */
+export const STATION_LABELS = {
+  otp: "OTP",
+  hr: "HR",
+  wards: "Wards",
+  dose: "Dose",
+  cyp: "CYP",
+  qt: "QT",
+  levels: "Levels",
+  liver: "LiverTox",
+  pheno: "Pheno",
+  reversal: "Reversal",
+  mme: "MME",
+  hunter: "Hunter",
+  uds: "UDS",
+  anc: "ANC",
+  inr: "INR",
+  doac: "DOAC",
+  anticoagulation: "Anticoagulation",
+  valproate: "Valproate",
+  potassium: "Potassium",
+  sglt2: "SGLT2",
+  acb: "ACB",
+  dialysis: "Dialysis",
+  steroids: "Steroids",
+  apap: "APAP",
+  iron: "Iron",
+  digoxin: "Digoxin",
+  phenobarbital: "Phenobarb",
+  aminoglycosides: "Aminoglycosides",
+  lithium: "Lithium",
+  oncology: "Oncology",
+  antimicrobial: "Stewardship",
+  phenytoin: "Phenytoin",
+  pregnancy: "Obstetrics",
+  obstetrickinetics: "Obstetric Station",
+  vasoactive: "Vasoactive",
+  transplant: "Transplant",
+  neuropsych: "Neuropsych",
+  toxicology: "Toxicology",
+  antiarrhythmic: "Antiarrhythmic",
+  acidbase: "Acid-Base",
+  anesthesia: "Anesthesia & NMB",
+  epilepsy: "Status Epilepticus",
+  moud: "MOUD & Harm Reduction",
+  glycemic: "Glycemic & DKA",
+  pediatric: "Pediatric & Neonatal",
+  separation: "Separate",
+  rotation: "Opioid Rotation",
+  hepatic: "Hepatic Clearance",
+  allergy: "Allergy & ADR",
+  af: "AF Stroke & Bleed",
+  dili: "Liver Injury",
+  resources: "Resources",
+  bedside: "Bedside",
+  alerts: "Alerts",
+} satisfies Partial<Record<ClinicalTabId, string>>;
+
+export type StationId = keyof typeof STATION_LABELS;
+
 export interface StationGroupDef {
   id: string;
   label: string;
@@ -170,7 +233,7 @@ export const STATION_ALIASES: Partial<Record<ClinicalTabId, string>> = {
   separation: "Binders",
   af: "Atrial fibrillation",
   dili: "Drug-induced liver injury",
-  bedside: "Bedside math CrCl QTc Child-Pugh",
+  bedside: "Bedside math CrCl eGFR CKD-EPI QTc Child-Pugh",
 };
 
 export function isAlwaysOnStation(id: string): boolean {

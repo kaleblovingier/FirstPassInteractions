@@ -16,6 +16,7 @@
  * React route here paints the full app shell in the popup. The opener lives in
  * `client.ts` (`signIn` → `openSignInPopup`).
  */
+import { publicAuthError, readPopupProviderId } from "./popup-input";
 import { auth, SESSION_TOKEN_COOKIE } from "./server";
 
 /** Message shape the popup posts to the opener (must match `client.ts`). */
@@ -39,7 +40,7 @@ export async function handleAuthPopupRequest(request: Request): Promise<Response
     const message: PopupMessage = {
       source: "grok-auth-popup",
       token,
-      ...(errored ? { error: url.searchParams.get("error") ?? "sign_in_failed" } : {}),
+      ...(errored ? { error: publicAuthError(url.searchParams.get("error")) } : {}),
     };
     return new Response(completionHtml(message), {
       status: 200,
@@ -51,9 +52,9 @@ export async function handleAuthPopupRequest(request: Request): Promise<Response
     });
   }
 
-  const providerId = url.searchParams.get("providerId")?.trim();
+  const providerId = readPopupProviderId(url.searchParams.get("providerId"));
   if (!providerId) {
-    return new Response("Missing providerId", {
+    return new Response("Unknown provider", {
       status: 400,
       headers: { "content-type": "text/plain; charset=utf-8" },
     });
@@ -79,7 +80,7 @@ export async function handleAuthPopupRequest(request: Request): Promise<Response
       return completionResponse({
         source: "grok-auth-popup",
         token: null,
-        error: detail || `oauth_init_failed_${apiRes.status}`,
+        error: publicAuthError(detail, `oauth_init_failed_${apiRes.status}`),
       });
     }
 
@@ -107,7 +108,7 @@ export async function handleAuthPopupRequest(request: Request): Promise<Response
     return completionResponse({
       source: "grok-auth-popup",
       token: null,
-      error: message,
+      error: publicAuthError(message, "oauth_init_threw"),
     });
   }
 }

@@ -15,6 +15,7 @@ import { analyze } from "../../drugs/engine";
 import { DEFAULT_HOST } from "../../drugs/types";
 import { pairSlots } from "../../drugs/fanout";
 import { SOFTWARE } from "../../regulatory";
+import { EXPORT_EMPTY } from "../../drugs/brief";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -60,7 +61,7 @@ test("ClinicalDecisionService: checkInteractions detects severe and contraindica
   if (res.success) {
     assert.ok(res.data.summary.totalFindings > 0);
     assert.ok(res.data.summary.contraindicatedCount > 0 || res.data.summary.majorCount > 0);
-    assert.ok(res.data.meta.disclaimer.includes("21 U.S.C. § 360j(o)(1)(E)"));
+    assert.match(res.data.meta.disclaimer, /not FDA-cleared/);
     assert.ok(res.data.meta.durationMs >= 0);
     assert.equal(res.data.meta.fanout.stages[0], "resolve");
     assert.equal(res.data.meta.fanout.stages.at(-1), "reduce");
@@ -173,7 +174,7 @@ test("ClinicalDecisionService: evaluateKinetics executes multi-station kinetics"
     assert.ok(res.data.modules.aminoglycosides !== undefined);
     assert.ok(res.data.modules.toxidromes !== undefined);
     assert.ok(res.data.modules.arrhythmia !== undefined);
-    assert.ok(res.data.meta.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
+    assert.match(res.data.meta.disclaimer, /licensed healthcare professionals/);
   }
 });
 
@@ -655,4 +656,24 @@ test("ClinicalDecisionService: responses carry the shipped software version", as
   assert.equal(ix.data.meta.version, SOFTWARE.version);
   assert.equal(kin.data.meta.version, SOFTWARE.version);
   assert.equal(kin.data.meta.disclaimer, STATUTORY_CDS_DISCLAIMER);
+  // Kinetics returns computed doses, so the disclaimer may not deny directives or claim a statute.
+  assert.match(STATUTORY_CDS_DISCLAIMER, /not FDA-cleared/);
+  assert.match(STATUTORY_CDS_DISCLAIMER, /must show that basis next to the finding/);
+  assert.doesNotMatch(STATUTORY_CDS_DISCLAIMER, /prescriptive directives|conforms to|360j|UCC/);
+});
+
+test("ClinicalDecisionService: an empty check says the list is not a green light", async () => {
+  ClinicalDecisionService.clearCaches();
+  const empty = await ClinicalDecisionService.checkInteractions({ drugs: ["ondansetron", "acetaminophen"] });
+  assert.ok(empty.success);
+  assert.equal(empty.data.findings.length, 0);
+  assert.deepEqual(
+    empty.data.warnings.filter((w) => w.code === "no-mapped-findings"),
+    [{ code: "no-mapped-findings", detail: EXPORT_EMPTY }],
+  );
+  const cached = await ClinicalDecisionService.checkInteractions({ drugs: ["ondansetron", "acetaminophen"] });
+  assert.ok(cached.success && cached.data.warnings.some((w) => w.code === "no-mapped-findings"));
+  const found = await ClinicalDecisionService.checkInteractions({ drugs: ["clarithromycin", "simvastatin"] });
+  assert.ok(found.success && found.data.findings.length > 0);
+  assert.ok(!found.data.warnings.some((w) => w.code === "no-mapped-findings"));
 });

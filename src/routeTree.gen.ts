@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as EnzymesRouteImport } from './routes/enzymes'
 import { Route as ForProgramsRouteImport } from './routes/for-programs'
+import { Route as GlossaryRouteImport } from './routes/glossary'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as PairsRouteImport } from './routes/pairs'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -20,6 +22,7 @@ import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrustRouteImport } from './routes/trust'
+import { Route as WorkupRouteImport } from './routes/workup'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
@@ -46,6 +49,16 @@ const EnzymesRoute = EnzymesRouteImport.update({
 const ForProgramsRoute = ForProgramsRouteImport.update({
   id: '/for-programs',
   path: '/for-programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlossaryRoute = GlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PairsRoute = PairsRouteImport.update({
@@ -81,6 +94,11 @@ const TermsRoute = TermsRouteImport.update({
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
   path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkupRoute = WorkupRouteImport.update({
+  id: '/workup',
+  path: '/workup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrugSlugRoute = DrugSlugRouteImport.update({
@@ -124,6 +142,8 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
+  '/glossary': typeof GlossaryRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -131,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
@@ -144,6 +165,8 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
+  '/glossary': typeof GlossaryRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -151,6 +174,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
@@ -165,6 +189,8 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
+  '/glossary': typeof GlossaryRoute
+  '/help': typeof HelpRoute
   '/pairs': typeof PairsRoute
   '/practice': typeof PracticeRoute
   '/privacy': typeof PrivacyRoute
@@ -172,6 +198,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
+  '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/pair/$slug': typeof PairSlugRoute
@@ -187,6 +214,8 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/enzymes'
     | '/for-programs'
+    | '/glossary'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -194,6 +223,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/pair/$slug'
@@ -207,6 +237,8 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/enzymes'
     | '/for-programs'
+    | '/glossary'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -214,6 +246,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/pair/$slug'
@@ -227,6 +260,8 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/enzymes'
     | '/for-programs'
+    | '/glossary'
+    | '/help'
     | '/pairs'
     | '/practice'
     | '/privacy'
@@ -234,6 +269,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/trust'
+    | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/pair/$slug'
@@ -248,6 +284,8 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   EnzymesRoute: typeof EnzymesRoute
   ForProgramsRoute: typeof ForProgramsRoute
+  GlossaryRoute: typeof GlossaryRoute
+  HelpRoute: typeof HelpRoute
   PairsRoute: typeof PairsRoute
   PracticeRoute: typeof PracticeRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -255,6 +293,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
+  WorkupRoute: typeof WorkupRoute
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
   PairSlugRoute: typeof PairSlugRoute
@@ -292,6 +331,20 @@ declare module '@tanstack/react-router' {
       path: '/for-programs'
       fullPath: '/for-programs'
       preLoaderRoute: typeof ForProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/glossary': {
+      id: '/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof GlossaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pairs': {
@@ -341,6 +394,13 @@ declare module '@tanstack/react-router' {
       path: '/trust'
       fullPath: '/trust'
       preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workup': {
+      id: '/workup'
+      path: '/workup'
+      fullPath: '/workup'
+      preLoaderRoute: typeof WorkupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drug/$slug': {
@@ -400,6 +460,8 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   EnzymesRoute: EnzymesRoute,
   ForProgramsRoute: ForProgramsRoute,
+  GlossaryRoute: GlossaryRoute,
+  HelpRoute: HelpRoute,
   PairsRoute: PairsRoute,
   PracticeRoute: PracticeRoute,
   PrivacyRoute: PrivacyRoute,
@@ -407,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
+  WorkupRoute: WorkupRoute,
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
   PairSlugRoute: PairSlugRoute,

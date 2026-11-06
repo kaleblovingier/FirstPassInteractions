@@ -1,41 +1,36 @@
 import { createServerFn } from "@tanstack/react-start";
+import {
+  billingRejected,
+  checkBillingInput,
+  CollectInput,
+  DraftCollectedInput,
+  type BillingChecked,
+} from "./rpc-input";
 import type { CollectRow } from "./collect.server";
 
-function readString(input: unknown, key: string) {
-  if (!input || typeof input !== "object") return "";
-  const v = (input as Record<string, unknown>)[key];
-  return typeof v === "string" ? v : "";
+type CollectBody = BillingChecked<{ pin: string; plan: "pro" | "lab" | "life"; names: string; hunt: string }>;
+type DraftBody = BillingChecked<{ pin: string; rows: CollectRow[] }>;
+
+type DraftResult =
+  | { ok: false; reason: string; loginUrl?: string }
+  | { ok: true; drafted: number };
+
+export async function handleCollectLicenses(data: CollectBody) {
+  if (!data.ok) return billingRejected();
+  const { collectLicenses: run } = await import("./collect.server");
+  return run(data.value);
 }
 
-function readRows(input: unknown): CollectRow[] {
-  if (!input || typeof input !== "object") return [];
-  const raw = (input as Record<string, unknown>).rows;
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((row): row is CollectRow => {
-    if (!row || typeof row !== "object") return false;
-    const r = row as Record<string, unknown>;
-    return typeof r.key === "string" && typeof r.soldTo === "string";
-  }) as CollectRow[];
+export async function handleDraftCollected(data: DraftBody): Promise<DraftResult> {
+  if (!data.ok) return billingRejected();
+  const { draftCollected: run } = await import("./collect.server");
+  return run(data.value);
 }
 
 export const collectLicenses = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({
-    pin: readString(input, "pin"),
-    plan: readString(input, "plan"),
-    names: readString(input, "names"),
-    hunt: readString(input, "hunt"),
-  }))
-  .handler(async ({ data }) => {
-    const { collectLicenses: run } = await import("./collect.server");
-    return run(data);
-  });
+  .validator((input: unknown) => checkBillingInput("collectLicenses", CollectInput, input))
+  .handler(async ({ data }) => handleCollectLicenses(data));
 
 export const draftCollected = createServerFn({ method: "POST" })
-  .validator((input: unknown) => ({
-    pin: readString(input, "pin"),
-    rows: readRows(input),
-  }))
-  .handler(async ({ data }) => {
-    const { draftCollected: run } = await import("./collect.server");
-    return run(data);
-  });
+  .validator((input: unknown) => checkBillingInput("draftCollected", DraftCollectedInput, input))
+  .handler(async ({ data }) => handleDraftCollected(data));

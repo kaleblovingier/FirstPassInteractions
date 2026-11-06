@@ -10,15 +10,18 @@ We want FirstPass to be usable by everyone, including people who use a keyboard,
 
 FirstPass does **not** claim conformance with WCAG 2.2 at Level A or AA. Our draft Accessibility Conformance Report (`docs/accessibility/ACR-WCAG22.md`) lists every criterion. It marks some as Supports or Partially Supports, and many as Not Evaluated.
 
-What we have tested so far:
-- Automated axe-core and Lighthouse scans of the main views, at phone and desktop widths.
-- Scripted keyboard tests (`scripts/keyboard-journeys.mjs`) covering search, adding and removing drugs, switching views, filters, dialogs and the key-recovery page.
-- Scripted checks (`scripts/wcag22-checks.mjs`) for reflow at 320px, text spacing, reduced motion, target size, and focus not being hidden behind other content.
+What we have tested so far (see the report for dates and for what is not a pass):
+- axe-core 4.14 and `scripts/wcag22-checks.mjs` (reflow at 320px, text spacing, reduced motion, target size, and focus fully covered). CI job `a11y` on main runs both against a production preview (PR #222). The first run on the commit named in the report was still going when this draft was updated, so this line is not a pass.
+- A keyboard script (`scripts/keyboard-journeys.mjs`) for search, adding and removing drugs, named views, filters, dialogs and the key-recovery page. It is not a CI step yet. PR #226, still open, would add that job.
+- A contrast unit test that runs with the rest of the test suite.
+- Lighthouse numbers in older notes were not re-run for this draft.
 
 Known limitations:
 - Nobody has tested with a screen reader yet (NVDA, JAWS, VoiceOver or TalkBack).
-- Some screen readers may not announce it when you remove a drug from the list.
+- Removing a drug writes a hidden status ("Removed" plus the name). No screen reader has been used to check that it is spoken.
 - Several WCAG 2.2 criteria have not been evaluated yet. The report lists which ones.
+- Manual forced-colors testing, and the CSP / privacy follow-up, are still open (P2).
+- Text spacing and covered focus on the checkout dialog and the Plans view were recorded in the October audit and have not been rechecked.
 
 ## Feedback
 
@@ -26,4 +29,4 @@ If you run into an accessibility barrier in FirstPass, or need information in an
 
 ## About this statement
 
-Last reviewed: DRAFT, not yet reviewed (prepared Oct 19, 2026).
+Last reviewed: DRAFT, not yet reviewed (prepared Oct 19, 2026; testing notes aligned to the report on Nov 5, 2026). This statement is not published in the app.

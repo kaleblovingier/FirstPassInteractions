@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { classCache, lookupInteractions, reportCache } from "./rxnav.server";
-import { liveCache } from "./live.server";
+import { liveCache, lookupLive } from "./live.server";
+import { INTERACTIONS_EXCERPT_CHARS } from "./label-identity";
 import { setLogSink } from "../server/log";
 
 const realFetch = globalThis.fetch;
@@ -174,6 +175,45 @@ describe("rxnav.server - lookupInteractions scan", () => {
     assert.equal(report.pairs.length, 2);
     assert.deepEqual(report.classes, []);
     assert.equal(report.reason, "RxClass answered with an error — drug classes may be missing this time.");
+  });
+
+  it("still names a partner that sits past the old 520-character interactions clip", async () => {
+    const filler = "background ".repeat(80);
+    assert.ok(filler.length > INTERACTIONS_EXCERPT_CHARS);
+    const text = `${filler}Fluconazole is named only after that window.`;
+    assert.ok(text.toLowerCase().indexOf("fluconazole") > INTERACTIONS_EXCERPT_CHARS);
+    stubFetch((url) => {
+      if (url.includes("label.json") && searched(url) === "warfarin") {
+        return json({
+          results: [
+            {
+              drug_interactions: [text],
+              set_id: "set-warfarin-long",
+              id: "openfda-warfarin-long",
+              effective_time: "20240115",
+              openfda: { rxcui: ["11289"] },
+            },
+          ],
+        });
+      }
+      return undefined;
+    });
+
+    const report = await lookupInteractions(["warfarin", "fluconazole"]);
+    const pair = report.pairs.find((p) => p.a === "Warfarin" && p.b === "Fluconazole");
+    assert.ok(pair, "a partner past the old clip must still produce a pair");
+    assert.equal(pair.severity, "named");
+    assert.equal(pair.source, "OpenFDA label");
+    assert.match(pair.description, /Fluconazole/);
+    assert.match(pair.identity, /SPL set-warfarin-long/);
+    assert.match(pair.identity, /OpenFDA id openfda-warfarin-long/);
+    assert.match(pair.identity, /Effective 2024-01-15/);
+
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.ok(live.label);
+    assert.ok(live.label.interactions.length <= INTERACTIONS_EXCERPT_CHARS + 1);
+    assert.equal(live.label.interactions.toLowerCase().includes("fluconazole"), false);
+    assert.equal(live.label.interactionsScan.toLowerCase().includes("fluconazole"), true);
   });
 
   it("scans at most four drugs at a time on an eight-drug desk", async () => {
