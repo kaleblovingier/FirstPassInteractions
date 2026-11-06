@@ -16,20 +16,20 @@ The question was whether a CYP or P-gp finding should read contraindicated ("Avo
 | Measure | Count |
 |---|---|
 | Catalog entries / unordered pairs scanned | 1,911 / 1,825,005 |
-| Contraindicated CYP/P-gp findings (pkSeverity branch) | 282 (282 CYP, 0 P-gp) on 282 pairs (282 by display name, as #66 counts) |
-| … of which carry a label citation (kept at contraindicated) | 282 |
+| Contraindicated CYP/P-gp findings (pkSeverity branch) | 284 (284 CYP, 0 P-gp) on 284 pairs (284 by display name, as #66 counts) |
+| … of which carry a label citation (kept at contraindicated) | 284 |
 | **Findings that move contraindicated → major** | **0** on **0** pairs |
 | **Pairs whose overall severity changes** | **0** |
 | Pairs with a moved finding that stay contraindicated via another rule | 0 |
 | Gold-set pairs (label contraindicated) that would drop below contraindicated | **0** |
-| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 479 / 479 → **479 / 479** |
+| Gold-set exact matches (label contraindicated → engine contraindicated), today → what-if | 481 / 481 → **481 / 481** |
 | MAT / ketamine-clinic pairs that move | 0 (0 change overall severity) |
 
 ## Reconciliation with PR #66
 
-PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **282 findings on 282 pairs keyed by display name**: **differs**.
+PR #66 (`scripts/signoff-packet.ts`) reported 1,334 contraindicated PK findings on 1,325 pairs. This script uses the same scan (every unordered pair, `analyze([a, b])`, no host, no amounts) and the same classification (kind `pk`, id suffix `pk-*` but not `pk-comp-*`, severity contraindicated) and finds **284 findings on 284 pairs keyed by display name**: **differs**.
 
-282 carry a label citation and are kept at contraindicated, so 0 are capped.
+284 carry a label citation and are kept at contraindicated, so 0 are capped.
 
 ## Moved findings by rule / enzyme
 
@@ -52,7 +52,7 @@ None: on every pair with a moved finding, the CYP/P-gp rule was the only source 
 
 ## Safety cross-check: label gold set (all waves)
 
-Each of the 514 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
+Each of the 516 gold-set pairs is re-run the way the gold-set test runs it (`analyze` with `DEFAULT_HOST`, findings involving both drugs) with and without the cap.
 
 ### Label says contraindicated, what-if would drop it below contraindicated
 

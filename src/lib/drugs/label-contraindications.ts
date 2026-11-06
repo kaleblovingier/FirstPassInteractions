@@ -73,6 +73,11 @@
  *   unsourced Avoid together grades in docs/grade-provenance-audit.md: Parnate
  *   Table 1 (4.1) names tryptophan and hydroxytryptophan, and the Marplan
  *   CONTRAINDICATIONS sentence names foods with a high tyramine content.
+ *   Varubi 4 (rolapitant with thioridazine and with pimozide, retrieved
+ *   2026-10-19, rechecked on DailyMed 2026-10-29 and 2026-11-06) is a severity
+ *   change made on Kaleb's decision on #209: neither card read Avoid together.
+ *   Those two rows use origin "wave7" and hold the existing CYP2D6 inhibitor
+ *   finding, with the labeled product as the perpetrator. No new CYP grade.
  * - Wave 14 rows (retrieved 2026-10-19, origin "pd") copy quote, labelSection,
  *   labelExample and the DailyMed link byte-for-byte from the wave-14 gold rows:
  *   Marplan CONTRAINDICATIONS with meperidine, fluoxetine, cocaine and the
@@ -6450,6 +6455,40 @@ export const LABEL_CONTRAINDICATIONS: readonly LabelContraindication[] = [
     origin: "pd",
     retrieved: "2026-10-19",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=95fde749-44ad-4668-86c4-0ff17bca0074",
+  },
+  // Wave 12 severity change (#209). Varubi section 4 names thioridazine and
+  // pimozide. The pin holds the CYP2D6 inhibitor finding the pair already
+  // produces, with rolapitant as the perpetrator. Before the pin that card read
+  // major (thioridazine) and moderate (pimozide). No new CYP grade.
+  {
+    id: "rolapitant+thioridazine",
+    labelDrugId: "rolapitant",
+    otherId: "thioridazine",
+    enzyme: "CYP2D6",
+    kind: "inhibitor",
+    labelDrug: "Varubi (rolapitant)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide.",
+    labelExample: "thioridazine",
+    basis: "named",
+    origin: "wave7",
+    retrieved: "2026-10-19",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8670c3cf-82d9-466d-be49-de33d8c8742b",
+  },
+  {
+    id: "rolapitant+pimozide",
+    labelDrugId: "rolapitant",
+    otherId: "pimozide",
+    enzyme: "CYP2D6",
+    kind: "inhibitor",
+    labelDrug: "Varubi (rolapitant)",
+    labelSection: "4 CONTRAINDICATIONS",
+    quote: "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide.",
+    labelExample: "pimozide",
+    basis: "named",
+    origin: "wave7",
+    retrieved: "2026-10-19",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8670c3cf-82d9-466d-be49-de33d8c8742b",
   },
   {
     id: "tranylcypromine+dextromethorphan",

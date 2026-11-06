@@ -74,7 +74,7 @@ L.push(`| Wave 7 (label contraindications: Tikosyn, Tracleer, Adempas, Xenazine,
 L.push(`| Wave 9 (MAOI-class contraindications naming linezolid / IV methylene blue; Azilect; Parnate Table 1) | ${w9.length} |`);
 L.push(`| Wave 10 (Nardil, Parnate other antidepressants, Marplan, Zyvox; Celexa, Lexapro, Viibryd, Fetzima, Savella + linezolid / IV methylene blue) | ${w10.length} |`);
 L.push(`| Wave 11 (inducer-naming contraindications: Xadago, Azilect + St. John's wort; Xadago named partners) | ${w11.length} |`);
-L.push(`| Wave 12 (unsourced Avoid together grades: Parnate Table 1 + 5-HTP / L-tryptophan; Marplan + tyramine foods) | ${w12.length} |`);
+L.push(`| Wave 12 (unsourced Avoid together grades: Parnate Table 1 + 5-HTP / L-tryptophan; Marplan + tyramine foods. Severity change: Varubi 4 + thioridazine, pimozide) | ${w12.length} |`);
 L.push(`| Wave 13 (Avoid together cards without a gold row: Parnate Table 1 and Nardil Contraindications) | ${w13.length} |`);
 L.push(`| Label says contraindicated | ${ciPairs.length} |`);
 L.push(`| Label says avoid / not recommended | ${avoidPairs.length} |`);
