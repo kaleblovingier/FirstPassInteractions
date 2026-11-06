@@ -28,6 +28,17 @@
   --color-info: #3d5c6b;
   --color-info-soft: #dde6ea;
 
+  /* Aliases for the shadcn-style role names some stations use, mapped onto the tokens above
+     (no new colours). Without them bg-primary, bg-card, text-muted-foreground and the like emit no CSS. */
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-fg);
+  --color-card: var(--color-surface);
+  --color-foreground: var(--color-fg);
+  --color-muted-foreground: var(--color-muted);
+  --color-surface-sunken: var(--color-bg-sunken);
+  --color-background: var(--color-bg);
+  --color-input: var(--color-border);
+
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;

@@ -16,6 +16,22 @@ import {
 } from "./permalinks.ts";
 import { LAB_ASSIGNMENTS, labNeedsPro } from "./lab.ts";
 import { sampleNeedsPro } from "./samples.ts";
+import { analyze } from "./engine.ts";
+
+test("prototype-key brief ids are dropped and the desk analysis does not throw", () => {
+  for (const name of ["constructor", "toString", "__proto__", "hasOwnProperty"]) {
+    const resolved = parsePermalink("?brief=" + name);
+    assert.deepEqual(resolved.ids, [], name);
+    assert.doesNotThrow(() => analyze(resolved.ids), name);
+  }
+  assert.deepEqual(parseBriefIds("constructor,ketamine,toString"), ["ketamine"]);
+});
+
+test("a bare percent sign in brief does not throw (the value is already decoded)", () => {
+  assert.doesNotThrow(() => parsePermalink("?brief=%25"));
+  assert.deepEqual(parsePermalink("?brief=%25").ids, []);
+  assert.deepEqual(parsePermalink("?brief=ketamine%2C%25%2Calprazolam").ids, ["ketamine", "alprazolam"]);
+});
 
 test("parses case permalink and resolves sample load payload", () => {
   const resolved = parsePermalink("?case=gf-oral-ketamine");

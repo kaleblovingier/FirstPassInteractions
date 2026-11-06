@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useDraftNumber } from "@/lib/forms/draft-number";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
@@ -53,6 +54,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
   // Core Calculator States
   const [condition, setCondition] = useState<"DKA" | "HHS">("DKA");
   const [patientWeightKg, setPatientWeightKg] = useState<number>(70);
+  const weightField = useDraftNumber(patientWeightKg, setPatientWeightKg, { min: 20, max: 250, fallback: 70 });
   const [currentGlucose, setCurrentGlucose] = useState<number>(420);
   const [priorGlucose, setPriorGlucose] = useState<string>("480");
   const [serumPotassium, setSerumPotassium] = useState<number>(4.2);
@@ -462,8 +464,10 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <span>Weight:</span>
                 <input
                   type="number"
-                  value={patientWeightKg}
-                  onChange={(e) => setPatientWeightKg(Math.max(20, Math.min(250, Number(e.target.value) || 70)))}
+                  min={20}
+                  max={250}
+                  aria-label="Patient weight (kg)"
+                  {...weightField}
                   className="w-16 rounded border border-border bg-surface-sunken px-2 py-0.5 text-xs font-mono font-bold text-fg"
                 />
                 <span>kg</span>

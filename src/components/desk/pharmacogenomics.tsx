@@ -500,6 +500,7 @@ export function Pharmacogenomics() {
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted" />
                 <input
                   type="text"
+                  aria-label="Filter by drug, gene, phenotype or hazard"
                   placeholder="Filter by drug, gene (e.g. Clopidogrel, CYP2C19, DPYD), phenotype or hazard..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
