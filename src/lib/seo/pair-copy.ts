@@ -31,6 +31,10 @@ export const PAIR_CTA = "Open this pair in the desk";
 export const PAIR_DISCLAIMER =
   "Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
 
+/** One action line for lay readers, rendered after PAIR_DISCLAIMER on public pages (not added to data strings or meta). */
+export const DISCLAIMER_ACTION =
+  "Don't start, stop, or change a medicine based on this page; ask a pharmacist or prescriber.";
+
 export function fillPairTemplate(tpl: string, v: { drugA: string; drugB: string; tier: string }): string {
   return tpl.replaceAll("{drugA}", v.drugA).replaceAll("{drugB}", v.drugB).replaceAll("{tier}", v.tier);
 }
