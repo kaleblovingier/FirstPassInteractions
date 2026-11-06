@@ -1207,7 +1207,7 @@ const ROWS: Row[] = [
   ["magnesium-oxide", "Magnesium oxide", ["Mag-Ox"], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", []],
   ["magnesium-sulfate-oral", "Magnesium sulfate oral", ["Epsom"], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", []],
   ["magnesium-citrate", "Magnesium citrate", [], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", []],
-  ["potassium-chloride", "Potassium chloride", ["Klor-Con", "K-Dur", "Micro-K"], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", ["klor-con"]],
+  ["potassium-chloride", "Potassium chloride", ["Klor-Con", "K-Dur", "Micro-K"], "Vitamin / mineral (clinical)", "", [], "Potassium salt. Not a CYP perpetrator.", ["klor-con"]],
   ["potassium-phosphate", "Potassium phosphate", ["K-Phos"], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", []],
   ["sodium-phosphate", "Sodium phosphate", ["OsmoPrep", "Fleet"], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", ["osmoprep"]],
   ["sodium-chloride-tablet", "Sodium chloride tablet", [], "Vitamin / mineral (clinical)", "", [], "Binder / hypervitaminosis. Not a CYP perpetrator unless niacin.", []],

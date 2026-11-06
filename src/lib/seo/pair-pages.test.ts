@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { PairPageView, PairsIndexView } from "@/components/seo/pair-page";
 import { pairPages, pairPageBySlug, sitemapXml } from "./pair-pages";
 import { enzymeHubs } from "./enzyme-hubs";
-import { PAIR_DISCLAIMER, PAIR_DESCRIPTION_TEMPLATE, PAIR_TITLE_TEMPLATE, PAIRS_INDEX_DESCRIPTION, PAIRS_INDEX_INTRO, PAIRS_INDEX_TITLE, PAIR_CTA, SITE_URL } from "./pair-copy";
+import { DISCLAIMER_ACTION, PAIR_DISCLAIMER, PAIR_DESCRIPTION_TEMPLATE, PAIR_TITLE_TEMPLATE, PAIRS_INDEX_DESCRIPTION, PAIRS_INDEX_INTRO, PAIRS_INDEX_TITLE, PAIR_CTA, SITE_URL } from "./pair-copy";
 import { analyze } from "@/lib/drugs/engine";
 import { LABEL_CONTRAINDICATIONS } from "@/lib/drugs/label-contraindications";
 import { LABEL_GOLD_SET } from "@/lib/drugs/reference/label-gold-set";
@@ -52,6 +52,17 @@ describe("public pair pages", () => {
 
   it("the disclaimer is exactly the agreed wording", () => {
     assert.equal(PAIR_DISCLAIMER, "Educational reference only. Not FDA-cleared. The Prescribing Information governs.");
+  });
+
+  it("the rendered disclaimer adds one action line for lay readers", () => {
+    assert.equal(DISCLAIMER_ACTION, "Don't start, stop, or change a medicine based on this page; ask a pharmacist or prescriber.");
+    for (const p of pages.slice(0, 5)) {
+      assert.ok(text(html(p)).includes(`${PAIR_DISCLAIMER} ${DISCLAIMER_ACTION}`), p.slug);
+    }
+    const idx = text(renderToStaticMarkup(createElement(PairsIndexView, { pages })));
+    assert.ok(idx.includes(DISCLAIMER_ACTION));
+    // Data strings and meta descriptions keep the agreed three sentences only.
+    for (const p of pages) assert.equal(p.description.includes(DISCLAIMER_ACTION), false, p.slug);
   });
 
   it("quote matching ignores spacing around ® and •", () => {

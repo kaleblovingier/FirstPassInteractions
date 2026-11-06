@@ -7,7 +7,7 @@ Question: is every stored label quote (gold set and contraindication pins) still
 
 | Result | Quotes | Pairs |
 |---|---|---|
-| Pass (exact, in the cited section) | 209 | 562 |
+| Pass (exact, in the cited section) | 209 | 563 |
 | Moved (exact, but in a different section than cited) | 1 | 1 |
 | Drifted (not in the current label) | 0 | 0 |
 | Could not fetch | 0 | 0 |
@@ -310,7 +310,7 @@ None.
 - thioridazine+fluoxetine, thioridazine+paroxetine, thioridazine+abiraterone, thioridazine+cinacalcet: Thioridazine HCl tablets, CONTRAINDICATIONS
 - thioridazine+fluvoxamine: Thioridazine HCl tablets, CONTRAINDICATIONS
 - dofetilide+hctz: Tikosyn (dofetilide), CONTRAINDICATIONS
-- dofetilide+verapamil, dofetilide+cimetidine, dofetilide+ketoconazole, dofetilide+tmp-smx: Tikosyn (dofetilide), CONTRAINDICATIONS
+- dofetilide+verapamil, dofetilide+cimetidine, dofetilide+ketoconazole, dofetilide+tmp-smx, dofetilide+trimethoprim: Tikosyn (dofetilide), CONTRAINDICATIONS
 - dolutegravir+dofetilide: Tivicay (dolutegravir), 4 CONTRAINDICATIONS
 - bosentan+cyclosporine: Tracleer (bosentan), 4.2 Use with Cyclosporine A
 - bosentan+glyburide: Tracleer (bosentan), 4.3 Use with Glyburide
