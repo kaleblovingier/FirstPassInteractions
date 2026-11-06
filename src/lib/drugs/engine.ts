@@ -2128,13 +2128,17 @@ function phenotypeFindings(drugs: Drug[], phenotypes: PhenotypeMap): Finding[] {
           effect = "↑ active metabolite";
           mechanism = `${enzyme} ultrarapid metabolizer · extra activation`;
           clinical = `An ultrarapid ${enzyme} metabolizer converts ${drug.name} to its active metabolite faster. Toxicity risk rises (${drug.toxicityHint}) — the classic example is codeine → morphine in CYP2D6 UM.`;
-          if (hottest.sensitivity === "sensitive" || hottest.nti) severity = "contraindicated";
+          // B-P0-2 option A (#231): no lift to contraindicated. Avoid together is
+          // kept for a named label pin; this genotype sketch stays at the
+          // strong-inducer analogy (Serious concern), like the poor-metabolizer cap.
         } else {
           effect = "↓ exposure / shorter duration";
           mechanism = `${enzyme} ultrarapid metabolizer · accelerated clearance`;
           clinical = `An ultrarapid ${enzyme} metabolizer shortens ${drug.name} exposure. For MDMA that means a briefer parent-drug effect and more downstream metabolite; for ketamine it can mean a weaker NMDA response.`;
           severity = ntiOrSensitive ? "major" : hottest.sensitivity === "major" ? "moderate" : "minor";
         }
+        // Same cap as poor and intermediate: a genotype sketch never reads Avoid together.
+        if (severity === "contraindicated") severity = "major";
       }
       out.push({
         id: `geno-${enzyme}-${pheno}-${drug.id}`,
