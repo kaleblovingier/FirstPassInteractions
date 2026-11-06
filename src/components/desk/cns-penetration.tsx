@@ -882,6 +882,7 @@ export function CnsPenetrationMatrix() {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted" />
             <input
               type="text"
+              aria-label="Search drug name, class, or indication"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search drug name, class, or indication (e.g., diphenhydramine, ceftriaxone, delirium)..."

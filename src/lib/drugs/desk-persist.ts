@@ -286,6 +286,12 @@ function readSelected(raw: unknown, present: boolean, current: string[]): { valu
       corrected = true;
       continue;
     }
+    // "constructor", "toString", "__proto__" are truthy DRUG_BY_ID lookups. Checked without importing
+    // the catalog, since this module also feeds the root route's prehydrate script.
+    if (Object.hasOwn(Object.prototype, item)) {
+      corrected = true;
+      continue;
+    }
     if (seen.has(item)) {
       corrected = true;
       continue;

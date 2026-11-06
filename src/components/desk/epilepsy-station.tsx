@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useDraftNumber } from "@/lib/forms/draft-number";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
@@ -48,6 +49,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
 
   // Core Calculator States
   const [patientWeightKg, setPatientWeightKg] = useState<number>(70);
+  const weightField = useDraftNumber(patientWeightKg, setPatientWeightKg, { min: 10, max: 200, fallback: 70 });
   const [seizureDurationMinutes, setSeizureDurationMinutes] = useState<number>(25);
   const [serumSodium, setSerumSodium] = useState<number>(140);
   const [serumOsmolality, setSerumOsmolality] = useState<number>(295);
@@ -131,8 +133,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                 type="number"
                 min={10}
                 max={200}
-                value={patientWeightKg}
-                onChange={(e) => setPatientWeightKg(Math.max(10, Math.min(200, Number(e.target.value) || 70)))}
+                {...weightField}
                 className="h-8 text-xs font-mono"
               />
               <div className="flex gap-1">

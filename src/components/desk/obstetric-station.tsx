@@ -24,6 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useDraftNumber } from "@/lib/forms/draft-number";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
@@ -63,6 +64,8 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
   // Interactive Clinical States
   const [gestationalAgeWeeks, setGestationalAgeWeeks] = useState<number>(32);
   const [serumMagnesiumMgDl, setSerumMagnesiumMgDl] = useState<number>(5.8);
+  const gestationalAgeField = useDraftNumber(gestationalAgeWeeks, setGestationalAgeWeeks, { min: 2, max: 42, fallback: 32 });
+  const magnesiumField = useDraftNumber(serumMagnesiumMgDl, setSerumMagnesiumMgDl, { min: 1, max: 22, fallback: 5.8 });
   const [urineOutputMlHr, setUrineOutputMlHr] = useState<number>(host.kidney === "ckd" ? 25 : 55);
   const [serumCreatinineMgDl, setSerumCreatinineMgDl] = useState<number>(host.kidney === "ckd" ? 1.4 : 0.6);
   const [systolicBp, setSystolicBp] = useState<number>(165);
@@ -188,8 +191,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
               min={2}
               max={42}
               step={1}
-              value={gestationalAgeWeeks}
-              onChange={(e) => setGestationalAgeWeeks(Math.max(2, Math.min(42, Number(e.target.value) || 32)))}
+              {...gestationalAgeField}
               className="h-8 text-xs font-mono font-bold"
             />
           </div>
@@ -200,8 +202,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
               min={1}
               max={22}
               step={0.1}
-              value={serumMagnesiumMgDl}
-              onChange={(e) => setSerumMagnesiumMgDl(Math.max(1, Math.min(22, Number(e.target.value) || 5.8)))}
+              {...magnesiumField}
               className={cn("h-8 text-xs font-mono font-bold", serumMagnesiumMgDl >= 9 ? "text-danger" : "text-fg")}
             />
           </div>

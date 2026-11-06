@@ -2,7 +2,7 @@
  * Local tray undo + recent trays. Educational desk only — no PHI, localStorage only.
  */
 
-import { DRUG_BY_ID } from "./catalog";
+import { DRUG_BY_ID, isCatalogId } from "./catalog";
 
 export const TRAY_HISTORY_KEY = "firstpass.trays.v1";
 export const MAX_RECENT = 8;
@@ -21,7 +21,7 @@ export type TrayHistoryState = {
 };
 
 function cleanIds(ids: string[]): string[] {
-  return ids.filter((id) => DRUG_BY_ID[id] && !id.startsWith("__"));
+  return ids.filter((id) => typeof id === "string" && isCatalogId(id) && !id.startsWith("__"));
 }
 
 export function labelForIds(ids: string[]): string {

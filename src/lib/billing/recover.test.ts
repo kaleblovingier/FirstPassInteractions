@@ -6,7 +6,6 @@ import {
   RECOVERY_LIMITED,
   RECOVERY_UNCONFIGURED,
   LIMITS,
-  clientIp,
   handleRecoverRequest,
   hit,
   normalizeEmail,
@@ -165,6 +164,7 @@ describe("lost-key recovery", () => {
   });
 
   it("rate limits per IP across emails", async () => {
+    process.env.VERCEL = "1";
     const { stripe } = fakeStripe([]);
     for (let i = 0; i < LIMITS.ip.max; i += 1) {
       assert.equal((await handleRecoverRequest(req(`u${i}@example.com`), { stripe })).status, 200);
@@ -178,8 +178,30 @@ describe("lost-key recovery", () => {
     assert.equal(hit("t", 1, 1000, 1500), true);
   });
 
-  it("parses the client IP and normalizes emails", () => {
-    assert.equal(clientIp(req("x@y.co", "192.0.2.1")), "192.0.2.1");
+  it("keys the IP limit on x-real-ip, so a rotated x-forwarded-for gets no fresh bucket", async () => {
+    process.env.VERCEL = "1";
+    const { stripe } = fakeStripe([]);
+    const spoofed = (email: string, i: number) =>
+      new Request("https://desk.test/api/license/recover", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-real-ip": "203.0.113.50", "x-forwarded-for": `198.51.100.${i}` },
+        body: JSON.stringify({ email }),
+      });
+    for (let i = 0; i < LIMITS.ip.max; i += 1) {
+      assert.equal((await handleRecoverRequest(spoofed(`s${i}@example.com`, i), { stripe })).status, 200);
+    }
+    assert.equal((await handleRecoverRequest(spoofed("s99@example.com", 99), { stripe })).status, 429);
+  });
+
+  it("off Vercel, forwarded headers are not trusted and only the email limit refuses", async () => {
+    delete process.env.VERCEL;
+    const { stripe } = fakeStripe([]);
+    for (let i = 0; i <= LIMITS.ip.max; i += 1) {
+      assert.equal((await handleRecoverRequest(req(`o${i}@example.com`), { stripe })).status, 200);
+    }
+  });
+
+  it("normalizes emails", () => {
     assert.equal(normalizeEmail(" A@B.Co "), "a@b.co");
     assert.equal(normalizeEmail("bad"), null);
   });
