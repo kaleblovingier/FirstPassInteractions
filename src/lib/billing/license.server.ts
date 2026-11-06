@@ -1,5 +1,7 @@
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "@/lib/env.server";
+import { logEvent } from "@/lib/server/log";
+import { SHARED_CLIENT, SlidingWindow, clientKey } from "@/lib/server/rate-limit";
 import {
   PROGRAM_KEY_RE,
   PROGRAM_TIER_FROM_LETTER,
@@ -68,14 +70,104 @@ function hmac(payload: string) {
 }
 
 function safeEq(a: string, b: string) {
-  const aa = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (aa.length !== bb.length) return false;
-  return timingSafeEqual(aa, bb);
+  // Fixed-size digests, so the time taken does not reveal the secret's length.
+  return timingSafeEqual(createHash("sha256").update(a).digest(), createHash("sha256").update(b).digest());
 }
 
-export function pinOk(pin: string) {
-  return safeEq(pin.trim(), resolvePin());
+/**
+ * Wrong-PIN throttling in two layers, neither of which can lock the operator out:
+ * - Per client (IPv4 address or IPv6 /64, see clientKey): the first `free` wrong PINs cost nothing, then each
+ *   wait doubles from `baseMs` up to `maxMs`. A right PIN, or `resetMs` without a wrong one, starts the client
+ *   over. Live penalties are never evicted: once `maxClients` are tracked, new clients go untracked and the
+ *   instance slows down instead.
+ * - Per instance: after `globalFree` wrong PINs in `globalWindowMs`, every PIN check first waits `slowMs`.
+ *   It never refuses, so a flood from anywhere costs the operator seconds, not access.
+ * Callers we cannot tell apart (SHARED_CLIENT) only ever get the slow-down.
+ */
+export const PIN_THROTTLE = {
+  free: 5,
+  baseMs: 1_000,
+  maxMs: 15 * 60 * 1000,
+  resetMs: 60 * 60 * 1000,
+  maxClients: 10_000,
+  globalFree: 30,
+  globalWindowMs: 15 * 60 * 1000,
+  slowMs: 2_000,
+};
+type Strikes = { fails: number; last: number };
+const strikes = new Map<string, Strikes>();
+const recentWrong = new SlidingWindow(PIN_THROTTLE.globalFree, PIN_THROTTLE.globalWindowMs, 1);
+let pause = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+function liveStrikes(key: string, now: number): Strikes | undefined {
+  const s = strikes.get(key);
+  return s && now - s.last < PIN_THROTTLE.resetMs ? s : undefined;
+}
+
+function trackWrong(key: string, now: number): number {
+  const fails = (liveStrikes(key, now)?.fails ?? 0) + 1;
+  if (!strikes.has(key) && strikes.size >= PIN_THROTTLE.maxClients) {
+    for (const [k, s] of strikes) if (now - s.last >= PIN_THROTTLE.resetMs) strikes.delete(k);
+  }
+  // Still full of live penalties: dropping one would hand a guesser a clean slate, so this client goes untracked.
+  if (strikes.has(key) || strikes.size < PIN_THROTTLE.maxClients) strikes.set(key, { fails, last: now });
+  return fails;
+}
+
+/** Milliseconds `key` must still wait before its next PIN check; 0 means go ahead. */
+export function pinWaitMs(key: string, now = Date.now()): number {
+  if (key === SHARED_CLIENT) return 0;
+  const s = liveStrikes(key, now);
+  if (!s || s.fails < PIN_THROTTLE.free) return 0;
+  const wait = Math.min(PIN_THROTTLE.baseMs * 2 ** (s.fails - PIN_THROTTLE.free), PIN_THROTTLE.maxMs);
+  return Math.max(0, s.last + wait - now);
+}
+
+/** True while every PIN check first waits `slowMs`: many wrong PINs lately, or a client table full of penalties. */
+export function pinSlowed(now = Date.now()): boolean {
+  return recentWrong.full("all", now) || strikes.size >= PIN_THROTTLE.maxClients;
+}
+
+export function pinWaitMessage(ms: number): string {
+  const secs = Math.ceil(ms / 1000);
+  const when = secs === 1 ? "1 second" : secs < 90 ? `${secs} seconds` : `${Math.ceil(secs / 60)} minutes`;
+  return `Too many wrong PINs from here. Try again in ${when}.`;
+}
+
+/** Throws while this client is backing off, without testing the PIN, so those guesses learn nothing. */
+export async function pinOk(pin: string, key = clientKey(), now = Date.now()): Promise<boolean> {
+  const wait = pinWaitMs(key, now);
+  if (wait > 0) throw new Error(pinWaitMessage(wait));
+  // Count the attempt before the pause so parallel guesses from one client can't all pass the wait check; a right PIN clears it.
+  const fails = key === SHARED_CLIENT ? undefined : trackWrong(key, now);
+  if (pinSlowed(now)) await pause(PIN_THROTTLE.slowMs);
+  if (safeEq(pin.trim(), resolvePin())) {
+    strikes.delete(key);
+    return true;
+  }
+  recentWrong.hit("all", now);
+  // Counts only, never the client or the guess. A steady stream of these is the brute-force signal to alert on.
+  logEvent("warn", "pin.wrong", { fails, slowed: pinSlowed(now) });
+  return false;
+}
+
+/** For callers that answer with a reason: null when the PIN is right, else what to tell the operator. */
+export async function pinRefusal(pin: string, key = clientKey()): Promise<string | null> {
+  try {
+    return (await pinOk(pin, key)) ? null : "Operator PIN is wrong.";
+  } catch (e) {
+    return e instanceof Error ? e.message : "License secrets are not configured.";
+  }
+}
+
+/** Test hooks: forget wrong PINs; replace the slow-down wait. */
+export function resetPinThrottle() {
+  strikes.clear();
+  recentWrong.reset();
+}
+
+export function setPinPause(next: (ms: number) => Promise<void>) {
+  pause = next;
 }
 
 export function defaultPinSet() {
@@ -86,6 +178,11 @@ export function defaultPepperSet() {
   return !env("LICENSE_PEPPER");
 }
 
+/**
+ * Maps a known issued plan. Unknown text becomes "life".
+ * Public server functions must not call this with request input — their zod
+ * schemas reject anything other than "pro" | "lab" | "life" before minting.
+ */
 export function parseIssuedPlan(raw: string): IssuedPlan {
   if (raw === "lab" || raw === "life" || raw === "pro") return raw;
   return "life";
@@ -250,12 +347,12 @@ export type ProgramMintResult =
   | { ok: false; reason: string };
 
 /** Foundry's program mint: PIN first, then tier, organization and end month ("YYYY-MM"). */
-export function mintProgramForOperator(
+export async function mintProgramForOperator(
   input: { pin: string; tier: string; org: string; end: string },
   now: Date = new Date(),
-): ProgramMintResult {
+): Promise<ProgramMintResult> {
   try {
-    if (!pinOk(input.pin)) {
+    if (!(await pinOk(input.pin))) {
       return { ok: false, reason: "Operator PIN is wrong." };
     }
     if (!isProgramTierId(input.tier)) {

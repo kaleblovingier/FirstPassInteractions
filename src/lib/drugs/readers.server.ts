@@ -2,6 +2,7 @@ import { READER_TITLES, sanitizeBrief, type ReaderBrief, type ReaderId, type Rea
 import { BoundedLRUCache } from "../server/cache";
 import { UpstreamError, fetchJson } from "../server/http";
 import { logEvent } from "../server/log";
+import { SlidingWindow, clientKey } from "../server/rate-limit";
 
 const ORDER: ReaderId[] = ["pair", "gap", "trainee"];
 
@@ -14,6 +15,9 @@ const ASKS_PER_WINDOW = 30;
 /** Same brief, same reading: a repeat ask within ten minutes costs nothing. */
 export const readCache = new BoundedLRUCache<ReaderNote[]>(200, READ_TTL_MS);
 const askTimes: number[] = [];
+/** One caller gets at most a third of the instance's asks, so a script cannot crowd everyone else out. */
+export const ASKS_PER_IP = 10;
+const askers = new SlidingWindow(ASKS_PER_IP, ASK_WINDOW_MS);
 
 const SYSTEM: Record<ReaderId, string> = {
   pair: "You are the pair reader on a teaching desk. Restate only the sharpest mapped row in the JSON, in two short sentences, everyday words. If clock is present, restate that start and stop in the JSON's own words. If source is present, name that source and no other. If fold is present, restate that fold in the JSON's own words and no other number. If hands is present, do not name a facility, a ZIP, or a treatment. Hands is not a finding. Do not name a milligram, a stop order, a hold, a switch, or a substitute. Do not say a combination is safe.",
@@ -40,6 +44,7 @@ function takeAskSlot(now = Date.now()) {
 /** Test hook: forget past asks. */
 export function resetReaderBudget() {
   askTimes.length = 0;
+  askers.reset();
 }
 
 async function askOne(id: ReaderId, brief: ReaderBrief, apiKey: string): Promise<ReaderNote> {
@@ -70,7 +75,10 @@ async function askOne(id: ReaderId, brief: ReaderBrief, apiKey: string): Promise
   }
 }
 
-export async function readWithBots(input: unknown): Promise<{ ok: true; readers: ReaderNote[] } | { ok: false; error: string }> {
+export async function readWithBots(
+  input: unknown,
+  ip = clientKey(),
+): Promise<{ ok: true; readers: ReaderNote[] } | { ok: false; error: string }> {
   const brief = sanitizeBrief(input);
   if (brief.names.length === 0) return { ok: false, error: "Add a name before asking the readers." };
   const apiKey = process.env.XAI_API_KEY;
@@ -93,10 +101,15 @@ export async function readWithBots(input: unknown): Promise<{ ok: true; readers:
     logEvent("info", "readers.ask", { cache: "hit", durationMs: 0, answered: cached.length });
     return { ok: true, readers: cached };
   }
+  if (askers.full(ip)) {
+    logEvent("warn", "readers.ask", { cache: "miss", limited: "caller" });
+    return { ok: false, error: "Too many reader asks from here. Try again in a minute." };
+  }
   if (!takeAskSlot()) {
     logEvent("warn", "readers.ask", { cache: "miss", limited: true });
     return { ok: false, error: "The readers are busy right now. Try again in a minute." };
   }
+  askers.hit(ip);
 
   const readers = await readCache.getOrFetch(
     key,

@@ -4,6 +4,7 @@ import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { plainWordsReport } from "@/lib/drugs/quick-chips";
+import { deskReportText, EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
 import { parseDoses } from "@/lib/drugs/dosing";
 import { applyHost, FIRST_PASS_NMDA } from "@/lib/drugs/host";
 import { treesFor } from "@/lib/drugs/metabolites";
@@ -52,6 +53,7 @@ import { feedbackMailto } from "@/lib/drugs/feedback";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { MonographNote } from "@/components/label-freshness";
 import { DrugSearch } from "./search";
 import { FindingList } from "./findings";
 import { DeskCoach } from "./coach";
@@ -82,6 +84,8 @@ import { WindowExtras } from "./tray";
 import { MedicationReview } from "./medication-review";
 import { RxnavBoard } from "./rxnav";
 import { PrescribingStrip } from "./pi";
+import { CommandPalette } from "./command-palette";
+import { DESK_VIEWS } from "@/lib/drugs/palette";
 
 const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
 const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
@@ -323,21 +327,7 @@ export function DeskApp() {
           </div>
           <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:justify-end">
             <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap xl:flex-nowrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:rounded-full">
-              {(
-                [
-                  ["desk", "Desk"],
-                  ["library", "Library"],
-                  ["cites", "Sources"],
-                  ["atlas", "Enzyme map"],
-                  ["study", "Learn"],
-                  ["rounds", "Cases"],
-                  ["compare", "Compare"],
-                  ["watch", "Watch"],
-                  ["label", "Safety"],
-                  ["help", "Find help"],
-                  ["plans", "Plans"],
-                ] as const
-              ).map(([id, label]) => (
+              {DESK_VIEWS.map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
@@ -359,6 +349,7 @@ export function DeskApp() {
                 Practice
               </a>
             </nav>
+            <CommandPalette />
             {!hydrated || !pro ? (
               <Button size="sm" className="hidden shrink-0 sm:inline-flex" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
@@ -375,7 +366,7 @@ export function DeskApp() {
           <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm leading-relaxed text-fg">
-                <strong className="font-semibold text-fg">For clinicians and supervised learning.</strong> Not for
+                <strong className="font-semibold text-fg">For licensed healthcare professionals and supervised health-professions students.</strong> Not for
                 personal treatment, dose changes, or deciding whether to combine substances. This
                 educational checker can miss risks and cannot test what is in a product. If someone is
                 seriously unwell or may be overdosing, contact local emergency services or a poison
@@ -1094,7 +1085,7 @@ function SingleDrug({ id }: { id: string }) {
         {nmda ? ` · ${KETAMINE_ROUTE_LABEL[route]}` : ""}
         {thc ? ` · ${CANNABIS_ROUTE_LABEL[cannabisRoute]}` : ""}
       </p>
-      {drug.note ? <p className="mt-3 text-sm leading-relaxed text-fg">{drug.note}</p> : null}
+      {drug.note ? <MonographNote note={drug.note} /> : null}
       <div className="mt-5 grid gap-4 sm:grid-cols-3">
         <RoleList title="Substrate of" rows={subs} empty="No mapped CYP substrate" />
         <RoleList title="Inhibits" rows={inhs} empty="Not a mapped inhibitor" />
@@ -1210,15 +1201,8 @@ function RiskBanner({
       `Ketamine route: ${KETAMINE_ROUTE_LABEL[host.ketamineRoute]}`,
       `Cannabis route: ${CANNABIS_ROUTE_LABEL[host.cannabisRoute]}`,
       `Highest severity: ${SEVERITY_LABEL[highest]}`,
-      "",
-      ...report.findings.map(
-        (f) =>
-          `• ${SEVERITY_LABEL[f.severity]} — ${f.headline}: ${plainLanguageSummary(f)} ${f.mechanism}. ${f.clinical}`,
-      ),
-      "",
-      "Educational model. Not a substitute for clinical decision support.",
     ];
-    await write("full", lines.join("\n"));
+    await write("full", deskReportText(lines, report.findings));
   }
 
   async function shareLine() {
@@ -1538,10 +1522,10 @@ function HowCard() {
           mycophenolate. Teaching notes, not a label. Search beers / pregnant.
         </li>
         <li>
-          <span className="text-fg">Sources.</span> DrugBank is identity and targets — open the
-          accession. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching
-          row highlights. Stahl is a receptor sketch (spectrum, occupancy, side effects from those
-          receptors) in original language, not a quotation of the book. PubMed is a curated PMID
+          <span className="text-fg">Sources.</span> DrugBank accession ids (CC0 vocabulary) for lookup;
+          target labels are FirstPass summaries. PharmGKB / CPIC is the gene table; flip a metabolizer on this desk and the matching
+          row highlights. The receptor sketch (spectrum, occupancy, side effects from those
+          receptors) is in original language, not a quotation of a textbook. PubMed is a curated PMID
           shelf plus a live NCBI search for the pair on the desk. Search pgx / stahl / drugbank /
           pubmed.
         </li>
@@ -1569,7 +1553,7 @@ function Disclaimer() {
       <p className="mt-1.5 text-[11px] leading-relaxed text-subtle">
         Built for learning and clinical review — not a personal treatment guide.{" "}
         {SOFTWARE.name} {SOFTWARE.version} is an educational clinical decision-support aid for
-        clinicians and supervised learning. {NOT_CLEARED} It can miss risks; an empty result is not
+        licensed healthcare professionals and supervised health-professions students. {NOT_CLEARED} It can miss risks; an empty result is not
         proof that a combination is safe. It does not identify product contents, diagnose, or tell
         anyone what to start, stop, or change. For care decisions, consult a qualified clinician and
         current FDA-approved labeling. Street-supply entries are teaching examples, not product
@@ -1600,8 +1584,9 @@ function exportDesk(
     regimen: selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean),
     host,
     highest: report.highest,
-    findings: report.findings,
-    footer: PI_FOOTER,
+    findings: report.findings.map((f) => ({ ...f, source: findingSourceLine(f) })),
+    ...(report.findings.length ? {} : { note: EXPORT_EMPTY }),
+    footer: `${EXPORT_NOT_A_DOSE} ${PI_FOOTER}`,
   };
   const blob = new Blob([JSON.stringify(body, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1614,7 +1599,7 @@ function exportDesk(
 
 function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
   const rows = [
-    ["severity", "kind", "headline", "mechanism", "effect", "clinical", "enzymes", "drugs"].join(","),
+    ["severity", "kind", "headline", "mechanism", "effect", "clinical", "enzymes", "drugs", "source"].join(","),
     ...report.findings.map((f) =>
       [
         f.severity,
@@ -1625,11 +1610,13 @@ function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
         csv(f.clinical),
         csv(f.enzymes.join("|")),
         csv(f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? id).join("|")),
+        csv(findingSourceLine(f)),
       ].join(","),
     ),
   ];
+  const empty = report.findings.length ? "" : `# ${EXPORT_EMPTY}\n`;
   const blob = new Blob(
-    [`# FirstPass ${SOFTWARE.version} ${selected.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")}\n# ${PI_FOOTER}\n${rows.join("\n")}`],
+    [`# FirstPass ${SOFTWARE.version} ${selected.map((id) => DRUG_BY_ID[id]?.name ?? id).join(" + ")}\n# ${EXPORT_NOT_A_DOSE}\n# ${PI_FOOTER}\n${empty}${rows.join("\n")}`],
     { type: "text/csv" },
   );
   const url = URL.createObjectURL(blob);

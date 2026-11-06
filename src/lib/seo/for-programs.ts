@@ -34,15 +34,15 @@ export const FOR_PROGRAMS_H1 = "FirstPass for programs";
 export const FOR_PROGRAMS_INTRO =
   "FirstPass is an educational reference for teaching drug interactions. Each pair shows what the FDA labels say about taking two drugs together, in the label's own wording, with a DailyMed link. A group or site license puts a whole class, residency cohort or clinic team on the same reference for lectures, in-services and self-study.";
 export const FOR_PROGRAMS_USERS =
-  "FirstPass is for licensed healthcare professionals and for students in health-professions programs working under faculty or preceptor supervision.";
+  "FirstPass is for licensed healthcare professionals and for students in accredited health-professions programs working under faculty or preceptor supervision.";
 
 export const FOR_PROGRAMS_AUDIENCES: { name: string; use: string }[] = [
   { name: "Pharmacy schools", use: "Pharmacology and therapeutics courses that teach students to read interaction sections of the Prescribing Information." },
   { name: "Residency programs", use: "Pharmacy and medical residency teaching: journal clubs, topic discussions and precepting on how labels word interactions." },
   { name: "Pharmacy-tech programs", use: "Community college and online programs training techs to recognize label-named interactions." },
-  { name: "Ketamine clinics", use: "Staff in-services on what labels say about common co-prescribed medicines." },
+  { name: "Ketamine clinics", use: "In-services for licensed clinic staff on what labels say about common co-prescribed medicines." },
   { name: "MAT and OTP programs", use: "Opioid treatment and office-based buprenorphine teams learning the label wording on common co-prescribed drugs." },
-  { name: "Harm-reduction groups", use: "Outreach and education staff who want plain-language label wording with a source link." },
+  { name: "Harm-reduction groups", use: "Licensed clinicians and supervised students on harm-reduction teams who want plain-language label wording with a source link." },
 ];
 
 /** What a program gets, in plain terms for the person deciding. Kept in line with /trust. */
@@ -115,7 +115,7 @@ export const FOR_PROGRAMS_FAQ: { q: string; a: string; link?: { href: string; la
   { q: "Can you send a W-9?", a: "Yes, on request." },
   {
     q: "Does anyone enter patient information?",
-    a: "No. FirstPass has no patient fields and no accounts, so there is nowhere to enter patient information. FirstPass is designed not to take patient information (no PHI).",
+    a: "No. FirstPass has no accounts for learners and no field that asks for a patient's name, record number or other identifier. Some teaching calculators take a typed value, such as a weight or a lab result, without saying whose it is. FirstPass is designed not to take patient information (no PHI).",
   },
   {
     q: "What do we need to install?",

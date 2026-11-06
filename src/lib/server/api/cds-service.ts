@@ -13,8 +13,9 @@ import {
   DRUGS,
   normalizeSearchText,
   searchDrugs,
-  stripSaltFormTokens,
+  saltFormKeys,
 } from "../../drugs/catalog";
+import { COMBINATION_BY_KEY } from "../../drugs/combos";
 import { analyze } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
 import {
@@ -89,9 +90,10 @@ import { vancomycinReportOnDesk } from "../../drugs/vancomycin";
 import { aminoglycosideReportOnDesk } from "../../drugs/aminoglycosides";
 import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
+import { EXPORT_EMPTY } from "../../drugs/brief";
 
 export const STATUTORY_CDS_DISCLAIMER =
-  "FirstPass Clinical Decision Support API conforms to 21 U.S.C. § 360j(o)(1)(E) (FD&C Act § 520(o)(1)(E)) as non-device clinical decision support. This service displays mathematical equations, biochemical pathways, published clinical guidelines, and peer-reviewed literature citations so licensed healthcare practitioners can independently review the basis of every calculation. It does not provide automated diagnoses, prescriptive directives, or order sets. The FDA-approved Prescribing Information governs all clinical practice. Provided AS IS with all faults pursuant to UCC § 2-316.";
+  "FirstPass API output is educational interaction reference information for licensed healthcare professionals. It is not FDA-cleared. Each finding carries its basis; an integration must show that basis next to the finding. Not for time-critical use, patient-facing display, or automated ordering. The FDA-approved Prescribing Information governs.";
 
 export interface ApiDrugSummary {
   id: string;
@@ -110,11 +112,19 @@ export interface ApiDrugRef {
   hostFactor?: true;
 }
 
-export type DrugMatch = "id" | "name" | "brand-or-alias";
+export type DrugMatch = "id" | "name" | "brand-or-alias" | "combination";
 
-/** How one requested string was read. Only an exact id, name, brand, or alias match resolves. */
+/** How one requested string was read. Only an exact id, name, brand, alias, or combination name resolves. */
 export type DrugResolution =
-  | { query: string; status: "resolved"; drugId: string; matchedBy: DrugMatch }
+  | {
+      query: string;
+      status: "resolved";
+      drugId: string;
+      matchedBy: DrugMatch;
+      /** Combination products only: every catalog row analyzed for it (drugId first) and its label. */
+      drugIds?: string[];
+      source?: string;
+    }
   | { query: string; status: "ambiguous" | "not-found"; candidates: ApiDrugRef[] };
 
 export type ApiWarningCode =
@@ -122,7 +132,8 @@ export type ApiWarningCode =
   | "host-field-not-modeled"
   | "pediatric-age-not-modeled"
   | "lactation-not-applied"
-  | "module-failed";
+  | "module-failed"
+  | "no-mapped-findings";
 
 /** Something the result does not reflect, stated instead of silently dropped. */
 export interface ApiWarning {
@@ -350,7 +361,7 @@ function drugRef(id: string): ApiDrugRef {
   return { id, name: catalogDrug(id)?.name ?? id };
 }
 
-type ExactIndex = Record<DrugMatch, Map<string, string[]>>;
+type ExactIndex = Record<Exclude<DrugMatch, "combination">, Map<string, string[]>>;
 
 let exactIndex: ExactIndex | undefined;
 
@@ -376,7 +387,7 @@ function getExactIndex(): ExactIndex {
   return index;
 }
 
-const MATCH_ORDER: readonly DrugMatch[] = ["id", "name", "brand-or-alias"];
+const MATCH_ORDER: readonly (keyof ExactIndex)[] = ["id", "name", "brand-or-alias"];
 const MAX_CANDIDATES = 5;
 
 /** Suggestions only; a search failure must not fail the check that asked for them. */
@@ -393,15 +404,21 @@ function searchCandidates(query: string): ApiDrugRef[] {
 
 /**
  * Reads one requested string as an exact catalog id, generic name, brand, or alias (case,
- * punctuation, and trailing salt/release tokens ignored). A key shared by more than one entry is
+ * punctuation, and trailing salt/release tokens ignored), or as a combination product name, which
+ * resolves to every cataloged ingredient (`drugIds`). A key shared by more than one entry is
  * ambiguous. Partial and misspelled strings never resolve, because a near miss can name a
  * different drug; they come back with search candidates instead.
  */
 export function resolveDrugQuery(query: string): DrugResolution {
   const index = getExactIndex();
   const normalized = normalizeSearchText(query);
-  for (const key of new Set([normalized, stripSaltFormTokens(normalized)])) {
+  for (const key of saltFormKeys(normalized)) {
     if (!key) continue;
+    // A combination name (Percocet) reads as all of its ingredients; no such name is an id or generic name.
+    const combo = COMBINATION_BY_KEY.get(key);
+    if (combo) {
+      return { query, status: "resolved", drugId: combo.ids[0], matchedBy: "combination", drugIds: [...combo.ids], source: combo.source };
+    }
     for (const matchedBy of MATCH_ORDER) {
       const ids = index[matchedBy].get(key);
       if (!ids) continue;
@@ -443,7 +460,8 @@ function resolveRequestedDrugs(requested: string[]): RequestedDrugs {
   const resolution = requested.map(resolveDrugQuery);
   const ordered: string[] = [];
   for (const r of resolution) {
-    if (r.status === "resolved" && !ordered.includes(r.drugId)) ordered.push(r.drugId);
+    if (r.status !== "resolved") continue;
+    for (const id of r.drugIds ?? [r.drugId]) if (!ordered.includes(id)) ordered.push(id);
   }
   return {
     ids: [...ordered].sort(),
@@ -781,7 +799,12 @@ export class ClinicalDecisionService {
             },
           },
           query: { ...drugs.query, host },
-          warnings: [...unresolvedWarnings(drugs.query), ...warnings],
+          warnings: [
+            ...unresolvedWarnings(drugs.query),
+            ...warnings,
+            // An empty list must not read as a clearance (highestSeverity "None").
+            ...(payload.findings.length ? [] : [{ code: "no-mapped-findings" as const, detail: EXPORT_EMPTY }]),
+          ],
           summary: payload.summary,
           findings: payload.findings,
         },

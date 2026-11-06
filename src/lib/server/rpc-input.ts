@@ -1,14 +1,21 @@
 /**
  * Input schemas for the drug server functions. Validators run on the server; a failed check
  * becomes a typed miss in the handler, so malformed, oversize or off-shelf input never
- * reaches an upstream API. Lists are bounded and unknown ids dropped rather than rejected,
- * so a stale id left on a saved desk does not sink the rest of the request.
+ * reaches an upstream API.
+ *
+ * Objects are strict: an unknown key is a miss, never silently dropped. Wrong types are
+ * rejected, not coerced. Unknown catalog ids inside an otherwise valid list are dropped
+ * rather than rejected, so a stale id left on a saved desk does not sink the rest of the
+ * request.
  */
 
 import { z } from "zod";
 import { DRUG_BY_ID } from "../drugs/catalog";
 import { sanitizeBrief, type ReaderBrief } from "../drugs/readers";
 import { logEvent } from "./log";
+import { withinNodeBudget } from "./node-budget";
+
+export { MAX_INPUT_NODES, withinNodeBudget } from "./node-budget";
 
 /** Most drugs one desk holds (maxDrugs on a paid plan). */
 export const DESK_MAX_IDS = 8;
@@ -38,22 +45,28 @@ const shelfIds = z
   .default([])
   .transform((ids) => [...new Set(ids)].filter(onShelf));
 
-export const LiveInput = z.object({ id: z.string().max(MAX_ID_LENGTH).refine(onShelf) });
+export const LiveInput = z.strictObject({
+  id: z.string().max(MAX_ID_LENGTH).refine(onShelf),
+  /** Watch Refresh sets this so that pin skips liveCache. Absent on an ordinary open. */
+  refresh: z.boolean().optional(),
+});
 
-export const IdsInput = z.object({ ids: shelfIds });
+export const IdsInput = z.strictObject({ ids: shelfIds });
 
-export const SearchInput = z.object({
+export const SearchInput = z.strictObject({
   query: z.string().max(MAX_QUERY_LENGTH).default(""),
   ids: shelfIds,
 });
 
-export const CpicInput = z.object({ name: z.string().max(MAX_NAME_LENGTH).refine(nameOnShelf) });
+export const CpicInput = z.strictObject({ name: z.string().max(MAX_NAME_LENGTH).refine(nameOnShelf) });
 
 const briefText = z.string().max(MAX_BRIEF_TEXT).default("");
 
 /** Transport bounds sit above the brief's own clips, so a long desk is clipped, not refused. */
+const briefRow = z.strictObject({ severity: briefText, line: briefText, why: briefText });
+
 export const ReaderBriefInput = z
-  .object({
+  .strictObject({
     names: z
       .array(z.string().max(MAX_NAME_LENGTH))
       .max(MAX_REQUEST_IDS)
@@ -65,10 +78,7 @@ export const ReaderBriefInput = z
     source: briefText,
     fold: briefText,
     hands: briefText,
-    rows: z
-      .array(z.object({ severity: briefText, line: briefText, why: briefText }))
-      .max(12)
-      .default([]),
+    rows: z.array(briefRow).max(12).default([]),
     quiet: z.array(z.string().max(MAX_BRIEF_TEXT)).max(40).default([]),
     food: z.array(z.string().max(MAX_BRIEF_TEXT)).max(12).default([]),
   })
@@ -79,6 +89,10 @@ export function checkInput<S extends z.ZodType>(
   schema: S,
   input: unknown,
 ): Checked<z.output<S>> {
+  if (!withinNodeBudget(input)) {
+    logEvent("info", "rpc.invalid", { fn, oversized: true });
+    return { ok: false };
+  }
   const parsed = schema.safeParse(input);
   if (parsed.success) return { ok: true, value: parsed.data };
   logEvent("info", "rpc.invalid", { fn, issues: parsed.error.issues.length });

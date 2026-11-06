@@ -3,9 +3,8 @@ import {
   defaultPinSet,
   mintKeyFromNote,
   mintKeyFromPaid,
-  parseIssuedPlan,
   parseNameList,
-  pinOk,
+  pinRefusal,
   type IssuedPlan,
 } from "@/lib/billing/license.server";
 import {
@@ -62,14 +61,13 @@ async function scanMail(): Promise<{
 
 export async function collectLicenses(opts: {
   pin: string;
-  plan: string;
+  plan: IssuedPlan;
   names: string;
   hunt: string;
 }) {
-  if (!pinOk(opts.pin)) {
-    return { ok: false as const, reason: "Operator PIN is wrong." };
-  }
-  const fallback = parseIssuedPlan(opts.plan);
+  const refused = await pinRefusal(opts.pin);
+  if (refused) return { ok: false as const, reason: refused };
+  const fallback = opts.plan;
   const rows: CollectRow[] = [];
   const seenKey = new Set<string>();
   const seenName = new Set<string>();
@@ -141,9 +139,8 @@ export async function collectLicenses(opts: {
 }
 
 export async function draftCollected(opts: { pin: string; rows: CollectRow[] }) {
-  if (!pinOk(opts.pin)) {
-    return { ok: false as const, reason: "Operator PIN is wrong." };
-  }
+  const refused = await pinRefusal(opts.pin);
+  if (refused) return { ok: false as const, reason: refused };
   const withMail = opts.rows.filter((r) => r.email && !r.mailed && r.source !== "stripe");
   if (!withMail.length) {
     return { ok: false as const, reason: "No buyer emails to draft — copy the packet instead." };

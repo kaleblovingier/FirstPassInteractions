@@ -176,7 +176,7 @@ describe("program keys: mint and verify", () => {
     assert.equal(verifyKey(`FP-ORG-P202710-${lb}-${ls}`, NOW).ok, false);
   });
 
-  it("fails closed in production without a pepper", () => {
+  it("fails closed in production without a pepper", async () => {
     const key = mintProgramKey("team", ORG, 2027, 10, NOW);
     process.env.NODE_ENV = "production";
     delete process.env.LICENSE_PEPPER;
@@ -184,7 +184,7 @@ describe("program keys: mint and verify", () => {
     assert.equal(res.ok, false);
     assert.match(res.reason ?? "", /LICENSE_PEPPER is unset/);
     assert.throws(() => mintProgramKey("team", ORG, 2027, 10, NOW), /LICENSE_PEPPER is unset/);
-    const op = mintProgramForOperator({ pin: PIN, tier: "team", org: ORG, end: "2027-10" }, NOW);
+    const op = await mintProgramForOperator({ pin: PIN, tier: "team", org: ORG, end: "2027-10" }, NOW);
     assert.equal(op.ok, false);
   });
 });
@@ -233,19 +233,19 @@ describe("legacy personal keys do not change", () => {
 describe("mintProgramForOperator (Foundry server function)", () => {
   const good = { pin: PIN, tier: "program", org: ORG, end: "2027-10" };
 
-  it("rejects a wrong PIN before anything else", () => {
-    assert.deepEqual(mintProgramForOperator({ ...good, pin: "wrong" }, NOW), {
+  it("rejects a wrong PIN before anything else", async () => {
+    assert.deepEqual(await mintProgramForOperator({ ...good, pin: "wrong" }, NOW), {
       ok: false,
       reason: "Operator PIN is wrong.",
     });
-    assert.deepEqual(mintProgramForOperator({ ...good, pin: "", tier: "gold", org: "" }, NOW), {
+    assert.deepEqual(await mintProgramForOperator({ ...good, pin: "", tier: "gold", org: "" }, NOW), {
       ok: false,
       reason: "Operator PIN is wrong.",
     });
   });
 
-  it("mints with the right PIN and returns the tier, org and end", () => {
-    const res = mintProgramForOperator({ ...good, pin: ` ${PIN} `, org: `  ${ORG}  ` }, NOW);
+  it("mints with the right PIN and returns the tier, org and end", async () => {
+    const res = await mintProgramForOperator({ ...good, pin: ` ${PIN} `, org: `  ${ORG}  ` }, NOW);
     assert.equal(res.ok, true);
     if (!res.ok) return;
     assert.equal(res.key, mintProgramKey("program", ORG, 2027, 10, NOW));
@@ -256,27 +256,27 @@ describe("mintProgramForOperator (Foundry server function)", () => {
     assert.equal(res.defaultPepper, false);
   });
 
-  it("validates tier, organization and end month", () => {
-    const reason = (input: Partial<typeof good>) => {
-      const res = mintProgramForOperator({ ...good, ...input }, NOW);
+  it("validates tier, organization and end month", async () => {
+    const reason = async (input: Partial<typeof good>) => {
+      const res = await mintProgramForOperator({ ...good, ...input }, NOW);
       return res.ok ? "ok" : res.reason;
     };
-    assert.equal(reason({ tier: "gold" }), "Pick a tier: Team, Program or Site.");
-    assert.equal(reason({ tier: "" }), "Pick a tier: Team, Program or Site.");
-    assert.equal(reason({ org: "   " }), "Add the organization name.");
-    assert.equal(reason({ org: "x".repeat(121) }), "Keep the organization name to 120 characters or fewer.");
-    assert.equal(reason({ org: "x".repeat(120) }), "ok");
-    assert.equal(reason({ end: "" }), "Pick the last month the key should work.");
-    assert.equal(reason({ end: "2027-13" }), "Pick the last month the key should work.");
-    assert.equal(reason({ end: "202710" }), "Pick the last month the key should work.");
-    assert.equal(reason({ end: "2026-09" }), "That end month has already passed.");
-    assert.equal(reason({ end: "2031-11" }), "Pick an end month within five years.");
+    assert.equal(await reason({ tier: "gold" }), "Pick a tier: Team, Program or Site.");
+    assert.equal(await reason({ tier: "" }), "Pick a tier: Team, Program or Site.");
+    assert.equal(await reason({ org: "   " }), "Add the organization name.");
+    assert.equal(await reason({ org: "x".repeat(121) }), "Keep the organization name to 120 characters or fewer.");
+    assert.equal(await reason({ org: "x".repeat(120) }), "ok");
+    assert.equal(await reason({ end: "" }), "Pick the last month the key should work.");
+    assert.equal(await reason({ end: "2027-13" }), "Pick the last month the key should work.");
+    assert.equal(await reason({ end: "202710" }), "Pick the last month the key should work.");
+    assert.equal(await reason({ end: "2026-09" }), "That end month has already passed.");
+    assert.equal(await reason({ end: "2031-11" }), "Pick an end month within five years.");
   });
 
-  it("flags the development defaults", () => {
+  it("flags the development defaults", async () => {
     delete process.env.FOUNDER_PIN;
     delete process.env.LICENSE_PEPPER;
-    const res = mintProgramForOperator({ ...good, pin: "heme-450" }, NOW);
+    const res = await mintProgramForOperator({ ...good, pin: "heme-450" }, NOW);
     assert.equal(res.ok, true);
     if (!res.ok) return;
     assert.equal(res.defaultPin, true);

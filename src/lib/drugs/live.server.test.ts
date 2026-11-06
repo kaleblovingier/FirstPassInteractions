@@ -1,7 +1,10 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { lookupLive, lookupLiveOutcome, liveCache, liveQueryName } from "./live.server";
+import { lookupLive, lookupLiveOutcome, liveCache, liveQueryName, orderEnforcementByInitiation } from "./live.server";
 import type { LiveSources } from "./live";
+import { DRUG_BY_ID } from "./catalog";
+import { OPENFDA_NO_DATE, setidsInText } from "./label-identity";
+import labelVersions from "./reference/label-versions.json" with { type: "json" };
 import { setLogSink } from "../server/log";
 
 const realFetch = globalThis.fetch;
@@ -147,6 +150,11 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     assert.equal(live.ok, true);
     assert.equal(live.reason, undefined);
     assert.equal(live.label?.boxed, "WARNING: BLEEDING RISK");
+    assert.equal(live.label?.setId, "set-warfarin");
+    assert.equal(live.label?.openFdaId, "");
+    assert.equal(live.label?.effectiveTime, "");
+    assert.match(live.label?.identity ?? "", /SPL set-warfarin/);
+    assert.match(live.label?.identity ?? "", new RegExp(OPENFDA_NO_DATE));
     assert.deepEqual(live.label?.rxcui, ["11289"]);
     assert.deepEqual(live.faers, [{ term: "HAEMORRHAGE", count: 42 }]);
     assert.deepEqual(live.rxnorm, { rxcui: "11289", name: "Warfarin", brands: ["Coumadin", "Jantoven"] });
@@ -161,6 +169,18 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     const outcome = await lookupLiveOutcome("warfarin", "Warfarin");
     assert.deepEqual(outcome.failed, []);
     assert.equal(urls.length, 9, "second lookup is served from cache");
+  });
+
+  it("reads OpenFDA effective_time as a day and does not invent one", async () => {
+    stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      const row = { ...WARFARIN_LABEL.results[0], effective_time: "20240501" };
+      return json({ results: [row] });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.equal(live.label?.effectiveTime, "2024-05-01");
+    assert.equal(live.label?.setId, "set-warfarin");
+    assert.equal(live.label?.boxed, "WARNING: BLEEDING RISK");
   });
 
   it("keeps the other sources and names the label failure when OpenFDA's label call fails", async () => {
@@ -238,6 +258,191 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     assert.equal(lookups[0]?.failed, "label");
     for (const line of logLines) {
       assert.doesNotMatch(line, /warfarin|coumadin|search=|label\.json|https?:/i);
+    }
+  });
+
+  it("prefers the catalog-note setid when OpenFDA returns two SPLs and records that setid", async () => {
+    const noteSet = setidsInText(DRUG_BY_ID.gepotidacin?.note)[0];
+    assert.ok(noteSet, "gepotidacin's catalog note cites a DailyMed setid");
+    const filedFirst = "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6";
+    assert.ok(labelVersions.labels[filedFirst], "the first stub is a setid already on file");
+    const { urls } = stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      return json({
+        results: [
+          {
+            set_id: filedFirst,
+            id: "openfda-filed-first",
+            effective_time: "20200101",
+            drug_interactions: ["First hit, already in label-versions."],
+          },
+          {
+            set_id: noteSet.toUpperCase(),
+            id: "openfda-note",
+            drug_interactions: ["Catalog note SPL, no effective_time."],
+          },
+        ],
+      });
+    });
+    const live = await lookupLive("gepotidacin", "Gepotidacin");
+    assert.equal(live.label?.setId, noteSet.toUpperCase());
+    assert.equal(live.label?.openFdaId, "openfda-note");
+    assert.equal(live.label?.effectiveTime, "");
+    assert.match(live.label?.identity ?? "", new RegExp(noteSet.toUpperCase()));
+    assert.match(live.label?.identity ?? "", /OpenFDA id openfda-note/);
+    assert.match(live.label?.identity ?? "", new RegExp(OPENFDA_NO_DATE));
+    const stored = (labelVersions.labels as Record<string, { effective: string }>)[noteSet]?.effective;
+    assert.equal(stored, "2026-02-10");
+    assert.match(
+      live.label?.identity ?? "",
+      new RegExp(`Stored label version for this setid is dated ${stored}, which differs`),
+    );
+    const labelUrl = urls.find((u) => u.includes("label.json")) ?? "";
+    assert.match(labelUrl, /[?&]limit=(?:[2-9]|\d{2,})\b/);
+  });
+
+  it("prefers a label-versions setid over an unknown first hit and says when the effective date differs", async () => {
+    assert.deepEqual(setidsInText(DRUG_BY_ID.warfarin?.note), []);
+    const filed = "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6";
+    const stored = labelVersions.labels[filed]?.effective;
+    assert.equal(stored, "2026-06-24");
+    stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      return json({
+        results: [
+          {
+            set_id: "not-a-known-spl",
+            id: "openfda-unknown",
+            effective_time: "20240101",
+            drug_interactions: ["Unknown first hit."],
+          },
+          {
+            set_id: filed,
+            id: "openfda-filed",
+            effective_time: "20200102",
+            drug_interactions: ["Known SPL with a different effective date."],
+          },
+        ],
+      });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.equal(live.label?.setId, filed);
+    assert.equal(live.label?.openFdaId, "openfda-filed");
+    assert.equal(live.label?.effectiveTime, "2020-01-02");
+    assert.match(live.label?.identity ?? "", /SPL 9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6/);
+    assert.match(live.label?.identity ?? "", /OpenFDA id openfda-filed/);
+    assert.match(live.label?.identity ?? "", /Effective 2020-01-02/);
+    assert.match(live.label?.identity ?? "", /dated 2026-06-24, which differs/);
+    assert.match(live.label?.identity ?? "", /The stored grade quote was not changed/);
+    assert.equal(labelVersions.labels[filed]?.effective, stored);
+  });
+
+  it("keeps the first OpenFDA hit when neither SPL is a known setid and records that id", async () => {
+    stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      return json({
+        results: [
+          { set_id: "shown-first", id: "id-first", effective_time: "20221103", drug_interactions: ["A"] },
+          { set_id: "later-unknown", id: "id-later", effective_time: "20231103", drug_interactions: ["B"] },
+        ],
+      });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.equal(live.label?.setId, "shown-first");
+    assert.equal(live.label?.openFdaId, "id-first");
+    assert.equal(live.label?.effectiveTime, "2022-11-03");
+    assert.match(live.label?.identity ?? "", /SPL shown-first · OpenFDA id id-first\. Effective 2022-11-03\./);
+    assert.doesNotMatch(live.label?.identity ?? "", /which differs/);
+  });
+
+  it("does not claim a date mismatch when the live effective date matches the stored file", async () => {
+    const filed = "9d5848f0-e9f0-4112-a7ca-bcc8ea2e69c6";
+    const stored = labelVersions.labels[filed]?.effective ?? "";
+    stubFetch((url) => {
+      if (!url.includes("label.json")) return healthyRoute(url);
+      return json({
+        results: [
+          { set_id: "not-a-known-spl", id: "openfda-unknown", effective_time: "19990101", drug_interactions: ["A"] },
+          {
+            set_id: filed,
+            id: "openfda-same-date",
+            effective_time: stored.replaceAll("-", ""),
+            drug_interactions: ["B"],
+          },
+        ],
+      });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.equal(live.label?.setId, filed);
+    assert.equal(live.label?.effectiveTime, stored);
+    assert.doesNotMatch(live.label?.identity ?? "", /which differs|grade quote/);
+    assert.equal(labelVersions.labels[filed]?.effective, stored);
+  });
+
+  it("keeps unparsed initiation dates after dated rows, newest first", () => {
+    const ordered = orderEnforcementByInitiation([
+      { date: "20190101", reason: "older" },
+      { date: "", reason: "blank" },
+      { date: "2024-06-15", reason: "newer" },
+      { date: "yesterday", reason: "junk" },
+      { date: "2019-02-31", reason: "impossible" },
+      { date: "20200101", reason: "tie-a" },
+      { date: "2020-01-01", reason: "tie-b" },
+    ]);
+    assert.deepEqual(
+      ordered.map((row) => row.reason),
+      ["newer", "tie-a", "tie-b", "older", "blank", "junk", "impossible"],
+    );
+  });
+
+  it("records a shortage failure on an otherwise ok pack", async () => {
+    stubFetch((url) => (url.includes("shortages.json") ? json({}, 502) : healthyRoute(url)));
+    const outcome = await lookupLiveOutcome("warfarin", "Warfarin");
+    assert.equal(outcome.sources.ok, true);
+    assert.deepEqual(outcome.sources.shortage, []);
+    assert.ok(outcome.failed.includes("shortage"));
+    assert.ok(outcome.sources.failed?.includes("shortage"));
+    assert.match(outcome.sources.fetchedAt ?? "", /^\d{4}-\d{2}-\d{2}T/);
+    assert.match(outcome.sources.reason ?? "", /FDA shortages/);
+  });
+
+  it("orders the enforcement rows Watch will read by initiation date", async () => {
+    const { urls } = stubFetch((url) => {
+      if (!url.includes("enforcement.json")) return healthyRoute(url);
+      return json({
+        results: [
+          { reason_for_recall: "older", recall_initiation_date: "20190101", status: "Ongoing", classification: "Class II" },
+          { reason_for_recall: "blank", status: "Ongoing", classification: "Class III" },
+          { reason_for_recall: "newer", recall_initiation_date: "2024-06-15", status: "Completed", classification: "Class I" },
+          { reason_for_recall: "junk", recall_initiation_date: "yesterday", status: "Ongoing", classification: "Class II" },
+        ],
+      });
+    });
+    const live = await lookupLive("warfarin", "Warfarin");
+    assert.deepEqual(
+      live.recalls.map((row) => row.reason),
+      ["newer", "older", "blank"],
+    );
+    assert.ok(urls.some((url) => url.includes("sort=recall_initiation_date:desc")));
+  });
+
+  it("skips liveCache when refresh asks again and leaves the RxClass cache alone", async () => {
+    const { classCache } = await import("./rxnav.server");
+    classCache.set("watch-sentinel", [{ className: "keep", classType: "ATC" }]);
+    try {
+      const { urls } = stubFetch(healthyRoute);
+      const first = await lookupLive("warfarin", "Warfarin");
+      assert.match(first.fetchedAt ?? "", /^\d{4}-\d{2}-\d{2}T/);
+      const calls = urls.length;
+      const cached = await lookupLive("warfarin", "Warfarin");
+      assert.equal(urls.length, calls, "a warm pin is served from liveCache");
+      assert.equal(cached.fetchedAt, first.fetchedAt);
+      const fresh = await lookupLive("warfarin", "Warfarin", { bypassCache: true });
+      assert.ok(urls.length > calls, "refresh asks the live sources again");
+      assert.match(fresh.fetchedAt ?? "", /^\d{4}-\d{2}-\d{2}T/);
+      assert.equal(classCache.get("watch-sentinel")?.[0]?.className, "keep");
+    } finally {
+      classCache.delete("watch-sentinel");
     }
   });
 

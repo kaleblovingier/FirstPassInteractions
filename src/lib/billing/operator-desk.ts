@@ -81,6 +81,94 @@ export function nextPipeStorage(
   return JSON.stringify(capped);
 }
 
+/** Issued-key list. Same cap and refuse-unreadable rules as the hunt book. */
+export const ISSUED_STORAGE_KEY = "firstpass.issued.v1";
+
+/** Operator pay line. A plain string, not the hunt book. */
+export const PAY_NOTE_STORAGE_KEY = "firstpass.payNote";
+
+export interface DeskListStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+}
+
+/**
+ * JSON to write for issued keys, or null when the write must be skipped.
+ * Same rules as `nextPipeStorage`: unreadable storage is kept unless
+ * `replaceUnreadable`, and an empty list does not replace a real list unless
+ * `allowEmpty`.
+ */
+export function nextIssuedStorage(
+  stored: string | null,
+  rows: readonly unknown[],
+  opts?: PipeSaveOpts,
+): string | null {
+  return nextPipeStorage(stored, rows, opts);
+}
+
+/**
+ * Persist issued keys. Returns false when the write is refused or `setItem`
+ * throws, and does not replace unreadable storage unless `replaceUnreadable`.
+ */
+export function saveIssuedList(
+  storage: DeskListStorage,
+  rows: readonly unknown[],
+  opts?: PipeSaveOpts,
+): boolean {
+  let raw: string | null = null;
+  try {
+    raw = storage.getItem(ISSUED_STORAGE_KEY);
+  } catch {
+    return false;
+  }
+  const payload = nextIssuedStorage(raw, rows, opts);
+  if (payload == null) return false;
+  try {
+    storage.setItem(ISSUED_STORAGE_KEY, payload);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Persist the pay note. Returns false when `setItem` throws; the caller keeps the typed text. */
+export function savePayNoteText(storage: Pick<DeskListStorage, "setItem">, note: string): boolean {
+  try {
+    storage.setItem(PAY_NOTE_STORAGE_KEY, note);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Mark waiting hunt rows as keyed. The license key is stored beside the note
+ * and the outreach note is left as it was.
+ */
+export function attachHuntLicenseKeys<
+  T extends { name: string; status: string; note: string; licenseKey?: string },
+>(rows: readonly T[], keysByName: ReadonlyMap<string, string>): Array<T & { licenseKey?: string }> {
+  return rows.map((row) => {
+    if (row.status !== "waiting") return row;
+    const key = keysByName.get(row.name.toLowerCase());
+    if (!key) return row;
+    return { ...row, status: "keyed" as T["status"], licenseKey: key };
+  });
+}
+
+/** True only after `writeText` resolves. A rejection is a failed copy. */
+export async function copyDeskText(
+  writeText: (text: string) => Promise<void>,
+  text: string,
+): Promise<boolean> {
+  try {
+    await writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function csvCell(value: string): string {
   const safe = /^[=+\-@]/.test(value) ? `'${value}` : value;
   if (/[",\n\r]/.test(safe)) return `"${safe.replace(/"/g, '""')}"`;
@@ -117,6 +205,42 @@ export function pipeToJson(rows: readonly PipeExportRow[]): string {
 export function pipeExportName(kind: "csv" | "json", now = new Date()): string {
   const day = now.toISOString().slice(0, 10);
   return `firstpass-hunt-book-${day}.${kind}`;
+}
+
+export interface PipeLicenseExportRow {
+  name: string;
+  who: string;
+  status: string;
+  licenseKey: string;
+}
+
+const LICENSE_COLUMNS = [
+  "name",
+  "who",
+  "status",
+  "licenseKey",
+] as const satisfies readonly (keyof PipeLicenseExportRow)[];
+
+/** License keys only. Not a column on the book CSV. */
+export function pipeLicensesToCsv(rows: readonly PipeLicenseExportRow[]): string {
+  const header = LICENSE_COLUMNS.join(",");
+  const lines = rows.map((row) => LICENSE_COLUMNS.map((col) => csvCell(row[col] ?? "")).join(","));
+  return [header, ...lines].join("\n") + "\n";
+}
+
+export function pipeLicensesToJson(rows: readonly PipeLicenseExportRow[]): string {
+  const body = rows.map((row) => ({
+    name: row.name,
+    who: row.who,
+    status: row.status,
+    licenseKey: row.licenseKey,
+  }));
+  return JSON.stringify(body, null, 2) + "\n";
+}
+
+export function pipeLicenseExportName(kind: "csv" | "json", now = new Date()): string {
+  const day = now.toISOString().slice(0, 10);
+  return `firstpass-hunt-keys-${day}.${kind}`;
 }
 
 export function pipeStatusCounts(

@@ -37,7 +37,8 @@ export const isCommentLine = (line: string) => /^\s*(\/\/|\*|\/\*)/.test(line);
 
 export function findDoses(source: string): { line: number; match: string }[] {
   const out: { line: number; match: string }[] = [];
-  source.split("\n").forEach((l, i) => {
+  // A CRLF checkout leaves "\r" on each line, and "." in the trailing-comment strip below can't cross it.
+  source.split(/\r?\n/).forEach((l, i) => {
     if (isCommentLine(l)) return;
     const code = l.replace(/\s\/\/\s.*$/, "");
     for (const m of code.matchAll(DOSE_PATTERN)) out.push({ line: i + 1, match: m[0] });

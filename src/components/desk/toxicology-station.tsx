@@ -157,7 +157,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
           <div className="flex items-center gap-2">
             <FlaskConical className="h-4 w-4 text-accent" />
             <span className="font-serif font-bold text-sm tracking-tight text-fg">
-              Emergency Toxicology, Nomograms &amp; Antidote Kinetics Station
+              Toxicology, Nomograms &amp; Antidote Kinetics Reference Station
             </span>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -281,7 +281,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
                 <p className="text-[11px] text-muted leading-relaxed">{alert.rationale}</p>
                 <div className="pt-1 text-[11px] font-medium text-fg">
                   <span className={alert.tier === "critical" ? "text-danger font-bold" : "text-accent font-bold"}>
-                    Recommended Action:{" "}
+                    Reference note:{" "}
                   </span>
                   {alert.actionGuidance}
                 </div>
@@ -413,7 +413,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
                 <div>
                   <span className="text-muted">NAC Indicated: </span>
                   <span className={cn("font-bold", apapEval.nacIndicated ? "text-danger" : "text-ok")}>
-                    {apapEval.nacIndicated ? "YES - INITIATE IMMEDIATELY" : "NO"}
+                    {apapEval.nacIndicated ? "YES (published criteria)" : "NO"}
                   </span>
                 </div>
               </div>
@@ -515,12 +515,12 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
                   Non-IgE Anaphylactoid Management
                 </span>
                 <p className="text-[10px] text-muted">
-                  Direct mast cell histamine release during Bag 1 loading. <strong className="text-fg">DO NOT STOP NAC PERMANENTLY.</strong>
+                  Direct mast cell histamine release during Bag 1 loading. <strong className="text-fg">Published management does not stop NAC permanently.</strong>
                 </p>
                 <div className="text-[10px] text-muted space-y-0.5">
-                  <p>1. Pause infusion temporarily.</p>
-                  <p>2. Administer IV H1/H2 blockers (Diphenhydramine + Famotidine).</p>
-                  <p>3. Once symptoms resolve, restart at reduced rate (50% speed).</p>
+                  <p>1. The infusion is paused temporarily.</p>
+                  <p>2. IV H1/H2 blockers (Diphenhydramine + Famotidine) are given.</p>
+                  <p>3. Once symptoms resolve, it restarts at a reduced rate (50% speed).</p>
                 </div>
               </div>
             </div>
@@ -813,7 +813,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
             <div className="rounded-md border border-danger/40 bg-danger-soft/20 p-3.5 space-y-2">
               <div className="flex items-center gap-1.5 text-danger font-semibold text-xs">
                 <AlertCircle className="h-4 w-4" />
-                <span>The Mandatory Potassium Replacement Rule &amp; Paradoxical Aciduria</span>
+                <span>The Potassium Replacement Rule &amp; Paradoxical Aciduria</span>
               </div>
               <p className="text-[11px] text-fg leading-relaxed">
                 {SALICYLATE_OVERDOSE_PROFILE.potassiumRule.physiologicalMechanism}
@@ -961,7 +961,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
       {activeTab === "protocols" && (
         <div className="space-y-4">
           <div className="rounded-lg border border-border bg-surface p-4 space-y-4">
-            <span className="font-semibold text-fg text-sm block">Core Emergency Toxicology Clinical Pearls</span>
+            <span className="font-semibold text-fg text-sm block">Core Toxicology Clinical Pearls</span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="rounded-md border border-border bg-surface-sunken p-3 space-y-1.5">
                 <span className="font-semibold text-xs text-fg flex items-center gap-1.5">

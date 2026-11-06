@@ -104,12 +104,14 @@ test("label drift: pass, moved and drifted", () => {
 test("label drift: committed report and label versions match the offline fixture (--check)", () => {
   const fx = JSON.parse(readFileSync(PATHS.fixture, "utf8"));
   const out = build(fx);
+  // Windows checkouts (core.autocrlf) turn the committed LF into CRLF.
+  const lf = (path: string) => readFileSync(path, "utf8").replace(/\r\n/g, "\n");
   assert.equal(
-    readFileSync(PATHS.md, "utf8"),
+    lf(PATHS.md),
     out.md,
     "docs/validation/label-drift.md is stale; re-run scripts/label-drift-check.ts",
   );
-  assert.equal(readFileSync(PATHS.versions, "utf8"), out.json, "label-versions.json is stale");
+  assert.equal(lf(PATHS.versions), out.json, "label-versions.json is stale");
   for (const r of quotedRows())
     if (r.setid) assert.ok(fx.labels[r.setid], `${r.pairs[0]}: setid ${r.setid} in fixture`);
   assert.equal(out.results.filter((r) => r.status === "unfetched").length, 0);

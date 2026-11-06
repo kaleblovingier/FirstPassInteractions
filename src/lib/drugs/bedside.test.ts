@@ -18,7 +18,17 @@ import {
   classifyLithiumLevel,
   evaluateExtripLithiumCriteria,
   calculateLithiumClearance,
+  deindexEgfr,
+  egfrBlockedReason,
+  egfrCr2021,
+  egfrCrCys2021,
+  egfrCys2012,
+  egfrOf,
+  kdigoGOf,
+  type EgfrInput,
 } from "./bedside";
+import { stationMatches } from "./station-groups";
+import { DOSE_PATTERN } from "../guards/dose-rule";
 
 test("qtcOf calculates Bazett and Fridericia", () => {
   const normal = qtcOf({ qtMs: 400, hr: 60 });
@@ -398,6 +408,191 @@ test("bedside lithium level classification, clearance physics, and EXTRIP hemodi
   const cl = calculateLithiumClearance({ crclMlMin: 100, weightKg: 70, takingThiazide: true });
   assert.equal(cl.percentReduction, 40);
   assert.equal(cl.estimatedLithiumClearanceMlMin, 12);
+});
+
+// Expected eGFRs below are the whole-number outputs of two independent calculators, read 2026-11-04:
+// NKF = kidney.org/professionals/gfr_calculator, MDCalc = mdcalc.com/calc/3939 (CKD-EPI equations).
+const within1 = (actual: number | null, expected: number, source: string) => {
+  assert.ok(actual !== null, source);
+  assert.ok(Math.abs(Math.round(actual) - expected) <= 1, `${source}: got ${actual}, expected ${expected} ±1`);
+};
+
+test("egfrCr2021 matches published calculator outputs for the CKD-EPI 2021 creatinine equation", () => {
+  const cases: [EgfrInput, number, string][] = [
+    [{ age: 60, sex: "male", scr: 1.0 }, 86, "NKF and MDCalc"],
+    [{ age: 50, sex: "female", scr: 0.6 }, 109, "NKF and MDCalc"],
+    [{ age: 80, sex: "female", scr: 2.2 }, 22, "NKF and MDCalc"],
+    [{ age: 30, sex: "male", scr: 4.0 }, 20, "NKF and MDCalc"],
+    [{ age: 70, sex: "female", scr: 1.4 }, 40, "NKF"],
+    [{ age: 40, sex: "male", scr: 0.8 }, 115, "NKF"],
+  ];
+  for (const [input, expected, source] of cases) within1(egfrCr2021(input), expected, `${source} ${JSON.stringify(input)}`);
+});
+
+test("egfrCrCys2021 matches published calculator outputs for the CKD-EPI 2021 creatinine–cystatin C equation", () => {
+  const cases: [EgfrInput, number, string][] = [
+    [{ age: 70, sex: "female", scr: 1.4, cystatinC: 1.5 }, 42, "NKF and MDCalc"],
+    [{ age: 40, sex: "male", scr: 0.8, cystatinC: 0.7 }, 123, "NKF and MDCalc"],
+    [{ age: 35, sex: "female", scr: 0.7, cystatinC: 0.8 }, 113, "NKF and MDCalc"],
+  ];
+  for (const [input, expected, source] of cases) within1(egfrCrCys2021(input), expected, `${source} ${JSON.stringify(input)}`);
+});
+
+test("egfrCys2012 matches published calculator outputs for the CKD-EPI 2012 cystatin C equation", () => {
+  const cases: [Pick<EgfrInput, "age" | "sex" | "cystatinC">, number, string][] = [
+    [{ age: 70, sex: "female", cystatinC: 1.5 }, 41, "NKF and MDCalc"],
+    [{ age: 75, sex: "male", cystatinC: 2.0 }, 29, "NKF and MDCalc"],
+    [{ age: 65, sex: "female", cystatinC: 0.6 }, 110, "NKF and MDCalc"],
+    [{ age: 40, sex: "male", cystatinC: 0.7 }, 121, "NKF"],
+    [{ age: 35, sex: "female", cystatinC: 0.8 }, 108, "NKF"],
+  ];
+  for (const [input, expected, source] of cases) within1(egfrCys2012(input), expected, `${source} ${JSON.stringify(input)}`);
+});
+
+test("CKD-EPI terms collapse to 1 at Scr = κ and cystatin C = 0.8, with no jump across κ", () => {
+  // At Scr = κ both creatinine terms are 1, leaving the intercept, age and sex factors.
+  assert.ok(Math.abs(egfrCr2021({ age: 50, sex: "male", scr: 0.9 })! - 142 * 0.9938 ** 50) < 1e-9);
+  assert.ok(Math.abs(egfrCr2021({ age: 35, sex: "female", scr: 0.7 })! - 142 * 0.9938 ** 35 * 1.012) < 1e-9);
+  assert.ok(
+    Math.abs(egfrCrCys2021({ age: 35, sex: "female", scr: 0.7, cystatinC: 0.8 })! - 135 * 0.9961 ** 35 * 0.963) < 1e-9,
+  );
+  assert.ok(Math.abs(egfrCys2012({ age: 40, sex: "male", cystatinC: 0.8 })! - 133 * 0.996 ** 40) < 1e-9);
+  for (const [sex, k] of [["male", 0.9], ["female", 0.7]] as const) {
+    const below = egfrCr2021({ age: 60, sex, scr: k - 1e-6 })!;
+    const above = egfrCr2021({ age: 60, sex, scr: k + 1e-6 })!;
+    assert.ok(Math.abs(below - above) < 0.001, `${sex} creatinine curve is continuous at κ`);
+  }
+});
+
+test("CKD-EPI 2021 creatinine takes the female and male branches from the paper", () => {
+  // Below κ: α −0.241 (F) / −0.302 (M). Above κ: −1.200 for both. Female factor 1.012.
+  const f = egfrCr2021({ age: 50, sex: "female", scr: 0.6 })!;
+  const m = egfrCr2021({ age: 50, sex: "male", scr: 0.6 })!;
+  assert.ok(Math.abs(f - 142 * (0.6 / 0.7) ** -0.241 * 0.9938 ** 50 * 1.012) < 1e-9);
+  assert.ok(Math.abs(m - 142 * (0.6 / 0.9) ** -0.302 * 0.9938 ** 50) < 1e-9);
+  const fHigh = egfrCr2021({ age: 50, sex: "female", scr: 1.2 })!;
+  const mHigh = egfrCr2021({ age: 50, sex: "male", scr: 1.2 })!;
+  assert.ok(Math.abs(fHigh - 142 * (1.2 / 0.7) ** -1.2 * 0.9938 ** 50 * 1.012) < 1e-9);
+  assert.ok(Math.abs(mHigh - 142 * (1.2 / 0.9) ** -1.2 * 0.9938 ** 50) < 1e-9);
+  // The same creatinine reads as a lower GFR in a woman (smaller κ).
+  assert.ok(fHigh < mHigh);
+});
+
+test("CKD-EPI eGFR falls as age or creatinine rises", () => {
+  for (const sex of ["male", "female"] as const) {
+    for (let age = 18; age < 110; age += 1) {
+      assert.ok(egfrCr2021({ age: age + 1, sex, scr: 1.1 })! < egfrCr2021({ age, sex, scr: 1.1 })!);
+      assert.ok(egfrCrCys2021({ age: age + 1, sex, scr: 1.1, cystatinC: 1.2 })! < egfrCrCys2021({ age, sex, scr: 1.1, cystatinC: 1.2 })!);
+      assert.ok(egfrCys2012({ age: age + 1, sex, cystatinC: 1.2 })! < egfrCys2012({ age, sex, cystatinC: 1.2 })!);
+    }
+    for (let x = 0.3; x < 9.9; x += 0.1) {
+      assert.ok(egfrCr2021({ age: 60, sex, scr: x + 0.1 })! < egfrCr2021({ age: 60, sex, scr: x })!);
+      assert.ok(egfrCrCys2021({ age: 60, sex, scr: x + 0.1, cystatinC: 1 })! < egfrCrCys2021({ age: 60, sex, scr: x, cystatinC: 1 })!);
+      assert.ok(egfrCrCys2021({ age: 60, sex, scr: 1, cystatinC: x + 0.1 })! < egfrCrCys2021({ age: 60, sex, scr: 1, cystatinC: x })!);
+      assert.ok(egfrCys2012({ age: 60, sex, cystatinC: x + 0.1 })! < egfrCys2012({ age: 60, sex, cystatinC: x })!);
+    }
+  }
+});
+
+test("CKD-EPI returns null for children and out-of-range input, with a reason the card can show", () => {
+  assert.equal(egfrCr2021({ age: 17, sex: "male", scr: 0.8 }), null);
+  assert.equal(egfrCr2021({ age: 111, sex: "male", scr: 0.8 }), null);
+  assert.equal(egfrCr2021({ age: Number.NaN, sex: "male", scr: 0.8 }), null);
+  assert.equal(egfrCr2021({ age: 60, sex: "male", scr: 0 }), null);
+  assert.equal(egfrCr2021({ age: 60, sex: "male", scr: -1 }), null);
+  assert.equal(egfrCr2021({ age: 60, sex: "male", scr: 21 }), null);
+  assert.equal(egfrCrCys2021({ age: 60, sex: "male", scr: 1 }), null);
+  assert.equal(egfrCrCys2021({ age: 60, sex: "male", scr: 1, cystatinC: 0 }), null);
+  assert.equal(egfrCys2012({ age: 60, sex: "male", cystatinC: 11 }), null);
+  assert.equal(egfrCys2012({ age: 16, sex: "female", cystatinC: 1 }), null);
+
+  const card = { sex: "female" as const, scr: 0.6, heightCm: 160, weightKg: 50 };
+  assert.equal(egfrOf({ ...card, age: 12 }), null);
+  assert.match(egfrBlockedReason(12), /adults 18 and older/);
+  assert.match(egfrBlockedReason(12), /pediatric equation/);
+  // A typed but unusable cystatin C blanks the card instead of silently falling back to creatinine.
+  assert.equal(egfrOf({ ...card, age: 40, cystatinC: Number.NaN }), null);
+  assert.match(egfrBlockedReason(40), /cystatin C 0–10 mg\/L or blank/);
+});
+
+test("de-indexed eGFR is eGFR × BSA / 1.73 and matches the NKF calculator's BSA-adjusted output", () => {
+  assert.equal(deindexEgfr(86, 1.73), 86);
+  assert.ok(Math.abs(deindexEgfr(60, 2.236)! - (60 * 2.236) / 1.73) < 1e-9);
+  assert.ok(deindexEgfr(60, 2.2)! > 60, "a large body has a higher eGFR in mL/min");
+  assert.ok(deindexEgfr(60, 1.4)! < 60, "a small body has a lower eGFR in mL/min");
+  assert.equal(deindexEgfr(60, 0), null);
+  assert.equal(deindexEgfr(Number.NaN, 1.8), null);
+
+  // NKF "Adjust eGFR for body surface area: Yes" (Du Bois), mL/min.
+  const typical = egfrOf({ age: 60, sex: "male", scr: 1.0, heightCm: 175, weightKg: 70 });
+  assert.ok(typical);
+  assert.equal(typical.egfr, 86);
+  assert.equal(typical.bsa, 1.85);
+  within1(typical.absolute, 92, "NKF BSA-adjusted, 175 cm 70 kg");
+  assert.deepEqual(typical.g, { category: "G2", label: "Mildly decreased" });
+  assert.equal(typical.equation, "creatinine");
+  assert.equal(typical.byMarker, null);
+
+  // Du Bois, not Mosteller: Mosteller BSA would give about 115 here.
+  within1(egfrOf({ age: 60, sex: "male", scr: 1.0, heightCm: 160, weightKg: 120 })?.absolute ?? null, 108, "NKF BSA-adjusted, 160 cm 120 kg");
+  within1(egfrOf({ age: 80, sex: "female", scr: 2.2, heightCm: 150, weightKg: 45 })?.absolute ?? null, 18, "NKF BSA-adjusted, 150 cm 45 kg");
+
+  const withCys = egfrOf({ age: 70, sex: "female", scr: 1.4, cystatinC: 1.5, heightCm: 160, weightKg: 50 });
+  assert.ok(withCys);
+  assert.equal(withCys.equation, "creatinine + cystatin C");
+  assert.equal(withCys.egfr, 42);
+  within1(withCys.absolute, 36, "NKF BSA-adjusted creatinine–cystatin C, 160 cm 50 kg");
+  assert.deepEqual(withCys.byMarker, { cr: 40, cys: 41, both: 42 });
+  assert.equal(withCys.g.category, "G3b");
+
+  // No usable height: the indexed eGFR still shows, the mL/min value does not.
+  const noHeight = egfrOf({ age: 60, sex: "male", scr: 1.0, heightCm: 0, weightKg: 70 });
+  assert.ok(noHeight);
+  assert.equal(noHeight.egfr, 86);
+  assert.equal(noHeight.bsa, null);
+  assert.equal(noHeight.absolute, null);
+});
+
+test("kdigoGOf reads the KDIGO 2024 GFR categories from the whole-number eGFR", () => {
+  const cat = (x: number) => kdigoGOf(x)?.category;
+  // Rounding: 89.5 is reported as 90, so G1; 89.4 as 89, so G2.
+  assert.equal(cat(90), "G1");
+  assert.equal(cat(89.5), "G1");
+  assert.equal(cat(89.4), "G2");
+  assert.equal(cat(89), "G2");
+  assert.equal(cat(60), "G2");
+  assert.equal(cat(59.5), "G2");
+  assert.equal(cat(59), "G3a");
+  assert.equal(cat(45), "G3a");
+  assert.equal(cat(44), "G3b");
+  assert.equal(cat(30), "G3b");
+  assert.equal(cat(29), "G4");
+  assert.equal(cat(15), "G4");
+  assert.equal(cat(14), "G5");
+  assert.equal(cat(0), "G5");
+  assert.equal(kdigoGOf(-1), null);
+  assert.equal(kdigoGOf(Number.NaN), null);
+  assert.equal(kdigoGOf(50)?.label, "Mildly to moderately decreased");
+  assert.equal(kdigoGOf(35)?.label, "Moderately to severely decreased");
+  assert.equal(kdigoGOf(10)?.label, "Kidney failure");
+});
+
+test("renal copy carries lab units only, never an administered dose, and the station search finds eGFR", () => {
+  const copy = [
+    egfrBlockedReason(12),
+    egfrBlockedReason(40),
+    crclOf({ age: 60, weightKg: 72, scr: 1.0, sex: "male" })!.note,
+    ...[95, 70, 50, 35, 20, 10].map((x) => kdigoGOf(x)!.label),
+    "eGFR 86 mL/min/1.73 m²",
+    "eGFR 86 mL/min/1.73m²",
+    "cystatin C 1.2 mg/L",
+    "SCr 1.4 mg/dL",
+  ];
+  for (const s of copy) assert.equal(s.match(DOSE_PATTERN), null, s);
+  assert.doesNotMatch(crclOf({ age: 60, weightKg: 72, scr: 1.0, sex: "male" })!.note, /not CKD-EPI/);
+
+  assert.ok(stationMatches({ id: "bedside", label: "Bedside" }, "Desk tools", "egfr"));
+  assert.ok(stationMatches({ id: "bedside", label: "Bedside" }, "Desk tools", "ckd-epi"));
 });
 
 

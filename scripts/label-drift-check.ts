@@ -10,6 +10,11 @@
  * Writes docs/validation/label-drift.md, src/lib/drugs/reference/label-versions.json
  * (setid → SPL version and effective date, for "last checked" lines) and
  * scripts/fixtures/label-drift-spl.json (the cited sections only, so CI stays offline).
+ * DailyMed setids cited from catalog-modern.ts and wave 2/3 are recorded in
+ * label-versions.json the same way (version, effective, checkedOn). They are
+ * not quote rows, so they do not enter the drift report. A later full fetch
+ * uses the run date as checkedOn. A catalog row checked on its own day keeps
+ * that date on the fixture label (`checkedOn`) until the next full fetch.
  * Never changes a grade, pin or quote; drift goes on the review list.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -17,6 +22,9 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LABEL_GOLD_SET } from "../src/lib/drugs/reference/label-gold-set.ts";
 import { LABEL_CONTRAINDICATIONS } from "../src/lib/drugs/label-contraindications.ts";
+import { MODERN_FORMULARY } from "../src/lib/drugs/catalog-modern.ts";
+import { MODERN_WAVE2_FORMULARY } from "../src/lib/drugs/catalog-modern-wave2.ts";
+import { MODERN_WAVE3_FORMULARY } from "../src/lib/drugs/catalog-modern-wave3.ts";
 import {
   driftReport,
   fixtureSections,
@@ -66,6 +74,37 @@ export function quotedRows(): QuotedRow[] {
   );
 }
 
+const CATALOG_LABEL_FILES = [
+  "src/lib/drugs/catalog-modern.ts",
+  "src/lib/drugs/catalog-modern-wave2.ts",
+  "src/lib/drugs/catalog-modern-wave3.ts",
+];
+
+/** DailyMed setids cited from the modern catalogs, with a desk label name.
+ *  These are not gold quotes. label-versions.json still records their SPL date. */
+export function catalogLabelCites(): { setid: string; labelDrug: string }[] {
+  const drugs = [...MODERN_FORMULARY, ...MODERN_WAVE2_FORMULARY, ...MODERN_WAVE3_FORMULARY];
+  const seen = new Set<string>();
+  const out: { setid: string; labelDrug: string }[] = [];
+  for (const rel of CATALOG_LABEL_FILES) {
+    const text = readFileSync(resolve(root, rel), "utf8");
+    for (const m of text.matchAll(/setid=([0-9a-f-]+)/gi)) {
+      const setid = m[1]!.toLowerCase();
+      if (seen.has(setid)) continue;
+      seen.add(setid);
+      const drug = drugs.find((d) => d.note?.toLowerCase().includes(setid));
+      const brand = drug?.brands[0];
+      const labelDrug = drug
+        ? brand
+          ? `${brand} (${drug.name.toLowerCase()})`
+          : drug.name
+        : setid;
+      out.push({ setid, labelDrug });
+    }
+  }
+  return out;
+}
+
 export function versionsFrom(rows: QuotedRow[], fx: DriftFixture): LabelVersion[] {
   const seen = new Map<string, LabelVersion>();
   for (const r of rows) {
@@ -75,6 +114,40 @@ export function versionsFrom(rows: QuotedRow[], fx: DriftFixture): LabelVersion[
     seen.set(r.setid, { setid: r.setid, labelDrug: r.labelDrug, ...meta });
   }
   return [...seen.values()].sort(
+    (a, b) => a.labelDrug.localeCompare(b.labelDrug) || a.setid.localeCompare(b.setid),
+  );
+}
+
+/** Quote labels plus modern-catalog cites. Quote rows keep the snapshot date.
+ *  A catalog cite checked on its own day uses that fixture `checkedOn`. */
+function versionRows(versions: LabelVersion[], fx: DriftFixture) {
+  const quoted = new Set(versions.map((v) => v.setid.toLowerCase()));
+  const rows: {
+    setid: string;
+    labelDrug: string;
+    version: number | null;
+    effective: string | null;
+    checkedOn: string;
+  }[] = versions.map((v) => ({
+    setid: v.setid,
+    labelDrug: v.labelDrug,
+    version: v.version,
+    effective: v.effective,
+    checkedOn: fx.retrieved,
+  }));
+  for (const c of catalogLabelCites()) {
+    if (quoted.has(c.setid)) continue;
+    const l = fx.labels[c.setid];
+    if (!l || !("meta" in l)) continue;
+    rows.push({
+      setid: c.setid,
+      labelDrug: c.labelDrug,
+      version: l.meta.version,
+      effective: l.meta.effective,
+      checkedOn: l.checkedOn ?? fx.retrieved,
+    });
+  }
+  return rows.sort(
     (a, b) => a.labelDrug.localeCompare(b.labelDrug) || a.setid.localeCompare(b.setid),
   );
 }
@@ -90,9 +163,14 @@ export function build(fx: DriftFixture) {
         retrieved: fx.retrieved,
         source: fx.source,
         labels: Object.fromEntries(
-          versions.map((v) => [
+          versionRows(versions, fx).map((v) => [
             v.setid,
-            { labelDrug: v.labelDrug, version: v.version, effective: v.effective, checkedOn: fx.retrieved },
+            {
+              labelDrug: v.labelDrug,
+              version: v.version,
+              effective: v.effective,
+              checkedOn: v.checkedOn,
+            },
           ]),
         ),
       },
@@ -123,7 +201,12 @@ async function main() {
     const cache = argv.includes("--cache") ? argv[argv.indexOf("--cache") + 1]! : null;
     if (cache) mkdirSync(cache, { recursive: true });
     const rows = quotedRows();
-    const ids = [...new Set(rows.map((r) => r.setid).filter((s): s is string => !!s))].sort();
+    const ids = [
+      ...new Set([
+        ...rows.map((r) => r.setid).filter((s): s is string => !!s),
+        ...catalogLabelCites().map((c) => c.setid),
+      ]),
+    ].sort();
     fx = {
       retrieved: new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }),
       source: "DailyMed SPL v2 XML (dailymed.nlm.nih.gov/dailymed/services/v2/spls/{setid}.xml)",
@@ -132,13 +215,10 @@ async function main() {
     for (const id of ids) {
       try {
         const xml = await fetchSpl(id, cache);
-        const all = splSections(xml);
+        const mine = rows.filter((r) => r.setid === id);
         fx.labels[id] = {
           meta: splMeta(xml),
-          sections: fixtureSections(
-            rows.filter((r) => r.setid === id),
-            all,
-          ),
+          sections: mine.length ? fixtureSections(mine, splSections(xml)) : [],
         };
       } catch (e) {
         fx.labels[id] = { error: e instanceof Error ? e.message : String(e) };

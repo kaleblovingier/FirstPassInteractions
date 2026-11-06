@@ -4,8 +4,10 @@ import {
   DRUG_BY_ID,
   DRUGS,
   normalizeSearchText,
+  saltFormKeys,
   searchDrugs,
   stripSaltFormTokens,
+  withoutStrength,
 } from "./catalog.ts";
 
 test("normalizes punctuation and diacritics for lookup", () => {
@@ -32,6 +34,28 @@ test("finds drugs when the user pastes salt or release forms", () => {
   assert.equal(searchDrugs("sertraline hydrochloride")[0]?.id, "sertraline");
   assert.equal(searchDrugs("metformin HCl")[0]?.id, "metformin");
   assert.ok(searchDrugs("bupropion xl").some((d) => d.id.startsWith("bupropion")));
+});
+
+test("keeps a salt that is the drug and reads past a pasted strength", () => {
+  assert.deepEqual(saltFormKeys("potassium chloride er"), ["potassium chloride er", "potassium chloride", "chloride"]);
+  assert.equal(searchDrugs("potassium chloride ER")[0]?.id, "potassium-chloride");
+  assert.equal(searchDrugs("diltiazem CD")[0]?.id, "diltiazem");
+  assert.equal(withoutStrength("lisinopril 10 mg"), "lisinopril");
+  assert.equal(withoutStrength("5 fu"), "5 fu");
+  assert.equal(searchDrugs("Synthroid 50 mcg")[0]?.id, "levothyroxine");
+});
+
+test("shelf keywords that are brands list their own row first", () => {
+  assert.equal(searchDrugs("Zosyn")[0]?.id, "piperacillin-tazobactam");
+  assert.equal(searchDrugs("Entresto")[0]?.id, "sacubitril-valsartan");
+  assert.equal(searchDrugs("Opvee")[0]?.id, "nalmefene");
+  assert.equal(searchDrugs("wards")[0]?.id, "meropenem");
+});
+
+test("common abbreviations name the drug, not a substring neighbour", () => {
+  assert.equal(searchDrugs("MTX")[0]?.id, "methotrexate");
+  assert.equal(searchDrugs("ASA")[0]?.id, "aspirin");
+  assert.notEqual(searchDrugs("tPA")[0]?.id, "parenteral-nutrition");
 });
 
 test("does not turn punctuation-only input into a broad result set", () => {

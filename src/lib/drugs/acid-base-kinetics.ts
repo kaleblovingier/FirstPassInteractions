@@ -267,7 +267,7 @@ export function evaluateWintersFormula(input: WintersInput): WintersResult {
     differentialDiagnosis.push(
       "Uncomplicated metabolic acidosis with intact central respiratory drive and ventilatory mechanics",
     );
-    actionGuidance:
+    actionGuidance =
       "Maintain support of spontaneous ventilation. Address underlying metabolic acidosis driver (e.g. insulin/fluids for DKA, perfusion restoration for lactic acidosis). Avoid sedative-hypnotics that impair respiratory drive.";
   } else if (measuredPaco2MmHg > expectedPaco2Max) {
     status = "concomitant-respiratory-acidosis";
@@ -281,7 +281,7 @@ export function evaluateWintersFormula(input: WintersInput): WintersResult {
       "Thoracic mechanical restriction (massive abdominal distension, chest wall trauma, pneumothorax)",
     );
     actionGuidance =
-      "URGENT: Assess airway patency and ventilatory endurance. Evaluate for respiratory muscle fatigue or CNS sedation. Prepare for potential ventilatory support (NIV or endotracheal intubation) with minute ventilation set high enough to match metabolic compensatory demands.";
+      "This pattern calls for prompt assessment of airway patency and ventilatory endurance, evaluation for respiratory muscle fatigue or CNS sedation, and readiness for ventilatory support (NIV or endotracheal intubation) with minute ventilation set high enough to match metabolic compensatory demands.";
   } else {
     status = "concomitant-respiratory-alkalosis";
     statusLabel = "Concomitant Respiratory Alkalosis (Primary Alveolar Hyperventilation)";

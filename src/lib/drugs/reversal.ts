@@ -85,10 +85,10 @@ const RULES: Rule[] = [
   {
     ids: ["apixaban", "rivaroxaban"],
     card: {
-      agent: "Andexanet alfa / PCC",
+      agent: "Andexanet alfa (no longer sold in the US) / PCC",
       for: "oral Xa inhibitor",
       kind: "antidote",
-      pearl: "Andexxa is labeled; 4-factor PCC is what most desks actually have. Stopping the DOAC is not vitamin K.",
+      pearl: "Andexxa is no longer sold in the US (FDA safety communication, December 18, 2025); reversal follows the institution's protocol and the Prescribing Information. 4-factor PCC is what most desks actually have. Stopping the DOAC is not vitamin K.",
     },
   },
   {

@@ -20,6 +20,7 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
+import { ANDEXXA_FDA_URL, ANDEXXA_REVERSAL_NOTE, ANDEXXA_US_STATUS } from "./catalog-label-names";
 import { type HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 
@@ -148,9 +149,9 @@ export const ANTICOAGULANT_PROFILES: Record<string, AnticoagulantProfile> = {
       notes: "Due to high plasma protein binding (~87%), hemodialysis provides minimal systemic clearance and is ineffective for acute bleed management.",
     },
     reversalOptions: {
-      firstLine: "Andexanet alfa (Andexxa, coagulation factor Xa [recombinant], inactivated-zhzo)",
+      firstLine: `Andexanet alfa (Andexxa): ${ANDEXXA_REVERSAL_NOTE}`,
       alternativeOffLabel: "4-Factor Prothrombin Complex Concentrate (4F-PCC / Kcentra) 2,000 units fixed or 25–50 units/kg",
-      notes: "Andexanet alfa is the FDA-approved targeted decoy antidote. 4F-PCC is recommended by CHEST/ASH when andexanet is unavailable.",
+      notes: `Andexanet alfa: ${ANDEXXA_US_STATUS} ${ANDEXXA_FDA_URL} 4F-PCC is recommended by CHEST/ASH when andexanet is unavailable.`,
     },
     labSensitivity: {
       ptInr: {
@@ -204,9 +205,9 @@ export const ANTICOAGULANT_PROFILES: Record<string, AnticoagulantProfile> = {
       notes: "High plasma protein binding (92–95%, predominantly albumin) prevents clearance by hemodialysis.",
     },
     reversalOptions: {
-      firstLine: "Andexanet alfa (Andexxa, coagulation factor Xa [recombinant], inactivated-zhzo)",
+      firstLine: `Andexanet alfa (Andexxa): ${ANDEXXA_REVERSAL_NOTE}`,
       alternativeOffLabel: "4-Factor Prothrombin Complex Concentrate (4F-PCC / Kcentra) 2,000 units fixed or 25–50 units/kg",
-      notes: "Andexanet alfa is the FDA-approved specific reversal decoy. 4F-PCC is the primary off-label alternative.",
+      notes: `Andexanet alfa: ${ANDEXXA_US_STATUS} ${ANDEXXA_FDA_URL} 4F-PCC is the primary off-label alternative.`,
     },
     labSensitivity: {
       ptInr: {
@@ -261,8 +262,8 @@ export const ANTICOAGULANT_PROFILES: Record<string, AnticoagulantProfile> = {
     },
     reversalOptions: {
       firstLine: "4-Factor Prothrombin Complex Concentrate (4F-PCC / Kcentra) 2,000 units fixed or 25–50 units/kg",
-      alternativeOffLabel: "Andexanet alfa (unapproved / off-label for edoxaban; proof-of-concept in volunteer studies)",
-      notes: "Andexanet alfa is NOT FDA-approved for edoxaban. 4F-PCC is the recommended reversal strategy in current clinical guidelines.",
+      alternativeOffLabel: "Andexanet alfa (unapproved / off-label for edoxaban; proof-of-concept in volunteer studies; no longer sold in the US, FDA safety communication, December 18, 2025)",
+      notes: "Andexanet alfa is NOT FDA-approved for edoxaban and is no longer sold in the US (FDA safety communication, December 18, 2025). 4F-PCC is the recommended reversal strategy in current clinical guidelines.",
     },
     labSensitivity: {
       ptInr: {
@@ -887,7 +888,7 @@ export function calculateHit4TsScore(params: Hit4TsInput): Hit4TsResult {
         ]
       : [],
     actionSummary: isIntermediateOrHigh
-      ? "IMMEDIATE CESSATION of all heparin products (unfractionated heparin, LMWH, heparin flushes, catheter locks). Order PF4-heparin ELISA and confirmatory Serotonin Release Assay (SRA). Initiate non-heparin alternative anticoagulant (Argatroban, Bivalirudin, or Fondaparinux). Avoid prophylactic platelet transfusions due to extreme risk of paradoxical arterial/venous thrombotic occlusion."
+      ? "Published HIT management at this probability: all heparin products are stopped at once (unfractionated heparin, LMWH, heparin flushes, catheter locks), a PF4-heparin ELISA and confirmatory Serotonin Release Assay (SRA) are sent, a non-heparin alternative anticoagulant (Argatroban, Bivalirudin, or Fondaparinux) is started, and prophylactic platelet transfusions are avoided because of the extreme risk of paradoxical arterial/venous thrombotic occlusion."
       : "Continue heparin if clinically indicated. Observe platelet trends. Do not order PF4 ELISA reflexively due to high false-positive rate of non-pathogenic antibodies in low probability patients.",
   };
 
@@ -1161,6 +1162,8 @@ export interface AndexanetAlfaProtocolResult {
     vials200mgOnly: number;
   };
   clinicalRationale: string;
+  /** US market status (FDA, December 18, 2025). */
+  marketStatus: string;
   trialBenchmark: string;
   safetyWarnings: {
     prothromboticRisk: string;
@@ -1237,6 +1240,7 @@ export function calculateAndexanetAlfaDosing(params: {
       vials200mgOnly,
     },
     clinicalRationale,
+    marketStatus: `${ANDEXXA_US_STATUS} ${ANDEXXA_FDA_URL}`,
     trialBenchmark:
       "ANNEXA-4 Trial (Connolly et al., NEJM 2019): In patients with acute major bleeding on apixaban or rivaroxaban, andexanet alfa reduced anti-Factor Xa activity by 92% and achieved excellent or good hemostatic efficacy in 82% of patients at 12 hours.",
     safetyWarnings: {
@@ -1810,20 +1814,11 @@ export function anticoagulationReportOnDesk(
     });
   }
 
-  // 4. Targeted Reversal: Andexanet alfa
+  // 4. Targeted Reversal: Andexanet alfa — sized only from an entered last dose and time, never assumed ones.
   let andexanetDosing: AndexanetAlfaProtocolResult | undefined;
-  if (drugIds.includes("apixaban")) {
-    andexanetDosing = calculateAndexanetAlfaDosing({
-      agent: "apixaban",
-      lastDoseMg,
-      hoursSinceLastDose,
-    });
-  } else if (drugIds.includes("rivaroxaban")) {
-    andexanetDosing = calculateAndexanetAlfaDosing({
-      agent: "rivaroxaban",
-      lastDoseMg,
-      hoursSinceLastDose,
-    });
+  const andexAgent = drugIds.includes("apixaban") ? "apixaban" : drugIds.includes("rivaroxaban") ? "rivaroxaban" : null;
+  if (andexAgent && options?.lastDoseMg !== undefined && options?.hoursSinceLastDose !== undefined) {
+    andexanetDosing = calculateAndexanetAlfaDosing({ agent: andexAgent, lastDoseMg, hoursSinceLastDose });
   }
 
   // 5. Targeted Reversal: Idarucizumab

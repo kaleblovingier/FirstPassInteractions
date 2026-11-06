@@ -34,6 +34,29 @@ export const TRADEMARK_LINE =
 /** Shown on /pairs. */
 export const NOT_AFFILIATED_LINE = "Not affiliated with or endorsed by FDA or NLM.";
 
+/** Statement the RxNav terms of service ask apps using NLM data to show (lhncbc.nlm.nih.gov/RxNav/TermsofService.html). */
+export const NLM_ATTRIBUTION =
+  "This product uses publicly available data from the U.S. National Library of Medicine (NLM), National Institutes of Health, Department of Health and Human Services; NLM is not responsible for the product and does not endorse or recommend this or any other product.";
+
+/** WHOCC asks every use of ATC material to name it (atcddd.fhi.no/copyright_disclaimer). */
+export const ATC_CREDIT = "ATC classes: WHO Collaborating Centre for Drug Statistics Methodology, via NLM RxClass.";
+
+/** PsychonautWiki text is CC BY-SA 4.0; the live extracts are shortened, so say so and keep the license. */
+export const PSYCHONAUTWIKI_CREDIT =
+  "Extracts from PsychonautWiki (psychonautwiki.org) by its contributors, licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). FirstPass shortened them and removed dosage and route sentences; the shortened text is shared under the same license.";
+
+/** The note TripSit asks for wherever its combination data appears (wiki.tripsit.me/wiki/Drug_combinations). */
+export const TRIPSIT_NOTE =
+  "Combination ratings: TripSit (combo.tripsit.me). TripSit's chart is only meant as a quick overview and reference; do more individual research before making a decision.";
+
+/** "AGS Beers Criteria" is a registered mark; shown wherever the paraphrased Beers rows appear. */
+export const BEERS_CREDIT =
+  "Paraphrased from the 2023 AGS Beers Criteria®. Not affiliated with or endorsed by the American Geriatrics Society.";
+
+/** CPIC asks users to credit cpicpgx.org as the primary source and say its guidelines are updated. */
+export const CPIC_CREDIT =
+  "Paraphrased from CPIC guidelines (cpicpgx.org). CPIC guidelines are updated; check cpicpgx.org for the current version.";
+
 export const PRIVACY_DOC: LegalDoc = {
   path: "/privacy",
   title: "Privacy policy | FirstPass",
@@ -58,7 +81,7 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "browser",
       title: "What stays in your browser",
       paras: [
-        "The drugs on your desk, host toggles, any amounts you type, study marks, lab-book answers, saved briefs, recent trays, watch pins, a search-shortcut setting and your license key are kept in your browser's local storage. They are not sent to a FirstPass database (there is none). Clearing site data for this site removes them.",
+        "The drugs on your desk, host toggles, any amounts you type, study marks, practice scores, lab-book answers, saved briefs, recent trays, watch pins, a search-shortcut setting and your license key are kept in your browser's local storage. They are not sent to a FirstPass database (there is none). Clearing site data for this site removes them.",
         "Your license key is sent to the server when it is checked. The server checks its signature and does not store it.",
       ],
     },
@@ -68,7 +91,8 @@ export const PRIVACY_DOC: LegalDoc = {
       paras: [
         "Live lookups: catalog drug names or ids. The server asks public sources (OpenFDA, NLM RxNorm and RxClass, PubChem, DailyMed, ClinicalTrials.gov, PubMed, CPIC, PsychonautWiki, TripSit) by drug name. Host toggles and typed amounts are not sent.",
         "\"Ask the three readers\": only when you press it, a short brief built from the check on screen (drug names, top rows, sources) is sent to xAI's API. Answers are kept in server memory for up to 10 minutes.",
-        "Program inquiry form (/for-programs): your name, work email, organization and message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
+        "Interaction API: software that calls FirstPass's interaction API sends drug names and, if it chooses, context such as age, sex, weight, kidney function or eGFR, urine pH, pregnancy, breastfeeding or smoking status. Do not send names, record numbers, dates or any other identifier. The server uses the context to compute the answer and keeps the context and the computed answer in server memory for up to 10 minutes so a repeat request is fast. It does not write them to disk or a database, and FirstPass's own logs do not record the request body. The desk itself does not use this API.",
+        "Program inquiry form (/for-programs): your name, work email, organization, role, program type, seat count, years and start date, and your message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
         "Lost-key recovery (/recover): Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent.",
         "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
         "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
@@ -87,7 +111,7 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "processors",
       title: "Who else handles data",
       paras: [
-        "Vercel (hosting and request logs), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI (only when you use the readers), and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
+        "Vercel (hosting and request logs), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI, when you use the readers, and xAI's Grok connector service, which the operator may use to read payment emails and draft key emails in the FirstPass Gmail inbox, and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
       ],
     },
     {
@@ -137,7 +161,8 @@ export const COOKIES_DOC: LegalDoc = {
       id: "storage",
       title: "Local and session storage",
       paras: [
-        "The desk keeps your work (drugs on the desk, toggles, study marks, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and stays in your browser. FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored. Clear site data to remove it.",
+        "The desk keeps your work (drugs on the desk, toggles, study marks, practice scores, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and stays in your browser. FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored. Clear site data to remove it.",
+        "The desk also uses your browser's cache storage (a service worker) so pages open offline. It holds copies of FirstPass pages and files, not your desk.",
       ],
     },
     { id: "changes", title: "Changes", paras: [`Effective ${LEGAL_EFFECTIVE}.`] },
