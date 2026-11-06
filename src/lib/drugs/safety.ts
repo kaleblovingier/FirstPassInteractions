@@ -409,7 +409,7 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "ibuprofen / naproxen attenuates aspirin antiplatelet effect",
         "Ibuprofen occupies COX-1 and blocks aspirin's irreversible acetylation if it is taken around the ASA dose. This is lost cardioprotection, not 'two NSAIDs.' Naproxen is quieter and still mapped. Acetaminophen does not do this. GI bleed remains a separate row.",
         "If both are required, aspirin first, ibuprofen later — open the PI. This desk does not time the tablets.",
-        "Aspirin and ibuprofen labels. Catella-Lawson 2001 (PMID 11248154).",
+        "Aspirin and ibuprofen labels. Catella-Lawson 2001 (PMID 11752357).",
       ),
     );
   }
@@ -651,7 +651,7 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "methotrexate × TMP-SMX — tubular blockade / additive antifolate",
         "Trimethoprim impairs renal tubular secretion of methotrexate via OAT1/OAT3 and OCT2 transporters, while sulfamethoxazole displaces methotrexate from albumin. Concurrently, both agents inhibit dihydrofolate reductase, synergistically extinguishing folate-dependent nucleotide synthesis. Fatal pancytopenia and toxic epidermal necrolysis are documented. Avoid coadministration.",
         "CBC with differential, renal function, severe mucositis or skin detachment. Consider leucovorin rescue under oncology/poison guidance.",
-        "Methotrexate and Bactrim Prescribing Information. Groenendal 1990 (PMID 2189332).",
+        "Methotrexate and Bactrim Prescribing Information. Groenendal 1990 (PMID 2225539).",
       ),
     );
   }
