@@ -100,13 +100,13 @@ export const ROUNDS_WAVE2: Round[] = [
     title: "The gas-station antidepressant and the booster",
     setting: "street",
     stem:
-      "Someone using a 'tianaa' product daily, well above any antidepressant label dose, starts ritonavir-boosted HIV treatment. Within days they are far more sedated than their usual tolerance, nodding mid-conversation.",
-    ask: "Tianeptine isn't an opioid on the label. Why does it look like one now?",
+      "Someone using a tianaa product daily starts ritonavir-boosted HIV treatment. The desk lights a major CYP3A4 exposure finding next to the opioid flag. Nobody has a prescribing-information sentence that says ritonavir raises tianeptine.",
+    ask: "The chip says major. Is that a labeled interaction?",
     teach:
-      "At the doses these products are actually used, tianeptine behaves as a μ-agonist, and it's also a major CYP3A4 substrate — both encoded on this desk. Ritonavir is a strong 3A4 inhibitor. Strong inhibition of a major substrate raises parent exposure, and more parent tianeptine means more opioid-like effect at the same self-dosed amount. The label calls it an antidepressant; the desk's CYP math doesn't read labels.",
+      "The desk stores tianeptine as a major CYP3A4 substrate, so ritonavir, a strong 3A4 inhibitor, produces a major exposure finding, and the opioid flag still stacks sedation. That CYP3A4 role is not a prescribing-information sentence. The citations on this row support μ-agonist toxicity and withdrawal, not a characterized CYP3A4 pathway. Published clearance is mainly beta-oxidation of the side chain. Read the chip as an unsourced stored grade, not as a labeled interaction.",
     drugIds: ["tianeptine", "ritonavir"],
     lane: "street",
-    blurb: "3A4 inhibition raises parent tianeptine",
+    blurb: "Stored 3A4 grade, not a labeled interaction",
   },
   {
     id: "r-phenibut-oxycodone-supplement",

@@ -23,6 +23,14 @@ import { EnzymeLedger } from "./ledger";
 import { StoredNameCard } from "./name-card";
 import { StoredLabelLine } from "./label-line";
 import { deskLabels } from "@/lib/drugs/label-on-desk";
+import {
+  pairBlankReason,
+  unscoredPerpetratorClause,
+  ungradedNotesForTray,
+  ungradedPairNotes,
+  ungradedPerpetratorsFor,
+  type UngradedPairNote,
+} from "@/lib/drugs/ungraded-perpetrators";
 
 const TIERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 
@@ -123,7 +131,7 @@ function enzymeRowGroups(findings: Finding[]) {
 
 function unmappedPairs(ids: string[], hit: Set<string>) {
   const real = ids.filter((id) => DRUG_BY_ID[id]);
-  const out: { key: string; title: string; reason: string }[] = [];
+  const out: { key: string; title: string; reason: string; notes: UngradedPairNote[] }[] = [];
   for (let i = 0; i < real.length; i++) {
     for (let j = i + 1; j < real.length; j++) {
       const key = [real[i], real[j]].sort().join("|");
@@ -131,37 +139,15 @@ function unmappedPairs(ids: string[], hit: Set<string>) {
       const title = [DRUG_BY_ID[real[i]].name, DRUG_BY_ID[real[j]].name]
         .sort((a, b) => a.localeCompare(b))
         .join(" · ");
-      out.push({ key, title, reason: blankReason(real[i], real[j]) });
+      out.push({
+        key,
+        title,
+        reason: pairBlankReason(real[i], real[j]),
+        notes: ungradedPairNotes(real[i], real[j]),
+      });
     }
   }
   return out.sort((a, b) => a.title.localeCompare(b.title));
-}
-
-function blankReason(aId: string, bId: string) {
-  const a = DRUG_BY_ID[aId];
-  const b = DRUG_BY_ID[bId];
-  if (!a || !b) return "Not a clearance.";
-  const substrates = (id: string) => DRUG_BY_ID[id]?.enzymes.filter((e) => e.kind === "substrate") ?? [];
-  const perps = (id: string) => DRUG_BY_ID[id]?.enzymes.filter((e) => e.kind !== "substrate") ?? [];
-  const shared = [...new Set(substrates(aId).map((e) => e.enzyme))].filter((enzyme) =>
-    substrates(bId).some((e) => e.enzyme === enzyme),
-  );
-  const near = (perpId: string, otherId: string) =>
-    perps(perpId).find((role) => !substrates(otherId).some((e) => e.enzyme === role.enzyme));
-  const fromA = near(aId, bId);
-  const fromB = near(bId, aId);
-  const miss = fromA ? { name: a.name, role: fromA, other: b.name } : fromB ? { name: b.name, role: fromB, other: a.name } : null;
-  const verb = miss?.role.kind === "inducer" ? "speeds" : "slows";
-  if (shared.length && miss) {
-    return `No perpetrator on shared ${shared[0]}. ${miss.name} ${verb} ${miss.role.enzyme}, and ${miss.other} is not on it.`;
-  }
-  if (shared.length) {
-    return `Both are ${shared.slice(0, 2).join(" and ")} substrates. No perpetrator was mapped.`;
-  }
-  if (miss) {
-    return `${miss.name} ${verb} ${miss.role.enzyme}. ${miss.other} is not a ${miss.role.enzyme} substrate on this map.`;
-  }
-  return "No shared enzyme and no stacked-effect row on this map.";
 }
 
 function victimMark(f: Finding) {
@@ -330,6 +316,10 @@ export function CheckBoard({
   const quietEnzymes = quietLine(ids, [...rows, ...food]);
   const plain = lead ? plainLanguageSummary(lead) : "";
   const quietPairs = ids.length >= 3 ? unmappedPairs(ids, new Set(regimenGroups(rows).pairs.map((p) => p.key))) : [];
+  const trayNotes = ungradedNotesForTray(ids);
+  const blanksOnScreen = regimen && (split.pairs.length + quietPairs.length > 1 || quietPairs.length > 0);
+  const coveredBlank = new Set(blanksOnScreen ? quietPairs.map((pair) => pair.key) : []);
+  const footnoteNotes = trayNotes.filter((note) => !coveredBlank.has(note.key));
   const foodPairs = [...regimenGroups(food).pairs].sort((a, b) => rank(b.rows[0]) - rank(a.rows[0]));
   const leadCard = lead ? clockForFinding(lead) : null;
   const leadWatch = lead ? (leadCard && lead.kind !== "pd" ? leadCard.start.watch : watchLine(lead)) : "";
@@ -472,6 +462,7 @@ export function CheckBoard({
                   : "A possible concern is mapped. Start with the everyday-language line; expand a row for clinical detail and sources. Severity labels are teaching bins, not a personal prediction of harm."}
           </p>
           {plain ? <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg">{plain}</p> : null}
+          {footnoteNotes.length ? <UngradedFootnotes notes={footnoteNotes} /> : null}
         </div>
         <span
           className={cn(
@@ -835,6 +826,47 @@ function MappedCell({
   );
 }
 
+function UngradedFootnotes({ notes }: { notes: UngradedPairNote[] }) {
+  const links = [...new Map(notes.map((note) => [note.href, note])).values()];
+  return (
+    <div className="mt-3 rounded-md bg-bg-sunken px-3 py-2.5">
+      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
+        Label named a perpetrator · no strength assigned
+      </p>
+      <ul className="mt-2 space-y-2">
+        {notes.map((note) => (
+          <li key={`${note.key}-${note.sentence}`}>
+            <p className="text-sm leading-relaxed text-fg">{note.line}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {links.map((note) => (
+          <a
+            key={note.href}
+            href={note.href}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-10 items-center text-xs font-medium text-accent underline underline-offset-2"
+          >
+            {note.linkLabel}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function UngradedRoleHint({ id }: { id: string }) {
+  const rows = ungradedPerpetratorsFor(id);
+  if (!rows.length) return null;
+  return (
+    <p className="mt-1.5 text-xs leading-relaxed text-muted">
+      The label names a perpetrator and this desk did not assign a strength. A stored row count is not the whole story.
+    </p>
+  );
+}
+
 function PairGrid({
   hits,
   blanks,
@@ -845,7 +877,7 @@ function PairGrid({
   onOpen,
 }: {
   hits: GridCell[];
-  blanks: { key: string; title: string; reason: string }[];
+  blanks: { key: string; title: string; reason: string; notes: UngradedPairNote[] }[];
   beside?: GridCell[];
   besideHidden?: number;
   hosts?: GridCell[];
@@ -873,7 +905,30 @@ function PairGrid({
               <div key={cell.key} className="min-h-11 rounded-md bg-bg-sunken px-2.5 py-2">
                 <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">No mapped collision</span>
                 <span className="mt-1 block text-xs leading-snug text-muted">{cell.title}</span>
-                <span className="mt-0.5 block text-[11px] leading-snug text-subtle">{cell.reason}</span>
+                {cell.notes.length ? (
+                  <>
+                    {cell.notes.map((note) => (
+                      <span key={`${note.key}-${note.sentence}`} className="mt-1 block text-[11px] leading-snug text-fg">
+                        {note.line}
+                      </span>
+                    ))}
+                    <span className="mt-1 flex flex-col gap-1">
+                      {[...new Map(cell.notes.map((note) => [note.href, note])).values()].map((note) => (
+                        <a
+                          key={note.href}
+                          href={note.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex font-mono text-[10px] text-accent underline underline-offset-2"
+                        >
+                          {note.linkLabel}
+                        </a>
+                      ))}
+                    </span>
+                  </>
+                ) : (
+                  <span className="mt-0.5 block text-[11px] leading-snug text-subtle">{cell.reason}</span>
+                )}
               </div>
             ))}
           </div>
@@ -1019,6 +1074,7 @@ function RoleGrid({ ids, rows }: { ids: string[]; rows: Finding[] }) {
             ) : (
               <p className="mt-1.5 text-xs text-muted">No enzyme role mapped here.</p>
             )}
+            <UngradedRoleHint id={id} />
           </div>
         );
       })}
@@ -1054,7 +1110,9 @@ function quietLine(ids: string[], findings: Finding[]) {
   }
   if (quiet.length === 0) return "";
   const parts = quiet.map(([enzyme, role]) => {
-    if (role.sub && !role.perp) return `${enzyme}, no perpetrator mapped`;
+    if (role.sub && !role.perp) {
+      return unscoredPerpetratorClause(ids, enzyme) ?? `${enzyme}, no perpetrator mapped`;
+    }
     if (role.perp && !role.sub) return `${enzyme}, no victim mapped`;
     return `${enzyme}, no pair written`;
   });
