@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CheckSquare, Square } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { ANDEXXA_FDA_URL, ANDEXXA_US_STATUS } from "@/lib/drugs/catalog-label-names";
@@ -224,53 +224,62 @@ import { Input } from "@/components/ui/input";
 import { StationPicker } from "./station-picker";
 import { DoseGate } from "./dose-gate";
 import { STATION_LABELS, type ClinicalTabId, type StationId } from "@/lib/drugs/station-groups";
-import { OncologyPanel } from "./oncology-station";
+const OncologyPanel = lazy(() => import("./oncology-station").then((m) => ({ default: m.OncologyPanel })));
 import { oncologyOnDesk } from "@/lib/drugs/oncology-kinetics";
-import { AntimicrobialPanel } from "./antimicrobial-station";
+const AntimicrobialPanel = lazy(() => import("./antimicrobial-station").then((m) => ({ default: m.AntimicrobialPanel })));
 import { antimicrobialOnDesk } from "@/lib/drugs/antimicrobial-stewardship";
-import { PhenytoinPanel } from "./phenytoin-station";
+const PhenytoinPanel = lazy(() => import("./phenytoin-station").then((m) => ({ default: m.PhenytoinPanel })));
 import { phenytoinOnDesk } from "@/lib/drugs/phenytoin-kinetics";
-import { PregnancyPanel } from "./pregnancy-station";
+const PregnancyPanel = lazy(() => import("./pregnancy-station").then((m) => ({ default: m.PregnancyPanel })));
 import { pregnancyOnDesk } from "@/lib/drugs/pregnancy-lactation";
-import { VasoactivePanel } from "./vasoactive-station";
+const VasoactivePanel = lazy(() => import("./vasoactive-station").then((m) => ({ default: m.VasoactivePanel })));
 import { vasoactiveOnDesk } from "@/lib/drugs/vasoactive-kinetics";
-import { TransplantPanel } from "./transplant-station";
+const TransplantPanel = lazy(() => import("./transplant-station").then((m) => ({ default: m.TransplantPanel })));
 import { transplantOnDesk } from "@/lib/drugs/transplant-immunosuppression";
-import { NeuropsychPanel } from "./neuropsych-station";
+const NeuropsychPanel = lazy(() => import("./neuropsych-station").then((m) => ({ default: m.NeuropsychPanel })));
 import { neuropsychOnDesk } from "@/lib/drugs/neuropsych-kinetics";
-import { AnticoagulationPanel } from "./anticoagulation-station";
+const AnticoagulationPanel = lazy(() => import("./anticoagulation-station").then((m) => ({ default: m.AnticoagulationPanel })));
 import { anticoagulationOnDesk } from "@/lib/drugs/anticoagulation-reversal";
-import { ToxicologyPanel } from "./toxicology-station";
+const ToxicologyPanel = lazy(() => import("./toxicology-station").then((m) => ({ default: m.ToxicologyPanel })));
 import { toxicologyOnDesk } from "@/lib/drugs/toxicology-kinetics";
-import { AntiarrhythmicPanel } from "./antiarrhythmic-station";
+const AntiarrhythmicPanel = lazy(() => import("./antiarrhythmic-station").then((m) => ({ default: m.AntiarrhythmicPanel })));
 import { antiarrhythmicOnDesk } from "@/lib/drugs/antiarrhythmic-kinetics";
-import { AcidBasePanel } from "./acid-base-station";
+const AcidBasePanel = lazy(() => import("./acid-base-station").then((m) => ({ default: m.AcidBasePanel })));
 import { acidBaseOnDesk } from "@/lib/drugs/acid-base-kinetics";
-import { AnesthesiaPanel } from "./anesthesia-station";
+const AnesthesiaPanel = lazy(() => import("./anesthesia-station").then((m) => ({ default: m.AnesthesiaPanel })));
 import { anesthesiaOnDesk } from "@/lib/drugs/anesthesia-reversal";
-import { EpilepsyPanel } from "./epilepsy-station";
+const EpilepsyPanel = lazy(() => import("./epilepsy-station").then((m) => ({ default: m.EpilepsyPanel })));
 import { statusEpilepticusOnDesk } from "@/lib/drugs/status-epilepticus";
-import { ObstetricPanel } from "./obstetric-station";
+const ObstetricPanel = lazy(() => import("./obstetric-station").then((m) => ({ default: m.ObstetricPanel })));
 import { obstetricOnDesk } from "@/lib/drugs/obstetric-kinetics";
-import { ResourcePanel } from "./resource-navigator";
-import { MoudPanel } from "./moud-station";
+const ResourcePanel = lazy(() => import("./resource-navigator").then((m) => ({ default: m.ResourcePanel })));
+const MoudPanel = lazy(() => import("./moud-station").then((m) => ({ default: m.MoudPanel })));
 import { moudOnDesk } from "@/lib/drugs/moud-kinetics";
-import { GlycemicPanel } from "./glycemic-station";
+const GlycemicPanel = lazy(() => import("./glycemic-station").then((m) => ({ default: m.GlycemicPanel })));
 import { glycemicOnDesk } from "@/lib/drugs/glycemic-kinetics";
-import { PediatricPanel } from "./pediatric-station";
+const PediatricPanel = lazy(() => import("./pediatric-station").then((m) => ({ default: m.PediatricPanel })));
 import { pediatricOnDesk } from "@/lib/drugs/pediatric-kinetics";
-import { SeparationPanel } from "./separation-station";
+const SeparationPanel = lazy(() => import("./separation-station").then((m) => ({ default: m.SeparationPanel })));
 import { separationOnDesk } from "@/lib/drugs/separation";
-import { RotationPanel } from "./opioid-rotation-station";
+const RotationPanel = lazy(() => import("./opioid-rotation-station").then((m) => ({ default: m.RotationPanel })));
 import { rotationOnDesk } from "@/lib/drugs/opioid-rotation";
-import { HepaticPanel } from "./hepatic-station";
+const HepaticPanel = lazy(() => import("./hepatic-station").then((m) => ({ default: m.HepaticPanel })));
 import { hepaticOnDesk } from "@/lib/drugs/hepatic-clearance";
-import { AllergyPanel } from "./allergy-station";
+const AllergyPanel = lazy(() => import("./allergy-station").then((m) => ({ default: m.AllergyPanel })));
 import { allergyOnDesk } from "@/lib/drugs/drug-allergy";
-import { AfPanel } from "./af-station";
+const AfPanel = lazy(() => import("./af-station").then((m) => ({ default: m.AfPanel })));
 import { afOnDesk } from "@/lib/drugs/af-stroke-bleed";
-import { DiliPanel } from "./dili-station";
+const DiliPanel = lazy(() => import("./dili-station").then((m) => ({ default: m.DiliPanel })));
 import { diliOnDesk } from "@/lib/drugs/dili";
+
+/** Readable status while a station panel downloads. */
+function StationFallback() {
+  return (
+    <div role="status" className="py-6 text-center text-xs text-muted">
+      Loading station…
+    </div>
+  );
+}
 
 /** Station ids live in CLINICAL_TAB_IDS (src/lib/drugs/station-groups.ts). Add new ones there and to a group. */
 type Tab = ClinicalTabId;
@@ -449,30 +458,32 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
         {live === "phenobarbital" && phenoBarbiturateOn ? <DoseGate><PhenobarbitalPanel ids={ids} /></DoseGate> : null}
         {live === "aminoglycosides" && agOn ? <DoseGate><AminoglycosidesPanel ids={ids} /></DoseGate> : null}
         {live === "lithium" && lithiumOn ? <LithiumPanel ids={ids} host={host} /> : null}
-        {live === "oncology" ? <OncologyPanel ids={ids} host={host} /> : null}
-        {live === "antimicrobial" ? <DoseGate><AntimicrobialPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "phenytoin" ? <DoseGate><PhenytoinPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "pregnancy" ? <PregnancyPanel ids={ids} host={host} /> : null}
-        {live === "obstetrickinetics" ? <ObstetricPanel ids={ids} host={host} /> : null}
-        {live === "vasoactive" ? <VasoactivePanel ids={ids} host={host} /> : null}
-        {live === "transplant" ? <TransplantPanel ids={ids} host={host} /> : null}
-        {live === "neuropsych" ? <NeuropsychPanel ids={ids} host={host} /> : null}
-        {live === "anticoagulation" ? <DoseGate><AnticoagulationPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "toxicology" ? <DoseGate><ToxicologyPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "antiarrhythmic" ? <DoseGate><AntiarrhythmicPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "acidbase" ? <DoseGate><AcidBasePanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "anesthesia" ? <DoseGate><AnesthesiaPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "epilepsy" ? <DoseGate><EpilepsyPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "moud" ? <DoseGate><MoudPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "glycemic" ? <DoseGate><GlycemicPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "pediatric" ? <DoseGate><PediatricPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "separation" && separationOn ? <SeparationPanel ids={ids} /> : null}
-        {live === "rotation" ? <DoseGate><RotationPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "hepatic" ? <HepaticPanel ids={ids} host={host} /> : null}
-        {live === "allergy" ? <AllergyPanel ids={ids} host={host} /> : null}
-        {live === "af" ? <DoseGate><AfPanel ids={ids} host={host} /></DoseGate> : null}
-        {live === "dili" ? <DiliPanel ids={ids} host={host} /> : null}
-        {live === "resources" ? <ResourcePanel ids={ids} host={host} /> : null}
+        <Suspense fallback={<StationFallback />}>
+          {live === "oncology" ? <OncologyPanel ids={ids} host={host} /> : null}
+          {live === "antimicrobial" ? <DoseGate><AntimicrobialPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "phenytoin" ? <DoseGate><PhenytoinPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "pregnancy" ? <PregnancyPanel ids={ids} host={host} /> : null}
+          {live === "obstetrickinetics" ? <ObstetricPanel ids={ids} host={host} /> : null}
+          {live === "vasoactive" ? <VasoactivePanel ids={ids} host={host} /> : null}
+          {live === "transplant" ? <TransplantPanel ids={ids} host={host} /> : null}
+          {live === "neuropsych" ? <NeuropsychPanel ids={ids} host={host} /> : null}
+          {live === "anticoagulation" ? <DoseGate><AnticoagulationPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "toxicology" ? <DoseGate><ToxicologyPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "antiarrhythmic" ? <DoseGate><AntiarrhythmicPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "acidbase" ? <DoseGate><AcidBasePanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "anesthesia" ? <DoseGate><AnesthesiaPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "epilepsy" ? <DoseGate><EpilepsyPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "moud" ? <DoseGate><MoudPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "glycemic" ? <DoseGate><GlycemicPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "pediatric" ? <DoseGate><PediatricPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "separation" && separationOn ? <SeparationPanel ids={ids} /> : null}
+          {live === "rotation" ? <DoseGate><RotationPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "hepatic" ? <HepaticPanel ids={ids} host={host} /> : null}
+          {live === "allergy" ? <AllergyPanel ids={ids} host={host} /> : null}
+          {live === "af" ? <DoseGate><AfPanel ids={ids} host={host} /></DoseGate> : null}
+          {live === "dili" ? <DiliPanel ids={ids} host={host} /> : null}
+          {live === "resources" ? <ResourcePanel ids={ids} host={host} /> : null}
+        </Suspense>
         {live === "bedside" ? <BedsidePanel ids={ids} host={host} steroids={steroids} /> : null}
         {live === "alerts" && alerts.length ? <AlertsPanel rows={alerts} /> : null}
       </div>
