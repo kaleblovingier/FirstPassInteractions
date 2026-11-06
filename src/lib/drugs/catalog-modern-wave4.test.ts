@@ -13,6 +13,12 @@ const WAVE4_IDS = [
   "atrasentan",
   "sebetralstat",
   "zongertinib",
+  "remibrutinib",
+  "paltusotine",
+  "imlunestrant",
+  "vimseltinib",
+  "mirdametinib",
+  "sunvozertinib",
 ] as const;
 
 const versions = JSON.parse(readFileSync("src/lib/drugs/reference/label-versions.json", "utf8")) as {
@@ -87,6 +93,13 @@ const PK_CASES: { drug: string; partner: string; enzyme: string; kind: "inhibito
   { drug: "sebetralstat", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Ekterly 7.1 avoid strong CYP3A4 inhibitors" },
   { drug: "sebetralstat", partner: "verapamil", enzyme: "CYP3A4", kind: "inhibitor", severity: "moderate", label: "Ekterly 7.1 dose reduction with moderate CYP3A4 inhibitors" },
   { drug: "zongertinib", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Hernexeos 7.1 avoid strong CYP3A inducers" },
+  { drug: "remibrutinib", partner: "ritonavir", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Rhapsido 7.1 avoid strong CYP3A4 inhibitors" },
+  { drug: "remibrutinib", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Rhapsido 7.1 avoid strong CYP3A4 inducers" },
+  { drug: "paltusotine", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Palsonify 7.1 strong CYP3A4 inducer may need an increased dosage" },
+  { drug: "imlunestrant", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Inluriyo 7.1 avoid strong CYP3A inhibitors" },
+  { drug: "imlunestrant", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Inluriyo 7.1 avoid strong CYP3A inducers" },
+  { drug: "sunvozertinib", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Zegfrovy 7.1 avoid strong CYP3A inhibitors" },
+  { drug: "sunvozertinib", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Zegfrovy 7.1 avoid moderate CYP3A inducers" },
 ];
 
 test("known label partners produce the finding the label describes", () => {
@@ -100,6 +113,18 @@ test("known label partners produce the finding the label describes", () => {
 test("zongertinib does not read major with a strong CYP3A inhibitor, where Hernexeos 12.3 reports no clinically significant change", () => {
   const hit = analyze(["zongertinib", "itraconazole"]).findings.find((f) => f.id.includes("pk-CYP3A4-inhibitor-itraconazole"));
   assert.notEqual(hit?.severity, "major");
+});
+
+test("remibrutinib reaches the additive bleeding rule, which Rhapsido 5.1 and 7.2 describe for antithrombotics", () => {
+  const hit = analyze(["remibrutinib", "warfarin"]).findings.find((f) => f.tags.includes("bleeding"));
+  assert.equal(hit?.severity, "major");
+});
+
+test("paltusotine and ensartinib reach the nodal rule, which their labels describe for drugs that slow the heart", () => {
+  for (const id of ["paltusotine", "ensartinib"]) {
+    const hit = analyze([id, "verapamil"]).findings.find((f) => f.tags.includes("bradycardia"));
+    assert.equal(hit?.severity, "major", id);
+  }
 });
 
 test("sebetralstat stacks on the QT desk through its qt-possible chip", () => {
