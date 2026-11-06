@@ -41,6 +41,7 @@
  *   Orphanet J Rare Dis. 2015;10:93. doi:10.1186/s13023-015-0310-1.
  */
 
+import { notEntered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import type { HostContext } from "./types";
 
@@ -1405,8 +1406,9 @@ export interface NeuropsychReport {
   clozapineReport: {
     hasClozapine: boolean;
     collisions1a2: ClozapineCollisionAlert[];
-    tobaccoModel: ClozapineTobaccoResult | null;
     cighEvaluation: CighEvaluation | null;
+    /** The tobacco-induction projection needs an entered clozapine dose, which this report does not take. */
+    inputsNeeded?: string;
   };
   emergenciesDetected: {
     hasSerotonergicStack: boolean;
@@ -1441,14 +1443,6 @@ export function neuropsychReportOnDesk(drugIds: string[], host: HostContext): Ne
 
   // Clozapine Collisions & Tobacco Model
   const clozapineCollisions = hasClozapine ? detectClozapine1a2Collisions(normalized) : [];
-  const tobaccoModel = hasClozapine
-    ? modelClozapineTobaccoKinetics({
-        currentDailyDoseMg: 350,
-        isSmokingTobacco: host.smoking,
-        scenario: host.smoking ? "smoker-steady" : "nonsmoker-steady",
-      })
-    : null;
-
   const cighEvaluation = hasClozapine
     ? evaluateCighRisk({
         hasClozapine: true,
@@ -1623,8 +1617,8 @@ export function neuropsychReportOnDesk(drugIds: string[], host: HostContext): Ne
     clozapineReport: {
       hasClozapine,
       collisions1a2: clozapineCollisions,
-      tobaccoModel,
       cighEvaluation,
+      inputsNeeded: notEntered([hasClozapine && "clozapine daily dose (tobacco-induction projection)"]),
     },
     emergenciesDetected: {
       hasSerotonergicStack,

@@ -28,6 +28,7 @@
  *   Does not generate closed-loop infusion commands, prescriptive dosing orders, or diagnostic mandates.
  */
 
+import { type Unsized, withoutUnentered } from "./assumed-inputs";
 import type { HostContext } from "./types";
 
 // ============================================================================
@@ -1212,11 +1213,26 @@ export interface PediatricReport {
   disclaimer: string;
 }
 
+type PediatricChildSection =
+  | "patientAgeSummary"
+  | "renalOntogeny"
+  | "hepaticOntogeny"
+  | "kernicterusRisk"
+  | "highAlertToxicities"
+  | "allometricScaling"
+  | "safetyAlerts";
+
+export function pediatricReportOnDesk(
+  drugIds: string[],
+  host: HostContext | undefined,
+  childContext: PediatricContext,
+): PediatricReport;
 export function pediatricReportOnDesk(
   drugIds: string[],
   host?: HostContext,
   childContext?: PediatricContext,
-): PediatricReport {
+): PediatricReport | Unsized<PediatricReport, PediatricChildSection>;
+export function pediatricReportOnDesk(drugIds: string[], host?: HostContext, childContext?: PediatricContext) {
   const context: PediatricContext = childContext ?? {
     gestationalAgeWeeks: 40,
     postnatalAgeDays: 14,
@@ -1315,7 +1331,7 @@ export function pediatricReportOnDesk(
     "Mosteller RD. Simplified calculation of body-surface area. N Engl J Med. 1987;317(17):1098.",
   ];
 
-  return {
+  const report: PediatricReport = {
     detection,
     patientAgeSummary,
     renalOntogeny,
@@ -1331,4 +1347,11 @@ export function pediatricReportOnDesk(
     citations,
     disclaimer: `${PEDIATRIC_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
   };
+  return withoutUnentered(report, [
+    [
+      "the child's age, weight and height",
+      childContext,
+      ["patientAgeSummary", "renalOntogeny", "hepaticOntogeny", "kernicterusRisk", "highAlertToxicities", "allometricScaling", "safetyAlerts"],
+    ],
+  ]);
 }

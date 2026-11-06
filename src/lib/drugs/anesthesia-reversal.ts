@@ -21,6 +21,7 @@
  *   evaluation, institutional anesthesia protocols, or the FDA-approved Prescribing Information.
  */
 
+import { withoutUnentered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import { type HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -1321,6 +1322,8 @@ export interface AnesthesiaReport {
   prisEvaluation?: PrisRiskResult;
   activeCollisions: AnesthesiaCollisionAlert[];
   clinicalPearls: string[];
+  /** Which inputs were not entered, so what they would size is left out. */
+  inputsNeeded?: string;
   disclaimer: string;
 }
 
@@ -1569,7 +1572,7 @@ export function anesthesiaReportOnDesk(
     );
   }
 
-  return {
+  const report: AnesthesiaReport = {
     onDesk,
     selectedNmba,
     tofEvaluation,
@@ -1582,6 +1585,12 @@ export function anesthesiaReportOnDesk(
     clinicalPearls,
     disclaimer: `${ANESTHESIA_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
   };
+  return withoutUnentered(report, [
+    ["weight", params?.weightKg, ["sugammadexDosing", "neostigmineDosing"]],
+    ["train-of-four count", params?.tofTwitches, ["tofEvaluation", "sugammadexDosing", "neostigmineDosing"]],
+    ["propofol rate", params?.propofolRateMcgKgMin ?? params?.propofolRateMgKgH, ["prisEvaluation"]],
+    ["propofol duration", params?.propofolDurationHours, ["prisEvaluation"]],
+  ]);
 }
 
 // ============================================================================

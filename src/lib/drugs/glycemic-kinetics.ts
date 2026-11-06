@@ -22,6 +22,7 @@
  *   evaluation, institutional critical care protocols, or the FDA-approved Prescribing Information.
  */
 
+import { type Unsized, withoutUnentered } from "./assumed-inputs";
 import type { HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 
@@ -302,6 +303,15 @@ export interface GlycemicDeskDetection {
   matchedDrugIds: string[];
   summary: string;
 }
+
+type GlycemicSizedSection =
+  | "patientWeightKg"
+  | "serumPotassium"
+  | "bloodGlucose"
+  | "potassiumGate"
+  | "fluidTitration"
+  | "insulinProtocol"
+  | "inpatientRegimen";
 
 export interface GlycemicReportOptions {
   patientWeightKg?: number;
@@ -895,8 +905,14 @@ export function glycemicOnDesk(drugIds: string[]): GlycemicDeskDetection {
 export function glycemicReportOnDesk(
   drugIds: string[],
   host: HostContext,
+  options: GlycemicReportOptions & { patientWeightKg: number; serumPotassium: number; bloodGlucose: number; measuredSodium: number },
+): GlycemicReport;
+export function glycemicReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
   options?: GlycemicReportOptions,
-): GlycemicReport {
+): GlycemicReport | Unsized<GlycemicReport, GlycemicSizedSection>;
+export function glycemicReportOnDesk(drugIds: string[], host: HostContext, options?: GlycemicReportOptions) {
   const onDesk = glycemicOnDesk(drugIds);
 
   const weight = options?.patientWeightKg ?? 70;
@@ -987,7 +1003,7 @@ export function glycemicReportOnDesk(
     "Subcutaneous Basal Insulin 2-Hour Overlap: Intravenous regular insulin clears in minutes (half-life 5-9 min). Administering subcutaneous basal insulin 2 hours before stopping the infusion maintains plasma insulin levels while subcutaneous depot absorbs, preventing rapid ketoacidosis relapse.",
   ];
 
-  return {
+  const report: GlycemicReport = {
     onDesk,
     patientWeightKg: weight,
     serumPotassium: serumK,
@@ -1002,4 +1018,10 @@ export function glycemicReportOnDesk(
     disclaimer: `${GLYCEMIC_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
     citations: GLYCEMIC_CITATIONS,
   };
+  return withoutUnentered(report, [
+    ["weight", options?.patientWeightKg, ["patientWeightKg", "insulinProtocol", "inpatientRegimen"]],
+    ["serum potassium", options?.serumPotassium, ["serumPotassium", "potassiumGate", "insulinProtocol"]],
+    ["blood glucose", options?.bloodGlucose, ["bloodGlucose", "fluidTitration", "insulinProtocol"]],
+    ["measured sodium", options?.measuredSodium, ["fluidTitration"]],
+  ]);
 }

@@ -39,6 +39,7 @@
  *    - Desmopressin (DDAVP) Clamp / Re-lowering Strategy: DDAVP 1-2 mcg + D5W if rapid autodiresis threatens ceiling.
  */
 
+import { type Unsized, withoutUnentered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import { type HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -1176,6 +1177,13 @@ export interface AcidBaseAlert {
   actionGuidance: string;
 }
 
+type AcidBaseSizedSection =
+  | "anionGapEvaluation"
+  | "wintersEvaluation"
+  | "deltaDeltaEvaluation"
+  | "hyponatremiaEvaluation"
+  | "adrogueMadiasPredictions";
+
 export interface AcidBaseReport {
   onDesk: AcidBaseOnDeskResult;
   anionGapEvaluation: AnionGapResult;
@@ -1201,8 +1209,14 @@ export interface AcidBaseReport {
 export function acidBaseReportOnDesk(
   drugIds: string[],
   host: HostContext,
+  options: AcidBaseReportOptions & Required<Pick<AcidBaseReportOptions, "chemistry" | "abg" | "patientBiometrics">>,
+): AcidBaseReport;
+export function acidBaseReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
   options?: AcidBaseReportOptions,
-): AcidBaseReport {
+): AcidBaseReport | Unsized<AcidBaseReport, AcidBaseSizedSection>;
+export function acidBaseReportOnDesk(drugIds: string[], host: HostContext, options?: AcidBaseReportOptions) {
   const onDesk = acidBaseOnDesk(drugIds);
   const alerts: AcidBaseAlert[] = [];
 
@@ -1410,7 +1424,7 @@ export function acidBaseReportOnDesk(
     });
   }
 
-  return {
+  const report: AcidBaseReport = {
     onDesk,
     anionGapEvaluation,
     wintersEvaluation,
@@ -1427,4 +1441,13 @@ export function acidBaseReportOnDesk(
     },
     disclaimer: `${ACID_BASE_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
   };
+  return withoutUnentered(report, [
+    [
+      "chemistry panel",
+      options?.chemistry,
+      ["anionGapEvaluation", "wintersEvaluation", "deltaDeltaEvaluation", "hyponatremiaEvaluation", "adrogueMadiasPredictions"],
+    ],
+    ["blood gas", options?.abg, ["wintersEvaluation"]],
+    ["weight and sex", options?.patientBiometrics, ["adrogueMadiasPredictions"]],
+  ]);
 }

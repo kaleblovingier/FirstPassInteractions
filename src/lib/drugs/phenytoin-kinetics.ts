@@ -45,6 +45,7 @@
  * The FDA-approved Prescribing Information and attending clinician govern all clinical decisions.
  */
 
+import { type Unsized, withoutUnentered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import { type HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -856,8 +857,14 @@ export function evaluatePhenytoinPgx(phenotypes: HostContext["phenotypes"]): Phe
 export function phenytoinReportOnDesk(
   drugIds: string[],
   host: HostContext,
+  params: PhenytoinReportParams & { totalMcgMl: number; weightKg: number; dailyDoseMg: number },
+): PhenytoinReport;
+export function phenytoinReportOnDesk(
+  drugIds: string[],
+  host: HostContext,
   params?: PhenytoinReportParams,
-): PhenytoinReport {
+): PhenytoinReport | Unsized<PhenytoinReport, "levelEval" | "sheinerTozer" | "kinetics" | "fosphenytoin">;
+export function phenytoinReportOnDesk(drugIds: string[], host: HostContext, params?: PhenytoinReportParams) {
   const onDesk = phenytoinOnDesk(drugIds);
   const hasPhenytoin = onDesk.hasAnyPhenytoin;
 
@@ -954,7 +961,7 @@ export function phenytoinReportOnDesk(
     );
   }
 
-  return {
+  const report: PhenytoinReport = {
     hasPhenytoin,
     onDesk,
     levelEval,
@@ -966,4 +973,9 @@ export function phenytoinReportOnDesk(
     clinicalPearls,
     disclaimer: `${PHENYTOIN_CDS_DISCLAIMER} ${NOT_CLEARED} ${PI_FOOTER}`,
   };
+  return withoutUnentered(report, [
+    ["total phenytoin level", params?.totalMcgMl, ["levelEval", "sheinerTozer", "kinetics"]],
+    ["weight", params?.weightKg, ["kinetics"]],
+    ["daily dose", params?.dailyDoseMg, ["kinetics", "fosphenytoin"]],
+  ]);
 }

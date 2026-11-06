@@ -65,6 +65,7 @@
  *      Continuous naloxone infusion protocol (2/3 of successful initial bolus dose per hour).
  */
 
+import { notEntered } from "./assumed-inputs";
 import { DRUG_BY_ID } from "./catalog";
 import { type HostContext } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -1105,6 +1106,8 @@ export interface ToxicologyReport {
   osmolalGapEvaluation?: OsmolalGapResult;
   salicylateIonizationEvaluation?: SalicylateIonizationResult;
   naloxoneInfusionCalculation?: ReturnType<typeof calculateNaloxoneInfusionRate>;
+  /** Which inputs were not entered, so what they would size is left out. */
+  inputsNeeded?: string;
   alerts: ToxicologyAlert[];
   clinicalPillars: {
     apap: {
@@ -1132,6 +1135,15 @@ export interface ToxicologyReport {
  * Comprehensive toxicology report generator integrating all 4 pillars, nomograms,
  * calculations, and statutory CDS disclosures.
  */
+function toxicologyInputsNeeded(onDesk: ToxicologyOnDeskResult, options?: ToxicologyReportOptions): string | undefined {
+  return notEntered([
+    onDesk.hasApap && !options?.apapNomogram && "acetaminophen level and hours since ingestion",
+    onDesk.hasToxicAlcohol && !options?.osmolalGap && "measured osmolality and chemistry",
+    onDesk.hasSalicylate && options?.urinePhForSalicylate === undefined && "urine pH",
+    onDesk.hasOpioid && options?.initialNaloxoneBolusMg === undefined && "the naloxone bolus that worked",
+  ]);
+}
+
 export function toxicologyReportOnDesk(
   drugIds: string[],
   host: HostContext,
@@ -1142,15 +1154,8 @@ export function toxicologyReportOnDesk(
 
   // APAP Pillar Evaluation
   let apapEvaluation: RumackNomogramResult | undefined;
-  if (onDesk.hasApap || options?.apapNomogram) {
-    const input: RumackNomogramInput = options?.apapNomogram ?? {
-      hoursPostIngestion: 4,
-      serumApapMcgMl: 150,
-      chronicAlcoholOrInducer: host.alcohol === "chronic" || onDesk.hasCyp2e1Inducer,
-      acuteAlcoholCoIngestion: host.alcohol === "acute",
-      malnutritionOrFasting: false,
-    };
-    apapEvaluation = evaluateRumackMatthewNomogram(input);
+  if (options?.apapNomogram) {
+    apapEvaluation = evaluateRumackMatthewNomogram(options.apapNomogram);
 
     if (apapEvaluation.nacIndicated) {
       alerts.push({
@@ -1165,15 +1170,8 @@ export function toxicologyReportOnDesk(
 
   // Toxic Alcohol Pillar Evaluation
   let osmolalGapEvaluation: OsmolalGapResult | undefined;
-  if (onDesk.hasToxicAlcohol || options?.osmolalGap) {
-    const input: OsmolalGapInput = options?.osmolalGap ?? {
-      measuredOsmolality: 310,
-      sodiumMeqL: 140,
-      glucoseMgDl: 100,
-      bunMgDl: 14,
-      ethanolMgDl: 0,
-    };
-    osmolalGapEvaluation = calculateOsmolalGap(input);
+  if (options?.osmolalGap) {
+    osmolalGapEvaluation = calculateOsmolalGap(options.osmolalGap);
 
     if (osmolalGapEvaluation.isGapElevated) {
       alerts.push({
@@ -1189,8 +1187,8 @@ export function toxicologyReportOnDesk(
 
   // Salicylate Pillar Evaluation
   let salicylateIonizationEvaluation: SalicylateIonizationResult | undefined;
-  if (onDesk.hasSalicylate || options?.urinePhForSalicylate !== undefined) {
-    const urinePh = options?.urinePhForSalicylate ?? 5.5;
+  if (options?.urinePhForSalicylate !== undefined) {
+    const urinePh = options.urinePhForSalicylate;
     salicylateIonizationEvaluation = calculateSalicylateIonization(urinePh);
 
     alerts.push({
@@ -1205,20 +1203,19 @@ export function toxicologyReportOnDesk(
 
   // Opioid Renarcotization Evaluation
   let naloxoneInfusionCalculation: ReturnType<typeof calculateNaloxoneInfusionRate> | undefined;
-  if (onDesk.hasOpioid || options?.initialNaloxoneBolusMg !== undefined) {
-    const bolus = options?.initialNaloxoneBolusMg ?? 0.4;
-    naloxoneInfusionCalculation = calculateNaloxoneInfusionRate(bolus);
-
-    if (onDesk.hasHighRenarcotizationRisk) {
-      alerts.push({
-        tier: "critical",
-        category: "Opioid",
-        title: "High Renarcotization Risk Detected",
-        rationale: `Regimen contains long-acting or lipophilic opioids (${onDesk.detectedRenarcotizationRiskIds.join(", ")}). Naloxone half-life (30–90 min) is substantially shorter than opioid duration.`,
-        actionGuidance:
-          `Prepare continuous naloxone infusion at ${naloxoneInfusionCalculation.hourlyInfusionRateMg} mg/hour (2/3 of successful initial bolus). Observe patient for >= 4–6 hours post-infusion.`,
-      });
-    }
+  if (options?.initialNaloxoneBolusMg !== undefined) {
+    naloxoneInfusionCalculation = calculateNaloxoneInfusionRate(options.initialNaloxoneBolusMg);
+  }
+  if (onDesk.hasHighRenarcotizationRisk) {
+    alerts.push({
+      tier: "critical",
+      category: "Opioid",
+      title: "High Renarcotization Risk Detected",
+      rationale: `Regimen contains long-acting or lipophilic opioids (${onDesk.detectedRenarcotizationRiskIds.join(", ")}). Naloxone half-life (30–90 min) is substantially shorter than opioid duration.`,
+      actionGuidance: naloxoneInfusionCalculation
+        ? `Prepare continuous naloxone infusion at ${naloxoneInfusionCalculation.hourlyInfusionRateMg} mg/hour (2/3 of successful initial bolus). Observe patient for >= 4–6 hours post-infusion.`
+        : "Size a continuous naloxone infusion from the bolus that worked (2/3 of it each hour). Observe patient for >= 4–6 hours post-infusion.",
+    });
   }
 
   return {
@@ -1227,6 +1224,7 @@ export function toxicologyReportOnDesk(
     osmolalGapEvaluation,
     salicylateIonizationEvaluation,
     naloxoneInfusionCalculation,
+    inputsNeeded: toxicologyInputsNeeded(onDesk, options),
     alerts,
     clinicalPillars: {
       apap: {

@@ -4,6 +4,15 @@ import { DEFAULT_HOST } from "./types";
 import { SE_WEIGHT_NEEDED, statusEpilepticusReportOnDesk } from "./status-epilepticus";
 import { anticoagulationReportOnDesk } from "./anticoagulation-reversal";
 import { evaluateReversal } from "./doac";
+import { phenytoinReportOnDesk } from "./phenytoin-kinetics";
+import { valproateReportOnDesk } from "./valproate";
+import { antiarrhythmicReportOnDesk } from "./antiarrhythmic-kinetics";
+import { anesthesiaReportOnDesk } from "./anesthesia-reversal";
+import { glycemicReportOnDesk } from "./glycemic-kinetics";
+import { toxicologyReportOnDesk } from "./toxicology-kinetics";
+import { acidBaseReportOnDesk } from "./acid-base-kinetics";
+import { pediatricReportOnDesk } from "./pediatric-kinetics";
+import { neuropsychReportOnDesk } from "./neuropsych-kinetics";
 
 // Owner rule: with no user-entered value, compute no dose; keep the math where the user entered the inputs.
 test("status epilepticus: no entered weight computes no weight-based dose", () => {
@@ -70,4 +79,63 @@ test("anticoagulation report sizes each section from the values entered", () => 
   assert.match(mg.inputsNeeded ?? "", /last dose/);
   const all = anticoagulationReportOnDesk(["apixaban"], DEFAULT_HOST, { weightKg: 80, baselineInr: 1.1, lastDoseMg: 5, hoursSinceLastDose: 4 });
   assert.equal(all.inputsNeeded, undefined);
+});
+
+// An API call enters nothing: every section that a value would have sized is absent, and the report says so.
+const NO_SIZED_DOSE = /"(calculated\w*|totalDoseMg|vials\w*|neostigmineTotalMg|glycopyrrolateTotalMg|fixedRateUnitsPerHour|noBolusRateUnitsPerHour|optionalInitialBolusUnits|totalDailyDoseUnits|ivLoadingDoseMg|fosphenytoinDoseMg|newDoseMg|volumeNeededForTargetMl|hourlyRateFor24hTargetMlH|hourlyInfusionRateMg|clampedDoseMg|recommendedDoseAdjustmentMg|exactVialsCalculated|recommendedStartingDose)"/;
+
+const unenteredReports: [string, () => object][] = [
+  ["phenytoin", () => phenytoinReportOnDesk(["phenytoin"], DEFAULT_HOST)],
+  ["valproate", () => valproateReportOnDesk(["valproate"], DEFAULT_HOST)],
+  ["anesthesia", () => anesthesiaReportOnDesk(["rocuronium", "sugammadex", "propofol"], DEFAULT_HOST)],
+  ["glycemic", () => glycemicReportOnDesk(["insulin-regular", "glipizide"], DEFAULT_HOST)],
+  ["acid-base", () => acidBaseReportOnDesk(["furosemide"], DEFAULT_HOST)],
+  ["pediatric", () => pediatricReportOnDesk(["acetaminophen", "amoxicillin"], DEFAULT_HOST)],
+  ["toxicology", () => toxicologyReportOnDesk(["acetaminophen", "methadone", "aspirin", "fomepizole"], DEFAULT_HOST)],
+];
+for (const [name, run] of unenteredReports) {
+  test(`${name} report computes no dose when no value was entered, and names what is needed`, () => {
+    const report = run();
+    assert.doesNotMatch(JSON.stringify(report), NO_SIZED_DOSE);
+    assert.match((report as { inputsNeeded?: string }).inputsNeeded ?? "", /^Not entered: /);
+  });
+}
+
+test("antiarrhythmic report reads no assumed digoxin level, weight or CrCl", () => {
+  const report = antiarrhythmicReportOnDesk(["digoxin", "digifab", "dofetilide", "verapamil"], DEFAULT_HOST);
+  assert.equal(report.digoxinEvaluation, undefined);
+  assert.equal(report.digiFabCalculation, undefined);
+  assert.equal(report.dofetilideRemsAdvisory?.recommendedStartingDose, undefined);
+  assert.equal(report.dofetilideRemsAdvisory?.measuredCrClMlMin, undefined);
+  assert.match(report.inputsNeeded ?? "", /digoxin level.*Cockcroft-Gault CrCl, baseline QTc/);
+  assert.ok(!report.alerts.some((a) => a.category === "Digoxin"), "no level verdict from nothing entered");
+  assert.ok(report.alerts.some((a) => a.category === "PgpCollision"), "the collision needs no level");
+  assert.ok(report.alerts.some((a) => a.category === "DigiFab"), "the post-Fab trap needs no level");
+});
+
+test("neuropsych report projects no clozapine concentration from an assumed dose", () => {
+  const report = neuropsychReportOnDesk(["clozapine"], { ...DEFAULT_HOST, smoking: true });
+  assert.ok(!("tobaccoModel" in report.clozapineReport));
+  assert.match(report.clozapineReport.inputsNeeded ?? "", /clozapine daily dose/);
+  assert.ok(report.activeAlerts.some((a) => a.includes("Clozapine Tobacco Smoke Induction")));
+});
+
+test("entered values still size each section", () => {
+  assert.equal(phenytoinReportOnDesk(["phenytoin"], DEFAULT_HOST, { totalMcgMl: 12, weightKg: 65, dailyDoseMg: 350 }).kinetics.dailyDoseMg, 350);
+  assert.equal(valproateReportOnDesk(["valproate"], DEFAULT_HOST, { totalMcgMl: 85, ammoniaUmolL: 95, weightKg: 60 }).carnitineDosing?.ivLoadingDoseMg, 6000);
+  const anesthesia = anesthesiaReportOnDesk(["rocuronium"], DEFAULT_HOST, { weightKg: 85, tofTwitches: 2, propofolRateMgKgH: 2.5, propofolDurationHours: 12 });
+  assert.equal(anesthesia.sugammadexDosing?.totalDoseMg, 170);
+  assert.equal(anesthesia.inputsNeeded, undefined);
+  const glycemic = glycemicReportOnDesk(["insulin-regular"], DEFAULT_HOST, { patientWeightKg: 75, serumPotassium: 4.2, bloodGlucose: 380, measuredSodium: 134 });
+  assert.equal(glycemic.insulinProtocol.fixedRateUnitsPerHour, 7.5);
+  assert.ok(!("inputsNeeded" in glycemic));
+  const fab = antiarrhythmicReportOnDesk(["digoxin"], DEFAULT_HOST, {
+    digoxinTdm: { serumDigoxinNgMl: 4, indication: "hfref", hoursPostDose: 12, patientWeightKg: 80 },
+  });
+  assert.equal(fab.digiFabCalculation?.vialsToAdministerRoundedUp, 4);
+  const dof = antiarrhythmicReportOnDesk(["dofetilide"], DEFAULT_HOST, { measuredCrClMlMin: 50, baselineQtcMs: 420 });
+  assert.equal(dof.dofetilideRemsAdvisory?.recommendedStartingDose, "250 mcg PO BID");
+  const tox = toxicologyReportOnDesk(["methadone"], DEFAULT_HOST, { initialNaloxoneBolusMg: 0.4 });
+  assert.equal(tox.naloxoneInfusionCalculation?.hourlyInfusionRateMg, 0.27);
+  assert.equal(tox.inputsNeeded, undefined);
 });
