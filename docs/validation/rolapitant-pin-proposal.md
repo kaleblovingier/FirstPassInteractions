@@ -109,3 +109,7 @@ Already written up for Kaleb. Nothing in this document applies them.
 ## Not in this change
 
 `label-contraindications.ts`, engine grades, catalog strengths, the gold set, and `docs/validation/severity-whatif.md` are unchanged. `severity-whatif.md` stays the cap preview it already is.
+
+## Decision
+
+Approved by Kaleb on 2026-11-06 ("Ship both"): both pairs pinned. Implemented in #235.
