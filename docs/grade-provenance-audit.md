@@ -36,25 +36,25 @@ This audit changes no grade and adds no source. Where nothing is cited, the UI n
 | Tier | Findings | Rule-only | Share |
 |---|---|---|---|
 | Avoid together | 3038 | 25 | 0.8% |
-| Serious concern | 73249 | 20879 | 28.5% |
+| Serious concern | 75310 | 21010 | 27.9% |
 
 Top rule-only rules:
 
 | Tier · rule | Findings |
 |---|---|
-| Serious concern · pd | 14263 |
-| Serious concern · pk-CYP3A4-inducer | 2589 |
+| Serious concern · pd | 14287 |
+| Serious concern · pk-CYP3A4-inducer | 2669 |
 | Serious concern · washout | 1528 |
-| Serious concern · pk-CYP3A4-inhibitor | 847 |
+| Serious concern · pk-CYP3A4-inhibitor | 857 |
 | Serious concern · pd-alpha2 | 288 |
 | Serious concern · pk-CYP2D6-inhibitor | 180 |
 | Serious concern · washout-st-johns | 132 |
-| Serious concern · pk-P-gp-inducer | 111 |
+| Serious concern · pk-P-gp-inducer | 114 |
 | Serious concern · pk-CYP2C19-inhibitor | 93 |
 | Serious concern · pk-CYP2C19-inducer | 92 |
-| Serious concern · pk-P-gp-inhibitor | 88 |
-| Serious concern · pk-CYP1A2-inducer | 78 |
-| Serious concern · pk-CYP2C9-inducer | 72 |
+| Serious concern · pk-P-gp-inhibitor | 90 |
+| Serious concern · pk-CYP1A2-inducer | 81 |
+| Serious concern · pk-CYP2C9-inducer | 78 |
 | Serious concern · pd-lithium | 66 |
 | Serious concern · pd-nmda | 66 |
 

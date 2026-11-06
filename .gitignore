@@ -13,5 +13,5 @@ node_modules/
 public/og/
 dist-lms/
 
-# Browser-session snapshots from Playwright MCP
+# Local Playwright MCP session logs and page snapshots
 .playwright-mcp/
