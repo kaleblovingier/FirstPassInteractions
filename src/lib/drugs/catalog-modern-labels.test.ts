@@ -11,6 +11,7 @@ const FILES = [
   "src/lib/drugs/catalog-modern.ts",
   "src/lib/drugs/catalog-modern-wave2.ts",
   "src/lib/drugs/catalog-modern-wave3.ts",
+  "src/lib/drugs/catalog-modern-wave4.ts",
 ];
 
 const MODERN_IDS = [

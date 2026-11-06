@@ -32,6 +32,12 @@
    "effective": "2024-10-10",
    "checkedOn": "2026-10-28"
   },
+  "913552ef-875d-4cb7-bf05-a7d20a394c38": {
+   "labelDrug": "Attruby (acoramidis)",
+   "version": 8,
+   "effective": "2026-06-29",
+   "checkedOn": "2026-11-05"
+  },
   "7ea3c60a-45c7-44cc-afc2-d87fa53993c0": {
    "labelDrug": "Austedo (deutetrabenazine)",
    "version": 36,
@@ -122,6 +128,12 @@
    "effective": "2025-11-10",
    "checkedOn": "2026-10-28"
   },
+  "fd3a6fbd-9137-428a-ba46-df6606f07d28": {
+   "labelDrug": "Crenessity (crinecerfont)",
+   "version": 9,
+   "effective": "2024-12-24",
+   "checkedOn": "2026-11-05"
+  },
   "00acd9e9-b26a-4626-949e-112ecd2f27e6": {
    "labelDrug": "Cymbalta (duloxetine)",
    "version": 3,
@@ -158,11 +170,23 @@
    "effective": "2023-08-15",
    "checkedOn": "2026-10-28"
   },
+  "1d145e2f-8e7e-2e90-e063-6294a90a4449": {
+   "labelDrug": "Ekterly (sebetralstat)",
+   "version": 4,
+   "effective": "2026-04-01",
+   "checkedOn": "2026-11-05"
+  },
   "41a133ef-e461-48ad-8221-b735bdd0ec25": {
    "labelDrug": "Eliquis (apixaban)",
    "version": 5,
    "effective": "2026-09-24",
    "checkedOn": "2026-10-28"
+  },
+  "1e1b2f79-678a-472a-b924-66909c8a4b2e": {
+   "labelDrug": "Ensacove (ensartinib)",
+   "version": 5,
+   "effective": "2026-02-17",
+   "checkedOn": "2026-11-05"
   },
   "0c05e1f7-a3d4-8e69-e063-6394a90aecc3": {
    "labelDrug": "Erythromycin",
@@ -200,6 +224,24 @@
    "effective": "2025-01-13",
    "checkedOn": "2026-10-28"
   },
+  "4c41bf90-5fa7-4935-a95c-e047ea6bbf8e": {
+   "labelDrug": "Gomekli (mirdametinib)",
+   "version": 8,
+   "effective": "2026-07-10",
+   "checkedOn": "2026-11-05"
+  },
+  "d3fabf12-354e-4e5c-b5de-20fdb579b783": {
+   "labelDrug": "Hernexeos (zongertinib)",
+   "version": 7,
+   "effective": "2026-08-13",
+   "checkedOn": "2026-11-05"
+  },
+  "5bc172e4-e8a2-441a-be52-279a7f890196": {
+   "labelDrug": "Inluriyo (imlunestrant)",
+   "version": 8,
+   "effective": "2026-09-18",
+   "checkedOn": "2026-11-05"
+  },
   "1a52bedc-8e2c-4116-a296-a87770676b4a": {
    "labelDrug": "Inspra (eplerenone)",
    "version": 6,
@@ -211,6 +253,12 @@
    "version": 18,
    "effective": "2026-07-31",
    "checkedOn": "2026-10-28"
+  },
+  "5de59f5b-e5db-410f-b692-658686ef4107": {
+   "labelDrug": "Itovebi (inavolisib)",
+   "version": 10,
+   "effective": "2026-04-21",
+   "checkedOn": "2026-11-05"
   },
   "8290add3-4449-4e58-6c97-8fe1eec972e3": {
    "labelDrug": "Kaletra (lopinavir/ritonavir)",
@@ -224,6 +272,12 @@
    "effective": "2026-03-27",
    "checkedOn": "2026-10-28"
   },
+  "b650f696-3391-4274-8b55-a5f5e9d04769": {
+   "labelDrug": "Komzifti (ziftomenib)",
+   "version": 1,
+   "effective": "2025-12-09",
+   "checkedOn": "2026-11-05"
+  },
   "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9": {
    "labelDrug": "Korlym (mifepristone)",
    "version": 26,
@@ -236,11 +290,23 @@
    "effective": "2025-01-31",
    "checkedOn": "2026-10-28"
   },
+  "a603f231-d09e-4bad-ad5e-b55f865da095": {
+   "labelDrug": "Leqselvi (deuruxolitinib)",
+   "version": 14,
+   "effective": "2026-09-28",
+   "checkedOn": "2026-11-05"
+  },
   "13bb8267-1cab-43e5-acae-55a4d957630a": {
    "labelDrug": "Lexapro (escitalopram)",
    "version": 45,
    "effective": "2023-10-01",
    "checkedOn": "2026-10-28"
+  },
+  "89f79d98-135c-40b2-a585-6996c04e599c": {
+   "labelDrug": "Livdelzi (seladelpar)",
+   "version": 3,
+   "effective": "2026-02-03",
+   "checkedOn": "2026-11-05"
   },
   "35cbb9d5-639b-207a-e054-00144ff88e88": {
    "labelDrug": "Lotronex (alosetron)",
@@ -277,6 +343,12 @@
    "version": 2,
    "effective": "2026-09-09",
    "checkedOn": "2026-10-28"
+  },
+  "ad45b43e-fdef-47ad-9c34-055b41bdc576": {
+   "labelDrug": "Modeyso (dordaviprone)",
+   "version": 2,
+   "effective": "2026-01-09",
+   "checkedOn": "2026-11-05"
   },
   "28596788-b73f-4247-85fc-3105f51fff5a": {
    "labelDrug": "Movantik (naloxegol)",
@@ -326,11 +398,41 @@
    "effective": "2026-02-13",
    "checkedOn": "2026-10-28"
   },
+  "f172e6ff-3190-41b0-b95a-58a7ef9e9e1e": {
+   "labelDrug": "Ogsiveo (nirogacestat)",
+   "version": 16,
+   "effective": "2026-09-01",
+   "checkedOn": "2026-11-05"
+  },
   "e6433c98-41a0-4f99-8f7f-d0e9db6e3f40": {
    "labelDrug": "Ohtuvayre (ensifentrine)",
    "version": 7,
    "effective": "2026-10-13",
    "checkedOn": "2026-11-04"
+  },
+  "ea3a9631-3a66-6a7c-e053-2995a90ae2ad": {
+   "labelDrug": "Ojemda (tovorafenib)",
+   "version": 9,
+   "effective": "2025-09-02",
+   "checkedOn": "2026-11-05"
+  },
+  "4a672fd1-eb7b-4aa9-9b23-845e4b5dc400": {
+   "labelDrug": "Ojjaara (momelotinib)",
+   "version": 9,
+   "effective": "2026-07-20",
+   "checkedOn": "2026-11-05"
+  },
+  "aa66ae5c-2bd2-4444-8178-b55651e054ef": {
+   "labelDrug": "Orserdu (elacestrant)",
+   "version": 9,
+   "effective": "2026-06-24",
+   "checkedOn": "2026-11-05"
+  },
+  "8a6d2ce0-a621-4ee7-983c-977cd948ff4d": {
+   "labelDrug": "Palsonify (paltusotine)",
+   "version": 3,
+   "effective": "2025-09-16",
+   "checkedOn": "2026-11-05"
   },
   "b72d8187-dfcc-4ea0-b5e9-c0be95b69a27": {
    "labelDrug": "Parnate (tranylcypromine)",
@@ -434,17 +536,35 @@
    "effective": "2024-12-18",
    "checkedOn": "2026-10-28"
   },
+  "6eb3cdbc-0e74-477d-82d6-3bb172d3f63f": {
+   "labelDrug": "Revuforj (revumenib)",
+   "version": 5,
+   "effective": "2026-02-04",
+   "checkedOn": "2026-11-05"
+  },
   "165cff62-b284-4a27-a65d-9ec8a5bfcdd8": {
    "labelDrug": "Reyataz (atazanavir)",
    "version": 37,
    "effective": "2024-12-05",
    "checkedOn": "2026-10-28"
   },
+  "e5e89bff-6ced-4165-acc5-fb13136b3a3d": {
+   "labelDrug": "Rhapsido (remibrutinib)",
+   "version": 3,
+   "effective": "2026-10-06",
+   "checkedOn": "2026-11-05"
+  },
   "1b074c23-dd35-43c9-820c-0e603481fdd3": {
    "labelDrug": "Rifadin (rifampin)",
    "version": 2,
    "effective": "2026-08-25",
    "checkedOn": "2026-10-28"
+  },
+  "f73c7a62-9601-4df0-810f-100f515d79ea": {
+   "labelDrug": "Romvimza (vimseltinib)",
+   "version": 3,
+   "effective": "2026-06-26",
+   "checkedOn": "2026-11-05"
   },
   "9de82310-70e8-47b9-b1fc-6c6848b99455": {
    "labelDrug": "Rozerem (ramelteon)",
@@ -536,6 +656,12 @@
    "effective": "2025-03-05",
    "checkedOn": "2026-10-28"
   },
+  "9a7e7f85-bfd0-44a0-beda-3bcfa8215c64": {
+   "labelDrug": "Vanrafia (atrasentan)",
+   "version": 3,
+   "effective": "2026-06-12",
+   "checkedOn": "2026-11-05"
+  },
   "08d08721-1f4c-478a-8abf-d9c402d50553": {
    "labelDrug": "Vfend (voriconazole)",
    "version": 33,
@@ -553,6 +679,12 @@
    "version": 39,
    "effective": "2026-05-31",
    "checkedOn": "2026-10-28"
+  },
+  "31405fee-55b7-4857-987e-2724ee76be84": {
+   "labelDrug": "Voranigo (vorasidenib)",
+   "version": 9,
+   "effective": "2026-06-20",
+   "checkedOn": "2026-11-05"
   },
   "17ffc094-8ca7-45d2-80d8-fd043bc9a221": {
    "labelDrug": "Vosevi (sofosbuvir/velpatasvir/voxilaprevir)",
@@ -607,6 +739,12 @@
    "version": 2,
    "effective": "2026-01-02",
    "checkedOn": "2026-10-28"
+  },
+  "349fa84e-1fdb-4976-b1bb-689b80eac8ad": {
+   "labelDrug": "Zegfrovy (sunvozertinib)",
+   "version": 1,
+   "effective": "2026-09-16",
+   "checkedOn": "2026-11-05"
   },
   "8f55d5de-5a4f-4a39-8c84-c53976dd6af9": {
    "labelDrug": "Zocor (simvastatin)",
