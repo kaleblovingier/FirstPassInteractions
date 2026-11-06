@@ -1,6 +1,6 @@
 # Beta Phase A findings — pharmacology and scientific accuracy
 
-Discovery only, from `main` before this document was added. This document changes no grade, catalog strength, pin, engine severity, or production copy.
+Discovery only, from `main` at `8c858db`, before this document was added. Rechecked against `main` at `d700a9a` on 2026-11-06: the engine, catalog, pin, and PGx files this note cites are unchanged since `8c858db`; one item (B-P1-4) is partly fixed on `main` and is marked below, and two counts are corrected. This document changes no grade, catalog strength, pin, engine severity, or production copy.
 
 Educational reference only. Not FDA-cleared. Not a prescribing aid. No new pharmacological relationship and no new numerical estimate is asserted here. Statements about labels are quotes or paraphrases already stored in the repo. Where the desk infers a tier from a mechanism, that inference is labeled as such.
 
@@ -106,7 +106,7 @@ There is no numeric confidence score on an interaction finding.
 3. A boxed or PI paraphrase keyed by finding-id suffix (`BOXED`, `PI`). Many of these are class paraphrases, not a verbatim SPL sentence, and the link is often a DailyMed search rather than a setid.
 4. FDA Table 1 role, only when the perpetrator is on the transcribed table for that enzyme and role. Detail text says FDA grades the roles and "the severity tier on this row is the desk's rule."
 5. A perpetrator-label quote from `label-perpetrators.ts`. If the label names a contraindication, that quote is shown. If it only states inhibition or induction, the detail says the tier is the desk's rule. If the victim is in `alsoNamed` and not in a contraindication group, the function returns nothing rather than call the tier a desk rule.
-6. The first curated PubMed cite for those drug ids (`citesFor()` prefers a pair-tagged cite, then any cite that lists either drug).
+6. The first curated PubMed cite for those drug ids (`citesFor()` prefers a pair-tagged cite, then any cite that lists either drug). **Changed on main (0795cee):** for a finding on two or more drugs, `basisFor()` now keeps a cite only when it is pair-tagged for two of the finding's drugs or lists at least two of them, so a paper about one drug alone is no longer the visible source.
 7. If `kind === "geno"` or the id contains `pheno`: a CPIC row pointing at `https://cpicpgx.org/guidelines/` with the sentence "Phenotype rows paraphrase published CPIC tables."
 8. If nothing else: "Curated map — no external source verified."
 
@@ -114,7 +114,7 @@ There is no numeric confidence score on an interaction finding.
 
 The check board (`src/components/desk/check.tsx`) renders mechanism verbs ("slows clearance of", "rewrites the pathway for"). It does not show a confidence tier.
 
-`docs/grade-provenance-audit.md` (generated, do not hand-edit) reports, on its scan: Avoid together 3,035 findings, 19 with no cited source (0.6%); Serious concern 72,023 findings, 14,786 rule-only (20.5%). The 19 unsourced Avoid together pairs are listed there and again in section 4.
+`docs/grade-provenance-audit.md` (generated, do not hand-edit; not regenerated since 0795cee, so its rule-only counts may now be low) reports, on its scan: Avoid together 3,035 findings, 19 with no cited source (0.6%); Serious concern 72,023 findings, 14,786 rule-only (20.5%). The 19 unsourced Avoid together pairs are listed there and again in section 4.
 
 A PubMed row or a CPIC index link counts as a cited source in `hasCitedSource()`. That can overstate how specific the evidence is. See B-P0-3 and B-P1-4.
 
@@ -132,7 +132,7 @@ A PubMed row or a CPIC index link counts as a cited source in `hasCitedSource()`
 
 ### 2.2 Pins
 
-`src/lib/drugs/label-contraindications.ts` holds named-pair pins. The test "pin list is exactly the reviewed set" locks these origin counts:
+`src/lib/drugs/label-contraindications.ts` holds named-pair pins. The test "pin list is exactly the reviewed set" locks the exact pin ids and these origin counts (the `restored-after-58` count is from the file; the test does not assert it):
 
 | Origin | Count |
 | --- | ---: |
@@ -215,7 +215,7 @@ Footnotes 4, 12, 15, and 16 in the FDA transcription are stored as paraphrase pl
 
 Present, and narrow.
 
-- Static cards: 53 catalog ids in `PGX` (`src/lib/drugs/pgx.ts`), levels A/B/C, genes including CYP2C19, CYP2D6, CYP2C9, SLCO1B1, TPMT/NUDT15, HLA, CYP2B6. Header: "Paraphrases of published guidelines — open the source for the table."
+- Static cards: 45 catalog ids in `PGX` (`src/lib/drugs/pgx.ts`), levels A/B/C, genes including CYP2C19, CYP2D6, CYP2C9 (and CYP2C9 / VKORC1), SLCO1B1, TPMT/NUDT15, HLA, CYP2B6, CYP3A5. Header: "Paraphrases of published guidelines — open the source for the table."
 - Phenotype engine: four genes, inhibitor/inducer analogy, not the card's action text.
 - Phenoconversion: six enzymes, fixed shift table, not the cards.
 - Live CPIC: user-initiated lookup at `api.cpicpgx.org`, 30-minute cache, failure returns "CPIC did not answer" or "CPIC has no guideline row for this name." It does not change a grade.
@@ -340,6 +340,7 @@ Complexity is the size of a later change, not a schedule. Acceptance criteria ar
 
 #### B-P1-4. Drug-level PubMed and class paraphrases count as "cited"
 
+- **Status on main (`d700a9a`): partly done.** Commit 0795cee stops `basisFor()` from citing a single-drug paper on a multi-drug finding. Still open: class paraphrases (`BOXED`, `PI`) and the CPIC index row still count as cited sources in `hasCitedSource()`, the audit has no pair-cited / drug-cited / catalog-rule split, and `docs/grade-provenance-audit.md` needs a regeneration before the 20.5% figure is reused.
 - **Impact.** `citesFor()` then `basisFor()` attach the first curated cite. Pair-specific cites are preferred; otherwise any paper that lists one of the drugs. The sign-off packet already labels many of those "not rule-specific". `gradeBases()` still shows them as a source, so the grade-provenance audit does not call the row rule-only. Serious concern is 20.5% rule-only on that audit; the other 79.5% are not all pair-level evidence.
 - **Complexity.** Medium. Needs a definition of "about this pair" before the UI changes, or rule-only counts will move for the wrong reason.
 - **Modules.** `src/lib/drugs/pubmed.ts`, `src/lib/drugs/basis.ts`, `src/lib/drugs/grade-provenance.ts`, `scripts/grade-provenance-audit.ts`.
@@ -377,7 +378,7 @@ Complexity is the size of a later change, not a schedule. Acceptance criteria ar
 
 #### B-P2-2. Static PGx cards can read as orders
 
-- **Impact.** 53 drugs have paraphrased action lines, some with a fraction of a usual dose, some saying Avoid. They are not the interaction engine. They can still be read as the desk's dose. Live CPIC lookup is separate and does not grade.
+- **Impact.** 45 drugs have paraphrased action lines, some with a fraction of a usual dose, some saying Avoid. They are not the interaction engine. They can still be read as the desk's dose. Live CPIC lookup is separate and does not grade.
 - **Complexity.** Small for a banner. Medium if each action line must be re-checked against the current guideline URL. Do not invent a dose while doing that.
 - **Modules.** `src/lib/drugs/pgx.ts`, `src/components/desk/pharmacogenomics.tsx`, `src/components/desk/dossier.tsx`.
 - **Acceptance.** Every card states it is a paraphrase and not a dose. Action lines that state a fraction stay only if the PR cites the guideline section already linked, without adding a new number. Drugs with no card do not gain one in this task.
