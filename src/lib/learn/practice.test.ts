@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import { Fragment, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
+import { SEVERITY_LABEL } from "@/lib/drugs/types";
 import { pairPages } from "@/lib/seo/pair-pages";
 import type { StudyMark } from "@/lib/drugs/study-marks";
 import {
   DOSE_UNIT_RE, FIRST_SESSION_SEED, GRADE_CHOICES, MARKS_KEY, NO_ENZYME, PRACTICE_DESCRIPTION, PRACTICE_INTRO, PRACTICE_TITLE,
-  SCORE_KEY, SESSION_SIZE, deckFacets, enzymeChoices, hasDoseText, loadMarks, loadScore, markAnswer, parsePracticeSearch,
+  SCORE_KEY, SESSION_SIZE, deckFacets, enzymeChoices, glossaryLinks, hasDoseText, loadMarks, loadScore, markAnswer, parsePracticeSearch,
   practiceDeck, practiceQuestions, saveMarks, saveScore, scoreAnswer, sessionCards, sessionSummary, type PracticeQuestion,
 } from "./practice";
 import { PracticeView } from "@/components/learn/practice-view";
@@ -226,4 +227,11 @@ test("first render is deterministic and follows the search, so server and browse
   const all = render({ enzyme: "CYP9Z9" });
   assert.ok(all.includes(`${qs.length} cards in this deck`));
   assert.match(all, /<option value="" selected="">All enzymes<\/option>/);
+});
+
+test("a revealed card links the glossary entries for its role, enzyme and grade words", () => {
+  const base = { gradeLabel: "Major", enzymes: ["CYP3A4"], roleA: "inhibitor" as const };
+  assert.deepEqual(glossaryLinks(base).map((g) => g.id), ["inhibitor", "cytochrome-p450"]);
+  assert.deepEqual(glossaryLinks({ gradeLabel: SEVERITY_LABEL.contraindicated, enzymes: ["P-gp"], roleA: null }).map((g) => g.id), ["p-glycoprotein", "contraindication"]);
+  assert.deepEqual(glossaryLinks({ gradeLabel: "Minor", enzymes: [], roleA: null }), []);
 });
