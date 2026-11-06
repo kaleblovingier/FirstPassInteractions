@@ -22,10 +22,10 @@ const CALL_LABEL: Record<PairCall, string> = {
 // The desk's kind words (check.tsx), with the PK / PD term students are calling.
 const KIND_WORD: Record<Finding["kind"], string> = { pk: "Levels (PK)", pd: "Effects (PD)", geno: "Genes", clinic: "Clinic" };
 const SEVERITIES: Severity[] = ["contraindicated", "major", "moderate", "minor"];
-const OUTCOME: Record<PairOutcome, { label: string; tone: "ok" | "warn" | "danger" }> = {
+const OUTCOME: Record<PairOutcome, { label: string; tone: "default" | "ok" | "warn" | "danger" }> = {
   found: { label: "Found", tone: "ok" },
   missed: { label: "Missed", tone: "danger" },
-  "over-called": { label: "Over-called", tone: "warn" },
+  "unmapped-call": { label: "Not on the desk's map", tone: "default" },
   "none-agreed": { label: "Agreed: nothing mapped", tone: "ok" },
 };
 const KICKER = "font-mono text-[10px] uppercase tracking-[0.14em] text-muted";
@@ -269,7 +269,9 @@ function PairOutcomeView({ r }: { r: PairResult }) {
         r.kindMatch === null ? "" : r.kindMatch ? "Kind matches." : "Kind differs.",
         r.severityMatch === null ? "" : r.severityMatch ? "Severity matches." : "Severity differs.",
       ].filter(Boolean).join(" ")
-    : "The desk maps nothing for this pair. That is not a green light.";
+    : r.outcome === "unmapped-call"
+      ? "You called this and the desk has no finding. That does not settle it: check both labels. That is not a green light either way."
+      : "The desk maps nothing for this pair. That is not a green light.";
   return (
     <div className="mt-2 rounded-lg bg-bg-sunken p-3 [overflow-wrap:anywhere]" data-testid="workup-result">
       <p className="flex flex-wrap items-center gap-2 text-sm text-fg">
@@ -280,6 +282,11 @@ function PairOutcomeView({ r }: { r: PairResult }) {
         </span>
       </p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{desk}</p>
+      {r.pair.pagePath ? (
+        <a href={r.pair.pagePath} className="inline-flex min-h-11 items-center text-xs text-accent underline">
+          Read the public page for {pairName(r.pair)}
+        </a>
+      ) : null}
       {r.findings.length ? (
         <ul className="mt-2 space-y-2">
           {r.findings.map((f) => (

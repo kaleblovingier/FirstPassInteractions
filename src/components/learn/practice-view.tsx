@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "react";
 import {
-  FIRST_SESSION_SEED, GRADE_CHOICES, PRACTICE_INTRO, ROLE_CHOICES, deckFacets, enzymeChoices, loadMarks, loadScore,
+  FIRST_SESSION_SEED, GRADE_CHOICES, glossaryLinks, PRACTICE_INTRO, ROLE_CHOICES, deckFacets, enzymeChoices, loadMarks, loadScore,
   markAnswer, practiceDeck, saveMarks, saveScore, scoreAnswer, sessionCards, sessionSummary,
   type CardResult, type PracticeQuestion, type PracticeScore, type PracticeSearch,
 } from "@/lib/learn/practice";
@@ -244,7 +244,12 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
                 </blockquote>
               ) : null}
               {reviewMark ? <p className="mt-2 text-xs text-muted" data-testid="practice-review">Spaced review: {duePhrase(reviewMark, now)}.</p> : null}
-              <p className="mt-2 text-xs"><a className="underline" href={`/pair/${q.slug}`}>Read the full pair page</a></p>
+              <p className="mt-2 flex flex-wrap gap-x-4 text-xs">
+                <a className="inline-flex min-h-11 items-center underline" href={`/pair/${q.slug}`}>Read the full pair page</a>
+                {glossaryLinks(q).map((g) => (
+                  <a key={g.id} className="inline-flex min-h-11 items-center underline" href={`/glossary#${g.id}`}>Glossary: {g.label}</a>
+                ))}
+              </p>
               <Button type="button" className="mt-4" onClick={nextCard}>
                 {run.pos + 1 < run.cards.length ? "Next pair" : "See session summary"}
               </Button>

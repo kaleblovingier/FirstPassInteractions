@@ -1,5 +1,5 @@
 /**
- * Workup mode: a student calls every drug pair in a sample regimen, then compares the calls
+ * Workup mode: a student calls every drug pair in a regimen (a sample or a WORKUP_LISTS list), then compares the calls
  * with the desk's analyze() findings and their sources. Reuses SAMPLE_REGIMENS, the engine
  * and basis.ts; adds no finding, grade, source or dose text. Educational practice only.
  *
@@ -16,11 +16,14 @@ import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { parseDoses } from "@/lib/drugs/dosing";
 import { analyze } from "@/lib/drugs/engine";
 import { leadGradeBasis } from "@/lib/drugs/grade-provenance";
+import { buildBriefUrl } from "@/lib/drugs/brief";
 import { buildCaseUrl } from "@/lib/drugs/permalinks";
 import { SAMPLE_REGIMENS, sampleNeedsPro, type SampleRegimen } from "@/lib/drugs/samples";
 import { DEFAULT_HOST, SEVERITY_RANK, type Finding, type Severity } from "@/lib/drugs/types";
 import { DOSE_PATTERN } from "@/lib/guards/dose-rule";
 import { SITE_URL } from "@/lib/seo/pair-copy";
+import { pairPages } from "@/lib/seo/pair-pages";
+import { WORKUP_LISTS } from "./workup-cases";
 
 export type PairCall = "none" | "pk" | "pd";
 export interface PairAnswer {
@@ -35,6 +38,8 @@ export interface WorkupDrug {
 }
 export interface WorkupPair {
   key: string;
+  /** Public `/pair/<slug>` page for this pair, when one exists. */
+  pagePath?: string;
   a: WorkupDrug;
   b: WorkupDrug;
 }
@@ -42,7 +47,7 @@ export interface WorkupCase {
   id: string;
   title: string;
   blurb: string;
-  /** Desk permalink for the same sample, `/?case=<id>`. */
+  /** Desk permalink: `/?case=<id>` for a sample, else the `?brief=` link for the same medicines. */
   deskUrl: string;
   drugs: WorkupDrug[];
   pairs: WorkupPair[];
@@ -66,20 +71,24 @@ export function scoredKey(f: Finding): string | null {
 
 const hasDose = (s: string) => s.search(DOSE_PATTERN) >= 0;
 
-/** A free sample with 3–6 items, a scored pair, and no dose text anywhere the page shows it; else null. */
-export function toWorkupCase(s: SampleRegimen): WorkupCase | null {
-  if (sampleNeedsPro(s) || s.drugIds.length < 3 || s.drugIds.length > 6) return null;
+const pagePaths = () => new Map(pairPages().map((p) => [pairKey(p.drugA, p.drugB), `/pair/${p.slug}`]));
+
+/** A free regimen with 3–6 items, at least one mapped and one unmapped pair, and no dose text anywhere the page shows it; else null. */
+export function toWorkupCase(s: Omit<SampleRegimen, "lane">): WorkupCase | null {
+  if (sampleNeedsPro(s as SampleRegimen) || s.drugIds.length < 3 || s.drugIds.length > 6) return null;
   const drugs = s.drugIds.map((id) => {
     const d = DRUG_BY_ID[id];
     return { id: d.id, name: d.name, cls: d.cls };
   });
-  const pairs = pairsOf(drugs).map(([a, b]) => ({ key: pairKey(a.id, b.id), a, b }));
+  const paths = pagePaths();
+  const pairs = pairsOf(drugs).map(([a, b]) => ({ key: pairKey(a.id, b.id), pagePath: paths.get(pairKey(a.id, b.id)), a, b }));
   const keys = new Set(pairs.map((p) => p.key));
   // Same host the desk loads for a free sample (permalinks.ts → store.load): defaults plus the sample's ketamine route.
   const host = { ...DEFAULT_HOST, ketamineRoute: s.ketamineRoute ?? DEFAULT_HOST.ketamineRoute };
   const findings = analyze(s.drugIds, host, parseDoses(s.doses)).findings;
   const scored = findings.filter((f) => keys.has(scoredKey(f) ?? ""));
-  if (!scored.length) return null;
+  // Every pair mapped (or none) would let all-or-nothing answers score perfectly.
+  if (!scored.length || new Set(scored.map(scoredKey)).size === pairs.length) return null;
   const shown = [
     s.title,
     s.blurb,
@@ -95,7 +104,7 @@ export function toWorkupCase(s: SampleRegimen): WorkupCase | null {
     id: s.id,
     title: s.title,
     blurb: s.blurb,
-    deskUrl: buildCaseUrl(s.id, { base: SITE_URL }).replace(SITE_URL, ""),
+    deskUrl: (SAMPLE_REGIMENS.some((x) => x.id === s.id) ? buildCaseUrl(s.id, { base: SITE_URL }) : buildBriefUrl(s.drugIds, { base: SITE_URL })).replace(SITE_URL, ""),
     drugs,
     pairs,
     findings,
@@ -104,7 +113,7 @@ export function toWorkupCase(s: SampleRegimen): WorkupCase | null {
 
 let cache: WorkupCase[] | null = null;
 export function workupCases(): WorkupCase[] {
-  return (cache ??= SAMPLE_REGIMENS.map(toWorkupCase).filter((c): c is WorkupCase => c !== null));
+  return (cache ??= [...SAMPLE_REGIMENS, ...WORKUP_LISTS].map(toWorkupCase).filter((c): c is WorkupCase => c !== null));
 }
 
 export const workupPath = (caseId: string) => `/workup?case=${encodeURIComponent(caseId)}`;
@@ -119,7 +128,7 @@ const searchSchema = z.object({
 });
 export const parseWorkupSearch = (raw: Record<string, unknown>): { case?: string } => searchSchema.parse(raw);
 
-export type PairOutcome = "found" | "missed" | "over-called" | "none-agreed";
+export type PairOutcome = "found" | "missed" | "unmapped-call" | "none-agreed";
 export interface PairResult {
   pair: WorkupPair;
   call: PairCall;
@@ -138,7 +147,7 @@ export interface WorkupGrade {
   interacting: number;
   found: number;
   missed: number;
-  overCalled: number;
+  unmappedCalled: number;
   kindMatched: number;
   severityGuessed: number;
   severityMatched: number;
@@ -153,7 +162,7 @@ export function gradeWorkup(c: Pick<WorkupCase, "pairs" | "findings">, answers: 
       .sort((x, y) => SEVERITY_RANK[y.severity] - SEVERITY_RANK[x.severity]);
     const { call, severity }: PairAnswer = answers[pair.key] ?? { call: "none" };
     const called = call !== "none";
-    const outcome: PairOutcome = findings.length ? (called ? "found" : "missed") : called ? "over-called" : "none-agreed";
+    const outcome: PairOutcome = findings.length ? (called ? "found" : "missed") : called ? "unmapped-call" : "none-agreed";
     const found = outcome === "found";
     return {
       pair,
@@ -172,7 +181,7 @@ export function gradeWorkup(c: Pick<WorkupCase, "pairs" | "findings">, answers: 
     interacting: count((r) => r.findings.length > 0),
     found: count((r) => r.outcome === "found"),
     missed: count((r) => r.outcome === "missed"),
-    overCalled: count((r) => r.outcome === "over-called"),
+    unmappedCalled: count((r) => r.outcome === "unmapped-call"),
     kindMatched: count((r) => r.kindMatch === true),
     severityGuessed: count((r) => r.severityMatch !== null),
     severityMatched: count((r) => r.severityMatch === true),
@@ -183,7 +192,7 @@ export function gradeWorkup(c: Pick<WorkupCase, "pairs" | "findings">, answers: 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 export function summaryLine(g: WorkupGrade): string {
-  const out = [`You found ${g.found} of ${plural(g.interacting, "interacting pair")}; ${g.overCalled || "none"} over-called.`];
+  const out = [`You found ${g.found} of ${plural(g.interacting, "interacting pair")}; ${g.unmappedCalled || "none"} more called that the desk does not map.`];
   if (g.found) out.push(`Your kind matched the desk on ${g.kindMatched} of ${g.found}.`);
   if (g.severityGuessed) out.push(`Your severity matched on ${g.severityMatched} of ${plural(g.severityGuessed, "guess", "guesses")}.`);
   return out.join(" ");

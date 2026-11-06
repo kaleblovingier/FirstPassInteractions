@@ -24,6 +24,9 @@ export const DESK_VIEWS = [
 /** Pages outside the desk. Add new routes here. */
 export const PALETTE_PAGES = [
   { href: "/practice", label: "Practice", hint: "Drug-pair recall" },
+  { href: "/workup", label: "Workup", hint: "Call every pair in a regimen" },
+  { href: "/glossary", label: "Glossary", hint: "Clinical pharmacology terms" },
+  { href: "/help", label: "Help", hint: "How the desk works" },
   { href: "/pairs", label: "Interaction pairs", hint: "Label-sourced pair pages" },
   { href: "/enzymes", label: "Enzyme pages", hint: "CYP450 inhibitors, inducers and substrates" },
   { href: "/trust", label: "Trust and privacy", hint: "How FirstPass handles data and checks sources" },

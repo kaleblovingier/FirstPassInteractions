@@ -7,6 +7,7 @@ import { pairPages, type PairPage } from "@/lib/seo/pair-pages";
 import { analyze } from "@/lib/drugs/engine";
 import { bySeed } from "@/lib/drugs/learn/learn-order";
 import { isDue, normalizeStudyMarks, scheduleStudyMark, type StudyMark } from "@/lib/drugs/study-marks";
+import { GLOSSARY_BY_ID } from "@/lib/learn/glossary";
 import { SEVERITY_LABEL, type Severity } from "@/lib/drugs/types";
 
 export type EnzymeRole = "inhibitor" | "inducer" | "substrate";
@@ -26,6 +27,17 @@ export interface PracticeQuestion {
 const GRADES = ["contraindicated", "major", "moderate", "minor"] as const satisfies readonly Severity[];
 export const GRADE_CHOICES: string[] = GRADES.map((s) => SEVERITY_LABEL[s]);
 export const ROLE_CHOICES: EnzymeRole[] = ["inhibitor", "inducer", "substrate"];
+
+/** Glossary entries (deep link /glossary#<id>) for what a revealed card names: its role, enzyme and grade words. */
+export function glossaryLinks(q: Pick<PracticeQuestion, "gradeLabel" | "enzymes" | "roleA">): { id: string; label: string }[] {
+  const ids = [
+    q.roleA,
+    q.enzymes.some((e) => e.startsWith("CYP")) ? "cytochrome-p450" : null,
+    q.enzymes.includes("P-gp") ? "p-glycoprotein" : null,
+    q.gradeLabel === SEVERITY_LABEL.contraindicated ? "contraindication" : null,
+  ];
+  return [...new Set(ids)].flatMap((id) => (id && GLOSSARY_BY_ID[id] ? [{ id, label: GLOSSARY_BY_ID[id].term }] : []));
+}
 
 /** Dose-unit guard shared by the question filter and the tests. */
 export const DOSE_UNIT_RE = /\b\d+(?:\.\d+)?\s*(?:mg|mcg|µg|g\/kg|mg\/kg|units?|IU|mEq|mL)\b|\b(?:mg|mcg|g\/kg|mg\/kg|units?)\s*\/\s*(?:kg|day|h|hr|dose)\b/i;
