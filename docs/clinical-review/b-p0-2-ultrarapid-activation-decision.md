@@ -76,3 +76,7 @@ Implement only after Alpha and Kaleb have both said yes, and only the option the
 | Implementer | Gamma (Bot 4), after both yes. |
 
 Educational reference only. Not FDA-cleared. The Prescribing Information governs.
+
+## Decision
+
+Kaleb approved option A on 2026-11-06 ("Ship both"). Implemented in #235: ultrarapid activation is capped at major for codeine, tamoxifen, clopidogrel and carisoprodol.
