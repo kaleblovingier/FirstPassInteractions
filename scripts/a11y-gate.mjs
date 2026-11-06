@@ -47,7 +47,7 @@ const specs = [
   ...(only.has("tools") ? TOOLS : []),
 ];
 // Optional standalone learning routes: gated only when this build serves them.
-for (const p of only.has("tools") ? ["/practice"] : []) {
+for (const p of only.has("tools") ? ["/practice", "/glossary", "/workup", "/help"] : []) {
   try { if ((await fetch(new URL(p, base))).ok) specs.push(p); } catch { /* not served */ }
 }
 console.log(`a11y-gate: ${specs.length} routes x 2 widths`);
