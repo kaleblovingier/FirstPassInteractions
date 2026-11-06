@@ -128,7 +128,7 @@ const searchSchema = z.object({
 });
 export const parseWorkupSearch = (raw: Record<string, unknown>): { case?: string } => searchSchema.parse(raw);
 
-export type PairOutcome = "found" | "missed" | "over-called" | "none-agreed";
+export type PairOutcome = "found" | "missed" | "unmapped-call" | "none-agreed";
 export interface PairResult {
   pair: WorkupPair;
   call: PairCall;
@@ -147,7 +147,7 @@ export interface WorkupGrade {
   interacting: number;
   found: number;
   missed: number;
-  overCalled: number;
+  unmappedCalled: number;
   kindMatched: number;
   severityGuessed: number;
   severityMatched: number;
@@ -162,7 +162,7 @@ export function gradeWorkup(c: Pick<WorkupCase, "pairs" | "findings">, answers: 
       .sort((x, y) => SEVERITY_RANK[y.severity] - SEVERITY_RANK[x.severity]);
     const { call, severity }: PairAnswer = answers[pair.key] ?? { call: "none" };
     const called = call !== "none";
-    const outcome: PairOutcome = findings.length ? (called ? "found" : "missed") : called ? "over-called" : "none-agreed";
+    const outcome: PairOutcome = findings.length ? (called ? "found" : "missed") : called ? "unmapped-call" : "none-agreed";
     const found = outcome === "found";
     return {
       pair,
@@ -181,7 +181,7 @@ export function gradeWorkup(c: Pick<WorkupCase, "pairs" | "findings">, answers: 
     interacting: count((r) => r.findings.length > 0),
     found: count((r) => r.outcome === "found"),
     missed: count((r) => r.outcome === "missed"),
-    overCalled: count((r) => r.outcome === "over-called"),
+    unmappedCalled: count((r) => r.outcome === "unmapped-call"),
     kindMatched: count((r) => r.kindMatch === true),
     severityGuessed: count((r) => r.severityMatch !== null),
     severityMatched: count((r) => r.severityMatch === true),
@@ -192,7 +192,7 @@ export function gradeWorkup(c: Pick<WorkupCase, "pairs" | "findings">, answers: 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 export function summaryLine(g: WorkupGrade): string {
-  const out = [`You found ${g.found} of ${plural(g.interacting, "interacting pair")}; ${g.overCalled || "none"} over-called.`];
+  const out = [`You found ${g.found} of ${plural(g.interacting, "interacting pair")}; ${g.unmappedCalled || "none"} more called that the desk does not map.`];
   if (g.found) out.push(`Your kind matched the desk on ${g.kindMatched} of ${g.found}.`);
   if (g.severityGuessed) out.push(`Your severity matched on ${g.severityMatched} of ${plural(g.severityGuessed, "guess", "guesses")}.`);
   return out.join(" ");

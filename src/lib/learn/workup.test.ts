@@ -82,13 +82,13 @@ const AB = pairKey("a", "b"), AC = pairKey("a", "c"), BC = pairKey("b", "c");
 
 test("grader: hits, misses and over-calls; gene, clinic and multi-drug rows go to Also on the desk", () => {
   const g = gradeWorkup(toy, { [AB]: { call: "pk", severity: "major" }, [AC]: { call: "pd", severity: "minor" }, [BC]: { call: "none" } });
-  assert.deepEqual(g.pairs.map((r) => r.outcome), ["found", "over-called", "missed"]);
+  assert.deepEqual(g.pairs.map((r) => r.outcome), ["found", "unmapped-call", "missed"]);
   assert.deepEqual(g.pairs[0]!.findings.map((f) => f.id), ["ab-pd", "ab-pk"], "highest grade first");
-  assert.deepEqual([g.interacting, g.found, g.missed, g.overCalled], [2, 1, 1, 1]);
+  assert.deepEqual([g.interacting, g.found, g.missed, g.unmappedCalled], [2, 1, 1, 1]);
   assert.deepEqual([g.kindMatched, g.severityGuessed, g.severityMatched], [1, 1, 1]);
   assert.equal(g.pairs[1]!.severityMatch, null, "no desk grade to compare on an over-call");
   assert.deepEqual(g.also.map((f) => f.id), ["abc-stack", "a-clinic", "ac-geno"]);
-  assert.equal(summaryLine(g), "You found 1 of 2 interacting pairs; 1 over-called. Your kind matched the desk on 1 of 1. Your severity matched on 1 of 1 guess.");
+  assert.equal(summaryLine(g), "You found 1 of 2 interacting pairs; 1 more called that the desk does not map. Your kind matched the desk on 1 of 1. Your severity matched on 1 of 1 guess.");
 });
 
 test("grader: either kind is a hit, the kind must exist on the desk, severity is the pair's highest grade", () => {
@@ -99,12 +99,12 @@ test("grader: either kind is a hit, the kind must exist on the desk, severity is
     ["found", false, true],
   ]);
   assert.equal(g.pairs[1]!.severity, undefined, "a severity on a 'none' call is ignored");
-  assert.equal(summaryLine(g), "You found 2 of 2 interacting pairs; none over-called. Your kind matched the desk on 1 of 2. Your severity matched on 1 of 1 guess.");
+  assert.equal(summaryLine(g), "You found 2 of 2 interacting pairs; none more called that the desk does not map. Your kind matched the desk on 1 of 2. Your severity matched on 1 of 1 guess.");
   const low = gradeWorkup(toy, { [AB]: { call: "pk", severity: "minor" } });
   assert.deepEqual([low.pairs[0]!.kindMatch, low.pairs[0]!.severityMatch], [true, false], "the PK row is minor but the pair's highest grade is major");
   const blank = gradeWorkup(toy, {});
   assert.deepEqual(blank.pairs.map((r) => r.outcome), ["missed", "none-agreed", "missed"], "unanswered counts as none");
-  assert.equal(summaryLine(blank), "You found 0 of 2 interacting pairs; none over-called.");
+  assert.equal(summaryLine(blank), "You found 0 of 2 interacting pairs; none more called that the desk does not map.");
 });
 
 test("grader agrees with analyze() on every eligible case", () => {
@@ -116,7 +116,7 @@ test("grader agrees with analyze() on every eligible case", () => {
     });
     const g = gradeWorkup(c, Object.fromEntries(deskAnswers));
     assert.ok(g.interacting > 0, c.id);
-    assert.deepEqual([g.found, g.missed, g.overCalled, g.kindMatched, g.severityMatched], [g.interacting, 0, 0, g.interacting, g.interacting], c.id);
+    assert.deepEqual([g.found, g.missed, g.unmappedCalled, g.kindMatched, g.severityMatched], [g.interacting, 0, 0, g.interacting, g.interacting], c.id);
     assert.equal(g.pairs.reduce((n, r) => n + r.findings.length, 0) + g.also.length, c.findings.length, `${c.id}: every finding scored once or listed`);
     assert.ok(g.also.every((f) => f.kind === "geno" || f.kind === "clinic" || f.drugIds.length !== 2), c.id);
   }
@@ -184,7 +184,8 @@ test("every case has a mapped and an unmapped pair, so marking everything is nev
     const g = gradeWorkup(c, {});
     assert.ok(g.interacting >= 1 && g.interacting < c.pairs.length, c.id);
     const all = gradeWorkup(c, Object.fromEntries(c.pairs.map((p) => [p.key, { call: "pk" as const }])));
-    assert.ok(all.overCalled >= 1, c.id);
-    assert.match(summaryLine(all), /[1-9]d* over-called/, c.id);
+    assert.ok(all.unmappedCalled >= 1, c.id);
+    assert.match(summaryLine(all), /[1-9]d* more called that the desk does not map/, c.id);
+    assert.doesNotMatch(summaryLine(all), /over-called/i, c.id);
   }
 });
