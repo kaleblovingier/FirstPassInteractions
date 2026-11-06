@@ -6,6 +6,8 @@ Educational reference only. Not FDA-cleared. The Prescribing Information governs
 
 Source of the finding: draft PR #219, `docs/clinical-review/beta-phase-a-findings.md` section B-P0-2, branch `cursor/beta-phase-a-findings-a67c`. The behavior below is what `main` runs today (`phenotypeFindings()` and `SEVERITY_HINT` in the files named here). This note adds no CYP grade and no numerical estimate.
 
+Rechecked against `main` at `d700a9a` on 2026-11-06: `phenotypeFindings()`, `pkSeverity()`, `SEVERITY_HINT`, and the codeine row are unchanged, `geno-CYP2D6-UM-codeine` still comes out `contraindicated` and `geno-CYP2D6-PM-codeine` `major` under `DEFAULT_HOST` with that phenotype, and no `phenotype-severity.test.ts` exists yet. The decision below is still open.
+
 ## The inconsistency
 
 Learners see **Avoid together** for severity `contraindicated`. The on-screen hint promises that bin is a named label pin, not pharmacokinetic math:
@@ -19,7 +21,7 @@ Learners see **Avoid together** for severity `contraindicated`. The on-screen hi
 `phenotypeFindings()` in the same file does not. It runs only for `PHENOTYPE_ENZYMES` (CYP2D6, CYP2C19, CYP2C9, CYP2B6). A normal metabolizer emits nothing. For every other phenotype it copies inhibitor or inducer math, then applies one extra rule:
 
 - **Poor or intermediate.** The analogy is a strong inhibitor (poor) or a moderate inhibitor (intermediate), via `pkSeverity(..., "inhibitor")`. If that analogy would have been `contraindicated`, the next line forces `major`. Ultrarapid is not on this line.
-- **Ultrarapid.** The analogy is a strong inducer, via `pkSeverity(..., "inducer")`. On an activation pathway, when the substrate is `sensitive` or narrow-index (`nti`), the function then **sets `contraindicated`**. There is no label pin on that assignment. The clinical string's example is codeine → morphine. The branch is every activation substrate on those four enzymes, not a codeine-only pin. Ultrarapid clearance stays on the inducer analogy and does not take this lift.
+- **Ultrarapid.** The analogy is a strong inducer, via `pkSeverity(..., "inducer")`. On an activation pathway, when the substrate is `sensitive` or narrow-index (`nti`), the function then **sets `contraindicated`**. There is no label pin on that assignment. The clinical string's example is codeine → morphine. The branch is every activation substrate on those four enzymes that is the drug's hottest role there and is sensitive or narrow-index, not a codeine-only pin. In the catalog on `main` that is four rows: clopidogrel (CYP2C19), codeine (CYP2D6), tamoxifen (CYP2D6), and carisoprodol (CYP2C19). Ultrarapid clearance does not take this lift; its inducer result is overwritten with its own map (sensitive or narrow-index `major`, major substrate `moderate`, otherwise `minor`).
 
 A learner can read that genotype sketch as a labeled contraindication. It is desk inference: phenotype times the stored pathway and sensitivity.
 
