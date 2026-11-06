@@ -29,3 +29,45 @@ test("Andexxa is sized only from an entered last dose and time", () => {
   assert.equal(evaluateReversal("rivaroxaban", "major").andexxaCalc, undefined);
   assert.equal(evaluateReversal("rivaroxaban", "major", { lastDoseMg: 20, hoursSinceLastDose: 2 }).andexxaCalc?.isHighDose, true);
 });
+
+test("anticoagulation report sizes nothing from an input that was not entered, and says which are missing", () => {
+  const argatroban = anticoagulationReportOnDesk(["argatroban", "bivalirudin", "warfarin"], DEFAULT_HOST);
+  assert.deepEqual(argatroban.patientParameters, {
+    weightKg: undefined,
+    baselineInr: undefined,
+    lastDoseMg: undefined,
+    hoursSinceLastDose: undefined,
+    crClMlMin: undefined,
+  });
+  assert.equal(argatroban.argatrobanKinetics?.recommendedInitialInfusionRateMcgKgMin, 2);
+  assert.doesNotMatch(JSON.stringify(argatroban.argatrobanKinetics), /"calculated/);
+  assert.doesNotMatch(JSON.stringify(argatroban.bivalirudinKinetics), /"calculated/);
+  assert.equal(argatroban.argatrobanWarfarinCrossover, undefined);
+  assert.equal(argatroban.fourFactorPccWarfarinDosing, undefined);
+  assert.match(argatroban.inputsNeeded ?? "", /^Not entered: weight, INR, last dose, hours since the last dose./);
+
+  const heparin = anticoagulationReportOnDesk(["heparin"], DEFAULT_HOST);
+  assert.equal(heparin.protamineDosing, undefined);
+  assert.equal(heparin.hit4TsEvaluation, undefined, "no Low 4Ts verdict from nothing entered");
+  assert.match(heparin.inputsNeeded ?? "", /platelet counts or 4Ts findings/);
+  assert.equal(anticoagulationReportOnDesk(["acetaminophen"], DEFAULT_HOST).inputsNeeded, undefined);
+
+  const fonda = anticoagulationReportOnDesk(["fondaparinux"], DEFAULT_HOST);
+  assert.ok(fonda.highYieldClinicalPearls.some((p) => p.includes("Protamine has ZERO effect")));
+});
+
+test("anticoagulation report sizes each section from the values entered", () => {
+  const sized = anticoagulationReportOnDesk(["argatroban", "warfarin"], DEFAULT_HOST, { weightKg: 80, baselineInr: 4.2 });
+  assert.equal(sized.argatrobanKinetics && "calculatedInfusionRateMcgMin" in sized.argatrobanKinetics, true);
+  assert.equal(sized.fourFactorPccWarfarinDosing?.cappedDoseUnits, 2800);
+  assert.ok(sized.argatrobanWarfarinCrossover);
+
+  const heparin = anticoagulationReportOnDesk(["heparin"], DEFAULT_HOST, { lastDoseMg: 4000, hoursSinceLastDose: 1 });
+  assert.equal(heparin.protamineDosing?.doseUnitsOrMg, 4000);
+  // 5 is the mg of another agent, not heparin units; it never turned into an assumed 5,000-unit dose.
+  const mg = anticoagulationReportOnDesk(["heparin"], DEFAULT_HOST, { lastDoseMg: 5, hoursSinceLastDose: 1 });
+  assert.equal(mg.protamineDosing, undefined);
+  assert.match(mg.inputsNeeded ?? "", /last dose/);
+  const all = anticoagulationReportOnDesk(["apixaban"], DEFAULT_HOST, { weightKg: 80, baselineInr: 1.1, lastDoseMg: 5, hoursSinceLastDose: 4 });
+  assert.equal(all.inputsNeeded, undefined);
+});
