@@ -133,7 +133,7 @@ export const UNGRADED_PERPETRATORS: readonly UngradedPerpetrator[] = [
     enzymes: ["CYP2D6", "CYP3A4", "CYP2C9"],
     direction: "inhibitor",
     sentence:
-      'Section 12.3, in vitro: "Etripamil inhibits CYP2D6, CYP3A4, and CYP2C9." The label gives no strength and has no section 7 interaction table. "Etripamil does not induce CYP1A2, CYP2B6, or CYP3A4."',
+      'Section 12.3, in vitro: "Etripamil inhibits CYP2D6, CYP3A4, and CYP2C9 but does not inhibit CYP2B6 or CYP2C8." The label gives no strength and has no section 7 interaction table. "Etripamil does not induce CYP1A2, CYP2B6, or CYP3A4."',
     href: dailyMed("a92170b9-4f93-4b83-b2cd-cb85c52821cd"),
     linkLabel: LINK,
   },
@@ -160,7 +160,7 @@ export const UNGRADED_PERPETRATORS: readonly UngradedPerpetrator[] = [
     enzymes: ["CYP2C8", "CYP2C9", "CYP2C19"],
     direction: "inhibitor",
     sentence:
-      'Section 12.3: "Zoliflodacin inhibited CYP2C8, CYP2C9, and CYP2C19 at IC50 values that were approximately 14- to 28-fold higher than the anticipated unbound therapeutic plasma concentrations." The label names no strength.',
+      'Section 12.3: "Zoliflodacin inhibited CYP2C8, CYP2C9, and CYP2C19 at IC50 values that were approximately 14- to 28-fold higher than the anticipated unbound therapeutic plasma concentrations (total concentrations 2.5 to 5-fold higher)." The label names no strength.',
     href: dailyMed("4beda35a-21b0-4b34-84ea-be6ea8cae50f"),
     linkLabel: LINK,
   },
