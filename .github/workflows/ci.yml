@@ -29,6 +29,7 @@ jobs:
       - run: npm test
       # The production build without db:migrate, which needs DATABASE_URL.
       - run: node scripts/with-app-env.mjs vite build
+      - run: node scripts/bundle-budget.mjs
 
   # scripts/a11y-gate.mjs and scripts/wcag22-checks.mjs. Widths are 320 and 1280
   # inside those scripts. The gate also runs wcag22-checks on the sitemap routes

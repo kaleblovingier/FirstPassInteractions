@@ -58,8 +58,6 @@ import { DrugSearch } from "./search";
 import { FindingList } from "./findings";
 import { DeskCoach } from "./coach";
 import { CheckBoard } from "./check";
-import { CypHeatmap } from "./heatmap";
-import { EnzymeAtlas } from "./atlas";
 import { HemeMark } from "./mark";
 import { KetamineRouteCard, PhenotypeCard } from "./phenotype";
 import { StackMeters } from "./stacks";
@@ -72,11 +70,7 @@ import { HostDelta } from "./delta";
 import { DeskFooter } from "./operator";
 import { severitySurface } from "./severity";
 import { Plate } from "./plate";
-import { FirstPassMap } from "./first-pass";
-import { CollisionMap } from "./constellation";
-import { Formulary } from "./library";
 import { WashoutCard } from "./washout";
-import { PkExplorer } from "./pk";
 import { StripeReturn } from "./stripe-return";
 import { ClinicPanel } from "./clinic";
 import { WindowBriefing } from "./window";
@@ -87,6 +81,12 @@ import { PrescribingStrip } from "./pi";
 import { CommandPalette } from "./command-palette";
 import { DESK_VIEWS } from "@/lib/drugs/palette";
 
+const CypHeatmap = lazy(() => import("./heatmap").then((m) => ({ default: m.CypHeatmap })));
+const EnzymeAtlas = lazy(() => import("./atlas").then((m) => ({ default: m.EnzymeAtlas })));
+const FirstPassMap = lazy(() => import("./first-pass").then((m) => ({ default: m.FirstPassMap })));
+const CollisionMap = lazy(() => import("./constellation").then((m) => ({ default: m.CollisionMap })));
+const Formulary = lazy(() => import("./library").then((m) => ({ default: m.Formulary })));
+const PkExplorer = lazy(() => import("./pk").then((m) => ({ default: m.PkExplorer })));
 const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
 const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
 const WatchPage = lazy(() => import("./watch").then((m) => ({ default: m.WatchPage })));
@@ -476,16 +476,20 @@ export function DeskApp() {
         ) : view === "atlas" ? (
           <>
             <h1 className="sr-only">How drugs share liver enzymes</h1>
-            {pro ? (
-              <EnzymeAtlas />
-            ) : (
-              <Paywall gate="atlas" pin>
+            <Suspense fallback={<DeskFallback />}>
+              {pro ? (
                 <EnzymeAtlas />
-              </Paywall>
-            )}
+              ) : (
+                <Paywall gate="atlas" pin>
+                  <EnzymeAtlas />
+                </Paywall>
+              )}
+            </Suspense>
           </>
         ) : view === "library" ? (
-          <Formulary />
+          <Suspense fallback={<DeskFallback />}>
+            <Formulary />
+          </Suspense>
         ) : view === "watch" ? (
           <>
             <h1 className="sr-only">Shortage and recall notes</h1>
@@ -670,7 +674,10 @@ export function DeskApp() {
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
                   )}
-                  <PkExplorer drugs={hostDrugs} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+<PkExplorer drugs={hostDrugs} host={host} />
+</Suspense>
+                  <Suspense fallback={<DeskFallback />}>
                   <FirstPassMap
                     ketamineRoute={ketamineRoute}
                     cannabisRoute={cannabisRoute}
@@ -681,6 +688,7 @@ export function DeskApp() {
                       ["dronabinol", "cannabidiol"].includes(id),
                     )}
                   />
+                  </Suspense>
                   {pro ? (
                     <MetaboliteCard ids={selected} />
                   ) : treesFor(selected).length > 0 ? (
@@ -688,7 +696,9 @@ export function DeskApp() {
                       <MetaboliteCard ids={selected} />
                     </Paywall>
                   ) : null}
-                  <CypHeatmap drugs={hostDrugs} colliding={colliding} />
+                  <Suspense fallback={<DeskFallback />}>
+<CypHeatmap drugs={hostDrugs} colliding={colliding} />
+</Suspense>
                 </>
               ) : (
                 <>
@@ -730,7 +740,9 @@ export function DeskApp() {
                   ) : null}
                   {report.findings.length > 0 ? (
                     <>
-                      <CollisionMap selected={selected} findings={report.findings} />
+                      <Suspense fallback={<DeskFallback />}>
+<CollisionMap selected={selected} findings={report.findings} />
+</Suspense>
                       <FindingList findings={report.findings} />
                     </>
                   ) : (
@@ -739,7 +751,9 @@ export function DeskApp() {
                   <Suspense fallback={<DeskFallback />}>
                     <Dossier ids={selected} host={host} />
                   </Suspense>
-                  <PkExplorer drugs={hostDrugs} host={host} />
+                  <Suspense fallback={<DeskFallback />}>
+<PkExplorer drugs={hostDrugs} host={host} />
+</Suspense>
                   {pro ? (
                     <MetaboliteCard ids={selected} />
                   ) : treesFor(selected).length > 0 ? (
@@ -747,6 +761,7 @@ export function DeskApp() {
                       <MetaboliteCard ids={selected} />
                     </Paywall>
                   ) : null}
+                  <Suspense fallback={<DeskFallback />}>
                   <FirstPassMap
                     ketamineRoute={ketamineRoute}
                     cannabisRoute={cannabisRoute}
@@ -757,7 +772,10 @@ export function DeskApp() {
                       ["dronabinol", "cannabidiol"].includes(id),
                     )}
                   />
-                  <CypHeatmap drugs={hostDrugs} colliding={colliding} />
+                  </Suspense>
+                  <Suspense fallback={<DeskFallback />}>
+<CypHeatmap drugs={hostDrugs} colliding={colliding} />
+</Suspense>
                 </>
               )}
             </div>
