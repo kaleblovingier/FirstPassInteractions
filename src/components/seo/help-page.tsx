@@ -326,7 +326,7 @@ export function HelpView() {
           <Button
             variant="secondary"
             onClick={() => void copyHandout()}
-            aria-label="Copy a plain-text list of state lines, national lines, and treatment directories"
+            aria-label={`${copied === "ok" ? "Copied" : "Copy this list"}: state lines, national lines, and treatment directories`}
             className="shrink-0"
           >
             {copied === "ok" ? (
@@ -471,7 +471,7 @@ export function HelpView() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <div className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
             <h3 className="font-serif text-lg tracking-tight text-fg">Xylazine ("Tranq") Specifics</h3>
             <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
@@ -507,7 +507,7 @@ export function HelpView() {
             <div className="mt-3">
               <a
                 href="tel:18004843731"
-                className={buttonVariants({ variant: "default", size: "sm" })}
+                className={cn(buttonVariants({ variant: "default", size: "sm" }), "h-auto min-h-11 whitespace-normal py-2 text-left")}
               >
                 <Phone className="size-3.5" aria-hidden="true" />
                 Call Never Use Alone (1-800-484-3731)

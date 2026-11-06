@@ -218,6 +218,66 @@ for (const name of ["Unlock", "Plans"]) {
   await ctx.close();
 }
 
+// 8. Ctrl+K palette: opens from the keyboard, arrows and Enter pick, Escape closes and returns focus.
+{
+  const { ctx, page } = await fresh("/");
+  await page.locator("body").click({ position: { x: 2, y: 2 } });
+  await page.keyboard.press("Control+k");
+  await page.waitForTimeout(400);
+  check((await page.locator('[role="dialog"]').count()) === 1, "palette: Ctrl+K opens the dialog");
+  check((await page.evaluate(() => document.activeElement?.tagName)) === "INPUT", "palette: focus lands in the search field");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(400);
+  check((await page.locator('[role="dialog"]').count()) === 0, "palette: Escape closes it");
+  const opener = page.getByRole("button", { name: /Search everything/ }).first();
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  await page.keyboard.press("ArrowDown");
+  const picked = await page.locator('[role="option"][data-selected="true"]').innerText();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(600);
+  check((await page.locator('[role="dialog"]').count()) === 0, `palette: arrows then Enter pick a result and close it (${picked.split(" ")[0]})`);
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(400);
+  check(await opener.evaluate((b) => b === document.activeElement), "palette: Escape returns focus to the header button");
+  await ctx.close();
+}
+
+// 9. Dose-calculator attestation gate: Confirm by keyboard, focus stays, gate stays open after reload.
+{
+  const { ctx, page } = await fresh("/", 390);
+  for (const d of ["apixaban", "warfarin"]) {
+    await page.locator("#drug-search").fill(d);
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(500);
+  }
+  await page.getByRole("button", { name: "DOAC", exact: true }).first().click();
+  const confirm = page.getByRole("button", { name: "Confirm", exact: true });
+  check((await confirm.count()) === 1, "attestation: dose calculators wait behind a Confirm button");
+  await confirm.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  check((await confirm.count()) === 0, "attestation: Enter on Confirm opens the calculators");
+  const f = await focusInfo(page);
+  check(!f.body, `attestation: focus stays on the panel after Confirm (got ${f.desc})`);
+  await page.goto(new URL("/", base).href, { waitUntil: "networkidle" });
+  for (const d of ["apixaban", "warfarin"]) {
+    await page.locator("#drug-search").fill(d);
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(500);
+  }
+  await page.getByRole("button", { name: "DOAC", exact: true }).first().click();
+  await page.waitForTimeout(400);
+  check((await page.getByRole("button", { name: "Confirm", exact: true }).count()) === 0, "attestation: stays confirmed after a reload");
+  await ctx.close();
+}
+
 await browser.close();
 console.log(`\n${notes.length} passed, ${failures.length} failed`);
 process.exit(failures.length ? 1 : 0);

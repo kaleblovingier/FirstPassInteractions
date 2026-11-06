@@ -4,12 +4,14 @@ on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 6 * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,9 +35,11 @@ jobs:
   # it selects; the second step runs wcag22-checks on its own default paths.
   # Keyboard journeys and the search/compare/export smoke are the `journeys`
   # job. This job stays the sitemap pass.
+  # Push and pull_request run a sample: tools, standalone routes, 6 of each generated type.
+  # The nightly schedule crawls every sitemap route under the 180 minute limit.
   a11y:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: ${{ github.event_name == 'schedule' && 180 || 30 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -73,7 +77,11 @@ jobs:
             cat preview.log
             exit 1
           fi
-          npm run a11y:gate -- http://127.0.0.1:8081
+          if [ "${{ github.event_name }}" = schedule ]; then
+            npm run a11y:gate -- http://127.0.0.1:8081
+          else
+            npm run a11y:gate -- http://127.0.0.1:8081 --limit 6
+          fi
           npm run a11y:wcag22 -- http://127.0.0.1:8081
 
   # Desk keyboard journeys, then search, compare, and export end-to-end.

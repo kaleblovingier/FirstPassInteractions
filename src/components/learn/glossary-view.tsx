@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PairDisclaimer } from "@/components/seo/pair-page";
 import { GLOSSARY, GLOSSARY_BY_ID, GLOSSARY_H1, GLOSSARY_INTRO, filterGlossary, groupByLetter } from "@/lib/learn/glossary";
 
-const chip = "inline-flex min-h-11 items-center underline sm:min-h-0";
+const chip = "inline-flex min-h-11 items-center underline";
 
 export function GlossaryView() {
   const [query, setQuery] = useState("");
