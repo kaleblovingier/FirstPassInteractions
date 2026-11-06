@@ -20,3 +20,11 @@ test('MAOI plus amphetamine cites the stimulant label contraindication', () => {
   const k = kinds(['selegiline', 'amphetamine'], 'pd-maoi-stim');
   assert.ok(k.includes('fda-boxed'));
 });
+
+test('a finding on two drugs does not cite a paper about only one of them', () => {
+  // PMID 7870932 is cocaine with ethanol. It says nothing about alprazolam.
+  const pmids = analyze(['ethanol', 'alprazolam']).findings.flatMap((f) =>
+    basisFor(f).filter((b) => b.kind === 'pubmed').map((b) => b.label),
+  );
+  assert.ok(!pmids.includes('PMID 7870932'), pmids.join(', '));
+});

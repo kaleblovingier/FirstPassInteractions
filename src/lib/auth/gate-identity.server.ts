@@ -5,6 +5,7 @@ import {
   type JWTVerifyGetKey,
 } from "jose";
 import { env, isWorkspacePreview } from "../env.server.ts";
+import { readGateIdentityToken } from "./gate-token";
 
 export const GATE_IDENTITY_HEADER = "x-grok-identity";
 export const GATE_JWKS_PATH = "/__gate/identity-key";
@@ -176,7 +177,7 @@ export async function gateIdentityFromHeaders(
   jwksFetch?: JwksFetch,
 ): Promise<GateIdentity | null> {
   if (!gateIdentityEnabled()) return null;
-  const token = headers.get(GATE_IDENTITY_HEADER)?.trim();
+  const token = readGateIdentityToken(headers.get(GATE_IDENTITY_HEADER));
   if (!token) return null;
   const endpoints = resolveGateEndpoints(headers);
   if (!endpoints) return null;

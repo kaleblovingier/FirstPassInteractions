@@ -136,10 +136,21 @@ describe("lost-key recovery", () => {
   });
 
   it("rejects malformed emails with 400", async () => {
-    for (const bad of ["", "nope", 42, null, "a@b"]) {
+    for (const bad of ["", "nope", 42, null, "a@b", { toString: () => "buyer@example.com" }]) {
       const res = await handleRecoverRequest(req(bad), { stripe: fakeStripe([]).stripe });
       assert.equal(res.status, 400);
     }
+  });
+
+  it("rejects a body with unknown keys instead of reading the email anyway", async () => {
+    const request = new Request("https://desk.test/api/license/recover", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "buyer@example.com", admin: true }),
+    });
+    const res = await handleRecoverRequest(request, { stripe: fakeStripe([]).stripe });
+    assert.equal(res.status, 400);
+    assert.equal(mails.length, 0);
   });
 
   it("rate limits per email across IPs", async () => {

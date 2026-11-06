@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useShallow } from "zustand/react/shallow";
 import { useDesk } from "@/lib/drugs/store";
 import type { HostContext } from "@/lib/drugs/types";
 import {
@@ -75,7 +76,8 @@ export function ResourceNavigator({ ids, host, onOpenHelp }: ResourceNavigatorPr
 export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: ResourceNavigatorProps) {
   // Store integration fallback
   const storeSelected = useDesk((s) => s.selected);
-  const storeHost = useDesk((s) => ({
+  // useShallow: a fresh object each read is an endless update loop in zustand 5.
+  const storeHost = useDesk(useShallow((s) => ({
     phenotypes: s.phenotypes,
     smoking: s.smoking,
     ketamineRoute: s.ketamineRoute,
@@ -84,7 +86,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
     age: s.age,
     kidney: s.kidney,
     preg: s.preg,
-  }));
+  })));
 
   const activeIds = propIds ?? storeSelected;
   const activeHost = propHost ?? storeHost;
