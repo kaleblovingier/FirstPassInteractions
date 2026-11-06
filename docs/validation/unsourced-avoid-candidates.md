@@ -35,11 +35,11 @@ Source: the 21 "Avoid together" grades with no cited source in `docs/grade-prove
 
 After wave 12 the audit lists 19 unsourced Avoid together grades (was 21).
 
-## Severity-change candidates (for Kaleb; not pinned)
+## Severity changes (pinned on Kaleb's decision on #209)
 
-| Pair | Label | Section | Quote | Card today |
-|---|---|---|---|---|
-| Rolapitant + Thioridazine | Varubi (setid 8670c3cf-82d9-466d-be49-de33d8c8742b) | 4 CONTRAINDICATIONS | "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." | Serious concern |
-| Rolapitant + Pimozide | Varubi | 4 CONTRAINDICATIONS | same | Use care |
+| Pair | Label | Section | Quote | Card before the pin | Card now |
+|---|---|---|---|---|---|
+| Rolapitant + Thioridazine | Varubi (setid 8670c3cf-82d9-466d-be49-de33d8c8742b) | 4 CONTRAINDICATIONS | "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide." | Serious concern | Avoid together |
+| Rolapitant + Pimozide | Varubi | 4 CONTRAINDICATIONS | same | Use care | Avoid together |
 
-A pin would raise these to Avoid together, which is a severity change, so they are listed for review only.
+Each pin holds the CYP2D6 inhibitor card the pair already had, with rolapitant as the perpetrator. No CYP grade changed. Other narrow-index CYP2D6 substrates the sentence does not name (atomoxetine, desipramine, nortriptyline) stay at Serious concern.

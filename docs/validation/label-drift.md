@@ -7,11 +7,11 @@ Question: is every stored label quote (gold set and contraindication pins) still
 
 | Result | Quotes | Pairs |
 |---|---|---|
-| Pass (exact, in the cited section) | 208 | 560 |
+| Pass (exact, in the cited section) | 209 | 562 |
 | Moved (exact, but in a different section than cited) | 1 | 1 |
 | Drifted (not in the current label) | 0 | 0 |
 | Could not fetch | 0 | 0 |
-| Labels | 97 | |
+| Labels | 98 | |
 
 ## Drifted
 
@@ -114,6 +114,7 @@ None.
 | Trazodone hydrochloride tablets | 4006d439-e2de-4590-82e9-fc9d56e3ec1b | 30 | 2025-07-09 | 1 | pass |
 | Triazolam | 5add318e-11b9-42f8-b052-0d8cebb32fcf | 26 | 2026-07-10 | 2 | pass |
 | Trintellix (vortioxetine) | 1a5b68e2-14d0-419d-9ec6-1ca97145e838 | 18 | 2025-03-05 | 1 | pass |
+| Varubi (rolapitant) | 8670c3cf-82d9-466d-be49-de33d8c8742b | 3 | 2026-09-08 | 1 | pass |
 | Vfend (voriconazole) | 08d08721-1f4c-478a-8abf-d9c402d50553 | 33 | 2026-03-20 | 1 | pass |
 | Viibryd (vilazodone) | 4c55ccfb-c4cf-11df-851a-0800200c9a66 | 34 | 2023-10-01 | 1 | pass |
 | Vivitrol (naltrexone ER injectable suspension) | cd11c435-b0f0-4bb9-ae78-60f101f3703f | 39 | 2026-05-31 | 1 | pass |
@@ -318,6 +319,7 @@ None.
 - triazolam+nefazodone: Triazolam, 4 CONTRAINDICATIONS
 - triazolam+ketoconazole: Triazolam tablets, 4 CONTRAINDICATIONS
 - vortioxetine+linezolid, vortioxetine+methylene-blue: Trintellix (vortioxetine), 4 CONTRAINDICATIONS
+- rolapitant+thioridazine, rolapitant+pimozide: Varubi (rolapitant), 4 CONTRAINDICATIONS
 - voriconazole+rifampin: Vfend (voriconazole), 4 CONTRAINDICATIONS
 - vilazodone+linezolid, vilazodone+methylene-blue: Viibryd (vilazodone), 4 CONTRAINDICATIONS
 - naltrexone+hydrocodone: Vivitrol (naltrexone ER injectable suspension), 4 CONTRAINDICATIONS

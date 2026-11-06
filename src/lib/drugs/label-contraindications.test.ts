@@ -508,6 +508,8 @@ const EXPECTED_PINS = [
   // wave 12
   "tranylcypromine+five-htp",
   "isocarboxazid+tyramine-foods",
+  "rolapitant+thioridazine",
+  "rolapitant+pimozide",
   // wave 13
   "tranylcypromine+dextromethorphan",
   "tranylcypromine+sam-e",
@@ -576,7 +578,7 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 60);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 155);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 49);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 51);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
@@ -808,5 +810,28 @@ test("bupropion/Contrave + linezolid or IV methylene blue pins say don't start, 
     const s = labelPinSentence(r);
     assert.match(s, /don't start (bupropion|Contrave) in a patient being treated with linezolid or intravenous methylene blue/);
     assert.equal((s.match(/intravenous/g) ?? []).length, 1);
+  }
+});
+
+test("Varubi pins hold the existing CYP2D6 inhibitor card and stay on the two named drugs", () => {
+  for (const victim of ["thioridazine", "pimozide"] as const) {
+    const pin = labelContraindicationFor("rolapitant", victim);
+    assert.equal(pin?.id, `rolapitant+${victim}`);
+    assert.equal(
+      pin?.quote,
+      "VARUBI is contraindicated in patients taking CYP2D6 substrates with a narrow therapeutic index, such as thioridazine and pimozide.",
+    );
+    const pinned = pairFindings("rolapitant", victim).filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
+    assert.equal(pinned.length, 1, victim);
+    const f = pinned[0];
+    // The card the pair already had, lifted. Rolapitant is the perpetrator.
+    assert.match(f.id, /pk-CYP2D6-inhibitor-rolapitant$/);
+    assert.deepEqual(f.drugIds, ["rolapitant", victim]);
+    assert.equal(f.severity, "contraindicated");
+  }
+  // Narrow-index CYP2D6 substrates the sentence does not name stay at the enzyme rule.
+  for (const other of ["atomoxetine", "desipramine", "nortriptyline"]) {
+    assert.equal(labelContraindicationFor("rolapitant", other), undefined, other);
+    assert.equal(pairSeverity("rolapitant", other), "major", other);
   }
 });
