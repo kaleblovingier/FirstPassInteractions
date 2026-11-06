@@ -19,6 +19,12 @@ const WAVE4_IDS = [
   "vimseltinib",
   "mirdametinib",
   "sunvozertinib",
+  "dordaviprone",
+  "ziftomenib",
+  "revumenib",
+  "acoramidis",
+  "crinecerfont",
+  "tovorafenib",
 ] as const;
 
 const versions = JSON.parse(readFileSync("src/lib/drugs/reference/label-versions.json", "utf8")) as {
@@ -100,6 +106,15 @@ const PK_CASES: { drug: string; partner: string; enzyme: string; kind: "inhibito
   { drug: "imlunestrant", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Inluriyo 7.1 avoid strong CYP3A inducers" },
   { drug: "sunvozertinib", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Zegfrovy 7.1 avoid strong CYP3A inhibitors" },
   { drug: "sunvozertinib", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Zegfrovy 7.1 avoid moderate CYP3A inducers" },
+  { drug: "dordaviprone", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Modeyso 7.1 avoid strong CYP3A4 inhibitors" },
+  { drug: "dordaviprone", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Modeyso 7.1 avoid strong CYP3A4 inducers" },
+  { drug: "ziftomenib", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Komzifti 7.1 avoid strong CYP3A4 inducers" },
+  { drug: "ziftomenib", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Komzifti 7.1 avoid moderate CYP3A4 inducers" },
+  { drug: "revumenib", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Revuforj 7.1 reduce the dose with strong CYP3A4 inhibitors" },
+  { drug: "revumenib", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Revuforj 7.1 avoid strong CYP3A4 inducers" },
+  { drug: "crinecerfont", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Crenessity 7.1 dose increase with strong CYP3A4 inducers" },
+  { drug: "crinecerfont", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "moderate", label: "Crenessity 7.1 dose increase with moderate CYP3A4 inducers" },
+  { drug: "tovorafenib", partner: "gemfibrozil", enzyme: "CYP2C8", kind: "inhibitor", severity: "major", label: "Ojemda 7.1 avoid strong CYP2C8 inhibitors" },
 ];
 
 test("known label partners produce the finding the label describes", () => {
@@ -123,6 +138,13 @@ test("remibrutinib reaches the additive bleeding rule, which Rhapsido 5.1 and 7.
 test("paltusotine and ensartinib reach the nodal rule, which their labels describe for drugs that slow the heart", () => {
   for (const id of ["paltusotine", "ensartinib"]) {
     const hit = analyze([id, "verapamil"]).findings.find((f) => f.tags.includes("bradycardia"));
+    assert.equal(hit?.severity, "major", id);
+  }
+});
+
+test("dordaviprone, ziftomenib, and revumenib read major with another QT-prolonging drug, as their labels warn", () => {
+  for (const id of ["dordaviprone", "ziftomenib", "revumenib"]) {
+    const hit = analyze([id, "ondansetron"]).findings.find((f) => f.tags.includes("qt"));
     assert.equal(hit?.severity, "major", id);
   }
 });

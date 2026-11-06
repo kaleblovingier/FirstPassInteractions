@@ -32,6 +32,12 @@
    "effective": "2024-10-10",
    "checkedOn": "2026-10-28"
   },
+  "913552ef-875d-4cb7-bf05-a7d20a394c38": {
+   "labelDrug": "Attruby (acoramidis)",
+   "version": 8,
+   "effective": "2026-06-29",
+   "checkedOn": "2026-11-05"
+  },
   "7ea3c60a-45c7-44cc-afc2-d87fa53993c0": {
    "labelDrug": "Austedo (deutetrabenazine)",
    "version": 36,
@@ -121,6 +127,12 @@
    "version": 33,
    "effective": "2025-11-10",
    "checkedOn": "2026-10-28"
+  },
+  "fd3a6fbd-9137-428a-ba46-df6606f07d28": {
+   "labelDrug": "Crenessity (crinecerfont)",
+   "version": 9,
+   "effective": "2024-12-24",
+   "checkedOn": "2026-11-05"
   },
   "00acd9e9-b26a-4626-949e-112ecd2f27e6": {
    "labelDrug": "Cymbalta (duloxetine)",
@@ -260,6 +272,12 @@
    "effective": "2026-03-27",
    "checkedOn": "2026-10-28"
   },
+  "b650f696-3391-4274-8b55-a5f5e9d04769": {
+   "labelDrug": "Komzifti (ziftomenib)",
+   "version": 1,
+   "effective": "2025-12-09",
+   "checkedOn": "2026-11-05"
+  },
   "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9": {
    "labelDrug": "Korlym (mifepristone)",
    "version": 26,
@@ -314,6 +332,12 @@
    "effective": "2026-09-09",
    "checkedOn": "2026-10-28"
   },
+  "ad45b43e-fdef-47ad-9c34-055b41bdc576": {
+   "labelDrug": "Modeyso (dordaviprone)",
+   "version": 2,
+   "effective": "2026-01-09",
+   "checkedOn": "2026-11-05"
+  },
   "28596788-b73f-4247-85fc-3105f51fff5a": {
    "labelDrug": "Movantik (naloxegol)",
    "version": 5,
@@ -367,6 +391,12 @@
    "version": 7,
    "effective": "2026-10-13",
    "checkedOn": "2026-11-04"
+  },
+  "ea3a9631-3a66-6a7c-e053-2995a90ae2ad": {
+   "labelDrug": "Ojemda (tovorafenib)",
+   "version": 9,
+   "effective": "2025-09-02",
+   "checkedOn": "2026-11-05"
   },
   "8a6d2ce0-a621-4ee7-983c-977cd948ff4d": {
    "labelDrug": "Palsonify (paltusotine)",
@@ -475,6 +505,12 @@
    "version": 5,
    "effective": "2024-12-18",
    "checkedOn": "2026-10-28"
+  },
+  "6eb3cdbc-0e74-477d-82d6-3bb172d3f63f": {
+   "labelDrug": "Revuforj (revumenib)",
+   "version": 5,
+   "effective": "2026-02-04",
+   "checkedOn": "2026-11-05"
   },
   "165cff62-b284-4a27-a65d-9ec8a5bfcdd8": {
    "labelDrug": "Reyataz (atazanavir)",
