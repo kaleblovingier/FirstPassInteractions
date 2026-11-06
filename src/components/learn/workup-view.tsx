@@ -280,6 +280,11 @@ function PairOutcomeView({ r }: { r: PairResult }) {
         </span>
       </p>
       <p className="mt-1 text-xs leading-relaxed text-muted">{desk}</p>
+      {r.pair.pagePath ? (
+        <a href={r.pair.pagePath} className="inline-flex min-h-11 items-center text-xs text-accent underline">
+          Read the public page for {pairName(r.pair)}
+        </a>
+      ) : null}
       {r.findings.length ? (
         <ul className="mt-2 space-y-2">
           {r.findings.map((f) => (

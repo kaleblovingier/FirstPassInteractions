@@ -6,6 +6,7 @@ import { analyze } from "@/lib/drugs/engine";
 import { SAMPLE_REGIMENS, sampleNeedsPro } from "@/lib/drugs/samples";
 import { DEFAULT_HOST, type Finding } from "@/lib/drugs/types";
 import { DOSE_PATTERN } from "@/lib/guards/dose-rule";
+import { WORKUP_LISTS } from "./workup-cases";
 import { WorkupView } from "@/components/learn/workup-view";
 import {
   DONE_KEY, NOT_A_GREEN_LIGHT, WORKUP_DESCRIPTION, WORKUP_INTRO, WORKUP_TITLE, gradeWorkup, loadDone, pairKey,
@@ -13,7 +14,7 @@ import {
 } from "./workup";
 
 const cases = workupCases();
-const sample = (id: string) => SAMPLE_REGIMENS.find((s) => s.id === id)!;
+const sample = (id: string) => (SAMPLE_REGIMENS.find((s) => s.id === id) ?? WORKUP_LISTS.find((s) => s.id === id))!;
 const hasDose = (s: string) => s.search(DOSE_PATTERN) >= 0;
 
 test("pairs: n·(n−1)/2 unordered pairs in a stable list order", () => {
@@ -31,17 +32,18 @@ test("pairs: n·(n−1)/2 unordered pairs in a stable list order", () => {
 test("eligible cases are free, 3–6 items, with a scored pair and no dose text in what the page shows", () => {
   assert.ok(cases.length > 0);
   for (const c of cases) {
-    assert.equal(sampleNeedsPro(sample(c.id)), false, c.id);
+    assert.equal(sampleNeedsPro(sample(c.id) as (typeof SAMPLE_REGIMENS)[number]), false, c.id);
     assert.ok(c.drugs.length >= 3 && c.drugs.length <= 6, c.id);
     assert.ok(c.findings.some((f) => c.pairs.some((p) => p.key === scoredKey(f))), c.id);
-    assert.equal(c.deskUrl, `/?case=${c.id}`);
+    assert.equal(c.deskUrl.startsWith("/?case="), SAMPLE_REGIMENS.some((s) => s.id === c.id));
+    if (!c.deskUrl.startsWith("/?case=")) assert.equal(new URL(c.deskUrl, "http://x").searchParams.get("brief"), c.drugs.map((d) => d.id).join(","), c.id);
     const shown = [c.title, c.blurb, ...c.drugs.flatMap((d) => [d.name, d.cls]), ...c.findings.flatMap((f) => [f.headline, f.mechanism, f.effect])];
     assert.ok(!shown.some(hasDose), c.id);
   }
 });
 
 test("eligibility rejects licensed host factors, size outside 3–6, dose text and no two-drug finding", () => {
-  const base = sample(cases[0]!.id);
+  const base = { ...sample(cases[0]!.id), drugIds: sample(cases[0]!.id).drugIds.slice(0, 3) };
   const quiet = ["acamprosate", "famotidine", "febuxostat", "amoxicillin"];
   assert.ok(toWorkupCase({ ...base, ketamineRoute: "oral" }), "ketamine route stays free");
   for (const pro of [{ phenotypes: { CYP2D6: "PM" as const } }, { smoking: true }, { alcohol: "chronic" as const }, { cannabisRoute: "oral" as const }]) {
@@ -172,4 +174,17 @@ test("copy: educational framing, no pricing, no decision-support claims", () => 
   const copy = [WORKUP_TITLE, WORKUP_DESCRIPTION, WORKUP_INTRO, html].join(" ");
   assert.doesNotMatch(copy, /\bfree\b|\$\d|pricing|\bPro\b|clinical decision|decision support|diagnos/i);
   assert.match(WORKUP_INTRO, /not a clinical tool/);
+});
+
+test("every case has a mapped and an unmapped pair, so marking everything is never perfect", () => {
+  assert.ok(cases.length >= 10, "at least ten cases");
+  assert.ok(cases.some((c) => c.pairs.some((p) => p.pagePath?.startsWith("/pair/"))), "some pair links to its public page");
+  assert.equal(cases.length, WORKUP_LISTS.length, "every listed case passes the page's eligibility checks");
+  for (const c of cases) {
+    const g = gradeWorkup(c, {});
+    assert.ok(g.interacting >= 1 && g.interacting < c.pairs.length, c.id);
+    const all = gradeWorkup(c, Object.fromEntries(c.pairs.map((p) => [p.key, { call: "pk" as const }])));
+    assert.ok(all.overCalled >= 1, c.id);
+    assert.match(summaryLine(all), /[1-9]d* over-called/, c.id);
+  }
 });
