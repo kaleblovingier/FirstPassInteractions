@@ -39,7 +39,7 @@ export const CITES_WAVE2: Cite[] = [
     "Xylazine and medetomidine sedate through α2, not μ — the mechanistic reason naloxone only solves half of a tranq-contaminated overdose.",
     ["clinic", "review"], ["xylazine", "medetomidine"]),
   c("41668237", 2026, "J Addict Med", "Medetomidine-Involved Overdoses Among Emergency Department Patients: Results From a US Multicenter Sentinel Surveillance Program.",
-    "17-site ED surveillance: medetomidine exposure roughly quadrupled the odds of bradycardia on arrival (OR 4.03) without any extra naloxone, intubation, or BiPAP need — the α2 signature, not an opioid one.",
+    "17-site ED surveillance: medetomidine exposure roughly quadrupled the odds of bradycardia on arrival (OR 4.03). Intubation, BiPAP, and naloxone use were not higher; bag-mask ventilation was (20.5% versus 3.7%). The α2 signature, not an opioid one.",
     ["clinic"], ["medetomidine"]),
   c("40257097", 2025, "J Addict Med", "Medetomidine-Associated Opioid Overdoses in Chicago, Illinois: A Report of 3 Cases.",
     "One of the first clinical case reports once medetomidine started replacing xylazine in a local supply — same α2 sedation, same naloxone-refractory picture.",
@@ -90,7 +90,7 @@ export const CITES_WAVE2: Cite[] = [
 
   // —— GLP-1 / GIP peptides: tirzepatide / semaglutide ——————————————————————
   c("42721915", 2026, "Maturitas", "Tirzepatide and oral progestogens: A hypothesis-generating review of a biologically plausible pharmacokinetic interaction in gynaecologic disease control and menopausal hormone therapy.",
-    "The one PK study on file: a single tirzepatide dose cut ethinylestradiol/norgestimate peak levels 55-66% and pushed time-to-peak out 2.5-4.5 hours — delayed gastric emptying doing exactly what this desk's note describes, to a real oral drug.",
+    "The review cites one PK study: a single tirzepatide dose cut peaks of ethinylestradiol, norgestimate, and norelgestromin by 59%, 66%, and 55%, and delayed time-to-peak by 2.5 to 4.5 hours. Overall exposure fell about 20% to 23%. A lower peak is not the same as lost contraceptive efficacy, and the review does not extend the result to other oral progestogens.",
     ["clinic"], ["tirzepatide"]),
   c("40330819", 2025, "Drug Des Devel Ther", "A Comprehensive Review on the Pharmacokinetics and Drug-Drug Interactions of Approved GLP-1 Receptor Agonists and a Dual GLP-1/GIP Receptor Agonist.",
     "No CYP- or transporter-mediated DDIs reported for this class. The one mechanism on file is delayed gastric emptying, which measurably changed oral-contraceptive exposure after tirzepatide and levothyroxine exposure after oral semaglutide.",
@@ -101,7 +101,7 @@ export const CITES_WAVE2: Cite[] = [
 
   // —— Kratom ————————————————————————————————————————————————
   c("36924284", 2023, "Clin Pharmacol Ther", "Clinical Assessment of the Drug Interaction Potential of the Psychotropic Natural Product Kratom.",
-    "First human DDI study: a single cup of kratom tea raised the CYP3A4 probe midazolam's AUC ~39% via gut-wall inhibition. The same dose moved the CYP2D6 probe dextromethorphan not at all — real 3A4 signal, no 2D6 signal at this dose.",
+    "First human DDI study: a single low dose of kratom tea raised the CYP3A4 probe midazolam's AUC about 39% via gut-wall inhibition. The same dose did not move the CYP2D6 probe dextromethorphan. Real 3A4 signal, no 2D6 signal at that dose.",
     ["cyp", "clinic"], ["kratom"]),
   c("37019472", 2023, "J Pharmacol Exp Ther", "Pharmacokinetic and Pharmacodynamic Consequences of Cytochrome P450 3A Inhibition on Mitragynine Metabolism in Rats.",
     "Blocking CYP3A pushed mitragynine exposure up 120% and its more potent metabolite 7-OH-mitragynine up 130%, with matching gains in opioid-like potency — the substrate role this desk encodes, with the swing that makes it matter.",
