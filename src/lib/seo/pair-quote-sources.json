@@ -1094,6 +1094,66 @@
    "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
    "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin"
   },
+  "lovastatin+cobicistat": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+darunavir-cobicistat-ftc-taf": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+elvitegravir-cobicistat-ftc-taf": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+elvitegravir-cobicistat-ftc-tdf": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+erythromycin": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+indinavir": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+indinavir-and-ritonavir": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+ketoconazole": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+nefazodone": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+nelfinavir": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+saquinavir": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+telithromycin": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+tipranavir": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+tipranavir-and-ritonavir": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
+  "lovastatin+voriconazole": {
+   "setid": "9438d8a0-ca5b-4676-aab9-d0241ccff6c9",
+   "excerpt": "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin ,nefazodone, and cobicistat-containing products)"
+  },
   "lurasidone+carbamazepine": {
    "setid": "afad3051-9df2-4c54-9684-e8262a133af8",
    "excerpt": "Strong CYP3A4 inducers (e.g., rifampin, avasimibe, St. John's wort, phenytoin, carbamazepine, etc.)"
@@ -1874,11 +1934,47 @@
    "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
    "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
   },
+  "simvastatin+cobicistat": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+darunavir-cobicistat-ftc-taf": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+elvitegravir-cobicistat-ftc-taf": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+elvitegravir-cobicistat-ftc-tdf": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+erythromycin": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
   "simvastatin+itraconazole": {
    "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
    "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
   },
+  "simvastatin+ketoconazole": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+nefazodone": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+nelfinavir": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
   "simvastatin+ritonavir": {
+   "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
+   "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
+  },
+  "simvastatin+voriconazole": {
    "setid": "8f55d5de-5a4f-4a39-8c84-c53976dd6af9",
    "excerpt": "Concomitant use of strong CYP3A4 inhibitors (select azole anti-fungals, macrolide antibiotics, anti-viral medications, and nefazodone)"
   },
@@ -2046,9 +2142,73 @@
    "setid": "4c55ccfb-c4cf-11df-851a-0800200c9a66",
    "excerpt": "VIIBRYD is contraindicated in: Patients taking, or within 14 days of stopping, monoamine oxidase inhibitors (MAOIs), including MAOIs such as linezolid or intravenous methylene blue"
   },
+  "voriconazole+carbamazepine": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 and for which significantly reduced voriconazole plasma concentrations may be associated with loss of efficacy [see Drug Interactions (7) ]:•Carbamazepine"
+  },
+  "voriconazole+dihydroergotamine": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)"
+  },
+  "voriconazole+eplerenone": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone"
+  },
+  "voriconazole+ergotamine": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)"
+  },
+  "voriconazole+finerenone": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone"
+  },
+  "voriconazole+ivabradine": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine"
+  },
+  "voriconazole+methylergonovine": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)"
+  },
+  "voriconazole+naloxegol": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine•Lurasidone•Naloxegol"
+  },
+  "voriconazole+phenobarbital": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 and for which significantly reduced voriconazole plasma concentrations may be associated with loss of efficacy [see Drug Interactions (7) ]:•Carbamazepine•Efavirenz Concomitant use with efavirenz dosages of 400 mg every 24 hours or higher is contraindicated [see Clinical Pharmacology (12.3) ] .•Long-acting barbiturates"
+  },
+  "voriconazole+pimozide": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine•Lurasidone•Naloxegol•Pimozide"
+  },
+  "voriconazole+quinidine": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine•Lurasidone•Naloxegol•Pimozide•Quinidine"
+  },
+  "voriconazole+rifabutin": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Rifabutin [see Clinical Pharmacology (12.3) ]•Sirolimus [see Clinical Pharmacology (12.3) ]•Tolvaptan•Venetoclax: Coadministration at initiation and during the ramp-up phase is contraindicated in patients with chronic lymphocytic leukemia (CLL) or small lymphocytic lymphoma (SLL) due to the potential for increased risk of tumor lysis syndrome [see Drug Interactions (7) ] .•Voclosporin 2. Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4"
+  },
   "voriconazole+rifampin": {
    "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
    "excerpt": "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 and for which significantly reduced voriconazole plasma concentrations may be associated with loss of efficacy [see Drug Interactions (7) ]:•Carbamazepine•Efavirenz Concomitant use with efavirenz dosages of 400 mg every 24 hours or higher is contraindicated [see Clinical Pharmacology (12.3) ] .•Long-acting barbiturates•Rifabutin•Rifampin"
+  },
+  "voriconazole+sirolimus": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine•Lurasidone•Naloxegol•Pimozide•Quinidine•Rifabutin [see Clinical Pharmacology (12.3) ]•Sirolimus"
+  },
+  "voriconazole+st-johns-wort": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 and for which significantly reduced voriconazole plasma concentrations may be associated with loss of efficacy [see Drug Interactions (7) ]:•Carbamazepine•Efavirenz Concomitant use with efavirenz dosages of 400 mg every 24 hours or higher is contraindicated [see Clinical Pharmacology (12.3) ] .•Long-acting barbiturates•Rifabutin•Rifampin•Ritonavir Concomitant use with high-dose ritonavir (400 mg every 12 hours) is contraindicated. Concomitant use with low-dose ritonavir (100 mg every 12 hours) should be avoided, unless an assessment of the benefit/risk to the patient justifies the use of VFEND [see Clinical Pharmacology (12.3) ] .•St. John's Wort"
+  },
+  "voriconazole+tolvaptan": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine•Lurasidone•Naloxegol•Pimozide•Quinidine•Rifabutin [see Clinical Pharmacology (12.3) ]•Sirolimus [see Clinical Pharmacology (12.3) ]•Tolvaptan"
+  },
+  "voriconazole+voclosporin": {
+   "setid": "08d08721-1f4c-478a-8abf-d9c402d50553",
+   "excerpt": "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism, and for which elevated plasma concentrations are associated with serious and/or life-threatening reactions [see Drug Interactions (7) ]:•Eplerenone•Ergot alkaloids (e.g., ergotamine, dihydroergotamine)•Finerenone•Ivabradine•Lurasidone•Naloxegol•Pimozide•Quinidine•Rifabutin [see Clinical Pharmacology (12.3) ]•Sirolimus [see Clinical Pharmacology (12.3) ]•Tolvaptan•Venetoclax: Coadministration at initiation and during the ramp-up phase is contraindicated in patients with chronic lymphocytic leukemia (CLL) or small lymphocytic lymphoma (SLL) due to the potential for increased risk of tumor lysis syndrome [see Drug Interactions (7) ] .•Voclosporin"
   },
   "vortioxetine+linezolid": {
    "setid": "1a5b68e2-14d0-419d-9ec6-1ca97145e838",

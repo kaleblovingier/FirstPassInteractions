@@ -20,7 +20,7 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.equal(row.pinBasis, "named");
   assert.equal(row.retrieved, "2026-09-27");
   assert.equal(row.source, "gold");
-  assert.equal(otherLineCount("simvastatin", "clarithromycin"), 2);
+  assert.equal(otherLineCount("simvastatin", "clarithromycin"), 11);
   assert.match(row.quote, /^Concomitant use of strong CYP3A4 inhibitors/);
   assert.match(row.example, /clarithromycin/);
   const page = pairPageBySlug(row.slug);
@@ -45,13 +45,27 @@ test("simvastatin and clarithromycin keep the stored Zocor line", () => {
   assert.equal(/\b\d+\s*mg\b/i.test(plain), false);
   assert.equal(deskLabels(["simvastatin", "clarithromycin", "warfarin"]).length, 1);
   const others = alsoOnLabel(["simvastatin", "clarithromycin"]);
+  // Wave 17 adds the other Zocor 7.1 Table 2 partners to the two wave-1 lines.
+  const zocorOthers = [
+    "itraconazole",
+    "ritonavir",
+    "ketoconazole",
+    "voriconazole",
+    "erythromycin",
+    "nelfinavir",
+    "nefazodone",
+    "cobicistat",
+    "darunavir-cobicistat-ftc-taf",
+    "elvitegravir-cobicistat-ftc-taf",
+    "elvitegravir-cobicistat-ftc-tdf",
+  ];
   assert.deepEqual(others, [
     {
       labelDrug: "Zocor (simvastatin)",
-      names: [DRUG_BY_ID.itraconazole.name, DRUG_BY_ID.ritonavir.name].sort((a, b) => a.localeCompare(b)),
+      names: zocorOthers.map((id) => DRUG_BY_ID[id].name).sort((a, b) => a.localeCompare(b)),
     },
   ]);
-  assert.equal(alsoOnLabel(["simvastatin", "clarithromycin", "itraconazole", "ritonavir"]).length, 0);
+  assert.equal(alsoOnLabel(["simvastatin", "clarithromycin", ...zocorOthers]).length, 0);
 });
 
 test("a pair with no stored label line is omitted", () => {
