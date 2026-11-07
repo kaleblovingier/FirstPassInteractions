@@ -2,6 +2,7 @@ import { OPERATOR, PAY_RAILS } from "@/lib/billing/commerce";
 import { useDesk } from "@/lib/drugs/store";
 import { PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 import { TRADEMARK_LINE } from "@/lib/seo/legal";
+import { ShortcutSheet } from "./shortcut-sheet";
 
 export function OperatorCard() {
   return (
@@ -44,7 +45,7 @@ export function DeskFooter() {
           <p className="mt-1 text-[11px] text-subtle" data-testid="desk-legal-links">
             <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
             <a href="/cookies" className="underline">Cookies</a> ·{" "}
-            <a href="/practice" className="underline">Practice</a>
+            <a href="/practice" className="underline">Practice</a> · <ShortcutSheet />
           </p>
           <p className="mt-1 text-[11px] text-subtle" data-testid="desk-trademark-line">{TRADEMARK_LINE}</p>
         </div>

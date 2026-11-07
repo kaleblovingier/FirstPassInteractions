@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState } from "./desk-persist";
 import { isCatalogId } from "./catalog";
 import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
-import { rememberTray } from "./tray-history";
+import { rememberTray, swapIds } from "./tray-history";
 import type { StationId } from "./station-groups";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
@@ -87,6 +87,8 @@ interface DeskState {
   checkout: { open: boolean; plan: PlanId; interval: Interval; reason: string };
   add: (id: string) => boolean;
   remove: (id: string) => void;
+  /** Replace one tray item in place, keeping host factors and the other doses. Undo restores the old tray. */
+  swap: (outId: string, inId: string) => boolean;
   clear: () => void;
   load: (ids: string[], extras?: LoadExtras) => boolean;
   setView: (view: View) => void;
@@ -276,6 +278,16 @@ export const useDesk = create<DeskState>()(
         const next = { ...get().doses };
         delete next[id];
         set({ selected: get().selected.filter((x) => x !== id), doses: next });
+      },
+      swap: (outId, inId) => {
+        const s = get();
+        const next = swapIds(s.selected, outId, inId);
+        if (!next) return false;
+        rememberTray(s.selected, { ketamineRoute: s.ketamineRoute });
+        const doses = { ...s.doses };
+        delete doses[outId];
+        set({ selected: next, doses, view: "desk" });
+        return true;
       },
       clear: () => {
         const s = get();
