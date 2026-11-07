@@ -436,6 +436,7 @@ export function StudyPage() {
                 <button
                   key={a.id}
                   type="button"
+                  aria-pressed={labId === a.id}
                   onClick={() => selectAssignment(a)}
                   className={cn(
                     "min-h-[44px] rounded-full px-3.5 text-xs font-medium",

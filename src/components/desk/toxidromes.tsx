@@ -428,6 +428,7 @@ export function ToxidromeSimulator() {
                 <button
                   key={key}
                   type="button"
+                  aria-pressed={matrixFilter === key}
                   onClick={() => setMatrixFilter(key as MatrixFilterCategory)}
                   className={cn(
                     "min-h-[36px] rounded-md px-2.5 text-xs font-medium transition-colors",
@@ -966,6 +967,7 @@ export function ToxidromeSimulator() {
                     <button
                       key={val}
                       type="button"
+                      aria-pressed={observedSigns.pupils === val}
                       onClick={() => setObservedSigns((s) => ({ ...s, pupils: s.pupils === val ? undefined : val }))}
                       className={cn(
                         "min-h-[44px] rounded-md p-1.5 text-center text-xs font-medium transition-colors border",
@@ -1002,6 +1004,7 @@ export function ToxidromeSimulator() {
                     <button
                       key={val}
                       type="button"
+                      aria-pressed={observedSigns.skin === val}
                       onClick={() => setObservedSigns((s) => ({ ...s, skin: s.skin === val ? undefined : val }))}
                       className={cn(
                         "min-h-[44px] rounded-md p-1.5 text-center text-xs font-medium transition-colors border",
@@ -1038,6 +1041,7 @@ export function ToxidromeSimulator() {
                     <button
                       key={val}
                       type="button"
+                      aria-pressed={observedSigns.heartRate === val}
                       onClick={() => setObservedSigns((s) => ({ ...s, heartRate: s.heartRate === val ? undefined : val }))}
                       className={cn(
                         "min-h-[44px] rounded-md p-1.5 text-center text-xs font-medium transition-colors border",
@@ -1074,6 +1078,7 @@ export function ToxidromeSimulator() {
                     <button
                       key={val}
                       type="button"
+                      aria-pressed={observedSigns.respiratoryRate === val}
                       onClick={() => setObservedSigns((s) => ({ ...s, respiratoryRate: s.respiratoryRate === val ? undefined : val }))}
                       className={cn(
                         "min-h-[44px] rounded-md p-1.5 text-center text-xs font-medium transition-colors border",
@@ -1110,6 +1115,7 @@ export function ToxidromeSimulator() {
                     <button
                       key={val}
                       type="button"
+                      aria-pressed={observedSigns.temperature === val}
                       onClick={() => setObservedSigns((s) => ({ ...s, temperature: s.temperature === val ? undefined : val }))}
                       className={cn(
                         "min-h-[44px] rounded-md p-1.5 text-center text-xs font-medium transition-colors border",
@@ -1147,6 +1153,7 @@ export function ToxidromeSimulator() {
                     <button
                       key={val}
                       type="button"
+                      aria-pressed={observedSigns.neuromuscular === val}
                       onClick={() => setObservedSigns((s) => ({ ...s, neuromuscular: s.neuromuscular === val ? undefined : val }))}
                       className={cn(
                         "min-h-[44px] rounded-md p-1 text-center text-[11px] font-medium transition-colors border",

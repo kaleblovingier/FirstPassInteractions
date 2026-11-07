@@ -91,12 +91,15 @@ export function Paywall({
     );
   }
 
+  // Both layers share one grid cell, so the box is as tall as the taller of the two. The card
+  // used to sit absolutely over the preview and was cut off whenever the preview was shorter
+  // than the card, which on a phone was most of the time.
   return (
-    <div className="relative overflow-hidden rounded-xl">
-      <div className="pointer-events-none select-none overflow-hidden blur-[3px]" aria-hidden inert>
+    <div data-testid="paywall" className="grid overflow-hidden rounded-xl">
+      <div className="pointer-events-none col-start-1 row-start-1 min-w-0 select-none overflow-hidden blur-[3px]" aria-hidden inert>
         {children}
       </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface/80 px-4 py-5 text-center">
+      <div className="col-start-1 row-start-1 flex min-w-0 flex-col items-center justify-center gap-3 bg-surface/80 px-4 py-5 text-center">
         {card}
       </div>
     </div>

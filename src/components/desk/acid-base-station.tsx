@@ -263,6 +263,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
       <div className="flex flex-wrap items-center gap-2 border-b border-border pb-2">
         <button
           type="button"
+          aria-pressed={activeTab === "diagnostic"}
           onClick={() => setActiveTab("diagnostic")}
           className={cn(
             "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
@@ -276,6 +277,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "hyponatremia"}
           onClick={() => setActiveTab("hyponatremia")}
           className={cn(
             "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
@@ -289,6 +291,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "protocols"}
           onClick={() => setActiveTab("protocols")}
           className={cn(
             "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
@@ -302,6 +305,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "desk"}
           onClick={() => setActiveTab("desk")}
           className={cn(
             "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
@@ -721,6 +725,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
                 <div className="flex rounded-md border border-border overflow-hidden">
                   <button
                     type="button"
+                    aria-pressed={sex === "male"}
                     onClick={() => setSex("male")}
                     className={cn(
                       "flex-1 py-1 text-center font-semibold transition-colors",
@@ -731,6 +736,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
                   </button>
                   <button
                     type="button"
+                    aria-pressed={sex === "female"}
                     onClick={() => setSex("female")}
                     className={cn(
                       "flex-1 py-1 text-center font-semibold transition-colors",

@@ -235,6 +235,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
       <div className="flex flex-wrap items-center gap-1 border-b border-border pb-2">
         <button
           type="button"
+          aria-pressed={stationTab === "pkpd"}
           onClick={() => setStationTab("pkpd")}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -246,6 +247,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
         </button>
         <button
           type="button"
+          aria-pressed={stationTab === "arc"}
           onClick={() => setStationTab("arc")}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -260,6 +262,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
         </button>
         <button
           type="button"
+          aria-pressed={stationTab === "safety"}
           onClick={() => setStationTab("safety")}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -274,6 +277,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
         </button>
         <button
           type="button"
+          aria-pressed={stationTab === "pearls"}
           onClick={() => setStationTab("pearls")}
           className={cn(
             "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
@@ -299,6 +303,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
+                aria-pressed={pkModalType === "time_dependent"}
                 onClick={() => setPkModalType("time_dependent")}
                 className={cn(
                   "px-2.5 py-1 rounded text-xs transition-colors",
@@ -311,6 +316,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
               </button>
               <button
                 type="button"
+                aria-pressed={pkModalType === "concentration_dependent"}
                 onClick={() => setPkModalType("concentration_dependent")}
                 className={cn(
                   "px-2.5 py-1 rounded text-xs transition-colors",
@@ -323,6 +329,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
               </button>
               <button
                 type="button"
+                aria-pressed={pkModalType === "exposure_dependent"}
                 onClick={() => setPkModalType("exposure_dependent")}
                 className={cn(
                   "px-2.5 py-1 rounded text-xs transition-colors",
@@ -450,6 +457,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
+                      aria-pressed={betaInfusionHours === 0.5}
                       onClick={() => setBetaInfusionHours(0.5)}
                       className={cn(
                         "px-2 py-0.5 rounded text-[11px]",
@@ -460,6 +468,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
                     </button>
                     <button
                       type="button"
+                      aria-pressed={betaInfusionHours === 3.0}
                       onClick={() => setBetaInfusionHours(3.0)}
                       className={cn(
                         "px-2 py-0.5 rounded text-[11px]",
@@ -470,6 +479,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
                     </button>
                     <button
                       type="button"
+                      aria-pressed={betaInfusionHours === 4.0}
                       onClick={() => setBetaInfusionHours(4.0)}
                       className={cn(
                         "px-2 py-0.5 rounded text-[11px]",

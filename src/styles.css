@@ -142,6 +142,31 @@ select {
   box-shadow: 0 0 0 1px var(--color-subtle);
 }
 
+/* Touch screens. Many stations size their own fields at 28 to 32px with 11 to 12px text.
+   On a coarse pointer every text field and select is at least 44px tall, and its text is
+   16px so iOS Safari does not zoom the page when the field takes focus. Unlayered, so it
+   wins over h-7 and text-xs. Mouse and trackpad layouts are unchanged. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]),
+  textarea,
+  select {
+    min-height: 44px;
+    font-size: 16px;
+  }
+}
+
+/* WCAG 2.4.11 focus not obscured. A view with a sticky bar (data-sticky-bar) reserves room
+   for it, so a control that takes focus, or a section an in-page link jumps to, is scrolled
+   clear of the bar instead of under it. The Plans bottom bar shows only below 640px. */
+html:has([data-sticky-bar="top"]) {
+  scroll-padding-top: 4.5rem;
+}
+@media (max-width: 39.99rem) {
+  html:has([data-sticky-bar="bottom"]) {
+    scroll-padding-bottom: 6rem;
+  }
+}
+
 /* Skip link (WCAG 2.4.1). Off-screen until focused; the accent outline is the shared :focus-visible rule. */
 .skip-link {
   position: absolute;

@@ -238,6 +238,7 @@ export function ReceptorProfiler() {
         <div className="mt-6 flex flex-wrap gap-2 border-t border-border pt-6">
           <button
             type="button"
+            aria-pressed={viewMode === "catalog"}
             onClick={() => setViewMode("catalog")}
             className={cn(
               "inline-flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
@@ -255,6 +256,7 @@ export function ReceptorProfiler() {
 
           <button
             type="button"
+            aria-pressed={viewMode === "compare"}
             onClick={() => setViewMode("compare")}
             className={cn(
               "inline-flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
@@ -269,6 +271,7 @@ export function ReceptorProfiler() {
 
           <button
             type="button"
+            aria-pressed={viewMode === "glossary"}
             onClick={() => setViewMode("glossary")}
             className={cn(
               "inline-flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",

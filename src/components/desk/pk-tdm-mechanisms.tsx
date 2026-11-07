@@ -316,6 +316,7 @@ export function PkTdmMechanisms() {
                     <button
                       key={d}
                       type="button"
+                      aria-pressed={mmDose === d}
                       onClick={() => setMmDose(d)}
                       className={cn(
                         "min-h-[44px] min-w-[50px] rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
@@ -532,6 +533,7 @@ export function PkTdmMechanisms() {
               <div className="flex gap-2">
                 <button
                   type="button"
+                  aria-pressed={zeroMode === "ethanol"}
                   onClick={() => setZeroMode("ethanol")}
                   className={cn(
                     "min-h-[44px] rounded-lg px-4 text-xs font-medium transition-colors border",
@@ -544,6 +546,7 @@ export function PkTdmMechanisms() {
                 </button>
                 <button
                   type="button"
+                  aria-pressed={zeroMode === "salicylate"}
                   onClick={() => setZeroMode("salicylate")}
                   className={cn(
                     "min-h-[44px] rounded-lg px-4 text-xs font-medium transition-colors border",
@@ -746,6 +749,7 @@ export function PkTdmMechanisms() {
                   <button
                     key={preset.name}
                     type="button"
+                    aria-pressed={activeDialysisPreset === preset.name}
                     onClick={() => {
                       setActiveDialysisPreset(preset.name);
                       setDialysisVd(preset.vdLKg);

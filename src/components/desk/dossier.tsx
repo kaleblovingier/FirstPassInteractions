@@ -143,6 +143,7 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
             <button
               key={pid}
               type="button"
+              aria-pressed={pid === id}
               onClick={() => setDrugId(pid)}
               className={cn(
                 "h-10 rounded-full px-3 text-xs font-medium",

@@ -158,6 +158,7 @@ export function OncologyPanel({ ids, host }: { ids: string[]; host: HostContext 
                 <button
                   key={hr}
                   type="button"
+                  aria-pressed={postInfusionHours === hr}
                   onClick={() => setPostInfusionHours(hr)}
                   className={cn(
                     "flex-1 rounded border py-1.5 text-xs font-mono transition-colors",

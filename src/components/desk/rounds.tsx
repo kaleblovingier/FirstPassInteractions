@@ -98,6 +98,7 @@ export function RoundsPage() {
             <button
               key={s.id}
               type="button"
+              aria-pressed={setting === s.id}
               onClick={() => setSetting(s.id)}
               className={cn(
                 "h-10 rounded-full px-3 text-xs font-medium",

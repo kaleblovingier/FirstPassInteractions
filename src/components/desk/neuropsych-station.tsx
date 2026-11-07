@@ -283,6 +283,7 @@ export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContex
       <div className="flex flex-wrap border-b border-border gap-2 pb-2">
         <button
           type="button"
+          aria-pressed={activeTab === "emergencies"}
           onClick={() => setActiveTab("emergencies")}
           className={cn(
             "px-3 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-1.5",
@@ -296,6 +297,7 @@ export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContex
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "clozapine"}
           onClick={() => setActiveTab("clozapine")}
           className={cn(
             "px-3 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-1.5",
@@ -309,6 +311,7 @@ export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContex
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "crosstaper"}
           onClick={() => setActiveTab("crosstaper")}
           className={cn(
             "px-3 py-1.5 rounded text-xs font-semibold transition-colors flex items-center gap-1.5",
