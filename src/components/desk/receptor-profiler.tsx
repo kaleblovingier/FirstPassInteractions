@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
   Search,
   X,
@@ -878,15 +879,23 @@ export function ReceptorProfiler() {
       )}
 
       {/* Popover / Detail modal for clicked receptor */}
-      {activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="max-w-md w-full rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+      {/* Radix Dialog: focus moves in and is trapped, Escape closes, focus returns to the receptor. */}
+      <Dialog.Root
+        open={Boolean(activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey])}
+        onOpenChange={(open) => {
+          if (!open) setActiveReceptorKey(null);
+        }}
+      >
+        {activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey] ? (
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs" />
+          <Dialog.Content className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100dvh-2rem)] max-w-md -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-serif text-xl font-bold text-accent">
+                  <Dialog.Title className="font-serif text-xl font-bold text-accent">
                     {RECEPTOR_TARGETS[activeReceptorKey].receptor}
-                  </h3>
+                  </Dialog.Title>
                   <span className="rounded bg-surface-2 px-2 py-0.5 text-xs text-muted">
                     {RECEPTOR_TARGETS[activeReceptorKey].family}
                   </span>
@@ -906,9 +915,9 @@ export function ReceptorProfiler() {
               </button>
             </div>
 
-            <p className="text-xs text-muted leading-relaxed">
+            <Dialog.Description className="text-xs text-muted leading-relaxed">
               {RECEPTOR_TARGETS[activeReceptorKey].description}
-            </p>
+            </Dialog.Description>
 
             <div className="space-y-2 rounded-lg bg-surface-2 p-3.5 text-xs leading-relaxed">
               <div>
@@ -938,9 +947,10 @@ export function ReceptorProfiler() {
                 Close Target Details
               </button>
             </div>
-          </div>
-        </div>
-      )}
+          </Dialog.Content>
+        </Dialog.Portal>
+        ) : null}
+      </Dialog.Root>
 
       {/* Regulatory Disclosure Footer */}
       <div className="rounded-xl border border-border bg-surface-2/40 p-4 text-xs leading-relaxed text-muted">
