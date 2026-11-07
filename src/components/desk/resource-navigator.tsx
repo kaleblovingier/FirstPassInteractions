@@ -50,6 +50,7 @@ import {
   type StatePAPInfo,
 } from "@/lib/drugs/healthcare-resources";
 import { NOT_CLEARED, PI_FOOTER } from "@/lib/regulatory";
+import { REFERENCE_RESOURCES, REFERENCE_RESOURCE_KIND_LABEL } from "@/lib/drugs/reference-resources";
 
 const COMMON_PAP_DRUG_SHORTCUTS = [
   "Humira",
@@ -984,6 +985,53 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
             })}
           </div>
         )}
+      </section>
+
+      {/* 6b. FDA AND NLM DRUG REFERENCES */}
+      <section
+        aria-labelledby="rn-references-h"
+        data-testid="resource-references"
+        className="rounded-xl border border-border/80 bg-surface p-4 shadow-[var(--shadow-border)] sm:p-5"
+      >
+        <div className="flex items-start gap-2">
+          <FileText className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+          <div>
+            <h3 id="rn-references-h" className="font-serif text-sm font-semibold text-fg">
+              Drug label and safety references
+            </h3>
+            <p className="mt-1 text-xs text-muted">
+              Public FDA and NLM pages for labels, approvals, interaction tables and safety notices. To report a
+              suspected adverse event, use MedWatch.
+            </p>
+          </div>
+        </div>
+        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          {REFERENCE_RESOURCES.map((r) => (
+            <li key={r.id} className="rounded-lg border border-border/60 bg-surface-raised p-2.5 text-[11px] leading-relaxed">
+              <a
+                href={r.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+              >
+                {r.name}
+                <ExternalLink className="size-3 shrink-0" aria-hidden />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+              <span className="ml-1 font-mono text-[10px] text-muted">
+                {r.owner} · {REFERENCE_RESOURCE_KIND_LABEL[r.kind]}
+              </span>
+              <p className="mt-1 text-muted">{r.description}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-[11px] text-muted">
+          Every label excerpt the desk has saved, with its DailyMed link, is listed on the{" "}
+          <a href="/sources" className="font-medium text-primary hover:underline">
+            sources and label library page
+          </a>
+          .
+        </p>
       </section>
 
       {/* 7. REGULATORY COMPLIANCE ACCORDION / FOOTER */}

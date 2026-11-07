@@ -20,6 +20,7 @@ import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RecoverRouteImport } from './routes/recover'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as WorkupRouteImport } from './routes/workup'
@@ -86,6 +87,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sources': typeof SourcesRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/workup': typeof WorkupRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sources': typeof SourcesRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/workup': typeof WorkupRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/recover': typeof RecoverRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sources': typeof SourcesRoute
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/workup': typeof WorkupRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/recover'
     | '/sitemap.xml'
+    | '/sources'
     | '/terms'
     | '/trust'
     | '/workup'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/recover'
     | '/sitemap.xml'
+    | '/sources'
     | '/terms'
     | '/trust'
     | '/workup'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/recover'
     | '/sitemap.xml'
+    | '/sources'
     | '/terms'
     | '/trust'
     | '/workup'
@@ -291,6 +303,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RecoverRoute: typeof RecoverRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SourcesRoute: typeof SourcesRoute
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   WorkupRoute: typeof WorkupRoute
@@ -382,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -467,6 +487,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RecoverRoute: RecoverRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SourcesRoute: SourcesRoute,
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   WorkupRoute: WorkupRoute,

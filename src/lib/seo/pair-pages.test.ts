@@ -143,12 +143,13 @@ describe("public pair pages", () => {
     }
   });
 
-  it("sitemap lists /, /pairs, /enzymes, /for-programs, /practice, /glossary, /workup, /trust, /help, /privacy, /terms, /cookies, every pair canonical, every drug hub and every indexable enzyme hub", () => {
+  it("sitemap lists /, /pairs, /enzymes, /for-programs, /practice, /glossary, /workup, /trust, /sources, /help, /privacy, /terms, /cookies, every pair canonical, every drug hub and every indexable enzyme hub", () => {
     const xml = sitemapXml();
     const hubCount = drugHubs().length;
     const enzymeCount = enzymeHubs().filter((h) => h.indexable).length;
-    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 12 + hubCount + enzymeCount);
+    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 13 + hubCount + enzymeCount);
     assert.ok(xml.includes(`<loc>${SITE_URL}/trust</loc>`));
+    assert.ok(xml.includes(`<loc>${SITE_URL}/sources</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/practice</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/glossary</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/workup</loc>`));

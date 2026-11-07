@@ -31,6 +31,7 @@ export const PALETTE_PAGES = [
   { href: "/help", label: "Help", hint: "How the desk works" },
   { href: "/pairs", label: "Interaction pairs", hint: "Label-sourced pair pages" },
   { href: "/enzymes", label: "Enzyme pages", hint: "CYP450 inhibitors, inducers and substrates" },
+  { href: "/sources", label: "Sources and label library", hint: "FDA label excerpts, DailyMed links and the FDA interaction table" },
   { href: "/trust", label: "Trust and privacy", hint: "How FirstPass handles data and checks sources" },
 ];
 
