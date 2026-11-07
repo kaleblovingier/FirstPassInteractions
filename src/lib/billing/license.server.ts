@@ -2,6 +2,7 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypt
 import { env } from "@/lib/env.server";
 import { logEvent } from "@/lib/server/log";
 import { SHARED_CLIENT, SlidingWindow, clientKey } from "@/lib/server/rate-limit";
+import { sharedThrottleConfigured, withStore } from "@/lib/server/throttle-store";
 import {
   PROGRAM_KEY_RE,
   PROGRAM_TIER_FROM_LETTER,
@@ -96,6 +97,10 @@ function safeEq(a: string, b: string) {
  * - Per instance: after `globalFree` wrong PINs in `globalWindowMs`, every PIN check first waits `slowMs`.
  *   It never refuses, so a flood from anywhere costs the operator seconds, not access.
  * Callers we cannot tell apart (SHARED_CLIENT) only ever get the slow-down.
+ *
+ * With DATABASE_URL set, both layers live in the shared throttle store (throttle-store.ts), so the backoff
+ * and the slow-down hold across every serverless instance and a cold start does not reset them. If the store
+ * fails or is slow, that check falls back to the per-instance layers below. Same numbers either way.
  */
 export const PIN_THROTTLE = {
   free: 5,
@@ -147,20 +152,56 @@ export function pinWaitMessage(ms: number): string {
   return `Too many wrong PINs from here. Try again in ${when}.`;
 }
 
+const PIN_STRIKES = "pin.strikes";
+const PIN_WRONG = "pin.wrong";
+
+/**
+ * The shared-store half of pinOk: counts this attempt and reads the slow-down, or throws the wait message
+ * while `key` is backing off. Null when the store did not answer, so the caller uses the instance layers.
+ */
+async function sharedPinCheck(key: string, now: number): Promise<{ fails?: number; slowed: boolean } | null> {
+  let fails: number | undefined;
+  if (key !== SHARED_CLIENT) {
+    const strike = await withStore((s) => s.strike(PIN_STRIKES, key, PIN_THROTTLE, now));
+    if (!strike) return null;
+    if (!strike.allowed) throw new Error(pinWaitMessage(strike.waitMs));
+    fails = strike.fails;
+  }
+  const load = await withStore(async (s) => {
+    const [wrong, live] = await Promise.all([
+      s.count(PIN_WRONG, "all", PIN_THROTTLE.globalWindowMs, now),
+      s.liveStrikes(PIN_STRIKES, now),
+    ]);
+    return wrong >= PIN_THROTTLE.globalFree || live >= PIN_THROTTLE.maxClients;
+  });
+  // The attempt is already counted in the store; if the load read failed, use this instance's view.
+  return { fails, slowed: load ?? pinSlowed(now) };
+}
+
 /** Throws while this client is backing off, without testing the PIN, so those guesses learn nothing. */
 export async function pinOk(pin: string, key = clientKey(), now = Date.now()): Promise<boolean> {
-  const wait = pinWaitMs(key, now);
-  if (wait > 0) throw new Error(pinWaitMessage(wait));
-  // Count the attempt before the pause so parallel guesses from one client can't all pass the wait check; a right PIN clears it.
-  const fails = key === SHARED_CLIENT ? undefined : trackWrong(key, now);
-  if (pinSlowed(now)) await pause(PIN_THROTTLE.slowMs);
+  const shared = sharedThrottleConfigured() ? await sharedPinCheck(key, now) : null;
+  let fails: number | undefined;
+  let slowed: boolean;
+  if (shared) {
+    ({ fails, slowed } = shared);
+  } else {
+    const wait = pinWaitMs(key, now);
+    if (wait > 0) throw new Error(pinWaitMessage(wait));
+    // Count the attempt before the pause so parallel guesses from one client can't all pass the wait check; a right PIN clears it.
+    fails = key === SHARED_CLIENT ? undefined : trackWrong(key, now);
+    slowed = pinSlowed(now);
+  }
+  if (slowed) await pause(PIN_THROTTLE.slowMs);
   if (safeEq(pin.trim(), resolvePin())) {
     strikes.delete(key);
+    if (shared && key !== SHARED_CLIENT) await withStore((s) => s.clearStrikes(PIN_STRIKES, key));
     return true;
   }
   recentWrong.hit("all", now);
+  if (shared) await withStore((s) => s.hit(PIN_WRONG, "all", PIN_THROTTLE.globalWindowMs, now));
   // Counts only, never the client or the guess. A steady stream of these is the brute-force signal to alert on.
-  logEvent("warn", "pin.wrong", { fails, slowed: pinSlowed(now) });
+  logEvent("warn", "pin.wrong", { fails, slowed: slowed || pinSlowed(now), shared: Boolean(shared) });
   return false;
 }
 

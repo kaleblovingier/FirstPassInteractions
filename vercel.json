@@ -84,7 +84,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://grok.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.stripe.com https://grok.com https://*.grok.com https://*.grok.me wss://*.grok.me; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://grok.com https://*.grok.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; frame-ancestors 'self' https://grok.com https://*.grok.com https://*.grok.me; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://grok.com https://js.stripe.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.stripe.com https://grok.com https://*.grok.com https://*.grok.me wss://*.grok.me; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://grok.com https://*.grok.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; frame-ancestors 'self' https://grok.com https://*.grok.com https://*.grok.me; upgrade-insecure-requests"
         },
         {
           "key": "Referrer-Policy",

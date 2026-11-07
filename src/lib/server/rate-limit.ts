@@ -1,7 +1,7 @@
 /**
  * In-memory sliding-window limits for server code. Counts live in one serverless instance and
- * reset on a cold start, so they slow one client down; a cap shared across instances needs a
- * store (Vercel KV, Upstash).
+ * reset on a cold start, so they slow one client down. For a cap shared across instances, use
+ * SharedWindow in ./throttle-store, which also counts in the app database when DATABASE_URL is set.
  */
 
 import { getRequest } from "@tanstack/react-start/server";

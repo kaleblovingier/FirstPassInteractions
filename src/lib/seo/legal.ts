@@ -95,6 +95,7 @@ export const PRIVACY_DOC: LegalDoc = {
         "Program inquiry form (/for-programs): your name, work email, organization, role, program type, seat count, years and start date, and your message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
         "Lost-key recovery (/recover): Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent.",
         "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
+        "Reader asks and wrong operator PINs are also counted per IP address. These counts are kept in server memory, and when FirstPass's database is connected they are also kept there so the limits hold across servers. The database stores a keyed one-way hash of the address, never the address itself. Each count expires when its limit window ends (an hour at most) and is deleted the next time a limit is checked.",
         "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
       ],
     },
@@ -118,7 +119,7 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "retention",
       title: "How long we keep it",
       paras: [
-        "Browser data: until you clear it. Rate-limit counters: until the server instance restarts, and at most a day. Reader answers: up to 10 minutes. Emails (key deliveries, inquiries, payment notices): in the FirstPass inbox until deleted. Venmo, Cash App and PayPal records: kept by those companies under their own rules, which include legal record-keeping. Vercel logs: per Vercel's retention.",
+        "Browser data: until you clear it. Rate-limit counters: in server memory until the instance restarts, and at most a day; in the database (when connected) until the limit window ends, then deleted the next time a limit is checked. Reader answers: up to 10 minutes. Emails (key deliveries, inquiries, payment notices): in the FirstPass inbox until deleted. Venmo, Cash App and PayPal records: kept by those companies under their own rules, which include legal record-keeping. Vercel logs: per Vercel's retention.",
       ],
     },
     {

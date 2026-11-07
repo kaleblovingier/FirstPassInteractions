@@ -1,5 +1,9 @@
-import { afterEach, beforeEach, describe, it } from "node:test";
+import { after, afterEach, before, beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { PGlite } from "@electric-sql/pglite";
+import type { Sql } from "../db";
+import { setThrottleStore, sqlThrottleStore } from "../server/throttle-store";
 import { ASKS_PER_IP, readCache, readWithBots, resetReaderBudget } from "./readers.server";
 import type { ReaderBrief } from "./readers";
 import { setLogSink } from "../server/log";
@@ -149,5 +153,54 @@ describe("readers.server - readWithBots", () => {
 
     assert.equal((await readWithBots(brief("Lead 0"), "203.0.113.5")).ok, true, "cached reads stay free");
     assert.equal((await readWithBots(brief("Other caller"), "198.51.100.5")).ok, true);
+  });
+});
+
+describe("readers.server - caps shared across instances", () => {
+  let db: PGlite;
+  before(async () => {
+    db = new PGlite({ parsers: { 20: Number } });
+    await db.exec(readFileSync(new URL("../../../migrations/0002_throttle.sql", import.meta.url), "utf8"));
+  });
+  after(async () => {
+    setThrottleStore(undefined);
+    await db.close();
+  });
+  beforeEach(async () => {
+    await db.exec("delete from throttle_hits; delete from throttle_strikes;");
+    const sql = (() => {
+      throw new Error("unused");
+    }) as unknown as Sql;
+    sql.query = async <T,>(text: string, params: unknown[] = []) => (await db.query<T>(text, params)).rows;
+    setThrottleStore(sqlThrottleStore(sql, "postgres://readers-test"));
+  });
+
+  /** A cold start or another instance: this instance's own counts and cache are gone. */
+  function otherInstance() {
+    resetReaderBudget();
+    readCache.clear();
+  }
+
+  it("holds the per-caller cap when asks land on different instances", async () => {
+    const calls = stubFetch(() => chat("A plain restatement."));
+    for (let i = 0; i < ASKS_PER_IP; i++) {
+      otherInstance();
+      assert.equal((await readWithBots(brief(`Spread ${i}`), "203.0.113.60")).ok, true, `ask ${i}`);
+    }
+    otherInstance();
+    const limited = await readWithBots(brief("One more"), "203.0.113.60");
+    assert.deepEqual(limited, { ok: false, error: "Too many reader asks from here. Try again in a minute." });
+    assert.equal(calls.length, ASKS_PER_IP * 3);
+  });
+
+  it("holds the whole-desk cap when asks land on different instances", async () => {
+    stubFetch(() => chat("A plain restatement."));
+    for (let i = 0; i < 30; i++) {
+      otherInstance();
+      assert.equal((await readWithBots(brief(`Desk ${i}`), `192.0.2.${i}`)).ok, true, `ask ${i}`);
+    }
+    otherInstance();
+    const limited = await readWithBots(brief("Desk 31"), "192.0.2.200");
+    assert.deepEqual(limited, { ok: false, error: "The readers are busy right now. Try again in a minute." });
   });
 });
