@@ -352,7 +352,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
                 <label className="text-[11px] font-medium text-muted block mb-1">
                   Paralytic Agent (NMBA):
                 </label>
-                <select
+                <select aria-label="Paralytic agent (NMBA)"
                   value={selectedNmba}
                   onChange={(e) => setSelectedNmba(e.target.value as NMBAId)}
                   className="w-full h-9 rounded-md border border-border bg-surface px-3 text-xs text-fg focus:outline-none focus:ring-1 focus:ring-accent"
@@ -709,7 +709,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
             <span className="font-serif font-bold text-sm text-fg">
               SCCM PADIS Guidelines ICU Sedation Comparison
             </span>
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="ICU sedation comparison table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-left text-[11px] border-collapse">
                 <thead>
                   <tr className="border-b border-border bg-surface-sunken text-muted">
@@ -783,7 +783,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
               <div className="rounded-lg border border-border/80 bg-surface-sunken p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-fg">Thermal Burn:</span>
-                  <input
+                  <input aria-label="Thermal burn"
                     type="checkbox"
                     checked={hasBurn}
                     onChange={(e) => setHasBurn(e.target.checked)}
@@ -810,7 +810,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
               <div className="rounded-lg border border-border/80 bg-surface-sunken p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-fg">Spinal Cord / Stroke:</span>
-                  <input
+                  <input aria-label="Spinal cord injury or stroke"
                     type="checkbox"
                     checked={hasDenervation}
                     onChange={(e) => setHasDenervation(e.target.checked)}
@@ -837,7 +837,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
               <div className="rounded-lg border border-border/80 bg-surface-sunken p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-fg">Neuromuscular Disease:</span>
-                  <input
+                  <input aria-label="Neuromuscular disease"
                     type="checkbox"
                     checked={hasNmd}
                     onChange={(e) => setHasNmd(e.target.checked)}
@@ -882,7 +882,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
                   Genetic variants and acquired deficiencies prolonging succinylcholine apnea from 5 minutes to hours.
                 </p>
               </div>
-              <select
+              <select aria-label="BChE variant"
                 value={bcheVariant}
                 onChange={(e) => setBcheVariant(e.target.value as any)}
                 className="h-8 rounded-md border border-border bg-surface px-2.5 text-xs text-fg"
@@ -934,7 +934,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
             <span className="font-serif font-bold text-sm text-fg">
               Comprehensive Neuromuscular Blocking Agent (NMBA) Reference Matrix
             </span>
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="Neuromuscular blocking agent table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-left text-[11px] border-collapse">
                 <thead>
                   <tr className="border-b border-border bg-surface-sunken text-muted">

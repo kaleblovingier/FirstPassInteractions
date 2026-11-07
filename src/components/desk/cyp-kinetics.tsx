@@ -69,7 +69,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "ritonavir-midazolam",
     title: "Ritonavir + Midazolam (TDI Knockout)",
     badge: "MBI / TDI Knockout",
-    badgeColor: "border-rose-500/30 bg-rose-500/10 text-rose-300",
+    badgeColor: "border-rose-500/30 bg-rose-500/10 text-danger",
     drugIds: ["ritonavir", "midazolam"],
     stopDay: 10,
     highlightMechanism: "Suicidal Apoprotein Alkylation & MIC Coordination",
@@ -80,7 +80,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "rifampin-tacrolimus",
     title: "Rifampin + Tacrolimus (PXR Induction)",
     badge: "PXR Induction",
-    badgeColor: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+    badgeColor: "border-amber-500/30 bg-amber-500/10 text-warning",
     drugIds: ["rifampin", "tacrolimus"],
     stopDay: 10,
     highlightMechanism: "Transcriptional PXR-RXR ER6/DR3 Activation",
@@ -91,7 +91,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "grapefruit-simvastatin",
     title: "Grapefruit + Simvastatin (Enterocyte Suicide)",
     badge: "Intestinal MBI",
-    badgeColor: "border-orange-500/30 bg-orange-500/10 text-orange-300",
+    badgeColor: "border-orange-500/30 bg-orange-500/10 text-orange-800",
     drugIds: ["grapefruit", "simvastatin"],
     stopDay: 7,
     highlightMechanism: "Furanocoumarin Epoxide Apoprotein Alkylation",
@@ -102,7 +102,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "tobacco-clozapine",
     title: "Tobacco Smoke + Clozapine (AhR Cessation)",
     badge: "AhR Induction & Cessation",
-    badgeColor: "border-sky-500/30 bg-sky-500/10 text-sky-300",
+    badgeColor: "border-sky-500/30 bg-sky-500/10 text-sky-800",
     drugIds: ["tobacco", "clozapine"],
     stopDay: 10,
     highlightMechanism: "PAH-AhR-ARNT XRE Promoter Activation",
@@ -113,7 +113,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "clarithromycin-rifampin",
     title: "Clarithromycin + Rifampin (Opposing Collision)",
     badge: "Opposing Collision",
-    badgeColor: "border-purple-500/30 bg-purple-500/10 text-purple-300",
+    badgeColor: "border-purple-500/30 bg-purple-500/10 text-purple-800",
     drugIds: ["clarithromycin", "rifampin"],
     stopDay: 10,
     highlightMechanism: "Suicidal Inactivation vs Transcriptional Induction",
@@ -124,7 +124,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "fluconazole-midazolam",
     title: "Fluconazole + Midazolam (Competitive Contrast)",
     badge: "Competitive Reversible",
-    badgeColor: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+    badgeColor: "border-emerald-500/30 bg-emerald-500/10 text-success",
     drugIds: ["fluconazole", "midazolam"],
     stopDay: 10,
     highlightMechanism: "Reversible Heme Iron Coordination (Ki governed)",
@@ -259,7 +259,7 @@ export function CypKineticsSimulator() {
               <h1 className="text-xl font-bold tracking-tight text-fg sm:text-2xl">
                 Cytochrome P450 TDI & Nuclear Induction Simulator
               </h1>
-              <Badge className="border border-sky-500/30 bg-sky-500/10 text-xs font-medium text-sky-300">
+              <Badge className="border border-sky-500/30 bg-sky-500/10 text-xs font-medium text-sky-800">
                 FD&C Act § 520(o)(1)(E) CDS
               </Badge>
             </div>
@@ -280,7 +280,7 @@ export function CypKineticsSimulator() {
               <ChevronDown className={cn("ml-1 size-3.5 transition-transform", showRegulatory && "rotate-180")} />
             </Button>
             {useDeskDrugs && selectedOnDesk.length > 0 ? (
-              <Badge className="border-emerald-500/30 bg-emerald-500/15 text-emerald-300">
+              <Badge className="border-emerald-500/30 bg-emerald-500/15 text-success">
                 <Check className="mr-1 size-3" />
                 Syncing Desk Tray ({selectedOnDesk.length} drugs)
               </Badge>
@@ -495,12 +495,12 @@ export function CypKineticsSimulator() {
                       "flex min-h-[44px] items-center gap-1 rounded-full px-3 py-1.5 text-xs transition-all",
                       isActive
                         ? drug.type === "tdi"
-                          ? "border border-rose-500/40 bg-rose-500/20 text-rose-200"
+                          ? "border border-rose-500/40 bg-rose-500/20 text-danger"
                           : drug.type === "ind"
-                            ? "border border-amber-500/40 bg-amber-500/20 text-amber-200"
+                            ? "border border-amber-500/40 bg-amber-500/20 text-warning"
                             : drug.type === "comp"
-                              ? "border border-emerald-500/40 bg-emerald-500/20 text-emerald-200"
-                              : "border border-sky-500/40 bg-sky-500/20 text-sky-200"
+                              ? "border border-emerald-500/40 bg-emerald-500/20 text-success"
+                              : "border border-sky-500/40 bg-sky-500/20 text-sky-800"
                         : "border border-border/60 bg-bg/60 text-muted hover:border-border hover:text-fg",
                     )}
                   >
@@ -529,7 +529,7 @@ export function CypKineticsSimulator() {
               <span className="text-[11px] font-medium text-muted">Nadir Activity</span>
               <div className="mt-1 flex items-center gap-1.5 font-bold text-sm sm:text-base">
                 <TrendingDown className="size-4 text-rose-400" />
-                <span className={cn(trajectory.nadirPct < 30 ? "text-rose-400" : "text-fg")}>
+                <span className={cn(trajectory.nadirPct < 30 ? "text-danger" : "text-fg")}>
                   {trajectory.nadirPct}%
                 </span>
               </div>
@@ -540,7 +540,7 @@ export function CypKineticsSimulator() {
               <span className="text-[11px] font-medium text-muted">Peak Activity</span>
               <div className="mt-1 flex items-center gap-1.5 font-bold text-sm sm:text-base">
                 <TrendingUp className="size-4 text-amber-400" />
-                <span className={cn(trajectory.peakPct > 150 ? "text-amber-400" : "text-fg")}>
+                <span className={cn(trajectory.peakPct > 150 ? "text-warning" : "text-fg")}>
                   {trajectory.peakPct}%
                 </span>
               </div>
@@ -661,7 +661,7 @@ export function CypKineticsSimulator() {
                         textAnchor="end"
                         className={cn(
                           "text-[10px] fill-current",
-                          val === 100 ? "font-bold text-emerald-400" : "text-muted",
+                          val === 100 ? "font-bold text-success" : "text-muted",
                         )}
                       >
                         {val}%
@@ -722,7 +722,7 @@ export function CypKineticsSimulator() {
                     x={scaleX(stopDay)}
                     y={padding.top - 8}
                     textAnchor="middle"
-                    className="text-[9px] font-bold fill-current text-rose-300"
+                    className="text-[9px] font-bold fill-current text-danger"
                   >
                     Stopped (D{stopDay})
                   </text>
@@ -798,12 +798,12 @@ export function CypKineticsSimulator() {
                     className={cn(
                       "border text-[10px]",
                       activeDayPoint.phase === "onset"
-                        ? "border-sky-500/40 text-sky-300"
+                        ? "border-sky-500/40 text-sky-800"
                         : activeDayPoint.phase === "steady-state"
-                          ? "border-amber-500/40 text-amber-300"
+                          ? "border-amber-500/40 text-warning"
                           : activeDayPoint.phase === "offset-recovery"
-                            ? "border-purple-500/40 text-purple-300"
-                            : "border-emerald-500/40 text-emerald-300",
+                            ? "border-purple-500/40 text-purple-800"
+                            : "border-emerald-500/40 text-success",
                     )}
                   >
                     {activeDayPoint.phaseLabel}
@@ -1021,7 +1021,7 @@ export function CypKineticsSimulator() {
                 </span>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {activePathway.regulatedEnzymes.map((enzyme) => (
-                    <Badge key={enzyme} className="border border-sky-500/30 bg-sky-500/10 text-xs text-sky-300">
+                    <Badge key={enzyme} className="border border-sky-500/30 bg-sky-500/10 text-xs text-sky-800">
                       {enzyme}
                     </Badge>
                   ))}
@@ -1084,8 +1084,8 @@ export function CypKineticsSimulator() {
                 className={cn(
                   "border font-semibold text-xs",
                   trayDetection.hasCollision
-                    ? "border-rose-500/40 bg-rose-500/15 text-rose-300"
-                    : "border-emerald-500/40 bg-emerald-500/15 text-emerald-300",
+                    ? "border-rose-500/40 bg-rose-500/15 text-danger"
+                    : "border-emerald-500/40 bg-emerald-500/15 text-success",
                 )}
               >
                 {trayDetection.hasCollision ? "Collisions Flagged" : "No Kinetic Collisions"}
@@ -1115,11 +1115,11 @@ export function CypKineticsSimulator() {
                         className={cn(
                           "inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium border",
                           isTdi
-                            ? "border-rose-500/40 bg-rose-500/15 text-rose-300"
+                            ? "border-rose-500/40 bg-rose-500/15 text-danger"
                             : isInd
-                              ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+                              ? "border-amber-500/40 bg-amber-500/15 text-warning"
                               : isVic
-                                ? "border-purple-500/40 bg-purple-500/15 text-purple-300"
+                                ? "border-purple-500/40 bg-purple-500/15 text-purple-800"
                                 : "border-border/60 bg-surface text-fg",
                         )}
                       >
@@ -1146,8 +1146,8 @@ export function CypKineticsSimulator() {
                     className={cn(
                       "rounded-lg border p-4 text-xs leading-relaxed sm:text-sm",
                       alert.severity === "critical"
-                        ? "border-rose-500/40 bg-rose-500/10 text-rose-100"
-                        : "border-amber-500/40 bg-amber-500/10 text-amber-100",
+                        ? "border-rose-500/40 bg-rose-500/10 text-danger"
+                        : "border-amber-500/40 bg-amber-500/10 text-warning",
                     )}
                   >
                     <div className="flex items-center gap-2 font-bold">

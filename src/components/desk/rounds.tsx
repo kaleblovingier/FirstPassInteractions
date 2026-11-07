@@ -320,7 +320,7 @@ function RoundCard({
                 Study these names
               </Button>
             ) : null}
-            <Button size="sm" variant="secondary" onClick={onReveal} aria-pressed={revealed}>
+            <Button size="sm" variant="secondary" onClick={onReveal}>
               {revealed ? "Hide teach" : "Reveal teach"}
             </Button>
           </div>

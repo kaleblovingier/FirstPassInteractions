@@ -362,7 +362,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-[11px]">
                 <div>
                   <label className="block text-muted font-medium mb-1">Select Beta-Lactam</label>
-                  <select
+                  <select aria-label="Beta-lactam"
                     value={betaLactamDrug}
                     onChange={(e) => {
                       const drug = e.target.value;
@@ -614,7 +614,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-[11px]">
                 <div>
                   <label className="block text-muted font-medium mb-1">Aminoglycoside</label>
-                  <select
+                  <select aria-label="Aminoglycoside"
                     value={agAgent}
                     onChange={(e) => {
                       const a = e.target.value as "gentamicin" | "tobramycin" | "amikacin";
@@ -649,7 +649,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
                       onChange={(e) => setAgHeight(e.target.value)}
                       className="h-8 font-mono text-xs w-20"
                     />
-                    <select
+                    <select aria-label="Sex"
                       value={agSex}
                       onChange={(e) => setAgSex(e.target.value as "male" | "female")}
                       className="h-8 rounded border border-border bg-surface-sunken px-2 text-xs text-fg"

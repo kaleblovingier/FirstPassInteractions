@@ -75,7 +75,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10 text-danger dark:text-red-400">
               <Brain className="h-5 w-5" />
             </div>
             <div>
@@ -93,7 +93,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
               className={cn(
                 "text-[11px] font-semibold border",
                 onDesk.hasStatusEpilepticusAgent
-                  ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800"
+                  ? "bg-amber-500/10 text-warning dark:text-amber-300 border-amber-300 dark:border-amber-800"
                   : "bg-surface-sunken text-muted border-border",
               )}
             >
@@ -158,7 +158,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
               <span>Seizure Duration (min)</span>
               <span className="font-mono text-fg font-bold">{seizureDurationMinutes} min</span>
             </div>
-            <input
+            <input aria-label="Seizure duration (minutes)"
               type="range"
               min={0}
               max={120}
@@ -523,7 +523,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
             </Badge>
           </div>
 
-          <div className="overflow-x-auto">
+          <div role="region" aria-label="Antiseizure loading dose table" tabIndex={0} className="overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-sunken text-muted font-medium">
@@ -548,7 +548,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                       {c.calculatedDoseMg} {c.drugId === "fosphenytoin" ? "mg PE" : "mg"}
                     </td>
                     <td className="p-2.5 text-muted">{c.maxInfusionRate}</td>
-                    <td className="p-2.5 text-center font-bold text-purple-600 dark:text-purple-400">
+                    <td className="p-2.5 text-center font-bold text-purple-800 dark:text-purple-400">
                       {c.esett60MinEfficacyPct}%
                       <span className="text-[9px] text-muted block font-mono font-normal">
                         ({c.esettEfficacyCi95})
@@ -565,7 +565,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                         </Badge>
                       )}
                     </td>
-                    <td className="p-2.5 text-[10px] text-red-600 dark:text-red-400">
+                    <td className="p-2.5 text-[10px] text-danger dark:text-red-400">
                       {c.criticalContraindications[0] || "None specified"}
                     </td>
                   </tr>
@@ -614,7 +614,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
             <div className="rounded-lg bg-surface-sunken p-3.5 border border-border space-y-2">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-fg">Synaptic GABA-A Density Remaining</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                <span className="font-mono font-bold text-blue-800 dark:text-blue-400">
                   {receptorKinetics.currentKinetics.synapticGabaADensityPct}%
                 </span>
               </div>
@@ -633,7 +633,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
             <div className="rounded-lg bg-surface-sunken p-3.5 border border-border space-y-2">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-fg">Synaptic NMDA / AMPA Density (Excitatory)</span>
-                <span className="font-mono font-bold text-red-600 dark:text-red-400">
+                <span className="font-mono font-bold text-danger dark:text-red-400">
                   {receptorKinetics.currentKinetics.synapticNmdaDensityPct}%
                 </span>
               </div>
@@ -652,7 +652,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
           </div>
 
           {/* Milestone Decay Curve Table */}
-          <div className="overflow-x-auto">
+          <div role="region" aria-label="Receptor change by seizure duration table" tabIndex={0} className="overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-sunken text-muted font-medium">
@@ -676,13 +676,13 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                       )}
                     >
                       <td className="p-2 text-fg">{pt.timeMinutes} min</td>
-                      <td className="p-2 text-blue-600 dark:text-blue-400">
+                      <td className="p-2 text-blue-800 dark:text-blue-400">
                         {pt.synapticGabaADensityPct}%
                       </td>
-                      <td className="p-2 text-amber-600 dark:text-amber-400">
+                      <td className="p-2 text-warning dark:text-amber-400">
                         {pt.benzodiazepineFoldResistance}x
                       </td>
-                      <td className="p-2 text-red-600 dark:text-red-400">
+                      <td className="p-2 text-danger dark:text-red-400">
                         {pt.synapticNmdaDensityPct}%
                       </td>
                       <td className="p-2 font-sans text-fg">{pt.clinicalPhaseName}</td>
@@ -771,7 +771,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                   <span className="text-[11px] text-muted block mt-0.5">
                     Infuse over {osmotherapy.hypertonicSaline234.infusionTimeMinutes}
                   </span>
-                  <span className="text-[10px] text-cyan-700 dark:text-cyan-300 block font-mono mt-1">
+                  <span className="text-[10px] text-cyan-800 dark:text-cyan-300 block font-mono mt-1">
                     Delivers 120 mEq Na+ &amp; 120 mEq Cl- (8,008 mOsm/L)
                   </span>
                 </div>
@@ -819,7 +819,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                   <span className="text-[11px] text-muted block mt-0.5">
                     Volume: {osmotherapy.mannitol20.calculatedVolumeMlLow} to {osmotherapy.mannitol20.calculatedVolumeMlHigh} mL (20% solution)
                   </span>
-                  <span className="text-[10px] text-amber-700 dark:text-amber-300 block font-mono mt-1">
+                  <span className="text-[10px] text-warning dark:text-amber-300 block font-mono mt-1">
                     Infuse over {osmotherapy.mannitol20.infusionDurationMinutes}
                   </span>
                 </div>
