@@ -14,6 +14,7 @@ import type { EnzymeRole, Finding, HostContext, Severity } from "@/lib/drugs/typ
 import { ENZYMES, ITEM_KIND_LABEL, SEVERITY_LABEL } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
+import { DeskOnlyNotice, GradePath, SourceReviewList } from "./basis-review";
 import { DeskReaders } from "./readers";
 import { NarcoticBridge } from "./narcotic-bridge";
 import { watchLine } from "@/lib/drugs/window";
@@ -1248,7 +1249,9 @@ function CheckRow({
             </button>
           ) : null}
           <WhyThisGrade finding={finding} />
+          <GradePath finding={finding} />
           <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Sources to check</p>
+          <DeskOnlyNotice finding={finding} />
           <div className="flex flex-wrap gap-2">
             {basis.map((b) =>
               b.href ? (
@@ -1269,6 +1272,7 @@ function CheckRow({
               ),
             )}
           </div>
+          <SourceReviewList finding={finding} />
           {action}
         </div>
       ) : null}

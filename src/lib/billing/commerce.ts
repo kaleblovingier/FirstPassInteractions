@@ -1,5 +1,7 @@
 /** Public pay / write lines — the operator asked these onto the desk. */
 
+import { INTENDED_USERS } from "@/lib/regulatory";
+
 export const OPERATOR = {
   name: "Kaleb Lovingier",
   venmo: "kaleblovingier",
@@ -100,7 +102,7 @@ export const TRY_THREE = [
 ] as const;
 
 /** Plain "who it's for" line — Plans hero and pitch. */
-export const WHO_FOR = "For licensed healthcare professionals, and for students in accredited health-professions programs using it for education under faculty or preceptor supervision.";
+export const WHO_FOR = INTENDED_USERS;
 
 /** Short Plans FAQ. Contact answers reuse OPERATOR lines only — no new handles. */
 export const PLANS_FAQ = [
