@@ -222,6 +222,25 @@ describe("public/sw.js", () => {
     assert.deepEqual(names.sort(), ["fp-offline-v2-assets", "fp-offline-v2-pages", "someone-elses-cache"]);
     assert.deepEqual(caches.paths("-pages").sort(), ["/", "/drug/ketamine", "/enzyme/cyp3a4", "/enzymes", "/pairs"]);
   });
+
+  it("a new version that activates offline keeps the old copy of each page and its assets", async () => {
+    const caches = fakeCaches();
+    const routes = { "/drug/ketamine": shellHtml };
+    const v1 = boot({ version: "v1", routes, caches });
+    await v1.install();
+    await v1.activate();
+    await v1.request("/drug/ketamine");
+
+    const v2 = boot({ version: "v2", routes, caches });
+    await v2.install();
+    v2.state.offline = true;
+    await v2.activate();
+    assert.ok(!(await caches.keys()).includes("fp-offline-v1-pages"), "old caches still go");
+    assert.ok(caches.paths("-pages").includes("/drug/ketamine"), "page kept");
+    assert.ok(caches.paths("-assets").includes("/assets/main-123.js"), "its assets kept");
+    const offline = await v2.request("/drug/ketamine");
+    assert.equal(await offline.text(), shellHtml);
+  });
 });
 
 describe("scripts/sw-version.mjs", () => {

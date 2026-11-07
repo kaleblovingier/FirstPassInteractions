@@ -111,6 +111,27 @@ async function carriedPages(oldNames) {
   return out.slice(-PAGE_CAP);
 }
 
+/** Copy an older worker's cached page `p`, and the cached assets it loads, into this version's caches. */
+async function keepOldCopy(oldNames, p) {
+  for (const name of oldNames) {
+    if (!name.endsWith("-pages")) continue;
+    const res = await (await caches.open(name)).match(p);
+    if (!res) continue;
+    await store(PAGES, p, res.clone());
+    for (const a of await assetsOf(res)) {
+      for (const assetName of oldNames) {
+        if (!assetName.endsWith("-assets")) continue;
+        const hit = await (await caches.open(assetName)).match(a);
+        if (hit) {
+          await store(ASSETS, a, hit);
+          break;
+        }
+      }
+    }
+    return;
+  }
+}
+
 self.addEventListener("install", (e) => {
   e.waitUntil(precacheShell().then(() => self.skipWaiting()));
 });
@@ -120,9 +141,14 @@ self.addEventListener("activate", (e) => {
     (async () => {
       const old = (await caches.keys()).filter((k) => k.startsWith("fp-offline-") && !k.startsWith(`${VERSION}-`));
       const carry = await carriedPages(old);
-      for (const k of old) await caches.delete(k);
       await self.clients.claim();
-      for (const p of carry) await cachePage(p, true);
+      // Re-fetch first and delete the old caches last, so a deploy that activates offline keeps
+      // the copy the reader already had (and the assets it loads) instead of losing it.
+      for (const p of carry) {
+        await cachePage(p, true);
+        if (!(await (await caches.open(PAGES)).match(p))) await keepOldCopy(old, p);
+      }
+      for (const k of old) await caches.delete(k);
     })(),
   );
 });
