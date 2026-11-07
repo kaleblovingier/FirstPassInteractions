@@ -96,6 +96,7 @@ const PkExplorer = lazy(() => import("./pk").then((m) => ({ default: m.PkExplore
 const ClinicalBoard = lazy(() => import("./clinical").then((m) => ({ default: m.ClinicalBoard })));
 const StudyPage = lazy(() => import("./study").then((m) => ({ default: m.StudyPage })));
 const WatchPage = lazy(() => import("./watch").then((m) => ({ default: m.WatchPage })));
+const SwapPreview = lazy(() => import("./swap-preview").then((m) => ({ default: m.SwapPreview })));
 const Foundry = lazy(() => import("./foundry").then((m) => ({ default: m.Foundry })));
 const Dossier = lazy(() => import("./dossier").then((m) => ({ default: m.Dossier })));
 const HelpPage = lazy(() => import("./help").then((m) => ({ default: m.HelpPage })));
@@ -230,10 +231,8 @@ export function DeskApp() {
     () => ({ phenotypes, smoking, ketamineRoute, cannabisRoute, alcohol, age, kidney, preg }),
     [phenotypes, smoking, ketamineRoute, cannabisRoute, alcohol, age, kidney, preg],
   );
-  const report = useMemo(
-    () => analyze(selected, host, parseDoses(doses)),
-    [selected, host, doses],
-  );
+  const amounts = useMemo(() => parseDoses(doses), [doses]);
+  const report = useMemo(() => analyze(selected, host, amounts), [selected, host, amounts]);
   const hostDrugs = useMemo(
     () => applyHost(selected.map((id) => DRUG_BY_ID[id]).filter(Boolean), host),
     [selected, host],
@@ -776,6 +775,9 @@ export function DeskApp() {
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
                   )}
+                  <Suspense fallback={<DeskFallback />}>
+                    <SwapPreview ids={selected} host={host} amounts={amounts} />
+                  </Suspense>
                   <Suspense fallback={<DeskFallback />}>
                     <Dossier ids={selected} host={host} />
                   </Suspense>

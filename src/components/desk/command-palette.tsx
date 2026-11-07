@@ -4,6 +4,7 @@ import { Command } from "cmdk";
 import { Search, X } from "lucide-react";
 import { isPaletteShortcut, paletteGroups, type PaletteItem } from "@/lib/drugs/palette";
 import { useDesk } from "@/lib/drugs/store";
+import { readHistory, type TraySnapshot } from "@/lib/drugs/tray-history";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,9 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const selected = useDesk((s) => s.selected);
-  const groups = useMemo(() => paletteGroups(query), [query]);
+  // Read when the palette opens: the list lives in this browser only and changes as trays are cleared or swapped.
+  const [recent, setRecent] = useState<TraySnapshot[]>([]);
+  const groups = useMemo(() => paletteGroups(query, recent), [query, recent]);
   const opener = useRef<HTMLElement | null>(null);
   // Off when the pick moves focus itself: to a station, a new page, or the checkout drawer a full tray opens.
   const restore = useRef(true);
@@ -24,6 +27,7 @@ export function CommandPalette() {
   function show(from: Element | null) {
     opener.current = from instanceof HTMLElement && from !== document.body ? from : null;
     restore.current = true;
+    setRecent(readHistory().recent);
     setQuery("");
     setOpen(true);
   }
@@ -51,6 +55,8 @@ export function CommandPalette() {
     } else if (item.kind === "page") {
       restore.current = false;
       window.location.assign(item.id);
+    } else if (item.kind === "tray") {
+      desk.load(item.ids, item.ketamineRoute ? { ketamineRoute: item.ketamineRoute } : undefined);
     } else if (!desk.add(item.id)) restore.current = false;
     setOpen(false);
   }
@@ -83,12 +89,12 @@ export function CommandPalette() {
           >
             <Dialog.Title className="sr-only">Search everything</Dialog.Title>
             <Dialog.Description className="sr-only">
-              Go to a desk view, clinical station or page, or add a drug to the tray.
+              Go to a desk view, clinical station or page, add a drug to the tray, or reopen a recent tray.
             </Dialog.Description>
             <Command label="Search everything" shouldFilter={false} vimBindings={false}>
               <div className="flex items-center gap-2 border-b border-border p-3">
                 <Command.Input asChild value={query} onValueChange={setQuery}>
-                  <Input placeholder="Drug, station, view or page" />
+                  <Input placeholder="Drug, station, view, page or recent tray" />
                 </Command.Input>
                 <Dialog.Close asChild>
                   <Button variant="ghost" size="icon" aria-label="Close">
@@ -107,7 +113,9 @@ export function CommandPalette() {
                     }
                   >
                     {g.items.map((item) => {
-                      const onTray = item.kind === "drug" && selected.includes(item.id);
+                      const onTray =
+                        (item.kind === "drug" && selected.includes(item.id)) ||
+                        (item.kind === "tray" && item.ids.join("+") === selected.join("+"));
                       const locked = item.kind === "station" && !selected.length;
                       return (
                         <Command.Item
