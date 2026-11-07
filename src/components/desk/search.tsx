@@ -133,10 +133,12 @@ export function DrugSearch() {
 
   return (
     <div>
-      <div className="flex items-start gap-2">
+      {/* Wraps below about 400px: the / key switch drops under the field, so the field and its
+          placeholder keep the full row on a phone instead of losing a third of it. */}
+      <div className="flex flex-wrap items-start justify-end gap-2">
       <div
         ref={rootRef}
-        className="relative min-w-0 flex-1"
+        className="relative min-w-[min(100%,16rem)] flex-1"
         onBlur={(e) => {
           // WCAG 2.4.11 / 1.4.13: close the suggestion list when keyboard focus leaves the
           // search, so the open list can't cover the controls that receive focus next.
@@ -196,7 +198,7 @@ export function DrugSearch() {
           full
             ? `${cap} items added · remove one to add another`
             : selected.length === 1
-              ? "Add a second item — brand, generic, or salt form"
+              ? "Add a second item: brand, generic, or salt form"
               : mat
                 ? "Try methadone, clonidine, or naloxone"
                 : "Try Ozempic, xylazine, or metformin HCl"
@@ -356,7 +358,7 @@ export function DrugSearch() {
                         <button
                           type="button"
                           disabled={onDesk}
-                          className="min-h-9 rounded-md bg-bg-sunken px-2.5 py-1 text-left text-xs text-fg hover:bg-accent-soft disabled:opacity-60"
+                          className="min-h-9 rounded-md bg-bg-sunken px-2.5 py-1 text-left text-xs text-fg hover:bg-accent-soft disabled:opacity-60 pointer-coarse:min-h-11"
                           onClick={() => (s.drug ? pick(s.drug.id) : pickCombo(s.combo))}
                         >
                           <span className="font-medium">{s.label}</span>
@@ -378,7 +380,7 @@ export function DrugSearch() {
                   <button
                     key={hint}
                     type="button"
-                    className="rounded-full bg-bg-sunken px-2.5 py-1 text-xs font-medium text-fg hover:bg-accent-soft"
+                    className="min-h-9 rounded-full bg-bg-sunken px-2.5 py-1 text-xs font-medium text-fg hover:bg-accent-soft pointer-coarse:min-h-11"
                     onClick={() => {
                       setQ(hint);
                       setOpen(true);
@@ -392,7 +394,7 @@ export function DrugSearch() {
             )}
             <button
               type="button"
-              className="mt-2 min-h-10 rounded-md px-2 text-sm font-medium text-accent underline underline-offset-2 hover:bg-accent-soft"
+              className="mt-2 min-h-10 rounded-md px-2 text-sm pointer-coarse:min-h-11 font-medium text-accent underline underline-offset-2 hover:bg-accent-soft"
               onClick={() => setView("library")}
             >
               Browse the full library
@@ -404,7 +406,7 @@ export function DrugSearch() {
           type="button"
           aria-pressed={slashOff}
           onClick={toggleSlash}
-          className="h-12 min-h-[44px] shrink-0 whitespace-nowrap rounded-lg bg-bg-sunken px-3 text-xs font-medium text-fg shadow-[var(--shadow-border)] hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+          className="h-12 shrink-0 whitespace-nowrap rounded-lg bg-bg-sunken px-3 text-xs font-medium text-fg shadow-[var(--shadow-border)] hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         >
           {slashOff ? "Turn on / key" : "Turn off / key"}
         </button>
@@ -419,23 +421,25 @@ export function DrugSearch() {
           {selected.length < 2 ? (
             <p className="text-xs leading-relaxed text-muted">
               {slashOff ? (
-                "The / key is off. Search a name, or tap a starter below — add two items to see mapped pair findings."
+                "The / key is off. Search a name, or tap a starter below. Add two items to see mapped pair findings."
               ) : (
                 <>
-                  Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.
-                  Search a name, or tap a starter below — add two items to see mapped pair findings.
+                  <span className="pointer-coarse:hidden">
+                    Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.{" "}
+                  </span>
+                  Search a name, or tap a starter below. Add two items to see mapped pair findings.
                 </>
               )}
             </p>
           ) : null}
-          <div className="flex flex-wrap gap-1.5" aria-label="Quick-add teaching starters">
+          <div role="group" className="flex flex-wrap gap-1.5" aria-label="Quick-add teaching starters">
             {availableQuickChips(selected).map((chip) => (
               <button
                 key={chip.id}
                 type="button"
                 title={chip.hint}
                 onClick={() => pick(chip.id)}
-                className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-fg hover:bg-accent-soft"
+                className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-fg hover:bg-accent-soft pointer-coarse:h-11"
               >
                 {chip.label}
                 <span className="ml-1.5 text-[10px] font-normal text-muted">{chip.hint}</span>
@@ -445,8 +449,10 @@ export function DrugSearch() {
         </div>
       ) : selected.length < 2 && !q ? (
         <p className="mt-2 px-1 text-xs leading-relaxed text-muted">
-          Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.
-          Search generic, brand, salt form, or street name — then add a second item to see pair findings.
+          <span className="pointer-coarse:hidden">
+            Press <kbd className="rounded-xs bg-bg-sunken px-1 font-mono text-[10px]">/</kbd> to focus.{" "}
+          </span>
+          Search generic, brand, salt form, or street name, then add a second item to see pair findings.
         </p>
       ) : null}
     </div>
