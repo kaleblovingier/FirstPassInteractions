@@ -81,7 +81,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
       <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-teal-500/10 text-teal-800">
               <Pill className="size-5" />
             </div>
             <div>
@@ -229,7 +229,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                 />
                 <div className="flex justify-between text-[10px] text-muted-foreground">
                   <span>Mild (5-12)</span>
-                  <span className="font-medium text-amber-400">Target (12-13+)</span>
+                  <span className="font-medium text-warning">Target (12-13+)</span>
                   <span>Severe (25+)</span>
                 </div>
               </div>
@@ -335,11 +335,11 @@ export function MoudStation({ ids, host }: MoudStationProps) {
               <div className="mt-3 space-y-2 text-xs">
                 <div>
                   <span className="font-semibold text-foreground">Buprenorphine Dose:</span>{" "}
-                  <span className="font-mono text-teal-400">{currentBerneseStep.buprenorphineDose}</span>
+                  <span className="font-mono text-teal-800">{currentBerneseStep.buprenorphineDose}</span>
                 </div>
                 <div>
                   <span className="font-semibold text-foreground">Full-Agonist Instruction:</span>{" "}
-                  <span className="text-amber-300 font-medium">{currentBerneseStep.fullAgonistInstruction}</span>
+                  <span className="text-warning font-medium">{currentBerneseStep.fullAgonistInstruction}</span>
                 </div>
                 <div>
                   <span className="font-semibold text-foreground">Clinical Pearl:</span>{" "}
@@ -384,7 +384,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                       onClick={() => setSelectedBerneseDay(s.day)}
                     >
                       <td className="py-2.5 font-mono">Day {s.day}</td>
-                      <td className="py-2.5 font-mono text-teal-400">{s.buprenorphineDose}</td>
+                      <td className="py-2.5 font-mono text-teal-800">{s.buprenorphineDose}</td>
                       <td className="py-2.5 text-muted-foreground">{s.fullAgonistInstruction}</td>
                       <td className="py-2.5 font-mono">~{s.estimatedReceptorOccupancyPercent}%</td>
                     </tr>
@@ -481,7 +481,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
             <div className="mt-2 space-y-2.5 text-xs">
               <div className="rounded-lg bg-muted/40 p-3">
                 <span className="font-semibold text-foreground">Hourly Infusion Rate:</span>{" "}
-                <span className="font-mono text-teal-400 font-bold">{naloxonePlan.hourlyContinuousInfusionMg} mg/hour</span>{" "}
+                <span className="font-mono text-teal-800 font-bold">{naloxonePlan.hourlyContinuousInfusionMg} mg/hour</span>{" "}
                 (2/3 of waking bolus)
               </div>
               <div className="rounded-lg bg-muted/40 p-3">
@@ -490,7 +490,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
               </div>
               <div className="rounded-lg bg-muted/40 p-3">
                 <span className="font-semibold text-foreground">Mandatory Observation Period:</span>{" "}
-                <span className="font-mono text-amber-300 font-bold">&gt;= {naloxonePlan.minimumObservationHours} hours</span> post-overdose
+                <span className="font-mono text-warning font-bold">&gt;= {naloxonePlan.minimumObservationHours} hours</span> post-overdose
               </div>
             </div>
 
@@ -505,7 +505,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
       {activeTab === "xylazine" && (
         <div className="rounded-xl border border-border/80 bg-card p-5 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-danger">
               <ShieldAlert className="size-5" />
             </div>
             <div>
@@ -516,7 +516,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
             </div>
           </div>
 
-          <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-200">
+          <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-danger">
             <div className="flex items-start gap-2">
               <AlertTriangle className="size-4 shrink-0 text-red-400" />
               <span>{xylazineProtocol.naloxoneResponseAlert}</span>

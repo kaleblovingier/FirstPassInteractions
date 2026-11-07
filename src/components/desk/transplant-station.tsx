@@ -80,7 +80,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
       <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-800">
               <ShieldAlert className="size-5" />
             </div>
             <div>
@@ -214,7 +214,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
               </div>
             </div>
 
-            <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-200">
+            <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-danger">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="size-4 shrink-0 text-red-400" />
                 <span>{currentCniGuide.cellularPartitioningNote}</span>
@@ -358,7 +358,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
       {activeTab === "thiopurine" && (
         <div className="rounded-xl border border-border/80 bg-card p-5 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-danger">
               <AlertTriangle className="size-5" />
             </div>
             <div>
@@ -371,7 +371,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
             </div>
           </div>
 
-          <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-200">
+          <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-danger">
             <span className="font-bold">MANDATORY RULE:</span> {thiopurineResult.mandatoryDoseReductionRule}
           </div>
 

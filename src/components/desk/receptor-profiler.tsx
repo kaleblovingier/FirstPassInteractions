@@ -102,12 +102,12 @@ function getTierBadgeClasses(tier: AffinityTier): {
   switch (tier) {
     case "Sub-nanomolar":
       return {
-        badge: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30",
+        badge: "bg-purple-500/15 text-purple-800 dark:text-purple-300 border-purple-500/30",
         dot: "bg-purple-600",
       };
     case "High":
       return {
-        badge: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30",
+        badge: "bg-rose-500/15 text-danger dark:text-rose-300 border-rose-500/30",
         dot: "bg-rose-600",
       };
     case "Moderate":
@@ -117,7 +117,7 @@ function getTierBadgeClasses(tier: AffinityTier): {
       };
     case "Low":
       return {
-        badge: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30",
+        badge: "bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/30",
         dot: "bg-blue-600",
       };
     case "Negligible":
@@ -849,13 +849,13 @@ export function ReceptorProfiler() {
 
                 <div className="space-y-2 rounded-lg bg-surface-2/60 p-3 text-xs">
                   <div>
-                    <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                    <span className="font-bold text-success dark:text-emerald-400">
                       Agonism Consequences:{" "}
                     </span>
                     <span className="text-fg/80">{target.agonismConsequences}</span>
                   </div>
                   <div>
-                    <span className="font-bold text-rose-700 dark:text-rose-400">
+                    <span className="font-bold text-danger dark:text-rose-400">
                       Antagonism Consequences:{" "}
                     </span>
                     <span className="text-fg/80">{target.antagonismConsequences}</span>
@@ -912,11 +912,11 @@ export function ReceptorProfiler() {
 
             <div className="space-y-2 rounded-lg bg-surface-2 p-3.5 text-xs leading-relaxed">
               <div>
-                <strong className="text-emerald-700 dark:text-emerald-400">Agonism: </strong>
+                <strong className="text-success dark:text-emerald-400">Agonism: </strong>
                 <span>{RECEPTOR_TARGETS[activeReceptorKey].agonismConsequences}</span>
               </div>
               <div>
-                <strong className="text-rose-700 dark:text-rose-400">Antagonism: </strong>
+                <strong className="text-danger dark:text-rose-400">Antagonism: </strong>
                 <span>{RECEPTOR_TARGETS[activeReceptorKey].antagonismConsequences}</span>
               </div>
               <div>

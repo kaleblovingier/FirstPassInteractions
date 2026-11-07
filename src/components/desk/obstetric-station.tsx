@@ -135,7 +135,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-500/10 text-pink-800 dark:text-pink-400">
               <Baby className="h-5 w-5" />
             </div>
             <div>
@@ -153,7 +153,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
               className={cn(
                 "text-[11px] font-semibold border",
                 onDesk.hasObstetricDrug
-                  ? "bg-pink-500/10 text-pink-700 dark:text-pink-300 border-pink-300 dark:border-pink-800"
+                  ? "bg-pink-500/10 text-pink-800 dark:text-pink-300 border-pink-300 dark:border-pink-800"
                   : "bg-surface-sunken text-muted border-border",
               )}
             >

@@ -219,7 +219,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
               className={cn(
                 "gap-1.5 transition-all text-xs font-medium",
                 copiedHandout
-                  ? "bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600"
+                  ? "bg-emerald-700 text-white hover:bg-emerald-800"
                   : "bg-primary text-primary-foreground hover:bg-primary/90",
               )}
             >
@@ -1017,7 +1017,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
                 </div>
               ))}
             </div>
-            <p className="font-mono text-[10px] text-muted/80 pt-1">
+            <p className="font-mono text-[10px] text-subtle pt-1">
               {NOT_CLEARED} {PI_FOOTER}
             </p>
           </div>

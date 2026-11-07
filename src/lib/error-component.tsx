@@ -33,7 +33,7 @@ export function AppErrorComponent({ error }: ErrorComponentProps) {
         "bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
       }
     >
-      <span className="text-red-500" aria-hidden="true">
+      <span className="text-danger" aria-hidden="true">
         <TriangleAlert className="size-10" strokeWidth={2} />
       </span>
       <h1 className="text-lg font-semibold">Something went wrong</h1>

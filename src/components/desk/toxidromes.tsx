@@ -141,7 +141,7 @@ export function ToxidromeSimulator() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-rose-500/15 text-rose-500">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-rose-500/15 text-danger">
                 <HeartPulse className="size-5" />
               </span>
               <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
@@ -189,7 +189,7 @@ export function ToxidromeSimulator() {
               <ShieldAlert className="mt-0.5 size-5 shrink-0 text-rose-500" />
               <div className="flex-1 space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-rose-500">
+                  <p className="text-xs font-bold uppercase tracking-wider text-danger">
                     Active Desk Toxidrome Detection ({trayResults.length} {trayResults.length === 1 ? "pattern" : "patterns"})
                   </p>
                   <span className="text-[11px] font-mono text-muted">
@@ -208,11 +208,11 @@ export function ToxidromeSimulator() {
                           {res.toxidrome ? res.toxidrome.name : res.antidotePathway?.targetToxicity}
                         </span>
                         {res.matchedAntidoteDrugIds.length > 0 ? (
-                          <Badge tone="ok" className="border-emerald-500 text-emerald-500 text-[10px] bg-emerald-500/10">
+                          <Badge tone="ok" className="border-emerald-500 text-success text-[10px] bg-emerald-500/10">
                             Antidote On Desk
                           </Badge>
                         ) : (
-                          <Badge tone="warn" className="border-amber-500 text-amber-500 text-[10px] bg-amber-500/10">
+                          <Badge tone="warn" className="border-amber-500 text-warning text-[10px] bg-amber-500/10">
                             Antidote Missing
                           </Badge>
                         )}
@@ -313,7 +313,7 @@ export function ToxidromeSimulator() {
           </button>
 
           {recentlyLoadedTray && (
-            <span className="text-xs font-medium text-emerald-500 flex items-center gap-1 animate-in fade-in">
+            <span className="text-xs font-medium text-success flex items-center gap-1 animate-in fade-in">
               <Check className="size-3.5" />
               Loaded {recentlyLoadedTray} onto desk
             </span>
@@ -391,7 +391,7 @@ export function ToxidromeSimulator() {
             <Stethoscope className="size-4 shrink-0 text-rose-500" />
             <span>Diagnostic Assistant</span>
             {activeObservedCount > 0 && (
-              <span className="rounded-full bg-rose-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-500">
+              <span className="rounded-full bg-rose-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-danger">
                 {activeObservedCount}
               </span>
             )}
@@ -448,12 +448,12 @@ export function ToxidromeSimulator() {
               <thead>
                 <tr className="border-b border-border bg-bg-sunken text-muted font-medium">
                   <th className="p-3 sm:p-4 w-48 font-semibold text-fg">Clinical Parameter</th>
-                  <th className="p-3 sm:p-4 text-amber-500">Anticholinergic</th>
-                  <th className="p-3 sm:p-4 text-emerald-500">Cholinergic</th>
-                  <th className="p-3 sm:p-4 text-indigo-500">Opioid</th>
-                  <th className="p-3 sm:p-4 text-rose-500">Sympathomimetic</th>
-                  <th className="p-3 sm:p-4 text-cyan-500">Sedative-Hypnotic</th>
-                  <th className="p-3 sm:p-4 text-purple-500">Serotonergic</th>
+                  <th className="p-3 sm:p-4 text-warning">Anticholinergic</th>
+                  <th className="p-3 sm:p-4 text-success">Cholinergic</th>
+                  <th className="p-3 sm:p-4 text-indigo-700">Opioid</th>
+                  <th className="p-3 sm:p-4 text-danger">Sympathomimetic</th>
+                  <th className="p-3 sm:p-4 text-cyan-800">Sedative-Hypnotic</th>
+                  <th className="p-3 sm:p-4 text-purple-800">Serotonergic</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -581,7 +581,7 @@ export function ToxidromeSimulator() {
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <BookOpen className="size-4 text-amber-500" />
-                <h3 className="font-semibold text-sm text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+                <h3 className="font-semibold text-sm text-warning dark:text-amber-400 uppercase tracking-wide">
                   Classical Teaching Mnemonic
                 </h3>
               </div>
@@ -592,7 +592,7 @@ export function ToxidromeSimulator() {
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 pt-2">
                 {activeToxidrome.mnemonicItems.map((item, idx) => (
                   <div key={idx} className="rounded-lg border border-border bg-surface p-3 space-y-1">
-                    <p className="font-bold text-xs text-amber-600 dark:text-amber-400">{item.phrase}</p>
+                    <p className="font-bold text-xs text-warning dark:text-amber-400">{item.phrase}</p>
                     <p className="font-semibold text-xs text-fg">{item.manifestation}</p>
                     <p className="text-[11px] text-muted leading-relaxed">{item.physiologicalBasis}</p>
                   </div>
@@ -705,7 +705,7 @@ export function ToxidromeSimulator() {
                 </h3>
                 <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-base text-emerald-600 dark:text-emerald-400">
+                    <span className="font-bold text-base text-success dark:text-emerald-400">
                       {activeToxidrome.primaryAntidote.name}
                     </span>
                     {activeToxidrome.primaryAntidote.antidoteDrugId && (
@@ -713,7 +713,7 @@ export function ToxidromeSimulator() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleAddDrug(activeToxidrome.primaryAntidote.antidoteDrugId!)}
-                        className="min-h-[36px] text-xs gap-1 border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
+                        className="min-h-[36px] text-xs gap-1 border-emerald-500/40 text-success dark:text-emerald-400 hover:bg-emerald-500/10"
                       >
                         <Plus className="size-3" />
                         Add Antidote
@@ -734,7 +734,7 @@ export function ToxidromeSimulator() {
                         <li key={idx}>{p}</li>
                       ))}
                       {activeToxidrome.primaryAntidote.boxedWarningsOrContraindications.map((w, idx) => (
-                        <li key={idx} className="text-rose-500 font-medium">{w}</li>
+                        <li key={idx} className="text-danger font-medium">{w}</li>
                       ))}
                     </ul>
                   </div>
@@ -769,7 +769,7 @@ export function ToxidromeSimulator() {
                   className={cn(
                     "flex min-h-[48px] flex-col items-start justify-center rounded-lg border p-2.5 text-left transition-all",
                     isSelected
-                      ? "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold shadow-xs"
+                      ? "border-emerald-500 bg-emerald-500/10 text-success dark:text-emerald-400 font-semibold shadow-xs"
                       : "border-border bg-surface text-fg hover:bg-surface-2",
                   )}
                 >
@@ -785,7 +785,7 @@ export function ToxidromeSimulator() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <Badge tone="ok" className="border-emerald-500 text-emerald-600 dark:text-emerald-400 uppercase font-mono text-[10px]">
+                  <Badge tone="ok" className="border-emerald-500 text-success dark:text-emerald-400 uppercase font-mono text-[10px]">
                     Molecular Antidote Pathway
                   </Badge>
                   <span className="text-xs font-mono text-muted">{activeAntidote.biochemicalClassification}</span>
@@ -836,7 +836,7 @@ export function ToxidromeSimulator() {
                     key={step.step}
                     className="flex flex-col sm:flex-row items-start gap-3 rounded-lg border border-border bg-surface-2/60 p-3.5 transition-colors hover:bg-surface-2"
                   >
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-success dark:text-emerald-400 font-bold text-xs">
                       {step.step}
                     </div>
 
@@ -893,7 +893,7 @@ export function ToxidromeSimulator() {
                   Clinical Monitoring &amp; Precautions
                 </h3>
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3.5 space-y-2 text-xs">
-                  <div className="font-semibold text-amber-600 dark:text-amber-400">Essential Monitoring Parameters:</div>
+                  <div className="font-semibold text-warning dark:text-amber-400">Essential Monitoring Parameters:</div>
                   <ul className="list-disc list-inside text-xs text-muted space-y-1">
                     {activeAntidote.monitoringParameters.map((m, idx) => (
                       <li key={idx}>{m}</li>
@@ -902,10 +902,10 @@ export function ToxidromeSimulator() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <p className="text-xs font-semibold text-rose-500">Boxed Warnings &amp; Key Contraindications:</p>
+                  <p className="text-xs font-semibold text-danger">Boxed Warnings &amp; Key Contraindications:</p>
                   <ul className="list-disc list-inside text-xs text-muted space-y-1">
                     {activeAntidote.boxedWarningsOrContraindications.map((w, idx) => (
-                      <li key={idx} className="text-rose-500 font-medium">{w}</li>
+                      <li key={idx} className="text-danger font-medium">{w}</li>
                     ))}
                   </ul>
                 </div>
@@ -1204,9 +1204,9 @@ export function ToxidromeSimulator() {
                             className={cn(
                               "text-[10px] font-semibold",
                               match.confidenceTier === "High"
-                                ? "border-emerald-500 text-emerald-500 bg-emerald-500/10"
+                                ? "border-emerald-500 text-success bg-emerald-500/10"
                                 : match.confidenceTier === "Moderate"
-                                ? "border-amber-500 text-amber-500 bg-amber-500/10"
+                                ? "border-amber-500 text-warning bg-amber-500/10"
                                 : "border-border text-muted",
                             )}
                           >
@@ -1236,13 +1236,13 @@ export function ToxidromeSimulator() {
                       {/* Matching Features Chips */}
                       {match.matchingFeatures.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                          <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                          <span className="text-[11px] font-semibold text-success dark:text-emerald-400">
                             Matching:
                           </span>
                           {match.matchingFeatures.map((feat, idx) => (
                             <span
                               key={idx}
-                              className="rounded-md border border-emerald-500/30 bg-surface px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400"
+                              className="rounded-md border border-emerald-500/30 bg-surface px-2 py-0.5 text-[11px] font-medium text-success dark:text-emerald-400"
                             >
                               ✓ {feat}
                             </span>
@@ -1253,13 +1253,13 @@ export function ToxidromeSimulator() {
                       {/* Divergent Features Chips */}
                       {match.divergentFeatures.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                          <span className="text-[11px] font-semibold text-rose-500">
+                          <span className="text-[11px] font-semibold text-danger">
                             Divergent:
                           </span>
                           {match.divergentFeatures.map((div, idx) => (
                             <span
                               key={idx}
-                              className="rounded-md border border-rose-500/30 bg-surface px-2 py-0.5 text-[11px] font-medium text-rose-500"
+                              className="rounded-md border border-rose-500/30 bg-surface px-2 py-0.5 text-[11px] font-medium text-danger"
                             >
                               ✗ {div}
                             </span>

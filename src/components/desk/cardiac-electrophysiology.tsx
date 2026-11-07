@@ -98,7 +98,7 @@ export function CardiacElectrophysiology() {
       <header className="flex flex-col gap-3 rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-rose-500/10 border border-rose-500/20 text-danger dark:text-rose-400">
               <Heart className="size-6 animate-pulse" />
             </div>
             <div>
@@ -112,7 +112,7 @@ export function CardiacElectrophysiology() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-rose-500/10 text-danger dark:text-rose-300 border border-rose-500/20">
               <Activity className="size-3.5" />
               FD&amp;C Act § 520(o)(1)(E)
             </span>
@@ -192,7 +192,7 @@ export function CardiacElectrophysiology() {
                 className={cn(
                   "min-h-[38px] px-2.5 rounded-md transition-all flex items-center gap-1",
                   simulateAfterdepolarization === "ead"
-                    ? "bg-rose-500 text-white font-bold shadow-sm"
+                    ? "bg-rose-700 text-white font-bold shadow-sm"
                     : "text-muted hover:text-fg",
                 )}
               >
@@ -206,7 +206,7 @@ export function CardiacElectrophysiology() {
                 className={cn(
                   "min-h-[38px] px-2.5 rounded-md transition-all flex items-center gap-1",
                   simulateAfterdepolarization === "dad"
-                    ? "bg-amber-600 text-white font-bold shadow-sm"
+                    ? "bg-amber-700 text-white font-bold shadow-sm"
                     : "text-muted hover:text-fg",
                 )}
               >
@@ -561,7 +561,7 @@ export function CardiacElectrophysiology() {
           <div className="rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)] flex flex-col gap-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-danger dark:text-rose-400">
                   Detailed Phase Analysis
                 </span>
                 <h3 className="text-xl font-bold text-fg">{currentPhase.name}</h3>
@@ -577,7 +577,7 @@ export function CardiacElectrophysiology() {
             {/* Ventricular vs Nodal Mechanics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="rounded-xl bg-surface-2 border border-border p-4 flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-bold text-sm">
+                <div className="flex items-center gap-2 text-sky-800 dark:text-sky-400 font-bold text-sm">
                   <Heart className="size-4" />
                   <span>Ventricular Fast Response</span>
                 </div>
@@ -587,7 +587,7 @@ export function CardiacElectrophysiology() {
               </div>
 
               <div className="rounded-xl bg-surface-2 border border-border p-4 flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
+                <div className="flex items-center gap-2 text-warning dark:text-amber-400 font-bold text-sm">
                   <Gauge className="size-4" />
                   <span>SA / AV Nodal Pacemaker Response</span>
                 </div>
@@ -615,10 +615,10 @@ export function CardiacElectrophysiology() {
                         className={cn(
                           "rounded px-1.5 py-0.5 text-[10px] font-bold uppercase",
                           flux.direction === "inward"
-                            ? "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20"
+                            ? "bg-rose-500/10 text-danger dark:text-rose-300 border border-rose-500/20"
                             : flux.direction === "outward"
-                            ? "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20"
-                            : "bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20",
+                            ? "bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border border-cyan-500/20"
+                            : "bg-purple-500/10 text-purple-800 dark:text-purple-300 border border-purple-500/20",
                         )}
                       >
                         {flux.direction}
@@ -683,13 +683,13 @@ export function CardiacElectrophysiology() {
           <div className="rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)] flex flex-col gap-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-400">
                   {currentClass.code}
                 </span>
                 <h3 className="text-xl font-bold text-fg">{currentClass.name}</h3>
                 <p className="text-xs text-muted mt-0.5">{currentClass.subheading}</p>
               </div>
-              <span className="rounded-full bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 text-xs font-semibold text-cyan-700 dark:text-cyan-300">
+              <span className="rounded-full bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 text-xs font-semibold text-cyan-800 dark:text-cyan-300">
                 {currentClass.useDependenceProfile}
               </span>
             </div>
@@ -791,7 +791,7 @@ export function CardiacElectrophysiology() {
 
             {/* Proarrhythmic Risks & Clinical Surveillance */}
             <div className="rounded-xl bg-rose-500/5 border border-rose-500/20 p-4 flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-rose-700 dark:text-rose-300 font-bold text-xs uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-danger dark:text-rose-300 font-bold text-xs uppercase tracking-wider">
                 <AlertTriangle className="size-4" />
                 Key Proarrhythmic Hazards &amp; Surveillance
               </div>
@@ -870,7 +870,7 @@ export function CardiacElectrophysiology() {
             >
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 text-[11px] font-mono font-bold text-purple-700 dark:text-purple-300">
+                  <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 text-[11px] font-mono font-bold text-purple-800 dark:text-purple-300">
                     {channel.gene}
                   </span>
                   <span className="text-[11px] font-mono text-muted">
@@ -1116,7 +1116,7 @@ export function CardiacElectrophysiology() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-fg">Class IA Dual Nav1.5 / hERG</span>
-                  <span className="text-[10px] font-mono text-amber-600 font-bold">High</span>
+                  <span className="text-[10px] font-mono text-warning font-bold">High</span>
                 </div>
                 <span className="text-[11px] text-muted">Quinidine + Procainamide</span>
               </button>
@@ -1128,7 +1128,7 @@ export function CardiacElectrophysiology() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-fg">Reverse Use-Dependence</span>
-                  <span className="text-[10px] font-mono text-amber-600 font-bold">High</span>
+                  <span className="text-[10px] font-mono text-warning font-bold">High</span>
                 </div>
                 <span className="text-[11px] text-muted">Dofetilide + Atenolol (Bradycardia Trap)</span>
               </button>

@@ -1339,7 +1339,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
         <div>
           <strong>FD&amp;C Act § 520(o)(1)(E) Regulatory Notice:</strong> {ANTICOAGULATION_CDS_DISCLAIMER}
         </div>
-        <div className="text-[9px] text-muted/80">
+        <div className="text-[9px] text-subtle">
           <strong>Key Peer-Reviewed Literature Citations:</strong>{" "}
           {ANTICOAGULATION_LITERATURE_CITATIONS.slice(0, 4).join(" &bull; ")}
         </div>
