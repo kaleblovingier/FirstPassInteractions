@@ -11,10 +11,27 @@ export interface PgxRow {
   action: string;
 }
 
+/** CPIC's list of every gene–drug pair it has looked at, with or without a guideline. */
+export const CPIC_GENE_DRUG_LIST = "https://cpicpgx.org/genes-drugs/";
+
+/**
+ * Where a card's rows come from.
+ * - `guideline`: a CPIC guideline that names this card's drug and gene.
+ * - `none`: CPIC has published no guideline for this drug and gene. The rows paraphrase
+ *   another source (FDA label, DPWG), which `note` names. Never link a guideline written
+ *   for a different drug here.
+ * - `unlinked`: this card does not hold a checked CPIC guideline address for the drug.
+ *   The UI sends the reader to the CPIC gene–drug list instead of guessing one.
+ */
+export type PgxSource =
+  | { kind: "guideline"; url: string }
+  | { kind: "none"; note: string }
+  | { kind: "unlinked"; note: string };
+
 export interface PgxCard {
   gene: string;
   cpic: CpicLevel;
-  guideline: string;
+  source: PgxSource;
   clinpgx: string;
   rows: PgxRow[];
   pearl: string;
@@ -22,6 +39,22 @@ export interface PgxCard {
 
 function g(path: string) {
   return `https://cpicpgx.org/guidelines/${path}`;
+}
+function guide(url: string): PgxSource {
+  return { kind: "guideline", url };
+}
+function none(note: string): PgxSource {
+  return { kind: "none", note };
+}
+
+/** The CPIC guideline page for a card, or null when CPIC has none for this drug. */
+export function guidelineUrl(card: PgxCard): string | null {
+  return card.source.kind === "guideline" ? card.source.url : null;
+}
+
+/** The one page a card points to first: its CPIC guideline, else the drug's ClinPGx page. */
+export function cardLink(card: PgxCard): string {
+  return guidelineUrl(card) ?? card.clinpgx;
 }
 function c(q: string) {
   return `https://www.clinpgx.org/search?query=${encodeURIComponent(q)}`;
@@ -39,7 +72,7 @@ function ssri2c19(drug: string): PgxCard {
   return {
     gene: "CYP2C19",
     cpic: "A",
-    guideline: SSRI,
+    source: guide(SSRI),
     clinpgx: c(drug),
     rows: [
       { pheno: "UM / RM", action: "Consider a drug not primarily cleared by 2C19." },
@@ -55,7 +88,7 @@ function tca2d6(drug: string): PgxCard {
   return {
     gene: "CYP2D6",
     cpic: "A",
-    guideline: TCA,
+    source: guide(TCA),
     clinpgx: c(drug),
     rows: [
       { pheno: "UM", action: "Avoid tertiary TCAs; pick a 2D6-independent agent." },
@@ -75,7 +108,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "A",
-      guideline: SSRI,
+      source: guide(SSRI),
       clinpgx: c("sertraline"),
       rows: [
         { pheno: "UM / RM", action: "Usual start; optional switch if no response." },
@@ -90,7 +123,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: SSRI,
+      source: guide(SSRI),
       clinpgx: c("paroxetine"),
       rows: [
         { pheno: "UM", action: "Pick an SSRI not primarily 2D6-cleared." },
@@ -105,7 +138,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: SSRI,
+      source: guide(SSRI),
       clinpgx: c("fluvoxamine"),
       rows: [
         { pheno: "NM / IM / UM", action: "Usual labeled dose." },
@@ -119,7 +152,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: SSRI,
+      source: guide(SSRI),
       clinpgx: c("venlafaxine"),
       rows: [
         { pheno: "UM", action: "Consider an alternative; parent may be low." },
@@ -134,7 +167,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: SSRI,
+      source: guide(SSRI),
       clinpgx: c("vortioxetine"),
       rows: [
         { pheno: "NM / IM / UM", action: "Usual labeled dose (max 20 mg)." },
@@ -147,7 +180,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "C",
-      guideline: SSRI,
+      source: guide(SSRI),
       clinpgx: c("fluoxetine"),
       rows: [
         { pheno: "any", action: "No gene-based dose. Parent + norfluoxetine still occupy SERT." },
@@ -165,7 +198,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: CODEINE,
+      source: guide(CODEINE),
       clinpgx: c("codeine"),
       rows: [
         { pheno: "UM", action: "Avoid — excess morphine, respiratory depression." },
@@ -181,7 +214,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: CODEINE,
+      source: guide(CODEINE),
       clinpgx: c("tramadol"),
       rows: [
         { pheno: "UM", action: "Avoid — excess O-desmethyltramadol." },
@@ -196,7 +229,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "B",
-      guideline: CODEINE,
+      source: guide(CODEINE),
       clinpgx: c("hydrocodone"),
       rows: [
         { pheno: "UM", action: "Monitor; hydromorphone formation may rise." },
@@ -210,7 +243,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: g("cpic-guideline-for-tamoxifen-based-on-cyp2d6-genotype/"),
+      source: guide(g("cpic-guideline-for-tamoxifen-based-on-cyp2d6-genotype/")),
       clinpgx: c("tamoxifen"),
       rows: [
         { pheno: "UM / NM", action: "Standard adjuvant dosing." },
@@ -224,7 +257,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: g("cpic-guideline-for-atomoxetine-based-on-cyp2d6-genotype/"),
+      source: guide(g("cpic-guideline-for-atomoxetine-based-on-cyp2d6-genotype/")),
       clinpgx: c("atomoxetine"),
       rows: [
         { pheno: "UM", action: "May need the upper labeled range; check plasma if no response." },
@@ -238,7 +271,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "A",
-      guideline: g("guideline-for-ondansetron-and-tropisetron-and-cyp2d6-genotype/"),
+      source: guide(g("guideline-for-ondansetron-and-tropisetron-and-cyp2d6-genotype/")),
       clinpgx: c("ondansetron"),
       rows: [
         { pheno: "UM", action: "Increased metabolism — consider a non-5-HT3 alternative for CINV." },
@@ -252,7 +285,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "B",
-      guideline: SSRI,
+      source: none("CPIC has no guideline for aripiprazole. The PM row paraphrases the FDA label and DPWG."),
       clinpgx: c("aripiprazole"),
       rows: [
         { pheno: "PM", action: "Label: half the usual dose. DPWG agrees. 3A4 inhibitors stack on top." },
@@ -265,7 +298,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "C",
-      guideline: SSRI,
+      source: none("CPIC has no guideline for risperidone. The PM row paraphrases DPWG."),
       clinpgx: c("risperidone"),
       rows: [
         { pheno: "PM", action: "DPWG: extra-pyramidal risk. Paliperidone (9-OH) is mostly renal." },
@@ -279,7 +312,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "A",
-      guideline: g("guideline-for-clopidogrel-and-cyp2c19/"),
+      source: guide(g("guideline-for-clopidogrel-and-cyp2c19/")),
       clinpgx: c("clopidogrel"),
       rows: [
         { pheno: "UM / RM / NM", action: "Standard 75 mg if indicated." },
@@ -293,7 +326,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "A",
-      guideline: PPI,
+      source: guide(PPI),
       clinpgx: c("omeprazole"),
       rows: [
         { pheno: "UM", action: "Increase dose ~100% for H. pylori / erosive disease." },
@@ -307,7 +340,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "A",
-      guideline: PPI,
+      source: guide(PPI),
       clinpgx: c("esomeprazole"),
       rows: [
         { pheno: "UM", action: "Increase dose for H. pylori / erosive disease." },
@@ -320,7 +353,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "A",
-      guideline: PPI,
+      source: guide(PPI),
       clinpgx: c("lansoprazole"),
       rows: [
         { pheno: "UM", action: "Increase dose for H. pylori / erosive disease." },
@@ -333,7 +366,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "A",
-      guideline: g("guideline-for-voriconazole-and-cyp2c19/"),
+      source: guide(g("guideline-for-voriconazole-and-cyp2c19/")),
       clinpgx: c("voriconazole"),
       rows: [
         { pheno: "UM / RM", action: "Choose another antifungal if possible — subtherapeutic risk." },
@@ -347,7 +380,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "C",
-      guideline: TCA,
+      source: none("CPIC has no guideline for diazepam and CYP2C19."),
       clinpgx: c("diazepam"),
       rows: [
         { pheno: "PM", action: "Longer parent and nordiazepam. Lorazepam / oxazepam skip this CYP." },
@@ -359,7 +392,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C19",
       cpic: "C",
-      guideline: TCA,
+      source: none("CPIC has no guideline for clobazam. The PM row paraphrases the Onfi label."),
       clinpgx: c("clobazam"),
       rows: [
         { pheno: "PM", action: "Label: start lower. N-desmethylclobazam stacks." },
@@ -371,7 +404,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C9 / VKORC1",
       cpic: "A",
-      guideline: g("guideline-for-warfarin-and-cyp2c9-and-vkorc1/"),
+      source: guide(g("guideline-for-warfarin-and-cyp2c9-and-vkorc1/")),
       clinpgx: c("warfarin"),
       rows: [
         { pheno: "2C9 NM", action: "Algorithm or usual 5 mg-ish start, INR-guided." },
@@ -385,7 +418,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C9",
       cpic: "A",
-      guideline: g("guideline-for-phenytoin-and-cyp2c9-and-hla-b/"),
+      source: guide(g("guideline-for-phenytoin-and-cyp2c9-and-hla-b/")),
       clinpgx: c("phenytoin"),
       rows: [
         { pheno: "NM", action: "Usual labeled dosing with levels." },
@@ -399,7 +432,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C9",
       cpic: "A",
-      guideline: NSAID,
+      source: guide(NSAID),
       clinpgx: c("celecoxib"),
       rows: [
         { pheno: "NM / IM", action: "Lowest effective dose." },
@@ -412,7 +445,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C9",
       cpic: "A",
-      guideline: NSAID,
+      source: guide(NSAID),
       clinpgx: c("ibuprofen"),
       rows: [
         { pheno: "PM", action: "Lowest dose, shortest course." },
@@ -425,7 +458,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2C9",
       cpic: "A",
-      guideline: NSAID,
+      source: guide(NSAID),
       clinpgx: c("meloxicam"),
       rows: [
         { pheno: "PM", action: "25–50% of the usual dose or pick another NSAID." },
@@ -438,7 +471,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "SLCO1B1",
       cpic: "A",
-      guideline: STATIN,
+      source: guide(STATIN),
       clinpgx: c("simvastatin"),
       rows: [
         { pheno: "normal function", action: "Usual dose; 80 mg is already a relic." },
@@ -452,7 +485,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "SLCO1B1",
       cpic: "A",
-      guideline: STATIN,
+      source: guide(STATIN),
       clinpgx: c("atorvastatin"),
       rows: [
         { pheno: "decreased / poor", action: "Dose-cap or switch; 3A4 inhibitors still raise parent." },
@@ -464,10 +497,14 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "SLCO1B1 / ABCG2",
       cpic: "A",
-      guideline: STATIN,
+      source: guide(STATIN),
       clinpgx: c("rosuvastatin"),
       rows: [
-        { pheno: "decreased OATP / BCRP", action: "Consider a lower start, especially in East Asian ancestry." },
+        {
+          pheno: "decreased OATP / BCRP",
+          action:
+            "Consider a lower start. Reduced-function ABCG2 alleles are more frequent in some East Asian populations; the genotype, not ancestry, decides the row.",
+        },
       ],
       pearl: "Not a 3A4 statin. Transporters and 2C9 are the quieter genes. Gemfibrozil is still a fibrate PD.",
     },
@@ -476,7 +513,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "TPMT / NUDT15",
       cpic: "A",
-      guideline: THIO,
+      source: guide(THIO),
       clinpgx: c("azathioprine"),
       rows: [
         { pheno: "NM / NM", action: "Usual start; still watch WBC." },
@@ -491,7 +528,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "TPMT / NUDT15",
       cpic: "A",
-      guideline: THIO,
+      source: guide(THIO),
       clinpgx: c("mercaptopurine"),
       rows: [
         { pheno: "IM", action: "Reduce start." },
@@ -504,21 +541,21 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "HLA-B*58:01",
       cpic: "A",
-      guideline: g("guideline-for-allopurinol-and-hla-b/"),
+      source: guide(g("guideline-for-allopurinol-and-hla-b/")),
       clinpgx: c("allopurinol"),
       rows: [
         { pheno: "negative", action: "Usual gout / urate dosing." },
         { pheno: "positive", action: "Avoid — SJS/TEN. Pick febuxostat only after HLA thinking, or another class." },
       ],
       pearl:
-        "Ancestry with higher *58:01 frequency (Han Chinese, Korean, Thai) is why this gene is on the label. The azathioprine marrow pair is a different enzyme (XO), not HLA.",
+        "HLA-B*58:01 is more frequent in some populations (for example Han Chinese, Korean, and Thai). The genotype, not ancestry, decides the row — ancestry-based screening can miss carriers. The azathioprine marrow pair is a different enzyme (XO), not HLA.",
     },
   ],
   carbamazepine: [
     {
       gene: "HLA-B*15:02 / HLA-A*31:01",
       cpic: "A",
-      guideline: g("guideline-for-carbamazepine-and-hla-b/"),
+      source: guide(g("guideline-for-carbamazepine-and-hla-b/")),
       clinpgx: c("carbamazepine"),
       rows: [
         { pheno: "*15:02 positive", action: "Avoid unless already tolerant >3 months. SJS/TEN." },
@@ -533,7 +570,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "HLA-B*15:02",
       cpic: "A",
-      guideline: g("guideline-for-carbamazepine-and-hla-b/"),
+      source: guide(g("guideline-for-carbamazepine-and-hla-b/")),
       clinpgx: c("oxcarbazepine"),
       rows: [
         { pheno: "positive", action: "Avoid in a carbamazepine-naive patient." },
@@ -546,7 +583,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP3A5",
       cpic: "A",
-      guideline: g("guideline-for-tacrolimus-and-cyp3a5/"),
+      source: guide(g("guideline-for-tacrolimus-and-cyp3a5/")),
       clinpgx: c("tacrolimus"),
       rows: [
         { pheno: "non-expresser (*3/*3)", action: "CPIC: standard recommended start, with TDM." },
@@ -560,7 +597,7 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2B6",
       cpic: "A",
-      guideline: g("cpic-guideline-for-efavirenz-based-on-cyp2b6-genotype/"),
+      source: guide(g("cpic-guideline-for-efavirenz-based-on-cyp2b6-genotype/")),
       clinpgx: c("efavirenz"),
       rows: [
         { pheno: "NM / UM", action: "Usual 600 mg if still used." },
@@ -574,7 +611,9 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2B6",
       cpic: "B",
-      guideline: g("cpic-guideline-for-efavirenz-based-on-cyp2b6-genotype/"),
+      source: none(
+        "CPIC has no methadone guideline. The 2021 CPIC opioid guideline looked at CYP2B6 and methadone and made no recommendation.",
+      ),
       clinpgx: c("methadone"),
       rows: [
         { pheno: "PM", action: "Higher exposure, longer QTc watch. Not a CPIC A table." },
@@ -588,7 +627,10 @@ export const PGX: Record<string, PgxCard[]> = {
     {
       gene: "CYP2D6",
       cpic: "C",
-      guideline: c("metoprolol"),
+      source: {
+        kind: "unlinked",
+        note: "This card holds no checked CPIC guideline address for metoprolol. The CPIC gene–drug list shows what CPIC has published for it.",
+      },
       clinpgx: c("metoprolol"),
       rows: [
         { pheno: "PM", action: "DPWG: start lower, watch bradycardia. Atenolol skips 2D6." },
