@@ -8,6 +8,7 @@ import {
   RedeemInput,
   type BillingChecked,
 } from "./rpc-input";
+import type { LicenseVerdict } from "./license-verdict";
 
 type RedeemBody = BillingChecked<{ key: string }>;
 type MintBody = BillingChecked<{ pin: string; plan: "pro" | "lab" | "life"; soldTo: string }>;
@@ -19,6 +20,20 @@ export async function handleRedeemLicense(data: RedeemBody) {
   const { verifyKey } = await import("./license.server");
   if (!data.value.key.trim()) return { ok: false as const, reason: "Paste a key." };
   return verifyKey(data.value.key);
+}
+
+/**
+ * Server check of a key the desk saved earlier. The paid unlock lives in the browser, so the desk
+ * asks this on load rather than trusting its own storage. Mints nothing, stores nothing, and does
+ * not echo why a key failed.
+ */
+export async function handleRecheckLicense(data: RedeemBody): Promise<LicenseVerdict> {
+  if (!data.ok || !data.value.key.trim()) return { status: "invalid" };
+  const { licenseSecretsReady, verifyKey } = await import("./license.server");
+  if (!licenseSecretsReady()) return { status: "unavailable" };
+  const res = verifyKey(data.value.key);
+  if (!res.ok) return { status: "invalid" };
+  return { status: "valid", plan: res.plan, lifetime: res.lifetime, license: res.license, program: res.program ?? null };
 }
 
 export async function handleMintLicenseKey(data: MintBody) {
@@ -81,6 +96,10 @@ export async function handleMintLicenseBatch(data: BatchBody) {
 export const redeemLicense = createServerFn({ method: "POST" })
   .validator((input: unknown) => checkBillingInput("redeemLicense", RedeemInput, input))
   .handler(async ({ data }) => handleRedeemLicense(data));
+
+export const recheckLicense = createServerFn({ method: "POST" })
+  .validator((input: unknown) => checkBillingInput("recheckLicense", RedeemInput, input))
+  .handler(async ({ data }) => handleRecheckLicense(data));
 
 export const mintLicenseKey = createServerFn({ method: "POST" })
   .validator((input: unknown) => checkBillingInput("mintLicenseKey", MintLicenseInput, input))

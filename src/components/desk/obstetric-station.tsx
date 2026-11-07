@@ -79,6 +79,12 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
   // Phenytoin binding calculator state
   const [measuredPhenytoinLevel, setMeasuredPhenytoinLevel] = useState<number>(8.5);
   const [measuredAlbuminGDl, setMeasuredAlbuminGDl] = useState<number>(3.1);
+  const systolicField = useDraftNumber(systolicBp, setSystolicBp, { min: 70, max: 250, fallback: 120 });
+  const diastolicField = useDraftNumber(diastolicBp, setDiastolicBp, { min: 40, max: 160, fallback: 80 });
+  const urineOutputField = useDraftNumber(urineOutputMlHr, setUrineOutputMlHr, { min: 0, max: 250, fallback: 0 });
+  const creatinineField = useDraftNumber(serumCreatinineMgDl, setSerumCreatinineMgDl, { min: 0.2, max: 8, fallback: 0.6 });
+  const phenytoinLevelField = useDraftNumber(measuredPhenytoinLevel, setMeasuredPhenytoinLevel, { min: 1, max: 50, fallback: 8 });
+  const albuminField = useDraftNumber(measuredAlbuminGDl, setMeasuredAlbuminGDl, { min: 1.5, max: 5, fallback: 3.1 });
 
   // Active Desk Report
   const report = useMemo(
@@ -213,16 +219,14 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
                 type="number"
                 min={70}
                 max={250}
-                value={systolicBp}
-                onChange={(e) => setSystolicBp(Number(e.target.value) || 120)}
+                {...systolicField}
                 className={cn("h-8 text-xs font-mono font-bold", systolicBp >= 160 ? "text-danger" : "text-fg")}
               />
               <Input
                 type="number"
                 min={40}
                 max={160}
-                value={diastolicBp}
-                onChange={(e) => setDiastolicBp(Number(e.target.value) || 80)}
+                {...diastolicField}
                 className={cn("h-8 text-xs font-mono font-bold", diastolicBp >= 110 ? "text-danger" : "text-fg")}
               />
             </div>
@@ -233,8 +237,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
               type="number"
               min={0}
               max={250}
-              value={urineOutputMlHr}
-              onChange={(e) => setUrineOutputMlHr(Number(e.target.value) || 0)}
+              {...urineOutputField}
               className={cn("h-8 text-xs font-mono", urineOutputMlHr < 30 ? "text-danger font-bold" : "text-fg")}
             />
           </div>
@@ -245,8 +248,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
               min={0.2}
               max={8.0}
               step={0.1}
-              value={serumCreatinineMgDl}
-              onChange={(e) => setSerumCreatinineMgDl(Number(e.target.value) || 0.6)}
+              {...creatinineField}
               className={cn("h-8 text-xs font-mono", serumCreatinineMgDl >= 1.2 ? "text-danger font-bold" : "text-fg")}
             />
           </div>
@@ -1025,8 +1027,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
                     min={1}
                     max={50}
                     step={0.5}
-                    value={measuredPhenytoinLevel}
-                    onChange={(e) => setMeasuredPhenytoinLevel(Number(e.target.value) || 8)}
+                    {...phenytoinLevelField}
                     className="h-8 text-xs font-mono"
                   />
                 </div>
@@ -1037,8 +1038,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
                     min={1.5}
                     max={5.0}
                     step={0.1}
-                    value={measuredAlbuminGDl}
-                    onChange={(e) => setMeasuredAlbuminGDl(Number(e.target.value) || 3.1)}
+                    {...albuminField}
                     className="h-8 text-xs font-mono"
                   />
                 </div>

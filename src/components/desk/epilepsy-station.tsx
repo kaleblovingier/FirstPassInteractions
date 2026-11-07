@@ -53,6 +53,8 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
   const [seizureDurationMinutes, setSeizureDurationMinutes] = useState<number>(25);
   const [serumSodium, setSerumSodium] = useState<number>(140);
   const [serumOsmolality, setSerumOsmolality] = useState<number>(295);
+  const sodiumField = useDraftNumber(serumSodium, setSerumSodium, { min: 115, max: 180, fallback: 140 });
+  const osmolalityField = useDraftNumber(serumOsmolality, setSerumOsmolality, { min: 260, max: 380, fallback: 295 });
 
   // Active Desk Report
   const report = useMemo(
@@ -182,8 +184,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
               type="number"
               min={115}
               max={180}
-              value={serumSodium}
-              onChange={(e) => setSerumSodium(Number(e.target.value) || 140)}
+              {...sodiumField}
               className="h-8 text-xs font-mono"
             />
             <span className="text-[9px] text-muted">Target: 145-155 (Ceiling 160)</span>
@@ -197,8 +198,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
               type="number"
               min={260}
               max={380}
-              value={serumOsmolality}
-              onChange={(e) => setSerumOsmolality(Number(e.target.value) || 295)}
+              {...osmolalityField}
               className="h-8 text-xs font-mono"
             />
             <span className="text-[9px] text-muted">Safety Ceiling &lt; 320 mOsm/kg</span>

@@ -273,7 +273,7 @@ Also out of scope: adding accounts, attaching `authMiddleware` while auth is off
 
 ## 5) Highest-impact incremental work (in order)
 
-1. ~~Schema-check `firstpass.desk.v7`~~ (done on main) and re-verify a non-free plan with the existing license server function (still open). ~~Add a reload control on `AppErrorComponent`.~~ Done on main.
+1. ~~Schema-check `firstpass.desk.v7`~~ (done on main) and ~~re-verify a non-free plan with the license server~~ (done: `recheckLicense` on desk load). ~~Add a reload control on `AppErrorComponent`.~~ Done on main.
 2. Lazy-load clinical stations from `clinical.tsx` without merging files.
 3. Lazy-load off-screen desk cards already gated by `view` in `app.tsx`, then compare one production entry-chunk size.
 4. ~~Point billing server functions at a bounded parser.~~ Done on main. Remove the `as any` on the PayPal order (still open).

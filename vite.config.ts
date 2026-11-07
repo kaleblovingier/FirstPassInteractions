@@ -12,6 +12,8 @@ import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
+// @ts-expect-error JS plugin alongside the TS vite config
+import { swVersionPlugin } from "./scripts/sw-version.mjs";
 
 /** The files `src/lib/db.ts` globs — same directory, same non-recursive scope. */
 function hasGlobbedMigrations(root: string): boolean {
@@ -187,6 +189,8 @@ export default defineConfig(({ command, isPreview }) => ({
     // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
     grokPwaPlugin(),
     ogImagesPlugin(),
+    // Build-only: stamp public/sw.js with a build id so each deploy clears the old offline caches.
+    swVersionPlugin(),
     tailwindcss(),
     tanstackStart({
       // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /for-programs, /trust, /help, /glossary, sitemap.xml). /workup stays server-rendered: its ?case= view differs from a static page.
