@@ -815,6 +815,7 @@ export function RenalMechanisms() {
                 <div className="flex items-center gap-1 text-[11px] font-medium">
                   <button
                     type="button"
+                    aria-pressed={filterMembrane === "all"}
                     onClick={() => setFilterMembrane("all")}
                     className={cn(
                       "px-2.5 py-1 rounded-md transition-all",
@@ -825,6 +826,7 @@ export function RenalMechanisms() {
                   </button>
                   <button
                     type="button"
+                    aria-pressed={filterMembrane === "apical"}
                     onClick={() => setFilterMembrane("apical")}
                     className={cn(
                       "px-2.5 py-1 rounded-md transition-all",
@@ -835,6 +837,7 @@ export function RenalMechanisms() {
                   </button>
                   <button
                     type="button"
+                    aria-pressed={filterMembrane === "basolateral"}
                     onClick={() => setFilterMembrane("basolateral")}
                     className={cn(
                       "px-2.5 py-1 rounded-md transition-all",
@@ -845,6 +848,7 @@ export function RenalMechanisms() {
                   </button>
                   <button
                     type="button"
+                    aria-pressed={filterMembrane === "paracellular"}
                     onClick={() => setFilterMembrane("paracellular")}
                     className={cn(
                       "px-2.5 py-1 rounded-md transition-all",

@@ -536,6 +536,7 @@ function CompoundsShelf() {
           <button
             key={f.id}
             type="button"
+            aria-pressed={family === f.id}
             onClick={() => {
               setShelf("");
               setFamily(f.id);

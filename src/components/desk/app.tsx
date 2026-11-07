@@ -1061,6 +1061,7 @@ function EmptyState({
             <button
               key={l.id}
               type="button"
+              aria-pressed={lane === l.id}
               onClick={() => setLane(l.id)}
               className={cn(
                 "h-10 rounded-full px-3 text-xs font-medium",

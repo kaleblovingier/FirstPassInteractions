@@ -486,6 +486,7 @@ export function CardiacElectrophysiology() {
       <nav className="flex items-center gap-1.5 overflow-x-auto rounded-xl bg-surface border border-border p-1.5 shadow-[var(--shadow-border)] text-xs sm:text-sm font-semibold">
         <button
           type="button"
+          aria-pressed={activeTab === "phases"}
           onClick={() => setActiveTab("phases")}
           className={cn(
             "flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 transition-all",
@@ -499,6 +500,7 @@ export function CardiacElectrophysiology() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "classes"}
           onClick={() => setActiveTab("classes")}
           className={cn(
             "flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 transition-all",
@@ -512,6 +514,7 @@ export function CardiacElectrophysiology() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "mechanisms"}
           onClick={() => setActiveTab("mechanisms")}
           className={cn(
             "flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 transition-all",
@@ -525,6 +528,7 @@ export function CardiacElectrophysiology() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "channels"}
           onClick={() => setActiveTab("channels")}
           className={cn(
             "flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 transition-all",
@@ -538,6 +542,7 @@ export function CardiacElectrophysiology() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "tray"}
           onClick={() => setActiveTab("tray")}
           className={cn(
             "flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 transition-all",

@@ -491,6 +491,7 @@ export function CheckBoard({
               <button
                 key={t}
                 type="button"
+                aria-pressed={tier === t}
                 onClick={() => {
                   setTier(t);
                   setShowAll(false);

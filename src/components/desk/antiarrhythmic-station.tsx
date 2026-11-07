@@ -275,6 +275,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                 <span className="text-[11px] text-muted mr-1">Indication:</span>
                 <button
                   type="button"
+                  aria-pressed={indication === "hfref"}
                   onClick={() => setIndication("hfref")}
                   className={cn(
                     "px-2.5 py-1 rounded text-xs font-medium transition-colors",
@@ -285,6 +286,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
                 </button>
                 <button
                   type="button"
+                  aria-pressed={indication === "afib"}
                   onClick={() => setIndication("afib")}
                   className={cn(
                     "px-2.5 py-1 rounded text-xs font-medium transition-colors",

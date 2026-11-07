@@ -401,6 +401,7 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
                   <button
                     key={cat.id}
                     type="button"
+                    aria-pressed={category === cat.id}
                     onClick={() => setCategory(cat.id)}
                     className={`h-7 rounded-full px-2.5 text-[11px] font-medium ${
                       category === cat.id ? "bg-ink text-bg" : "bg-surface text-muted hover:text-fg"

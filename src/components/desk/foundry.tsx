@@ -427,6 +427,7 @@ export function Foundry() {
                 <button
                   key={id}
                   type="button"
+                  aria-pressed={tab === id}
                   onClick={() => setTab(id)}
                   className={
                     tab === id
@@ -782,6 +783,7 @@ function CloseDesk({
             <button
               key={id}
               type="button"
+              aria-pressed={plan === id}
               onClick={() => setPlan(id)}
               className={
                 plan === id

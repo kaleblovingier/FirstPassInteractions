@@ -86,6 +86,7 @@ export function EnzymeAtlas() {
           <button
             key={e}
             type="button"
+            aria-pressed={enzyme === e}
             onClick={() => setAtlasEnzyme(e)}
             title={ATLAS_ENZYME_PLAIN[e].nickname}
             className={cn(

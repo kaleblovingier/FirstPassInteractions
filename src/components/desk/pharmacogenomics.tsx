@@ -515,6 +515,7 @@ export function Pharmacogenomics() {
                   <button
                     key={lvl}
                     type="button"
+                    aria-pressed={activeLevelFilter === lvl}
                     onClick={() => setActiveLevelFilter(lvl)}
                     className={cn(
                       "min-h-[44px] rounded-lg px-3 text-xs font-bold transition-all",
