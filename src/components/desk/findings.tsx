@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
-import { basisFor } from "@/lib/drugs/basis";
+import { reviewBases } from "@/lib/drugs/basis-review";
 import { sourceLinkText } from "@/lib/drugs/grade-provenance";
 import { findingsOnTray, partitionFindings } from "@/lib/drugs/brief";
 import { clinicianScan, plainLanguageSummary } from "@/lib/drugs/interaction-summary";
@@ -10,6 +10,7 @@ import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { severitySurface, severityTone } from "./severity";
+import { DeskOnlyNotice, GradePath, SourceReviewNote } from "./basis-review";
 
 const SEVERITY_FILTERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
 type KindFilter = "all" | "pk" | "pd" | "geno" | "clinic" | "food";
@@ -199,11 +200,14 @@ function FindingCard({ finding }: { finding: Finding }) {
               <p className="mt-2 text-xs leading-relaxed text-muted">{finding.mechanism}</p>
             ) : null}
           </div>
+          <GradePath finding={finding} />
           <div className="space-y-2 rounded-md bg-bg-sunken px-3 py-2.5">
             <p className="font-mono text-[10px] uppercase tracking-wide text-muted">Sources to check</p>
-            {basisFor(finding).map((b) => (
+            <DeskOnlyNotice finding={finding} />
+            {reviewBases(finding).map(({ basis: b, note, provenance }) => (
               <div key={`${b.kind}-${b.label}`}>
                 <p className="text-xs font-medium text-fg">{b.label}</p>
+                <SourceReviewNote note={note} provenance={provenance} />
                 <p className="mt-0.5 text-sm leading-relaxed text-muted">{b.detail}</p>
                 {b.href ? (
                   <a

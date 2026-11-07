@@ -378,6 +378,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
                     <button
                       key={t}
                       type="button"
+                      aria-pressed={tofTwitches === t}
                       onClick={() => setTofTwitches(t)}
                       className={cn(
                         "flex-1 h-9 rounded text-xs font-semibold border transition-all",

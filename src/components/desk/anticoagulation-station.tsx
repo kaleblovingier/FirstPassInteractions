@@ -794,6 +794,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                         <button
                           key={d}
                           type="button"
+                          aria-pressed={daysOnCombinedTherapy === d}
                           onClick={() => setDaysOnCombinedTherapy(d)}
                           className={cn(
                             "px-3 py-1 rounded text-xs font-mono font-bold border transition-colors",

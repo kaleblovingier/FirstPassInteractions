@@ -313,6 +313,7 @@ export function CypKineticsSimulator() {
       <div className="flex flex-wrap gap-2 border-b border-border/60 pb-2">
         <button
           type="button"
+          aria-pressed={activeTab === "trajectory"}
           onClick={() => setActiveTab("trajectory")}
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all sm:text-sm",
@@ -326,6 +327,7 @@ export function CypKineticsSimulator() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "modes"}
           onClick={() => setActiveTab("modes")}
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all sm:text-sm",
@@ -339,6 +341,7 @@ export function CypKineticsSimulator() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "nuclear"}
           onClick={() => setActiveTab("nuclear")}
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all sm:text-sm",
@@ -352,6 +355,7 @@ export function CypKineticsSimulator() {
         </button>
         <button
           type="button"
+          aria-pressed={activeTab === "tray"}
           onClick={() => setActiveTab("tray")}
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all sm:text-sm",
@@ -425,6 +429,7 @@ export function CypKineticsSimulator() {
                       <button
                         key={d}
                         type="button"
+                        aria-pressed={stopDay === d}
                         onClick={() => {
                           setStopDay(d);
                           setSelectedDay(d);
@@ -449,6 +454,7 @@ export function CypKineticsSimulator() {
                       <button
                         key={d}
                         type="button"
+                        aria-pressed={totalDays === d}
                         onClick={() => setTotalDays(d)}
                         className={cn(
                           "min-h-[44px] min-w-[44px] rounded-md px-2.5 py-1 text-xs font-semibold transition-all",
@@ -976,6 +982,7 @@ export function CypKineticsSimulator() {
               <button
                 key={pathway.receptorId}
                 type="button"
+                aria-pressed={selectedReceptor === pathway.receptorId}
                 onClick={() => setSelectedReceptor(pathway.receptorId)}
                 className={cn(
                   "flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all sm:text-sm",

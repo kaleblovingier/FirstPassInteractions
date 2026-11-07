@@ -3,6 +3,8 @@ import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@
 import { DESK_PREHYDRATE_SCRIPT } from "@/lib/drugs/desk-persist";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { SiteHeader } from "@/components/site-header";
+import { showsSiteHeader } from "@/lib/seo/site-nav";
 import { siteOgMeta } from "@/lib/seo/og-meta";
 import { SITE_URL } from "@/lib/seo/pair-copy";
 import { siteJsonLdMeta } from "@/lib/seo/site-jsonld";
@@ -74,7 +76,13 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  component: () => (
+  component: RootDocument,
+});
+
+function RootDocument() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const site = showsSiteHeader(path);
+  return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
         <HeadContent />
@@ -82,11 +90,15 @@ export const Route = createRootRoute({
       <body className="bg-bg text-fg">
         <PreviewHostBridge />
         <OfflineVisitReporter />
+        {site ? <SiteHeader pathname={path} /> : null}
         <AuthProvider>
-          <Outlet />
+          {/* Target of the public pages' skip link. The desk has its own, to #main. */}
+          <div id="content" tabIndex={site ? -1 : undefined}>
+            <Outlet />
+          </div>
         </AuthProvider>
         <Scripts />
       </body>
     </html>
-  ),
-});
+  );
+}

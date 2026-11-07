@@ -201,6 +201,7 @@ export function MechanismIntersect() {
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
+          aria-pressed={activeCategory === "all"}
           onClick={() => setActiveCategory("all")}
           className={cn(
             "flex min-h-[44px] items-center gap-1.5 rounded-full px-4 text-xs font-medium transition cursor-pointer",
@@ -219,6 +220,7 @@ export function MechanismIntersect() {
           <button
             key={l.category}
             type="button"
+            aria-pressed={activeCategory === l.category}
             onClick={() => setActiveCategory(l.category)}
             className={cn(
               "flex min-h-[44px] items-center gap-1.5 rounded-full px-3.5 text-xs font-medium transition cursor-pointer",

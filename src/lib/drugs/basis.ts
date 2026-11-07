@@ -24,6 +24,12 @@ export interface FindingBasis {
   label: string;
   detail: string;
   href?: string;
+  /** Label section exactly as stored with the saved label line (e.g. "4 CONTRAINDICATIONS"). */
+  section?: string;
+  /** ISO day the saved label line or FDA table was retrieved. */
+  retrieved?: string;
+  /** True when the detail carries the label's own words, false when the saved line is paraphrased. */
+  verbatim?: boolean;
 }
 
 const BOXED: Record<string, { detail: string; href?: string }> = {
@@ -193,7 +199,13 @@ function fdaDdiBasis(finding: Finding): FindingBasis | null {
     detail += `, and ${victimName} as a ${sub.fdaClass ? `${SUBSTRATE_WORD[sub.fdaClass]} ` : ""}${target} substrate`;
   }
   detail += `. FDA grades the roles; the severity tier on this row is the desk's rule. Table content current as of ${FDA_DDI_SOURCE.contentCurrentAsOf}.`;
-  return { kind: "fda-ddi", label: "FDA interaction table", detail, href: FDA_DDI_SOURCE.url };
+  return {
+    kind: "fda-ddi",
+    label: "FDA interaction table",
+    detail,
+    href: FDA_DDI_SOURCE.url,
+    retrieved: FDA_DDI_SOURCE.retrieved,
+  };
 }
 
 /** Unordered pair key -> label-verified gold pairs (verbatim DailyMed quotes). */
@@ -225,6 +237,9 @@ function labelQuoteBasis(finding: Finding): FindingBasis | null {
     label: `${name} label, ${g.labelSection}`,
     detail: `The ${name} label ${verdict}: "${g.quote}"${g.paraphrased ? " (paraphrased)" : ""} Retrieved from DailyMed ${g.retrieved}.`,
     href: g.url,
+    section: g.labelSection,
+    retrieved: g.retrieved,
+    verbatim: !g.paraphrased,
   };
 }
 
@@ -245,6 +260,9 @@ function labelPinBasis(finding: Finding): FindingBasis | null {
     label: `${pin.labelDrug} label, Contraindications`,
     detail: parts.join(" "),
     href: pin.url,
+    section: pin.labelSection,
+    retrieved: pin.retrieved ?? LABEL_CONTRAINDICATIONS_RETRIEVED,
+    verbatim: true,
   };
 }
 /** Verbatim label line for a finding that carries a wave 18 conditional contraindication. */
@@ -257,6 +275,9 @@ function labelConditionalBasis(finding: Finding): FindingBasis | null {
     label: `${line.labelDrug} label, ${line.labelSection}`,
     detail: `The ${line.labelDrug} label lists this combination under Contraindications only ${line.scope}. ${line.labelSection}: "${line.quote}" Named in the label: "${line.labelExample}" The desk keeps this card below Avoid together because it does not know that condition. Retrieved from DailyMed ${line.retrieved}.`,
     href: line.url,
+    section: line.labelSection,
+    retrieved: line.retrieved,
+    verbatim: true,
   };
 }
 
@@ -286,6 +307,9 @@ function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
       label: `${L.brand} label, ${ci.section}`,
       detail: `The ${L.brand} label calls this combination contraindicated: "${ci.quote}" Retrieved from DailyMed ${L.retrieved}.`,
       href: L.url,
+      section: ci.section,
+      retrieved: L.retrieved,
+      verbatim: true,
     };
   }
   return {
@@ -297,6 +321,9 @@ function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
         : "The severity tier on this row is the desk's rule."
     } Retrieved from DailyMed ${L.retrieved}.`,
     href: L.url,
+    section: L.section,
+    retrieved: L.retrieved,
+    verbatim: true,
   };
 }
 

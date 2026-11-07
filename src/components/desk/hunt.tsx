@@ -325,6 +325,7 @@ export function HuntDesk() {
                 <button
                   key={id}
                   type="button"
+                  aria-pressed={prey === id}
                   onClick={() => setPrey(id)}
                   className={
                     prey === id
@@ -343,6 +344,7 @@ export function HuntDesk() {
             <button
               key={id}
               type="button"
+              aria-pressed={range === id}
               onClick={() => setRange(id)}
               className={
                 range === id

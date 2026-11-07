@@ -9,6 +9,8 @@ import { basisFor } from "../src/lib/drugs/basis.ts";
 const real = DRUGS.filter((d) => !d.id.startsWith("__"));
 const bySeverity: Record<string, { findings: number; deskOnly: number }> = {};
 const deskOnlyByRule: Record<string, number> = {};
+/** severity -> rule -> desk-only count, for the contraindicated and major rows. */
+const deskOnlyBySeverityRule: Record<string, Record<string, number>> = {};
 let total = 0;
 let deskOnly = 0;
 
@@ -23,6 +25,8 @@ for (let i = 0; i < real.length; i++) {
         row.deskOnly++;
         const rule = (f.id.split("__").pop() ?? f.id).replace(/-[a-z0-9]+$/, "");
         deskOnlyByRule[rule] = (deskOnlyByRule[rule] ?? 0) + 1;
+        const bucket = (deskOnlyBySeverityRule[f.severity] ??= {});
+        bucket[rule] = (bucket[rule] ?? 0) + 1;
       }
     }
   }
@@ -37,4 +41,10 @@ for (const sev of ["contraindicated", "major", "moderate", "minor"]) {
 console.log("Top desk-only rules:");
 for (const [rule, n] of Object.entries(deskOnlyByRule).sort((a, b) => b[1] - a[1]).slice(0, 15)) {
   console.log(`  ${rule}: ${n}`);
+}
+for (const sev of ["contraindicated", "major"]) {
+  const rules = Object.entries(deskOnlyBySeverityRule[sev] ?? {}).sort((a, b) => b[1] - a[1]);
+  if (!rules.length) continue;
+  console.log(`Desk-only ${sev} rules:`);
+  for (const [rule, n] of rules.slice(0, 10)) console.log(`  ${rule}: ${n}`);
 }

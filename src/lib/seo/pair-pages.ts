@@ -163,6 +163,7 @@ export function sitemapXml(): string {
     `${SITE_URL}/glossary`,
     `${SITE_URL}/workup`,
     `${SITE_URL}/trust`,
+    `${SITE_URL}/sources`,
     `${SITE_URL}/help`,
     `${SITE_URL}/privacy`,
     `${SITE_URL}/terms`,

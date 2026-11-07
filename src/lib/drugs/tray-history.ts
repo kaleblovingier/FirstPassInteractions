@@ -122,3 +122,15 @@ export function popUndo(): TraySnapshot | null {
   writeHistory({ ...cur, undo: null });
   return cur.undo;
 }
+
+/**
+ * The tray with `outId` replaced in place by `inId`, or null when that swap is
+ * not possible (same item, item not on the tray, replacement already on it, or
+ * not a catalog item). The tray keeps its length, so the plan's cap still holds.
+ */
+export function swapIds(ids: string[], outId: string, inId: string): string[] | null {
+  if (outId === inId) return null;
+  if (!ids.includes(outId) || ids.includes(inId)) return null;
+  if (!isCatalogId(inId) || inId.startsWith("__") || !DRUG_BY_ID[inId]) return null;
+  return ids.map((id) => (id === outId ? inId : id));
+}

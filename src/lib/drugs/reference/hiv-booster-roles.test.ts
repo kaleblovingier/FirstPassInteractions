@@ -33,9 +33,10 @@ test("'before' in the doc is the catalog on main for the five rows", () => {
 });
 
 test("the role change only raises grades, never to contraindicated, and leaves pinned pairs alone", () => {
-  // 2,051 pairs on this branch. A change to this number means the catalog or the
+  // 2,053 pairs (2,051 when written; +2 from the 2026-11-07 duplicate-row edit E1,
+  // Genvoya and Stribild with dextromethorphan-bupropion). A change to this number means the catalog or the
   // engine moved under the proposal; regenerate the doc so the list stays complete.
-  assert.equal(data.moved.length, 2051);
+  assert.equal(data.moved.length, 2053);
   for (const m of data.moved) {
     assert.ok(SEVERITY_RANK[m.after] > SEVERITY_RANK[m.before], `${m.changed}+${m.partner} goes down`);
     assert.notEqual(m.after, "contraindicated", `${m.changed}+${m.partner}`);

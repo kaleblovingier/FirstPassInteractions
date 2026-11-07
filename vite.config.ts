@@ -194,15 +194,15 @@ export default defineConfig(({ command, isPreview }) => ({
     swVersionPlugin(),
     tailwindcss(),
     tanstackStart({
-      // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /for-programs, /trust, /help, /glossary, sitemap.xml). /workup stays server-rendered: its ?case= view differs from a static page.
+      // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /for-programs, /trust, /sources, /help, /glossary, sitemap.xml). /workup stays server-rendered: its ?case= view differs from a static page.
       // /pairs links to every pair page and /enzymes to every enzyme page, so crawling covers them all.
       // The desk itself stays server-rendered as before.
       prerender: {
         enabled: true,
         crawlLinks: true,
-        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path === "/trust" || path === "/help" || path === "/glossary" || path === "/privacy" || path === "/terms" || path === "/cookies" || path === "/enzymes" || path.startsWith("/enzyme/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
+        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path === "/trust" || path === "/sources" || path === "/help" || path === "/glossary" || path === "/privacy" || path === "/terms" || path === "/cookies" || path === "/enzymes" || path.startsWith("/enzyme/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
       },
-      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/trust" }, { path: "/help" }, { path: "/glossary" }, { path: "/privacy" }, { path: "/terms" }, { path: "/cookies" }, { path: "/enzymes" }, { path: "/sitemap.xml" }],
+      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/trust" }, { path: "/sources" }, { path: "/help" }, { path: "/glossary" }, { path: "/privacy" }, { path: "/terms" }, { path: "/cookies" }, { path: "/enzymes" }, { path: "/sitemap.xml" }],
     }),
     ...(command === "build" || isPreview
       ? [

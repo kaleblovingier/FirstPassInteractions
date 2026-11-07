@@ -179,6 +179,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
         <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/60">
           <button
             type="button"
+            aria-pressed={activeTab === "apap"}
             onClick={() => setActiveTab("apap")}
             className={cn(
               "px-3 py-1.5 rounded-md font-medium text-xs transition-colors flex items-center gap-1.5",
@@ -207,6 +208,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
           </button>
           <button
             type="button"
+            aria-pressed={activeTab === "salicylate"}
             onClick={() => setActiveTab("salicylate")}
             className={cn(
               "px-3 py-1.5 rounded-md font-medium text-xs transition-colors flex items-center gap-1.5",
@@ -221,6 +223,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
           </button>
           <button
             type="button"
+            aria-pressed={activeTab === "opioid"}
             onClick={() => setActiveTab("opioid")}
             className={cn(
               "px-3 py-1.5 rounded-md font-medium text-xs transition-colors flex items-center gap-1.5",
@@ -235,6 +238,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
           </button>
           <button
             type="button"
+            aria-pressed={activeTab === "protocols"}
             onClick={() => setActiveTab("protocols")}
             className={cn(
               "px-3 py-1.5 rounded-md font-medium text-xs transition-colors flex items-center gap-1.5",

@@ -85,13 +85,16 @@ export function LabelPage() {
 
       <nav
         aria-label="On this page"
-        className="sticky top-0 z-10 -mx-1 flex flex-wrap gap-1.5 bg-bg/95 px-1 py-2 backdrop-blur-sm"
+        data-sticky-bar="top"
+        // One scrolling row on a phone. Wrapped, the eight links were four rows tall and the
+        // sticky bar covered a quarter of the screen and the top of every section it jumped to.
+        className="sticky top-0 z-10 -mx-1 flex gap-1.5 overflow-x-auto bg-bg/95 px-1 py-2 backdrop-blur-sm sm:flex-wrap sm:overflow-visible"
       >
         {TOC.map((item) => (
           <a
             key={item.id}
             href={`#${item.id}`}
-            className="inline-flex h-9 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
+            className="inline-flex h-9 shrink-0 items-center whitespace-nowrap pointer-coarse:h-11 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
           >
             {item.label}
           </a>

@@ -111,6 +111,7 @@ export const INDICATIONS = [
   "Displaying study cards (rounds, named labeled pairs, formulary CYP roles, FDA fold-change grades, and mechanism cards from the selected pair) so a healthcare trainee can rehearse the basis, mark misses, and review them. Not an exam key and not a milligram.",
   "Watching user-selected names for OpenFDA shortage and enforcement/recall excerpts so the healthcare professional can independently review the basis. The excerpts are shortened for teaching. They are recent label, shortage, and recall notes to read, not safety alerts, not a shortage alert service, and not a milligram.",
   "Linking CPIC / ClinPGx tables, PubMed PMIDs, DrugBank accessions, NIH RxClass, LactMed paraphrases, and ClinicalTrials.gov records for independent review.",
+  "On an open row, naming the FDA label section of each saved label line in FDA's own heading words (Boxed Warning, 4 Contraindications, 5 Warnings and Precautions, 7 Drug Interactions, 8.1 Pregnancy) and the day that line was retrieved. A source with no saved section or date says so. A row whose only basis is the desk's own map says so. A line restates how the desk's rule reached the tier from the rule family, the stored perpetrator strength, and the stored FDA fold already on that row. None of this is a new finding, a milligram, or a clearance.",
   "Reading a metabolizer status the healthcare professional already knows and picks by hand. Metabolizer rows are teaching paraphrases of CPIC guidance, not a genetic test result and not an interpretation of one. The desk takes no raw genotype or genetic test data as input.",
 ] as const;
 
@@ -154,7 +155,7 @@ export const CDS_CRITERIA: { id: string; title: string; how: string }[] = [
   {
     id: "4",
     title: "Independent review of the basis",
-    how: "Every collision names its mechanism, the drugs, the source class (FDA boxed, PI, CPIC, PMID, published scale, or desk map), and a link to DailyMed or PubMed. The HCP can reject the recommendation.",
+    how: "Every collision names its mechanism, the drugs, the source class (FDA boxed, PI, FDA interaction table, CPIC, PMID, published scale, or desk map), and a link to DailyMed, FDA, or PubMed. Where a saved label line records them, a source names the FDA label section in FDA's own heading words and the day that line was retrieved. A row whose only basis is the desk's own map says so before its sources. An open row restates how the desk's rule reached the tier from the inputs already on that row. The HCP can reject the recommendation.",
   },
 ];
 
@@ -183,6 +184,11 @@ export const HAZARDS: { id: string; hazard: string; control: string }[] = [
     id: "H5",
     hazard: "Stale software after a label change.",
     control: "Software version is printed on the IFU, export, and huddle. Live label fetch is not a cache of last year.",
+  },
+  {
+    id: "H6",
+    hazard: "User relies on the tier without reading its basis (automation bias).",
+    control: "Each open row names its sources, the FDA label section and retrieval day where saved, and says when no section or date is saved. A row whose only basis is the desk's own map says so before its sources. A line restates how the desk's rule reached the tier and says the tier is the desk's bin, not an FDA grade.",
   },
 ];
 
