@@ -4,6 +4,7 @@ import { PairPageView } from "@/components/seo/pair-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { legacyPairRedirect, pairPageBySlug } from "@/lib/seo/pair-pages";
 import { SITE_URL } from "@/lib/seo/pair-copy";
+import { NotFoundView } from "@/components/not-found";
 
 export const Route = createFileRoute("/pair/$slug")({
   loader: ({ params }) => {
@@ -30,11 +31,7 @@ export const Route = createFileRoute("/pair/$slug")({
         }
       : {},
   component: PairRoute,
-  notFoundComponent: () => (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <p>That pair page doesn't exist. <a className="underline" href="/pairs">See all pairs</a>.</p>
-    </main>
-  ),
+  notFoundComponent: () => <NotFoundView what="pair page" back={{ href: "/pairs", label: "All drug pairs" }} />,
 });
 
 function PairRoute() {
