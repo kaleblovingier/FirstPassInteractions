@@ -62,6 +62,13 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
   const [chloride, setChloride] = useState<number>(98);
   const [bicarbonate, setBicarbonate] = useState<number>(12);
   const [venousPh, setVenousPh] = useState<number>(7.20);
+  // Blank or mid-typing values leave the calculation alone; leaving the field settles it (blank goes to 0, as before).
+  const glucoseField = useDraftNumber(currentGlucose, setCurrentGlucose, { min: 0, fallback: 0 });
+  const potassiumField = useDraftNumber(serumPotassium, setSerumPotassium, { min: 0, fallback: 0 });
+  const sodiumField = useDraftNumber(measuredSodium, setMeasuredSodium, { min: 0, fallback: 0 });
+  const chlorideField = useDraftNumber(chloride, setChloride, { min: 0, fallback: 0 });
+  const bicarbonateField = useDraftNumber(bicarbonate, setBicarbonate, { min: 0, fallback: 0 });
+  const venousPhField = useDraftNumber(venousPh, setVenousPh, { min: 0, fallback: 0 });
   const [sodiumFormula, setSodiumFormula] = useState<"katz" | "hillier">("katz");
   const [patientPhenotype, setPatientPhenotype] = useState<"frail_renal" | "standard" | "obese_resistant">("standard");
   const [isNpo, setIsNpo] = useState<boolean>(false);
@@ -386,8 +393,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">Glucose (mg/dL)</label>
                 <Input
                   type="number"
-                  value={currentGlucose}
-                  onChange={(e) => setCurrentGlucose(Number(e.target.value) || 0)}
+                  {...glucoseField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -408,8 +414,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <Input
                   type="number"
                   step="0.1"
-                  value={serumPotassium}
-                  onChange={(e) => setSerumPotassium(Number(e.target.value) || 0)}
+                  {...potassiumField}
                   className={cn(
                     "h-9 text-xs font-mono font-bold",
                     serumPotassium < 3.3 ? "border-red-500 bg-red-500/10 text-red-600 dark:text-red-400" : "",
@@ -421,8 +426,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">Na (mEq/L)</label>
                 <Input
                   type="number"
-                  value={measuredSodium}
-                  onChange={(e) => setMeasuredSodium(Number(e.target.value) || 0)}
+                  {...sodiumField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -431,8 +435,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">Cl (mEq/L)</label>
                 <Input
                   type="number"
-                  value={chloride}
-                  onChange={(e) => setChloride(Number(e.target.value) || 0)}
+                  {...chlorideField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -441,8 +444,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">HCO3 (mEq/L)</label>
                 <Input
                   type="number"
-                  value={bicarbonate}
-                  onChange={(e) => setBicarbonate(Number(e.target.value) || 0)}
+                  {...bicarbonateField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -452,8 +454,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <Input
                   type="number"
                   step="0.01"
-                  value={venousPh}
-                  onChange={(e) => setVenousPh(Number(e.target.value) || 0)}
+                  {...venousPhField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
