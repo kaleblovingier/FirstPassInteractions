@@ -20,7 +20,16 @@ test("wave5 catalog rows use one class word per role", () => {
         { enzyme: "CYP2C19", kind: "inhibitor", grade: "strong" },
       ],
     },
-    { id: "tipranavir", query: "Aptivus", roles: [{ enzyme: "P-gp", kind: "inhibitor", grade: "weak" }] },
+    // P-gp weak is the Aptivus label class word. The CYP3A4 strong role (2026-11-07 proposal)
+    // is FDA Table 1's grade for tipranavir and ritonavir, the regimen Aptivus is taken as.
+    {
+      id: "tipranavir",
+      query: "Aptivus",
+      roles: [
+        { enzyme: "P-gp", kind: "inhibitor", grade: "weak" },
+        { enzyme: "CYP3A4", kind: "inhibitor", grade: "strong" },
+      ],
+    },
     { id: "telithromycin", query: "Ketek", roles: [{ enzyme: "CYP3A4", kind: "inhibitor", grade: "strong" }] },
   ] as const;
   for (const c of cases) {
