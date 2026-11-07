@@ -8,7 +8,12 @@ const paths = rest.length ? rest : ["/", "/recover", "/@Library", "/@Sources", "
 const browser = await chromium.launch({ ...(process.env.CHROME ? { executablePath: process.env.CHROME } : {}), args: ["--no-sandbox"] });
 const SPACING = "*{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}p{margin-bottom:2em!important}";
 let fails = 0;
-const report = (ok, msg) => { if (!ok) fails++; console.log(`${ok ? "ok  " : "FAIL"} ${msg}`); };
+const report = (ok, msg) => {
+  if (!ok) fails++;
+  console.log(`${ok ? "ok  " : "FAIL"} ${msg}`);
+  // Actions logs need a login; annotations are public, so a failure can be read without one.
+  if (!ok && process.env.GITHUB_ACTIONS) console.log(`::error::${msg}`);
+};
 async function open(spec, width, opts = {}) {
   const [path, click] = spec.split("@");
   const ctx = await browser.newContext({ viewport: { width, height: 800 }, reducedMotion: opts.reduce ? "reduce" : "no-preference" });

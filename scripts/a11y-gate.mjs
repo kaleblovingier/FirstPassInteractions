@@ -99,5 +99,10 @@ if (!skipWcag22) {
 
 const axeNodes = results.reduce((a, r) => a + r.count, 0);
 console.log(`\na11y-gate: ${specs.length} routes, axe ${results.length} violations (${axeNodes} nodes), wcag22 ${wcagFails.length} failures`);
+// Actions logs need a login; annotations are public, so a failure can be read without one.
+if (process.env.GITHUB_ACTIONS) {
+  for (const r of results) console.log(`::error::${r.spec} @${r.width} ${r.id}: ${r.targets.slice(0, 2).join(" ; ")}`);
+  for (const l of wcagFails) console.log(`::error::${l}`);
+}
 if (out) fs.writeFileSync(out, JSON.stringify({ routes: specs, axe: results, wcag22: wcagFails }, null, 2));
 process.exit(results.length || wcagFails.length ? 1 : 0);
