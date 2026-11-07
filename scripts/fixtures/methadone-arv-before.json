@@ -225,5 +225,6 @@
     }
   },
   "otherPairs": 1892,
-  "otherDigest": "2a70a93dd878fecc541dc67942dc9532823021936da4f55839b713828c1052f1"
+  "otherDigest": "675441e17fbe5e5885234f5a75b830c3280f25b689dfbac3c168b2936bccc1ba",
+  "otherDigestNote": "Refreshed 2026-11-07 on claude/project-thread-qouam9-clin: duplicate-row edit E2 (docs/validation/duplicate-rows-2026-11-07.md) adds the pd-antag-opioid card to methadone + olanzapine-samidorphan. With the E1-E3 edits reverted in memory the digest is the original 2a70a93dd878fecc541dc67942dc9532823021936da4f55839b713828c1052f1, so no other methadone pair moved."
 }
