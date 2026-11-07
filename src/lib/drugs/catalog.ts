@@ -659,12 +659,12 @@ const raw: Drug[] = [
     ["cannabinoid", "cns-depressant"],
     "Sedation, tachycardia, 2C9/3A4 victim toxicity",
     { aliases: ["thc", "delta-9-thc", "cannabis", "marijuana"] }),
-  d("cannabidiol", "Cannabidiol", ["Epidiolex"], "Cannabinoid (CBD)",
+  d("cannabidiol", "Cannabidiol", [], "Cannabinoid (CBD)",
     [sub("CYP2C19", "major"), sub("CYP3A4", "major"), inh("CYP2C19", "strong"), inh("CYP3A4", "moderate"), inh("CYP2C9", "moderate"), inh("CYP2D6", "weak")],
     ["cannabinoid", "cns-depressant", "hepatotoxic"],
     "Somnolence, transaminase rise, victim-drug toxicity (clobazam, diazepam, warfarin)",
     {
-      aliases: ["cbd", "epidiolex"],
+      aliases: ["cbd"],
       note: "Strong CYP2C19 inhibitor — a major perpetrator for diazepam, clobazam, and citalopram.",
     }),
 
