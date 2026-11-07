@@ -58,7 +58,7 @@ export function WindowExtras() {
                       onClick={() => tap(item.id)}
                       aria-pressed={live}
                       className={cn(
-                        "h-10 rounded-full px-3 text-xs font-medium",
+                        "h-10 pointer-coarse:h-11 rounded-full px-3 text-xs font-medium",
                         live
                           ? "bg-ink text-bg"
                           : "bg-bg-sunken text-muted hover:text-fg",

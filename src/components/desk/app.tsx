@@ -362,7 +362,7 @@ export function DeskApp() {
                   onClick={() => setView(id)}
                   aria-current={view === id ? "page" : undefined}
                   className={cn(
-                    "h-11 shrink-0 whitespace-nowrap rounded-full px-2 text-xs font-medium sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm",
+                    "h-11 shrink-0 whitespace-nowrap rounded-full px-2 text-xs font-medium sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm pointer-coarse:h-11",
                     view === id ? "bg-surface-2 text-fg shadow-[var(--shadow-border)]" : "text-muted hover:text-fg",
                   )}
                 >
@@ -372,7 +372,7 @@ export function DeskApp() {
               <a
                 href="/practice"
                 data-testid="nav-practice"
-                className="inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-full px-2 text-xs font-medium text-muted hover:text-fg sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm"
+                className="inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-full px-2 text-xs font-medium text-muted hover:text-fg sm:h-9 sm:px-2.5 sm:text-xs md:px-3.5 md:text-sm pointer-coarse:h-11"
               >
                 Practice
               </a>
@@ -442,7 +442,7 @@ export function DeskApp() {
                 </>
               ) : null}
             </p>
-            <button type="button" className="shrink-0 text-sm text-ok underline" onClick={dismissActivated}>
+            <button type="button" className="-my-2 inline-flex min-h-11 shrink-0 items-center px-2 text-sm text-ok underline" onClick={dismissActivated}>
               Dismiss
             </button>
           </div>
@@ -453,7 +453,7 @@ export function DeskApp() {
         <div role="status" className="border-b border-border bg-bg-sunken">
           <div className="mx-auto flex max-w-6xl items-start justify-between gap-3 px-4 py-3 sm:items-center sm:px-6">
             <p className="text-sm leading-relaxed text-fg">{programNote}</p>
-            <button type="button" className="shrink-0 text-sm text-muted underline hover:text-fg" onClick={dismissProgramNote}>
+            <button type="button" className="-my-2 inline-flex min-h-11 shrink-0 items-center px-2 text-sm text-muted underline hover:text-fg" onClick={dismissProgramNote}>
               Dismiss
             </button>
           </div>

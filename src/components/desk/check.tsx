@@ -420,7 +420,7 @@ export function CheckBoard({
               {rows.length > 0 ? (
                 <a
                   href="#check-rows"
-                  className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                  className="inline-flex h-10 pointer-coarse:h-11 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
                 >
                   Rows
                 </a>
@@ -428,14 +428,14 @@ export function CheckBoard({
               {food.length > 0 ? (
                 <a
                   href="#check-food"
-                  className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                  className="inline-flex h-10 pointer-coarse:h-11 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
                 >
                   Food
                 </a>
               ) : null}
               <a
                 href="#check-roles"
-                className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                className="inline-flex h-10 pointer-coarse:h-11 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
               >
                 Roles
               </a>
@@ -443,7 +443,7 @@ export function CheckBoard({
                 <button
                   type="button"
                   onClick={() => useDesk.getState().setView("study")}
-                  className="inline-flex h-10 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
+                  className="inline-flex h-10 pointer-coarse:h-11 items-center rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted"
                 >
                   Study this desk
                 </button>
@@ -486,7 +486,7 @@ export function CheckBoard({
             <span className="text-fg">Effects</span> (how risks stack),{" "}
             <span className="text-fg">Genes</span> (phenotype rewrite).
           </p>
-          <div className="flex flex-wrap gap-1">
+          <div role="group" aria-label="Show rows by severity" className="flex flex-wrap gap-1">
             {TIERS.map((t) => (
               <button
                 key={t}
@@ -497,7 +497,7 @@ export function CheckBoard({
                   setShowAll(false);
                 }}
                 className={cn(
-                  "h-10 rounded-full px-3 text-xs font-medium",
+                  "h-10 pointer-coarse:h-11 rounded-full px-3 text-xs font-medium",
                   tier === t ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
                 )}
               >
@@ -723,7 +723,7 @@ export function CheckBoard({
                             <button
                               type="button"
                               onClick={() => add(extra)}
-                              className="h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+                              className="h-10 pointer-coarse:h-11 rounded-full bg-surface px-3 text-xs font-medium text-fg"
                             >
                               Add {DRUG_BY_ID[extra]?.name}
                             </button>
@@ -848,7 +848,7 @@ function UngradedFootnotes({ notes }: { notes: UngradedPairNote[] }) {
             href={note.href}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-10 items-center text-xs font-medium text-accent underline underline-offset-2"
+            className="inline-flex h-10 pointer-coarse:h-11 items-center text-xs font-medium text-accent underline underline-offset-2"
           >
             {note.linkLabel}
           </a>
@@ -951,7 +951,7 @@ function PairGrid({
                 <button
                   type="button"
                   onClick={() => openShelf(cell.key)}
-                  className="mt-2 h-10 text-xs font-medium text-accent underline-offset-2 hover:underline"
+                  className="mt-2 h-10 pointer-coarse:h-11 text-xs font-medium text-accent underline-offset-2 hover:underline"
                 >
                   Open the {cell.key} shelf
                 </button>
@@ -1036,7 +1036,7 @@ function LeadSources({ finding }: { finding: Finding }) {
           href={b.href}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex h-10 items-center gap-1 rounded-full bg-bg-sunken px-3 text-xs font-medium text-accent hover:underline"
+          className="inline-flex h-10 pointer-coarse:h-11 items-center gap-1 rounded-full bg-bg-sunken px-3 text-xs font-medium text-accent hover:underline"
         >
           {b.label}
           <ExternalLink className="size-3" />
@@ -1243,7 +1243,7 @@ function CheckRow({
             <button
               type="button"
               onClick={() => setAtlasEnzyme(enzyme)}
-              className="h-10 rounded-full bg-surface px-3 text-xs font-medium text-fg"
+              className="h-10 pointer-coarse:h-11 rounded-full bg-surface px-3 text-xs font-medium text-fg"
             >
               Open {enzyme} in the atlas
             </button>
@@ -1258,13 +1258,13 @@ function CheckRow({
                   href={b.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 items-center gap-1 rounded-full bg-surface px-3 text-xs font-medium text-accent hover:underline"
+                  className="inline-flex h-10 pointer-coarse:h-11 items-center gap-1 rounded-full bg-surface px-3 text-xs font-medium text-accent hover:underline"
                 >
                   {b.label}
                   <ExternalLink className="size-3" />
                 </a>
               ) : (
-                <span key={`${b.kind}-${b.label}`} className="inline-flex h-10 items-center px-1 text-xs text-muted">
+                <span key={`${b.kind}-${b.label}`} className="inline-flex h-10 pointer-coarse:h-11 items-center px-1 text-xs text-muted">
                   {b.label}
                 </span>
               ),
@@ -1290,7 +1290,7 @@ export function WhyThisGrade({ finding }: { finding: Finding }) {
           href={why.href}
           target="_blank"
           rel="noreferrer"
-          className="mt-1 inline-flex h-10 items-center gap-1 font-mono text-[11px] text-accent hover:underline"
+          className="mt-1 inline-flex h-10 pointer-coarse:h-11 items-center gap-1 font-mono text-[11px] text-accent hover:underline"
         >
           {sourceLinkText(why.title, why.href)} <ExternalLink className="size-3" />
         </a>
