@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
   Search,
   X,
@@ -102,12 +103,12 @@ function getTierBadgeClasses(tier: AffinityTier): {
   switch (tier) {
     case "Sub-nanomolar":
       return {
-        badge: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30",
+        badge: "bg-purple-500/15 text-purple-800 dark:text-purple-300 border-purple-500/30",
         dot: "bg-purple-600",
       };
     case "High":
       return {
-        badge: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30",
+        badge: "bg-rose-500/15 text-danger dark:text-rose-300 border-rose-500/30",
         dot: "bg-rose-600",
       };
     case "Moderate":
@@ -117,7 +118,7 @@ function getTierBadgeClasses(tier: AffinityTier): {
       };
     case "Low":
       return {
-        badge: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30",
+        badge: "bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/30",
         dot: "bg-blue-600",
       };
     case "Negligible":
@@ -292,7 +293,7 @@ export function ReceptorProfiler() {
           <div className="space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-6">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-muted" />
-              <input
+              <input aria-label="Search drugs"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -706,7 +707,7 @@ export function ReceptorProfiler() {
               </p>
             </div>
 
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="Receptor target table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-border bg-surface-2/50 text-[11px] font-semibold uppercase tracking-wider text-muted">
                   <tr>
@@ -849,13 +850,13 @@ export function ReceptorProfiler() {
 
                 <div className="space-y-2 rounded-lg bg-surface-2/60 p-3 text-xs">
                   <div>
-                    <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                    <span className="font-bold text-success dark:text-emerald-400">
                       Agonism Consequences:{" "}
                     </span>
                     <span className="text-fg/80">{target.agonismConsequences}</span>
                   </div>
                   <div>
-                    <span className="font-bold text-rose-700 dark:text-rose-400">
+                    <span className="font-bold text-danger dark:text-rose-400">
                       Antagonism Consequences:{" "}
                     </span>
                     <span className="text-fg/80">{target.antagonismConsequences}</span>
@@ -878,15 +879,23 @@ export function ReceptorProfiler() {
       )}
 
       {/* Popover / Detail modal for clicked receptor */}
-      {activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="max-w-md w-full rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+      {/* Radix Dialog: focus moves in and is trapped, Escape closes, focus returns to the receptor. */}
+      <Dialog.Root
+        open={Boolean(activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey])}
+        onOpenChange={(open) => {
+          if (!open) setActiveReceptorKey(null);
+        }}
+      >
+        {activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey] ? (
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs" />
+          <Dialog.Content className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100dvh-2rem)] max-w-md -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-serif text-xl font-bold text-accent">
+                  <Dialog.Title className="font-serif text-xl font-bold text-accent">
                     {RECEPTOR_TARGETS[activeReceptorKey].receptor}
-                  </h3>
+                  </Dialog.Title>
                   <span className="rounded bg-surface-2 px-2 py-0.5 text-xs text-muted">
                     {RECEPTOR_TARGETS[activeReceptorKey].family}
                   </span>
@@ -906,17 +915,17 @@ export function ReceptorProfiler() {
               </button>
             </div>
 
-            <p className="text-xs text-muted leading-relaxed">
+            <Dialog.Description className="text-xs text-muted leading-relaxed">
               {RECEPTOR_TARGETS[activeReceptorKey].description}
-            </p>
+            </Dialog.Description>
 
             <div className="space-y-2 rounded-lg bg-surface-2 p-3.5 text-xs leading-relaxed">
               <div>
-                <strong className="text-emerald-700 dark:text-emerald-400">Agonism: </strong>
+                <strong className="text-success dark:text-emerald-400">Agonism: </strong>
                 <span>{RECEPTOR_TARGETS[activeReceptorKey].agonismConsequences}</span>
               </div>
               <div>
-                <strong className="text-rose-700 dark:text-rose-400">Antagonism: </strong>
+                <strong className="text-danger dark:text-rose-400">Antagonism: </strong>
                 <span>{RECEPTOR_TARGETS[activeReceptorKey].antagonismConsequences}</span>
               </div>
               <div>
@@ -938,9 +947,10 @@ export function ReceptorProfiler() {
                 Close Target Details
               </button>
             </div>
-          </div>
-        </div>
-      )}
+          </Dialog.Content>
+        </Dialog.Portal>
+        ) : null}
+      </Dialog.Root>
 
       {/* Regulatory Disclosure Footer */}
       <div className="rounded-xl border border-border bg-surface-2/40 p-4 text-xs leading-relaxed text-muted">

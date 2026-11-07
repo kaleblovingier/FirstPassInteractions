@@ -312,7 +312,7 @@ export function TransporterNetwork() {
             <div className="rounded-lg border border-sky-500/30 bg-sky-500/10 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-sky-500/20 px-2 py-0.5 text-xs font-bold text-sky-700 dark:text-sky-300">
+                  <span className="rounded-md bg-sky-500/20 px-2 py-0.5 text-xs font-bold text-sky-800 dark:text-sky-300">
                     APICAL / LUMINAL
                   </span>
                   <span className="text-sm font-semibold text-fg">
@@ -358,8 +358,8 @@ export function TransporterNetwork() {
                             className={cn(
                               "flex size-6 items-center justify-center rounded-full text-xs font-bold",
                               isEfflux
-                                ? "bg-rose-500/20 text-rose-600 dark:text-rose-400"
-                                : "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400",
+                                ? "bg-rose-500/20 text-danger dark:text-rose-400"
+                                : "bg-emerald-500/20 text-success dark:text-emerald-400",
                             )}
                           >
                             {isEfflux ? <ArrowUp className="size-3.5" /> : <ArrowDown className="size-3.5" />}
@@ -378,8 +378,8 @@ export function TransporterNetwork() {
                           className={cn(
                             "rounded px-1.5 py-0.5 text-[10px] font-bold uppercase",
                             isEfflux
-                              ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+                              ? "bg-rose-500/10 text-danger dark:text-rose-400"
+                              : "bg-emerald-500/10 text-success dark:text-emerald-400",
                           )}
                         >
                           {node.direction}
@@ -409,7 +409,7 @@ export function TransporterNetwork() {
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300">
+                  <span className="rounded-md bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-warning dark:text-amber-300">
                     BASOLATERAL / SANGUINEOUS
                   </span>
                   <span className="text-sm font-semibold text-fg">
@@ -470,8 +470,8 @@ export function TransporterNetwork() {
                     isSelected
                       ? "bg-black/20 text-accent-fg"
                       : t.family === "ABC Efflux"
-                        ? "bg-rose-500/15 text-rose-600 dark:text-rose-400"
-                        : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+                        ? "bg-rose-500/15 text-danger dark:text-rose-400"
+                        : "bg-emerald-500/15 text-success dark:text-emerald-400",
                   )}
                 >
                   {t.family}
@@ -495,8 +495,8 @@ export function TransporterNetwork() {
                 className={cn(
                   "rounded-md px-2.5 py-1 text-xs font-bold uppercase",
                   activeTransporter.family === "ABC Efflux"
-                    ? "bg-rose-500/15 text-rose-700 dark:text-rose-300"
-                    : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+                    ? "bg-rose-500/15 text-danger dark:text-rose-300"
+                    : "bg-emerald-500/15 text-success dark:text-emerald-300",
                 )}
               >
                 {activeTransporter.family} • {activeTransporter.atpDependent ? "ATP-Driven Efflux" : "Facilitated/Secondary Influx"}
@@ -556,7 +556,7 @@ export function TransporterNetwork() {
           {/* Substrates */}
           <div className="rounded-lg border border-border bg-surface-2 p-4">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-sky-800 dark:text-sky-400">
                 Substrates ({activeTransporter.substrates.length})
               </span>
               <span className="text-[11px] text-muted">Transported Cargo</span>
@@ -595,7 +595,7 @@ export function TransporterNetwork() {
           {/* Inhibitors */}
           <div className="rounded-lg border border-border bg-surface-2 p-4">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-danger dark:text-rose-400">
                 Inhibitors ({activeTransporter.inhibitors.length})
               </span>
               <span className="text-[11px] text-muted">Transport Blockers</span>
@@ -615,7 +615,7 @@ export function TransporterNetwork() {
                     className={cn(
                       "group inline-flex min-h-[44px] items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                       isSelected
-                        ? "border-rose-500/50 bg-rose-500/15 text-rose-600 dark:text-rose-400"
+                        ? "border-rose-500/50 bg-rose-500/15 text-danger dark:text-rose-400"
                         : "border-border bg-surface text-fg hover:border-rose-500/40 hover:bg-surface-2",
                     )}
                   >
@@ -651,7 +651,7 @@ export function TransporterNetwork() {
           {/* Inducers */}
           <div className="rounded-lg border border-border bg-surface-2 p-4">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-warning dark:text-amber-400">
                 Inducers ({activeTransporter.inducers.length})
               </span>
               <span className="text-[11px] text-muted">Expression Accelerators</span>
@@ -672,7 +672,7 @@ export function TransporterNetwork() {
                       className={cn(
                         "group inline-flex min-h-[44px] items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
-                          ? "border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                          ? "border-amber-500/50 bg-amber-500/15 text-warning dark:text-amber-300"
                           : "border-border bg-surface text-fg hover:border-amber-500/40 hover:bg-surface-2",
                       )}
                     >
@@ -817,7 +817,7 @@ export function TransporterNetwork() {
             </p>
           </div>
 
-          <div className="mt-4 overflow-x-auto">
+          <div role="region" aria-label="Transporter table" tabIndex={0} className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[700px] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border bg-surface-2 text-fg">
@@ -842,8 +842,8 @@ export function TransporterNetwork() {
                         className={cn(
                           "rounded px-2 py-0.5 text-[10px] font-bold uppercase",
                           t.family === "ABC Efflux"
-                            ? "bg-rose-500/15 text-rose-600 dark:text-rose-400"
-                            : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+                            ? "bg-rose-500/15 text-danger dark:text-rose-400"
+                            : "bg-emerald-500/15 text-success dark:text-emerald-400",
                         )}
                       >
                         {t.family}

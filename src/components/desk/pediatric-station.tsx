@@ -235,7 +235,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
       <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-700">
               <Baby className="size-5" />
             </div>
             <div>
@@ -351,7 +351,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               onChange={(e) => setAgeValue(Number(e.target.value))}
               className="h-9 font-mono text-xs"
             />
-            <select
+            <select aria-label="Age unit"
               value={ageUnit}
               onChange={(e) => setAgeUnit(e.target.value as any)}
               className="h-9 rounded-md border border-border bg-surface-2 px-2 text-xs text-fg"
@@ -361,7 +361,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               <option value="years">Years</option>
             </select>
           </div>
-          <p className="mt-1 font-mono text-[10px] text-indigo-400">
+          <p className="mt-1 font-mono text-[10px] text-indigo-700">
             PMA: {report.patientAgeSummary.postmenstrualAgeWeeks} wks
           </p>
         </div>
@@ -427,7 +427,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               onChange={(e) => setIsHyperbilirubinemic(e.target.checked)}
               className="rounded border-border text-accent focus:ring-accent"
             />
-            <span className={isHyperbilirubinemic ? "font-semibold text-amber-400" : "text-muted-foreground"}>
+            <span className={isHyperbilirubinemic ? "font-semibold text-warning" : "text-muted-foreground"}>
               Hyperbilirubinemia
             </span>
           </label>
@@ -439,7 +439,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               onChange={(e) => setHasIvCalciumActive(e.target.checked)}
               className="rounded border-border text-accent focus:ring-accent"
             />
-            <span className={hasIvCalciumActive ? "font-semibold text-rose-400" : "text-muted-foreground"}>
+            <span className={hasIvCalciumActive ? "font-semibold text-danger" : "text-muted-foreground"}>
               IV Calcium Solution
             </span>
           </label>
@@ -451,7 +451,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               onChange={(e) => setIsPostTonsillectomy(e.target.checked)}
               className="rounded border-border text-accent focus:ring-accent"
             />
-            <span className={isPostTonsillectomy ? "font-semibold text-purple-400" : "text-muted-foreground"}>
+            <span className={isPostTonsillectomy ? "font-semibold text-purple-800" : "text-muted-foreground"}>
               Post-Tonsillectomy
             </span>
           </label>
@@ -530,7 +530,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
 
                 <div className="mt-4 rounded-lg bg-surface-2 p-3 text-xs">
                   <div className="font-semibold text-foreground">Expected Normal for Age:</div>
-                  <div className="mt-1 font-mono text-indigo-400">
+                  <div className="mt-1 font-mono text-indigo-700">
                     {report.renalOntogeny.expectedNormalGfrBracket.minGfr} to{" "}
                     {report.renalOntogeny.expectedNormalGfrBracket.maxGfr} mL/min/1.73m² (mean ~
                     {report.renalOntogeny.expectedNormalGfrBracket.meanGfr})
@@ -637,7 +637,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
           <div className="rounded-xl border border-border/80 bg-card p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-warning">
                   <Clock className="size-5" />
                 </div>
                 <div>
@@ -650,7 +650,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-mono text-xl font-bold text-amber-400">
+                <div className="font-mono text-xl font-bold text-warning">
                   {report.hepaticOntogeny.caffeineHalfLifePredictionHours}h
                 </div>
                 <div className="text-[11px] text-muted-foreground">Predicted Caffeine t½</div>
@@ -801,7 +801,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                       {item.isContraindicated ? "CONTRAINDICATED" : "HIGH-ALERT"}
                     </Badge>
                   </div>
-                  <div className="text-[11px] font-medium text-indigo-400">{item.syndromeTitle}</div>
+                  <div className="text-[11px] font-medium text-indigo-700">{item.syndromeTitle}</div>
                   <p className="text-muted-foreground leading-relaxed">
                     {item.molecularBiochemicalMechanism}
                   </p>
@@ -834,7 +834,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               Evaluated against patient age ({report.patientAgeSummary.chronologicalAgeText}), post-T&A surgical status, and developmental windows
             </p>
 
-            <div className="mt-4 overflow-x-auto">
+            <div role="region" aria-label="Pediatric agent threshold table" tabIndex={0} className="mt-4 overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-border/80 text-muted-foreground">
@@ -983,7 +983,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                 {/* Dosing Templates Selector */}
                 <div>
                   <label className="text-muted-foreground">Load Standard Pediatric Template</label>
-                  <select
+                  <select aria-label="Pediatric template"
                     value={selectedTemplateIndex}
                     onChange={(e) => {
                       const idx = Number(e.target.value);
@@ -1085,7 +1085,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                             Raw: {c.rawCalculatedDoseMg} mg
                           </span>
                           <ArrowRight className="size-3 text-muted-foreground" />
-                          <span className={c.isCeilingApplied ? "text-danger font-bold" : "text-emerald-400 font-bold"}>
+                          <span className={c.isCeilingApplied ? "text-danger font-bold" : "text-success font-bold"}>
                             Final: {c.clampedDoseMg} mg
                           </span>
                           {c.isCeilingApplied && <Badge tone="danger" className="text-[10px]">Capped</Badge>}

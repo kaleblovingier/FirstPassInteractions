@@ -4,6 +4,7 @@ import { EnzymePageView } from "@/components/seo/enzyme-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { enzymeHubBySlug, enzymeHubRedirect } from "@/lib/seo/enzyme-hubs";
 import { SITE_URL } from "@/lib/seo/pair-copy";
+import { NotFoundView } from "@/components/not-found";
 
 export const Route = createFileRoute("/enzyme/$slug")({
   loader: ({ params }) => {
@@ -40,13 +41,7 @@ export const Route = createFileRoute("/enzyme/$slug")({
         }
       : {},
   component: EnzymeRoute,
-  notFoundComponent: () => (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <p>
-        That enzyme page doesn't exist. <a className="underline" href="/enzymes">See all enzymes</a>.
-      </p>
-    </main>
-  ),
+  notFoundComponent: () => <NotFoundView what="enzyme page" back={{ href: "/enzymes", label: "Enzyme pages" }} />,
 });
 
 function EnzymeRoute() {

@@ -108,8 +108,9 @@ export const LAB_BY_ID = Object.fromEntries(LAB_ASSIGNMENTS.map((a) => [a.id, a]
 >;
 
 export function labAssignment(id: string | null | undefined): LabAssignment | null {
-  if (!id) return null;
-  return LAB_BY_ID[id] ?? null;
+  // ?lab=constructor must not resolve to Object.prototype's own members.
+  if (!id || !Object.hasOwn(LAB_BY_ID, id)) return null;
+  return LAB_BY_ID[id];
 }
 
 export function sampleForLab(assignment: LabAssignment): SampleRegimen | null {

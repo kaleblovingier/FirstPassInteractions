@@ -41,10 +41,14 @@ Not stored anywhere: the ZIP or city typed into the help-line finder is resolved
 in-browser table and is not persisted or transmitted (`src/lib/drugs/help-resources.ts`,
 `src/components/desk/help.tsx`).
 
-The paid unlock is stored in the browser. The server verifies a key's signature only when the
-key is redeemed (`src/lib/billing/license.ts`, `redeemLicense`). The unlock is not re-checked
-with the server on later visits (`src/lib/drugs/store.ts`). This is a licensing note, not a data
-flow.
+The paid unlock is stored in the browser. The server verifies a key's signature when the key is
+redeemed (`src/lib/billing/license.ts`, `redeemLicense`), and again once per desk load: the desk
+sends the saved key to `recheckLicense`, and a key that does not verify returns the free desk
+(`src/components/desk/app.tsx`, `licenseCheckOutcome` in `src/lib/drugs/store.ts`). Nothing is
+stored on the server. When the server cannot check (license secrets unset) or cannot be reached
+(offline), the desk keeps its saved unlock. The paid tools themselves run in the browser from the
+shipped bundle, so this check raises the bar but is not a server-side lock. This is a licensing
+note, not a data flow.
 
 ## 3. What leaves the browser, and where it goes
 
@@ -101,6 +105,7 @@ an outside AI service (`src/components/desk/readers.tsx`).
 | PayPal (off unless `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` are set) | Order id. The server reads the payer email and given name from PayPal to email the key. | PayPal Orders v2 (`api-m.paypal.com`, or sandbox) | `src/lib/billing/paypal.server.ts` |
 | Key email | Buyer email, buyer name, key. | Resend (`api.resend.com`), to the buyer with a blind copy to `FirstPassInteractions@gmail.com` | `src/lib/billing/license-mail.server.ts`, `src/lib/billing/commerce.ts` (`OPERATOR.email`) |
 | Key redemption | The key string. Verified and returned; nothing stored. | FirstPass server only | `src/lib/billing/license.ts`, `src/lib/billing/license.server.ts` |
+| Saved-key re-check | The saved key string, once per desk load on a paid desk. Answered valid, invalid or unavailable; nothing stored, and the key is not logged. | FirstPass server only | `src/lib/billing/license.ts` (`recheckLicense`) |
 | Lost-key recovery | The typed email. Looked up in Stripe; the key is re-sent through Resend to that email only. The same answer is returned whether or not a purchase matches. | Stripe, Resend | `src/routes/api/license/recover.ts`, `src/lib/billing/recover.server.ts` |
 | Manual payments (Venmo, Cash App, direct PayPal) | Handled by the operator, who mints a key in the operator console. | Operator | `README.md` (Pay / write), `src/components/desk/foundry.tsx` |
 

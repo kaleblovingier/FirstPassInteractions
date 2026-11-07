@@ -4,6 +4,7 @@ import { DrugHubView } from "@/components/seo/pair-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { drugHubBySlug, legacyDrugHubRedirect } from "@/lib/seo/drug-hubs";
 import { SITE_URL } from "@/lib/seo/pair-copy";
+import { NotFoundView } from "@/components/not-found";
 
 export const Route = createFileRoute("/drug/$slug")({
   loader: ({ params }) => {
@@ -30,11 +31,7 @@ export const Route = createFileRoute("/drug/$slug")({
         }
       : {},
   component: DrugHubRoute,
-  notFoundComponent: () => (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <p>That drug page doesn't exist. <a className="underline" href="/pairs">See all pairs</a>.</p>
-    </main>
-  ),
+  notFoundComponent: () => <NotFoundView what="drug page" back={{ href: "/pairs", label: "All drug pairs" }} />,
 });
 
 function DrugHubRoute() {

@@ -20,6 +20,7 @@ async function open(spec, width, opts = {}) {
   const page = await ctx.newPage();
   await page.goto(new URL(path, base).href, { waitUntil: "networkidle" });
   for (const name of click ? click.split(">") : []) { await page.getByRole("button", { name, exact: true }).or(page.getByRole("tab", { name, exact: true })).first().click({ timeout: 10000 }); await page.waitForTimeout(600); }
+  await page.waitForLoadState("networkidle"); // lazy station chunks
   return { ctx, page };
 }
 for (const spec of paths) for (const width of [320, 1280]) {

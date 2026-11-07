@@ -171,7 +171,6 @@ export function MedicationReview({ ids, host, findings, doses, onOpenPacket }: M
             <>
               <button
                 type="button"
-                aria-pressed={showRemainingOnly}
                 onClick={() => setShowRemainingOnly((current) => !current)}
                 className="min-h-8 rounded-full px-2.5 text-[11px] font-medium text-muted hover:bg-bg-sunken hover:text-fg"
               >

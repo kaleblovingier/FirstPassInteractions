@@ -98,7 +98,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
       <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-danger">
               <HeartPulse className="size-5" />
             </div>
             <div>
@@ -532,7 +532,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
                     Critical Safety Alerts
                   </h4>
                   {selectedAgent.keySafetyAlerts.map((alert, i) => (
-                    <div key={i} className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-xs text-amber-200">
+                    <div key={i} className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-xs text-warning">
                       <AlertTriangle className="size-4 shrink-0 text-amber-400" />
                       <span>{alert}</span>
                     </div>
@@ -652,7 +652,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
                   "rounded-lg border p-4 text-xs space-y-2.5",
                   inotropeRenalResult.milrinone.accumulationRiskTier === "normal"
                     ? "border-border bg-card"
-                    : "border-red-500/30 bg-red-500/5 text-red-200",
+                    : "border-red-500/30 bg-red-500/5 text-danger",
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -699,7 +699,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
       {activeTab === "extravasation" && (
         <div className="rounded-xl border border-border/80 bg-card p-5">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-warning">
               <Syringe className="size-5" />
             </div>
             <div>
