@@ -5,6 +5,7 @@
 
 import { DRUG_BY_ID } from "./catalog";
 import { isVirtual } from "./host";
+import { skipMethadone3A4Victim } from "./methadone-antiretroviral";
 import {
   METABOLIZER_LABEL,
   type Drug,
@@ -118,7 +119,13 @@ export function phenoConvertFromDrugs(drugs: Drug[], host: HostContext): PhenoCo
   for (const enzyme of WATCH) {
     const inhibitors = strongest(drugs, enzyme, "inhibitor");
     const inducers = strongest(drugs, enzyme, "inducer");
-    const victims = victimsOf(drugs, enzyme);
+    // Methadone with only antiretroviral 3A4 inhibitors on the desk has its own card
+    // (methadone-antiretroviral.ts), so "parent climbs" is not said for it here.
+    const methadoneArvOnly =
+      enzyme === "CYP3A4" &&
+      inhibitors.length > 0 &&
+      inhibitors.every((inh) => skipMethadone3A4Victim(inh.id, "methadone"));
+    const victims = victimsOf(drugs, enzyme).filter((v) => !(methadoneArvOnly && v.id === "methadone"));
     if (!inhibitors.length && !inducers.length && !victims.length) continue;
     const genotype: Metabolizer =
       enzyme === "CYP2D6" || enzyme === "CYP2C19" || enzyme === "CYP2C9" || enzyme === "CYP2B6"

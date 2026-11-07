@@ -1,0 +1,229 @@
+{
+  "base": "origin/claude/project-thread-u8ylj3-clin-hiv @ 95266f4",
+  "card": "suffix|severity|effect; findings naming methadone and the partner; host = DEFAULT_HOST, noHost = no host context",
+  "pairs": {
+    "ritonavir": {
+      "host": [
+        "cyp-clock|major|TDI linger",
+        "cyp-dual|major|dual first-pass knockout",
+        "pd-methadone-ritonavir|major|methadone may fall / withdrawal",
+        "pheno-CYP1A2-ritonavir|moderate|genotype rewritten toward induced",
+        "pheno-CYP2B6-ritonavir|moderate|genotype rewritten toward induced",
+        "pheno-CYP3A4-ritonavir|major|genotype rewritten toward PM",
+        "pk-CYP1A2-inducer-ritonavir|moderate|↓ exposure / loss of efficacy",
+        "pk-CYP2B6-inducer-ritonavir|major|↓ exposure / loss of efficacy",
+        "pk-comp-CYP3A4|minor|competitive substrate overlap"
+      ],
+      "noHost": [
+        "cyp-clock|major|TDI linger",
+        "cyp-dual|major|dual first-pass knockout",
+        "pd-methadone-ritonavir|major|methadone may fall / withdrawal",
+        "pk-CYP1A2-inducer-ritonavir|moderate|↓ exposure / loss of efficacy",
+        "pk-CYP2B6-inducer-ritonavir|major|↓ exposure / loss of efficacy",
+        "pk-comp-CYP3A4|minor|competitive substrate overlap"
+      ]
+    },
+    "paxlovid": {
+      "host": [
+        "cyp-clock|major|TDI linger",
+        "cyp-dual|major|dual first-pass knockout",
+        "pd-methadone-ritonavir|major|methadone may fall / withdrawal",
+        "pheno-CYP2B6-paxlovid|moderate|genotype rewritten toward induced",
+        "pheno-CYP3A4-paxlovid|major|genotype rewritten toward PM",
+        "pk-CYP2B6-inducer-paxlovid|major|↓ exposure / loss of efficacy"
+      ],
+      "noHost": [
+        "cyp-clock|major|TDI linger",
+        "cyp-dual|major|dual first-pass knockout",
+        "pd-methadone-ritonavir|major|methadone may fall / withdrawal",
+        "pk-CYP2B6-inducer-paxlovid|major|↓ exposure / loss of efficacy"
+      ]
+    },
+    "lopinavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "cyp-dual|major|dual first-pass knockout",
+        "pd-qt|major|additive QT prolongation / TdP",
+        "pheno-CYP3A4-lopinavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-lopinavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "cyp-dual|major|dual first-pass knockout",
+        "pd-qt|major|additive QT prolongation / TdP",
+        "pk-CYP3A4-inhibitor-lopinavir|major|↑ exposure"
+      ]
+    },
+    "darunavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-darunavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-darunavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-darunavir|major|↑ exposure"
+      ]
+    },
+    "saquinavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-saquinavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-saquinavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-saquinavir|major|↑ exposure"
+      ]
+    },
+    "tipranavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "cyp-dual|major|dual first-pass knockout",
+        "pheno-CYP3A4-tipranavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-tipranavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "cyp-dual|major|dual first-pass knockout",
+        "pk-CYP3A4-inhibitor-tipranavir|major|↑ exposure"
+      ]
+    },
+    "tipranavir-and-ritonavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-tipranavir-and-ritonavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-tipranavir-and-ritonavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-tipranavir-and-ritonavir|major|↑ exposure"
+      ]
+    },
+    "nelfinavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-nelfinavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-nelfinavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-nelfinavir|major|↑ exposure"
+      ]
+    },
+    "atazanavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pd-qt|major|additive QT prolongation / TdP",
+        "pheno-CYP3A4-atazanavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-atazanavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pd-qt|major|additive QT prolongation / TdP",
+        "pk-CYP3A4-inhibitor-atazanavir|major|↑ exposure"
+      ]
+    },
+    "indinavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-indinavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-indinavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-indinavir|major|↑ exposure"
+      ]
+    },
+    "indinavir-and-ritonavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-indinavir-and-ritonavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-indinavir-and-ritonavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-indinavir-and-ritonavir|major|↑ exposure"
+      ]
+    },
+    "elvitegravir-and-ritonavir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-elvitegravir-and-ritonavir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-elvitegravir-and-ritonavir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-elvitegravir-and-ritonavir|major|↑ exposure"
+      ]
+    },
+    "paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir|major|↑ exposure"
+      ]
+    },
+    "darunavir-cobicistat": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-darunavir-cobicistat|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-darunavir-cobicistat|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-darunavir-cobicistat|major|↑ exposure"
+      ]
+    },
+    "darunavir-cobicistat-ftc-taf": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-darunavir-cobicistat-ftc-taf|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-darunavir-cobicistat-ftc-taf|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-darunavir-cobicistat-ftc-taf|major|↑ exposure"
+      ]
+    },
+    "atazanavir-cobicistat": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-atazanavir-cobicistat|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-atazanavir-cobicistat|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-atazanavir-cobicistat|major|↑ exposure"
+      ]
+    },
+    "elvitegravir-cobicistat-ftc-taf": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-elvitegravir-cobicistat-ftc-taf|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-elvitegravir-cobicistat-ftc-taf|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-elvitegravir-cobicistat-ftc-taf|major|↑ exposure"
+      ]
+    },
+    "elvitegravir-cobicistat-ftc-tdf": {
+      "host": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pheno-CYP3A4-elvitegravir-cobicistat-ftc-tdf|major|genotype rewritten toward PM",
+        "pk-CYP3A4-inhibitor-elvitegravir-cobicistat-ftc-tdf|major|↑ exposure"
+      ],
+      "noHost": [
+        "cyp-clock|major|start ↑ / stop ↓",
+        "pk-CYP3A4-inhibitor-elvitegravir-cobicistat-ftc-tdf|major|↑ exposure"
+      ]
+    }
+  },
+  "otherPairs": 1892,
+  "otherDigest": "2a70a93dd878fecc541dc67942dc9532823021936da4f55839b713828c1052f1"
+}

@@ -92,7 +92,9 @@ const BOXED: Record<string, { detail: string; href?: string }> = {
 
 const PI: Record<string, string> = {
   "pd-methadone-ritonavir":
-    "Methadone and ritonavir / Paxlovid labels: mixed PK — methadone may fall (withdrawal); fentanyl and other 3A4 opioids may rise.",
+    "Methadone and ritonavir / Paxlovid labels: mixed PK — methadone may fall (withdrawal); fentanyl and other 3A4 opioids may rise. Methadone label, 7 (Paradoxical Effects of Antiretroviral Agents): ritonavir, lopinavir+ritonavir, saquinavir+ritonavir, tipranavir+ritonavir, darunavir+ritonavir and nelfinavir have lowered methadone.",
+  "pd-methadone-arv-unsettled":
+    "Methadone label, 7: antiretroviral agents may result in decreased efficacy or, in certain cases, increased toxicity. The label's list of antiretrovirals that lowered methadone does not name this regimen, and no saved label gives the direction.",
   "pd-bup-ritonavir":
     "Buprenorphine labels: 3A4 inhibitors can raise exposure. Opposite arrow from methadone on the same booster.",
   "pd-bup-precip":

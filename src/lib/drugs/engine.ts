@@ -6,6 +6,14 @@ import { udsFindings } from "./uds";
 import { protocolFindings } from "./cyp-protocol";
 import { doseFindings } from "./dosing";
 import {
+  METHADONE_ARV_FALL,
+  METHADONE_ARV_HIGHLIGHT,
+  METHADONE_ARV_WITHDRAWAL,
+  methadoneArvPartner,
+  skipMethadone3A4Victim,
+  type MethadoneArvRow,
+} from "./methadone-antiretroviral";
+import {
   LABEL_CONTRAINDICATED_TAG,
   labelContraindicationFor,
   labelPinSentence,
@@ -97,7 +105,10 @@ const OATP_VICTIM = new Set(["fexofenadine", "atenolol", "nadolol", "aliskiren"]
 const VITK_FOOD = new Set(["vitamin-k", "leafy-greens", "soy"]);
 const T4_POLYPHENOL = new Set(["levothyroxine", "iron", "alendronate"]);
 const ENTERAL_VICTIM = new Set(["phenytoin", "warfarin", "levothyroxine", "carbamazepine"]);
-/** Ritonavir-boosted products: 3A4 inhibit raises fentanyl; methadone often falls. */
+/**
+ * Ritonavir products for the buprenorphine card. Methadone with an
+ * antiretroviral 3A4 inhibitor is in methadone-antiretroviral.ts.
+ */
 const RITONAVIR_BOOST = new Set(["ritonavir", "paxlovid"]);
 /** Illicit / street full agonists that stack with a methadone take-home. */
 const STREET_FULL_AGONIST = new Set([
@@ -210,13 +221,10 @@ function pkFindings(a: Drug, b: Drug): Finding[] {
         ) {
           continue;
         }
-        // Ritonavir/Paxlovid inhibit 3A4 but methadone still falls (2B6/UGT). Don't score ↑ parent.
-        if (
-          enzyme === "CYP3A4" &&
-          kind === "inhibitor" &&
-          victim.id === "methadone" &&
-          RITONAVIR_BOOST.has(perp.id)
-        ) {
+        // Methadone with a 3A4-inhibiting antiretroviral: the methadone label says
+        // ritonavir-boosted PIs lower methadone, and no saved source says the
+        // cobicistat rows raise it. Don't score ↑ parent (methadone-antiretroviral.ts).
+        if (enzyme === "CYP3A4" && kind === "inhibitor" && skipMethadone3A4Victim(perp.id, victim.id)) {
           continue;
         }
         const strongest = perps.reduce((m, p) =>
@@ -463,6 +471,48 @@ function labelFloorFindings(a: Drug, b: Drug): Finding[] {
     ];
   }
   return [];
+}
+
+/**
+ * Methadone with a CYP3A4-inhibiting antiretroviral row. The pk pass skips the
+ * 3A4 rise card for these pairs; this is the card the pair shows instead.
+ */
+function methadoneArvFinding(
+  a: Drug,
+  b: Drug,
+  arvId: string,
+  row: MethadoneArvRow,
+): Finding {
+  const arvName = (a.id === arvId ? a : b).name;
+  if (row.arrow === "falls" && (arvId === "ritonavir" || arvId === "paxlovid")) {
+    return pdPair(a, b, {
+      suffix: "pd-methadone-ritonavir",
+      severity: "major",
+      effect: "methadone may fall / withdrawal",
+      mechanism: "ritonavir-boosted 3A4 inhibit vs 2B6/UGT dump",
+      clinical:
+        "The 3A4 arrow is the wrong one for methadone. Acute ritonavir (Paxlovid) and steady-state ritonavir still drop methadone — watch withdrawal at the window, not nod. Fentanyl on the same booster is the opposite: parent rises, airway risk climbs. This is not a dosing protocol.",
+      tags: ["mat", "cyp"],
+    });
+  }
+  if (row.arrow === "falls") {
+    return pdPair(a, b, {
+      suffix: "pd-methadone-ritonavir",
+      severity: "major",
+      effect: "methadone may fall / withdrawal",
+      mechanism: "3A4 inhibitor that still lowers methadone (methadone label)",
+      clinical: `The 3A4 arrow is the wrong one for methadone here. Methadone HCl tablets, 7 DRUG INTERACTIONS (Paradoxical Effects of Antiretroviral Agents) names ${row.labelName} among antiretrovirals whose use "${METHADONE_ARV_FALL}" and says this "${METHADONE_ARV_WITHDRAWAL}." ${row.why} Watch withdrawal at the window, not nod. This is not a dosing protocol.`,
+      tags: ["mat", "cyp"],
+    });
+  }
+  return pdPair(a, b, {
+    suffix: "pd-methadone-arv-unsettled",
+    severity: "moderate",
+    effect: "methadone direction not settled",
+    mechanism: "3A4 inhibitor the methadone label does not name",
+    clinical: `Saved sources do not say which way methadone moves with ${arvName}. ${row.why} The methadone label (7) names ritonavir and several ritonavir-boosted protease inhibitors among antiretrovirals that lowered methadone, and says antiretroviral agents "${METHADONE_ARV_HIGHLIGHT}" This desk shows no CYP3A4 rise card and no fall card for this pair. Watch for withdrawal and for sedation at the window. This is not a dosing protocol.`,
+    tags: ["mat", "cyp"],
+  });
 }
 
 function pdFindings(a: Drug, b: Drug): Finding[] {
@@ -1481,21 +1531,10 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  if (
-    (a.id === "methadone" && RITONAVIR_BOOST.has(b.id)) ||
-    (b.id === "methadone" && RITONAVIR_BOOST.has(a.id))
-  ) {
-    out.push(
-      pdPair(a, b, {
-        suffix: "pd-methadone-ritonavir",
-        severity: "major",
-        effect: "methadone may fall / withdrawal",
-        mechanism: "ritonavir-boosted 3A4 inhibit vs 2B6/UGT dump",
-        clinical:
-          "The 3A4 arrow is the wrong one for methadone. Acute ritonavir (Paxlovid) and steady-state ritonavir still drop methadone — watch withdrawal at the window, not nod. Fentanyl on the same booster is the opposite: parent rises, airway risk climbs. This is not a dosing protocol.",
-        tags: ["mat", "cyp"],
-      }),
-    );
+  // Only where the row carries a CYP3A4 inhibitor role: this card stands in for the 3A4 rise card.
+  const arv = methadoneArvPartner(a.id, b.id);
+  if (arv && perpetratorsOf(a.id === arv.id ? a : b, "CYP3A4", "inhibitor").length) {
+    out.push(methadoneArvFinding(a, b, arv.id, arv.row));
   }
 
   if (
