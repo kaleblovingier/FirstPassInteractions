@@ -11,6 +11,7 @@ import {
   LABEL_CONTRAINDICATIONS_RETRIEVED,
   labelContraindicationFor,
 } from "./label-contraindications";
+import { LABEL_CONDITIONAL_TAG, labelConditionalFor } from "./label-conditional";
 import { PERPETRATOR_LABELS } from "./reference/label-perpetrators";
 import { cardLink, guidelineUrl, pgxFor } from "./pgx";
 import type { Finding } from "./types";
@@ -244,6 +245,19 @@ function labelPinBasis(finding: Finding): FindingBasis | null {
     href: pin.url,
   };
 }
+/** Verbatim label line for a finding that carries a wave 18 conditional contraindication. */
+function labelConditionalBasis(finding: Finding): FindingBasis | null {
+  if (!finding.tags.includes(LABEL_CONDITIONAL_TAG) || finding.drugIds.length !== 2) return null;
+  const line = labelConditionalFor(finding.drugIds[0], finding.drugIds[1]);
+  if (!line) return null;
+  return {
+    kind: "fda-pi",
+    label: `${line.labelDrug} label, ${line.labelSection}`,
+    detail: `The ${line.labelDrug} label lists this combination under Contraindications only ${line.scope}. ${line.labelSection}: "${line.quote}" Named in the label: "${line.labelExample}" The desk keeps this card below Avoid together because it does not know that condition. Retrieved from DailyMed ${line.retrieved}.`,
+    href: line.url,
+  };
+}
+
 /** Perpetrator's own label. Named contraindications still attach when FDA Table 1 cites the role. */
 function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
   if (finding.kind !== "pk") return null;
@@ -380,6 +394,8 @@ export function basisFor(finding: Finding): FindingBasis[] {
   // #58 label pins lead. Gold-set quotes (#68) still attach for pairs the pin does not already cite.
   const pinned = labelPinBasis(finding);
   if (pinned) out.push(pinned);
+  const conditional = labelConditionalBasis(finding);
+  if (conditional) out.push(conditional);
   const quoted = labelQuoteBasis(finding);
   if (quoted && quoted.href !== pinned?.href) out.push(quoted);
   const boxed = BOXED[suffix];
