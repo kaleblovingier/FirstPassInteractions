@@ -12,6 +12,7 @@ import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
+import { vercelRoutes } from "./scripts/vercel-routes.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { swVersionPlugin } from "./scripts/sw-version.mjs";
 
@@ -211,6 +212,10 @@ export default defineConfig(({ command, isPreview }) => ({
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
+            // Security headers (CSP, HSTS, …) and old-slug redirects. They must be in the
+            // Build Output config.json: the preset does not copy vercel.json headers there.
+            // scripts/check-build-headers.mjs checks the built file.
+            vercel: { config: { routes: vercelRoutes() } },
           }),
         ]
       : []),
