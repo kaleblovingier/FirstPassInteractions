@@ -33,6 +33,11 @@
       "permanent": true
     },
     {
+      "source": "/drug/elvitegravir-cobicistat-ftc-taf",
+      "destination": "/drug/genvoya",
+      "permanent": true
+    },
+    {
       "source": "/drug/lopinavir",
       "destination": "/drug/kaletra",
       "permanent": true
@@ -50,6 +55,16 @@
     {
       "source": "/drug/darunavir-cobicistat",
       "destination": "/drug/prezcobix",
+      "permanent": true
+    },
+    {
+      "source": "/drug/elvitegravir-cobicistat-ftc-tdf",
+      "destination": "/drug/stribild",
+      "permanent": true
+    },
+    {
+      "source": "/drug/darunavir-cobicistat-ftc-taf",
+      "destination": "/drug/symtuza",
       "permanent": true
     },
     {

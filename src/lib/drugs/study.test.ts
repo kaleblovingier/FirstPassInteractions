@@ -1618,7 +1618,7 @@ describe("study learning tools", () => {
     const pair = deskCards(["simvastatin", "clarithromycin"], []);
     assert.equal(pair.find((c) => c.id === "mech-clarithromycin|simvastatin")?.correct, "PK");
     assert.equal(pair.find((c) => c.id === "dom-clarithromycin|simvastatin")?.correct, "statins");
-    assert.equal(pair.find((c) => c.id === "more-clarithromycin|simvastatin")?.correct, "2");
+    assert.equal(pair.find((c) => c.id === "more-clarithromycin|simvastatin")?.correct, "11");
     assert.equal(pair.find((c) => c.id === "mech-clarithromycin|simvastatin")?.prompt, "Simvastatin × Clarithromycin.");
     assert.equal(pair.some((c) => c.id.startsWith("bas-")), false);
     const pin = deskCards(["ranolazine", "phenobarbital"], []);

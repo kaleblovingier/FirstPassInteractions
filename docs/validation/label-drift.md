@@ -7,7 +7,7 @@ Question: is every stored label quote (gold set and contraindication pins) still
 
 | Result | Quotes | Pairs |
 |---|---|---|
-| Pass (exact, in the cited section) | 209 | 563 |
+| Pass (exact, in the cited section) | 224 | 603 |
 | Moved (exact, but in a different section than cited) | 1 | 1 |
 | Drifted (not in the current label) | 0 | 0 |
 | Could not fetch | 0 | 0 |
@@ -69,7 +69,7 @@ None.
 | Latuda (lurasidone) | afad3051-9df2-4c54-9684-e8262a133af8 | 37 | 2025-01-31 | 2 | pass |
 | Lexapro (escitalopram) | 13bb8267-1cab-43e5-acae-55a4d957630a | 45 | 2023-10-01 | 1 | pass |
 | Lotronex (alosetron) | 35cbb9d5-639b-207a-e054-00144ff88e88 | 8 | 2026-06-30 | 1 | pass |
-| Lovastatin tablets | 9438d8a0-ca5b-4676-aab9-d0241ccff6c9 | 5 | 2026-07-23 | 1 | pass |
+| Lovastatin tablets | 9438d8a0-ca5b-4676-aab9-d0241ccff6c9 | 5 | 2026-07-23 | 2 | pass |
 | Marplan (isocarboxazid) | 95fde749-44ad-4668-86c4-0ff17bca0074 | 1 | 2026-04-21 | 16 | pass |
 | Mavyret (glecaprevir/pibrentasvir) | 7bf99777-0401-9095-8645-16c6e907fcc0 | 201 | 2025-06-25 | 1 | pass |
 | Methadone HCl tablets | 540edd43-165d-4257-b989-3bccc8f54afb | 2 | 2026-09-09 | 9 | pass |
@@ -115,7 +115,7 @@ None.
 | Triazolam | 5add318e-11b9-42f8-b052-0d8cebb32fcf | 26 | 2026-07-10 | 2 | pass |
 | Trintellix (vortioxetine) | 1a5b68e2-14d0-419d-9ec6-1ca97145e838 | 18 | 2025-03-05 | 1 | pass |
 | Varubi (rolapitant) | 8670c3cf-82d9-466d-be49-de33d8c8742b | 3 | 2026-09-08 | 1 | pass |
-| Vfend (voriconazole) | 08d08721-1f4c-478a-8abf-d9c402d50553 | 33 | 2026-03-20 | 1 | pass |
+| Vfend (voriconazole) | 08d08721-1f4c-478a-8abf-d9c402d50553 | 33 | 2026-03-20 | 15 | pass |
 | Viibryd (vilazodone) | 4c55ccfb-c4cf-11df-851a-0800200c9a66 | 34 | 2023-10-01 | 1 | pass |
 | Vivitrol (naltrexone ER injectable suspension) | cd11c435-b0f0-4bb9-ae78-60f101f3703f | 39 | 2026-05-31 | 1 | pass |
 | Vosevi (sofosbuvir/velpatasvir/voxilaprevir) | 17ffc094-8ca7-45d2-80d8-fd043bc9a221 | 6 | 2025-07-14 | 1 | pass |
@@ -186,6 +186,7 @@ None.
 - escitalopram+linezolid, escitalopram+methylene-blue: Lexapro (escitalopram), 4 CONTRAINDICATIONS
 - alosetron+fluvoxamine: Lotronex (alosetron), 4.3 Concomitant Use of Fluvoxamine
 - lovastatin+clarithromycin: Lovastatin tablets, CONTRAINDICATIONS
+- lovastatin+ketoconazole, lovastatin+voriconazole, lovastatin+erythromycin, lovastatin+telithromycin, lovastatin+nefazodone, lovastatin+cobicistat, lovastatin+darunavir-cobicistat-ftc-taf, lovastatin+elvitegravir-cobicistat-ftc-taf, lovastatin+elvitegravir-cobicistat-ftc-tdf, lovastatin+nelfinavir, lovastatin+indinavir-and-ritonavir, lovastatin+tipranavir-and-ritonavir, lovastatin+indinavir, lovastatin+saquinavir, lovastatin+tipranavir: Lovastatin tablets, CONTRAINDICATIONS
 - isocarboxazid+amitriptyline: Marplan (isocarboxazid), CONTRAINDICATIONS
 - isocarboxazid+amoxapine: Marplan (isocarboxazid), CONTRAINDICATIONS
 - isocarboxazid+buspirone: Marplan (isocarboxazid), CONTRAINDICATIONS
@@ -320,7 +321,21 @@ None.
 - triazolam+ketoconazole: Triazolam tablets, 4 CONTRAINDICATIONS
 - vortioxetine+linezolid, vortioxetine+methylene-blue: Trintellix (vortioxetine), 4 CONTRAINDICATIONS
 - rolapitant+thioridazine, rolapitant+pimozide: Varubi (rolapitant), 4 CONTRAINDICATIONS
+- voriconazole+carbamazepine: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+eplerenone: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+ergotamine, voriconazole+dihydroergotamine, voriconazole+methylergonovine: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+finerenone: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+ivabradine: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+naloxegol: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+phenobarbital: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+pimozide: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+quinidine: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+rifabutin: Vfend (voriconazole), 4 CONTRAINDICATIONS
 - voriconazole+rifampin: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+sirolimus: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+st-johns-wort: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+tolvaptan: Vfend (voriconazole), 4 CONTRAINDICATIONS
+- voriconazole+voclosporin: Vfend (voriconazole), 4 CONTRAINDICATIONS
 - vilazodone+linezolid, vilazodone+methylene-blue: Viibryd (vilazodone), 4 CONTRAINDICATIONS
 - naltrexone+hydrocodone: Vivitrol (naltrexone ER injectable suspension), 4 CONTRAINDICATIONS
 - sofosbuvir-velpatasvir-voxilaprevir+rifampin: Vosevi (sofosbuvir/velpatasvir/voxilaprevir), 4 CONTRAINDICATIONS
@@ -336,7 +351,7 @@ None.
 - sodium-oxybate+zolpidem: Xyrem (sodium oxybate), 4 CONTRAINDICATIONS
 - tizanidine+fluvoxamine, tizanidine+ciprofloxacin: Zanaflex (tizanidine), 7.1 Strong CYP1A2 Inhibitors
 - tizanidine+fluvoxamine, tizanidine+ciprofloxacin: Zanaflex (tizanidine), 4 CONTRAINDICATIONS
-- simvastatin+clarithromycin, simvastatin+itraconazole, simvastatin+ritonavir: Zocor (simvastatin), 4 CONTRAINDICATIONS
+- simvastatin+clarithromycin, simvastatin+itraconazole, simvastatin+ritonavir, simvastatin+ketoconazole, simvastatin+voriconazole, simvastatin+erythromycin, simvastatin+nelfinavir, simvastatin+nefazodone, simvastatin+cobicistat, simvastatin+darunavir-cobicistat-ftc-taf, simvastatin+elvitegravir-cobicistat-ftc-taf, simvastatin+elvitegravir-cobicistat-ftc-tdf: Zocor (simvastatin), 4 CONTRAINDICATIONS
 - lonafarnib+lovastatin, lonafarnib+simvastatin, lonafarnib+atorvastatin: Zokinvy (lonafarnib), 4 CONTRAINDICATIONS
 - lonafarnib+midazolam: Zokinvy (lonafarnib), 4 CONTRAINDICATIONS
 - sertraline+linezolid, sertraline+methylene-blue: Zoloft (sertraline), 4 CONTRAINDICATIONS

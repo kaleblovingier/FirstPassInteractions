@@ -544,6 +544,47 @@ const EXPECTED_PINS = [
   "febuxostat+azathioprine",
   "febuxostat+mercaptopurine",
   "disulfiram+ethanol",
+  // wave 17 (severity change: Zocor, lovastatin, Vfend section 4)
+  "simvastatin+ketoconazole",
+  "simvastatin+voriconazole",
+  "simvastatin+erythromycin",
+  "simvastatin+nelfinavir",
+  "simvastatin+nefazodone",
+  "simvastatin+cobicistat",
+  "simvastatin+darunavir-cobicistat-ftc-taf",
+  "simvastatin+elvitegravir-cobicistat-ftc-taf",
+  "simvastatin+elvitegravir-cobicistat-ftc-tdf",
+  "lovastatin+ketoconazole",
+  "lovastatin+voriconazole",
+  "lovastatin+erythromycin",
+  "lovastatin+telithromycin",
+  "lovastatin+nefazodone",
+  "lovastatin+cobicistat",
+  "lovastatin+darunavir-cobicistat-ftc-taf",
+  "lovastatin+elvitegravir-cobicistat-ftc-taf",
+  "lovastatin+elvitegravir-cobicistat-ftc-tdf",
+  "lovastatin+nelfinavir",
+  "lovastatin+indinavir-and-ritonavir",
+  "lovastatin+tipranavir-and-ritonavir",
+  "lovastatin+indinavir",
+  "lovastatin+saquinavir",
+  "lovastatin+tipranavir",
+  "voriconazole+eplerenone",
+  "voriconazole+ergotamine",
+  "voriconazole+dihydroergotamine",
+  "voriconazole+methylergonovine",
+  "voriconazole+finerenone",
+  "voriconazole+ivabradine",
+  "voriconazole+naloxegol",
+  "voriconazole+pimozide",
+  "voriconazole+quinidine",
+  "voriconazole+sirolimus",
+  "voriconazole+tolvaptan",
+  "voriconazole+voclosporin",
+  "voriconazole+rifabutin",
+  "voriconazole+carbamazepine",
+  "voriconazole+phenobarbital",
+  "voriconazole+st-johns-wort",
   // label-named shelf, no enzyme grade
   "nefazodone+terfenadine",
   "nefazodone+astemizole",
@@ -576,10 +617,10 @@ test("pin list is exactly the reviewed set", () => {
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "gold-set").length, 27);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave3").length, 90);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave4").length, 99);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 61);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "no-enzyme").length, 68);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "pd").length, 155);
   assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave6").length, 13);
-  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 51);
+  assert.equal(LABEL_CONTRAINDICATIONS.filter((r) => r.origin === "wave7").length, 84);
   for (const r of LABEL_CONTRAINDICATIONS) {
     if (r.origin === "no-enzyme" || r.origin === "pd") {
       assert.equal(r.enzyme, undefined, r.id);
@@ -852,5 +893,54 @@ test("Tikosyn names trimethoprim alone or with sulfamethoxazole: both catalog ro
     const pinned = pairFindings("dofetilide", other).filter((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG));
     assert.equal(pinned.length, 1, other);
     assert.deepEqual(pinned[0].enzymes, [], `${other}: no CYP grade on this pin`);
+  }
+});
+
+test("wave 17 pins lock the Zocor, lovastatin and Vfend section 4 pairs at contraindicated", () => {
+  const ZOCOR = "8f55d5de-5a4f-4a39-8c84-c53976dd6af9";
+  const LOVASTATIN = "9438d8a0-ca5b-4676-aab9-d0241ccff6c9";
+  const VFEND = "08d08721-1f4c-478a-8abf-d9c402d50553";
+  const locked: [string, string, string][] = [
+    ...["ketoconazole", "voriconazole", "erythromycin", "nelfinavir", "nefazodone", "cobicistat", "darunavir-cobicistat-ftc-taf", "elvitegravir-cobicistat-ftc-taf", "elvitegravir-cobicistat-ftc-tdf"].map(
+      (b): [string, string, string] => ["simvastatin", b, ZOCOR],
+    ),
+    ...["ketoconazole", "voriconazole", "erythromycin", "telithromycin", "nefazodone", "cobicistat", "darunavir-cobicistat-ftc-taf", "elvitegravir-cobicistat-ftc-taf", "elvitegravir-cobicistat-ftc-tdf", "nelfinavir", "indinavir-and-ritonavir", "tipranavir-and-ritonavir", "indinavir", "saquinavir", "tipranavir"].map(
+      (b): [string, string, string] => ["lovastatin", b, LOVASTATIN],
+    ),
+    ...["eplerenone", "ergotamine", "dihydroergotamine", "methylergonovine", "finerenone", "ivabradine", "naloxegol", "pimozide", "quinidine", "sirolimus", "tolvaptan", "voclosporin", "rifabutin", "carbamazepine", "phenobarbital", "st-johns-wort"].map(
+      (b): [string, string, string] => ["voriconazole", b, VFEND],
+    ),
+  ];
+  assert.equal(locked.length, 40);
+  for (const [a, b, setid] of locked) {
+    const pin = labelContraindicationFor(a, b);
+    assert.equal(pin?.id, `${a}+${b}`);
+    assert.ok(pin?.url.endsWith(setid), `${a}+${b} cites its own label`);
+    assert.equal(pin?.retrieved, "2026-10-28");
+    for (const host of [undefined, DEFAULT_HOST]) assert.equal(pairSeverity(a, b, host), "contraindicated", `${a}+${b}`);
+  }
+  // Statins are the victim. Vfend is the perpetrator for item 1 and the victim of the item 2 inducers.
+  const pinnedId = (a: string, b: string) => pairFindings(a, b).find((f) => f.tags.includes(LABEL_CONTRAINDICATED_TAG))?.id ?? "";
+  assert.match(pinnedId("simvastatin", "ketoconazole"), /pk-CYP3A4-inhibitor-ketoconazole$/);
+  assert.match(pinnedId("voriconazole", "pimozide"), /pk-CYP3A4-inhibitor-voriconazole$/);
+  assert.match(pinnedId("voriconazole", "carbamazepine"), /pk-CYP2C19-inducer-carbamazepine$/);
+  // Similar strong CYP3A4 inhibitor pairs that the labels do not name stay at the enzyme rule.
+  for (const [a, b] of [
+    ["simvastatin", "telithromycin"],
+    ["simvastatin", "idelalisib"],
+    ["simvastatin", "tucatinib"],
+    ["simvastatin", "indinavir-and-ritonavir"],
+    ["lovastatin", "idelalisib"],
+    ["lovastatin", "ceritinib"],
+    ["voriconazole", "everolimus"],
+    ["voriconazole", "tacrolimus"],
+  ] as const) {
+    assert.equal(labelContraindicationFor(a, b), undefined, `${a}+${b}`);
+    assert.equal(pairSeverity(a, b), "major", `${a}+${b}`);
+  }
+  // Dose- or indication-conditional Vfend lines, and rows outside the named class, are not pinned.
+  for (const b of ["efavirenz", "ritonavir", "venetoclax", "primidone", "bromocriptine"]) {
+    assert.equal(labelContraindicationFor("voriconazole", b), undefined, b);
+    assert.equal(pairSeverity("voriconazole", b), "major", b);
   }
 });
