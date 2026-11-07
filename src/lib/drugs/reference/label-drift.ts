@@ -286,7 +286,7 @@ export function driftReport(
   L.push("> Educational reference only, not FDA-cleared. No dosing. This report changes no grade.");
   L.push("");
   L.push(
-    `Question: is every stored label quote (gold set and contraindication pins) still word for word in the cited section of the current DailyMed SPL? DailyMed SPL v2 XML retrieved ${retrieved}. Matching folds whitespace, case, curly quotes and dashes; "…" separates elided segments, and each must be present.`,
+    `Question: is every stored label quote (gold set, contraindication pins, and wave 18 conditional lines) still word for word in the cited section of the current DailyMed SPL? DailyMed SPL v2 XML retrieved ${retrieved}. Matching folds whitespace, case, curly quotes and dashes; "…" separates elided segments, and each must be present.`,
   );
   L.push("");
   L.push("| Result | Quotes | Pairs |");

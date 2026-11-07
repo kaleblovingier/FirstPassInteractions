@@ -1,6 +1,7 @@
 /**
- * Label drift check: is every stored label quote (gold set and contraindication
- * pins) still an exact substring of the cited section of the current DailyMed SPL?
+ * Label drift check: is every stored label quote (gold set, contraindication
+ * pins, and wave 18 conditional lines) still an exact substring of the cited
+ * section of the current DailyMed SPL?
  *
  *   npx --no-install tsx scripts/label-drift-check.ts            # fetch DailyMed, write fixture + docs
  *   npx --no-install tsx scripts/label-drift-check.ts --check    # offline: rebuild from the fixture, exit 1 if docs are stale
@@ -22,6 +23,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LABEL_GOLD_SET } from "../src/lib/drugs/reference/label-gold-set.ts";
 import { LABEL_CONTRAINDICATIONS } from "../src/lib/drugs/label-contraindications.ts";
+import { LABEL_CONDITIONAL_LINES } from "../src/lib/drugs/label-conditional.ts";
 import { MODERN_FORMULARY } from "../src/lib/drugs/catalog-modern.ts";
 import { MODERN_WAVE2_FORMULARY } from "../src/lib/drugs/catalog-modern-wave2.ts";
 import { MODERN_WAVE3_FORMULARY } from "../src/lib/drugs/catalog-modern-wave3.ts";
@@ -70,6 +72,8 @@ export function quotedRows(): QuotedRow[] {
     if (p.contraindicationsSentence)
       add(p.id, p.labelDrug, "4 CONTRAINDICATIONS", p.contraindicationsSentence, p.url);
   }
+  // Wave 18 conditional lines (dose, indication or phase). Same check, no grade.
+  for (const p of LABEL_CONDITIONAL_LINES) add(p.id, p.labelDrug, p.labelSection, p.quote, p.url);
   return [...by.values()].sort(
     (a, b) => a.labelDrug.localeCompare(b.labelDrug) || a.pairs[0]!.localeCompare(b.pairs[0]!),
   );
