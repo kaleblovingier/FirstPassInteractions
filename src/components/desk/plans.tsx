@@ -117,16 +117,16 @@ export function PlansPage() {
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{COMMERCE.pitch}</p>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
               {founding ? (
-                <Button variant="secondary" disabled className="w-full min-h-[44px] sm:w-auto">
+                <Button variant="secondary" disabled className="h-auto w-full min-h-[44px] whitespace-normal py-2.5 text-center sm:w-auto">
                   <Check className="size-4" />
                   {onProgram ? "Program license is live on this desk" : "Founding is live on this desk"}
                 </Button>
               ) : (
-                <Button onClick={unlock} className="w-full min-h-[44px] sm:w-auto cursor-pointer">
+                <Button onClick={unlock} className="h-auto w-full min-h-[44px] whitespace-normal py-2.5 text-center sm:w-auto cursor-pointer">
                   Unlock founding · ${COMMERCE.founding} once
                 </Button>
               )}
-              <Button variant="secondary" onClick={redeem} className="w-full min-h-[44px] sm:w-auto cursor-pointer">
+              <Button variant="secondary" onClick={redeem} className="h-auto w-full min-h-[44px] whitespace-normal py-2.5 text-center sm:w-auto cursor-pointer">
                 <KeyRound className="size-4" />
                 Have a key? Redeem it
               </Button>
@@ -188,7 +188,7 @@ export function PlansPage() {
               </ul>
               <div className="mt-6">
                 {isFree ? (
-                  <Button variant="secondary" className="w-full min-h-[44px]" disabled={current === "free"} onClick={downgrade}>
+                  <Button variant="secondary" className="h-auto w-full min-h-[44px] whitespace-normal py-2.5 text-center" disabled={current === "free"} onClick={downgrade}>
                     {current === "free" ? "You're on the free desk" : "Switch to free desk"}
                   </Button>
                 ) : (
@@ -234,14 +234,14 @@ export function PlansPage() {
                     ) : null}
 
                     {founding ? (
-                      <Button variant="secondary" className="w-full min-h-[44px]" disabled>
+                      <Button variant="secondary" className="h-auto w-full min-h-[44px] whitespace-normal py-2.5 text-center" disabled>
                         {onProgram && program
                           ? `Included in your ${PROGRAM_TIER_BY_ID[program.tier].name} program license`
                           : "Your current license"}
                       </Button>
                     ) : (
                       <div className="space-y-2">
-                        <Button className="w-full min-h-[44px] cursor-pointer font-semibold" onClick={unlock}>
+                        <Button className="h-auto w-full min-h-[44px] whitespace-normal py-2.5 text-center cursor-pointer font-semibold" onClick={unlock}>
                           Unlock founding · ${COMMERCE.founding} once
                         </Button>
                         <button
