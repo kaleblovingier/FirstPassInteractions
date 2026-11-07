@@ -95,6 +95,7 @@ export function LicenseActivatedDialog({
             <div
               className="flex-1 overflow-x-auto rounded-lg border border-border/80 bg-surface px-3 py-2.5 font-mono text-xs font-bold text-fg select-all break-all"
               tabIndex={0}
+              role="region"
               aria-label="License key"
             >
               {license}
