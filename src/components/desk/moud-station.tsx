@@ -193,7 +193,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
             <div className="space-y-3 text-xs">
               <div>
                 <label className="text-muted-foreground">Last Full-Agonist Opioid</label>
-                <select
+                <select aria-label="Last full-agonist opioid"
                   value={lastAgonist}
                   onChange={(e) => setLastAgonist(e.target.value as any)}
                   className="mt-1 w-full rounded-md border border-border bg-background p-2 text-xs"
@@ -219,7 +219,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                   <label className="text-muted-foreground">Current COWS Score</label>
                   <span className="font-mono">{cowsScore} / 48</span>
                 </div>
-                <Input
+                <Input aria-label="Current COWS score"
                   type="range"
                   min="0"
                   max="36"
@@ -236,7 +236,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
 
               <div>
                 <label className="text-muted-foreground">Induction Strategy</label>
-                <select
+                <select aria-label="Induction strategy"
                   value={inductionMethod}
                   onChange={(e) => setInductionMethod(e.target.value as any)}
                   className="mt-1 w-full rounded-md border border-border bg-background p-2 text-xs"
@@ -457,7 +457,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
 
               <div>
                 <label className="text-muted-foreground">Suspected Opioid Exposure</label>
-                <select
+                <select aria-label="Suspected opioid exposure"
                   value={lastAgonist}
                   onChange={(e) => setLastAgonist(e.target.value as any)}
                   className="mt-1 w-full rounded-md border border-border bg-background p-2 text-xs"

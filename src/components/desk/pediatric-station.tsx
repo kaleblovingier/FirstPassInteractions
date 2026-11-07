@@ -351,7 +351,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               onChange={(e) => setAgeValue(Number(e.target.value))}
               className="h-9 font-mono text-xs"
             />
-            <select
+            <select aria-label="Age unit"
               value={ageUnit}
               onChange={(e) => setAgeUnit(e.target.value as any)}
               className="h-9 rounded-md border border-border bg-surface-2 px-2 text-xs text-fg"
@@ -983,7 +983,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                 {/* Dosing Templates Selector */}
                 <div>
                   <label className="text-muted-foreground">Load Standard Pediatric Template</label>
-                  <select
+                  <select aria-label="Pediatric template"
                     value={selectedTemplateIndex}
                     onChange={(e) => {
                       const idx = Number(e.target.value);

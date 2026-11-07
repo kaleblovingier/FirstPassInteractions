@@ -767,7 +767,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                       <span className="font-medium text-muted">Combined Therapy INR Reading:</span>
                       <span className="font-mono font-bold text-fg text-sm">INR {combinedInr.toFixed(1)}</span>
                     </div>
-                    <input
+                    <input aria-label="Combined therapy INR"
                       type="range"
                       min="1.5"
                       max="7.0"
@@ -869,7 +869,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                     <label className="font-medium text-fg">Patient Body Weight (kg)</label>
                     <span className="font-mono font-bold text-accent">{pccWeightKg} kg</span>
                   </div>
-                  <input
+                  <input aria-label="Patient body weight (kg)"
                     type="range"
                     min="40"
                     max="140"
@@ -892,7 +892,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                     <label className="font-medium text-fg">Pre-Treatment Baseline INR</label>
                     <span className="font-mono font-bold text-accent">INR {pccInr.toFixed(1)}</span>
                   </div>
-                  <input
+                  <input aria-label="Pre-treatment baseline INR"
                     type="range"
                     min="1.5"
                     max="10.0"
@@ -1046,7 +1046,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                   <label className="font-medium text-muted">Time Since Infusion Stop / Dose</label>
                   <span className="font-mono font-bold text-fg">{protamineHours} hours</span>
                 </div>
-                <input
+                <input aria-label="Hours since infusion stop or dose"
                   type="range"
                   min="0.1"
                   max="12"
@@ -1197,7 +1197,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
                   <label className="font-medium text-muted">Time Elapsed (hours)</label>
                   <span className="font-mono font-bold text-fg">{andexHoursElapsed}h</span>
                 </div>
-                <input
+                <input aria-label="Hours elapsed"
                   type="range"
                   min="0.5"
                   max="24"

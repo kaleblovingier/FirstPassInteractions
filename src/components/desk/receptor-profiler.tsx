@@ -292,7 +292,7 @@ export function ReceptorProfiler() {
           <div className="space-y-4 rounded-xl border border-border bg-surface p-4 sm:p-6">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-muted" />
-              <input
+              <input aria-label="Search drugs"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

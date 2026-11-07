@@ -214,7 +214,7 @@ export function MechanismPathways({
         <div className="mt-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input
+            <input aria-label="Search pathways"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

@@ -275,7 +275,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
                 <label className="mb-1 block font-mono text-[10px] text-muted uppercase tracking-wider">
                   Clinic / Health System Header
                 </label>
-                <Input
+                <Input aria-label="Clinic or health system header"
                   type="text"
                   placeholder="e.g. Hope Valley Community Health Clinic"
                   value={clinicHeaderInput}
@@ -507,7 +507,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
           {/* Keyword Search Input */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted" />
-            <Input
+            <Input aria-label="Search resources"
               type="search"
               placeholder="Search by clinic name, program, disease, drug, or keyword..."
               value={searchQuery}
@@ -548,7 +548,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
             {/* Client-side Reference ZIP Input */}
             <div className="relative w-36">
               <MapPin className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted" />
-              <Input
+              <Input aria-label="Patient ZIP code"
                 type="text"
                 maxLength={5}
                 placeholder="Patient ZIP (Local)"
@@ -684,7 +684,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
             <div className="space-y-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted" />
-                <Input
+                <Input aria-label="Search patient assistance programs"
                   type="search"
                   placeholder="Search PAPs by drug name (Humira, Eliquis, Keytruda...), manufacturer, or disease..."
                   value={papSearchQuery}

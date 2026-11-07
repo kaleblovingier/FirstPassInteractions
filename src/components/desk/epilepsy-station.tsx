@@ -158,7 +158,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
               <span>Seizure Duration (min)</span>
               <span className="font-mono text-fg font-bold">{seizureDurationMinutes} min</span>
             </div>
-            <input
+            <input aria-label="Seizure duration (minutes)"
               type="range"
               min={0}
               max={120}

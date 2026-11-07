@@ -743,7 +743,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               </div>
               <div>
                 <label className="text-[10px] text-muted block mb-1">Volume Status</label>
-                <select
+                <select aria-label="Volume status"
                   value={volumeStatus}
                   onChange={(e) => setVolumeStatus(e.target.value as VolumeStatus)}
                   className="w-full h-8 px-2 text-xs rounded border border-border bg-surface text-fg"

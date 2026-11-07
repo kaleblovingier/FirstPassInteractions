@@ -372,7 +372,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
                 </div>
               </div>
 
-              <input
+              <input aria-label="Serum magnesium (mg/dL)"
                 type="range"
                 min="1.0"
                 max="20.0"

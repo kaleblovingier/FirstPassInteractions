@@ -917,7 +917,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted">Phenotype:</span>
-                <select
+                <select aria-label="Phenotype"
                   value={patientPhenotype}
                   onChange={(e) => setPatientPhenotype(e.target.value as any)}
                   className="rounded-md border border-border bg-surface-sunken px-2.5 py-1 text-xs font-medium text-fg"
