@@ -129,6 +129,7 @@ function DeskFallback({ label = "Loading desk view…" }: { label?: string }) {
   );
 }
 import { AddictionSafetyBanner } from "./safety-banner";
+import { ViewBoundary } from "./view-boundary";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 
 export function DeskApp() {
@@ -461,6 +462,7 @@ export function DeskApp() {
       ) : null}
 
       <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
+        <ViewBoundary resetKey={view} atHome={view === "desk"} onHome={() => setView("desk")}>
         {view === "plans" ? (
           <>
             <PlansPage />
@@ -838,6 +840,7 @@ export function DeskApp() {
             </aside>
           </div>
         )}
+        </ViewBoundary>
       </main>
       <DeskFooter />
       <CheckoutDrawer />
