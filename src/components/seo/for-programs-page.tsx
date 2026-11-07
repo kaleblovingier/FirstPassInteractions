@@ -254,7 +254,7 @@ export function ForProgramsView() {
             {FOR_PROGRAMS_INCLUDES.map((s) => (
               <li key={s} className="flex gap-2 text-sm">
                 <Check aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-accent" />
-                <span>{s}</span>
+                <span className="[overflow-wrap:anywhere]">{s}</span>
               </li>
             ))}
           </ul>

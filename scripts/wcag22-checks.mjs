@@ -68,7 +68,7 @@ for (const spec of paths) for (const width of [320, 1280]) {
     const ov = document.documentElement.scrollWidth - document.documentElement.clientWidth;
     const clipped = [...document.querySelectorAll("body *")].filter((e) => {
       const s = getComputedStyle(e); if (!/(hidden|clip)/.test(s.overflow + s.overflowX + s.overflowY)) return false;
-      if (e.closest(".sr-only,.skip-link") || e.getClientRects().length === 0 || e.clientWidth <= 2) return false;
+      if (e.closest(".sr-only,.skip-link,[inert]") || e.getClientRects().length === 0 || e.clientWidth <= 2) return false;
       if (s.textOverflow === "ellipsis" || /-webkit-box/.test(s.display)) return false;
       return e.textContent.trim() && (e.scrollHeight > e.clientHeight + 2 || e.scrollWidth > e.clientWidth + 2);
     }).map((e) => `${e.tagName.toLowerCase()}.${[...e.classList].slice(0, 3).join(".")}`);

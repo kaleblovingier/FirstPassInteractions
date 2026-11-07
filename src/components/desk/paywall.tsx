@@ -93,7 +93,7 @@ export function Paywall({
 
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <div className="pointer-events-none select-none blur-[3px]" aria-hidden inert>
+      <div className="pointer-events-none select-none overflow-hidden blur-[3px]" aria-hidden inert>
         {children}
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface/80 px-4 py-5 text-center">
