@@ -834,7 +834,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               Evaluated against patient age ({report.patientAgeSummary.chronologicalAgeText}), post-T&A surgical status, and developmental windows
             </p>
 
-            <div className="mt-4 overflow-x-auto">
+            <div role="region" aria-label="Pediatric agent threshold table" tabIndex={0} className="mt-4 overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-border/80 text-muted-foreground">

@@ -707,7 +707,7 @@ export function ReceptorProfiler() {
               </p>
             </div>
 
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="Receptor target table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-border bg-surface-2/50 text-[11px] font-semibold uppercase tracking-wider text-muted">
                   <tr>

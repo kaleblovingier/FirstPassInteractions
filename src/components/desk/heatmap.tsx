@@ -116,7 +116,7 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
         On narrow screens, scroll the map horizontally to see every enzyme. Drug names stay pinned.
         Tap an enzyme to open it in the atlas.
       </p>
-      <div className="-mx-1 overflow-x-auto">
+      <div role="region" aria-label="Shared enzyme table" tabIndex={0} className="-mx-1 overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0 text-left">
           <thead>
             <tr>

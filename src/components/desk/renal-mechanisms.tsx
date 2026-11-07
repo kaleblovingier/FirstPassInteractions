@@ -1035,7 +1035,7 @@ export function RenalMechanisms() {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
+          <div role="region" aria-label="Diuretic class table" tabIndex={0} className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-2 text-fg font-semibold">

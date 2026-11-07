@@ -817,7 +817,7 @@ export function TransporterNetwork() {
             </p>
           </div>
 
-          <div className="mt-4 overflow-x-auto">
+          <div role="region" aria-label="Transporter table" tabIndex={0} className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[700px] border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-border bg-surface-2 text-fg">

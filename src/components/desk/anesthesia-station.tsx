@@ -709,7 +709,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
             <span className="font-serif font-bold text-sm text-fg">
               SCCM PADIS Guidelines ICU Sedation Comparison
             </span>
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="ICU sedation comparison table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-left text-[11px] border-collapse">
                 <thead>
                   <tr className="border-b border-border bg-surface-sunken text-muted">
@@ -934,7 +934,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
             <span className="font-serif font-bold text-sm text-fg">
               Comprehensive Neuromuscular Blocking Agent (NMBA) Reference Matrix
             </span>
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="Neuromuscular blocking agent table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-left text-[11px] border-collapse">
                 <thead>
                   <tr className="border-b border-border bg-surface-sunken text-muted">

@@ -418,7 +418,7 @@ export function Pharmacogenomics() {
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
                 Key Clinical Alleles &amp; Functional Activity Scores ({activeGene.alleles.length} Defined)
               </h4>
-              <div className="overflow-x-auto rounded-xl border border-border/60">
+              <div role="region" aria-label="Allele table" tabIndex={0} className="overflow-x-auto rounded-xl border border-border/60">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-bg-sunken font-mono text-muted uppercase border-b border-border/60">
                     <tr>

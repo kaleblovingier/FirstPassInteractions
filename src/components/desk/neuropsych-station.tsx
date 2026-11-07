@@ -655,7 +655,7 @@ export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContex
           </div>
 
           {/* Exhaustive 4-Way Side-by-Side Comparison Matrix */}
-          <div className="rounded-lg border border-border bg-surface p-4 space-y-3 overflow-x-auto">
+          <div role="region" aria-label="Toxidrome comparison table" tabIndex={0} className="rounded-lg border border-border bg-surface p-4 space-y-3 overflow-x-auto">
             <span className="font-semibold text-fg text-sm">
               Comprehensive Neuro-Emergency Differential Matrix (Hunter SS vs NMS vs Anticholinergic vs MH)
             </span>

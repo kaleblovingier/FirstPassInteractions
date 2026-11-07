@@ -1243,7 +1243,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
             </p>
           </div>
 
-          <div className="overflow-x-auto">
+          <div role="region" aria-label="Anticoagulant and reversal agent table" tabIndex={0} className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-sunken text-muted">

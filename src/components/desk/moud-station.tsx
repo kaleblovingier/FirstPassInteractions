@@ -363,7 +363,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
             </div>
 
             {/* Schedule Table */}
-            <div className="mt-5 overflow-x-auto">
+            <div role="region" aria-label="Buprenorphine induction schedule" tabIndex={0} className="mt-5 overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-border/60 text-muted-foreground">

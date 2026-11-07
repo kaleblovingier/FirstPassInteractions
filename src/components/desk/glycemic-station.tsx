@@ -988,7 +988,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
                 Rapid-Acting Correctional Scale (Rule of 1800, Target 140 mg/dL)
               </h4>
-              <div className="overflow-x-auto">
+              <div role="region" aria-label="Correction dose table" tabIndex={0} className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead className="border-b border-border/60 text-muted text-[11px]">
                     <tr>

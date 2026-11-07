@@ -443,7 +443,7 @@ export function ToxidromeSimulator() {
           </div>
 
           {/* Matrix Table */}
-          <div className="overflow-x-auto rounded-xl border border-border bg-surface shadow-[var(--shadow-border)]">
+          <div role="region" aria-label="Toxidrome comparison table" tabIndex={0} className="overflow-x-auto rounded-xl border border-border bg-surface shadow-[var(--shadow-border)]">
             <table className="w-full min-w-[900px] border-collapse text-left text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-border bg-bg-sunken text-muted font-medium">

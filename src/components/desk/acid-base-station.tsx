@@ -847,7 +847,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div role="region" aria-label="Infusate comparison table" tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-[11px] border border-border rounded">
                 <thead className="bg-surface-sunken text-muted">
                   <tr className="border-b border-border">
