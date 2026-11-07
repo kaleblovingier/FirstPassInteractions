@@ -361,7 +361,7 @@ export function RotationPanel({ ids, host }: { ids: string[]; host: HostContext 
           <Steps items={patch.steps} />
           <Warnings items={patch.warnings} />
 
-          <div className="overflow-x-auto rounded-xl border border-border">
+          <div role="region" aria-label="Fentanyl patch conversion table" tabIndex={0} className="overflow-x-auto rounded-xl border border-border">
             <table className="w-full min-w-[280px] text-sm">
               <caption className="px-3 pt-2 text-left text-xs text-muted">
                 Duragesic label: starting strength from oral morphine
@@ -500,7 +500,7 @@ export function RotationPanel({ ids, host }: { ids: string[]; host: HostContext 
 function BandTable({ title, bands, ome }: { title: string; bands: MethadoneRatioBand[]; ome: number }) {
   const active = Number.isFinite(ome) && ome > 0 ? methadoneRatioFor(bands, ome) : null;
   return (
-    <div className="overflow-x-auto rounded-xl border border-border">
+    <div role="region" aria-label="Morphine to methadone ratio table" tabIndex={0} className="overflow-x-auto rounded-xl border border-border">
       <table className="w-full min-w-[220px] text-sm">
         <caption className="px-3 pt-2 text-left text-xs text-muted">{title}</caption>
         <thead>

@@ -1,4 +1,5 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { DESK_PREHYDRATE_SCRIPT } from "@/lib/drugs/desk-persist";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
@@ -10,6 +11,22 @@ import appCss from "../styles.css?url";
 const APP_NAME = "FirstPass";
 const SITE_DESCRIPTION =
   "FirstPass is an educational drug-interaction reference for teaching: label-sourced pairs in the FDA label's own wording, with DailyMed links. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
+
+/**
+ * In-app links render without a page load, so the service worker never sees those pages.
+ * Tell it the path; it caches allow-listed reference pages it does not have yet (public/sw.js).
+ */
+function OfflineVisitReporter() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    try {
+      navigator.serviceWorker?.controller?.postMessage({ type: "fp-visit", path });
+    } catch {
+      /* no worker, or it is being replaced */
+    }
+  }, [path]);
+  return null;
+}
 
 export const Route = createRootRoute({
   head: () => ({
@@ -64,6 +81,7 @@ export const Route = createRootRoute({
       </head>
       <body className="bg-bg text-fg">
         <PreviewHostBridge />
+        <OfflineVisitReporter />
         <AuthProvider>
           <Outlet />
         </AuthProvider>

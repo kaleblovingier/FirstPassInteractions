@@ -97,7 +97,7 @@ export function EnzymeAtlas() {
           </button>
         ))}
       </div>
-      <input
+      <input aria-label="Search this atlas"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search this atlas — brand or generic…"

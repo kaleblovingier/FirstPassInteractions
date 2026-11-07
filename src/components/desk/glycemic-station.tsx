@@ -62,6 +62,13 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
   const [chloride, setChloride] = useState<number>(98);
   const [bicarbonate, setBicarbonate] = useState<number>(12);
   const [venousPh, setVenousPh] = useState<number>(7.20);
+  // Blank or mid-typing values leave the calculation alone; leaving the field settles it (blank goes to 0, as before).
+  const glucoseField = useDraftNumber(currentGlucose, setCurrentGlucose, { min: 0, fallback: 0 });
+  const potassiumField = useDraftNumber(serumPotassium, setSerumPotassium, { min: 0, fallback: 0 });
+  const sodiumField = useDraftNumber(measuredSodium, setMeasuredSodium, { min: 0, fallback: 0 });
+  const chlorideField = useDraftNumber(chloride, setChloride, { min: 0, fallback: 0 });
+  const bicarbonateField = useDraftNumber(bicarbonate, setBicarbonate, { min: 0, fallback: 0 });
+  const venousPhField = useDraftNumber(venousPh, setVenousPh, { min: 0, fallback: 0 });
   const [sodiumFormula, setSodiumFormula] = useState<"katz" | "hillier">("katz");
   const [patientPhenotype, setPatientPhenotype] = useState<"frail_renal" | "standard" | "obese_resistant">("standard");
   const [isNpo, setIsNpo] = useState<boolean>(false);
@@ -177,7 +184,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10 text-danger dark:text-red-400">
               <Droplets className="h-5 w-5" />
             </div>
             <div>
@@ -228,7 +235,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
             <div className="flex items-start gap-2.5">
               <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
               <div className="space-y-1">
-                <span className="font-bold uppercase tracking-wider text-red-700 dark:text-red-300">
+                <span className="font-bold uppercase tracking-wider text-danger dark:text-red-300">
                   Potassium Gate Reference — Serum K+ &lt; 3.3 mEq/L
                 </span>
                 <p className="font-medium leading-relaxed">
@@ -264,7 +271,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-6 text-[11px] px-2 border-red-400 text-red-600 dark:text-red-400"
+            className="h-6 text-[11px] px-2 border-red-400 text-danger dark:text-red-400"
             onClick={() => applyPreset("hypo-k-gate")}
           >
             Hypokalemia Gate (K+ 2.9)
@@ -280,7 +287,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-6 text-[11px] px-2 text-amber-600 dark:text-amber-400"
+            className="h-6 text-[11px] px-2 text-warning dark:text-amber-400"
             onClick={() => applyPreset("su-overdose")}
           >
             Sulfonylurea Overdose
@@ -288,7 +295,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-6 text-[11px] px-2 text-emerald-600 dark:text-emerald-400"
+            className="h-6 text-[11px] px-2 text-success dark:text-emerald-400"
             onClick={() => applyPreset("resolved-dka")}
           >
             Resolved DKA (Bridge SubQ)
@@ -386,8 +393,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">Glucose (mg/dL)</label>
                 <Input
                   type="number"
-                  value={currentGlucose}
-                  onChange={(e) => setCurrentGlucose(Number(e.target.value) || 0)}
+                  {...glucoseField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -408,11 +414,10 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <Input
                   type="number"
                   step="0.1"
-                  value={serumPotassium}
-                  onChange={(e) => setSerumPotassium(Number(e.target.value) || 0)}
+                  {...potassiumField}
                   className={cn(
                     "h-9 text-xs font-mono font-bold",
-                    serumPotassium < 3.3 ? "border-red-500 bg-red-500/10 text-red-600 dark:text-red-400" : "",
+                    serumPotassium < 3.3 ? "border-red-500 bg-red-500/10 text-danger dark:text-red-400" : "",
                   )}
                 />
               </div>
@@ -421,8 +426,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">Na (mEq/L)</label>
                 <Input
                   type="number"
-                  value={measuredSodium}
-                  onChange={(e) => setMeasuredSodium(Number(e.target.value) || 0)}
+                  {...sodiumField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -431,8 +435,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">Cl (mEq/L)</label>
                 <Input
                   type="number"
-                  value={chloride}
-                  onChange={(e) => setChloride(Number(e.target.value) || 0)}
+                  {...chlorideField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -441,8 +444,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <label className="text-[11px] font-medium text-muted">HCO3 (mEq/L)</label>
                 <Input
                   type="number"
-                  value={bicarbonate}
-                  onChange={(e) => setBicarbonate(Number(e.target.value) || 0)}
+                  {...bicarbonateField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -452,8 +454,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <Input
                   type="number"
                   step="0.01"
-                  value={venousPh}
-                  onChange={(e) => setVenousPh(Number(e.target.value) || 0)}
+                  {...venousPhField}
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -474,7 +475,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               </div>
               <div className="flex items-center gap-4 font-mono">
                 <span>
-                  Anion Gap: <strong className={anionGapValue > 12 ? "text-red-500" : "text-emerald-500"}>{anionGapValue}</strong> mEq/L
+                  Anion Gap: <strong className={anionGapValue > 12 ? "text-danger" : "text-success"}>{anionGapValue}</strong> mEq/L
                 </span>
                 <span>
                   Corrected Na: <strong>{fluidTitration.correctedSodium.correctedNa}</strong> mEq/L
@@ -508,7 +509,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 )}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-red-600 dark:text-red-400">&lt; 3.3 mEq/L</span>
+                  <span className="font-bold text-xs text-danger dark:text-red-400">&lt; 3.3 mEq/L</span>
                   <Badge tone="danger" className="text-[10px]">
                     HOLD INSULIN
                   </Badge>
@@ -531,7 +532,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 )}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-amber-600 dark:text-amber-400">3.3 to 5.3 mEq/L</span>
+                  <span className="font-bold text-xs text-warning dark:text-amber-400">3.3 to 5.3 mEq/L</span>
                   <Badge tone="warn" className="text-[10px]">
                     REPLETE &amp; RUN INSULIN
                   </Badge>
@@ -554,7 +555,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 )}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-xs text-emerald-600 dark:text-emerald-400">&gt; 5.3 mEq/L</span>
+                  <span className="font-bold text-xs text-success dark:text-emerald-400">&gt; 5.3 mEq/L</span>
                   <Badge tone="ok" className="text-[10px]">
                     HOLD K+ &amp; RUN INSULIN
                   </Badge>
@@ -615,10 +616,10 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                       className={cn(
                         "font-mono",
                         insulinProtocol.declineRateEvaluation.assessment === "optimal"
-                          ? "text-emerald-500"
+                          ? "text-success"
                           : insulinProtocol.declineRateEvaluation.assessment === "subtarget"
-                          ? "text-amber-500"
-                          : "text-red-500",
+                          ? "text-warning"
+                          : "text-danger",
                       )}
                     >
                       {insulinProtocol.declineRateEvaluation.hourlyDecline} mg/dL/h (Target: 50-75)
@@ -649,19 +650,19 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               <div className="space-y-1.5 text-xs">
                 <div className="font-semibold text-fg">Resolution Criteria (Blood Glucose &lt; 200 AND &gt;= 2 of labs):</div>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
-                  <div className={cn("flex items-center gap-1.5", currentGlucose < 200 ? "text-emerald-500" : "text-muted")}>
+                  <div className={cn("flex items-center gap-1.5", currentGlucose < 200 ? "text-success" : "text-muted")}>
                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                     <span>Glucose &lt; 200 mg/dL ({currentGlucose})</span>
                   </div>
-                  <div className={cn("flex items-center gap-1.5", bicarbonate >= 18 ? "text-emerald-500" : "text-muted")}>
+                  <div className={cn("flex items-center gap-1.5", bicarbonate >= 18 ? "text-success" : "text-muted")}>
                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                     <span>HCO3 &gt;= 18 mEq/L ({bicarbonate})</span>
                   </div>
-                  <div className={cn("flex items-center gap-1.5", venousPh > 7.30 ? "text-emerald-500" : "text-muted")}>
+                  <div className={cn("flex items-center gap-1.5", venousPh > 7.30 ? "text-success" : "text-muted")}>
                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                     <span>Venous pH &gt; 7.30 ({venousPh})</span>
                   </div>
-                  <div className={cn("flex items-center gap-1.5", anionGapValue <= 12 ? "text-emerald-500" : "text-muted")}>
+                  <div className={cn("flex items-center gap-1.5", anionGapValue <= 12 ? "text-success" : "text-muted")}>
                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                     <span>Anion Gap &lt;= 12 ({anionGapValue})</span>
                   </div>
@@ -670,7 +671,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
 
               {/* SubQ Transition Bridge */}
               <div className="rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-500/10 p-2.5 text-xs space-y-1">
-                <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-300">
+                <div className="flex items-center gap-1.5 font-bold text-warning dark:text-amber-300">
                   <Clock className="h-3.5 w-3.5" />
                   <span>Mandatory 2-Hour Subcutaneous Transition Bridge</span>
                 </div>
@@ -817,7 +818,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
 
               {/* Two-Bag Setup Visual */}
               <div className="rounded-md border border-blue-400/40 bg-surface p-3 mt-2 text-xs space-y-2">
-                <div className="font-bold text-blue-700 dark:text-blue-300">Two-Bag System Simulator:</div>
+                <div className="font-bold text-blue-800 dark:text-blue-300">Two-Bag System Simulator:</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                   <div className="rounded border border-border/60 p-2 bg-surface-sunken">
                     <strong className="text-fg">Bag 1 (Zero Dextrose):</strong>
@@ -917,7 +918,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted">Phenotype:</span>
-                <select
+                <select aria-label="Phenotype"
                   value={patientPhenotype}
                   onChange={(e) => setPatientPhenotype(e.target.value as any)}
                   className="rounded-md border border-border bg-surface-sunken px-2.5 py-1 text-xs font-medium text-fg"
@@ -941,7 +942,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
 
               <div className="rounded-lg border border-border/70 bg-surface-sunken p-3 text-center">
                 <div className="text-xs text-muted">Basal Component (50%)</div>
-                <div className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
+                <div className="text-xl font-bold font-mono text-success dark:text-emerald-400 mt-0.5">
                   {inpatientRegimen.basalComponent.dailyUnits} <span className="text-xs font-normal text-muted">units</span>
                 </div>
                 <div className="text-[10px] text-muted mt-1">Glargine / Degludec once daily</div>
@@ -949,7 +950,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
 
               <div className="rounded-lg border border-border/70 bg-surface-sunken p-3 text-center">
                 <div className="text-xs text-muted">Prandial Bolus (50%)</div>
-                <div className="text-xl font-bold font-mono text-blue-600 dark:text-blue-400 mt-0.5">
+                <div className="text-xl font-bold font-mono text-blue-800 dark:text-blue-400 mt-0.5">
                   {inpatientRegimen.prandialComponent.perMealUnits} <span className="text-xs font-normal text-muted">u / meal</span>
                 </div>
                 <div className="text-[10px] text-muted mt-1">Lispro / Aspart with 3 meals</div>
@@ -957,7 +958,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
 
               <div className="rounded-lg border border-border/70 bg-surface-sunken p-3 text-center">
                 <div className="text-xs text-muted">Rule of 1800 ISF</div>
-                <div className="text-xl font-bold font-mono text-purple-600 dark:text-purple-400 mt-0.5">
+                <div className="text-xl font-bold font-mono text-purple-800 dark:text-purple-400 mt-0.5">
                   1 u : {inpatientRegimen.correctionScale.ruleOf1800Isf} <span className="text-xs font-normal text-muted">mg/dL</span>
                 </div>
                 <div className="text-[10px] text-muted mt-1">1800 / TDD sensitivity factor</div>
@@ -988,7 +989,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
                 Rapid-Acting Correctional Scale (Rule of 1800, Target 140 mg/dL)
               </h4>
-              <div className="overflow-x-auto">
+              <div role="region" aria-label="Correction dose table" tabIndex={0} className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
                   <thead className="border-b border-border/60 text-muted text-[11px]">
                     <tr>

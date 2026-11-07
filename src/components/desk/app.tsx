@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
+import { recheckLicense } from "@/lib/billing/license";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { plainWordsReport } from "@/lib/drugs/quick-chips";
@@ -257,6 +258,28 @@ export function DeskApp() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [view, justActivated]);
+  // The paid unlock is saved in this browser. Once per load, ask the server whether the saved key
+  // still verifies; a key that fails returns the free desk. No answer (offline, or a static copy
+  // with no server) keeps the desk as it is. A paid plan with no key at all cannot be checked.
+  useEffect(() => {
+    if (!hydrated) return;
+    const { plan, license, applyLicenseCheck } = useDesk.getState();
+    if (plan === "free") return;
+    if (!license) {
+      applyLicenseCheck(null, { status: "invalid" });
+      return;
+    }
+    let live = true;
+    recheckLicense({ data: { key: license } }).then(
+      (verdict) => {
+        if (live) useDesk.getState().applyLicenseCheck(license, verdict);
+      },
+      () => {},
+    );
+    return () => {
+      live = false;
+    };
+  }, [hydrated]);
   // A program license ends with its term: re-check on load and when the tab comes back.
   useEffect(() => {
     if (!hydrated) return;

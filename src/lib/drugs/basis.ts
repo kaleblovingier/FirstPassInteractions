@@ -11,8 +11,9 @@ import {
   LABEL_CONTRAINDICATIONS_RETRIEVED,
   labelContraindicationFor,
 } from "./label-contraindications";
+import { LABEL_CONDITIONAL_TAG, labelConditionalFor } from "./label-conditional";
 import { PERPETRATOR_LABELS } from "./reference/label-perpetrators";
-import { pgxFor } from "./pgx";
+import { cardLink, guidelineUrl, pgxFor } from "./pgx";
 import type { Finding } from "./types";
 
 export type BasisKind =
@@ -246,6 +247,19 @@ function labelPinBasis(finding: Finding): FindingBasis | null {
     href: pin.url,
   };
 }
+/** Verbatim label line for a finding that carries a wave 18 conditional contraindication. */
+function labelConditionalBasis(finding: Finding): FindingBasis | null {
+  if (!finding.tags.includes(LABEL_CONDITIONAL_TAG) || finding.drugIds.length !== 2) return null;
+  const line = labelConditionalFor(finding.drugIds[0], finding.drugIds[1]);
+  if (!line) return null;
+  return {
+    kind: "fda-pi",
+    label: `${line.labelDrug} label, ${line.labelSection}`,
+    detail: `The ${line.labelDrug} label lists this combination under Contraindications only ${line.scope}. ${line.labelSection}: "${line.quote}" Named in the label: "${line.labelExample}" The desk keeps this card below Avoid together because it does not know that condition. Retrieved from DailyMed ${line.retrieved}.`,
+    href: line.url,
+  };
+}
+
 /** Perpetrator's own label. Named contraindications still attach when FDA Table 1 cites the role. */
 function perpetratorLabelBasis(finding: Finding): FindingBasis | null {
   if (finding.kind !== "pk") return null;
@@ -344,22 +358,28 @@ function analogyBasis(): FindingBasis {
 }
 
 /** A phenotype row may link a page only when pgx.ts has a card for that drug and gene.
- *  The link is the card's own page. Some cards link a CPIC guideline written for a related
- *  drug class, so the copy never says the guideline covers this drug or that the row follows it. */
+ *  The link is the card's own CPIC guideline when it has one, else the drug's ClinPGx page.
+ *  The copy never says the row follows the guideline: the tier is the desk's analogy. */
 function phenotypeGuidelineBasis(finding: Finding): FindingBasis | null {
   const drugId = finding.drugIds[0];
   const enzyme = finding.enzymes[0];
   if (!drugId || !enzyme) return null;
   const card = pgxFor(drugId).find((c) => geneHits(c.gene, enzyme));
-  if (!card || isGenericCpicIndex(card.guideline)) return null;
-  const linked = isSpecificCpicGuideline(card.guideline)
-    ? "a CPIC guideline page. Check that the guideline names this drug before you rely on it."
-    : "a page to read beside the row.";
+  if (!card) return null;
+  const href = cardLink(card);
+  if (isGenericCpicIndex(href)) return null;
+  const guideline = guidelineUrl(card);
+  const linked =
+    guideline && isSpecificCpicGuideline(guideline)
+      ? "links a CPIC guideline page. Check that the guideline names this drug before you rely on it."
+      : card.source.kind === "none"
+        ? "notes that CPIC has no guideline for this drug, and links a page to read beside the row."
+        : "links a page to read beside the row.";
   return {
     kind: "cpic",
     label: "Teaching card",
-    detail: `The tier is the inhibitor/inducer analogy on this desk. The teaching card for this drug and gene links ${linked} This desk is not a PGx report.`,
-    href: card.guideline,
+    detail: `The tier is the inhibitor/inducer analogy on this desk. The teaching card for this drug and gene ${linked} This desk is not a PGx report.`,
+    href,
   };
 }
 
@@ -376,6 +396,8 @@ export function basisFor(finding: Finding): FindingBasis[] {
   // #58 label pins lead. Gold-set quotes (#68) still attach for pairs the pin does not already cite.
   const pinned = labelPinBasis(finding);
   if (pinned) out.push(pinned);
+  const conditional = labelConditionalBasis(finding);
+  if (conditional) out.push(conditional);
   const quoted = labelQuoteBasis(finding);
   if (quoted && quoted.href !== pinned?.href) out.push(quoted);
   const boxed = BOXED[suffix];

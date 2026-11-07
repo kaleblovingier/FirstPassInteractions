@@ -111,7 +111,7 @@ export function LostKeyRecovery() {
         ref={alertRef}
         tabIndex={-1}
         role="alert"
-        className={err ? "mt-3 text-sm text-red-600 focus:outline-none" : "sr-only"}
+        className={err ? "mt-3 text-sm text-danger focus:outline-none" : "sr-only"}
       >
         {err}
       </p>

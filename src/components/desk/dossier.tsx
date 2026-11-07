@@ -6,7 +6,7 @@ import { lookupCpicGuideline, lookupLiveSources, searchTrials } from "@/lib/drug
 import type { DailyMedHit, FdaLabel, FaersHit, NdcHit, PubchemCard, RecallHit, RxnormCard, ShortageHit, TrialHit } from "@/lib/drugs/live";
 import { LIVERTOX_CAT_TONE, livertoxFor, livertoxUrl } from "@/lib/drugs/livertox";
 import { lactFor, lactmedHomeUrl, lactmedSearchUrl, lactOnDesk, type LactCard } from "@/lib/drugs/lactmed";
-import { pgxFor, type PgxCard } from "@/lib/drugs/pgx";
+import { CPIC_GENE_DRUG_LIST, pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
@@ -701,10 +701,24 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
         <article key={card.gene}>
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-mono text-sm text-fg">{card.gene}</h3>
-            <Badge tone={card.cpic === "A" ? "accent" : card.cpic === "B" ? "warn" : "default"}>
-              CPIC {card.cpic}
-            </Badge>
+            {card.source.kind === "guideline" ? (
+              <Badge tone={card.cpic === "A" ? "accent" : card.cpic === "B" ? "warn" : "default"}>
+                CPIC {card.cpic}
+              </Badge>
+            ) : (
+              <>
+                <Badge tone="default">
+                  {card.source.kind === "none" ? "No CPIC guideline" : "CPIC guideline not linked"}
+                </Badge>
+                <Badge tone="default">Pair level {card.cpic}</Badge>
+              </>
+            )}
           </div>
+          {card.source.kind !== "guideline" ? (
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              {card.source.note} The pair level on this card is not a guideline recommendation.
+            </p>
+          ) : null}
           <p className="mt-2 text-sm leading-relaxed text-fg">{card.pearl}</p>
           <ul className="mt-3 divide-y divide-border rounded-md bg-bg-sunken">
             {card.rows.map((row) => {
@@ -724,7 +738,11 @@ function PgxPanel({ cards, host, name }: { cards: PgxCard[]; host: HostContext; 
             })}
           </ul>
           <div className="mt-3 flex flex-wrap gap-3">
-            <Out href={card.guideline}>CPIC guideline</Out>
+            {card.source.kind === "guideline" ? (
+              <Out href={card.source.url}>CPIC guideline</Out>
+            ) : (
+              <Out href={CPIC_GENE_DRUG_LIST}>CPIC gene–drug list</Out>
+            )}
             <Out href={card.clinpgx}>ClinPGx / PharmGKB</Out>
           </div>
         </article>

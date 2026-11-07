@@ -233,7 +233,7 @@ function CrossSection({ trayBetaLactams }: { trayBetaLactams: string[] }) {
           {trayBetaLactams.length > 0 ? "Tray beta-lactams against the whole table" : "Culprit against the whole table (add a beta-lactam to the tray for more rows)"}
         </p>
         <Legend />
-        <div className="max-w-full overflow-x-auto rounded-xl bg-bg-sunken p-2">
+        <div role="region" aria-label="Beta-lactam cross-reactivity table" tabIndex={0} className="max-w-full overflow-x-auto rounded-xl bg-bg-sunken p-2">
           <table className="border-separate border-spacing-0.5 text-xs" aria-label="Cross-reactivity matrix">
             <thead>
               <tr>

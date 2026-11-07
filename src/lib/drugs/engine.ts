@@ -19,6 +19,13 @@ import {
   labelPinSentence,
 } from "./label-contraindications";
 import {
+  LABEL_CONDITIONAL_TAG,
+  isConditionalTarget,
+  isInspraPotassiumPair,
+  labelConditionalFor,
+  labelConditionalSentence,
+} from "./label-conditional";
+import {
   ACEI,
   ARNI,
   FLUOROPYRIMIDINE,
@@ -378,6 +385,29 @@ function applyLabelPins(a: Drug, b: Drug, findings: Finding[]): Finding[] {
     tags: [pin.enzyme, pin.kind, LABEL_CONTRAINDICATED_TAG],
   });
   return out;
+}
+
+/**
+ * Wave 18 conditional label lines (see label-conditional.ts). The label
+ * contraindicates the pair only at a dose, for one indication, or in one
+ * treatment phase that the desk cannot see. The finding the line names keeps
+ * its grade; one sentence and the `label-conditional` tag are added. A pair
+ * already held by a label pin is left alone. No grade changes here.
+ */
+function applyLabelConditional(a: Drug, b: Drug, findings: Finding[]): Finding[] {
+  const line = labelConditionalFor(a.id, b.id);
+  if (!line || labelContraindicationFor(a.id, b.id)) return findings;
+  const i = findings.findIndex((f) => isConditionalTarget(line, f));
+  if (i < 0) return findings;
+  return findings.map((f, j) =>
+    j === i
+      ? {
+          ...f,
+          clinical: `${f.clinical} ${labelConditionalSentence(line, f)}`,
+          tags: [...f.tags, LABEL_CONDITIONAL_TAG],
+        }
+      : f,
+  );
 }
 
 function has(drug: Drug, flag: Drug["pd"][number]) {
@@ -1069,6 +1099,24 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
         mechanism: "RAAS blockade × potassium retention",
         clinical:
           "ACEI/ARB plus a potassium-sparing agent (spironolactone, TMP-SMX) can produce life-threatening hyperkalemia. Check potassium and creatinine, especially in CKD.",
+        tags: ["potassium"],
+      }),
+    );
+  }
+
+  // Wave 18: Inspra section 4 contraindicates potassium supplements and
+  // potassium-sparing diuretics when Inspra treats hypertension. Only the
+  // partners in label-conditional.ts fire. Major, the same grade as the
+  // ACEI/ARB × potassium-sparing card; label-conditional.ts adds the label line.
+  if (isInspraPotassiumPair(a.id, b.id)) {
+    out.push(
+      pdPair(a, b, {
+        suffix: "pd-mra-k",
+        severity: "major",
+        effect: "hyperkalemia",
+        mechanism: "eplerenone × potassium-sparing diuretic or potassium supplement",
+        clinical:
+          "Eplerenone already blocks aldosterone at the collecting duct. A potassium-sparing diuretic or a potassium supplement adds more potassium retention or load. Check potassium and creatinine, especially in CKD.",
         tags: ["potassium"],
       }),
     );
@@ -2534,7 +2582,7 @@ export function analyze(
       // Pharmacodynamic findings go in with the pin so a no-enzyme pin can
       // lift an existing pd row instead of appending a second card.
       if (skipApapChronic) findings.push(...pd);
-      else findings.push(...applyLabelPins(a, b, [...pk, ...pd]));
+      else findings.push(...applyLabelConditional(a, b, applyLabelPins(a, b, [...pk, ...pd])));
       findings.push(...labelFloorFindings(a, b));
     }
   }

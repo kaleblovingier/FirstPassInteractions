@@ -65,6 +65,19 @@ function resolvePin(): string {
   return DEFAULT_PIN;
 }
 
+/**
+ * True when keys can be checked here: a real pepper is set, or this is not production.
+ * False means every verify would fail, so a failure would say nothing about the key.
+ */
+export function licenseSecretsReady(): boolean {
+  try {
+    resolvePepper();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function hmac(payload: string) {
   return createHmac("sha256", resolvePepper()).update(payload).digest("hex").slice(0, 8).toUpperCase();
 }

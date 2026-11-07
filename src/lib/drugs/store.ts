@@ -13,6 +13,7 @@ import {
   programEndedNote,
   type ProgramGrant,
 } from "@/lib/billing/program-license";
+import { KEY_NOT_VERIFIED_NOTE, type LicenseVerdict } from "@/lib/billing/license-verdict";
 import {
   DEFAULT_HOST,
   DEFAULT_PHENOTYPES,
@@ -112,6 +113,8 @@ interface DeskState {
   activateLicense: (opts: { plan: PlanId; license: string; lifetime: boolean; program?: ProgramGrant | null }) => boolean;
   /** Falls back to the free desk if the program license has ended. Returns true when it did. */
   checkProgram: (now?: number) => boolean;
+  /** Applies the server's verdict on the saved key `checked`. Returns true when the desk went back to free. */
+  applyLicenseCheck: (checked: string | null, verdict: LicenseVerdict) => boolean;
   dismissProgramNote: () => void;
   dismissActivated: () => void;
   ackHcp: () => void;
@@ -159,6 +162,36 @@ type ProgramState = Pick<
  */
 export function programFallback(s: ProgramState, now: number = Date.now()): Partial<DeskState> | null {
   if (!s.program || !programEnded(s.program, now)) return null;
+  return freeDeskFallback(s, programEndedNote(s.program));
+}
+
+/**
+ * What the server's verdict on the saved key changes, or null when nothing does.
+ * Applies only while the desk still holds the key that was checked, so a redeem in between wins.
+ * "unavailable" (the server could not check) changes nothing; "invalid" returns the free desk.
+ * A valid key sets plan, lifetime and program term from the key itself.
+ */
+export function licenseCheckOutcome(
+  s: ProgramState,
+  checked: string | null,
+  verdict: LicenseVerdict,
+  now: number = Date.now(),
+): Partial<DeskState> | null {
+  if (s.plan === "free" || s.license !== checked) return null;
+  if (verdict.status === "unavailable") return null;
+  if (verdict.status === "invalid") {
+    // A program term that ran out keeps its own note.
+    return programFallback(s, now) ?? freeDeskFallback(s, KEY_NOT_VERIFIED_NOTE);
+  }
+  const program = verdict.program ? normalizeProgramGrant(verdict.program) : null;
+  const sameProgram =
+    s.program === program || (!!s.program && !!program && s.program.tier === program.tier && s.program.endsAt === program.endsAt);
+  if (s.plan === verdict.plan && s.lifetime === verdict.lifetime && sameProgram) return null;
+  return { plan: verdict.plan, lifetime: verdict.lifetime, program };
+}
+
+/** Back to the free desk with a one-line note: first five drugs and their amounts, host factors reset. */
+function freeDeskFallback(s: ProgramState, note: string): Partial<DeskState> {
   const selected = (Array.isArray(s.selected) ? s.selected : [])
     .filter((id): id is string => typeof id === "string")
     .slice(0, maxDrugs("free"));
@@ -168,7 +201,7 @@ export function programFallback(s: ProgramState, now: number = Date.now()): Part
     license: null,
     lifetime: false,
     program: null,
-    programNote: programEndedNote(s.program),
+    programNote: note,
     justActivated: false,
     selected,
     doses: Object.fromEntries(
@@ -448,6 +481,12 @@ export const useDesk = create<DeskState>()(
         if (!next) return false;
         set(next);
         return true;
+      },
+      applyLicenseCheck: (checked, verdict) => {
+        const next = licenseCheckOutcome(get(), checked, verdict);
+        if (!next) return false;
+        set(next);
+        return next.plan === "free";
       },
       dismissProgramNote: () => set({ programNote: null }),
       dismissActivated: () => set({ justActivated: false }),

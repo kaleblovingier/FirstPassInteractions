@@ -27,6 +27,16 @@ test("prototype-key brief ids are dropped and the desk analysis does not throw",
   assert.deepEqual(parseBriefIds("constructor,ketamine,toString"), ["ketamine"]);
 });
 
+test("prototype-key lab, case and pack ids resolve to nothing", () => {
+  for (const name of ["constructor", "toString", "__proto__", "hasOwnProperty", "valueOf"]) {
+    for (const param of ["lab", "case", "sample", "pack"]) {
+      const resolved = parsePermalink(`?${param}=${name}`);
+      assert.equal(resolved.kind, "none", `${param}=${name}`);
+      assert.equal(resolved.assignment, null, `${param}=${name}`);
+    }
+  }
+});
+
 test("a bare percent sign in brief does not throw (the value is already decoded)", () => {
   assert.doesNotThrow(() => parsePermalink("?brief=%25"));
   assert.deepEqual(parsePermalink("?brief=%25").ids, []);

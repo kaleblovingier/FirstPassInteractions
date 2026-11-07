@@ -169,7 +169,7 @@ export function CnsPenetrationMatrix() {
       <header className="flex flex-col gap-3 rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-400">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-800 dark:text-cyan-400">
               <Brain className="size-6 animate-pulse" />
             </div>
             <div>
@@ -183,7 +183,7 @@ export function CnsPenetrationMatrix() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border border-cyan-500/20">
               <Activity className="size-3.5" />
               FD&amp;C Act § 520(o)(1)(E)
             </span>
@@ -261,10 +261,10 @@ export function CnsPenetrationMatrix() {
                         className={cn(
                           "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
                           risk.severity === "critical"
-                            ? "bg-rose-500 text-white"
+                            ? "bg-rose-700 text-white"
                             : risk.severity === "warning"
-                            ? "bg-amber-500 text-white"
-                            : "bg-cyan-500 text-white",
+                            ? "bg-amber-700 text-white"
+                            : "bg-cyan-700 text-white",
                         )}
                       >
                         {risk.severity}
@@ -311,11 +311,11 @@ export function CnsPenetrationMatrix() {
                       className={cn(
                         "rounded px-1.5 py-0.5 text-[10px] font-bold",
                         scoreResult.level === "High"
-                          ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
+                          ? "bg-emerald-500/20 text-success dark:text-emerald-300 border border-emerald-500/30"
                           : scoreResult.level === "Moderate"
-                          ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30"
+                          ? "bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30"
                           : scoreResult.level === "Low"
-                          ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30"
+                          ? "bg-amber-500/20 text-warning dark:text-amber-300 border border-amber-500/30"
                           : "bg-slate-500/20 text-slate-700 dark:text-slate-300 border border-slate-500/30",
                       )}
                     >
@@ -367,7 +367,7 @@ export function CnsPenetrationMatrix() {
                   </span>
                 </div>
                 <p className="text-[11px] text-muted line-clamp-2 leading-relaxed">{reg.description}</p>
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400">
+                <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-cyan-800 dark:text-cyan-400">
                   <Plus className="size-3" />
                   <span>Load {reg.drugIds.length} drugs onto tray</span>
                 </div>
@@ -638,7 +638,7 @@ export function CnsPenetrationMatrix() {
           {inspectedHotspot && (
             <div className="mt-4 rounded-xl border border-cyan-500/30 bg-surface p-4 text-xs">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-sm text-cyan-600 dark:text-cyan-400 uppercase tracking-wide">
+                <span className="font-bold text-sm text-cyan-800 dark:text-cyan-400 uppercase tracking-wide">
                   {inspectedHotspot === "tight-junctions"
                     ? "Intercellular Tight Junctions (Claudin-5 / Occludin / ZO-1)"
                     : inspectedHotspot === "endothelium"
@@ -763,7 +763,7 @@ export function CnsPenetrationMatrix() {
         <div className="rounded-xl border border-border bg-bg-sunken p-4 sm:p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3">
             <div>
-              <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-warning dark:text-amber-400 uppercase tracking-wider">
                 {activeDivergence.drugClass}
               </span>
               <h3 className="text-sm sm:text-base font-bold text-fg">{activeDivergence.title}</h3>
@@ -778,7 +778,7 @@ export function CnsPenetrationMatrix() {
                 load(combined);
                 showFeedback(`Loaded all ${combined.length} divergence drugs onto Desk Tray`);
               }}
-              className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-surface px-3 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 min-h-[44px] sm:min-h-[36px]"
+              className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-surface px-3 py-1.5 text-xs font-bold text-warning dark:text-amber-300 hover:bg-amber-500/10 min-h-[44px] sm:min-h-[36px]"
             >
               <Plus className="size-3.5" />
               <span>Load Both Comparators onto Tray</span>
@@ -792,10 +792,10 @@ export function CnsPenetrationMatrix() {
             {/* Comparator A */}
             <div className="rounded-xl border border-rose-500/30 bg-surface p-4 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-rose-600 dark:text-rose-400">
+                <span className="font-bold text-sm text-danger dark:text-rose-400">
                   {activeDivergence.comparatorA.label}
                 </span>
-                <span className="rounded bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                <span className="rounded bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-danger dark:text-rose-400 border border-rose-500/20">
                   {activeDivergence.comparatorA.drugIds.join(", ")}
                 </span>
               </div>
@@ -815,10 +815,10 @@ export function CnsPenetrationMatrix() {
             {/* Comparator B */}
             <div className="rounded-xl border border-emerald-500/30 bg-surface p-4 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-emerald-600 dark:text-emerald-400">
+                <span className="font-bold text-sm text-success dark:text-emerald-400">
                   {activeDivergence.comparatorB.label}
                 </span>
-                <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-success dark:text-emerald-400 border border-emerald-500/20">
                   {activeDivergence.comparatorB.drugIds.join(", ")}
                 </span>
               </div>
@@ -912,7 +912,7 @@ export function CnsPenetrationMatrix() {
                 className={cn(
                   "min-h-[36px] px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all",
                   selectedCategory === cat
-                    ? "bg-cyan-500 text-white border-cyan-500"
+                    ? "bg-cyan-700 text-white border-cyan-700"
                     : "bg-bg-sunken text-muted border-border hover:text-fg hover:bg-surface",
                 )}
               >
@@ -932,7 +932,7 @@ export function CnsPenetrationMatrix() {
                 className={cn(
                   "min-h-[36px] px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all",
                   selectedPermeability === lvl
-                    ? "bg-cyan-500 text-white border-cyan-500"
+                    ? "bg-cyan-700 text-white border-cyan-700"
                     : "bg-bg-sunken text-muted border-border hover:text-fg hover:bg-surface",
                 )}
               >
@@ -964,11 +964,11 @@ export function CnsPenetrationMatrix() {
                       className={cn(
                         "rounded-full px-2 py-0.5 text-[10px] font-bold border",
                         bbp.level === "High"
-                          ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
+                          ? "bg-emerald-500/15 text-success dark:text-emerald-300 border-emerald-500/30"
                           : bbp.level === "Moderate"
-                          ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30"
+                          ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border-cyan-500/30"
                           : bbp.level === "Low"
-                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30"
+                          ? "bg-amber-500/15 text-warning dark:text-amber-300 border-amber-500/30"
                           : "bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/30",
                       )}
                     >
@@ -1019,7 +1019,7 @@ export function CnsPenetrationMatrix() {
                       HBD: {p.biophysical.hBondDonors} / HBA: {p.biophysical.hBondAcceptors}
                     </span>
                     {p.biophysical.pgpSubstrate ? (
-                      <span className="rounded bg-purple-500/15 text-purple-700 dark:text-purple-300 font-bold px-1.5 py-0.5 border border-purple-500/30">
+                      <span className="rounded bg-purple-500/15 text-purple-800 dark:text-purple-300 font-bold px-1.5 py-0.5 border border-purple-500/30">
                         P-gp Substrate
                       </span>
                     ) : (
@@ -1031,10 +1031,10 @@ export function CnsPenetrationMatrix() {
                       className={cn(
                         "rounded px-1.5 py-0.5 font-bold border",
                         p.centralSedationDeliriumRisk === "High"
-                          ? "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30"
+                          ? "bg-rose-500/15 text-danger dark:text-rose-300 border-rose-500/30"
                           : p.centralSedationDeliriumRisk === "Moderate"
-                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30"
-                          : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+                          ? "bg-amber-500/15 text-warning dark:text-amber-300 border-amber-500/30"
+                          : "bg-emerald-500/15 text-success dark:text-emerald-300 border-emerald-500/30",
                       )}
                     >
                       Sedation: {p.centralSedationDeliriumRisk}
@@ -1061,8 +1061,8 @@ export function CnsPenetrationMatrix() {
                     className={cn(
                       "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all min-h-[44px] sm:min-h-[36px]",
                       isOnTray
-                        ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
-                        : "bg-cyan-500 text-white hover:bg-cyan-600",
+                        ? "bg-emerald-500/20 text-success dark:text-emerald-300 border border-emerald-500/30"
+                        : "bg-cyan-700 text-white hover:bg-cyan-800",
                     )}
                   >
                     {isOnTray ? (

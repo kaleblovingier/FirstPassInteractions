@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* FirstPass has one light "paper" theme: body and every surface stay light whatever the OS says.
+   Tailwind's default dark: variant follows prefers-color-scheme, so the station classes like
+   dark:text-emerald-400 put pastel text (1.3 to 2:1) on the light paper for anyone in OS dark mode.
+   Scope dark: to an explicit opt-in that nothing sets until a real dark theme (surfaces included) exists. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Newsreader", "Times New Roman", serif;
@@ -27,6 +33,12 @@
   --color-ok-soft: #dce8df;
   --color-info: #3d5c6b;
   --color-info-soft: #dde6ea;
+
+  /* Text on hue-tinted station badges (bg-emerald-500/10 and the like). Palette -400/-500/-600
+     text was 1.3 to 3.6:1 on the paper; these are at least 5.5:1 on every page background and
+     4.7:1 on their own hue's /20 tint over bg-sunken (see scripts/low-contrast-text.mjs). */
+  --color-success: #1e6146;
+  --color-warning: #764812;
 
   /* Aliases for the shadcn-style role names some stations use, mapped onto the tokens above
      (no new colours). Without them bg-primary, bg-card, text-muted-foreground and the like emit no CSS. */

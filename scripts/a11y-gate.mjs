@@ -4,7 +4,10 @@
 //
 // Usage (against a local build: npm run build && npm run preview):
 //   CHROME=/usr/bin/google-chrome node scripts/a11y-gate.mjs http://127.0.0.1:4173 \
-//     [--only drug,pair,enzyme,tools] [--limit N] [--workers 4] [--skip-wcag22] [--json out.json]
+//     [--only drug,pair,enzyme,tools,stations] [--limit N] [--workers 4] [--skip-wcag22] [--json out.json]
+// "stations" (the Library modules and a few clinical-board stations) is opt-in, not in the default
+// set: it has not had a clean run yet. Run it with --only stations, fix what it finds, then add it
+// to the default so CI gates it.
 // axe-core is resolved from this repo, or from AXE_FROM=<dir with node_modules/axe-core>.
 import { chromium } from "playwright";
 import { createRequire } from "node:module";
@@ -40,11 +43,22 @@ const TOOLS = ["/@Learn", "/@Cases", "/@Enzyme map", "/@Study drill", "/@Study d
 const sitemap = await (await fetch(new URL("/sitemap.xml", base))).text();
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
 const pick = (re) => { const l = locs.filter((p) => re.test(p)); return limit ? l.slice(0, limit) : l; };
+// Desk stations. Library modules need no tray; clinical-board stations open from a ?brief= tray
+// (methadone + ondansetron for QT, tacrolimus, norepinephrine, buprenorphine). Confirm is the
+// dose-calculator attestation gate in front of MOUD.
+const TRAY = "methadone,ondansetron,tacrolimus,norepinephrine,buprenorphine";
+const STATIONS = [
+  ...["Receptor Profiler", "Transporter Network", "Cardiac Electrophysiology", "Pharmacogenomics & CPIC",
+    "Toxidromes & Antidotes", "BBB & CNS Penetration", "CYP Induction & TDI", "Renal Tubular Pharmacology"].map((t) => `/@Library>${t}`),
+  ...["QT", "Transplant", "Vasoactive", "MOUD & Harm Reduction>Confirm"].map((s) => `/?brief=${TRAY}@${s}`),
+];
+
 const specs = [
   ...(only.has("drug") ? pick(/^\/drug\//) : []),
   ...(only.has("pair") ? pick(/^\/pair\//) : []),
   ...(only.has("enzyme") ? [...pick(/^\/enzymes?$/), ...pick(/^\/enzyme\//)] : []),
   ...(only.has("tools") ? TOOLS : []),
+  ...(only.has("stations") ? STATIONS : []),
 ];
 // Optional standalone learning routes: gated only when this build serves them.
 for (const p of only.has("tools") ? ["/practice", "/glossary", "/workup", "/help"] : []) {
@@ -64,6 +78,8 @@ async function axeOne(spec, width) {
       await page.getByRole("button", { name, exact: true }).or(page.getByRole("tab", { name, exact: true })).first().click({ timeout: 10000 });
       await page.waitForTimeout(600);
     }
+    // Stations are lazy chunks; let them load before axe reads the page.
+    await page.waitForLoadState("networkidle");
     await page.addScriptTag({ content: axeSource });
     const v = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"] } })).violations
       .map((x) => ({ id: x.id, impact: x.impact, targets: x.nodes.slice(0, 5).map((n) => n.target.join(" ")), count: x.nodes.length })));

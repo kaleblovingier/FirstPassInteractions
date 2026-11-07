@@ -131,7 +131,7 @@ export function Pharmacogenomics() {
                 <Dna className="size-3.5" />
                 CPIC LEVEL A / B CONSENSUS
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-medium text-success dark:text-emerald-400">
                 <ShieldCheck className="size-3" />
                 FD&amp;C Act § 520(o)(1)(E)
               </span>
@@ -215,7 +215,7 @@ export function Pharmacogenomics() {
         >
           <Layers className="size-4 shrink-0 text-teal-500" />
           <span>CPIC Actionability Matrix</span>
-          <span className="rounded-full bg-teal-500/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal-600 dark:text-teal-400">
+          <span className="rounded-full bg-teal-500/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-teal-800 dark:text-teal-400">
             {PGX_INTERACTIONS.length}
           </span>
         </button>
@@ -365,7 +365,7 @@ export function Pharmacogenomics() {
                           ? isPm
                             ? "border-danger bg-danger/10 text-danger ring-1 ring-danger"
                             : isUm
-                            ? "border-amber-500 bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-1 ring-amber-500"
+                            ? "border-amber-500 bg-amber-500/10 text-warning dark:text-amber-400 ring-1 ring-amber-500"
                             : "border-accent bg-accent/10 text-accent ring-1 ring-accent"
                           : "border-border/60 bg-bg-sunken/50 text-fg hover:bg-surface",
                       )}
@@ -418,7 +418,7 @@ export function Pharmacogenomics() {
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
                 Key Clinical Alleles &amp; Functional Activity Scores ({activeGene.alleles.length} Defined)
               </h4>
-              <div className="overflow-x-auto rounded-xl border border-border/60">
+              <div role="region" aria-label="Allele table" tabIndex={0} className="overflow-x-auto rounded-xl border border-border/60">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-bg-sunken font-mono text-muted uppercase border-b border-border/60">
                     <tr>
@@ -443,7 +443,7 @@ export function Pharmacogenomics() {
                                 {allele.nucleotideChange || ""} {allele.proteinChange || ""}
                               </span>
                             ) : (
-                              <span className="text-muted/60">{allele.name}</span>
+                              <span className="text-subtle">{allele.name}</span>
                             )}
                           </td>
                           <td className="p-3">
@@ -453,10 +453,10 @@ export function Pharmacogenomics() {
                                 isNoFunc
                                   ? "bg-danger/15 text-danger"
                                   : isDec
-                                  ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                                  ? "bg-amber-500/15 text-warning dark:text-amber-400"
                                   : isInc
-                                  ? "bg-purple-500/15 text-purple-700 dark:text-purple-400"
-                                  : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+                                  ? "bg-purple-500/15 text-purple-800 dark:text-purple-400"
+                                  : "bg-emerald-500/15 text-success dark:text-emerald-400",
                               )}
                             >
                               {allele.functionality}
@@ -590,8 +590,8 @@ export function Pharmacogenomics() {
                           className={cn(
                             "rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold",
                             isLevelA
-                              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30"
-                              : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30",
+                              ? "bg-emerald-500/15 text-success dark:text-emerald-400 border border-emerald-500/30"
+                              : "bg-amber-500/15 text-warning dark:text-amber-400 border border-amber-500/30",
                           )}
                         >
                           {ix.cpicLevel}
@@ -836,7 +836,7 @@ export function Pharmacogenomics() {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-purple-500/20 px-2 py-0.5 font-mono text-xs font-bold text-purple-600 dark:text-purple-400">
+                    <span className="rounded-md bg-purple-500/20 px-2 py-0.5 font-mono text-xs font-bold text-purple-800 dark:text-purple-400">
                       HLA-B*15:02 &amp; HLA-A*31:01
                     </span>
                     <h4 className="text-base font-bold text-fg">
@@ -885,7 +885,7 @@ export function Pharmacogenomics() {
                 </div>
 
                 <div className="rounded-xl border border-border/60 bg-surface p-3.5 space-y-1.5">
-                  <div className="flex items-center gap-2 font-mono text-xs font-bold text-purple-600 dark:text-purple-400">
+                  <div className="flex items-center gap-2 font-mono text-xs font-bold text-purple-800 dark:text-purple-400">
                     <span>02</span>
                     <span>TCR Engagement</span>
                   </div>

@@ -91,7 +91,9 @@
  *   "Long-acting barbiturates". Zocor's "select" HIV and HCV protease
  *   inhibitor groups are pinned only for the drugs it names. Vfend's
  *   dose-conditional efavirenz and ritonavir lines and the venetoclax
- *   ramp-up line are not pinned. No new CYP grade.
+ *   ramp-up line are not pinned. No new CYP grade. Wave 18 carries those
+ *   lines (and the Sporanox, Noxafil and Inspra conditional lines) as notes
+ *   on the existing card in label-conditional.ts, not as pins.
  * - Wave 14 rows (retrieved 2026-10-19, origin "pd") copy quote, labelSection,
  *   labelExample and the DailyMed link byte-for-byte from the wave-14 gold rows:
  *   Marplan CONTRAINDICATIONS with meperidine, fluoxetine, cocaine and the
