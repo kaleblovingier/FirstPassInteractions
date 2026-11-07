@@ -5056,4 +5056,29 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
     pairs: ["voriconazole+bromocriptine", "voriconazole+cabergoline", "voriconazole+primidone"],
     reason: "Vfend section 4 lists ergot alkaloids (e.g., ergotamine, dihydroergotamine) and long-acting barbiturates. Methylergonovine and phenobarbital are pinned as class rows. Bromocriptine and cabergoline are ergot-derived dopamine agonists, and primidone is not a barbiturate (phenobarbital is a metabolite); the label does not name them. Not pinned; grade unchanged.",
   },
+  {
+    pair: "wave 18 (conditional line, note added, for Kaleb): Vfend + efavirenz, ritonavir, venetoclax; Sporanox + venetoclax; Noxafil + venetoclax",
+    pairs: ["voriconazole+efavirenz", "voriconazole+ritonavir", "voriconazole+venetoclax", "itraconazole+venetoclax", "posaconazole+venetoclax"],
+    reason: "Section 4 text in the drift fixture (retrieved 2026-10-28): Vfend contraindicates efavirenz only at or above the dosage it states, ritonavir only at high dose (low-dose ritonavir \"should be avoided\" unless benefit/risk justifies Vfend), and venetoclax only at initiation and during ramp-up in CLL or SLL; Sporanox CONTRAINDICATIONS and Noxafil 4.6 say the same for venetoclax. The desk takes no dose, indication or treatment phase, so a pin would overstate. Not pinned and not a gold row. label-conditional.ts appends the label line to the existing CYP card and basis.ts quotes it. Grade unchanged (Serious concern).",
+  },
+  {
+    pair: "wave 18 (indication-conditional, new card, for Kaleb): Inspra + potassium supplements and potassium-sparing diuretics",
+    pairs: ["eplerenone+spironolactone", "eplerenone+spironolactone-derm", "eplerenone+spironolactone-hctz", "eplerenone+amiloride", "eplerenone+triamterene", "eplerenone+hydrochlorothiazide-triamterene", "eplerenone+potassium", "eplerenone+potassium-chloride"],
+    reason: "Inspra section 4 (fixture, retrieved 2026-10-28) contraindicates potassium supplements and potassium-sparing diuretics (e.g., amiloride, spironolactone, or triamterene) only for the treatment of hypertension. These pairs had no card. Engine rule pd-mra-k adds a hyperkalemia card at Serious concern for these partners only, and label-conditional.ts appends the hypertension line. Aldactazide and Maxzide/Dyazide are combination rows that contain a named drug. Not pinned; no Avoid together.",
+  },
+  {
+    pair: "wave 18 (no saved label): spironolactone and finerenone with trimethoprim, potassium supplements, amiloride, triamterene; eplerenone with trimethoprim or finerenone",
+    pairs: ["spironolactone+tmp-smx", "spironolactone+potassium", "spironolactone+potassium-chloride", "spironolactone+amiloride", "spironolactone+triamterene", "finerenone+tmp-smx", "finerenone+potassium", "finerenone+amiloride", "finerenone+triamterene", "finerenone+spironolactone", "eplerenone+tmp-smx", "eplerenone+finerenone"],
+    reason: "The Aldactone, Bactrim and Kerendia labels are not in the drift fixture, and Inspra names only potassium supplements and potassium-sparing diuretics (trimethoprim and finerenone are neither). No saved sentence to cite, so no card is added. These pairs still have no card at all, except eplerenone + finerenone, which reads Mild note from a CYP3A4 card. Candidates once those labels are saved.",
+  },
+  {
+    pair: "wave 18 (not on the line as a row): Vfend + efavirenz or ritonavir combination products; Inspra + other potassium salts",
+    pairs: ["voriconazole+efavirenz-ftc-tdf", "voriconazole+lopinavir", "voriconazole+paxlovid", "voriconazole+indinavir-and-ritonavir", "voriconazole+tipranavir-and-ritonavir", "eplerenone+potassium-chloride-iv", "eplerenone+potassium-citrate", "eplerenone+potassium-phosphate"],
+    reason: "Vfend names efavirenz and ritonavir by dose. The ritonavir or efavirenz content of these combination rows is not in a saved label, so the dose line is not applied to them. Voriconazole + efavirenz/FTC/TDF still has no card. Norvir section 4 (fixture) lists voriconazole without a dose qualifier; the wave 4 note says Norvir section 7 makes it dose-dependent, and that section is not saved. Inspra says potassium supplements; IV potassium chloride, potassium citrate and potassium phosphate rows are not clearly that product, so they get no card. Grade unchanged.",
+  },
+  {
+    pair: "wave 18 (Venclexta not saved): venetoclax with other strong CYP3A inhibitors",
+    pairs: ["clarithromycin+venetoclax", "ketoconazole+venetoclax", "ritonavir+venetoclax", "lopinavir+venetoclax"],
+    reason: "The Venclexta label is not in the drift fixture, so its own lines on strong CYP3A inhibitors (ramp-up and steady state) cannot be quoted here. Only the Vfend, Sporanox and Noxafil lines name venetoclax. Other strong inhibitor cards stay at Serious concern with no label line. Kaletra + venetoclax is already noted as avoid, not a section 4 contraindication.",
+  },
 ];
