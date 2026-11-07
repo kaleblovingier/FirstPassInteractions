@@ -105,8 +105,8 @@ export interface GoldPair {
   mechanism: "PK" | "PD" | "PK+PD";
   domain: GoldDomain;
   note?: string;
-  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi; 16 = Nitrostat, isosorbide dinitrate, febuxostat, disulfiram. */
-  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13 | 14 | 16;
+  /** 1 = original set; 2 = MAT / ketamine-clinic wave; 3 = Korlym / HIV PIs; 4 = clarithromycin, azoles, Norvir, Paxlovid, Kaletra; 5 = Geodon; 6 = Recorlev; 7 = Tikosyn, Tracleer, Adempas, Xenazine, Austedo, Mavyret, Edurant, Biktarvy, Tivicay, Apokyn, Relpax, Vosevi; 16 = Nitrostat, isosorbide dinitrate, febuxostat, disulfiram; 17 = severity change: Zocor, lovastatin, Vfend section 4. */
+  wave: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 9 | 10 | 11 | 12 | 13 | 14 | 16 | 17;
 }
 
 const DM = (setid: string) => `https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=${setid}`;
@@ -4039,6 +4039,271 @@ const WAVE_16: GoldPair[] = [
 ];
 
 
+/**
+ * Wave 17 (DailyMed v2 SPL retrieved 2026-10-28; versions rechecked on DailyMed
+ * 2026-11-07). Severity change approved by Kaleb: these cards read major (a few
+ * read Use care, Low concern or no card) and the label says contraindicated.
+ * Zocor section 4 contraindicates strong CYP3A4 inhibitors; the partners come
+ * from the Examples row of Table 2 in 7.1 (labelExample). Lovastatin tablets
+ * CONTRAINDICATIONS names the partners (or "HIV protease inhibitors" and
+ * "cobicistat-containing products"). Vfend section 4 item 1 (drugs highly
+ * dependent on CYP3A4) and item 2 (inducers). Zocor's "select" protease
+ * inhibitor groups are used only for the drugs named; Vfend's dose-conditional
+ * efavirenz and ritonavir lines and the venetoclax ramp-up line are not used.
+ */
+function row17(r: Row): GoldPair {
+  return { ...row7(r), wave: 17, retrieved: "2026-10-28" };
+}
+
+const LOVASTATIN_CI =
+  "Concomitant administration with strong CYP3A4 inhibitors (e.g., itraconazole, ketoconazole, posaconazole, voriconazole, HIV protease inhibitors, boceprevir, telaprevir, erythromycin, clarithromycin, telithromycin … nefazodone, and cobicistat-containing products)";
+const VFEND_CYP3A4 = "Concomitant use of VFEND is contraindicated with drugs that are highly dependent on CYP3A4 for metabolism …";
+const VFEND_INDUCERS =
+  "Concomitant use of VFEND is contraindicated with drugs and herbal products that induce CYP2C19, CYP2C9, and/or CYP3A4 …";
+
+const WAVE_17: GoldPair[] = [
+  row17({
+    drugA: "simvastatin", drugB: "ketoconazole", queries: ["simvastatin", "ketoconazole"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "Select azole anti-fungals (e.g., itraconazole, ketoconazole, posaconazole, and voriconazole)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "voriconazole", queries: ["simvastatin", "vfend"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "Select azole anti-fungals (e.g., itraconazole, ketoconazole, posaconazole, and voriconazole)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "erythromycin", queries: ["simvastatin", "erythromycin"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "select macrolide antibiotics (e.g., erythromycin and clarithromycin)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "nelfinavir", queries: ["simvastatin", "nelfinavir"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "select HIV protease inhibitors (e.g., nelfinavir, ritonavir, and darunavir/ritonavir)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "nefazodone", queries: ["simvastatin", "nefazodone"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "cobicistat", queries: ["simvastatin", "tybost"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "darunavir-cobicistat-ftc-taf", queries: ["simvastatin", "symtuza"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "elvitegravir-cobicistat-ftc-taf", queries: ["simvastatin", "genvoya"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "simvastatin", drugB: "elvitegravir-cobicistat-ftc-tdf", queries: ["simvastatin", "stribild"],
+    labelDrug: "Zocor (simvastatin)", label: "zocor", labelSection: "4 CONTRAINDICATIONS",
+    quote: ZOCOR_4, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "ketoconazole", queries: ["lovastatin", "ketoconazole"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "ketoconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "voriconazole", queries: ["lovastatin", "vfend"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "voriconazole",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "erythromycin", queries: ["lovastatin", "erythromycin"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "erythromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "telithromycin", queries: ["lovastatin", "telithromycin"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "telithromycin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "nefazodone", queries: ["lovastatin", "nefazodone"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "nefazodone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "cobicistat", queries: ["lovastatin", "tybost"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "darunavir-cobicistat-ftc-taf", queries: ["lovastatin", "symtuza"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "elvitegravir-cobicistat-ftc-taf", queries: ["lovastatin", "genvoya"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "elvitegravir-cobicistat-ftc-tdf", queries: ["lovastatin", "stribild"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "cobicistat-containing products",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "nelfinavir", queries: ["lovastatin", "nelfinavir"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "HIV protease inhibitors",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "indinavir-and-ritonavir", queries: ["lovastatin", "indinavir and ritonavir"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "HIV protease inhibitors",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "tipranavir-and-ritonavir", queries: ["lovastatin", "tipranavir and ritonavir"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "HIV protease inhibitors",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "indinavir", queries: ["lovastatin", "indinavir"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "HIV protease inhibitors",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "saquinavir", queries: ["lovastatin", "saquinavir"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "HIV protease inhibitors",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "lovastatin", drugB: "tipranavir", queries: ["lovastatin", "aptivus"],
+    labelDrug: "Lovastatin tablets", label: "lovastatin", labelSection: "CONTRAINDICATIONS",
+    quote: LOVASTATIN_CI, labelExample: "HIV protease inhibitors",
+    labelClass: "contraindicated", mechanism: "PK", domain: "statins",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "eplerenone", queries: ["vfend", "eplerenone"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Eplerenone`, labelExample: "Eplerenone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "ergotamine", queries: ["vfend", "ergotamine"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Ergot alkaloids (e.g., ergotamine, dihydroergotamine)`, labelExample: "ergotamine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "dihydroergotamine", queries: ["vfend", "dihydroergotamine"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Ergot alkaloids (e.g., ergotamine, dihydroergotamine)`, labelExample: "dihydroergotamine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "methylergonovine", queries: ["vfend", "methylergonovine"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Ergot alkaloids (e.g., ergotamine, dihydroergotamine)`, labelExample: "Ergot alkaloids (e.g., ergotamine, dihydroergotamine)",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "finerenone", queries: ["vfend", "finerenone"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Finerenone`, labelExample: "Finerenone",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "ivabradine", queries: ["vfend", "ivabradine"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Ivabradine`, labelExample: "Ivabradine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "naloxegol", queries: ["vfend", "naloxegol"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Naloxegol`, labelExample: "Naloxegol",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "pimozide", queries: ["vfend", "pimozide"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Pimozide`, labelExample: "Pimozide",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "quinidine", queries: ["vfend", "quinidine"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Quinidine`, labelExample: "Quinidine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "sirolimus", queries: ["vfend", "sirolimus"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Sirolimus`, labelExample: "Sirolimus",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "tolvaptan", queries: ["vfend", "tolvaptan"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Tolvaptan`, labelExample: "Tolvaptan",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "voclosporin", queries: ["vfend", "voclosporin"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_CYP3A4} Voclosporin`, labelExample: "Voclosporin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "rifabutin", queries: ["vfend", "rifabutin"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_INDUCERS} Rifabutin`, labelExample: "Rifabutin",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "carbamazepine", queries: ["vfend", "carbamazepine"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_INDUCERS} Carbamazepine`, labelExample: "Carbamazepine",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "phenobarbital", queries: ["vfend", "phenobarbital"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_INDUCERS} Long-acting barbiturates`, labelExample: "Long-acting barbiturates",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+  row17({
+    drugA: "voriconazole", drugB: "st-johns-wort", queries: ["vfend", "st john's wort"],
+    labelDrug: "Vfend (voriconazole)", label: "vfend", labelSection: "4 CONTRAINDICATIONS",
+    quote: `${VFEND_INDUCERS} St. John's Wort`, labelExample: "St. John's Wort",
+    labelClass: "contraindicated", mechanism: "PK", domain: "antimicrobial",
+  }),
+];
+
 export const WAVE_5_COUNT = WAVE_5.length;
 export const WAVE_6_COUNT = WAVE_6.length;
 export const WAVE_7_COUNT = WAVE_7.length;
@@ -4049,7 +4314,8 @@ export const WAVE_12_COUNT = WAVE_12.length;
 export const WAVE_13_COUNT = WAVE_13.length;
 export const WAVE_14_COUNT = WAVE_14.length;
 export const WAVE_16_COUNT = WAVE_16.length;
-export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13, ...WAVE_14, ...WAVE_16];
+export const WAVE_17_COUNT = WAVE_17.length;
+export const LABEL_GOLD_SET: GoldPair[] = [...WAVE_1, ...WAVE_2, ...WAVE_3, ...WAVE_4, ...WAVE_5, ...WAVE_6, ...WAVE_7, ...WAVE_9, ...WAVE_10, ...WAVE_11, ...WAVE_12, ...WAVE_13, ...WAVE_14, ...WAVE_16, ...WAVE_17];
 
 /**
  * Pairs where the engine currently sits BELOW `expectedFloor`.
@@ -4509,10 +4775,6 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
     reason: "Named in Cresemba section 4 (strong CYP3A4 inducers). CYP3A4 inducer cards read major. Pinning would raise 3 pairs. Not pinned.",
   },
   {
-    pair: "wave 11 (severity change, for Kaleb): Vfend (voriconazole) + carbamazepine, efavirenz, rifabutin, St. John's wort",
-    reason: "Named in Vfend section 4. CYP3A4 / CYP2C19 inducer cards read major. Pinning would raise 4 pairs. The efavirenz line is dose-conditional on the label. Not pinned.",
-  },
-  {
     pair: "wave 11 (severity change, for Kaleb): Edurant (rilpivirine) + dexamethasone; Biltricide (praziquantel) + rifampin",
     reason: "Named in each label's section 4 (Edurant: systemic dexamethasone, more than a single-dose treatment; Biltricide: strong CYP3A inducers such as rifampin). CYP3A4 inducer cards read major. Not pinned.",
   },
@@ -4549,10 +4811,6 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
     reason: "Prezcobix section 4 names each anticonvulsant. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
   },
   {
-    pair: "wave 11 (severity-change candidates for Kaleb): Vfend (voriconazole) + carbamazepine, rifabutin",
-    reason: "Vfend section 4 names both. The existing CYP3A4/CYP2C19 inducer cards read major. A pin would change severity. Not pinned. Vfend + efavirenz is contraindicated only at standard doses, so it is conditional and dropped.",
-  },
-  {
     pair: "wave 11 (severity-change candidates for Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Coartem + rifampin, carbamazepine, phenytoin, St. John's wort; Biltricide (praziquantel) + rifampin",
     reason: "Each section 4 names these drugs as strong CYP3A4 inducers. The existing CYP3A4 inducer card reads major. A pin would change severity. Not pinned.",
   },
@@ -4579,10 +4837,6 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "wave 11 severity-change candidates (Kaleb): Cresemba (isavuconazole) + rifampin, carbamazepine, St. John's wort; Biltricide (praziquantel) + rifampin",
     reason: "Named in section 4. CYP3A4 inducer cards read major. A pin would change severity.",
-  },
-  {
-    pair: "wave 11 severity-change candidates (Kaleb): Vfend (voriconazole) + rifabutin, carbamazepine, St. John's wort",
-    reason: "Named in Vfend section 4. CYP3A4/CYP2C19 inducer and inhibitor cards read major. A pin would change severity. Vfend + efavirenz is conditional on the efavirenz dose and is not a candidate.",
   },
   {
     pair: "wave 11 severity-change candidates (Kaleb): Tybost (cobicistat) + carbamazepine, nevirapine (CYP3A4 card at major); + rifampin, phenobarbital, phenytoin, St. John's wort (washout card only or no card)",
@@ -4776,5 +5030,30 @@ export const DROPPED_CANDIDATES: { pair: string; reason: string; pairs?: string[
   {
     pair: "wave 16: Sunlenca (lenacapavir) + strong CYP3A inducers; Caprelsa, Tasigna, Imbruvica, Sivextro",
     reason: 'Sunlenca section 4 (setid e5652804-29c4-40d7-aeb2-0142ed2a7b5b, effective 2026-08-27) names the strong CYP3A inducer class and no drug. Caprelsa section 4 is congenital long QT syndrome. Tasigna section 4 is hypokalemia, hypomagnesemia, or long QT syndrome. Imbruvica and Sivextro section 4 are "None". Nothing named to pin.',
+  },
+  {
+    pair: "wave 17 (conditional on the label): Vfend (voriconazole) + efavirenz, ritonavir, venetoclax",
+    pairs: ["voriconazole+efavirenz", "voriconazole+efavirenz-ftc-tdf", "voriconazole+ritonavir", "voriconazole+venetoclax"],
+    reason: "Vfend section 4 (setid 08d08721-1f4c-478a-8abf-d9c402d50553, version 33) contraindicates efavirenz only at the dosages it states, ritonavir only at high dose (low-dose ritonavir is \"should be avoided\"), and venetoclax only at initiation and during the ramp-up phase in CLL or SLL. Not pinned; grade unchanged.",
+  },
+  {
+    pair: "wave 17 (not named): Zocor \"select\" protease inhibitors and telithromycin",
+    pairs: ["simvastatin+indinavir", "simvastatin+saquinavir", "simvastatin+tipranavir", "simvastatin+indinavir-and-ritonavir", "simvastatin+tipranavir-and-ritonavir", "simvastatin+elvitegravir-and-ritonavir", "simvastatin+paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir", "simvastatin+glecaprevir-pibrentasvir", "simvastatin+telithromycin"],
+    reason: "Zocor 7.1 Table 2 lists \"select HIV protease inhibitors (e.g., nelfinavir, ritonavir, and darunavir/ritonavir)\" and \"select HCV protease inhibitors (e.g., boceprevir and telaprevir)\". \"Select\" does not cover the whole class, so only the named drugs are pinned. Telithromycin is not in the Zocor Examples row. Not pinned; grade unchanged.",
+  },
+  {
+    pair: "wave 17 (not an HIV protease inhibitor product): lovastatin + elvitegravir and ritonavir; ombitasvir/paritaprevir/ritonavir",
+    pairs: ["lovastatin+elvitegravir-and-ritonavir", "lovastatin+paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir", "lovastatin+glecaprevir-pibrentasvir"],
+    reason: "The lovastatin CONTRAINDICATIONS sentence names HIV protease inhibitors, boceprevir and telaprevir. These rows contain ritonavir as a booster but are an integrase inhibitor regimen and hepatitis C regimens, and the sentence does not name them. Boceprevir and telaprevir are not in the catalog. Not pinned; grade unchanged.",
+  },
+  {
+    pair: "wave 17 (catalog form rows): Vfend + quinidine gluconate, carbamazepine XR / Equetro; simvastatin/ezetimibe",
+    pairs: ["voriconazole+quinidine-gluconate", "voriconazole+carbamazepine-xr", "voriconazole+carbamazepine-equetro"],
+    reason: "Existing pins name the base catalog row only (quinidine, carbamazepine, simvastatin). The form rows carry no CYP role, so a pin would add a standalone card. Simvastatin/ezetimibe has its own label (Vytorin), which this wave did not read. Not pinned; grade unchanged.",
+  },
+  {
+    pair: "wave 17 (class not clearly covered): Vfend \"Ergot alkaloids\" and \"Long-acting barbiturates\"",
+    pairs: ["voriconazole+bromocriptine", "voriconazole+cabergoline", "voriconazole+primidone"],
+    reason: "Vfend section 4 lists ergot alkaloids (e.g., ergotamine, dihydroergotamine) and long-acting barbiturates. Methylergonovine and phenobarbital are pinned as class rows. Bromocriptine and cabergoline are ergot-derived dopamine agonists, and primidone is not a barbiturate (phenobarbital is a metabolite); the label does not name them. Not pinned; grade unchanged.",
   },
 ];
