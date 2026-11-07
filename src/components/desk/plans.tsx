@@ -522,7 +522,7 @@ export function PlansPage() {
       </p>
 
       {!checkoutOpen ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
+        <div data-sticky-bar="bottom" className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
           <div className="mx-auto flex max-w-md gap-2">
             {founding ? null : (
               <Button className="flex-1 min-h-[44px] cursor-pointer" onClick={unlock}>

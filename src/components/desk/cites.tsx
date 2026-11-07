@@ -154,7 +154,7 @@ export function CitesPage() {
         ))}
       </div>
 
-      <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 bg-bg/95 px-1 py-2 backdrop-blur-sm">
+      <div data-sticky-bar="top" className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 bg-bg/95 px-1 py-2 backdrop-blur-sm">
         <p className="text-xs text-muted">
           <span className="font-mono tabular-nums">{rows.length}</span> shown
           {hasFilter ? (
@@ -170,7 +170,7 @@ export function CitesPage() {
           <button
             type="button"
             onClick={() => setView("desk")}
-            className="ml-auto h-8 rounded-full bg-ink px-3 text-[11px] font-medium text-bg sm:ml-0"
+            className="ml-auto min-h-11 rounded-full bg-ink px-4 text-[11px] font-medium text-bg sm:ml-0"
           >
             Open desk
           </button>

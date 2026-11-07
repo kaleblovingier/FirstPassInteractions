@@ -142,6 +142,18 @@ select {
   box-shadow: 0 0 0 1px var(--color-subtle);
 }
 
+/* WCAG 2.4.11 focus not obscured. A view with a sticky bar (data-sticky-bar) reserves room
+   for it, so a control that takes focus, or a section an in-page link jumps to, is scrolled
+   clear of the bar instead of under it. The Plans bottom bar shows only below 640px. */
+html:has([data-sticky-bar="top"]) {
+  scroll-padding-top: 4.5rem;
+}
+@media (max-width: 39.99rem) {
+  html:has([data-sticky-bar="bottom"]) {
+    scroll-padding-bottom: 6rem;
+  }
+}
+
 /* Skip link (WCAG 2.4.1). Off-screen until focused; the accent outline is the shared :focus-visible rule. */
 .skip-link {
   position: absolute;
