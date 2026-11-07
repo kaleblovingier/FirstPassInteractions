@@ -12,7 +12,7 @@ import {
   labelContraindicationFor,
 } from "./label-contraindications";
 import { PERPETRATOR_LABELS } from "./reference/label-perpetrators";
-import { pgxFor } from "./pgx";
+import { cardLink, guidelineUrl, pgxFor } from "./pgx";
 import type { Finding } from "./types";
 
 export type BasisKind =
@@ -342,22 +342,28 @@ function analogyBasis(): FindingBasis {
 }
 
 /** A phenotype row may link a page only when pgx.ts has a card for that drug and gene.
- *  The link is the card's own page. Some cards link a CPIC guideline written for a related
- *  drug class, so the copy never says the guideline covers this drug or that the row follows it. */
+ *  The link is the card's own CPIC guideline when it has one, else the drug's ClinPGx page.
+ *  The copy never says the row follows the guideline: the tier is the desk's analogy. */
 function phenotypeGuidelineBasis(finding: Finding): FindingBasis | null {
   const drugId = finding.drugIds[0];
   const enzyme = finding.enzymes[0];
   if (!drugId || !enzyme) return null;
   const card = pgxFor(drugId).find((c) => geneHits(c.gene, enzyme));
-  if (!card || isGenericCpicIndex(card.guideline)) return null;
-  const linked = isSpecificCpicGuideline(card.guideline)
-    ? "a CPIC guideline page. Check that the guideline names this drug before you rely on it."
-    : "a page to read beside the row.";
+  if (!card) return null;
+  const href = cardLink(card);
+  if (isGenericCpicIndex(href)) return null;
+  const guideline = guidelineUrl(card);
+  const linked =
+    guideline && isSpecificCpicGuideline(guideline)
+      ? "links a CPIC guideline page. Check that the guideline names this drug before you rely on it."
+      : card.source.kind === "none"
+        ? "notes that CPIC has no guideline for this drug, and links a page to read beside the row."
+        : "links a page to read beside the row.";
   return {
     kind: "cpic",
     label: "Teaching card",
-    detail: `The tier is the inhibitor/inducer analogy on this desk. The teaching card for this drug and gene links ${linked} This desk is not a PGx report.`,
-    href: card.guideline,
+    detail: `The tier is the inhibitor/inducer analogy on this desk. The teaching card for this drug and gene ${linked} This desk is not a PGx report.`,
+    href,
   };
 }
 

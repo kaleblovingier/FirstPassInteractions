@@ -977,7 +977,7 @@ export const PGX_INTERACTIONS: PgxInteraction[] = [
     cpicLevel: "Level A",
     therapeuticArea: "Oncology",
     guidelineTitle: "CPIC Guideline for Tamoxifen and CYP2D6",
-    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-tamoxifen-and-cyp2d6/",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-tamoxifen-based-on-cyp2d6-genotype/",
     fdaBoxedWarning: false,
     phenotypeRisks: [
       {
@@ -1296,8 +1296,8 @@ export const PGX_INTERACTIONS: PgxInteraction[] = [
     geneSymbol: "CYP2C9",
     cpicLevel: "Level A",
     therapeuticArea: "Pain & Neurology",
-    guidelineTitle: "CPIC Guideline for Phenytoin and CYP2C9",
-    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-phenytoin-and-cyp2c9/",
+    guidelineTitle: "CPIC Guideline for Phenytoin and CYP2C9/HLA-B",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-phenytoin-and-cyp2c9-and-hla-b/",
     fdaBoxedWarning: false,
     phenotypeRisks: [
       {
@@ -1417,8 +1417,8 @@ export const PGX_INTERACTIONS: PgxInteraction[] = [
     geneSymbol: "HLA-B*15:02",
     cpicLevel: "Level A",
     therapeuticArea: "Pain & Neurology",
-    guidelineTitle: "CPIC Guideline for Oxcarbazepine and HLA-B",
-    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-oxcarbazepine-and-hla-b/",
+    guidelineTitle: "CPIC Guideline for Carbamazepine/Oxcarbazepine and HLA-B/HLA-A",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-carbamazepine-and-hla-b/",
     fdaBoxedWarning: false,
     phenotypeRisks: [
       {
