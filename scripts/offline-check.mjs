@@ -1,6 +1,8 @@
-// Offline reading check (Playwright). Visit once online, let the service worker
-// precache, go offline, then confirm drug, pair and enzyme pages (with label
-// quotes) still render, and that /api/ and gated pages were never cached.
+// Offline reading check (Playwright). The service worker precaches only the shell
+// and caches reference pages as they are opened. Visit a sample of pages online,
+// go offline, then confirm those drug, pair and enzyme pages (with label quotes)
+// still render, that pages never opened were not downloaded, and that /api/ and
+// gated pages were never cached.
 //   node scripts/offline-check.mjs http://127.0.0.1:PORT
 import { chromium } from "playwright";
 
@@ -15,25 +17,31 @@ const xml = await (await fetch(new URL("/sitemap.xml", base))).text();
 const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
 const want = (re) => locs.filter((p) => re.test(p));
 const drugs = want(/^\/drug\//), pairs = want(/^\/pair\//), enzymes = want(/^\/enzyme\//);
-const expected = drugs.length + pairs.length + enzymes.length + 3;
+const sample = [drugs[0], drugs.at(-1), pairs[0], pairs[Math.floor(pairs.length / 2)], pairs.at(-1), enzymes[0], "/pairs", "/enzymes"];
+const unvisited = drugs[1];
 
 await page.goto(base + "/", { waitUntil: "load" });
 await page.evaluate(() => navigator.serviceWorker.ready);
 await page.reload({ waitUntil: "load" });
 check(await page.evaluate(() => !!navigator.serviceWorker.controller), "service worker controls the page");
+const version = await page.evaluate(async () => (await caches.keys()).find((n) => n.endsWith("-pages")) || "");
+check(/^fp-offline-[0-9a-f]{12}-pages$/.test(version), `cache named after the build (${version})`);
 
-const deadline = Date.now() + 240_000;
-let cached = 0;
-while (Date.now() < deadline) {
-  cached = await page.evaluate(async () => {
-    const keys = await caches.keys();
-    const k = keys.find((n) => n.endsWith("-pages"));
-    return k ? (await (await caches.open(k)).keys()).length : 0;
+const pagePaths = () =>
+  page.evaluate(async () => {
+    const k = (await caches.keys()).find((n) => n.endsWith("-pages"));
+    return k ? (await (await caches.open(k)).keys()).map((r) => new URL(r.url).pathname) : [];
   });
-  if (cached >= expected) break;
-  await page.waitForTimeout(2000);
+for (const p of sample) await page.goto(base + p, { waitUntil: "load" });
+const deadline = Date.now() + 30_000;
+let cached = [];
+while (Date.now() < deadline) {
+  cached = await pagePaths();
+  if (sample.every((p) => cached.includes(p))) break;
+  await page.waitForTimeout(500);
 }
-check(cached >= expected, `precached ${cached}/${expected} reference pages`);
+check(sample.every((p) => cached.includes(p)), `cached the ${sample.length} opened pages (${cached.length} pages in cache)`);
+check(!cached.includes(unvisited), `did not download ${unvisited}, which was never opened`);
 
 const leaked = await page.evaluate(async () => {
   const out = [];
@@ -47,7 +55,6 @@ const leaked = await page.evaluate(async () => {
 check(leaked.length === 0, `no API, gate or desk responses cached${leaked.length ? ": " + leaked.slice(0, 5).join(", ") : ""}`);
 
 await ctx.setOffline(true);
-const sample = [drugs[0], drugs.at(-1), pairs[0], pairs[Math.floor(pairs.length / 2)], pairs.at(-1), enzymes[0], "/pairs", "/enzymes"];
 for (const p of sample) {
   try {
     await page.goto(base + p, { waitUntil: "domcontentloaded", timeout: 15000 });
