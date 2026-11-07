@@ -157,6 +157,15 @@ function perpNames(findings: Finding[], victim: string, arrow: "up" | "down") {
   return [...new Set(names)];
 }
 
+/** The antiretroviral named on a methadone × antiretroviral card (methadone-antiretroviral.ts). */
+function arvNames(findings: Finding[], suffix: string) {
+  const names = findings
+    .filter((f) => f.id.includes(suffix))
+    .map((f) => DRUG_BY_ID[f.drugIds.find((id) => id !== "methadone") ?? ""]?.name)
+    .filter((n): n is string => Boolean(n));
+  return [...new Set(names)];
+}
+
 function pushUnique(list: string[], item: string) {
   if (item && !list.includes(item)) list.push(item);
 }
@@ -183,6 +192,8 @@ export function briefWindow(ids: string[], report: Report, host: HostContext): W
   });
   const precip = hasSuffix(findings, "pd-bup-precip") || hasSuffix(findings, "pd-antag-opioid");
   const mixedArrow = hasSuffix(findings, "pd-methadone-ritonavir");
+  const fallNames = arvNames(findings, "pd-methadone-ritonavir");
+  const unsettledNames = arvNames(findings, "pd-methadone-arv-unsettled");
   const takeHome = hasSuffix(findings, "pd-opioid-stack") && methadone && street;
   const dump = perpNames(findings, "methadone", "down");
   const bump = perpNames(findings, "methadone", "up");
@@ -212,7 +223,7 @@ export function briefWindow(ids: string[], report: Report, host: HostContext): W
     pushUnique(tray, "medical");
   }
 
-  if (mixedArrow) {
+  if (mixedArrow && (on("paxlovid") || on("ritonavir"))) {
     pushUnique(
       watch,
       "Withdrawal at the window, not nod — Paxlovid / ritonavir often drops methadone (2B6/UGT) even while it raises fentanyl.",
@@ -220,6 +231,16 @@ export function briefWindow(ids: string[], report: Report, host: HostContext): W
     if (!tell) {
       tell =
         "The COVID pills can steal a methadone dose for a few days. Fentanyl on the same booster is the opposite arrow — parent and airway climb.";
+    }
+    pushUnique(callBits, "Call medical before a take-home bump. Withdrawal here is PK, not a missed bottle.");
+    pushUnique(tray, "withdrawal watch");
+  } else if (mixedArrow) {
+    pushUnique(
+      watch,
+      `Withdrawal at the window, not nod — the methadone label lists ${fallNames.join(", ")} among antiretrovirals that lowered methadone.`,
+    );
+    if (!tell) {
+      tell = `${fallNames.join(" / ")} can make a stable methadone look stolen even though it inhibits 3A4. That is the label's arrow, not a missed bottle.`;
     }
     pushUnique(callBits, "Call medical before a take-home bump. Withdrawal here is PK, not a missed bottle.");
     pushUnique(tray, "withdrawal watch");
@@ -234,6 +255,17 @@ export function briefWindow(ids: string[], report: Report, host: HostContext): W
     pushUnique(callBits, "If they cannot stay awake, hold and get medical. Support ventilation.");
     pushUnique(tray, "naloxone");
     pushUnique(tray, "airway");
+  }
+
+  if (unsettledNames.length) {
+    pushUnique(
+      watch,
+      `Methadone direction not settled with ${unsettledNames.join(", ")} — the saved labels do not say up or down. Watch for withdrawal and for nod.`,
+    );
+    if (!tell) {
+      tell = `${unsettledNames.join(" / ")} is not on the methadone label's antiretroviral list. Do not assume the 3A4 rise or the ritonavir fall.`;
+    }
+    pushUnique(callBits, "Call medical before a take-home change. Withdrawal or nod here may be PK, not a missed bottle.");
   }
 
   if (tybost) {

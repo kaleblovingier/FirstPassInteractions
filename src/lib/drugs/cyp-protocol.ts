@@ -8,6 +8,7 @@
 
 import { DRUG_BY_ID } from "./catalog";
 import { isVirtual } from "./host";
+import { skipMethadone3A4Victim } from "./methadone-antiretroviral";
 import type { Enzyme, Finding, Severity, Strength } from "./types";
 
 export type PerpKind = "inhibitor" | "inducer";
@@ -486,7 +487,11 @@ export function protocolsOnDesk(ids: string[]): ProtocolCard[] {
     const d = DRUG_BY_ID[id]!;
     const tdi = TDI[id];
     const others = real.filter((x) => x !== id);
-    const victims = victimsOf(others, best.enzymes).filter((v) => v.id !== id);
+    // Methadone with an antiretroviral 3A4 inhibitor has its own card (methadone-antiretroviral.ts).
+    // The reversible or TDI clock would say methadone rises, so it is not a 3A4 victim here.
+    const victims = victimsOf(others, best.enzymes).filter(
+      (v) => v.id !== id && !(v.enzyme === "CYP3A4" && best.kind === "inhibitor" && skipMethadone3A4Victim(id, v.id)),
+    );
     const dualHit =
       best.kind === "inhibitor" &&
       best.enzymes.includes("CYP3A4") &&

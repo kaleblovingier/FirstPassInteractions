@@ -36,19 +36,20 @@ Every unordered pair of catalog entries that includes one of the five rows (9,54
 
 | Before → after | Pairs |
 |---|---:|
-| none (Not mapped) → major (Serious concern) | 1277 |
-| minor (Mild note) → major (Serious concern) | 544 |
+| none (Not mapped) → major (Serious concern) | 1275 |
+| minor (Mild note) → major (Serious concern) | 543 |
 | none (Not mapped) → minor (Mild note) | 112 |
 | moderate (Use care) → major (Serious concern) | 64 |
-| none (Not mapped) → moderate (Use care) | 54 |
+| none (Not mapped) → moderate (Use care) | 56 |
+| minor (Mild note) → moderate (Use care) | 1 |
 
 | Row | Pairs moved | none → major | minor → major | moderate → major | none → moderate | none → minor | other |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| indinavir (shelf row) | 338 | 53 | 262 | 23 | 0 | 0 | 0 |
+| indinavir (shelf row) | 338 | 53 | 261 | 23 | 0 | 0 | 1 |
 | saquinavir (shelf row) | 337 | 53 | 261 | 23 | 0 | 0 | 0 |
 | tipranavir (Aptivus) | 381 | 356 | 21 | 4 | 0 | 0 | 0 |
-| Genvoya (elvitegravir–cobicistat–FTC–TAF) | 498 | 408 | 0 | 7 | 27 | 56 | 0 |
-| Stribild (elvitegravir–cobicistat–FTC–TDF) | 497 | 407 | 0 | 7 | 27 | 56 | 0 |
+| Genvoya (elvitegravir–cobicistat–FTC–TAF) | 498 | 407 | 0 | 7 | 28 | 56 | 0 |
+| Stribild (elvitegravir–cobicistat–FTC–TDF) | 497 | 406 | 0 | 7 | 28 | 56 | 0 |
 
 ### By cause
 
@@ -56,11 +57,11 @@ Cause is the strongest new or raised CYP card on the pair, described by the role
 
 | Cause | Pairs |
 |---|---:|
-| new Aptivus CYP3A4 strong inhibitor × major substrate | 293 |
-| new Genvoya CYP3A4 strong inhibitor × major substrate | 277 |
-| new Stribild CYP3A4 strong inhibitor × major substrate | 276 |
-| new indinavir CYP3A4 strong inhibitor × major substrate | 249 |
-| new saquinavir CYP3A4 strong inhibitor × major substrate | 249 |
+| new Aptivus CYP3A4 strong inhibitor × major substrate | 292 |
+| new Genvoya CYP3A4 strong inhibitor × major substrate | 276 |
+| new Stribild CYP3A4 strong inhibitor × major substrate | 275 |
+| new indinavir CYP3A4 strong inhibitor × major substrate | 248 |
+| new saquinavir CYP3A4 strong inhibitor × major substrate | 248 |
 | new Aptivus CYP3A4 strong inhibitor × minor substrate | 45 |
 | new indinavir CYP3A4 strong inhibitor × minor substrate | 44 |
 | new saquinavir CYP3A4 strong inhibitor × minor substrate | 44 |
@@ -96,6 +97,8 @@ Cause is the strongest new or raised CYP card on the pair, described by the role
 | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate | 4 |
 | new Stribild CYP2D6 weak inhibitor × sensitive substrate | 4 |
 | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate | 4 |
+| derived card (pd-methadone-arv-unsettled) | 3 |
+| derived card (pd-methadone-ritonavir) | 2 |
 | new Aptivus CYP3A4 strong inhibitor × major substrate (activation) | 1 |
 | new Aptivus CYP3A4 strong inhibitor × minor substrate (activation) | 1 |
 | new Genvoya CYP2D6 weak inhibitor × sensitive substrate (activation) | 1 |
@@ -388,7 +391,7 @@ Pairs where the scan with no host context gives a different before or after grad
 
 ### Things to know before approving
 
-1. **Methadone arrow.** Methadone with indinavir, saquinavir, tipranavir, Genvoya and Stribild now reads major as a CYP3A4 inhibitor card (higher methadone). The methadone label in the fixture (section 7) says saquinavir+ritonavir and tipranavir+ritonavir have "resulted in increased clearance or decreased plasma levels of methadone". The engine skips the 3A4 card for methadone only for `ritonavir` and `paxlovid` (`RITONAVIR_BOOST` in engine.ts). Lopinavir, darunavir, atazanavir, Prezcobix and tipranavir and ritonavir already read major the same way on main, so this is an existing engine gap that the new rows join, not a new kind of error. Adding the ritonavir-boosted rows to `RITONAVIR_BOOST` is a separate engine change.
+1. **Methadone arrow.** The methadone label in the fixture (section 7) says saquinavir+ritonavir and tipranavir+ritonavir have "resulted in increased clearance or decreased plasma levels of methadone". A later commit on this branch (`src/lib/drugs/methadone-antiretroviral.ts`, list in `docs/validation/methadone-arv-arrow-2026-11-07.md`) stops every boosted HIV row from showing a CYP3A4 "higher methadone" card. With the new roles, methadone with saquinavir and tipranavir shows the label's fall card (major), and methadone with indinavir, Genvoya and Stribild shows a neutral "direction not settled" card (moderate), so those pairs are listed above with a derived-card cause.
 2. **Two cards on seven pinned pairs.** Lovastatin with indinavir, saquinavir, tipranavir, Genvoya and Stribild, and simvastatin with Genvoya and Stribild, are no-enzyme pins. They stay contraindicated, but the pair now shows the label card and a separate CYP3A4 card at major. Converting them to enzyme pins would show one card; this branch does not touch pins.
 3. **Strong-inhibitor derived cards.** The CYP clock and CYP3A4 phenoconversion cards are major for any strong 3A4 inhibitor and any partner with a CYP3A4 substrate role, even a minor one. That is why acetaminophen, losartan or lacosamide with these rows now reads major. Ritonavir and cobicistat pairs with the same partners already read major on main.
 4. **No pair becomes contraindicated.** Labels in the fixture name some of these drugs under Contraindications, and those pairs now read major, not contraindicated. Pin candidates (not added): pimozide with indinavir and saquinavir (pimozide CONTRAINDICATIONS); ergotamine with indinavir (ergotamine and caffeine CONTRAINDICATIONS); dihydroergotamine with indinavir (DHE injection CONTRAINDICATIONS); ranolazine with indinavir and saquinavir (Ranexa 7.1, pointing to section 4); rifampin with saquinavir and tipranavir (Rifadin contraindications; rifampin with tipranavir reads moderate, from a washout card only, because tipranavir has no 3A4 substrate role); atazanavir and Evotaz with indinavir (Reyataz and Evotaz section 4, not a CYP finding).
@@ -645,7 +648,7 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 231 | Finerenone (`finerenone`) | Nonsteroidal MRA | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
 | 232 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
 | 233 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 234 | Methadone (`methadone`) | Opioid agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 234 | Methadone (`methadone`) | Opioid agonist | minor → moderate | derived card (pd-methadone-arv-unsettled) |
 | 235 | Alfentanil (`alfentanil`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
 | 236 | Fentanyl (`fentanyl`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
 | 237 | Hydrocodone (`hydrocodone`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
@@ -987,7 +990,7 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 230 | Finerenone (`finerenone`) | Nonsteroidal MRA | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
 | 231 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
 | 232 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 233 | Methadone (`methadone`) | Opioid agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 233 | Methadone (`methadone`) | Opioid agonist | minor → major | derived card (pd-methadone-ritonavir) |
 | 234 | Alfentanil (`alfentanil`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
 | 235 | Fentanyl (`fentanyl`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
 | 236 | Hydrocodone (`hydrocodone`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
@@ -1368,7 +1371,7 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 269 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
 | 270 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
 | 271 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 272 | Methadone (`methadone`) | Opioid agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 272 | Methadone (`methadone`) | Opioid agonist | none → major | derived card (pd-methadone-ritonavir) |
 | 273 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
 | 274 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
 | 275 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
@@ -1838,7 +1841,7 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 353 | Viloxazine (`viloxazine`) | NRI (ADHD) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
 | 354 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
 | 355 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 356 | Methadone (`methadone`) | Opioid agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 356 | Methadone (`methadone`) | Opioid agonist | none → moderate | derived card (pd-methadone-arv-unsettled) |
 | 357 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
 | 358 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
 | 359 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
@@ -2340,7 +2343,7 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 352 | Viloxazine (`viloxazine`) | NRI (ADHD) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
 | 353 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
 | 354 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 355 | Methadone (`methadone`) | Opioid agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 355 | Methadone (`methadone`) | Opioid agonist | none → moderate | derived card (pd-methadone-arv-unsettled) |
 | 356 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
 | 357 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
 | 358 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
