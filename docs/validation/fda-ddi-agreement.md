@@ -23,7 +23,7 @@
 | direction_mismatch | 0 | yes |
 | strength_mismatch | 39 | yes |
 | missing_in_catalog | 6 | yes |
-| not_in_fda | 52 | no (informational) |
+| not_in_fda | 55 | no (informational) |
 | drug_not_in_catalog | 4 | no (coverage) |
 
 Reviewed direction-mismatch allowlist entries: 0.
@@ -92,7 +92,7 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 | 42 | missing_in_catalog | miconazole | `miconazole` | CYP2C9 | inhibitor (FDA moderate) | — | — |
 | 43 | missing_in_catalog | resmetirom | `resmetirom` | CYP2C8 | substrate (FDA moderate-sensitive) | inhibitor (weak) | — |
 | 44 | missing_in_catalog | ritonavir | `ritonavir` | CYP2C19 | inducer (FDA weak) | — | fn 14, fn 15, fn 16 |
-| 45 | missing_in_catalog | tipranavir | `tipranavir` | CYP3A4 | substrate (FDA sensitive) | — | fn 6 |
+| 45 | missing_in_catalog | tipranavir | `tipranavir` | CYP3A4 | substrate (FDA sensitive) | inhibitor (strong) | fn 6 |
 
 <details><summary>FDA footnotes cited above</summary>
 
@@ -113,7 +113,7 @@ Substrate grade mapping: FDA *sensitive* ↔ catalog `sensitive`; FDA *moderate 
 
 The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target where FDA's table lists none. FDA's table is illustrative, so these are not errors and are not in the review list.
 
-<details><summary>52 catalog assertions</summary>
+<details><summary>55 catalog assertions</summary>
 
 - abiraterone (`abiraterone`) · CYP2C8 · inhibitor (moderate)
 - adagrasib (`adagrasib`) · CYP2D6 · inhibitor (moderate)
@@ -138,6 +138,7 @@ The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target
 - fluvoxamine (`fluvoxamine`) · CYP2B6 · inhibitor (moderate)
 - gemfibrozil (`gemfibrozil`) · CYP2C9 · inhibitor (moderate)
 - grapefruit juice (`grapefruit`) · P-gp · inhibitor (moderate)
+- indinavir (`indinavir`) · CYP3A4 · inhibitor (strong)
 - ketoconazole (`ketoconazole`) · CYP2C19 · inhibitor (moderate)
 - lansoprazole (`lansoprazole`) · CYP2C19 · inhibitor (weak)
 - modafinil (`modafinil`) · CYP2C19 · inhibitor (moderate)
@@ -162,10 +163,12 @@ The catalog asserts an inhibitor/inducer role for an FDA-listed drug on a target
 - ritonavir (`ritonavir`) · CYP2D6 · inhibitor (moderate)
 - ritonavir (`ritonavir`) · P-gp · inhibitor (strong)
 - ritonavir (`ritonavir`) · CYP1A2 · inducer (moderate)
+- saquinavir (`saquinavir`) · CYP3A4 · inhibitor (strong)
 - sotorasib (`sotorasib`) · P-gp · inhibitor (moderate)
 - St. John’s wort (`st-johns-wort`) · CYP2C19 · inducer (moderate)
 - St. John’s wort (`st-johns-wort`) · P-gp · inducer (strong)
 - St. John’s wort (`st-johns-wort`) · CYP2C9 · inducer (weak)
+- tipranavir (`tipranavir`) · CYP3A4 · inhibitor (strong)
 - tipranavir (`tipranavir`) · P-gp · inhibitor (weak)
 
 </details>

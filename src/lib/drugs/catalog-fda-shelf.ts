@@ -1,6 +1,13 @@
 /**
  * FDA Table 1 names that were not on the shelf.
  * Each role and grade is copied from that table. A row with no grade stays off.
+ * One exception (2026-11-07, pending Kaleb's approval): indinavir and saquinavir
+ * also carry a strong CYP3A4 inhibitor role. Table 1 lists them only as
+ * sensitive 3A substrates (footnote 6, usually given with ritonavir) and grades
+ * "indinavir and ritonavir" and "saquinavir and ritonavir" strong. The inhibitor
+ * grade is the one victim labels give: Ranexa 7.1, Belsomra 7.2 and Brilinta 7.1
+ * name indinavir and saquinavir among strong CYP3A inhibitors. See
+ * docs/validation/hiv-booster-roles-2026-11-07.md.
  * Not a dose. Not a therapeutic class. Not a new finding.
  */
 import type { Drug, Enzyme, EnzymeRole, ItemKind, PdFlag, Strength, SubstrateSensitivity } from "./types";
@@ -49,6 +56,11 @@ function d(
 const NOTE =
   "Enzyme role and grade are from FDA Table 1 (content current as of 2026-05-29), examples and not a full list, and not a milligram.";
 
+/** Indinavir and saquinavir: substrate role from Table 1, strong 3A4 inhibitor role from victim labels. */
+const PI_INHIBITOR_NOTE =
+  "The sensitive CYP3A4 substrate role is from FDA Table 1 (content current as of 2026-05-29), which notes it is usually given with ritonavir. Table 1 does not grade this drug as an inhibitor on its own. It grades the ritonavir combination a strong 3A inhibitor. The strong CYP3A4 inhibitor role here is from victim labels (Ranexa, Belsomra and Brilinta) that name it among strong CYP3A inhibitors. Not a milligram.";
+const PI_INHIBITOR_HINT = "Strong 3A4 inhibitor per victim labels; Table 1 lists it as a 3A victim. Not a dose.";
+
 export const FDA_TABLE_SHELF: Drug[] = [
   d("diosmin", "diosmin", [], "FDA Table 1 example",
     [inh("CYP2C9", "weak")],
@@ -66,10 +78,10 @@ export const FDA_TABLE_SHELF: Drug[] = [
     "FDA Table 1 role only. Not a dose.",
     { note: NOTE }),
   d("indinavir", "indinavir", [], "FDA Table 1 example",
-    [sub("CYP3A4", "sensitive")],
+    [sub("CYP3A4", "sensitive"), inh("CYP3A4", "strong")],
     [],
-    "FDA Table 1 role only. Not a dose.",
-    { note: NOTE }),
+    PI_INHIBITOR_HINT,
+    { note: PI_INHIBITOR_NOTE }),
   d("indinavir-and-ritonavir", "indinavir and ritonavir", [], "FDA Table 1 example",
     [inh("CYP3A4", "strong")],
     [],
@@ -121,10 +133,10 @@ export const FDA_TABLE_SHELF: Drug[] = [
     "FDA Table 1 role only. Not a dose.",
     { note: NOTE }),
   d("saquinavir", "saquinavir", [], "FDA Table 1 example",
-    [sub("CYP3A4", "sensitive")],
+    [sub("CYP3A4", "sensitive"), inh("CYP3A4", "strong")],
     [],
-    "FDA Table 1 role only. Not a dose.",
-    { note: NOTE }),
+    PI_INHIBITOR_HINT,
+    { note: PI_INHIBITOR_NOTE }),
   d("sevabertinib", "sevabertinib", [], "FDA Table 1 example",
     [inh("CYP3A4", "weak"), sub("CYP3A4", "major")],
     [],
