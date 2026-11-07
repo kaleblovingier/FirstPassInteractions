@@ -59,8 +59,11 @@ test("plans FAQ answers subscription, card, lost key, and medical advice", () =>
   assert.doesNotMatch(faq, /diagnos|treat|cure/i);
 });
 
-test("who-it's-for line uses the approved audience wording", () => {
-  const m = src.match(/WHO_FOR = "([^"]+)"/);
+test("who-it's-for line uses the approved audience wording", async () => {
+  // WHO_FOR is single-sourced from INTENDED_USERS in regulatory.ts.
+  assert.match(src, /WHO_FOR = INTENDED_USERS;/);
+  const regulatory = await readFile(new URL("../regulatory.ts", import.meta.url), "utf8");
+  const m = regulatory.match(/INTENDED_USERS =\s*"([^"]+)"/);
   assert.ok(m);
   assert.equal(
     m[1],
