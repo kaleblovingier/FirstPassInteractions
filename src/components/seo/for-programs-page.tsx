@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { PROGRAM_TIERS, type ProgramTier } from "@/lib/billing/programs";
 import {
@@ -43,6 +43,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { PairDisclaimer } from "./pair-page";
+import { ProgramCheckoutSection } from "./program-checkout";
+import { isCardTier, programCheckoutStatus, type CardTier } from "@/lib/billing/program-checkout";
 
 type Years = 1 | 2 | 3;
 const YEARS: readonly Years[] = [1, 2, 3];
@@ -91,6 +93,25 @@ function WhatsNew() {
   );
 }
 
+/** Asks the server once whether program card checkout is on. False until it answers, so static HTML never shows it. */
+function useProgramCheckoutLive(): boolean {
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void programCheckoutStatus()
+      .then((r) => {
+        if (alive) setLive(Boolean(r?.live));
+      })
+      .catch(() => {
+        /* stays off */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return live;
+}
+
 /* ---------------- page ---------------- */
 
 export interface InquiryValues {
@@ -121,6 +142,16 @@ export function ForProgramsView() {
   const [estSeats, setEstSeats] = useState(String(DEFAULT_ESTIMATE_SEATS));
   const [estYears, setEstYears] = useState<Years>(1);
   const [inquiry, setInquiry] = useState<InquiryValues>(EMPTY_INQUIRY);
+  const cardLive = useProgramCheckoutLive();
+  const [cardTier, setCardTier] = useState<CardTier>("program");
+
+  /** Pick the tier in the card form and move to it. */
+  const payByCard = (tier: CardTier) => {
+    setCardTier(tier);
+    const form = document.getElementById("pc-seats");
+    form?.scrollIntoView({ block: "center" });
+    form?.focus({ preventScroll: true });
+  };
 
   /** Carry the estimator's numbers into the form and move to it. */
   const askForQuote = () => {
@@ -239,7 +270,7 @@ export function ForProgramsView() {
         <p className="mt-2 max-w-2xl text-sm text-muted">Pick the size that covers everyone who will use it. Every tier gets the same tools.</p>
         <ul className="mt-5 grid gap-4 md:grid-cols-3">
           {PROGRAM_TIERS.map((t) => (
-            <TierCard key={t.id} tier={t} />
+            <TierCard key={t.id} tier={t} onPayByCard={cardLive && isCardTier(t.id) ? () => payByCard(t.id as CardTier) : undefined} />
           ))}
         </ul>
         <p id="founding" data-testid="for-programs-comparison" className="mt-5 max-w-2xl scroll-mt-6 rounded-lg bg-bg-sunken/60 px-4 py-3 text-sm">
@@ -250,6 +281,8 @@ export function ForProgramsView() {
           <span className="text-muted">, then Plans, to buy Founding for one person.</span>
         </p>
       </section>
+
+      <ProgramCheckoutSection live={cardLive} tier={cardTier} onTier={setCardTier} />
 
       <section id="estimate" className="mt-12 scroll-mt-6" aria-labelledby="estimate-h">
         <h2 id="estimate-h" className={H2}>Estimate your license</h2>
@@ -328,8 +361,8 @@ export function ForProgramsView() {
 
 /* ---------------- tiers ---------------- */
 
-/** One tier, as /for-programs shows it. `askHref` is where "Ask about" goes; audience pages point it at /for-programs#inquiry. */
-export function TierCard({ tier, askHref = "#inquiry" }: { tier: ProgramTier; askHref?: string }) {
+/** One tier, as /for-programs shows it. `askHref` is where "Ask about" goes; audience pages point it at /for-programs#inquiry. `onPayByCard` shows the card button when program checkout is live. */
+export function TierCard({ tier, askHref = "#inquiry", onPayByCard }: { tier: ProgramTier; askHref?: string; onPayByCard?: () => void }) {
   return (
     <li
       data-testid={`tier-${tier.id}`}
@@ -366,6 +399,16 @@ export function TierCard({ tier, askHref = "#inquiry" }: { tier: ProgramTier; as
       >
         Ask about {tier.name}
       </a>
+      {onPayByCard ? (
+        <button
+          type="button"
+          onClick={onPayByCard}
+          data-testid={`pay-by-card-${tier.id}`}
+          className={cn(buttonVariants({ variant: "secondary" }), "mt-2 min-h-[44px] w-full cursor-pointer")}
+        >
+          Pay by card
+        </button>
+      ) : null}
     </li>
   );
 }

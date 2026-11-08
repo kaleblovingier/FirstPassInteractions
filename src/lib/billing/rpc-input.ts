@@ -70,6 +70,18 @@ export const StripeSessionInput = z.strictObject({
   sessionId: oneLine(200),
 });
 
+/**
+ * Program card checkout. Tier "site" passes the gate so the server can answer with
+ * the invoice path in plain words. No price field: the server reads it from programs.ts.
+ */
+export const ProgramCheckoutInput = z.strictObject({
+  tier,
+  org: oneLine(200),
+  email: oneLine(254),
+  seats: z.number().int().min(1).max(100_000),
+  years: z.literal(1),
+});
+
 export const OperatorPinInput = z.strictObject({ pin });
 
 export const PaypalOrderInput = z.strictObject({
