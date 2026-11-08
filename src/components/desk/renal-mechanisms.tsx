@@ -812,7 +812,7 @@ export function RenalMechanisms() {
                 </h3>
 
                 {/* Membrane Filter Buttons */}
-                <div className="flex items-center gap-1 text-[11px] font-medium">
+                <div className="flex flex-wrap items-center gap-1 text-[11px] font-medium">
                   <button
                     type="button"
                     aria-pressed={filterMembrane === "all"}

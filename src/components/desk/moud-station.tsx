@@ -126,7 +126,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
         </div>
 
         {/* FD&C Act Banner */}
-        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-bg-sunken p-3 text-xs text-muted-foreground">
           <ShieldAlert className="size-4 shrink-0 text-amber-400" />
           <div>
             <span className="font-medium text-foreground">FD&C Act § 520(o)(1)(E) Non-Device CDS:</span> {NOT_CLEARED}
@@ -205,8 +205,9 @@ export function MoudStation({ ids, host }: MoudStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Hours Since Last Opioid Consumption</label>
+                <label htmlFor="moud-field-1" className="text-muted-foreground">Hours Since Last Opioid Consumption</label>
                 <Input
+                  id="moud-field-1"
                   type="number"
                   value={hoursSinceLastUse}
                   onChange={(e) => setHoursSinceLastUse(Number(e.target.value))}
@@ -272,7 +273,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                 {withdrawalResult.receptorMechanism}
               </p>
 
-              <div className="mt-4 rounded-lg bg-muted/40 p-3">
+              <div className="mt-4 rounded-lg bg-bg-sunken p-3">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   COWS & Clinical Readiness Recommendation
                 </h4>
@@ -324,7 +325,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
             </div>
 
             {/* Selected Day Card */}
-            <div className="mt-5 rounded-lg border border-border/60 bg-muted/30 p-4">
+            <div className="mt-5 rounded-lg border border-border/60 bg-bg-sunken p-4">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-foreground">Day {currentBerneseStep.day} Regimen</span>
                 <Badge tone="accent">
@@ -378,8 +379,8 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                     <tr
                       key={s.day}
                       className={cn(
-                        "cursor-pointer hover:bg-muted/40 transition-colors",
-                        selectedBerneseDay === s.day && "bg-muted/60 font-medium",
+                        "cursor-pointer hover:bg-bg-sunken transition-colors",
+                        selectedBerneseDay === s.day && "bg-bg-sunken font-medium",
                       )}
                       onClick={() => setSelectedBerneseDay(s.day)}
                     >
@@ -409,7 +410,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
 
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {Object.values(OPIOID_RECEPTOR_AFFINITIES).map((op) => (
-                <div key={op.agent} className="rounded-lg border border-border/60 bg-muted/30 p-3.5 text-xs space-y-2">
+                <div key={op.agent} className="rounded-lg border border-border/60 bg-bg-sunken p-3.5 text-xs space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-foreground">{op.agent}</span>
                     <Badge tone={op.intrinsicEfficacyAlpha === 0 ? "danger" : op.intrinsicEfficacyAlpha < 0.5 ? "warn" : "ok"}>
@@ -445,8 +446,9 @@ export function MoudStation({ ids, host }: MoudStationProps) {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-muted-foreground">Successful Waking Bolus Dose (mg)</label>
+                <label htmlFor="moud-field-2" className="text-muted-foreground">Successful Waking Bolus Dose (mg)</label>
                 <Input
+                  id="moud-field-2"
                   type="number"
                   step="0.1"
                   value={wakingNaloxoneBolus}
@@ -479,16 +481,16 @@ export function MoudStation({ ids, host }: MoudStationProps) {
             </div>
 
             <div className="mt-2 space-y-2.5 text-xs">
-              <div className="rounded-lg bg-muted/40 p-3">
+              <div className="rounded-lg bg-bg-sunken p-3">
                 <span className="font-semibold text-foreground">Hourly Infusion Rate:</span>{" "}
                 <span className="font-mono text-teal-800 font-bold">{naloxonePlan.hourlyContinuousInfusionMg} mg/hour</span>{" "}
                 (2/3 of waking bolus)
               </div>
-              <div className="rounded-lg bg-muted/40 p-3">
+              <div className="rounded-lg bg-bg-sunken p-3">
                 <span className="font-semibold text-foreground">Pump Rate (4 mg / 100 mL NS bag):</span>{" "}
                 <span className="font-mono text-foreground font-bold">{naloxonePlan.hourlyInfusionMlPerHour} mL/hour</span>
               </div>
-              <div className="rounded-lg bg-muted/40 p-3">
+              <div className="rounded-lg bg-bg-sunken p-3">
                 <span className="font-semibold text-foreground">Mandatory Observation Period:</span>{" "}
                 <span className="font-mono text-warning font-bold">&gt;= {naloxonePlan.minimumObservationHours} hours</span> post-overdose
               </div>
@@ -524,7 +526,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
           </div>
 
           <div className="grid grid-cols-1 gap-4 text-xs md:grid-cols-2">
-            <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3 space-y-2">
               <h4 className="font-semibold text-foreground">Clinical Hallmarks</h4>
               <ul className="space-y-1.5 text-muted-foreground">
                 {xylazineProtocol.clinicalHallmarks.map((h, i) => (
@@ -535,7 +537,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
               </ul>
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3 space-y-2">
               <h4 className="font-semibold text-foreground">Supportive Resuscitation Priorities</h4>
               <ul className="space-y-1.5 text-muted-foreground">
                 {xylazineProtocol.supportiveCarePriorities.map((p, i) => (

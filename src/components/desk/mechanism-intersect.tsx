@@ -38,7 +38,7 @@ const LEVEL_BADGES: Record<BurdenLevel, { label: string; badgeClass: string; bar
   minimal: {
     label: "Minimal",
     badgeClass: "bg-surface-2 text-muted border-border",
-    barClass: "bg-muted/40",
+    barClass: "bg-bg-sunken",
   },
   mild: {
     label: "Mild",

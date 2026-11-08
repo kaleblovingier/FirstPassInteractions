@@ -452,7 +452,7 @@ export function CardiacElectrophysiology() {
         </div>
 
         {/* Phase Selector Pills (Touch-friendly, min 44px) */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
+        <div role="tablist" aria-label="Action potential phases" className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
           {phases.map((p) => {
             const isSelected = selectedPhaseNumber === p.phase;
             return (
