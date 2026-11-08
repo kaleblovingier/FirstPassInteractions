@@ -28,16 +28,16 @@ Saved sources only (no live site was reachable from the build machine): FDA Tabl
 
 ## Method
 
-Every unordered pair of catalog entries that includes one of the five rows (9,540 pairs over 1,911 entries) is run through `analyze()` twice: with the added roles removed from the five rows in memory (this equals main: checked), and as shipped on this branch. The pair grade is the highest finding that involves both drugs (`pairSeverity` in the label tests). Default host, no amounts. A second scan with no host context is listed below where it differs. A full scan of all 1.8 million catalog pairs on main and on this branch found no moved pair outside these rows.
+Every unordered pair of catalog entries that includes one of the five rows (9,575 pairs over 1,918 entries) is run through `analyze()` twice: with the added roles removed from the five rows in memory (this equals main: checked), and as shipped on this branch. The pair grade is the highest finding that involves both drugs (`pairSeverity` in the label tests). Default host, no amounts. A second scan with no host context is listed below where it differs. A full scan of all 1.8 million catalog pairs on main and on this branch found no moved pair outside these rows.
 
 ## Summary
 
-**2,053 pairs move.** Up 2,053, down 0. Pairs that become contraindicated: 0. Pinned pairs that move: 0.
+**2,083 pairs move.** Up 2,083, down 0. Pairs that become contraindicated: 0. Pinned pairs that move: 0.
 
 | Before → after | Pairs |
 |---|---:|
-| none (Not mapped) → major (Serious concern) | 1275 |
-| minor (Mild note) → major (Serious concern) | 543 |
+| none (Not mapped) → major (Serious concern) | 1294 |
+| minor (Mild note) → major (Serious concern) | 554 |
 | none (Not mapped) → minor (Mild note) | 114 |
 | moderate (Use care) → major (Serious concern) | 64 |
 | none (Not mapped) → moderate (Use care) | 56 |
@@ -45,11 +45,11 @@ Every unordered pair of catalog entries that includes one of the five rows (9,54
 
 | Row | Pairs moved | none → major | minor → major | moderate → major | none → moderate | none → minor | other |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| indinavir (shelf row) | 338 | 53 | 261 | 23 | 0 | 0 | 1 |
-| saquinavir (shelf row) | 337 | 53 | 261 | 23 | 0 | 0 | 0 |
-| tipranavir (Aptivus) | 381 | 356 | 21 | 4 | 0 | 0 | 0 |
-| Genvoya (elvitegravir–cobicistat–FTC–TAF) | 499 | 407 | 0 | 7 | 28 | 57 | 0 |
-| Stribild (elvitegravir–cobicistat–FTC–TDF) | 498 | 406 | 0 | 7 | 28 | 57 | 0 |
+| indinavir (shelf row) | 344 | 54 | 266 | 23 | 0 | 0 | 1 |
+| saquinavir (shelf row) | 343 | 54 | 266 | 23 | 0 | 0 | 0 |
+| tipranavir (Aptivus) | 387 | 361 | 22 | 4 | 0 | 0 | 0 |
+| Genvoya (elvitegravir–cobicistat–FTC–TAF) | 505 | 413 | 0 | 7 | 28 | 57 | 0 |
+| Stribild (elvitegravir–cobicistat–FTC–TDF) | 504 | 412 | 0 | 7 | 28 | 57 | 0 |
 
 ### By cause
 
@@ -57,16 +57,16 @@ Cause is the strongest new or raised CYP card on the pair, described by the role
 
 | Cause | Pairs |
 |---|---:|
-| new Aptivus CYP3A4 strong inhibitor × major substrate | 292 |
-| new Genvoya CYP3A4 strong inhibitor × major substrate | 276 |
-| new Stribild CYP3A4 strong inhibitor × major substrate | 275 |
-| new indinavir CYP3A4 strong inhibitor × major substrate | 248 |
-| new saquinavir CYP3A4 strong inhibitor × major substrate | 248 |
-| new Aptivus CYP3A4 strong inhibitor × minor substrate | 45 |
-| new indinavir CYP3A4 strong inhibitor × minor substrate | 44 |
-| new saquinavir CYP3A4 strong inhibitor × minor substrate | 44 |
-| new Genvoya CYP3A4 strong inhibitor × minor substrate | 43 |
-| new Stribild CYP3A4 strong inhibitor × minor substrate | 43 |
+| new Aptivus CYP3A4 strong inhibitor × major substrate | 297 |
+| new Genvoya CYP3A4 strong inhibitor × major substrate | 281 |
+| new Stribild CYP3A4 strong inhibitor × major substrate | 280 |
+| new indinavir CYP3A4 strong inhibitor × major substrate | 253 |
+| new saquinavir CYP3A4 strong inhibitor × major substrate | 253 |
+| new Aptivus CYP3A4 strong inhibitor × minor substrate | 46 |
+| new indinavir CYP3A4 strong inhibitor × minor substrate | 45 |
+| new saquinavir CYP3A4 strong inhibitor × minor substrate | 45 |
+| new Genvoya CYP3A4 strong inhibitor × minor substrate | 44 |
+| new Stribild CYP3A4 strong inhibitor × minor substrate | 44 |
 | new Aptivus CYP3A4 strong inhibitor × sensitive substrate | 39 |
 | new indinavir CYP3A4 strong inhibitor × sensitive substrate | 38 |
 | new saquinavir CYP3A4 strong inhibitor × sensitive substrate | 37 |
@@ -117,8 +117,8 @@ Cause is the strongest new or raised CYP card on the pair, described by the role
 | Partner class | Pairs |
 |---|---:|
 | ALK / ROS1 / NTRK / RET / MET TKI | 57 |
+| Atypical antipsychotic | 55 |
 | Benzodiazepine | 55 |
-| Atypical antipsychotic | 50 |
 | Designer benzodiazepine | 50 |
 | VEGF TKI | 50 |
 | Benzimidazole opioid (nitazene) | 45 |
@@ -411,7 +411,7 @@ Listed for a later wave. None is fixed here because each is a different kind of 
 
 Grouped by changed row, then by the partner's catalog class. A pair of two changed rows is listed once, under the row named first in the table above.
 
-### indinavir (shelf row) (338)
+### indinavir (shelf row) (344)
 
 | # | Partner | Partner class | Before → after | Cause |
 |---:|---|---|---|---|
@@ -429,332 +429,338 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 12 | Tiagabine (`tiagabine`) | AED (GAT-1) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
 | 13 | Lacosamide (`lacosamide`) | AED (slow Na) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
 | 14 | Cannabidiol (Epidiolex) (`cannabidiol-epidiolex`) | AED cannabinoid | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 15 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 16 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 17 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 18 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 19 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 20 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 21 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 22 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 23 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 24 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 25 | Doxazosin (`doxazosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 26 | Silodosin (`silodosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 27 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 28 | Perampanel (`perampanel`) | AMPA antagonist AED | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 29 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 30 | Darolutamide (`darolutamide`) | Androgen receptor blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 31 | Ivermectin (`ivermectin`) | Anthelmintic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 32 | Praziquantel (`praziquantel`) | Anthelmintic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 33 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 34 | Bicalutamide (`bicalutamide`) | Antiandrogen | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 35 | Ranolazine (`ranolazine`) | Antianginal | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 36 | Colchicine (`colchicine`) | Antigout | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 37 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 38 | Mefloquine (`mefloquine`) | Antimalarial | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 39 | Quinine (`quinine`) | Antimalarial | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 40 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 41 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 42 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 43 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 44 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 45 | Buspirone (`buspirone`) | Anxiolytic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 46 | Losartan (`losartan`) | ARB | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 47 | Exemestane (`exemestane`) | Aromatase inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 48 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 49 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 50 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 51 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 52 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 53 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 54 | Cariprazine (`cariprazine`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 55 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 56 | Iloperidone (`iloperidone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 57 | Lumateperone (`lumateperone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 58 | Lurasidone (`lurasidone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 59 | Quetiapine (`quetiapine`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 60 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 61 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 62 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 63 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 64 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 65 | Asciminib (`asciminib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 66 | Bosutinib (`bosutinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 67 | Dasatinib (`dasatinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 68 | Nilotinib (`nilotinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 69 | Ponatinib (`ponatinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 70 | Radotinib (`radotinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 71 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 72 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 73 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 74 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 75 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 76 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 77 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 78 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 79 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 80 | Alprazolam (`alprazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 81 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 82 | Clobazam (`clobazam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 83 | Clonazepam (`clonazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 84 | Diazepam (`diazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 85 | Estazolam (`estazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 86 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 87 | Flurazepam (`flurazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 88 | Midazolam (`midazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 89 | Quazepam (`quazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 90 | Triazolam (`triazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 91 | Bisoprolol (`bisoprolol`) | Beta blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 92 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 93 | Binimetinib (`binimetinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 94 | Cobimetinib (`cobimetinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 95 | Selumetinib (`selumetinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 96 | Trametinib (`trametinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 97 | Vemurafenib (`vemurafenib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 98 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 99 | Ibrutinib (`ibrutinib`) | BTK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 100 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 101 | Remibrutinib (`remibrutinib`) | BTK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 102 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 103 | Cinacalcet (`cinacalcet`) | Calcimimetic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 104 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 105 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 106 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 107 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 108 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 109 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 110 | Maraviroc (`maraviroc`) | CCR5 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 111 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 112 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 113 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 114 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 115 | Guanfacine (`guanfacine`) | Central α2-agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 116 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 117 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 118 | Ivacaftor (`ivacaftor`) | CFTR potentiator | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 119 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 120 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 121 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 122 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 123 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 124 | Dordaviprone (`dordaviprone`) | ClpP protease activator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 125 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 126 | Prednisone (`prednisone`) | Corticosteroid | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 127 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 128 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 129 | Abiraterone (`abiraterone`) | CYP17 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 130 | Bromazolam (`bromazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 131 | Clonazolam (`clonazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 132 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 133 | Diclazepam (`diclazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 134 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 135 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 136 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 137 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 138 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 139 | Phenazolam (`phenazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 140 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 141 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 142 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 143 | Felodipine (`felodipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 144 | Isradipine (`isradipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 145 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 146 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 147 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 148 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 149 | Apixaban (`apixaban`) | Direct oral anticoagulant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 150 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 151 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 152 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 153 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 154 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 155 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 156 | Daridorexant (`daridorexant`) | Dual orexin antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 157 | Mobocertinib (`mobocertinib`) | EGFR TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 158 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 159 | MDA (`mda`) | Entactogen / stimulant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 160 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 161 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 162 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 163 | Ambrisentan (`ambrisentan`) | ERA (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 164 | Macitentan (`macitentan`) | ERA (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 165 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 166 | Ergotamine (`ergotamine`) | Ergot antimigraine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 167 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 168 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 169 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 170 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 171 | eliglustat (`eliglustat`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 172 | leniolisib (`leniolisib`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 173 | lomitapide (`lomitapide`) | FDA Table 1 example | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 174 | saquinavir (`saquinavir`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 175 | sevabertinib (`sevabertinib`) | FDA Table 1 example | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 176 | taletrectinib (`taletrectinib`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 177 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 178 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 179 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 180 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 181 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 182 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 183 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 184 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 185 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 186 | Pitolisant (`pitolisant`) | H3 antagonist | moderate → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 187 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 188 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 189 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 190 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 191 | Elvitegravir–cobicistat–FTC–TAF (`elvitegravir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 192 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 193 | Tipranavir (`tipranavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 194 | Ivabradine (`ivabradine`) | If-channel blocker | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 195 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 196 | Bictegravir (`bictegravir`) | INSTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 197 | Elvitegravir (`elvitegravir`) | INSTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 198 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 199 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 200 | Tofacitinib (`tofacitinib`) | JAK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 201 | Upadacitinib (`upadacitinib`) | JAK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 202 | Fedratinib (`fedratinib`) | JAK2 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 203 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 204 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 205 | Salmeterol (`salmeterol`) | LABA | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 206 | Vilanterol (`vilanterol`) | LABA | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 207 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 208 | Montelukast (`montelukast`) | LTRA | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 209 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 210 | Repaglinide (`repaglinide`) | Meglitinide | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 211 | Tasimelteon (`tasimelteon`) | Melatonin agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 212 | Revumenib (`revumenib`) | Menin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 213 | Ziftomenib (`ziftomenib`) | Menin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 214 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 215 | Adrafinil (`adrafinil`) | Modafinil prodrug | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 216 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 217 | Sirolimus (`sirolimus`) | mTOR inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 218 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 219 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 220 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 221 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 222 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 223 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 224 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 225 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 226 | Phencyclidine (`pcp`) | NMDA dissociative | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 227 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 228 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 229 | Doravirine (`doravirine`) | NNRTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 230 | Rilpivirine (`rilpivirine`) | NNRTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 231 | Finerenone (`finerenone`) | Nonsteroidal MRA | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 232 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 233 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 234 | Methadone (`methadone`) | Opioid agonist | minor → moderate | derived card (pd-methadone-arv-unsettled) |
-| 235 | Alfentanil (`alfentanil`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 236 | Fentanyl (`fentanyl`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 237 | Hydrocodone (`hydrocodone`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 238 | Meperidine (`meperidine`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 239 | Oxycodone (`oxycodone`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 240 | Sufentanil (`sufentanil`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 241 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 242 | Atogepant (`atogepant`) | Oral CGRP antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 243 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 244 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 245 | Relugolix (`relugolix`) | Oral GnRH antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 246 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 247 | Lemborexant (`lemborexant`) | Orexin antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 248 | Suvorexant (`suvorexant`) | Orexin antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 249 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 250 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate (activation) |
-| 251 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate (activation) |
-| 252 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 253 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 254 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 255 | Roflumilast (`roflumilast`) | PDE4 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 256 | Avanafil (`avanafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 257 | Sildenafil (`sildenafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 258 | Tadalafil (`tadalafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 259 | Vardenafil (`vardenafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 260 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 261 | Domperidone (`domperidone`) | Peripheral D2 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 262 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 263 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 264 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 265 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 266 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 267 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 268 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 269 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 270 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 271 | Siponimod (`siponimod`) | S1P modulator | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 272 | Trazodone (`trazodone`) | SARI antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 273 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 274 | Ulipristal (`ulipristal`) | Selective progesterone modulator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 275 | Tamoxifen (`tamoxifen`) | SERM | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 276 | Riociguat (`riociguat`) | sGC stimulator (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 277 | Levomilnacipran (`levomilnacipran`) | SNRI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 278 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 279 | Vilazodone (`vilazodone`) | SPAR antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 280 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 281 | Citalopram (`citalopram`) | SSRI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 282 | Escitalopram (`escitalopram`) | SSRI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 283 | Sertraline (`sertraline`) | SSRI | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 284 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 285 | Atorvastatin (`atorvastatin`) | Statin | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 286 | Simvastatin (`simvastatin`) | Statin | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 287 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 288 | Brorphine (`brorphine`) | Street synthetic opioid | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 289 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 290 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 291 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 292 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 293 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 294 | Dapsone (`dapsone`) | Sulfone | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 295 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 296 | Cabazitaxel (`cabazitaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 297 | Docetaxel (`docetaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 298 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 299 | Paclitaxel (`paclitaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 300 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 301 | Etizolam (`etizolam`) | Thienodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 302 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 303 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 304 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 305 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 306 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 307 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 308 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 309 | Almotriptan (`almotriptan`) | Triptan | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 310 | Eletriptan (`eletriptan`) | Triptan | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 311 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 312 | Haloperidol (`haloperidol`) | Typical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 313 | Pimozide (`pimozide`) | Typical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 314 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 315 | Tolvaptan (`tolvaptan`) | V2 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 316 | Axitinib (`axitinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 317 | Cabozantinib (`cabozantinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 318 | Fruquintinib (`fruquintinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 319 | Lenvatinib (`lenvatinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 320 | Pazopanib (`pazopanib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 321 | Regorafenib (`regorafenib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 322 | Sorafenib (`sorafenib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 323 | Sunitinib (`sunitinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 324 | Tivozanib (`tivozanib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 325 | Vandetanib (`vandetanib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 326 | Eribulin (`eribulin`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 327 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 328 | Vinblastine (`vinblastine`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 329 | Vincristine (`vincristine`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 330 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 331 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 332 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 333 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 334 | Armodafinil (`armodafinil`) | Wake-promoting agent | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 335 | Modafinil (`modafinil`) | Wake-promoting agent | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 336 | Eszopiclone (`eszopiclone`) | Z-hypnotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
-| 337 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
-| 338 | Zolpidem (`zolpidem`) | Z-hypnotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 15 | Baxdrostat (`baxdrostat`) | Aldosterone synthase inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 16 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 17 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 18 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 19 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 20 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 21 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 22 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 23 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 24 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 25 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 26 | Doxazosin (`doxazosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 27 | Silodosin (`silodosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 28 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 29 | Perampanel (`perampanel`) | AMPA antagonist AED | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 30 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 31 | Darolutamide (`darolutamide`) | Androgen receptor blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 32 | Ivermectin (`ivermectin`) | Anthelmintic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 33 | Praziquantel (`praziquantel`) | Anthelmintic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 34 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 35 | Bicalutamide (`bicalutamide`) | Antiandrogen | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 36 | Ranolazine (`ranolazine`) | Antianginal | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 37 | Colchicine (`colchicine`) | Antigout | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 38 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 39 | Mefloquine (`mefloquine`) | Antimalarial | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 40 | Quinine (`quinine`) | Antimalarial | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 41 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 42 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 43 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 44 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 45 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 46 | Buspirone (`buspirone`) | Anxiolytic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 47 | Losartan (`losartan`) | ARB | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 48 | Exemestane (`exemestane`) | Aromatase inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 49 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 50 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 51 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 52 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 53 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 54 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 55 | Cariprazine (`cariprazine`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 56 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 57 | Iloperidone (`iloperidone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 58 | Lumateperone (`lumateperone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 59 | Lurasidone (`lurasidone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 60 | Milsaperidone (`milsaperidone`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 61 | Quetiapine (`quetiapine`) | Atypical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 62 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 63 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 64 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 65 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 66 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 67 | Asciminib (`asciminib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 68 | Bosutinib (`bosutinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 69 | Dasatinib (`dasatinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 70 | Nilotinib (`nilotinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 71 | Ponatinib (`ponatinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 72 | Radotinib (`radotinib`) | BCR-ABL TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 73 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 74 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 75 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 76 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 77 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 78 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 79 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 80 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 81 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 82 | Alprazolam (`alprazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 83 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 84 | Clobazam (`clobazam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 85 | Clonazepam (`clonazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 86 | Diazepam (`diazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 87 | Estazolam (`estazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 88 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 89 | Flurazepam (`flurazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 90 | Midazolam (`midazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 91 | Quazepam (`quazepam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 92 | Triazolam (`triazolam`) | Benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 93 | Bisoprolol (`bisoprolol`) | Beta blocker | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 94 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 95 | Binimetinib (`binimetinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 96 | Cobimetinib (`cobimetinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 97 | Selumetinib (`selumetinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 98 | Trametinib (`trametinib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 99 | Vemurafenib (`vemurafenib`) | BRAF / MEK | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 100 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 101 | Ibrutinib (`ibrutinib`) | BTK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 102 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 103 | Remibrutinib (`remibrutinib`) | BTK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 104 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 105 | Cinacalcet (`cinacalcet`) | Calcimimetic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 106 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 107 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 108 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 109 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 110 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 111 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 112 | Maraviroc (`maraviroc`) | CCR5 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 113 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 114 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 115 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 116 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 117 | Guanfacine (`guanfacine`) | Central α2-agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 118 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 119 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 120 | Ivacaftor (`ivacaftor`) | CFTR potentiator | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 121 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 122 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 123 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 124 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 125 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 126 | Dordaviprone (`dordaviprone`) | ClpP protease activator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 127 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 128 | Prednisone (`prednisone`) | Corticosteroid | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 129 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 130 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 131 | Abiraterone (`abiraterone`) | CYP17 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 132 | Bromazolam (`bromazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 133 | Clonazolam (`clonazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 134 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 135 | Diclazepam (`diclazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 136 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 137 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 138 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 139 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 140 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 141 | Phenazolam (`phenazolam`) | Designer benzodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 142 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 143 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 144 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 145 | Felodipine (`felodipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 146 | Isradipine (`isradipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 147 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 148 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 149 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 150 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 151 | Apixaban (`apixaban`) | Direct oral anticoagulant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 152 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 153 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 154 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 155 | Tavapadon (`tavapadon`) | Dopamine agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 156 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 157 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 158 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 159 | Daridorexant (`daridorexant`) | Dual orexin antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 160 | Mobocertinib (`mobocertinib`) | EGFR TKI | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 161 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 162 | MDA (`mda`) | Entactogen / stimulant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 163 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 164 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 165 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 166 | Ambrisentan (`ambrisentan`) | ERA (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 167 | Macitentan (`macitentan`) | ERA (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 168 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 169 | Ergotamine (`ergotamine`) | Ergot antimigraine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 170 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 171 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 172 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 173 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 174 | Vepdegestrant (`vepdegestrant`) | Estrogen receptor degrader | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 175 | eliglustat (`eliglustat`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 176 | leniolisib (`leniolisib`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 177 | lomitapide (`lomitapide`) | FDA Table 1 example | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 178 | saquinavir (`saquinavir`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 179 | sevabertinib (`sevabertinib`) | FDA Table 1 example | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 180 | taletrectinib (`taletrectinib`) | FDA Table 1 example | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 181 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 182 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 183 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 184 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 185 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 186 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 187 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 188 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 189 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 190 | Pitolisant (`pitolisant`) | H3 antagonist | moderate → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 191 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 192 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 193 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 194 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 195 | Elvitegravir–cobicistat–FTC–TAF (`elvitegravir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 196 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 197 | Tipranavir (`tipranavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 198 | Ivabradine (`ivabradine`) | If-channel blocker | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 199 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 200 | Bictegravir (`bictegravir`) | INSTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 201 | Elvitegravir (`elvitegravir`) | INSTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 202 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 203 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 204 | Tofacitinib (`tofacitinib`) | JAK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 205 | Upadacitinib (`upadacitinib`) | JAK inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 206 | Fedratinib (`fedratinib`) | JAK2 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 207 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 208 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 209 | Salmeterol (`salmeterol`) | LABA | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 210 | Vilanterol (`vilanterol`) | LABA | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 211 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 212 | Montelukast (`montelukast`) | LTRA | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 213 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 214 | Repaglinide (`repaglinide`) | Meglitinide | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 215 | Tasimelteon (`tasimelteon`) | Melatonin agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 216 | Revumenib (`revumenib`) | Menin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 217 | Ziftomenib (`ziftomenib`) | Menin inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 218 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 219 | Adrafinil (`adrafinil`) | Modafinil prodrug | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 220 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 221 | Sirolimus (`sirolimus`) | mTOR inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 222 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 223 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 224 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 225 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 226 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 227 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 228 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 229 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 230 | Phencyclidine (`pcp`) | NMDA dissociative | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 231 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 232 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 233 | Doravirine (`doravirine`) | NNRTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 234 | Rilpivirine (`rilpivirine`) | NNRTI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 235 | Finerenone (`finerenone`) | Nonsteroidal MRA | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 236 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 237 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 238 | Methadone (`methadone`) | Opioid agonist | minor → moderate | derived card (pd-methadone-arv-unsettled) |
+| 239 | Alfentanil (`alfentanil`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 240 | Fentanyl (`fentanyl`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 241 | Hydrocodone (`hydrocodone`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 242 | Meperidine (`meperidine`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 243 | Oxycodone (`oxycodone`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 244 | Sufentanil (`sufentanil`) | Opioid analgesic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 245 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 246 | Atogepant (`atogepant`) | Oral CGRP antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 247 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 248 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 249 | Relugolix (`relugolix`) | Oral GnRH antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 250 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 251 | Lemborexant (`lemborexant`) | Orexin antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 252 | Suvorexant (`suvorexant`) | Orexin antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 253 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 254 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate (activation) |
+| 255 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate (activation) |
+| 256 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 257 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 258 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | moderate → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 259 | Nerandomilast (`nerandomilast`) | PDE4 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 260 | Roflumilast (`roflumilast`) | PDE4 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 261 | Avanafil (`avanafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 262 | Sildenafil (`sildenafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 263 | Tadalafil (`tadalafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 264 | Vardenafil (`vardenafil`) | PDE5 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 265 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 266 | Domperidone (`domperidone`) | Peripheral D2 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 267 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 268 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 269 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 270 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 271 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 272 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 273 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 274 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 275 | Daraxonrasib (`daraxonrasib`) | RAS inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 276 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 277 | Siponimod (`siponimod`) | S1P modulator | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 278 | Trazodone (`trazodone`) | SARI antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 279 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 280 | Ulipristal (`ulipristal`) | Selective progesterone modulator | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 281 | Tamoxifen (`tamoxifen`) | SERM | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 282 | Riociguat (`riociguat`) | sGC stimulator (PAH) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 283 | Levomilnacipran (`levomilnacipran`) | SNRI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 284 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 285 | Vilazodone (`vilazodone`) | SPAR antidepressant | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 286 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 287 | Citalopram (`citalopram`) | SSRI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 288 | Escitalopram (`escitalopram`) | SSRI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 289 | Sertraline (`sertraline`) | SSRI | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 290 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 291 | Atorvastatin (`atorvastatin`) | Statin | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 292 | Simvastatin (`simvastatin`) | Statin | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 293 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 294 | Brorphine (`brorphine`) | Street synthetic opioid | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 295 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 296 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 297 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 298 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 299 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 300 | Dapsone (`dapsone`) | Sulfone | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 301 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 302 | Cabazitaxel (`cabazitaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 303 | Docetaxel (`docetaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 304 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 305 | Paclitaxel (`paclitaxel`) | Taxane | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 306 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 307 | Etizolam (`etizolam`) | Thienodiazepine | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 308 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 309 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 310 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 311 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 312 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 313 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 314 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 315 | Almotriptan (`almotriptan`) | Triptan | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 316 | Eletriptan (`eletriptan`) | Triptan | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 317 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 318 | Haloperidol (`haloperidol`) | Typical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 319 | Pimozide (`pimozide`) | Typical antipsychotic | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 320 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 321 | Tolvaptan (`tolvaptan`) | V2 antagonist | minor → major | new indinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 322 | Axitinib (`axitinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 323 | Cabozantinib (`cabozantinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 324 | Fruquintinib (`fruquintinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 325 | Lenvatinib (`lenvatinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 326 | Pazopanib (`pazopanib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 327 | Regorafenib (`regorafenib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 328 | Sorafenib (`sorafenib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 329 | Sunitinib (`sunitinib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 330 | Tivozanib (`tivozanib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 331 | Vandetanib (`vandetanib`) | VEGF TKI | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 332 | Eribulin (`eribulin`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 333 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 334 | Vinblastine (`vinblastine`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 335 | Vincristine (`vincristine`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 336 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 337 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 338 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 339 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 340 | Armodafinil (`armodafinil`) | Wake-promoting agent | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 341 | Modafinil (`modafinil`) | Wake-promoting agent | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 342 | Eszopiclone (`eszopiclone`) | Z-hypnotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
+| 343 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new indinavir CYP3A4 strong inhibitor × minor substrate |
+| 344 | Zolpidem (`zolpidem`) | Z-hypnotic | minor → major | new indinavir CYP3A4 strong inhibitor × major substrate |
 
-### saquinavir (shelf row) (337)
+### saquinavir (shelf row) (343)
 
 | # | Partner | Partner class | Before → after | Cause |
 |---:|---|---|---|---|
@@ -772,331 +778,337 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 12 | Tiagabine (`tiagabine`) | AED (GAT-1) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
 | 13 | Lacosamide (`lacosamide`) | AED (slow Na) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
 | 14 | Cannabidiol (Epidiolex) (`cannabidiol-epidiolex`) | AED cannabinoid | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 15 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 16 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 17 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 18 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 19 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 20 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 21 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 22 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 23 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 24 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 25 | Doxazosin (`doxazosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 26 | Silodosin (`silodosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 27 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 28 | Perampanel (`perampanel`) | AMPA antagonist AED | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 29 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 30 | Darolutamide (`darolutamide`) | Androgen receptor blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 31 | Ivermectin (`ivermectin`) | Anthelmintic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 32 | Praziquantel (`praziquantel`) | Anthelmintic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 33 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 34 | Bicalutamide (`bicalutamide`) | Antiandrogen | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 35 | Ranolazine (`ranolazine`) | Antianginal | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 36 | Colchicine (`colchicine`) | Antigout | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 37 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 38 | Mefloquine (`mefloquine`) | Antimalarial | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 39 | Quinine (`quinine`) | Antimalarial | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 40 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 41 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 42 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 43 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 44 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 45 | Buspirone (`buspirone`) | Anxiolytic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 46 | Losartan (`losartan`) | ARB | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 47 | Exemestane (`exemestane`) | Aromatase inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 48 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 49 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 50 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 51 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 52 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 53 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 54 | Cariprazine (`cariprazine`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 55 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 56 | Iloperidone (`iloperidone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 57 | Lumateperone (`lumateperone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 58 | Lurasidone (`lurasidone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 59 | Quetiapine (`quetiapine`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 60 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 61 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 62 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 63 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 64 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 65 | Asciminib (`asciminib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 66 | Bosutinib (`bosutinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 67 | Dasatinib (`dasatinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 68 | Nilotinib (`nilotinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 69 | Ponatinib (`ponatinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 70 | Radotinib (`radotinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 71 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 72 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 73 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 74 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 75 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 76 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 77 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 78 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 79 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 80 | Alprazolam (`alprazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 81 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 82 | Clobazam (`clobazam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 83 | Clonazepam (`clonazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 84 | Diazepam (`diazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 85 | Estazolam (`estazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 86 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 87 | Flurazepam (`flurazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 88 | Midazolam (`midazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 89 | Quazepam (`quazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 90 | Triazolam (`triazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 91 | Bisoprolol (`bisoprolol`) | Beta blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 92 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 93 | Binimetinib (`binimetinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 94 | Cobimetinib (`cobimetinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 95 | Selumetinib (`selumetinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 96 | Trametinib (`trametinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 97 | Vemurafenib (`vemurafenib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 98 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 99 | Ibrutinib (`ibrutinib`) | BTK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 100 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 101 | Remibrutinib (`remibrutinib`) | BTK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 102 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 103 | Cinacalcet (`cinacalcet`) | Calcimimetic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 104 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 105 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 106 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 107 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 108 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 109 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 110 | Maraviroc (`maraviroc`) | CCR5 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 111 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 112 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 113 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 114 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 115 | Guanfacine (`guanfacine`) | Central α2-agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 116 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 117 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 118 | Ivacaftor (`ivacaftor`) | CFTR potentiator | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 119 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 120 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 121 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 122 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 123 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 124 | Dordaviprone (`dordaviprone`) | ClpP protease activator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 125 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 126 | Prednisone (`prednisone`) | Corticosteroid | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 127 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 128 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 129 | Abiraterone (`abiraterone`) | CYP17 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 130 | Bromazolam (`bromazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 131 | Clonazolam (`clonazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 132 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 133 | Diclazepam (`diclazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 134 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 135 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 136 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 137 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 138 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 139 | Phenazolam (`phenazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 140 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 141 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 142 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 143 | Felodipine (`felodipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 144 | Isradipine (`isradipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 145 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 146 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 147 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 148 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 149 | Apixaban (`apixaban`) | Direct oral anticoagulant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 150 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 151 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 152 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 153 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 154 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 155 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 156 | Daridorexant (`daridorexant`) | Dual orexin antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 157 | Mobocertinib (`mobocertinib`) | EGFR TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 158 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 159 | MDA (`mda`) | Entactogen / stimulant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 160 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 161 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 162 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 163 | Ambrisentan (`ambrisentan`) | ERA (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 164 | Macitentan (`macitentan`) | ERA (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 165 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 166 | Ergotamine (`ergotamine`) | Ergot antimigraine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 167 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 168 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 169 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 170 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 171 | eliglustat (`eliglustat`) | FDA Table 1 example | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 172 | leniolisib (`leniolisib`) | FDA Table 1 example | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 173 | lomitapide (`lomitapide`) | FDA Table 1 example | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 174 | sevabertinib (`sevabertinib`) | FDA Table 1 example | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 175 | taletrectinib (`taletrectinib`) | FDA Table 1 example | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 176 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 177 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 178 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 179 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 180 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 181 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 182 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 183 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 184 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 185 | Pitolisant (`pitolisant`) | H3 antagonist | moderate → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 186 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 187 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 188 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 189 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 190 | Elvitegravir–cobicistat–FTC–TAF (`elvitegravir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 191 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 192 | Tipranavir (`tipranavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 193 | Ivabradine (`ivabradine`) | If-channel blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 194 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 195 | Bictegravir (`bictegravir`) | INSTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 196 | Elvitegravir (`elvitegravir`) | INSTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 197 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 198 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 199 | Tofacitinib (`tofacitinib`) | JAK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 200 | Upadacitinib (`upadacitinib`) | JAK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 201 | Fedratinib (`fedratinib`) | JAK2 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 202 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 203 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 204 | Salmeterol (`salmeterol`) | LABA | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 205 | Vilanterol (`vilanterol`) | LABA | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 206 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 207 | Montelukast (`montelukast`) | LTRA | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 208 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 209 | Repaglinide (`repaglinide`) | Meglitinide | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 210 | Tasimelteon (`tasimelteon`) | Melatonin agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 211 | Revumenib (`revumenib`) | Menin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 212 | Ziftomenib (`ziftomenib`) | Menin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 213 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 214 | Adrafinil (`adrafinil`) | Modafinil prodrug | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 215 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 216 | Sirolimus (`sirolimus`) | mTOR inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 217 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 218 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 219 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 220 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 221 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 222 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 223 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 224 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 225 | Phencyclidine (`pcp`) | NMDA dissociative | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 226 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 227 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 228 | Doravirine (`doravirine`) | NNRTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 229 | Rilpivirine (`rilpivirine`) | NNRTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 230 | Finerenone (`finerenone`) | Nonsteroidal MRA | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 231 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 232 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 233 | Methadone (`methadone`) | Opioid agonist | minor → major | derived card (pd-methadone-ritonavir) |
-| 234 | Alfentanil (`alfentanil`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 235 | Fentanyl (`fentanyl`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 236 | Hydrocodone (`hydrocodone`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 237 | Meperidine (`meperidine`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 238 | Oxycodone (`oxycodone`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 239 | Sufentanil (`sufentanil`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 240 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 241 | Atogepant (`atogepant`) | Oral CGRP antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 242 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 243 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 244 | Relugolix (`relugolix`) | Oral GnRH antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 245 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 246 | Lemborexant (`lemborexant`) | Orexin antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 247 | Suvorexant (`suvorexant`) | Orexin antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 248 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 249 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate (activation) |
-| 250 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate (activation) |
-| 251 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 252 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 253 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 254 | Roflumilast (`roflumilast`) | PDE4 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 255 | Avanafil (`avanafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 256 | Sildenafil (`sildenafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 257 | Tadalafil (`tadalafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 258 | Vardenafil (`vardenafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 259 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 260 | Domperidone (`domperidone`) | Peripheral D2 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 261 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 262 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 263 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 264 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 265 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 266 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 267 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 268 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 269 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 270 | Siponimod (`siponimod`) | S1P modulator | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 271 | Trazodone (`trazodone`) | SARI antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 272 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 273 | Ulipristal (`ulipristal`) | Selective progesterone modulator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 274 | Tamoxifen (`tamoxifen`) | SERM | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 275 | Riociguat (`riociguat`) | sGC stimulator (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 276 | Levomilnacipran (`levomilnacipran`) | SNRI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 277 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 278 | Vilazodone (`vilazodone`) | SPAR antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 279 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 280 | Citalopram (`citalopram`) | SSRI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 281 | Escitalopram (`escitalopram`) | SSRI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 282 | Sertraline (`sertraline`) | SSRI | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 283 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 284 | Atorvastatin (`atorvastatin`) | Statin | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 285 | Simvastatin (`simvastatin`) | Statin | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 286 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 287 | Brorphine (`brorphine`) | Street synthetic opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 288 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 289 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 290 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 291 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 292 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 293 | Dapsone (`dapsone`) | Sulfone | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 294 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 295 | Cabazitaxel (`cabazitaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 296 | Docetaxel (`docetaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 297 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 298 | Paclitaxel (`paclitaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 299 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 300 | Etizolam (`etizolam`) | Thienodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 301 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 302 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 303 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 304 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 305 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 306 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 307 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 308 | Almotriptan (`almotriptan`) | Triptan | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 309 | Eletriptan (`eletriptan`) | Triptan | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 310 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 311 | Haloperidol (`haloperidol`) | Typical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 312 | Pimozide (`pimozide`) | Typical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 313 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 314 | Tolvaptan (`tolvaptan`) | V2 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
-| 315 | Axitinib (`axitinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 316 | Cabozantinib (`cabozantinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 317 | Fruquintinib (`fruquintinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 318 | Lenvatinib (`lenvatinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 319 | Pazopanib (`pazopanib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 320 | Regorafenib (`regorafenib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 321 | Sorafenib (`sorafenib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 322 | Sunitinib (`sunitinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 323 | Tivozanib (`tivozanib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 324 | Vandetanib (`vandetanib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 325 | Eribulin (`eribulin`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 326 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 327 | Vinblastine (`vinblastine`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 328 | Vincristine (`vincristine`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 329 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 330 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 331 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 332 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 333 | Armodafinil (`armodafinil`) | Wake-promoting agent | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 334 | Modafinil (`modafinil`) | Wake-promoting agent | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 335 | Eszopiclone (`eszopiclone`) | Z-hypnotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
-| 336 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
-| 337 | Zolpidem (`zolpidem`) | Z-hypnotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 15 | Baxdrostat (`baxdrostat`) | Aldosterone synthase inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 16 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 17 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 18 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 19 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 20 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 21 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 22 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 23 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 24 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 25 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 26 | Doxazosin (`doxazosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 27 | Silodosin (`silodosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 28 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 29 | Perampanel (`perampanel`) | AMPA antagonist AED | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 30 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 31 | Darolutamide (`darolutamide`) | Androgen receptor blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 32 | Ivermectin (`ivermectin`) | Anthelmintic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 33 | Praziquantel (`praziquantel`) | Anthelmintic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 34 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 35 | Bicalutamide (`bicalutamide`) | Antiandrogen | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 36 | Ranolazine (`ranolazine`) | Antianginal | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 37 | Colchicine (`colchicine`) | Antigout | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 38 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 39 | Mefloquine (`mefloquine`) | Antimalarial | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 40 | Quinine (`quinine`) | Antimalarial | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 41 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 42 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 43 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 44 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 45 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 46 | Buspirone (`buspirone`) | Anxiolytic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 47 | Losartan (`losartan`) | ARB | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 48 | Exemestane (`exemestane`) | Aromatase inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 49 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 50 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 51 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 52 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 53 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 54 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 55 | Cariprazine (`cariprazine`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 56 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 57 | Iloperidone (`iloperidone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 58 | Lumateperone (`lumateperone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 59 | Lurasidone (`lurasidone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 60 | Milsaperidone (`milsaperidone`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 61 | Quetiapine (`quetiapine`) | Atypical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 62 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 63 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 64 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 65 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 66 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 67 | Asciminib (`asciminib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 68 | Bosutinib (`bosutinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 69 | Dasatinib (`dasatinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 70 | Nilotinib (`nilotinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 71 | Ponatinib (`ponatinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 72 | Radotinib (`radotinib`) | BCR-ABL TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 73 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 74 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 75 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 76 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 77 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 78 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 79 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 80 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 81 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 82 | Alprazolam (`alprazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 83 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 84 | Clobazam (`clobazam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 85 | Clonazepam (`clonazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 86 | Diazepam (`diazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 87 | Estazolam (`estazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 88 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 89 | Flurazepam (`flurazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 90 | Midazolam (`midazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 91 | Quazepam (`quazepam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 92 | Triazolam (`triazolam`) | Benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 93 | Bisoprolol (`bisoprolol`) | Beta blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 94 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 95 | Binimetinib (`binimetinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 96 | Cobimetinib (`cobimetinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 97 | Selumetinib (`selumetinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 98 | Trametinib (`trametinib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 99 | Vemurafenib (`vemurafenib`) | BRAF / MEK | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 100 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 101 | Ibrutinib (`ibrutinib`) | BTK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 102 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 103 | Remibrutinib (`remibrutinib`) | BTK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 104 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 105 | Cinacalcet (`cinacalcet`) | Calcimimetic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 106 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 107 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 108 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 109 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 110 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 111 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 112 | Maraviroc (`maraviroc`) | CCR5 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 113 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 114 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 115 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 116 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 117 | Guanfacine (`guanfacine`) | Central α2-agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 118 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 119 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 120 | Ivacaftor (`ivacaftor`) | CFTR potentiator | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 121 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 122 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 123 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 124 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 125 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 126 | Dordaviprone (`dordaviprone`) | ClpP protease activator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 127 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 128 | Prednisone (`prednisone`) | Corticosteroid | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 129 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 130 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 131 | Abiraterone (`abiraterone`) | CYP17 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 132 | Bromazolam (`bromazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 133 | Clonazolam (`clonazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 134 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 135 | Diclazepam (`diclazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 136 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 137 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 138 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 139 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 140 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 141 | Phenazolam (`phenazolam`) | Designer benzodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 142 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 143 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 144 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 145 | Felodipine (`felodipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 146 | Isradipine (`isradipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 147 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 148 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 149 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 150 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 151 | Apixaban (`apixaban`) | Direct oral anticoagulant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 152 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 153 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 154 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 155 | Tavapadon (`tavapadon`) | Dopamine agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 156 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 157 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 158 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 159 | Daridorexant (`daridorexant`) | Dual orexin antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 160 | Mobocertinib (`mobocertinib`) | EGFR TKI | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 161 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 162 | MDA (`mda`) | Entactogen / stimulant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 163 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 164 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 165 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 166 | Ambrisentan (`ambrisentan`) | ERA (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 167 | Macitentan (`macitentan`) | ERA (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 168 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 169 | Ergotamine (`ergotamine`) | Ergot antimigraine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 170 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 171 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 172 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 173 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 174 | Vepdegestrant (`vepdegestrant`) | Estrogen receptor degrader | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 175 | eliglustat (`eliglustat`) | FDA Table 1 example | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 176 | leniolisib (`leniolisib`) | FDA Table 1 example | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 177 | lomitapide (`lomitapide`) | FDA Table 1 example | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 178 | sevabertinib (`sevabertinib`) | FDA Table 1 example | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 179 | taletrectinib (`taletrectinib`) | FDA Table 1 example | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 180 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 181 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 182 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 183 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 184 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 185 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 186 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 187 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 188 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 189 | Pitolisant (`pitolisant`) | H3 antagonist | moderate → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 190 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 191 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 192 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 193 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 194 | Elvitegravir–cobicistat–FTC–TAF (`elvitegravir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 195 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 196 | Tipranavir (`tipranavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 197 | Ivabradine (`ivabradine`) | If-channel blocker | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 198 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 199 | Bictegravir (`bictegravir`) | INSTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 200 | Elvitegravir (`elvitegravir`) | INSTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 201 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 202 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 203 | Tofacitinib (`tofacitinib`) | JAK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 204 | Upadacitinib (`upadacitinib`) | JAK inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 205 | Fedratinib (`fedratinib`) | JAK2 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 206 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 207 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 208 | Salmeterol (`salmeterol`) | LABA | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 209 | Vilanterol (`vilanterol`) | LABA | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 210 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 211 | Montelukast (`montelukast`) | LTRA | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 212 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 213 | Repaglinide (`repaglinide`) | Meglitinide | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 214 | Tasimelteon (`tasimelteon`) | Melatonin agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 215 | Revumenib (`revumenib`) | Menin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 216 | Ziftomenib (`ziftomenib`) | Menin inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 217 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 218 | Adrafinil (`adrafinil`) | Modafinil prodrug | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 219 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 220 | Sirolimus (`sirolimus`) | mTOR inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 221 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 222 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 223 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 224 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 225 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 226 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 227 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 228 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 229 | Phencyclidine (`pcp`) | NMDA dissociative | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 230 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 231 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 232 | Doravirine (`doravirine`) | NNRTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 233 | Rilpivirine (`rilpivirine`) | NNRTI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 234 | Finerenone (`finerenone`) | Nonsteroidal MRA | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 235 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 236 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 237 | Methadone (`methadone`) | Opioid agonist | minor → major | derived card (pd-methadone-ritonavir) |
+| 238 | Alfentanil (`alfentanil`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 239 | Fentanyl (`fentanyl`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 240 | Hydrocodone (`hydrocodone`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 241 | Meperidine (`meperidine`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 242 | Oxycodone (`oxycodone`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 243 | Sufentanil (`sufentanil`) | Opioid analgesic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 244 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 245 | Atogepant (`atogepant`) | Oral CGRP antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 246 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 247 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 248 | Relugolix (`relugolix`) | Oral GnRH antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 249 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 250 | Lemborexant (`lemborexant`) | Orexin antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 251 | Suvorexant (`suvorexant`) | Orexin antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 252 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 253 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate (activation) |
+| 254 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate (activation) |
+| 255 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 256 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 257 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | moderate → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 258 | Nerandomilast (`nerandomilast`) | PDE4 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 259 | Roflumilast (`roflumilast`) | PDE4 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 260 | Avanafil (`avanafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 261 | Sildenafil (`sildenafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 262 | Tadalafil (`tadalafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 263 | Vardenafil (`vardenafil`) | PDE5 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 264 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 265 | Domperidone (`domperidone`) | Peripheral D2 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 266 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 267 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 268 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 269 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 270 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 271 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 272 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 273 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 274 | Daraxonrasib (`daraxonrasib`) | RAS inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 275 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 276 | Siponimod (`siponimod`) | S1P modulator | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 277 | Trazodone (`trazodone`) | SARI antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 278 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 279 | Ulipristal (`ulipristal`) | Selective progesterone modulator | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 280 | Tamoxifen (`tamoxifen`) | SERM | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 281 | Riociguat (`riociguat`) | sGC stimulator (PAH) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 282 | Levomilnacipran (`levomilnacipran`) | SNRI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 283 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 284 | Vilazodone (`vilazodone`) | SPAR antidepressant | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 285 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 286 | Citalopram (`citalopram`) | SSRI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 287 | Escitalopram (`escitalopram`) | SSRI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 288 | Sertraline (`sertraline`) | SSRI | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 289 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 290 | Atorvastatin (`atorvastatin`) | Statin | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 291 | Simvastatin (`simvastatin`) | Statin | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 292 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 293 | Brorphine (`brorphine`) | Street synthetic opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 294 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 295 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 296 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 297 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 298 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 299 | Dapsone (`dapsone`) | Sulfone | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 300 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 301 | Cabazitaxel (`cabazitaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 302 | Docetaxel (`docetaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 303 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 304 | Paclitaxel (`paclitaxel`) | Taxane | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 305 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 306 | Etizolam (`etizolam`) | Thienodiazepine | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 307 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 308 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 309 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 310 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 311 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 312 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 313 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 314 | Almotriptan (`almotriptan`) | Triptan | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 315 | Eletriptan (`eletriptan`) | Triptan | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 316 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 317 | Haloperidol (`haloperidol`) | Typical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 318 | Pimozide (`pimozide`) | Typical antipsychotic | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 319 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 320 | Tolvaptan (`tolvaptan`) | V2 antagonist | minor → major | new saquinavir CYP3A4 strong inhibitor × sensitive substrate |
+| 321 | Axitinib (`axitinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 322 | Cabozantinib (`cabozantinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 323 | Fruquintinib (`fruquintinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 324 | Lenvatinib (`lenvatinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 325 | Pazopanib (`pazopanib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 326 | Regorafenib (`regorafenib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 327 | Sorafenib (`sorafenib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 328 | Sunitinib (`sunitinib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 329 | Tivozanib (`tivozanib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 330 | Vandetanib (`vandetanib`) | VEGF TKI | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 331 | Eribulin (`eribulin`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 332 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 333 | Vinblastine (`vinblastine`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 334 | Vincristine (`vincristine`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 335 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 336 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 337 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 338 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 339 | Armodafinil (`armodafinil`) | Wake-promoting agent | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 340 | Modafinil (`modafinil`) | Wake-promoting agent | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 341 | Eszopiclone (`eszopiclone`) | Z-hypnotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
+| 342 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new saquinavir CYP3A4 strong inhibitor × minor substrate |
+| 343 | Zolpidem (`zolpidem`) | Z-hypnotic | minor → major | new saquinavir CYP3A4 strong inhibitor × major substrate |
 
-### tipranavir (Aptivus) (381)
+### tipranavir (Aptivus) (387)
 
 | # | Partner | Partner class | Before → after | Cause |
 |---:|---|---|---|---|
@@ -1114,375 +1126,381 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 12 | Tiagabine (`tiagabine`) | AED (GAT-1) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
 | 13 | Lacosamide (`lacosamide`) | AED (slow Na) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
 | 14 | Cannabidiol (Epidiolex) (`cannabidiol-epidiolex`) | AED cannabinoid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 15 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 16 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 17 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 18 | Ceritinib (`ceritinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 19 | Crizotinib (`crizotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 20 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 21 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 22 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 23 | Lorlatinib (`lorlatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 24 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 25 | Repotrectinib (`repotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 26 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 27 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 28 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 29 | Doxazosin (`doxazosin`) | Alpha-1 blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 30 | Silodosin (`silodosin`) | Alpha-1 blocker | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 31 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 32 | Perampanel (`perampanel`) | AMPA antagonist AED | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 33 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 34 | Apalutamide (`apalutamide`) | Androgen receptor blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 35 | Darolutamide (`darolutamide`) | Androgen receptor blocker | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 36 | Enzalutamide (`enzalutamide`) | Androgen receptor blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 37 | Ivermectin (`ivermectin`) | Anthelmintic | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 38 | Praziquantel (`praziquantel`) | Anthelmintic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 39 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 40 | Bicalutamide (`bicalutamide`) | Antiandrogen | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 41 | Ranolazine (`ranolazine`) | Antianginal | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 42 | Carbamazepine (`carbamazepine`) | Anticonvulsant | moderate → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 43 | Colchicine (`colchicine`) | Antigout | moderate → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 44 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 45 | Mefloquine (`mefloquine`) | Antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 46 | Quinine (`quinine`) | Antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 47 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 48 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 49 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 50 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 51 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 52 | Mifepristone (`mifepristone`) | Antiprogestin / cortisol blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 53 | Buspirone (`buspirone`) | Anxiolytic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 54 | Losartan (`losartan`) | ARB | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 55 | Exemestane (`exemestane`) | Aromatase inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 56 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 57 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 58 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 59 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 60 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 61 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 62 | Cariprazine (`cariprazine`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 63 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 64 | Iloperidone (`iloperidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 65 | Lumateperone (`lumateperone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 66 | Lurasidone (`lurasidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 67 | Quetiapine (`quetiapine`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 68 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 69 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 70 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 71 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 72 | Fluconazole (`fluconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 73 | Isavuconazonium (`isavuconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 74 | Itraconazole (`itraconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 75 | Voriconazole (`voriconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 76 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 77 | Asciminib (`asciminib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 78 | Bosutinib (`bosutinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 79 | Dasatinib (`dasatinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 80 | Imatinib (`imatinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 81 | Nilotinib (`nilotinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 82 | Ponatinib (`ponatinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 83 | Radotinib (`radotinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 84 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 85 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 86 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 87 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 88 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 89 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 90 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 91 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 92 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 93 | Alprazolam (`alprazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 94 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 95 | Clobazam (`clobazam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 96 | Clonazepam (`clonazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 97 | Diazepam (`diazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 98 | Estazolam (`estazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 99 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 100 | Flurazepam (`flurazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 101 | Midazolam (`midazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 102 | Quazepam (`quazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 103 | Triazolam (`triazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 104 | Bisoprolol (`bisoprolol`) | Beta blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 105 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 106 | Binimetinib (`binimetinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 107 | Cobimetinib (`cobimetinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 108 | Dabrafenib (`dabrafenib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 109 | Encorafenib (`encorafenib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 110 | Selumetinib (`selumetinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 111 | Trametinib (`trametinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 112 | Vemurafenib (`vemurafenib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 113 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 114 | Ibrutinib (`ibrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 115 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 116 | Remibrutinib (`remibrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 117 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 118 | Avacopan (`avacopan`) | C5a receptor blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 119 | Cinacalcet (`cinacalcet`) | Calcimimetic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 120 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 121 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 122 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 123 | Cannabidiol (`cannabidiol`) | Cannabinoid (CBD) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 124 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 125 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 126 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 127 | Maraviroc (`maraviroc`) | CCR5 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 128 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 129 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 130 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 131 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 132 | Guanfacine (`guanfacine`) | Central α2-agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 133 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 134 | Lumacaftor–ivacaftor (`lumacaftor-ivacaftor`) | CFTR modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 135 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 136 | Ivacaftor (`ivacaftor`) | CFTR potentiator | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 137 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 138 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 139 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 140 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 141 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 142 | Dronedarone (`dronedarone`) | Class III antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 143 | Dordaviprone (`dordaviprone`) | ClpP protease activator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 144 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 145 | Dexamethasone (`dexamethasone`) | Corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 146 | Prednisone (`prednisone`) | Corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 147 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 148 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 149 | Abiraterone (`abiraterone`) | CYP17 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 150 | Bromazolam (`bromazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 151 | Clonazolam (`clonazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 152 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 153 | Diclazepam (`diclazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 154 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 155 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 156 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 157 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 158 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 159 | Phenazolam (`phenazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 160 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 161 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 162 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 163 | Felodipine (`felodipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 164 | Isradipine (`isradipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 165 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 166 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 167 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 168 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 169 | Apixaban (`apixaban`) | Direct oral anticoagulant | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 170 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 171 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 172 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 173 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 174 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 175 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 176 | Daridorexant (`daridorexant`) | Dual orexin antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 177 | Mobocertinib (`mobocertinib`) | EGFR TKI | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 178 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 179 | MDA (`mda`) | Entactogen / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 180 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 181 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 182 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 183 | Ambrisentan (`ambrisentan`) | ERA (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 184 | Bosentan (`bosentan`) | ERA (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 185 | Macitentan (`macitentan`) | ERA (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 186 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 187 | Ergotamine (`ergotamine`) | Ergot antimigraine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 188 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 189 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 190 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 191 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 192 | eliglustat (`eliglustat`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 193 | leniolisib (`leniolisib`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 194 | lomitapide (`lomitapide`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 195 | sevabertinib (`sevabertinib`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 196 | taletrectinib (`taletrectinib`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 197 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 198 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 199 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 200 | Ivosidenib (`ivosidenib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 201 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 202 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 203 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 204 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 205 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 206 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 207 | Pitolisant (`pitolisant`) | H3 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 208 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | minor → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 209 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 210 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 211 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 212 | Lenacapavir (`lenacapavir`) | HIV capsid inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 213 | Atazanavir–cobicistat (`atazanavir-cobicistat`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 214 | Darunavir–cobicistat (`darunavir-cobicistat`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 215 | Darunavir–cobicistat–FTC–TAF (`darunavir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 216 | Elvitegravir–cobicistat–FTC–TAF (`elvitegravir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 217 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 218 | Atazanavir (`atazanavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 219 | Darunavir (`darunavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 220 | Lopinavir/ritonavir (`lopinavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 221 | Ritonavir (`ritonavir`) | HIV protease inhibitor / booster | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 222 | Ivabradine (`ivabradine`) | If-channel blocker | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 223 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 224 | Bictegravir (`bictegravir`) | INSTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 225 | Elvitegravir (`elvitegravir`) | INSTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 226 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 227 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 228 | Tofacitinib (`tofacitinib`) | JAK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 229 | Upadacitinib (`upadacitinib`) | JAK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 230 | Fedratinib (`fedratinib`) | JAK2 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 231 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 232 | Adagrasib (`adagrasib`) | KRAS G12C inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 233 | Sotorasib (`sotorasib`) | KRAS G12C inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 234 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 235 | Salmeterol (`salmeterol`) | LABA | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 236 | Vilanterol (`vilanterol`) | LABA | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 237 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 238 | Montelukast (`montelukast`) | LTRA | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 239 | Clarithromycin (`clarithromycin`) | Macrolide antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 240 | Erythromycin (`erythromycin`) | Macrolide antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 241 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 242 | Repaglinide (`repaglinide`) | Meglitinide | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 243 | Tasimelteon (`tasimelteon`) | Melatonin agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 244 | Revumenib (`revumenib`) | Menin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 245 | Ziftomenib (`ziftomenib`) | Menin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 246 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 247 | Adrafinil (`adrafinil`) | Modafinil prodrug | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 248 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 249 | Sirolimus (`sirolimus`) | mTOR inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 250 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 251 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 252 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 253 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 254 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 255 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 256 | Netupitant–palonosetron (`netupitant`) | NK1 / 5-HT3 | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 257 | Aprepitant (`aprepitant`) | NK1 antagonist (antiemetic) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 258 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 259 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 260 | Phencyclidine (`pcp`) | NMDA dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 261 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 262 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 263 | Doravirine (`doravirine`) | NNRTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 264 | Etravirine (`etravirine`) | NNRTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 265 | Rilpivirine (`rilpivirine`) | NNRTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 266 | Nevirapine (`nevirapine`) | NNRTI antiretroviral | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 267 | Diltiazem (`diltiazem`) | Non-DHP CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 268 | Verapamil (`verapamil`) | Non-DHP CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 269 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 270 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 271 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 272 | Methadone (`methadone`) | Opioid agonist | none → major | derived card (pd-methadone-ritonavir) |
-| 273 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 274 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 275 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 276 | Meperidine (`meperidine`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 277 | Oxycodone (`oxycodone`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 278 | Sufentanil (`sufentanil`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 279 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 280 | Atogepant (`atogepant`) | Oral CGRP antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 281 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 282 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 283 | Relugolix (`relugolix`) | Oral GnRH antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 284 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 285 | Lemborexant (`lemborexant`) | Orexin antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 286 | Suvorexant (`suvorexant`) | Orexin antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 287 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 288 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate (activation) |
-| 289 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate (activation) |
-| 290 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 291 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 292 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 293 | Roflumilast (`roflumilast`) | PDE4 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 294 | Avanafil (`avanafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 295 | Sildenafil (`sildenafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 296 | Tadalafil (`tadalafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 297 | Vardenafil (`vardenafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 298 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 299 | Domperidone (`domperidone`) | Peripheral D2 antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 300 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 301 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 302 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | moderate → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 303 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 304 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 305 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 306 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 307 | Idelalisib (`idelalisib`) | PI3Kδ inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 308 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 309 | Lefamulin (`lefamulin`) | Pleuromutilin antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 310 | Rifabutin (`rifabutin`) | Rifamycin | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 311 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 312 | Siponimod (`siponimod`) | S1P modulator | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 313 | Nefazodone (`nefazodone`) | SARI antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 314 | Trazodone (`trazodone`) | SARI antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 315 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 316 | Ulipristal (`ulipristal`) | Selective progesterone modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 317 | Tamoxifen (`tamoxifen`) | SERM | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 318 | Riociguat (`riociguat`) | sGC stimulator (PAH) | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 319 | Levomilnacipran (`levomilnacipran`) | SNRI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 320 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 321 | Vilazodone (`vilazodone`) | SPAR antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 322 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 323 | Citalopram (`citalopram`) | SSRI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 324 | Escitalopram (`escitalopram`) | SSRI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 325 | Sertraline (`sertraline`) | SSRI | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 326 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 327 | Atorvastatin (`atorvastatin`) | Statin | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 328 | Simvastatin (`simvastatin`) | Statin | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 329 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 330 | Brorphine (`brorphine`) | Street synthetic opioid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 331 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 332 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 333 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 334 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 335 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 336 | Dapsone (`dapsone`) | Sulfone | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 337 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 338 | Cabazitaxel (`cabazitaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 339 | Docetaxel (`docetaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 340 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 341 | Paclitaxel (`paclitaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 342 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 343 | Etizolam (`etizolam`) | Thienodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 344 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 345 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 346 | Nintedanib (`nintedanib`) | TKI (IPF) | minor → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 347 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 348 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 349 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 350 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 351 | Almotriptan (`almotriptan`) | Triptan | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 352 | Eletriptan (`eletriptan`) | Triptan | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 353 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 354 | Haloperidol (`haloperidol`) | Typical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 355 | Pimozide (`pimozide`) | Typical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 356 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 357 | Conivaptan (`conivaptan`) | V1a/V2 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 358 | Tolvaptan (`tolvaptan`) | V2 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
-| 359 | Axitinib (`axitinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 360 | Cabozantinib (`cabozantinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 361 | Fruquintinib (`fruquintinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 362 | Lenvatinib (`lenvatinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 363 | Pazopanib (`pazopanib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 364 | Regorafenib (`regorafenib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 365 | Sorafenib (`sorafenib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 366 | Sunitinib (`sunitinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 367 | Tivozanib (`tivozanib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 368 | Vandetanib (`vandetanib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 369 | Eribulin (`eribulin`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 370 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 371 | Vinblastine (`vinblastine`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 372 | Vincristine (`vincristine`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 373 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 374 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 375 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 376 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 377 | Armodafinil (`armodafinil`) | Wake-promoting agent | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 378 | Modafinil (`modafinil`) | Wake-promoting agent | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 379 | Eszopiclone (`eszopiclone`) | Z-hypnotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
-| 380 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
-| 381 | Zolpidem (`zolpidem`) | Z-hypnotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 15 | Baxdrostat (`baxdrostat`) | Aldosterone synthase inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 16 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 17 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 18 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 19 | Ceritinib (`ceritinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 20 | Crizotinib (`crizotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 21 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 22 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 23 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 24 | Lorlatinib (`lorlatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 25 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 26 | Repotrectinib (`repotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 27 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 28 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 29 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 30 | Doxazosin (`doxazosin`) | Alpha-1 blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 31 | Silodosin (`silodosin`) | Alpha-1 blocker | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 32 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 33 | Perampanel (`perampanel`) | AMPA antagonist AED | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 34 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 35 | Apalutamide (`apalutamide`) | Androgen receptor blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 36 | Darolutamide (`darolutamide`) | Androgen receptor blocker | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 37 | Enzalutamide (`enzalutamide`) | Androgen receptor blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 38 | Ivermectin (`ivermectin`) | Anthelmintic | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 39 | Praziquantel (`praziquantel`) | Anthelmintic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 40 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 41 | Bicalutamide (`bicalutamide`) | Antiandrogen | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 42 | Ranolazine (`ranolazine`) | Antianginal | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 43 | Carbamazepine (`carbamazepine`) | Anticonvulsant | moderate → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 44 | Colchicine (`colchicine`) | Antigout | moderate → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 45 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 46 | Mefloquine (`mefloquine`) | Antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 47 | Quinine (`quinine`) | Antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 48 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 49 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 50 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 51 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 52 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 53 | Mifepristone (`mifepristone`) | Antiprogestin / cortisol blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 54 | Buspirone (`buspirone`) | Anxiolytic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 55 | Losartan (`losartan`) | ARB | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 56 | Exemestane (`exemestane`) | Aromatase inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 57 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 58 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 59 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 60 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 61 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 62 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 63 | Cariprazine (`cariprazine`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 64 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 65 | Iloperidone (`iloperidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 66 | Lumateperone (`lumateperone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 67 | Lurasidone (`lurasidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 68 | Milsaperidone (`milsaperidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 69 | Quetiapine (`quetiapine`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 70 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 71 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 72 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 73 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 74 | Fluconazole (`fluconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 75 | Isavuconazonium (`isavuconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 76 | Itraconazole (`itraconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 77 | Voriconazole (`voriconazole`) | Azole antifungal | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 78 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 79 | Asciminib (`asciminib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 80 | Bosutinib (`bosutinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 81 | Dasatinib (`dasatinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 82 | Imatinib (`imatinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 83 | Nilotinib (`nilotinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 84 | Ponatinib (`ponatinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 85 | Radotinib (`radotinib`) | BCR-ABL TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 86 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 87 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 88 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 89 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 90 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 91 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 92 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 93 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 94 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 95 | Alprazolam (`alprazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 96 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 97 | Clobazam (`clobazam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 98 | Clonazepam (`clonazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 99 | Diazepam (`diazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 100 | Estazolam (`estazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 101 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 102 | Flurazepam (`flurazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 103 | Midazolam (`midazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 104 | Quazepam (`quazepam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 105 | Triazolam (`triazolam`) | Benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 106 | Bisoprolol (`bisoprolol`) | Beta blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 107 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 108 | Binimetinib (`binimetinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 109 | Cobimetinib (`cobimetinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 110 | Dabrafenib (`dabrafenib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 111 | Encorafenib (`encorafenib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 112 | Selumetinib (`selumetinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 113 | Trametinib (`trametinib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 114 | Vemurafenib (`vemurafenib`) | BRAF / MEK | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 115 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 116 | Ibrutinib (`ibrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 117 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 118 | Remibrutinib (`remibrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 119 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 120 | Avacopan (`avacopan`) | C5a receptor blocker | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 121 | Cinacalcet (`cinacalcet`) | Calcimimetic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 122 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 123 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 124 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 125 | Cannabidiol (`cannabidiol`) | Cannabinoid (CBD) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 126 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 127 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 128 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 129 | Maraviroc (`maraviroc`) | CCR5 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 130 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 131 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 132 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 133 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 134 | Guanfacine (`guanfacine`) | Central α2-agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 135 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 136 | Lumacaftor–ivacaftor (`lumacaftor-ivacaftor`) | CFTR modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 137 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 138 | Ivacaftor (`ivacaftor`) | CFTR potentiator | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 139 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 140 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 141 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 142 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 143 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 144 | Dronedarone (`dronedarone`) | Class III antiarrhythmic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 145 | Dordaviprone (`dordaviprone`) | ClpP protease activator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 146 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 147 | Dexamethasone (`dexamethasone`) | Corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 148 | Prednisone (`prednisone`) | Corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 149 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 150 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 151 | Abiraterone (`abiraterone`) | CYP17 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 152 | Bromazolam (`bromazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 153 | Clonazolam (`clonazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 154 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 155 | Diclazepam (`diclazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 156 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 157 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 158 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 159 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 160 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 161 | Phenazolam (`phenazolam`) | Designer benzodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 162 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 163 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 164 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 165 | Felodipine (`felodipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 166 | Isradipine (`isradipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 167 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 168 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 169 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 170 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 171 | Apixaban (`apixaban`) | Direct oral anticoagulant | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 172 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 173 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 174 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 175 | Tavapadon (`tavapadon`) | Dopamine agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 176 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 177 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 178 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 179 | Daridorexant (`daridorexant`) | Dual orexin antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 180 | Mobocertinib (`mobocertinib`) | EGFR TKI | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 181 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 182 | MDA (`mda`) | Entactogen / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 183 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 184 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 185 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 186 | Ambrisentan (`ambrisentan`) | ERA (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 187 | Bosentan (`bosentan`) | ERA (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 188 | Macitentan (`macitentan`) | ERA (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 189 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 190 | Ergotamine (`ergotamine`) | Ergot antimigraine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 191 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 192 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 193 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 194 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 195 | Vepdegestrant (`vepdegestrant`) | Estrogen receptor degrader | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 196 | eliglustat (`eliglustat`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 197 | leniolisib (`leniolisib`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 198 | lomitapide (`lomitapide`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 199 | sevabertinib (`sevabertinib`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 200 | taletrectinib (`taletrectinib`) | FDA Table 1 example | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 201 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 202 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 203 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 204 | Ivosidenib (`ivosidenib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 205 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 206 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 207 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 208 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 209 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 210 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 211 | Pitolisant (`pitolisant`) | H3 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 212 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | minor → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 213 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 214 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 215 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 216 | Lenacapavir (`lenacapavir`) | HIV capsid inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 217 | Atazanavir–cobicistat (`atazanavir-cobicistat`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 218 | Darunavir–cobicistat (`darunavir-cobicistat`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 219 | Darunavir–cobicistat–FTC–TAF (`darunavir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 220 | Elvitegravir–cobicistat–FTC–TAF (`elvitegravir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 221 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 222 | Atazanavir (`atazanavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 223 | Darunavir (`darunavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 224 | Lopinavir/ritonavir (`lopinavir`) | HIV protease inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 225 | Ritonavir (`ritonavir`) | HIV protease inhibitor / booster | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 226 | Ivabradine (`ivabradine`) | If-channel blocker | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 227 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 228 | Bictegravir (`bictegravir`) | INSTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 229 | Elvitegravir (`elvitegravir`) | INSTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 230 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 231 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 232 | Tofacitinib (`tofacitinib`) | JAK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 233 | Upadacitinib (`upadacitinib`) | JAK inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 234 | Fedratinib (`fedratinib`) | JAK2 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 235 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 236 | Adagrasib (`adagrasib`) | KRAS G12C inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 237 | Sotorasib (`sotorasib`) | KRAS G12C inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 238 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 239 | Salmeterol (`salmeterol`) | LABA | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 240 | Vilanterol (`vilanterol`) | LABA | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 241 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 242 | Montelukast (`montelukast`) | LTRA | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 243 | Clarithromycin (`clarithromycin`) | Macrolide antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 244 | Erythromycin (`erythromycin`) | Macrolide antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 245 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 246 | Repaglinide (`repaglinide`) | Meglitinide | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 247 | Tasimelteon (`tasimelteon`) | Melatonin agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 248 | Revumenib (`revumenib`) | Menin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 249 | Ziftomenib (`ziftomenib`) | Menin inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 250 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 251 | Adrafinil (`adrafinil`) | Modafinil prodrug | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 252 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 253 | Sirolimus (`sirolimus`) | mTOR inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 254 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 255 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 256 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 257 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 258 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 259 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 260 | Netupitant–palonosetron (`netupitant`) | NK1 / 5-HT3 | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 261 | Aprepitant (`aprepitant`) | NK1 antagonist (antiemetic) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 262 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 263 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 264 | Phencyclidine (`pcp`) | NMDA dissociative | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 265 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 266 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 267 | Doravirine (`doravirine`) | NNRTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 268 | Etravirine (`etravirine`) | NNRTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 269 | Rilpivirine (`rilpivirine`) | NNRTI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 270 | Nevirapine (`nevirapine`) | NNRTI antiretroviral | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 271 | Diltiazem (`diltiazem`) | Non-DHP CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 272 | Verapamil (`verapamil`) | Non-DHP CCB | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 273 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 274 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 275 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 276 | Methadone (`methadone`) | Opioid agonist | none → major | derived card (pd-methadone-ritonavir) |
+| 277 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 278 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 279 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 280 | Meperidine (`meperidine`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 281 | Oxycodone (`oxycodone`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 282 | Sufentanil (`sufentanil`) | Opioid analgesic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 283 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 284 | Atogepant (`atogepant`) | Oral CGRP antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 285 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 286 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 287 | Relugolix (`relugolix`) | Oral GnRH antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 288 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 289 | Lemborexant (`lemborexant`) | Orexin antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 290 | Suvorexant (`suvorexant`) | Orexin antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 291 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 292 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate (activation) |
+| 293 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate (activation) |
+| 294 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 295 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 296 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 297 | Nerandomilast (`nerandomilast`) | PDE4 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 298 | Roflumilast (`roflumilast`) | PDE4 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 299 | Avanafil (`avanafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 300 | Sildenafil (`sildenafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 301 | Tadalafil (`tadalafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 302 | Vardenafil (`vardenafil`) | PDE5 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 303 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 304 | Domperidone (`domperidone`) | Peripheral D2 antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 305 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 306 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | minor → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 307 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | moderate → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 308 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 309 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 310 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 311 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 312 | Idelalisib (`idelalisib`) | PI3Kδ inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 313 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 314 | Lefamulin (`lefamulin`) | Pleuromutilin antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 315 | Daraxonrasib (`daraxonrasib`) | RAS inhibitor | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 316 | Rifabutin (`rifabutin`) | Rifamycin | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 317 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 318 | Siponimod (`siponimod`) | S1P modulator | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 319 | Nefazodone (`nefazodone`) | SARI antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 320 | Trazodone (`trazodone`) | SARI antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 321 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 322 | Ulipristal (`ulipristal`) | Selective progesterone modulator | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 323 | Tamoxifen (`tamoxifen`) | SERM | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 324 | Riociguat (`riociguat`) | sGC stimulator (PAH) | minor → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 325 | Levomilnacipran (`levomilnacipran`) | SNRI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 326 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 327 | Vilazodone (`vilazodone`) | SPAR antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 328 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 329 | Citalopram (`citalopram`) | SSRI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 330 | Escitalopram (`escitalopram`) | SSRI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 331 | Sertraline (`sertraline`) | SSRI | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 332 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 333 | Atorvastatin (`atorvastatin`) | Statin | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 334 | Simvastatin (`simvastatin`) | Statin | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 335 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 336 | Brorphine (`brorphine`) | Street synthetic opioid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 337 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 338 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 339 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 340 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 341 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 342 | Dapsone (`dapsone`) | Sulfone | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 343 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 344 | Cabazitaxel (`cabazitaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 345 | Docetaxel (`docetaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 346 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 347 | Paclitaxel (`paclitaxel`) | Taxane | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 348 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 349 | Etizolam (`etizolam`) | Thienodiazepine | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 350 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 351 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 352 | Nintedanib (`nintedanib`) | TKI (IPF) | minor → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 353 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 354 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 355 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 356 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 357 | Almotriptan (`almotriptan`) | Triptan | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 358 | Eletriptan (`eletriptan`) | Triptan | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 359 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 360 | Haloperidol (`haloperidol`) | Typical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 361 | Pimozide (`pimozide`) | Typical antipsychotic | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 362 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 363 | Conivaptan (`conivaptan`) | V1a/V2 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 364 | Tolvaptan (`tolvaptan`) | V2 antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × sensitive substrate |
+| 365 | Axitinib (`axitinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 366 | Cabozantinib (`cabozantinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 367 | Fruquintinib (`fruquintinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 368 | Lenvatinib (`lenvatinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 369 | Pazopanib (`pazopanib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 370 | Regorafenib (`regorafenib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 371 | Sorafenib (`sorafenib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 372 | Sunitinib (`sunitinib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 373 | Tivozanib (`tivozanib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 374 | Vandetanib (`vandetanib`) | VEGF TKI | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 375 | Eribulin (`eribulin`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 376 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 377 | Vinblastine (`vinblastine`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 378 | Vincristine (`vincristine`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 379 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 380 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 381 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 382 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 383 | Armodafinil (`armodafinil`) | Wake-promoting agent | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 384 | Modafinil (`modafinil`) | Wake-promoting agent | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 385 | Eszopiclone (`eszopiclone`) | Z-hypnotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
+| 386 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new Aptivus CYP3A4 strong inhibitor × minor substrate |
+| 387 | Zolpidem (`zolpidem`) | Z-hypnotic | none → major | new Aptivus CYP3A4 strong inhibitor × major substrate |
 
-### Genvoya (elvitegravir–cobicistat–FTC–TAF) (499)
+### Genvoya (elvitegravir–cobicistat–FTC–TAF) (505)
 
 | # | Partner | Partner class | Before → after | Cause |
 |---:|---|---|---|---|
@@ -1507,486 +1525,492 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 19 | Lacosamide (`lacosamide`) | AED (slow Na) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
 | 20 | Cannabidiol (Epidiolex) (`cannabidiol-epidiolex`) | AED cannabinoid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
 | 21 | Fosphenytoin (`fosphenytoin`) | AED prodrug | none → major | new Genvoya CYP3A4 substrate role × Fosphenytoin (strong inducer) |
-| 22 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 23 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 24 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 25 | Ceritinib (`ceritinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 26 | Crizotinib (`crizotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 27 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 28 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 29 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 30 | Lorlatinib (`lorlatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 substrate role × Lorlatinib (moderate inducer) |
-| 31 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 32 | Repotrectinib (`repotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 substrate role × Repotrectinib (moderate inducer) |
-| 33 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 34 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 35 | Black pepper (piperine) (`piperine`) | Alkaloid absorption booster | none → major | new Genvoya CYP3A4 substrate role × Black pepper (piperine) (moderate inhibitor) |
-| 36 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 37 | Doxazosin (`doxazosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 38 | Silodosin (`silodosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 39 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 40 | Perampanel (`perampanel`) | AMPA antagonist AED | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 41 | Amphetamine (`amphetamine`) | Amphetamine stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 42 | Methamphetamine (`methamphetamine`) | Amphetamine stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 43 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 44 | Apalutamide (`apalutamide`) | Androgen receptor blocker | none → major | new Genvoya CYP3A4 substrate role × Apalutamide (strong inducer) |
-| 45 | Darolutamide (`darolutamide`) | Androgen receptor blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 46 | Enzalutamide (`enzalutamide`) | Androgen receptor blocker | none → major | new Genvoya CYP3A4 substrate role × Enzalutamide (strong inducer) |
-| 47 | Ivermectin (`ivermectin`) | Anthelmintic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 48 | Praziquantel (`praziquantel`) | Anthelmintic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 49 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 50 | Bicalutamide (`bicalutamide`) | Antiandrogen | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 51 | Ranolazine (`ranolazine`) | Antianginal | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 52 | Carbamazepine (`carbamazepine`) | Anticonvulsant | moderate → major | new Genvoya CYP3A4 substrate role × Carbamazepine (strong inducer) |
-| 53 | Oxcarbazepine (`oxcarbazepine`) | Anticonvulsant | none → major | new Genvoya CYP3A4 substrate role × Oxcarbazepine (moderate inducer) |
-| 54 | Phenytoin (`phenytoin`) | Anticonvulsant | none → major | new Genvoya CYP3A4 substrate role × Phenytoin (strong inducer) |
-| 55 | Topiramate (`topiramate`) | Anticonvulsant | none → moderate | new Genvoya CYP3A4 substrate role × Topiramate (weak inducer) |
-| 56 | Dextromethorphan–bupropion (`dextromethorphan-bupropion`) | Antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 57 | Griseofulvin (`griseofulvin`) | Antifungal | none → major | new Genvoya CYP3A4 substrate role × Griseofulvin (moderate inducer) |
-| 58 | Colchicine (`colchicine`) | Antigout | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 59 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 60 | Mefloquine (`mefloquine`) | Antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 61 | Primaquine (`primaquine`) | Antimalarial | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 62 | Quinine (`quinine`) | Antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 63 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 64 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 65 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 66 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 67 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 68 | Isoniazid (`isoniazid`) | Antimycobacterial | none → minor | new Genvoya CYP3A4 substrate role × Isoniazid (weak inhibitor) |
-| 69 | Mifepristone (`mifepristone`) | Antiprogestin / cortisol blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 70 | Tecovirimat (`tecovirimat`) | Antiviral | none → moderate | new Genvoya CYP3A4 substrate role × Tecovirimat (weak inducer) |
-| 71 | Buspirone (`buspirone`) | Anxiolytic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 72 | Losartan (`losartan`) | ARB | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 73 | Exemestane (`exemestane`) | Aromatase inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 74 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 75 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 76 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 77 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 78 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 79 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 80 | Cariprazine (`cariprazine`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 81 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 82 | Iloperidone (`iloperidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 83 | Lumateperone (`lumateperone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 84 | Lurasidone (`lurasidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 85 | Quetiapine (`quetiapine`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 86 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 87 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 88 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 89 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 90 | Fluconazole (`fluconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 91 | Isavuconazonium (`isavuconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 92 | Itraconazole (`itraconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 93 | Ketoconazole (`ketoconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 substrate role × Ketoconazole (strong inhibitor) |
-| 94 | Posaconazole (`posaconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 substrate role × Posaconazole (strong inhibitor) |
-| 95 | Voriconazole (`voriconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 96 | Phenobarbital (`phenobarbital`) | Barbiturate anticonvulsant | moderate → major | new Genvoya CYP3A4 substrate role × Phenobarbital (moderate inducer) |
-| 97 | Primidone (`primidone`) | Barbiturate anticonvulsant (prodrug) | moderate → major | new Genvoya CYP3A4 substrate role × Primidone (moderate inducer) |
-| 98 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 99 | Asciminib (`asciminib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 100 | Bosutinib (`bosutinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 101 | Dasatinib (`dasatinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 102 | Imatinib (`imatinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 103 | Nilotinib (`nilotinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 104 | Ponatinib (`ponatinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 105 | Radotinib (`radotinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 106 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 107 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 108 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 109 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 110 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 111 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 112 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 113 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 114 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 115 | Alprazolam (`alprazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 116 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 117 | Clobazam (`clobazam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 118 | Clonazepam (`clonazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 119 | Diazepam (`diazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 120 | Estazolam (`estazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 121 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 122 | Flurazepam (`flurazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 123 | Midazolam (`midazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 124 | Quazepam (`quazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 125 | Triazolam (`triazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 126 | Carvedilol (`carvedilol`) | Beta / alpha blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 127 | Bisoprolol (`bisoprolol`) | Beta blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 128 | Metoprolol (`metoprolol`) | Beta blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 129 | Nebivolol (`nebivolol`) | Beta blocker | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
-| 130 | Propranolol (`propranolol`) | Beta blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 131 | Timolol (`timolol`) | Beta blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 132 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 133 | Binimetinib (`binimetinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 134 | Cobimetinib (`cobimetinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 135 | Dabrafenib (`dabrafenib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 substrate role × Dabrafenib (moderate inducer) |
-| 136 | Encorafenib (`encorafenib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 substrate role × Encorafenib (strong inducer) |
-| 137 | Selumetinib (`selumetinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 138 | Trametinib (`trametinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 139 | Vemurafenib (`vemurafenib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 140 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 141 | Ibrutinib (`ibrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 142 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 143 | Remibrutinib (`remibrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 144 | Rilzabrutinib (`rilzabrutinib`) | BTK inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Rilzabrutinib (moderate inhibitor) |
-| 145 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 146 | Avacopan (`avacopan`) | C5a receptor blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 147 | Cinacalcet (`cinacalcet`) | Calcimimetic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 148 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 149 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 150 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 151 | Cannabidiol (`cannabidiol`) | Cannabinoid (CBD) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 152 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 153 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 154 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 155 | Green tea extract (EGCG) (`green-tea`) | Catechin supplement | none → minor | new Genvoya CYP3A4 substrate role × Green tea extract (EGCG) (weak inhibitor) |
-| 156 | Mephedrone (`mephedrone`) | Cathinone entactogen | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 157 | Methylone (`methylone`) | Cathinone entactogen | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 158 | N-Ethylhexedrone (`n-ethylhexedrone`) | Cathinone stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 159 | N-Ethylpentylone (`n-ethylpentylone`) | Cathinone stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 160 | 3-MMC (`three-mmc`) | Cathinone stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 161 | α-PVP (`a-pvp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 162 | MDPHP (`mdphp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 163 | MDPV (`mdpv`) | Cathinone stimulant (pyrovalerone) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 164 | Eutylone (`eutylone`) | Cathinone stimulant / entactogen | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 165 | Maraviroc (`maraviroc`) | CCR5 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 166 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 167 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 168 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 169 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 170 | Guanfacine (`guanfacine`) | Central α2-agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 171 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 172 | Lumacaftor–ivacaftor (`lumacaftor-ivacaftor`) | CFTR modulator | none → major | new Genvoya CYP3A4 substrate role × Lumacaftor–ivacaftor (strong inducer) |
-| 173 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 174 | Ivacaftor (`ivacaftor`) | CFTR potentiator | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 175 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 176 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 177 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 178 | Mexiletine (`mexiletine`) | Class Ib antiarrhythmic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 179 | Flecainide (`flecainide`) | Class Ic antiarrhythmic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 180 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 181 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 182 | Dronedarone (`dronedarone`) | Class III antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 183 | Dordaviprone (`dordaviprone`) | ClpP protease activator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 184 | Letermovir (`letermovir`) | CMV terminase inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Letermovir (moderate inhibitor) |
-| 185 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 186 | Dexamethasone (`dexamethasone`) | Corticosteroid | none → major | new Genvoya CYP3A4 substrate role × Dexamethasone (moderate inducer) |
-| 187 | Prednisone (`prednisone`) | Corticosteroid | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 188 | Levoketoconazole (`levoketoconazole`) | Cortisol synthesis inhibitor | none → major | new Genvoya CYP3A4 substrate role × Levoketoconazole (strong inhibitor) |
-| 189 | Paxlovid (nirmatrelvir/ritonavir) (`paxlovid`) | COVID-19 antiviral (ritonavir-boosted) | none → major | new Genvoya CYP3A4 substrate role × Paxlovid (nirmatrelvir/ritonavir) (strong inhibitor) |
-| 190 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 191 | Pexidartinib (`pexidartinib`) | CSF1R inhibitor | none → major | new Genvoya CYP3A4 substrate role × Pexidartinib (moderate inducer) |
-| 192 | Turmeric / curcumin (`turmeric`) | Curcuminoid supplement | none → minor | new Genvoya CYP3A4 substrate role × Turmeric / curcumin (weak inhibitor) |
-| 193 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 194 | Abiraterone (`abiraterone`) | CYP17 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 195 | Goldenseal (`goldenseal`) | CYP2D6 / 3A4 herbal inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Goldenseal (moderate inhibitor) |
-| 196 | Bromazolam (`bromazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 197 | Clonazolam (`clonazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 198 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 199 | Diclazepam (`diclazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 200 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 201 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 202 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 203 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 204 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 205 | Phenazolam (`phenazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 206 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 207 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 208 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 209 | Felodipine (`felodipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 210 | Isradipine (`isradipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 211 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 212 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 213 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 214 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 215 | Apixaban (`apixaban`) | Direct oral anticoagulant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 216 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 217 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 218 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 219 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 220 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 221 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 222 | Brensocatib (`brensocatib`) | DPP1 inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Brensocatib (weak inducer) |
-| 223 | Daridorexant (`daridorexant`) | Dual orexin antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 224 | Lazertinib (`lazertinib`) | EGFR TKI | none → minor | new Genvoya CYP3A4 substrate role × Lazertinib (weak inhibitor) |
-| 225 | Mobocertinib (`mobocertinib`) | EGFR TKI | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 226 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 227 | MDA (`mda`) | Entactogen / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 228 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 229 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 230 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 231 | Ambrisentan (`ambrisentan`) | ERA (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 232 | Bosentan (`bosentan`) | ERA (PAH) | none → major | new Genvoya CYP3A4 substrate role × Bosentan (moderate inducer) |
-| 233 | Macitentan (`macitentan`) | ERA (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 234 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 235 | Ergotamine (`ergotamine`) | Ergot antimigraine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 236 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 237 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 238 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 239 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 240 | Lonafarnib (`lonafarnib`) | Farnesyltransferase inhibitor | none → major | new Genvoya CYP3A4 substrate role × Lonafarnib (strong inhibitor) |
-| 241 | eliglustat (`eliglustat`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 242 | elvitegravir and ritonavir (`elvitegravir-and-ritonavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × elvitegravir and ritonavir (strong inhibitor) |
-| 243 | indinavir and ritonavir (`indinavir-and-ritonavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × indinavir and ritonavir (strong inhibitor) |
-| 244 | leniolisib (`leniolisib`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 245 | lomitapide (`lomitapide`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 246 | nelfinavir (`nelfinavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × nelfinavir (strong inhibitor) |
-| 247 | paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (`paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (strong inhibitor) |
-| 248 | R-venlafaxine (`r-venlafaxine`) | FDA Table 1 example | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
-| 249 | S-venlafaxine (`s-venlafaxine`) | FDA Table 1 example | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 250 | sevabertinib (`sevabertinib`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 251 | taletrectinib (`taletrectinib`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 252 | tipranavir and ritonavir (`tipranavir-and-ritonavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × tipranavir and ritonavir (strong inhibitor) |
-| 253 | Diphenhydramine (`diphenhydramine`) | First-generation antihistamine | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 254 | Quercetin (`quercetin`) | Flavonol supplement | none → major | new Genvoya CYP3A4 substrate role × Quercetin (moderate inhibitor) |
-| 255 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 256 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 257 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 258 | Ivosidenib (`ivosidenib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 substrate role × Ivosidenib (strong inducer) |
-| 259 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 260 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 261 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 262 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 263 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 264 | Ciprofloxacin (`ciprofloxacin`) | Fluoroquinolone | none → moderate | new Genvoya CYP3A4 substrate role × Ciprofloxacin (moderate inhibitor) |
-| 265 | Grapefruit juice (`grapefruit`) | Furanocoumarin (intestinal CYP3A4) | none → major | new Genvoya CYP3A4 substrate role × Grapefruit juice (moderate inhibitor) |
-| 266 | Star fruit (`starfruit`) | Furanocoumarin / nephrotoxin | none → moderate | new Genvoya CYP3A4 substrate role × Star fruit (moderate inhibitor) |
-| 267 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 268 | Relacorilant (`relacorilant`) | Glucocorticoid receptor antagonist | none → major | new Genvoya CYP3A4 substrate role × Relacorilant (strong inhibitor) |
-| 269 | Ranitidine (`ranitidine`) | H2 blocker | none → minor | new Genvoya CYP3A4 substrate role × Ranitidine (weak inhibitor) |
-| 270 | Cimetidine (`cimetidine`) | H2 blocker / CYP perpetrator | none → minor | new Genvoya CYP3A4 substrate role × Cimetidine (weak inhibitor) |
-| 271 | Pitolisant (`pitolisant`) | H3 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 272 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 273 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 274 | Givinostat (`givinostat`) | HDAC inhibitor | none → minor | new Genvoya CYP3A4 substrate role × Givinostat (weak inhibitor) |
-| 275 | Tucatinib (`tucatinib`) | HER2 TKI | none → major | new Genvoya CYP3A4 substrate role × Tucatinib (strong inhibitor) |
-| 276 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 277 | Milk thistle (silymarin) (`milk-thistle`) | Herbal 2C9 / 3A4 modulator | none → minor | new Genvoya CYP3A4 substrate role × Milk thistle (silymarin) (weak inhibitor) |
-| 278 | Panax ginseng (`ginseng`) | Herbal adaptogen | none → moderate | new Genvoya CYP3A4 substrate role × Panax ginseng (weak inducer) |
-| 279 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 280 | Lenacapavir (`lenacapavir`) | HIV capsid inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 281 | Atazanavir–cobicistat (`atazanavir-cobicistat`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 282 | Bictegravir–lenacapavir (`bictegravir-lenacapavir`) | HIV combo tablet | none → moderate | new Genvoya CYP3A4 substrate role × Bictegravir–lenacapavir (moderate inhibitor) |
-| 283 | Darunavir–cobicistat (`darunavir-cobicistat`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 284 | Darunavir–cobicistat–FTC–TAF (`darunavir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 285 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 286 | Atazanavir (`atazanavir`) | HIV protease inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 287 | Darunavir (`darunavir`) | HIV protease inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 288 | Lopinavir/ritonavir (`lopinavir`) | HIV protease inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 289 | Ritonavir (`ritonavir`) | HIV protease inhibitor / booster | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 290 | St. John's wort (`st-johns-wort`) | Hypericum (3A4 inducer) | moderate → major | new Genvoya CYP3A4 substrate role × St. John's wort (strong inducer) |
-| 291 | Ivabradine (`ivabradine`) | If-channel blocker | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 292 | Trofinetide (`trofinetide`) | IGF-1 tripeptide analog | none → minor | new Genvoya CYP3A4 substrate role × Trofinetide (weak inhibitor) |
-| 293 | Echinacea (`echinacea`) | Immune herb | none → minor | new Genvoya CYP3A4 substrate role × Echinacea (weak inhibitor) |
-| 294 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 295 | Bictegravir (`bictegravir`) | INSTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 296 | Elvitegravir (`elvitegravir`) | INSTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 297 | Pomegranate juice (`pomegranate`) | Intestinal CYP3A4 inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Pomegranate juice (moderate inhibitor) |
-| 298 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 299 | Berberine (`berberine`) | Isoquinoline alkaloid (glucose / lipid) | none → major | new Genvoya CYP3A4 substrate role × Berberine (moderate inhibitor) |
-| 300 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 301 | Tofacitinib (`tofacitinib`) | JAK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 302 | Upadacitinib (`upadacitinib`) | JAK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 303 | Fedratinib (`fedratinib`) | JAK2 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 304 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 305 | Kava (`kava`) | Kavalactone sedative | none → minor | new Genvoya CYP3A4 substrate role × Kava (weak inhibitor) |
-| 306 | Telithromycin (`telithromycin`) | Ketolide antibiotic | none → major | new Genvoya CYP3A4 substrate role × Telithromycin (strong inhibitor) |
-| 307 | Adagrasib (`adagrasib`) | KRAS G12C inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 308 | Sotorasib (`sotorasib`) | KRAS G12C inhibitor | none → major | new Genvoya CYP3A4 substrate role × Sotorasib (moderate inducer) |
-| 309 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 310 | Salmeterol (`salmeterol`) | LABA | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 311 | Vilanterol (`vilanterol`) | LABA | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 312 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 313 | Montelukast (`montelukast`) | LTRA | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 314 | Clarithromycin (`clarithromycin`) | Macrolide antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 315 | Erythromycin (`erythromycin`) | Macrolide antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 316 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 317 | Repaglinide (`repaglinide`) | Meglitinide | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 318 | Tasimelteon (`tasimelteon`) | Melatonin agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 319 | Revumenib (`revumenib`) | Menin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 320 | Ziftomenib (`ziftomenib`) | Menin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 321 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 322 | Adrafinil (`adrafinil`) | Modafinil prodrug | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 323 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 324 | Sirolimus (`sirolimus`) | mTOR inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 325 | Vortioxetine (`vortioxetine`) | Multimodal antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 326 | Chlorzoxazone (`chlorzoxazone`) | Muscle relaxant | none → minor | new Genvoya CYP3A4 substrate role × Chlorzoxazone (weak inhibitor) |
-| 327 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 328 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 329 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 330 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 331 | Glycerol phenylbutyrate (`glycerol-phenylbutyrate`) | Nitrogen-binding agent (urea cycle) | none → moderate | new Genvoya CYP3A4 substrate role × Glycerol phenylbutyrate (weak inducer) |
-| 332 | Fexinidazole (`fexinidazole`) | Nitroimidazole antiprotozoal | none → major | new Genvoya CYP3A4 substrate role × Fexinidazole (moderate inducer) |
-| 333 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 334 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 335 | Netupitant–palonosetron (`netupitant`) | NK1 / 5-HT3 | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 336 | Fosaprepitant (`fosaprepitant`) | NK1 antagonist | none → minor | new Genvoya CYP3A4 substrate role × Fosaprepitant (weak inhibitor) |
-| 337 | Aprepitant (`aprepitant`) | NK1 antagonist (antiemetic) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 338 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 339 | Dextromethorphan–bupropion (`auvelity`) | NMDA / NDRI antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 340 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
-| 341 | Phencyclidine (`pcp`) | NMDA dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 342 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 343 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 344 | Doravirine (`doravirine`) | NNRTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 345 | Etravirine (`etravirine`) | NNRTI | none → major | new Genvoya CYP3A4 substrate role × Etravirine (moderate inducer) |
-| 346 | Rilpivirine (`rilpivirine`) | NNRTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 347 | Efavirenz (`efavirenz`) | NNRTI antiretroviral | moderate → major | new Genvoya CYP3A4 substrate role × Efavirenz (moderate inducer) |
-| 348 | Nevirapine (`nevirapine`) | NNRTI antiretroviral | none → major | new Genvoya CYP3A4 substrate role × Nevirapine (moderate inducer) |
-| 349 | Diltiazem (`diltiazem`) | Non-DHP CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 350 | Verapamil (`verapamil`) | Non-DHP CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 351 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 352 | Omaveloxolone (`omaveloxolone`) | Nrf2 activator | none → moderate | new Genvoya CYP3A4 substrate role × Omaveloxolone (weak inducer) |
-| 353 | Atomoxetine (`atomoxetine`) | NRI (ADHD) | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 354 | Viloxazine (`viloxazine`) | NRI (ADHD) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 355 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 356 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 357 | Methadone (`methadone`) | Opioid agonist | none → moderate | derived card (pd-methadone-arv-unsettled) |
-| 358 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 359 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 360 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 361 | Meperidine (`meperidine`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 362 | Oxycodone (`oxycodone`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 363 | Sufentanil (`sufentanil`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 364 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new Genvoya CYP2D6 weak inhibitor × sensitive substrate (activation) |
-| 365 | Atogepant (`atogepant`) | Oral CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 366 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 367 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 368 | Relugolix (`relugolix`) | Oral GnRH antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 369 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 370 | Lemborexant (`lemborexant`) | Orexin antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 371 | Suvorexant (`suvorexant`) | Orexin antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 372 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 373 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate (activation) |
-| 374 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate (activation) |
-| 375 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 376 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 377 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 378 | Roflumilast (`roflumilast`) | PDE4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 379 | Avanafil (`avanafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 380 | Sildenafil (`sildenafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 381 | Tadalafil (`tadalafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 382 | Vardenafil (`vardenafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 383 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 384 | Dicloxacillin (`dicloxacillin`) | Penicillinase-resistant penicillin | none → major | new Genvoya CYP3A4 substrate role × Dicloxacillin (moderate inducer) |
-| 385 | Nafcillin (`nafcillin`) | Penicillinase-resistant penicillin | none → moderate | new Genvoya CYP3A4 substrate role × Nafcillin (weak inducer) |
-| 386 | Domperidone (`domperidone`) | Peripheral D2 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 387 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 388 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 389 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 390 | 2C-B (`twocb`) | Phenethylamine psychedelic | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
-| 391 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 392 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 393 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 394 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 395 | Idelalisib (`idelalisib`) | PI3Kδ inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 396 | Cobicistat (`cobicistat`) | PK booster | none → major | new Genvoya CYP3A4 substrate role × Cobicistat (strong inhibitor) |
-| 397 | Berotralstat (`berotralstat`) | Plasma kallikrein inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Berotralstat (moderate inhibitor) |
-| 398 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 399 | Lefamulin (`lefamulin`) | Pleuromutilin antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 400 | Vonoprazan (`vonoprazan`) | Potassium-competitive acid blocker | none → minor | new Genvoya CYP3A4 substrate role × Vonoprazan (weak inhibitor) |
-| 401 | Elafibranor (`elafibranor`) | PPAR agonist | none → moderate | new Genvoya CYP3A4 substrate role × Elafibranor (weak inducer) |
-| 402 | Omeprazole (`omeprazole`) | PPI | none → minor | new Genvoya CYP3A4 substrate role × Omeprazole (weak inhibitor) |
-| 403 | Metoclopramide (`metoclopramide`) | Prokinetic / D2 antagonist | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 404 | Rifabutin (`rifabutin`) | Rifamycin | none → major | new Genvoya CYP3A4 substrate role × Rifabutin (moderate inducer) |
-| 405 | Rifampin (`rifampin`) | Rifamycin | moderate → major | new Genvoya CYP3A4 substrate role × Rifampin (strong inducer) |
-| 406 | Rifapentine (`rifapentine`) | Rifamycin | none → major | new Genvoya CYP3A4 substrate role × Rifapentine (strong inducer) |
-| 407 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 408 | Siponimod (`siponimod`) | S1P modulator | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 409 | Nefazodone (`nefazodone`) | SARI antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 410 | Trazodone (`trazodone`) | SARI antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 411 | Ensitrelvir (`ensitrelvir`) | SARS-CoV-2 protease inhibitor | none → major | new Genvoya CYP3A4 substrate role × Ensitrelvir (strong inhibitor) |
-| 412 | Schisandra (`schisandra`) | Schisandra (CYP3A4 herbal inhibitor) | none → major | new Genvoya CYP3A4 substrate role × Schisandra (moderate inhibitor) |
-| 413 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 414 | Promethazine (`promethazine`) | Sedating antihistamine | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 415 | Ulipristal (`ulipristal`) | Selective progesterone modulator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 416 | Saw palmetto (`saw-palmetto`) | Serenoa (BPH herb) | none → minor | new Genvoya CYP3A4 substrate role × Saw palmetto (weak inhibitor) |
-| 417 | Tamoxifen (`tamoxifen`) | SERM | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 418 | Riociguat (`riociguat`) | sGC stimulator (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 419 | Duloxetine (`duloxetine`) | SNRI | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 420 | Levomilnacipran (`levomilnacipran`) | SNRI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 421 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 422 | Vilazodone (`vilazodone`) | SPAR antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 423 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 424 | Citalopram (`citalopram`) | SSRI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 425 | Escitalopram (`escitalopram`) | SSRI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 426 | Fluvoxamine (`fluvoxamine`) | SSRI | none → moderate | new Genvoya CYP3A4 substrate role × Fluvoxamine (moderate inhibitor) |
-| 427 | Paroxetine (`paroxetine`) | SSRI | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 428 | Sertraline (`sertraline`) | SSRI | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 429 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 430 | Atorvastatin (`atorvastatin`) | Statin | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 431 | Resveratrol (`resveratrol`) | Stilbene supplement | none → moderate | new Genvoya CYP3A4 substrate role × Resveratrol (moderate inhibitor) |
-| 432 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 433 | Brorphine (`brorphine`) | Street synthetic opioid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 434 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 435 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 436 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 437 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 438 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 439 | Dapsone (`dapsone`) | Sulfone | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 440 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 441 | Cabazitaxel (`cabazitaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 442 | Docetaxel (`docetaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 443 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 444 | Paclitaxel (`paclitaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 445 | Amoxapine (`amoxapine`) | Tetracyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 446 | Maprotiline (`maprotiline`) | Tetracyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 447 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 448 | Etizolam (`etizolam`) | Thienodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 449 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 450 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 451 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 452 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 453 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 454 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 455 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 456 | Desipramine (`desipramine`) | Tricyclic antidepressant | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 457 | Doxepin (`doxepin`) | Tricyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 458 | Imipramine (`imipramine`) | Tricyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 459 | Nortriptyline (`nortriptyline`) | Tricyclic antidepressant | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 460 | Trimipramine (`trimipramine`) | Tricyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 461 | Almotriptan (`almotriptan`) | Triptan | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 462 | Eletriptan (`eletriptan`) | Triptan | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 463 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 464 | Chlorpromazine (`chlorpromazine`) | Typical antipsychotic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 465 | Fluphenazine (`fluphenazine`) | Typical antipsychotic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 466 | Haloperidol (`haloperidol`) | Typical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 467 | Perphenazine (`perphenazine`) | Typical antipsychotic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 468 | Pimozide (`pimozide`) | Typical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 469 | Thioridazine (`thioridazine`) | Typical antipsychotic | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 470 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 471 | Conivaptan (`conivaptan`) | V1a/V2 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 472 | Tolvaptan (`tolvaptan`) | V2 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
-| 473 | Axitinib (`axitinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 474 | Cabozantinib (`cabozantinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 475 | Fruquintinib (`fruquintinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 476 | Lenvatinib (`lenvatinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 477 | Pazopanib (`pazopanib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 478 | Regorafenib (`regorafenib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 479 | Sorafenib (`sorafenib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 480 | Sunitinib (`sunitinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 481 | Tivozanib (`tivozanib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 482 | Vandetanib (`vandetanib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 483 | Eribulin (`eribulin`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 484 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 485 | Vinblastine (`vinblastine`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 486 | Vincristine (`vincristine`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 487 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 488 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 489 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 490 | Deutetrabenazine (`deutetrabenazine`) | VMAT2 inhibitor | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 491 | Tetrabenazine (`tetrabenazine`) | VMAT2 inhibitor | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
-| 492 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 493 | Armodafinil (`armodafinil`) | Wake-promoting agent | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 494 | Modafinil (`modafinil`) | Wake-promoting agent | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 495 | Eszopiclone (`eszopiclone`) | Z-hypnotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 496 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
-| 497 | Zolpidem (`zolpidem`) | Z-hypnotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
-| 498 | Lofexidine (`lofexidine`) | α2-agonist (opioid withdrawal) | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
-| 499 | Yohimbine (`yohimbine`) | α2-antagonist (sexual / stimulant herb) | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 22 | Baxdrostat (`baxdrostat`) | Aldosterone synthase inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 23 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 24 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 25 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 26 | Ceritinib (`ceritinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 27 | Crizotinib (`crizotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 28 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 29 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 30 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 31 | Lorlatinib (`lorlatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 substrate role × Lorlatinib (moderate inducer) |
+| 32 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 33 | Repotrectinib (`repotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 substrate role × Repotrectinib (moderate inducer) |
+| 34 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 35 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 36 | Black pepper (piperine) (`piperine`) | Alkaloid absorption booster | none → major | new Genvoya CYP3A4 substrate role × Black pepper (piperine) (moderate inhibitor) |
+| 37 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 38 | Doxazosin (`doxazosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 39 | Silodosin (`silodosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 40 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 41 | Perampanel (`perampanel`) | AMPA antagonist AED | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 42 | Amphetamine (`amphetamine`) | Amphetamine stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 43 | Methamphetamine (`methamphetamine`) | Amphetamine stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 44 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 45 | Apalutamide (`apalutamide`) | Androgen receptor blocker | none → major | new Genvoya CYP3A4 substrate role × Apalutamide (strong inducer) |
+| 46 | Darolutamide (`darolutamide`) | Androgen receptor blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 47 | Enzalutamide (`enzalutamide`) | Androgen receptor blocker | none → major | new Genvoya CYP3A4 substrate role × Enzalutamide (strong inducer) |
+| 48 | Ivermectin (`ivermectin`) | Anthelmintic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 49 | Praziquantel (`praziquantel`) | Anthelmintic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 50 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 51 | Bicalutamide (`bicalutamide`) | Antiandrogen | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 52 | Ranolazine (`ranolazine`) | Antianginal | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 53 | Carbamazepine (`carbamazepine`) | Anticonvulsant | moderate → major | new Genvoya CYP3A4 substrate role × Carbamazepine (strong inducer) |
+| 54 | Oxcarbazepine (`oxcarbazepine`) | Anticonvulsant | none → major | new Genvoya CYP3A4 substrate role × Oxcarbazepine (moderate inducer) |
+| 55 | Phenytoin (`phenytoin`) | Anticonvulsant | none → major | new Genvoya CYP3A4 substrate role × Phenytoin (strong inducer) |
+| 56 | Topiramate (`topiramate`) | Anticonvulsant | none → moderate | new Genvoya CYP3A4 substrate role × Topiramate (weak inducer) |
+| 57 | Dextromethorphan–bupropion (`dextromethorphan-bupropion`) | Antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 58 | Griseofulvin (`griseofulvin`) | Antifungal | none → major | new Genvoya CYP3A4 substrate role × Griseofulvin (moderate inducer) |
+| 59 | Colchicine (`colchicine`) | Antigout | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 60 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 61 | Mefloquine (`mefloquine`) | Antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 62 | Primaquine (`primaquine`) | Antimalarial | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 63 | Quinine (`quinine`) | Antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 64 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 65 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 66 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 67 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 68 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 69 | Isoniazid (`isoniazid`) | Antimycobacterial | none → minor | new Genvoya CYP3A4 substrate role × Isoniazid (weak inhibitor) |
+| 70 | Mifepristone (`mifepristone`) | Antiprogestin / cortisol blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 71 | Tecovirimat (`tecovirimat`) | Antiviral | none → moderate | new Genvoya CYP3A4 substrate role × Tecovirimat (weak inducer) |
+| 72 | Buspirone (`buspirone`) | Anxiolytic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 73 | Losartan (`losartan`) | ARB | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 74 | Exemestane (`exemestane`) | Aromatase inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 75 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 76 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 77 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 78 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 79 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 80 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 81 | Cariprazine (`cariprazine`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 82 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 83 | Iloperidone (`iloperidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 84 | Lumateperone (`lumateperone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 85 | Lurasidone (`lurasidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 86 | Milsaperidone (`milsaperidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 87 | Quetiapine (`quetiapine`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 88 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 89 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 90 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 91 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 92 | Fluconazole (`fluconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 93 | Isavuconazonium (`isavuconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 94 | Itraconazole (`itraconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 95 | Ketoconazole (`ketoconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 substrate role × Ketoconazole (strong inhibitor) |
+| 96 | Posaconazole (`posaconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 substrate role × Posaconazole (strong inhibitor) |
+| 97 | Voriconazole (`voriconazole`) | Azole antifungal | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 98 | Phenobarbital (`phenobarbital`) | Barbiturate anticonvulsant | moderate → major | new Genvoya CYP3A4 substrate role × Phenobarbital (moderate inducer) |
+| 99 | Primidone (`primidone`) | Barbiturate anticonvulsant (prodrug) | moderate → major | new Genvoya CYP3A4 substrate role × Primidone (moderate inducer) |
+| 100 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 101 | Asciminib (`asciminib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 102 | Bosutinib (`bosutinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 103 | Dasatinib (`dasatinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 104 | Imatinib (`imatinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 105 | Nilotinib (`nilotinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 106 | Ponatinib (`ponatinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 107 | Radotinib (`radotinib`) | BCR-ABL TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 108 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 109 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 110 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 111 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 112 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 113 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 114 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 115 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 116 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 117 | Alprazolam (`alprazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 118 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 119 | Clobazam (`clobazam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 120 | Clonazepam (`clonazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 121 | Diazepam (`diazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 122 | Estazolam (`estazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 123 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 124 | Flurazepam (`flurazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 125 | Midazolam (`midazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 126 | Quazepam (`quazepam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 127 | Triazolam (`triazolam`) | Benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 128 | Carvedilol (`carvedilol`) | Beta / alpha blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 129 | Bisoprolol (`bisoprolol`) | Beta blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 130 | Metoprolol (`metoprolol`) | Beta blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 131 | Nebivolol (`nebivolol`) | Beta blocker | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
+| 132 | Propranolol (`propranolol`) | Beta blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 133 | Timolol (`timolol`) | Beta blocker | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 134 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 135 | Binimetinib (`binimetinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 136 | Cobimetinib (`cobimetinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 137 | Dabrafenib (`dabrafenib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 substrate role × Dabrafenib (moderate inducer) |
+| 138 | Encorafenib (`encorafenib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 substrate role × Encorafenib (strong inducer) |
+| 139 | Selumetinib (`selumetinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 140 | Trametinib (`trametinib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 141 | Vemurafenib (`vemurafenib`) | BRAF / MEK | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 142 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 143 | Ibrutinib (`ibrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 144 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 145 | Remibrutinib (`remibrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 146 | Rilzabrutinib (`rilzabrutinib`) | BTK inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Rilzabrutinib (moderate inhibitor) |
+| 147 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 148 | Avacopan (`avacopan`) | C5a receptor blocker | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 149 | Cinacalcet (`cinacalcet`) | Calcimimetic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 150 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 151 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 152 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 153 | Cannabidiol (`cannabidiol`) | Cannabinoid (CBD) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 154 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 155 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 156 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 157 | Green tea extract (EGCG) (`green-tea`) | Catechin supplement | none → minor | new Genvoya CYP3A4 substrate role × Green tea extract (EGCG) (weak inhibitor) |
+| 158 | Mephedrone (`mephedrone`) | Cathinone entactogen | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 159 | Methylone (`methylone`) | Cathinone entactogen | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 160 | N-Ethylhexedrone (`n-ethylhexedrone`) | Cathinone stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 161 | N-Ethylpentylone (`n-ethylpentylone`) | Cathinone stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 162 | 3-MMC (`three-mmc`) | Cathinone stimulant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 163 | α-PVP (`a-pvp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 164 | MDPHP (`mdphp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 165 | MDPV (`mdpv`) | Cathinone stimulant (pyrovalerone) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 166 | Eutylone (`eutylone`) | Cathinone stimulant / entactogen | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 167 | Maraviroc (`maraviroc`) | CCR5 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 168 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 169 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 170 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 171 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 172 | Guanfacine (`guanfacine`) | Central α2-agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 173 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 174 | Lumacaftor–ivacaftor (`lumacaftor-ivacaftor`) | CFTR modulator | none → major | new Genvoya CYP3A4 substrate role × Lumacaftor–ivacaftor (strong inducer) |
+| 175 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 176 | Ivacaftor (`ivacaftor`) | CFTR potentiator | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 177 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 178 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 179 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 180 | Mexiletine (`mexiletine`) | Class Ib antiarrhythmic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 181 | Flecainide (`flecainide`) | Class Ic antiarrhythmic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 182 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 183 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 184 | Dronedarone (`dronedarone`) | Class III antiarrhythmic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 185 | Dordaviprone (`dordaviprone`) | ClpP protease activator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 186 | Letermovir (`letermovir`) | CMV terminase inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Letermovir (moderate inhibitor) |
+| 187 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 188 | Dexamethasone (`dexamethasone`) | Corticosteroid | none → major | new Genvoya CYP3A4 substrate role × Dexamethasone (moderate inducer) |
+| 189 | Prednisone (`prednisone`) | Corticosteroid | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 190 | Levoketoconazole (`levoketoconazole`) | Cortisol synthesis inhibitor | none → major | new Genvoya CYP3A4 substrate role × Levoketoconazole (strong inhibitor) |
+| 191 | Paxlovid (nirmatrelvir/ritonavir) (`paxlovid`) | COVID-19 antiviral (ritonavir-boosted) | none → major | new Genvoya CYP3A4 substrate role × Paxlovid (nirmatrelvir/ritonavir) (strong inhibitor) |
+| 192 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 193 | Pexidartinib (`pexidartinib`) | CSF1R inhibitor | none → major | new Genvoya CYP3A4 substrate role × Pexidartinib (moderate inducer) |
+| 194 | Turmeric / curcumin (`turmeric`) | Curcuminoid supplement | none → minor | new Genvoya CYP3A4 substrate role × Turmeric / curcumin (weak inhibitor) |
+| 195 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 196 | Abiraterone (`abiraterone`) | CYP17 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 197 | Goldenseal (`goldenseal`) | CYP2D6 / 3A4 herbal inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Goldenseal (moderate inhibitor) |
+| 198 | Bromazolam (`bromazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 199 | Clonazolam (`clonazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 200 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 201 | Diclazepam (`diclazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 202 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 203 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 204 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 205 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 206 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 207 | Phenazolam (`phenazolam`) | Designer benzodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 208 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 209 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 210 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 211 | Felodipine (`felodipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 212 | Isradipine (`isradipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 213 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 214 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 215 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 216 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 217 | Apixaban (`apixaban`) | Direct oral anticoagulant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 218 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 219 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 220 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 221 | Tavapadon (`tavapadon`) | Dopamine agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 222 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 223 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 224 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 225 | Brensocatib (`brensocatib`) | DPP1 inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Brensocatib (weak inducer) |
+| 226 | Daridorexant (`daridorexant`) | Dual orexin antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 227 | Lazertinib (`lazertinib`) | EGFR TKI | none → minor | new Genvoya CYP3A4 substrate role × Lazertinib (weak inhibitor) |
+| 228 | Mobocertinib (`mobocertinib`) | EGFR TKI | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 229 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 230 | MDA (`mda`) | Entactogen / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 231 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 232 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 233 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 234 | Ambrisentan (`ambrisentan`) | ERA (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 235 | Bosentan (`bosentan`) | ERA (PAH) | none → major | new Genvoya CYP3A4 substrate role × Bosentan (moderate inducer) |
+| 236 | Macitentan (`macitentan`) | ERA (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 237 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 238 | Ergotamine (`ergotamine`) | Ergot antimigraine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 239 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 240 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 241 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 242 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 243 | Vepdegestrant (`vepdegestrant`) | Estrogen receptor degrader | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 244 | Lonafarnib (`lonafarnib`) | Farnesyltransferase inhibitor | none → major | new Genvoya CYP3A4 substrate role × Lonafarnib (strong inhibitor) |
+| 245 | eliglustat (`eliglustat`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 246 | elvitegravir and ritonavir (`elvitegravir-and-ritonavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × elvitegravir and ritonavir (strong inhibitor) |
+| 247 | indinavir and ritonavir (`indinavir-and-ritonavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × indinavir and ritonavir (strong inhibitor) |
+| 248 | leniolisib (`leniolisib`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 249 | lomitapide (`lomitapide`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 250 | nelfinavir (`nelfinavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × nelfinavir (strong inhibitor) |
+| 251 | paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (`paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (strong inhibitor) |
+| 252 | R-venlafaxine (`r-venlafaxine`) | FDA Table 1 example | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
+| 253 | S-venlafaxine (`s-venlafaxine`) | FDA Table 1 example | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 254 | sevabertinib (`sevabertinib`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 255 | taletrectinib (`taletrectinib`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 256 | tipranavir and ritonavir (`tipranavir-and-ritonavir`) | FDA Table 1 example | none → major | new Genvoya CYP3A4 substrate role × tipranavir and ritonavir (strong inhibitor) |
+| 257 | Diphenhydramine (`diphenhydramine`) | First-generation antihistamine | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 258 | Quercetin (`quercetin`) | Flavonol supplement | none → major | new Genvoya CYP3A4 substrate role × Quercetin (moderate inhibitor) |
+| 259 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 260 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 261 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 262 | Ivosidenib (`ivosidenib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 substrate role × Ivosidenib (strong inducer) |
+| 263 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 264 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 265 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 266 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 267 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 268 | Ciprofloxacin (`ciprofloxacin`) | Fluoroquinolone | none → moderate | new Genvoya CYP3A4 substrate role × Ciprofloxacin (moderate inhibitor) |
+| 269 | Grapefruit juice (`grapefruit`) | Furanocoumarin (intestinal CYP3A4) | none → major | new Genvoya CYP3A4 substrate role × Grapefruit juice (moderate inhibitor) |
+| 270 | Star fruit (`starfruit`) | Furanocoumarin / nephrotoxin | none → moderate | new Genvoya CYP3A4 substrate role × Star fruit (moderate inhibitor) |
+| 271 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 272 | Relacorilant (`relacorilant`) | Glucocorticoid receptor antagonist | none → major | new Genvoya CYP3A4 substrate role × Relacorilant (strong inhibitor) |
+| 273 | Ranitidine (`ranitidine`) | H2 blocker | none → minor | new Genvoya CYP3A4 substrate role × Ranitidine (weak inhibitor) |
+| 274 | Cimetidine (`cimetidine`) | H2 blocker / CYP perpetrator | none → minor | new Genvoya CYP3A4 substrate role × Cimetidine (weak inhibitor) |
+| 275 | Pitolisant (`pitolisant`) | H3 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 276 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 277 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 278 | Givinostat (`givinostat`) | HDAC inhibitor | none → minor | new Genvoya CYP3A4 substrate role × Givinostat (weak inhibitor) |
+| 279 | Tucatinib (`tucatinib`) | HER2 TKI | none → major | new Genvoya CYP3A4 substrate role × Tucatinib (strong inhibitor) |
+| 280 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 281 | Milk thistle (silymarin) (`milk-thistle`) | Herbal 2C9 / 3A4 modulator | none → minor | new Genvoya CYP3A4 substrate role × Milk thistle (silymarin) (weak inhibitor) |
+| 282 | Panax ginseng (`ginseng`) | Herbal adaptogen | none → moderate | new Genvoya CYP3A4 substrate role × Panax ginseng (weak inducer) |
+| 283 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 284 | Lenacapavir (`lenacapavir`) | HIV capsid inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 285 | Atazanavir–cobicistat (`atazanavir-cobicistat`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 286 | Bictegravir–lenacapavir (`bictegravir-lenacapavir`) | HIV combo tablet | none → moderate | new Genvoya CYP3A4 substrate role × Bictegravir–lenacapavir (moderate inhibitor) |
+| 287 | Darunavir–cobicistat (`darunavir-cobicistat`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 288 | Darunavir–cobicistat–FTC–TAF (`darunavir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 289 | Elvitegravir–cobicistat–FTC–TDF (`elvitegravir-cobicistat-ftc-tdf`) | HIV combo tablet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 290 | Atazanavir (`atazanavir`) | HIV protease inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 291 | Darunavir (`darunavir`) | HIV protease inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 292 | Lopinavir/ritonavir (`lopinavir`) | HIV protease inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 293 | Ritonavir (`ritonavir`) | HIV protease inhibitor / booster | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 294 | St. John's wort (`st-johns-wort`) | Hypericum (3A4 inducer) | moderate → major | new Genvoya CYP3A4 substrate role × St. John's wort (strong inducer) |
+| 295 | Ivabradine (`ivabradine`) | If-channel blocker | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 296 | Trofinetide (`trofinetide`) | IGF-1 tripeptide analog | none → minor | new Genvoya CYP3A4 substrate role × Trofinetide (weak inhibitor) |
+| 297 | Echinacea (`echinacea`) | Immune herb | none → minor | new Genvoya CYP3A4 substrate role × Echinacea (weak inhibitor) |
+| 298 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 299 | Bictegravir (`bictegravir`) | INSTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 300 | Elvitegravir (`elvitegravir`) | INSTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 301 | Pomegranate juice (`pomegranate`) | Intestinal CYP3A4 inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Pomegranate juice (moderate inhibitor) |
+| 302 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 303 | Berberine (`berberine`) | Isoquinoline alkaloid (glucose / lipid) | none → major | new Genvoya CYP3A4 substrate role × Berberine (moderate inhibitor) |
+| 304 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 305 | Tofacitinib (`tofacitinib`) | JAK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 306 | Upadacitinib (`upadacitinib`) | JAK inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 307 | Fedratinib (`fedratinib`) | JAK2 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 308 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 309 | Kava (`kava`) | Kavalactone sedative | none → minor | new Genvoya CYP3A4 substrate role × Kava (weak inhibitor) |
+| 310 | Telithromycin (`telithromycin`) | Ketolide antibiotic | none → major | new Genvoya CYP3A4 substrate role × Telithromycin (strong inhibitor) |
+| 311 | Adagrasib (`adagrasib`) | KRAS G12C inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 312 | Sotorasib (`sotorasib`) | KRAS G12C inhibitor | none → major | new Genvoya CYP3A4 substrate role × Sotorasib (moderate inducer) |
+| 313 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 314 | Salmeterol (`salmeterol`) | LABA | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 315 | Vilanterol (`vilanterol`) | LABA | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 316 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 317 | Montelukast (`montelukast`) | LTRA | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 318 | Clarithromycin (`clarithromycin`) | Macrolide antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 319 | Erythromycin (`erythromycin`) | Macrolide antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 320 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 321 | Repaglinide (`repaglinide`) | Meglitinide | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 322 | Tasimelteon (`tasimelteon`) | Melatonin agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 323 | Revumenib (`revumenib`) | Menin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 324 | Ziftomenib (`ziftomenib`) | Menin inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 325 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 326 | Adrafinil (`adrafinil`) | Modafinil prodrug | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 327 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 328 | Sirolimus (`sirolimus`) | mTOR inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 329 | Vortioxetine (`vortioxetine`) | Multimodal antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 330 | Chlorzoxazone (`chlorzoxazone`) | Muscle relaxant | none → minor | new Genvoya CYP3A4 substrate role × Chlorzoxazone (weak inhibitor) |
+| 331 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 332 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 333 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 334 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 335 | Glycerol phenylbutyrate (`glycerol-phenylbutyrate`) | Nitrogen-binding agent (urea cycle) | none → moderate | new Genvoya CYP3A4 substrate role × Glycerol phenylbutyrate (weak inducer) |
+| 336 | Fexinidazole (`fexinidazole`) | Nitroimidazole antiprotozoal | none → major | new Genvoya CYP3A4 substrate role × Fexinidazole (moderate inducer) |
+| 337 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 338 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 339 | Netupitant–palonosetron (`netupitant`) | NK1 / 5-HT3 | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 340 | Fosaprepitant (`fosaprepitant`) | NK1 antagonist | none → minor | new Genvoya CYP3A4 substrate role × Fosaprepitant (weak inhibitor) |
+| 341 | Aprepitant (`aprepitant`) | NK1 antagonist (antiemetic) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 342 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 343 | Dextromethorphan–bupropion (`auvelity`) | NMDA / NDRI antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 344 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
+| 345 | Phencyclidine (`pcp`) | NMDA dissociative | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 346 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 347 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 348 | Doravirine (`doravirine`) | NNRTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 349 | Etravirine (`etravirine`) | NNRTI | none → major | new Genvoya CYP3A4 substrate role × Etravirine (moderate inducer) |
+| 350 | Rilpivirine (`rilpivirine`) | NNRTI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 351 | Efavirenz (`efavirenz`) | NNRTI antiretroviral | moderate → major | new Genvoya CYP3A4 substrate role × Efavirenz (moderate inducer) |
+| 352 | Nevirapine (`nevirapine`) | NNRTI antiretroviral | none → major | new Genvoya CYP3A4 substrate role × Nevirapine (moderate inducer) |
+| 353 | Diltiazem (`diltiazem`) | Non-DHP CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 354 | Verapamil (`verapamil`) | Non-DHP CCB | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 355 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 356 | Omaveloxolone (`omaveloxolone`) | Nrf2 activator | none → moderate | new Genvoya CYP3A4 substrate role × Omaveloxolone (weak inducer) |
+| 357 | Atomoxetine (`atomoxetine`) | NRI (ADHD) | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 358 | Viloxazine (`viloxazine`) | NRI (ADHD) | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 359 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 360 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 361 | Methadone (`methadone`) | Opioid agonist | none → moderate | derived card (pd-methadone-arv-unsettled) |
+| 362 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 363 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 364 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 365 | Meperidine (`meperidine`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 366 | Oxycodone (`oxycodone`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 367 | Sufentanil (`sufentanil`) | Opioid analgesic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 368 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new Genvoya CYP2D6 weak inhibitor × sensitive substrate (activation) |
+| 369 | Atogepant (`atogepant`) | Oral CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 370 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 371 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 372 | Relugolix (`relugolix`) | Oral GnRH antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 373 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 374 | Lemborexant (`lemborexant`) | Orexin antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 375 | Suvorexant (`suvorexant`) | Orexin antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 376 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 377 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate (activation) |
+| 378 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate (activation) |
+| 379 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 380 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 381 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 382 | Nerandomilast (`nerandomilast`) | PDE4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 383 | Roflumilast (`roflumilast`) | PDE4 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 384 | Avanafil (`avanafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 385 | Sildenafil (`sildenafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 386 | Tadalafil (`tadalafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 387 | Vardenafil (`vardenafil`) | PDE5 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 388 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 389 | Dicloxacillin (`dicloxacillin`) | Penicillinase-resistant penicillin | none → major | new Genvoya CYP3A4 substrate role × Dicloxacillin (moderate inducer) |
+| 390 | Nafcillin (`nafcillin`) | Penicillinase-resistant penicillin | none → moderate | new Genvoya CYP3A4 substrate role × Nafcillin (weak inducer) |
+| 391 | Domperidone (`domperidone`) | Peripheral D2 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 392 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 393 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 394 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 395 | 2C-B (`twocb`) | Phenethylamine psychedelic | none → minor | new Genvoya CYP2D6 weak inhibitor × minor substrate |
+| 396 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 397 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 398 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 399 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 400 | Idelalisib (`idelalisib`) | PI3Kδ inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 401 | Cobicistat (`cobicistat`) | PK booster | none → major | new Genvoya CYP3A4 substrate role × Cobicistat (strong inhibitor) |
+| 402 | Berotralstat (`berotralstat`) | Plasma kallikrein inhibitor | none → moderate | new Genvoya CYP3A4 substrate role × Berotralstat (moderate inhibitor) |
+| 403 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 404 | Lefamulin (`lefamulin`) | Pleuromutilin antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 405 | Vonoprazan (`vonoprazan`) | Potassium-competitive acid blocker | none → minor | new Genvoya CYP3A4 substrate role × Vonoprazan (weak inhibitor) |
+| 406 | Elafibranor (`elafibranor`) | PPAR agonist | none → moderate | new Genvoya CYP3A4 substrate role × Elafibranor (weak inducer) |
+| 407 | Omeprazole (`omeprazole`) | PPI | none → minor | new Genvoya CYP3A4 substrate role × Omeprazole (weak inhibitor) |
+| 408 | Metoclopramide (`metoclopramide`) | Prokinetic / D2 antagonist | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 409 | Daraxonrasib (`daraxonrasib`) | RAS inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 410 | Rifabutin (`rifabutin`) | Rifamycin | none → major | new Genvoya CYP3A4 substrate role × Rifabutin (moderate inducer) |
+| 411 | Rifampin (`rifampin`) | Rifamycin | moderate → major | new Genvoya CYP3A4 substrate role × Rifampin (strong inducer) |
+| 412 | Rifapentine (`rifapentine`) | Rifamycin | none → major | new Genvoya CYP3A4 substrate role × Rifapentine (strong inducer) |
+| 413 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 414 | Siponimod (`siponimod`) | S1P modulator | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 415 | Nefazodone (`nefazodone`) | SARI antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 416 | Trazodone (`trazodone`) | SARI antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 417 | Ensitrelvir (`ensitrelvir`) | SARS-CoV-2 protease inhibitor | none → major | new Genvoya CYP3A4 substrate role × Ensitrelvir (strong inhibitor) |
+| 418 | Schisandra (`schisandra`) | Schisandra (CYP3A4 herbal inhibitor) | none → major | new Genvoya CYP3A4 substrate role × Schisandra (moderate inhibitor) |
+| 419 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 420 | Promethazine (`promethazine`) | Sedating antihistamine | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 421 | Ulipristal (`ulipristal`) | Selective progesterone modulator | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 422 | Saw palmetto (`saw-palmetto`) | Serenoa (BPH herb) | none → minor | new Genvoya CYP3A4 substrate role × Saw palmetto (weak inhibitor) |
+| 423 | Tamoxifen (`tamoxifen`) | SERM | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 424 | Riociguat (`riociguat`) | sGC stimulator (PAH) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 425 | Duloxetine (`duloxetine`) | SNRI | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 426 | Levomilnacipran (`levomilnacipran`) | SNRI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 427 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 428 | Vilazodone (`vilazodone`) | SPAR antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 429 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 430 | Citalopram (`citalopram`) | SSRI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 431 | Escitalopram (`escitalopram`) | SSRI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 432 | Fluvoxamine (`fluvoxamine`) | SSRI | none → moderate | new Genvoya CYP3A4 substrate role × Fluvoxamine (moderate inhibitor) |
+| 433 | Paroxetine (`paroxetine`) | SSRI | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 434 | Sertraline (`sertraline`) | SSRI | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 435 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 436 | Atorvastatin (`atorvastatin`) | Statin | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 437 | Resveratrol (`resveratrol`) | Stilbene supplement | none → moderate | new Genvoya CYP3A4 substrate role × Resveratrol (moderate inhibitor) |
+| 438 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 439 | Brorphine (`brorphine`) | Street synthetic opioid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 440 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 441 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 442 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 443 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 444 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 445 | Dapsone (`dapsone`) | Sulfone | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 446 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 447 | Cabazitaxel (`cabazitaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 448 | Docetaxel (`docetaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 449 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 450 | Paclitaxel (`paclitaxel`) | Taxane | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 451 | Amoxapine (`amoxapine`) | Tetracyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 452 | Maprotiline (`maprotiline`) | Tetracyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 453 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 454 | Etizolam (`etizolam`) | Thienodiazepine | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 455 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 456 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 457 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 458 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 459 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 460 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 461 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 462 | Desipramine (`desipramine`) | Tricyclic antidepressant | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 463 | Doxepin (`doxepin`) | Tricyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 464 | Imipramine (`imipramine`) | Tricyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 465 | Nortriptyline (`nortriptyline`) | Tricyclic antidepressant | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 466 | Trimipramine (`trimipramine`) | Tricyclic antidepressant | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 467 | Almotriptan (`almotriptan`) | Triptan | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 468 | Eletriptan (`eletriptan`) | Triptan | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 469 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 470 | Chlorpromazine (`chlorpromazine`) | Typical antipsychotic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 471 | Fluphenazine (`fluphenazine`) | Typical antipsychotic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 472 | Haloperidol (`haloperidol`) | Typical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 473 | Perphenazine (`perphenazine`) | Typical antipsychotic | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 474 | Pimozide (`pimozide`) | Typical antipsychotic | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 475 | Thioridazine (`thioridazine`) | Typical antipsychotic | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 476 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 477 | Conivaptan (`conivaptan`) | V1a/V2 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 478 | Tolvaptan (`tolvaptan`) | V2 antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × sensitive substrate |
+| 479 | Axitinib (`axitinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 480 | Cabozantinib (`cabozantinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 481 | Fruquintinib (`fruquintinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 482 | Lenvatinib (`lenvatinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 483 | Pazopanib (`pazopanib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 484 | Regorafenib (`regorafenib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 485 | Sorafenib (`sorafenib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 486 | Sunitinib (`sunitinib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 487 | Tivozanib (`tivozanib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 488 | Vandetanib (`vandetanib`) | VEGF TKI | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 489 | Eribulin (`eribulin`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 490 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 491 | Vinblastine (`vinblastine`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 492 | Vincristine (`vincristine`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 493 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 494 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 495 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 496 | Deutetrabenazine (`deutetrabenazine`) | VMAT2 inhibitor | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 497 | Tetrabenazine (`tetrabenazine`) | VMAT2 inhibitor | none → moderate | new Genvoya CYP2D6 weak inhibitor × sensitive substrate |
+| 498 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 499 | Armodafinil (`armodafinil`) | Wake-promoting agent | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 500 | Modafinil (`modafinil`) | Wake-promoting agent | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 501 | Eszopiclone (`eszopiclone`) | Z-hypnotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 502 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new Genvoya CYP3A4 strong inhibitor × minor substrate |
+| 503 | Zolpidem (`zolpidem`) | Z-hypnotic | none → major | new Genvoya CYP3A4 strong inhibitor × major substrate |
+| 504 | Lofexidine (`lofexidine`) | α2-agonist (opioid withdrawal) | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
+| 505 | Yohimbine (`yohimbine`) | α2-antagonist (sexual / stimulant herb) | none → minor | new Genvoya CYP2D6 weak inhibitor × major substrate |
 
-### Stribild (elvitegravir–cobicistat–FTC–TDF) (498)
+### Stribild (elvitegravir–cobicistat–FTC–TDF) (504)
 
 | # | Partner | Partner class | Before → after | Cause |
 |---:|---|---|---|---|
@@ -2011,480 +2035,486 @@ Grouped by changed row, then by the partner's catalog class. A pair of two chang
 | 19 | Lacosamide (`lacosamide`) | AED (slow Na) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
 | 20 | Cannabidiol (Epidiolex) (`cannabidiol-epidiolex`) | AED cannabinoid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
 | 21 | Fosphenytoin (`fosphenytoin`) | AED prodrug | none → major | new Stribild CYP3A4 substrate role × Fosphenytoin (strong inducer) |
-| 22 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 23 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 24 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 25 | Ceritinib (`ceritinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 26 | Crizotinib (`crizotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 27 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 28 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 29 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 30 | Lorlatinib (`lorlatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 substrate role × Lorlatinib (moderate inducer) |
-| 31 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 32 | Repotrectinib (`repotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 substrate role × Repotrectinib (moderate inducer) |
-| 33 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 34 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 35 | Black pepper (piperine) (`piperine`) | Alkaloid absorption booster | none → major | new Stribild CYP3A4 substrate role × Black pepper (piperine) (moderate inhibitor) |
-| 36 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 37 | Doxazosin (`doxazosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 38 | Silodosin (`silodosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 39 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 40 | Perampanel (`perampanel`) | AMPA antagonist AED | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 41 | Amphetamine (`amphetamine`) | Amphetamine stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 42 | Methamphetamine (`methamphetamine`) | Amphetamine stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 43 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 44 | Apalutamide (`apalutamide`) | Androgen receptor blocker | none → major | new Stribild CYP3A4 substrate role × Apalutamide (strong inducer) |
-| 45 | Darolutamide (`darolutamide`) | Androgen receptor blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 46 | Enzalutamide (`enzalutamide`) | Androgen receptor blocker | none → major | new Stribild CYP3A4 substrate role × Enzalutamide (strong inducer) |
-| 47 | Ivermectin (`ivermectin`) | Anthelmintic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 48 | Praziquantel (`praziquantel`) | Anthelmintic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 49 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 50 | Bicalutamide (`bicalutamide`) | Antiandrogen | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 51 | Ranolazine (`ranolazine`) | Antianginal | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 52 | Carbamazepine (`carbamazepine`) | Anticonvulsant | moderate → major | new Stribild CYP3A4 substrate role × Carbamazepine (strong inducer) |
-| 53 | Oxcarbazepine (`oxcarbazepine`) | Anticonvulsant | none → major | new Stribild CYP3A4 substrate role × Oxcarbazepine (moderate inducer) |
-| 54 | Phenytoin (`phenytoin`) | Anticonvulsant | none → major | new Stribild CYP3A4 substrate role × Phenytoin (strong inducer) |
-| 55 | Topiramate (`topiramate`) | Anticonvulsant | none → moderate | new Stribild CYP3A4 substrate role × Topiramate (weak inducer) |
-| 56 | Dextromethorphan–bupropion (`dextromethorphan-bupropion`) | Antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 57 | Griseofulvin (`griseofulvin`) | Antifungal | none → major | new Stribild CYP3A4 substrate role × Griseofulvin (moderate inducer) |
-| 58 | Colchicine (`colchicine`) | Antigout | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 59 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 60 | Mefloquine (`mefloquine`) | Antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 61 | Primaquine (`primaquine`) | Antimalarial | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 62 | Quinine (`quinine`) | Antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 63 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 64 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 65 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 66 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 67 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 68 | Isoniazid (`isoniazid`) | Antimycobacterial | none → minor | new Stribild CYP3A4 substrate role × Isoniazid (weak inhibitor) |
-| 69 | Mifepristone (`mifepristone`) | Antiprogestin / cortisol blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 70 | Tecovirimat (`tecovirimat`) | Antiviral | none → moderate | new Stribild CYP3A4 substrate role × Tecovirimat (weak inducer) |
-| 71 | Buspirone (`buspirone`) | Anxiolytic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 72 | Losartan (`losartan`) | ARB | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 73 | Exemestane (`exemestane`) | Aromatase inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 74 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 75 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 76 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 77 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 78 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 79 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 80 | Cariprazine (`cariprazine`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 81 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 82 | Iloperidone (`iloperidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 83 | Lumateperone (`lumateperone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 84 | Lurasidone (`lurasidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 85 | Quetiapine (`quetiapine`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 86 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 87 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 88 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 89 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 90 | Fluconazole (`fluconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 91 | Isavuconazonium (`isavuconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 92 | Itraconazole (`itraconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 93 | Ketoconazole (`ketoconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 substrate role × Ketoconazole (strong inhibitor) |
-| 94 | Posaconazole (`posaconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 substrate role × Posaconazole (strong inhibitor) |
-| 95 | Voriconazole (`voriconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 96 | Phenobarbital (`phenobarbital`) | Barbiturate anticonvulsant | moderate → major | new Stribild CYP3A4 substrate role × Phenobarbital (moderate inducer) |
-| 97 | Primidone (`primidone`) | Barbiturate anticonvulsant (prodrug) | moderate → major | new Stribild CYP3A4 substrate role × Primidone (moderate inducer) |
-| 98 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 99 | Asciminib (`asciminib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 100 | Bosutinib (`bosutinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 101 | Dasatinib (`dasatinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 102 | Imatinib (`imatinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 103 | Nilotinib (`nilotinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 104 | Ponatinib (`ponatinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 105 | Radotinib (`radotinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 106 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 107 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 108 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 109 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 110 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 111 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 112 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 113 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 114 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 115 | Alprazolam (`alprazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 116 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 117 | Clobazam (`clobazam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 118 | Clonazepam (`clonazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 119 | Diazepam (`diazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 120 | Estazolam (`estazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 121 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 122 | Flurazepam (`flurazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 123 | Midazolam (`midazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 124 | Quazepam (`quazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 125 | Triazolam (`triazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 126 | Carvedilol (`carvedilol`) | Beta / alpha blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 127 | Bisoprolol (`bisoprolol`) | Beta blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 128 | Metoprolol (`metoprolol`) | Beta blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 129 | Nebivolol (`nebivolol`) | Beta blocker | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
-| 130 | Propranolol (`propranolol`) | Beta blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 131 | Timolol (`timolol`) | Beta blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 132 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 133 | Binimetinib (`binimetinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 134 | Cobimetinib (`cobimetinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 135 | Dabrafenib (`dabrafenib`) | BRAF / MEK | none → major | new Stribild CYP3A4 substrate role × Dabrafenib (moderate inducer) |
-| 136 | Encorafenib (`encorafenib`) | BRAF / MEK | none → major | new Stribild CYP3A4 substrate role × Encorafenib (strong inducer) |
-| 137 | Selumetinib (`selumetinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 138 | Trametinib (`trametinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 139 | Vemurafenib (`vemurafenib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 140 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 141 | Ibrutinib (`ibrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 142 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 143 | Remibrutinib (`remibrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 144 | Rilzabrutinib (`rilzabrutinib`) | BTK inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Rilzabrutinib (moderate inhibitor) |
-| 145 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 146 | Avacopan (`avacopan`) | C5a receptor blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 147 | Cinacalcet (`cinacalcet`) | Calcimimetic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 148 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 149 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 150 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 151 | Cannabidiol (`cannabidiol`) | Cannabinoid (CBD) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 152 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 153 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 154 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 155 | Green tea extract (EGCG) (`green-tea`) | Catechin supplement | none → minor | new Stribild CYP3A4 substrate role × Green tea extract (EGCG) (weak inhibitor) |
-| 156 | Mephedrone (`mephedrone`) | Cathinone entactogen | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 157 | Methylone (`methylone`) | Cathinone entactogen | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 158 | N-Ethylhexedrone (`n-ethylhexedrone`) | Cathinone stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 159 | N-Ethylpentylone (`n-ethylpentylone`) | Cathinone stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 160 | 3-MMC (`three-mmc`) | Cathinone stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 161 | α-PVP (`a-pvp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 162 | MDPHP (`mdphp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 163 | MDPV (`mdpv`) | Cathinone stimulant (pyrovalerone) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 164 | Eutylone (`eutylone`) | Cathinone stimulant / entactogen | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 165 | Maraviroc (`maraviroc`) | CCR5 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 166 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 167 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 168 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 169 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 170 | Guanfacine (`guanfacine`) | Central α2-agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 171 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 172 | Lumacaftor–ivacaftor (`lumacaftor-ivacaftor`) | CFTR modulator | none → major | new Stribild CYP3A4 substrate role × Lumacaftor–ivacaftor (strong inducer) |
-| 173 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 174 | Ivacaftor (`ivacaftor`) | CFTR potentiator | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 175 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 176 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 177 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 178 | Mexiletine (`mexiletine`) | Class Ib antiarrhythmic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 179 | Flecainide (`flecainide`) | Class Ic antiarrhythmic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 180 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 181 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 182 | Dronedarone (`dronedarone`) | Class III antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 183 | Dordaviprone (`dordaviprone`) | ClpP protease activator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 184 | Letermovir (`letermovir`) | CMV terminase inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Letermovir (moderate inhibitor) |
-| 185 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 186 | Dexamethasone (`dexamethasone`) | Corticosteroid | none → major | new Stribild CYP3A4 substrate role × Dexamethasone (moderate inducer) |
-| 187 | Prednisone (`prednisone`) | Corticosteroid | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 188 | Levoketoconazole (`levoketoconazole`) | Cortisol synthesis inhibitor | none → major | new Stribild CYP3A4 substrate role × Levoketoconazole (strong inhibitor) |
-| 189 | Paxlovid (nirmatrelvir/ritonavir) (`paxlovid`) | COVID-19 antiviral (ritonavir-boosted) | none → major | new Stribild CYP3A4 substrate role × Paxlovid (nirmatrelvir/ritonavir) (strong inhibitor) |
-| 190 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 191 | Pexidartinib (`pexidartinib`) | CSF1R inhibitor | none → major | new Stribild CYP3A4 substrate role × Pexidartinib (moderate inducer) |
-| 192 | Turmeric / curcumin (`turmeric`) | Curcuminoid supplement | none → minor | new Stribild CYP3A4 substrate role × Turmeric / curcumin (weak inhibitor) |
-| 193 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 194 | Abiraterone (`abiraterone`) | CYP17 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 195 | Goldenseal (`goldenseal`) | CYP2D6 / 3A4 herbal inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Goldenseal (moderate inhibitor) |
-| 196 | Bromazolam (`bromazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 197 | Clonazolam (`clonazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 198 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 199 | Diclazepam (`diclazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 200 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 201 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 202 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 203 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 204 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 205 | Phenazolam (`phenazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 206 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 207 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 208 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 209 | Felodipine (`felodipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 210 | Isradipine (`isradipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 211 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 212 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 213 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 214 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 215 | Apixaban (`apixaban`) | Direct oral anticoagulant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 216 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 217 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 218 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 219 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 220 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 221 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 222 | Brensocatib (`brensocatib`) | DPP1 inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Brensocatib (weak inducer) |
-| 223 | Daridorexant (`daridorexant`) | Dual orexin antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 224 | Lazertinib (`lazertinib`) | EGFR TKI | none → minor | new Stribild CYP3A4 substrate role × Lazertinib (weak inhibitor) |
-| 225 | Mobocertinib (`mobocertinib`) | EGFR TKI | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 226 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 227 | MDA (`mda`) | Entactogen / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 228 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 229 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 230 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 231 | Ambrisentan (`ambrisentan`) | ERA (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 232 | Bosentan (`bosentan`) | ERA (PAH) | none → major | new Stribild CYP3A4 substrate role × Bosentan (moderate inducer) |
-| 233 | Macitentan (`macitentan`) | ERA (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 234 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 235 | Ergotamine (`ergotamine`) | Ergot antimigraine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 236 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 237 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 238 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 239 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 240 | Lonafarnib (`lonafarnib`) | Farnesyltransferase inhibitor | none → major | new Stribild CYP3A4 substrate role × Lonafarnib (strong inhibitor) |
-| 241 | eliglustat (`eliglustat`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 242 | elvitegravir and ritonavir (`elvitegravir-and-ritonavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × elvitegravir and ritonavir (strong inhibitor) |
-| 243 | indinavir and ritonavir (`indinavir-and-ritonavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × indinavir and ritonavir (strong inhibitor) |
-| 244 | leniolisib (`leniolisib`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 245 | lomitapide (`lomitapide`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 246 | nelfinavir (`nelfinavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × nelfinavir (strong inhibitor) |
-| 247 | paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (`paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (strong inhibitor) |
-| 248 | R-venlafaxine (`r-venlafaxine`) | FDA Table 1 example | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
-| 249 | S-venlafaxine (`s-venlafaxine`) | FDA Table 1 example | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 250 | sevabertinib (`sevabertinib`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 251 | taletrectinib (`taletrectinib`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 252 | tipranavir and ritonavir (`tipranavir-and-ritonavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × tipranavir and ritonavir (strong inhibitor) |
-| 253 | Diphenhydramine (`diphenhydramine`) | First-generation antihistamine | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 254 | Quercetin (`quercetin`) | Flavonol supplement | none → major | new Stribild CYP3A4 substrate role × Quercetin (moderate inhibitor) |
-| 255 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 256 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 257 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 258 | Ivosidenib (`ivosidenib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 substrate role × Ivosidenib (strong inducer) |
-| 259 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 260 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 261 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 262 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 263 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 264 | Ciprofloxacin (`ciprofloxacin`) | Fluoroquinolone | none → moderate | new Stribild CYP3A4 substrate role × Ciprofloxacin (moderate inhibitor) |
-| 265 | Grapefruit juice (`grapefruit`) | Furanocoumarin (intestinal CYP3A4) | none → major | new Stribild CYP3A4 substrate role × Grapefruit juice (moderate inhibitor) |
-| 266 | Star fruit (`starfruit`) | Furanocoumarin / nephrotoxin | none → moderate | new Stribild CYP3A4 substrate role × Star fruit (moderate inhibitor) |
-| 267 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 268 | Relacorilant (`relacorilant`) | Glucocorticoid receptor antagonist | none → major | new Stribild CYP3A4 substrate role × Relacorilant (strong inhibitor) |
-| 269 | Ranitidine (`ranitidine`) | H2 blocker | none → minor | new Stribild CYP3A4 substrate role × Ranitidine (weak inhibitor) |
-| 270 | Cimetidine (`cimetidine`) | H2 blocker / CYP perpetrator | none → minor | new Stribild CYP3A4 substrate role × Cimetidine (weak inhibitor) |
-| 271 | Pitolisant (`pitolisant`) | H3 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 272 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 273 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 274 | Givinostat (`givinostat`) | HDAC inhibitor | none → minor | new Stribild CYP3A4 substrate role × Givinostat (weak inhibitor) |
-| 275 | Tucatinib (`tucatinib`) | HER2 TKI | none → major | new Stribild CYP3A4 substrate role × Tucatinib (strong inhibitor) |
-| 276 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 277 | Milk thistle (silymarin) (`milk-thistle`) | Herbal 2C9 / 3A4 modulator | none → minor | new Stribild CYP3A4 substrate role × Milk thistle (silymarin) (weak inhibitor) |
-| 278 | Panax ginseng (`ginseng`) | Herbal adaptogen | none → moderate | new Stribild CYP3A4 substrate role × Panax ginseng (weak inducer) |
-| 279 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 280 | Lenacapavir (`lenacapavir`) | HIV capsid inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 281 | Atazanavir–cobicistat (`atazanavir-cobicistat`) | HIV combo tablet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 282 | Bictegravir–lenacapavir (`bictegravir-lenacapavir`) | HIV combo tablet | none → moderate | new Stribild CYP3A4 substrate role × Bictegravir–lenacapavir (moderate inhibitor) |
-| 283 | Darunavir–cobicistat (`darunavir-cobicistat`) | HIV combo tablet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 284 | Darunavir–cobicistat–FTC–TAF (`darunavir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 285 | Atazanavir (`atazanavir`) | HIV protease inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 286 | Darunavir (`darunavir`) | HIV protease inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 287 | Lopinavir/ritonavir (`lopinavir`) | HIV protease inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 288 | Ritonavir (`ritonavir`) | HIV protease inhibitor / booster | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 289 | St. John's wort (`st-johns-wort`) | Hypericum (3A4 inducer) | moderate → major | new Stribild CYP3A4 substrate role × St. John's wort (strong inducer) |
-| 290 | Ivabradine (`ivabradine`) | If-channel blocker | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 291 | Trofinetide (`trofinetide`) | IGF-1 tripeptide analog | none → minor | new Stribild CYP3A4 substrate role × Trofinetide (weak inhibitor) |
-| 292 | Echinacea (`echinacea`) | Immune herb | none → minor | new Stribild CYP3A4 substrate role × Echinacea (weak inhibitor) |
-| 293 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 294 | Bictegravir (`bictegravir`) | INSTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 295 | Elvitegravir (`elvitegravir`) | INSTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 296 | Pomegranate juice (`pomegranate`) | Intestinal CYP3A4 inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Pomegranate juice (moderate inhibitor) |
-| 297 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 298 | Berberine (`berberine`) | Isoquinoline alkaloid (glucose / lipid) | none → major | new Stribild CYP3A4 substrate role × Berberine (moderate inhibitor) |
-| 299 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 300 | Tofacitinib (`tofacitinib`) | JAK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 301 | Upadacitinib (`upadacitinib`) | JAK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 302 | Fedratinib (`fedratinib`) | JAK2 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 303 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 304 | Kava (`kava`) | Kavalactone sedative | none → minor | new Stribild CYP3A4 substrate role × Kava (weak inhibitor) |
-| 305 | Telithromycin (`telithromycin`) | Ketolide antibiotic | none → major | new Stribild CYP3A4 substrate role × Telithromycin (strong inhibitor) |
-| 306 | Adagrasib (`adagrasib`) | KRAS G12C inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 307 | Sotorasib (`sotorasib`) | KRAS G12C inhibitor | none → major | new Stribild CYP3A4 substrate role × Sotorasib (moderate inducer) |
-| 308 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 309 | Salmeterol (`salmeterol`) | LABA | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 310 | Vilanterol (`vilanterol`) | LABA | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 311 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 312 | Montelukast (`montelukast`) | LTRA | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 313 | Clarithromycin (`clarithromycin`) | Macrolide antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 314 | Erythromycin (`erythromycin`) | Macrolide antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 315 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 316 | Repaglinide (`repaglinide`) | Meglitinide | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 317 | Tasimelteon (`tasimelteon`) | Melatonin agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 318 | Revumenib (`revumenib`) | Menin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 319 | Ziftomenib (`ziftomenib`) | Menin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 320 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 321 | Adrafinil (`adrafinil`) | Modafinil prodrug | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 322 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 323 | Sirolimus (`sirolimus`) | mTOR inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
-| 324 | Vortioxetine (`vortioxetine`) | Multimodal antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 325 | Chlorzoxazone (`chlorzoxazone`) | Muscle relaxant | none → minor | new Stribild CYP3A4 substrate role × Chlorzoxazone (weak inhibitor) |
-| 326 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 327 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 328 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 329 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 330 | Glycerol phenylbutyrate (`glycerol-phenylbutyrate`) | Nitrogen-binding agent (urea cycle) | none → moderate | new Stribild CYP3A4 substrate role × Glycerol phenylbutyrate (weak inducer) |
-| 331 | Fexinidazole (`fexinidazole`) | Nitroimidazole antiprotozoal | none → major | new Stribild CYP3A4 substrate role × Fexinidazole (moderate inducer) |
-| 332 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 333 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 334 | Netupitant–palonosetron (`netupitant`) | NK1 / 5-HT3 | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 335 | Fosaprepitant (`fosaprepitant`) | NK1 antagonist | none → minor | new Stribild CYP3A4 substrate role × Fosaprepitant (weak inhibitor) |
-| 336 | Aprepitant (`aprepitant`) | NK1 antagonist (antiemetic) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 337 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 338 | Dextromethorphan–bupropion (`auvelity`) | NMDA / NDRI antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 339 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
-| 340 | Phencyclidine (`pcp`) | NMDA dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 341 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 342 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 343 | Doravirine (`doravirine`) | NNRTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 344 | Etravirine (`etravirine`) | NNRTI | none → major | new Stribild CYP3A4 substrate role × Etravirine (moderate inducer) |
-| 345 | Rilpivirine (`rilpivirine`) | NNRTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 346 | Efavirenz (`efavirenz`) | NNRTI antiretroviral | moderate → major | new Stribild CYP3A4 substrate role × Efavirenz (moderate inducer) |
-| 347 | Nevirapine (`nevirapine`) | NNRTI antiretroviral | none → major | new Stribild CYP3A4 substrate role × Nevirapine (moderate inducer) |
-| 348 | Diltiazem (`diltiazem`) | Non-DHP CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 349 | Verapamil (`verapamil`) | Non-DHP CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 350 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 351 | Omaveloxolone (`omaveloxolone`) | Nrf2 activator | none → moderate | new Stribild CYP3A4 substrate role × Omaveloxolone (weak inducer) |
-| 352 | Atomoxetine (`atomoxetine`) | NRI (ADHD) | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 353 | Viloxazine (`viloxazine`) | NRI (ADHD) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 354 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 355 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 356 | Methadone (`methadone`) | Opioid agonist | none → moderate | derived card (pd-methadone-arv-unsettled) |
-| 357 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 358 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 359 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 360 | Meperidine (`meperidine`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 361 | Oxycodone (`oxycodone`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 362 | Sufentanil (`sufentanil`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 363 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new Stribild CYP2D6 weak inhibitor × sensitive substrate (activation) |
-| 364 | Atogepant (`atogepant`) | Oral CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 365 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 366 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 367 | Relugolix (`relugolix`) | Oral GnRH antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 368 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 369 | Lemborexant (`lemborexant`) | Orexin antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 370 | Suvorexant (`suvorexant`) | Orexin antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 371 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 372 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate (activation) |
-| 373 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate (activation) |
-| 374 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 375 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 376 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 377 | Roflumilast (`roflumilast`) | PDE4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 378 | Avanafil (`avanafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 379 | Sildenafil (`sildenafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 380 | Tadalafil (`tadalafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 381 | Vardenafil (`vardenafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 382 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 383 | Dicloxacillin (`dicloxacillin`) | Penicillinase-resistant penicillin | none → major | new Stribild CYP3A4 substrate role × Dicloxacillin (moderate inducer) |
-| 384 | Nafcillin (`nafcillin`) | Penicillinase-resistant penicillin | none → moderate | new Stribild CYP3A4 substrate role × Nafcillin (weak inducer) |
-| 385 | Domperidone (`domperidone`) | Peripheral D2 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 386 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 387 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 388 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 389 | 2C-B (`twocb`) | Phenethylamine psychedelic | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
-| 390 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 391 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 392 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 393 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 394 | Idelalisib (`idelalisib`) | PI3Kδ inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 395 | Cobicistat (`cobicistat`) | PK booster | none → major | new Stribild CYP3A4 substrate role × Cobicistat (strong inhibitor) |
-| 396 | Berotralstat (`berotralstat`) | Plasma kallikrein inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Berotralstat (moderate inhibitor) |
-| 397 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 398 | Lefamulin (`lefamulin`) | Pleuromutilin antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 399 | Vonoprazan (`vonoprazan`) | Potassium-competitive acid blocker | none → minor | new Stribild CYP3A4 substrate role × Vonoprazan (weak inhibitor) |
-| 400 | Elafibranor (`elafibranor`) | PPAR agonist | none → moderate | new Stribild CYP3A4 substrate role × Elafibranor (weak inducer) |
-| 401 | Omeprazole (`omeprazole`) | PPI | none → minor | new Stribild CYP3A4 substrate role × Omeprazole (weak inhibitor) |
-| 402 | Metoclopramide (`metoclopramide`) | Prokinetic / D2 antagonist | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 403 | Rifabutin (`rifabutin`) | Rifamycin | none → major | new Stribild CYP3A4 substrate role × Rifabutin (moderate inducer) |
-| 404 | Rifampin (`rifampin`) | Rifamycin | moderate → major | new Stribild CYP3A4 substrate role × Rifampin (strong inducer) |
-| 405 | Rifapentine (`rifapentine`) | Rifamycin | none → major | new Stribild CYP3A4 substrate role × Rifapentine (strong inducer) |
-| 406 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 407 | Siponimod (`siponimod`) | S1P modulator | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 408 | Nefazodone (`nefazodone`) | SARI antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 409 | Trazodone (`trazodone`) | SARI antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 410 | Ensitrelvir (`ensitrelvir`) | SARS-CoV-2 protease inhibitor | none → major | new Stribild CYP3A4 substrate role × Ensitrelvir (strong inhibitor) |
-| 411 | Schisandra (`schisandra`) | Schisandra (CYP3A4 herbal inhibitor) | none → major | new Stribild CYP3A4 substrate role × Schisandra (moderate inhibitor) |
-| 412 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 413 | Promethazine (`promethazine`) | Sedating antihistamine | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 414 | Ulipristal (`ulipristal`) | Selective progesterone modulator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 415 | Saw palmetto (`saw-palmetto`) | Serenoa (BPH herb) | none → minor | new Stribild CYP3A4 substrate role × Saw palmetto (weak inhibitor) |
-| 416 | Tamoxifen (`tamoxifen`) | SERM | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 417 | Riociguat (`riociguat`) | sGC stimulator (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 418 | Duloxetine (`duloxetine`) | SNRI | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 419 | Levomilnacipran (`levomilnacipran`) | SNRI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 420 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 421 | Vilazodone (`vilazodone`) | SPAR antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 422 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 423 | Citalopram (`citalopram`) | SSRI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 424 | Escitalopram (`escitalopram`) | SSRI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 425 | Fluvoxamine (`fluvoxamine`) | SSRI | none → moderate | new Stribild CYP3A4 substrate role × Fluvoxamine (moderate inhibitor) |
-| 426 | Paroxetine (`paroxetine`) | SSRI | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 427 | Sertraline (`sertraline`) | SSRI | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 428 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 429 | Atorvastatin (`atorvastatin`) | Statin | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 430 | Resveratrol (`resveratrol`) | Stilbene supplement | none → moderate | new Stribild CYP3A4 substrate role × Resveratrol (moderate inhibitor) |
-| 431 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 432 | Brorphine (`brorphine`) | Street synthetic opioid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 433 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 434 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 435 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 436 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 437 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 438 | Dapsone (`dapsone`) | Sulfone | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 439 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 440 | Cabazitaxel (`cabazitaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 441 | Docetaxel (`docetaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 442 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 443 | Paclitaxel (`paclitaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 444 | Amoxapine (`amoxapine`) | Tetracyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 445 | Maprotiline (`maprotiline`) | Tetracyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 446 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 447 | Etizolam (`etizolam`) | Thienodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 448 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 449 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 450 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 451 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 452 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 453 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 454 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 455 | Desipramine (`desipramine`) | Tricyclic antidepressant | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 456 | Doxepin (`doxepin`) | Tricyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 457 | Imipramine (`imipramine`) | Tricyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 458 | Nortriptyline (`nortriptyline`) | Tricyclic antidepressant | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 459 | Trimipramine (`trimipramine`) | Tricyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 460 | Almotriptan (`almotriptan`) | Triptan | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 461 | Eletriptan (`eletriptan`) | Triptan | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 462 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 463 | Chlorpromazine (`chlorpromazine`) | Typical antipsychotic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 464 | Fluphenazine (`fluphenazine`) | Typical antipsychotic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 465 | Haloperidol (`haloperidol`) | Typical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 466 | Perphenazine (`perphenazine`) | Typical antipsychotic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 467 | Pimozide (`pimozide`) | Typical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 468 | Thioridazine (`thioridazine`) | Typical antipsychotic | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
-| 469 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 470 | Conivaptan (`conivaptan`) | V1a/V2 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 471 | Tolvaptan (`tolvaptan`) | V2 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
-| 472 | Axitinib (`axitinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 473 | Cabozantinib (`cabozantinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 474 | Fruquintinib (`fruquintinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 475 | Lenvatinib (`lenvatinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 476 | Pazopanib (`pazopanib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 477 | Regorafenib (`regorafenib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 478 | Sorafenib (`sorafenib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 479 | Sunitinib (`sunitinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 480 | Tivozanib (`tivozanib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 481 | Vandetanib (`vandetanib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 482 | Eribulin (`eribulin`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 483 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 484 | Vinblastine (`vinblastine`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 485 | Vincristine (`vincristine`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 486 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 487 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 488 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 489 | Deutetrabenazine (`deutetrabenazine`) | VMAT2 inhibitor | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 490 | Tetrabenazine (`tetrabenazine`) | VMAT2 inhibitor | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
-| 491 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 492 | Armodafinil (`armodafinil`) | Wake-promoting agent | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 493 | Modafinil (`modafinil`) | Wake-promoting agent | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 494 | Eszopiclone (`eszopiclone`) | Z-hypnotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 495 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
-| 496 | Zolpidem (`zolpidem`) | Z-hypnotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
-| 497 | Lofexidine (`lofexidine`) | α2-agonist (opioid withdrawal) | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
-| 498 | Yohimbine (`yohimbine`) | α2-antagonist (sexual / stimulant herb) | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 22 | Baxdrostat (`baxdrostat`) | Aldosterone synthase inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 23 | Alectinib (`alectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 24 | Brigatinib (`brigatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 25 | Capmatinib (`capmatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 26 | Ceritinib (`ceritinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 27 | Crizotinib (`crizotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 28 | Ensartinib (`ensartinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 29 | Entrectinib (`entrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 30 | Larotrectinib (`larotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 31 | Lorlatinib (`lorlatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 substrate role × Lorlatinib (moderate inducer) |
+| 32 | Pralsetinib (`pralsetinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 33 | Repotrectinib (`repotrectinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 substrate role × Repotrectinib (moderate inducer) |
+| 34 | Selpercatinib (`selpercatinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 35 | Tepotinib (`tepotinib`) | ALK / ROS1 / NTRK / RET / MET TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 36 | Black pepper (piperine) (`piperine`) | Alkaloid absorption booster | none → major | new Stribild CYP3A4 substrate role × Black pepper (piperine) (moderate inhibitor) |
+| 37 | Alfuzosin (`alfuzosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 38 | Doxazosin (`doxazosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 39 | Silodosin (`silodosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 40 | Tamsulosin (`tamsulosin`) | Alpha-1 blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 41 | Perampanel (`perampanel`) | AMPA antagonist AED | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 42 | Amphetamine (`amphetamine`) | Amphetamine stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 43 | Methamphetamine (`methamphetamine`) | Amphetamine stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 44 | Acetaminophen (`acetaminophen`) | Analgesic / antipyretic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 45 | Apalutamide (`apalutamide`) | Androgen receptor blocker | none → major | new Stribild CYP3A4 substrate role × Apalutamide (strong inducer) |
+| 46 | Darolutamide (`darolutamide`) | Androgen receptor blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 47 | Enzalutamide (`enzalutamide`) | Androgen receptor blocker | none → major | new Stribild CYP3A4 substrate role × Enzalutamide (strong inducer) |
+| 48 | Ivermectin (`ivermectin`) | Anthelmintic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 49 | Praziquantel (`praziquantel`) | Anthelmintic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 50 | Albendazole (`albendazole`) | Anthelmintic benzimidazole | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 51 | Bicalutamide (`bicalutamide`) | Antiandrogen | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 52 | Ranolazine (`ranolazine`) | Antianginal | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 53 | Carbamazepine (`carbamazepine`) | Anticonvulsant | moderate → major | new Stribild CYP3A4 substrate role × Carbamazepine (strong inducer) |
+| 54 | Oxcarbazepine (`oxcarbazepine`) | Anticonvulsant | none → major | new Stribild CYP3A4 substrate role × Oxcarbazepine (moderate inducer) |
+| 55 | Phenytoin (`phenytoin`) | Anticonvulsant | none → major | new Stribild CYP3A4 substrate role × Phenytoin (strong inducer) |
+| 56 | Topiramate (`topiramate`) | Anticonvulsant | none → moderate | new Stribild CYP3A4 substrate role × Topiramate (weak inducer) |
+| 57 | Dextromethorphan–bupropion (`dextromethorphan-bupropion`) | Antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 58 | Griseofulvin (`griseofulvin`) | Antifungal | none → major | new Stribild CYP3A4 substrate role × Griseofulvin (moderate inducer) |
+| 59 | Colchicine (`colchicine`) | Antigout | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 60 | Artemether–lumefantrine (`artemether-lumefantrine`) | Antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 61 | Mefloquine (`mefloquine`) | Antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 62 | Primaquine (`primaquine`) | Antimalarial | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 63 | Quinine (`quinine`) | Antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 64 | Darifenacin (`darifenacin`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 65 | Fesoterodine (`fesoterodine`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 66 | Oxybutynin (`oxybutynin`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 67 | Solifenacin (`solifenacin`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 68 | Tolterodine (`tolterodine`) | Antimuscarinic (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 69 | Isoniazid (`isoniazid`) | Antimycobacterial | none → minor | new Stribild CYP3A4 substrate role × Isoniazid (weak inhibitor) |
+| 70 | Mifepristone (`mifepristone`) | Antiprogestin / cortisol blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 71 | Tecovirimat (`tecovirimat`) | Antiviral | none → moderate | new Stribild CYP3A4 substrate role × Tecovirimat (weak inducer) |
+| 72 | Buspirone (`buspirone`) | Anxiolytic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 73 | Losartan (`losartan`) | ARB | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 74 | Exemestane (`exemestane`) | Aromatase inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 75 | Deschloroketamine (`dck`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 76 | Methoxetamine (`mxe`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 77 | 3-MeO-PCP (`three-meo-pcp`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 78 | 2-Fluorodeschloroketamine (`two-fdck`) | Arylcyclohexylamine dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 79 | Aripiprazole (`aripiprazole`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 80 | Brexpiprazole (`brexpiprazole`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 81 | Cariprazine (`cariprazine`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 82 | Clozapine (`clozapine`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 83 | Iloperidone (`iloperidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 84 | Lumateperone (`lumateperone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 85 | Lurasidone (`lurasidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 86 | Milsaperidone (`milsaperidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 87 | Quetiapine (`quetiapine`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 88 | Risperidone (`risperidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 89 | Ziprasidone (`ziprasidone`) | Atypical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 90 | Kratom (mitragynine) (`kratom`) | Atypical opioid / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 91 | Tianeptine (`tianeptine`) | Atypical μ-opioid antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 92 | Fluconazole (`fluconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 93 | Isavuconazonium (`isavuconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 94 | Itraconazole (`itraconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 95 | Ketoconazole (`ketoconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 substrate role × Ketoconazole (strong inhibitor) |
+| 96 | Posaconazole (`posaconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 substrate role × Posaconazole (strong inhibitor) |
+| 97 | Voriconazole (`voriconazole`) | Azole antifungal | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 98 | Phenobarbital (`phenobarbital`) | Barbiturate anticonvulsant | moderate → major | new Stribild CYP3A4 substrate role × Phenobarbital (moderate inducer) |
+| 99 | Primidone (`primidone`) | Barbiturate anticonvulsant (prodrug) | moderate → major | new Stribild CYP3A4 substrate role × Primidone (moderate inducer) |
+| 100 | Venetoclax (`venetoclax`) | BCL-2 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 101 | Asciminib (`asciminib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 102 | Bosutinib (`bosutinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 103 | Dasatinib (`dasatinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 104 | Imatinib (`imatinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 105 | Nilotinib (`nilotinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 106 | Ponatinib (`ponatinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 107 | Radotinib (`radotinib`) | BCR-ABL TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 108 | Butonitazene (`butonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 109 | Etodesnitazene (`etodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 110 | Etonitazene (`etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 111 | Flunitazene (`flunitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 112 | Isotonitazene (`isotonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 113 | Metodesnitazene (`metodesnitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 114 | Metonitazene (`metonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 115 | N-Pyrrolidino etonitazene (`n-pyrrolidino-etonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 116 | Protonitazene (`protonitazene`) | Benzimidazole opioid (nitazene) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 117 | Alprazolam (`alprazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 118 | Chlordiazepoxide (`chlordiazepoxide`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 119 | Clobazam (`clobazam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 120 | Clonazepam (`clonazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 121 | Diazepam (`diazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 122 | Estazolam (`estazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 123 | Flunitrazepam (`flunitrazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 124 | Flurazepam (`flurazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 125 | Midazolam (`midazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 126 | Quazepam (`quazepam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 127 | Triazolam (`triazolam`) | Benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 128 | Carvedilol (`carvedilol`) | Beta / alpha blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 129 | Bisoprolol (`bisoprolol`) | Beta blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 130 | Metoprolol (`metoprolol`) | Beta blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 131 | Nebivolol (`nebivolol`) | Beta blocker | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
+| 132 | Propranolol (`propranolol`) | Beta blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 133 | Timolol (`timolol`) | Beta blocker | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 134 | Mirabegron (`mirabegron`) | Beta-3 agonist (OAB) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 135 | Binimetinib (`binimetinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 136 | Cobimetinib (`cobimetinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 137 | Dabrafenib (`dabrafenib`) | BRAF / MEK | none → major | new Stribild CYP3A4 substrate role × Dabrafenib (moderate inducer) |
+| 138 | Encorafenib (`encorafenib`) | BRAF / MEK | none → major | new Stribild CYP3A4 substrate role × Encorafenib (strong inducer) |
+| 139 | Selumetinib (`selumetinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 140 | Trametinib (`trametinib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 141 | Vemurafenib (`vemurafenib`) | BRAF / MEK | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 142 | Acalabrutinib (`acalabrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 143 | Ibrutinib (`ibrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 144 | Pirtobrutinib (`pirtobrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 145 | Remibrutinib (`remibrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 146 | Rilzabrutinib (`rilzabrutinib`) | BTK inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Rilzabrutinib (moderate inhibitor) |
+| 147 | Zanubrutinib (`zanubrutinib`) | BTK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 148 | Avacopan (`avacopan`) | C5a receptor blocker | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 149 | Cinacalcet (`cinacalcet`) | Calcimimetic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 150 | Cyclosporine (`cyclosporine`) | Calcineurin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 151 | Tacrolimus (`tacrolimus`) | Calcineurin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 152 | Voclosporin (`voclosporin`) | Calcineurin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 153 | Cannabidiol (`cannabidiol`) | Cannabinoid (CBD) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 154 | Dronabinol (THC) (`dronabinol`) | Cannabinoid (THC) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 155 | Aficamten (`aficamten`) | Cardiac myosin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 156 | Mavacamten (`mavacamten`) | Cardiac myosin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 157 | Green tea extract (EGCG) (`green-tea`) | Catechin supplement | none → minor | new Stribild CYP3A4 substrate role × Green tea extract (EGCG) (weak inhibitor) |
+| 158 | Mephedrone (`mephedrone`) | Cathinone entactogen | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 159 | Methylone (`methylone`) | Cathinone entactogen | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 160 | N-Ethylhexedrone (`n-ethylhexedrone`) | Cathinone stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 161 | N-Ethylpentylone (`n-ethylpentylone`) | Cathinone stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 162 | 3-MMC (`three-mmc`) | Cathinone stimulant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 163 | α-PVP (`a-pvp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 164 | MDPHP (`mdphp`) | Cathinone stimulant (pyrovalerone) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 165 | MDPV (`mdpv`) | Cathinone stimulant (pyrovalerone) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 166 | Eutylone (`eutylone`) | Cathinone stimulant / entactogen | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 167 | Maraviroc (`maraviroc`) | CCR5 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 168 | Abemaciclib (`abemaciclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 169 | Palbociclib (`palbociclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 170 | Ribociclib (`ribociclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 171 | Trilaciclib (`trilaciclib`) | CDK4/6 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 172 | Guanfacine (`guanfacine`) | Central α2-agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 173 | Elexacaftor–tezacaftor–ivacaftor (`elexacaftor-tezacaftor-ivacaftor`) | CFTR modulator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 174 | Lumacaftor–ivacaftor (`lumacaftor-ivacaftor`) | CFTR modulator | none → major | new Stribild CYP3A4 substrate role × Lumacaftor–ivacaftor (strong inducer) |
+| 175 | Vanzacaftor–tezacaftor–deutivacaftor (`vanzacaftor-tezacaftor-deutivacaftor`) | CFTR modulator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 176 | Ivacaftor (`ivacaftor`) | CFTR potentiator | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 177 | Disopyramide (`disopyramide`) | Class Ia antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 178 | Quinidine (`quinidine`) | Class Ia antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 179 | Lidocaine (`lidocaine`) | Class Ib / local anesthetic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 180 | Mexiletine (`mexiletine`) | Class Ib antiarrhythmic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 181 | Flecainide (`flecainide`) | Class Ic antiarrhythmic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 182 | Propafenone (`propafenone`) | Class Ic antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 183 | Amiodarone (`amiodarone`) | Class III antiarrhythmic | moderate → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 184 | Dronedarone (`dronedarone`) | Class III antiarrhythmic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 185 | Dordaviprone (`dordaviprone`) | ClpP protease activator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 186 | Letermovir (`letermovir`) | CMV terminase inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Letermovir (moderate inhibitor) |
+| 187 | Budesonide (oral / gut) (`budesonide`) | Corticosteroid | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 188 | Dexamethasone (`dexamethasone`) | Corticosteroid | none → major | new Stribild CYP3A4 substrate role × Dexamethasone (moderate inducer) |
+| 189 | Prednisone (`prednisone`) | Corticosteroid | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 190 | Levoketoconazole (`levoketoconazole`) | Cortisol synthesis inhibitor | none → major | new Stribild CYP3A4 substrate role × Levoketoconazole (strong inhibitor) |
+| 191 | Paxlovid (nirmatrelvir/ritonavir) (`paxlovid`) | COVID-19 antiviral (ritonavir-boosted) | none → major | new Stribild CYP3A4 substrate role × Paxlovid (nirmatrelvir/ritonavir) (strong inhibitor) |
+| 192 | Crinecerfont (`crinecerfont`) | CRF1 receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 193 | Pexidartinib (`pexidartinib`) | CSF1R inhibitor | none → major | new Stribild CYP3A4 substrate role × Pexidartinib (moderate inducer) |
+| 194 | Turmeric / curcumin (`turmeric`) | Curcuminoid supplement | none → minor | new Stribild CYP3A4 substrate role × Turmeric / curcumin (weak inhibitor) |
+| 195 | Mavorixafor (`mavorixafor`) | CXCR4 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 196 | Abiraterone (`abiraterone`) | CYP17 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 197 | Goldenseal (`goldenseal`) | CYP2D6 / 3A4 herbal inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Goldenseal (moderate inhibitor) |
+| 198 | Bromazolam (`bromazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 199 | Clonazolam (`clonazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 200 | Desalkylgidazepam (`desalkylgidazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 201 | Diclazepam (`diclazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 202 | Flualprazolam (`flualprazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 203 | Flubromazepam (`flubromazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 204 | Flubromazolam (`flubromazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 205 | Meclonazepam (`meclonazepam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 206 | Nifoxipam (`nifoxipam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 207 | Phenazolam (`phenazolam`) | Designer benzodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 208 | Bedaquiline (`bedaquiline`) | Diarylquinoline (TB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 209 | Tretinoin (ATRA) (`tretinoin-atra`) | Differentiating agent | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 210 | Amlodipine (`amlodipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 211 | Felodipine (`felodipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 212 | Isradipine (`isradipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 213 | Nicardipine (`nicardipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 214 | Nifedipine (`nifedipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 215 | Nimodipine (`nimodipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 216 | Nisoldipine (`nisoldipine`) | Dihydropyridine CCB | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 217 | Apixaban (`apixaban`) | Direct oral anticoagulant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 218 | Rivaroxaban (`rivaroxaban`) | Direct oral anticoagulant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 219 | Argatroban (`argatroban`) | Direct thrombin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 220 | Hydroxychloroquine (`hydroxychloroquine`) | DMARD / antimalarial | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 221 | Tavapadon (`tavapadon`) | Dopamine agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 222 | Bromocriptine (`bromocriptine`) | Dopamine agonist (ergot) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 223 | Linagliptin (`linagliptin`) | DPP-4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 224 | Saxagliptin (`saxagliptin`) | DPP-4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 225 | Brensocatib (`brensocatib`) | DPP1 inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Brensocatib (weak inducer) |
+| 226 | Daridorexant (`daridorexant`) | Dual orexin antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 227 | Lazertinib (`lazertinib`) | EGFR TKI | none → minor | new Stribild CYP3A4 substrate role × Lazertinib (weak inhibitor) |
+| 228 | Mobocertinib (`mobocertinib`) | EGFR TKI | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 229 | Sunvozertinib (`sunvozertinib`) | EGFR TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 230 | MDA (`mda`) | Entactogen / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 231 | MDMA (`mdma`) | Entactogen / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 232 | Aprocitentan (`aprocitentan`) | ERA (endothelin antagonist) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 233 | Atrasentan (`atrasentan`) | ERA (endothelin antagonist) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 234 | Ambrisentan (`ambrisentan`) | ERA (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 235 | Bosentan (`bosentan`) | ERA (PAH) | none → major | new Stribild CYP3A4 substrate role × Bosentan (moderate inducer) |
+| 236 | Macitentan (`macitentan`) | ERA (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 237 | Dihydroergotamine (`dihydroergotamine`) | Ergot antimigraine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 238 | Ergotamine (`ergotamine`) | Ergot antimigraine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 239 | Methylergonovine (`methylergonovine`) | Ergot uterotonic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 240 | Ethinyl estradiol (OCP) (`ethinyl-estradiol`) | Estrogen contraceptive | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 241 | Elacestrant (`elacestrant`) | Estrogen receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 242 | Imlunestrant (`imlunestrant`) | Estrogen receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 243 | Vepdegestrant (`vepdegestrant`) | Estrogen receptor degrader | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 244 | Lonafarnib (`lonafarnib`) | Farnesyltransferase inhibitor | none → major | new Stribild CYP3A4 substrate role × Lonafarnib (strong inhibitor) |
+| 245 | eliglustat (`eliglustat`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 246 | elvitegravir and ritonavir (`elvitegravir-and-ritonavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × elvitegravir and ritonavir (strong inhibitor) |
+| 247 | indinavir and ritonavir (`indinavir-and-ritonavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × indinavir and ritonavir (strong inhibitor) |
+| 248 | leniolisib (`leniolisib`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 249 | lomitapide (`lomitapide`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 250 | nelfinavir (`nelfinavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × nelfinavir (strong inhibitor) |
+| 251 | paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (`paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × paritaprevir and ritonavir and (ombitasvir and/or dasabuvir) (strong inhibitor) |
+| 252 | R-venlafaxine (`r-venlafaxine`) | FDA Table 1 example | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
+| 253 | S-venlafaxine (`s-venlafaxine`) | FDA Table 1 example | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 254 | sevabertinib (`sevabertinib`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 255 | taletrectinib (`taletrectinib`) | FDA Table 1 example | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 256 | tipranavir and ritonavir (`tipranavir-and-ritonavir`) | FDA Table 1 example | none → major | new Stribild CYP3A4 substrate role × tipranavir and ritonavir (strong inhibitor) |
+| 257 | Diphenhydramine (`diphenhydramine`) | First-generation antihistamine | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 258 | Quercetin (`quercetin`) | Flavonol supplement | none → major | new Stribild CYP3A4 substrate role × Quercetin (moderate inhibitor) |
+| 259 | Enasidenib (`enasidenib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 260 | Gilteritinib (`gilteritinib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 261 | Glasdegib (`glasdegib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 262 | Ivosidenib (`ivosidenib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 substrate role × Ivosidenib (strong inducer) |
+| 263 | Midostaurin (`midostaurin`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 264 | Olutasidenib (`olutasidenib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 265 | Quizartinib (`quizartinib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 266 | Sonidegib (`sonidegib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 267 | Vismodegib (`vismodegib`) | FLT3 / IDH / hedgehog | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 268 | Ciprofloxacin (`ciprofloxacin`) | Fluoroquinolone | none → moderate | new Stribild CYP3A4 substrate role × Ciprofloxacin (moderate inhibitor) |
+| 269 | Grapefruit juice (`grapefruit`) | Furanocoumarin (intestinal CYP3A4) | none → major | new Stribild CYP3A4 substrate role × Grapefruit juice (moderate inhibitor) |
+| 270 | Star fruit (`starfruit`) | Furanocoumarin / nephrotoxin | none → moderate | new Stribild CYP3A4 substrate role × Star fruit (moderate inhibitor) |
+| 271 | Nirogacestat (`nirogacestat`) | Gamma secretase inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 272 | Relacorilant (`relacorilant`) | Glucocorticoid receptor antagonist | none → major | new Stribild CYP3A4 substrate role × Relacorilant (strong inhibitor) |
+| 273 | Ranitidine (`ranitidine`) | H2 blocker | none → minor | new Stribild CYP3A4 substrate role × Ranitidine (weak inhibitor) |
+| 274 | Cimetidine (`cimetidine`) | H2 blocker / CYP perpetrator | none → minor | new Stribild CYP3A4 substrate role × Cimetidine (weak inhibitor) |
+| 275 | Pitolisant (`pitolisant`) | H3 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 276 | Sofosbuvir / velpatasvir (`epclusa`) | HCV DAA | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 277 | Glecaprevir–pibrentasvir (`glecaprevir-pibrentasvir`) | HCV DAA | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 278 | Givinostat (`givinostat`) | HDAC inhibitor | none → minor | new Stribild CYP3A4 substrate role × Givinostat (weak inhibitor) |
+| 279 | Tucatinib (`tucatinib`) | HER2 TKI | none → major | new Stribild CYP3A4 substrate role × Tucatinib (strong inhibitor) |
+| 280 | Zongertinib (`zongertinib`) | HER2 TKI | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 281 | Milk thistle (silymarin) (`milk-thistle`) | Herbal 2C9 / 3A4 modulator | none → minor | new Stribild CYP3A4 substrate role × Milk thistle (silymarin) (weak inhibitor) |
+| 282 | Panax ginseng (`ginseng`) | Herbal adaptogen | none → moderate | new Stribild CYP3A4 substrate role × Panax ginseng (weak inducer) |
+| 283 | Fostemsavir (`fostemsavir`) | HIV attachment inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 284 | Lenacapavir (`lenacapavir`) | HIV capsid inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 285 | Atazanavir–cobicistat (`atazanavir-cobicistat`) | HIV combo tablet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 286 | Bictegravir–lenacapavir (`bictegravir-lenacapavir`) | HIV combo tablet | none → moderate | new Stribild CYP3A4 substrate role × Bictegravir–lenacapavir (moderate inhibitor) |
+| 287 | Darunavir–cobicistat (`darunavir-cobicistat`) | HIV combo tablet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 288 | Darunavir–cobicistat–FTC–TAF (`darunavir-cobicistat-ftc-taf`) | HIV combo tablet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 289 | Atazanavir (`atazanavir`) | HIV protease inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 290 | Darunavir (`darunavir`) | HIV protease inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 291 | Lopinavir/ritonavir (`lopinavir`) | HIV protease inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 292 | Ritonavir (`ritonavir`) | HIV protease inhibitor / booster | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 293 | St. John's wort (`st-johns-wort`) | Hypericum (3A4 inducer) | moderate → major | new Stribild CYP3A4 substrate role × St. John's wort (strong inducer) |
+| 294 | Ivabradine (`ivabradine`) | If-channel blocker | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 295 | Trofinetide (`trofinetide`) | IGF-1 tripeptide analog | none → minor | new Stribild CYP3A4 substrate role × Trofinetide (weak inhibitor) |
+| 296 | Echinacea (`echinacea`) | Immune herb | none → minor | new Stribild CYP3A4 substrate role × Echinacea (weak inhibitor) |
+| 297 | Fluticasone (`fluticasone`) | Inhaled / nasal corticosteroid | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 298 | Bictegravir (`bictegravir`) | INSTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 299 | Elvitegravir (`elvitegravir`) | INSTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 300 | Pomegranate juice (`pomegranate`) | Intestinal CYP3A4 inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Pomegranate juice (moderate inhibitor) |
+| 301 | Etripamil (`etripamil`) | Intranasal non-dihydropyridine calcium channel blocker | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 302 | Berberine (`berberine`) | Isoquinoline alkaloid (glucose / lipid) | none → major | new Stribild CYP3A4 substrate role × Berberine (moderate inhibitor) |
+| 303 | Ruxolitinib (`ruxolitinib`) | JAK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 304 | Tofacitinib (`tofacitinib`) | JAK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 305 | Upadacitinib (`upadacitinib`) | JAK inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 306 | Fedratinib (`fedratinib`) | JAK2 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 307 | Ritlecitinib (`ritlecitinib`) | JAK3 / TEC inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 308 | Kava (`kava`) | Kavalactone sedative | none → minor | new Stribild CYP3A4 substrate role × Kava (weak inhibitor) |
+| 309 | Telithromycin (`telithromycin`) | Ketolide antibiotic | none → major | new Stribild CYP3A4 substrate role × Telithromycin (strong inhibitor) |
+| 310 | Adagrasib (`adagrasib`) | KRAS G12C inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 311 | Sotorasib (`sotorasib`) | KRAS G12C inhibitor | none → major | new Stribild CYP3A4 substrate role × Sotorasib (moderate inducer) |
+| 312 | 7-Hydroxymitragynine (`seven-oh`) | Kratom μ-agonist (7-OH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 313 | Salmeterol (`salmeterol`) | LABA | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 314 | Vilanterol (`vilanterol`) | LABA | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 315 | Cocaine (`cocaine`) | Local anesthetic / stimulant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 316 | Montelukast (`montelukast`) | LTRA | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 317 | Clarithromycin (`clarithromycin`) | Macrolide antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 318 | Erythromycin (`erythromycin`) | Macrolide antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 319 | Nateglinide (`nateglinide`) | Meglitinide | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 320 | Repaglinide (`repaglinide`) | Meglitinide | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 321 | Tasimelteon (`tasimelteon`) | Melatonin agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 322 | Revumenib (`revumenib`) | Menin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 323 | Ziftomenib (`ziftomenib`) | Menin inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 324 | Eplerenone (`eplerenone`) | Mineralocorticoid antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 325 | Adrafinil (`adrafinil`) | Modafinil prodrug | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 326 | Red yeast rice (`red-yeast-rice`) | Monacolin K (lovastatin analog) | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 327 | Sirolimus (`sirolimus`) | mTOR inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × sensitive NTI substrate |
+| 328 | Vortioxetine (`vortioxetine`) | Multimodal antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 329 | Chlorzoxazone (`chlorzoxazone`) | Muscle relaxant | none → minor | new Stribild CYP3A4 substrate role × Chlorzoxazone (weak inhibitor) |
+| 330 | Cyclobenzaprine (`cyclobenzaprine`) | Muscle relaxant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 331 | Zavegepant (`zavegepant`) | Nasal CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 332 | Mirtazapine (`mirtazapine`) | NaSSA antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 333 | Suzetrigine (`suzetrigine`) | NaV1.8 inhibitor (non-opioid analgesic) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 334 | Glycerol phenylbutyrate (`glycerol-phenylbutyrate`) | Nitrogen-binding agent (urea cycle) | none → moderate | new Stribild CYP3A4 substrate role × Glycerol phenylbutyrate (weak inducer) |
+| 335 | Fexinidazole (`fexinidazole`) | Nitroimidazole antiprotozoal | none → major | new Stribild CYP3A4 substrate role × Fexinidazole (moderate inducer) |
+| 336 | Pretomanid (`pretomanid`) | Nitroimidazooxazine (TB) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 337 | Tradipitant (`tradipitant`) | NK1 (neurokinin-1) receptor antagonist (antiemetic) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 338 | Netupitant–palonosetron (`netupitant`) | NK1 / 5-HT3 | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 339 | Fosaprepitant (`fosaprepitant`) | NK1 antagonist | none → minor | new Stribild CYP3A4 substrate role × Fosaprepitant (weak inhibitor) |
+| 340 | Aprepitant (`aprepitant`) | NK1 antagonist (antiemetic) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 341 | Elinzanetant (`elinzanetant`) | NK1/NK3 receptor antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 342 | Dextromethorphan–bupropion (`auvelity`) | NMDA / NDRI antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 343 | Dextromethorphan (`dextromethorphan`) | NMDA antitussive / dissociative | none → major | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
+| 344 | Phencyclidine (`pcp`) | NMDA dissociative | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 345 | Esketamine (`esketamine`) | NMDA dissociative (S-ketamine) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 346 | Ketamine (`ketamine`) | NMDA dissociative anesthetic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 347 | Doravirine (`doravirine`) | NNRTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 348 | Etravirine (`etravirine`) | NNRTI | none → major | new Stribild CYP3A4 substrate role × Etravirine (moderate inducer) |
+| 349 | Rilpivirine (`rilpivirine`) | NNRTI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 350 | Efavirenz (`efavirenz`) | NNRTI antiretroviral | moderate → major | new Stribild CYP3A4 substrate role × Efavirenz (moderate inducer) |
+| 351 | Nevirapine (`nevirapine`) | NNRTI antiretroviral | none → major | new Stribild CYP3A4 substrate role × Nevirapine (moderate inducer) |
+| 352 | Diltiazem (`diltiazem`) | Non-DHP CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 353 | Verapamil (`verapamil`) | Non-DHP CCB | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 354 | Finerenone (`finerenone`) | Nonsteroidal MRA | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 355 | Omaveloxolone (`omaveloxolone`) | Nrf2 activator | none → moderate | new Stribild CYP3A4 substrate role × Omaveloxolone (weak inducer) |
+| 356 | Atomoxetine (`atomoxetine`) | NRI (ADHD) | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 357 | Viloxazine (`viloxazine`) | NRI (ADHD) | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 358 | Ibogaine (`ibogaine`) | Oneirogen / NMDA–kappa agonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 359 | Tramadol (`tramadol`) | Opioid / SNRI analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 360 | Methadone (`methadone`) | Opioid agonist | none → moderate | derived card (pd-methadone-arv-unsettled) |
+| 361 | Alfentanil (`alfentanil`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 362 | Fentanyl (`fentanyl`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 363 | Hydrocodone (`hydrocodone`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 364 | Meperidine (`meperidine`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 365 | Oxycodone (`oxycodone`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 366 | Sufentanil (`sufentanil`) | Opioid analgesic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 367 | Codeine (`codeine`) | Opioid analgesic (prodrug) | none → major | new Stribild CYP2D6 weak inhibitor × sensitive substrate (activation) |
+| 368 | Atogepant (`atogepant`) | Oral CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 369 | Rimegepant (`rimegepant`) | Oral CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 370 | Ubrogepant (`ubrogepant`) | Oral CGRP antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 371 | Relugolix (`relugolix`) | Oral GnRH antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 372 | Orforglipron (`orforglipron`) | Oral non-peptide GLP-1 agonist (emerging) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 373 | Lemborexant (`lemborexant`) | Orexin antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 374 | Suvorexant (`suvorexant`) | Orexin antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 375 | Tazemetostat (`tazemetostat`) | Other cytotoxic / differentiating | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 376 | Clopidogrel (`clopidogrel`) | P2Y12 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate (activation) |
+| 377 | Prasugrel (`prasugrel`) | P2Y12 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate (activation) |
+| 378 | Ticagrelor (`ticagrelor`) | P2Y12 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 379 | Buprenorphine (`buprenorphine`) | Partial opioid agonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 380 | Cilostazol (`cilostazol`) | PDE3 antiplatelet | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 381 | Nerandomilast (`nerandomilast`) | PDE4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 382 | Roflumilast (`roflumilast`) | PDE4 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 383 | Avanafil (`avanafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 384 | Sildenafil (`sildenafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 385 | Tadalafil (`tadalafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 386 | Vardenafil (`vardenafil`) | PDE5 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 387 | Sildenafil (PAH) (`sildenafil-pah`) | PDE5 inhibitor (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 388 | Dicloxacillin (`dicloxacillin`) | Penicillinase-resistant penicillin | none → major | new Stribild CYP3A4 substrate role × Dicloxacillin (moderate inducer) |
+| 389 | Nafcillin (`nafcillin`) | Penicillinase-resistant penicillin | none → moderate | new Stribild CYP3A4 substrate role × Nafcillin (weak inducer) |
+| 390 | Domperidone (`domperidone`) | Peripheral D2 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 391 | Naldemedine (`naldemedine`) | Peripheral opioid antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 392 | Naloxegol (`naloxegol`) | Peripheral opioid antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 393 | Loperamide (`loperamide`) | Peripheral μ-agonist / P-gp substrate | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 394 | 2C-B (`twocb`) | Phenethylamine psychedelic | none → minor | new Stribild CYP2D6 weak inhibitor × minor substrate |
+| 395 | Alpelisib (`alpelisib`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 396 | Capivasertib (`capivasertib`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 397 | Everolimus (`everolimus`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 398 | Temsirolimus (`temsirolimus`) | PI3K / mTOR / AKT | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 399 | Idelalisib (`idelalisib`) | PI3Kδ inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 400 | Cobicistat (`cobicistat`) | PK booster | none → major | new Stribild CYP3A4 substrate role × Cobicistat (strong inhibitor) |
+| 401 | Berotralstat (`berotralstat`) | Plasma kallikrein inhibitor | none → moderate | new Stribild CYP3A4 substrate role × Berotralstat (moderate inhibitor) |
+| 402 | Sebetralstat (`sebetralstat`) | Plasma kallikrein inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 403 | Lefamulin (`lefamulin`) | Pleuromutilin antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 404 | Vonoprazan (`vonoprazan`) | Potassium-competitive acid blocker | none → minor | new Stribild CYP3A4 substrate role × Vonoprazan (weak inhibitor) |
+| 405 | Elafibranor (`elafibranor`) | PPAR agonist | none → moderate | new Stribild CYP3A4 substrate role × Elafibranor (weak inducer) |
+| 406 | Omeprazole (`omeprazole`) | PPI | none → minor | new Stribild CYP3A4 substrate role × Omeprazole (weak inhibitor) |
+| 407 | Metoclopramide (`metoclopramide`) | Prokinetic / D2 antagonist | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 408 | Daraxonrasib (`daraxonrasib`) | RAS inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 409 | Rifabutin (`rifabutin`) | Rifamycin | none → major | new Stribild CYP3A4 substrate role × Rifabutin (moderate inducer) |
+| 410 | Rifampin (`rifampin`) | Rifamycin | moderate → major | new Stribild CYP3A4 substrate role × Rifampin (strong inducer) |
+| 411 | Rifapentine (`rifapentine`) | Rifamycin | none → major | new Stribild CYP3A4 substrate role × Rifapentine (strong inducer) |
+| 412 | Ozanimod (`ozanimod`) | S1P modulator | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 413 | Siponimod (`siponimod`) | S1P modulator | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 414 | Nefazodone (`nefazodone`) | SARI antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 415 | Trazodone (`trazodone`) | SARI antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 416 | Ensitrelvir (`ensitrelvir`) | SARS-CoV-2 protease inhibitor | none → major | new Stribild CYP3A4 substrate role × Ensitrelvir (strong inhibitor) |
+| 417 | Schisandra (`schisandra`) | Schisandra (CYP3A4 herbal inhibitor) | none → major | new Stribild CYP3A4 substrate role × Schisandra (moderate inhibitor) |
+| 418 | Hydroxyzine (`hydroxyzine`) | Sedating antihistamine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 419 | Promethazine (`promethazine`) | Sedating antihistamine | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 420 | Ulipristal (`ulipristal`) | Selective progesterone modulator | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 421 | Saw palmetto (`saw-palmetto`) | Serenoa (BPH herb) | none → minor | new Stribild CYP3A4 substrate role × Saw palmetto (weak inhibitor) |
+| 422 | Tamoxifen (`tamoxifen`) | SERM | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 423 | Riociguat (`riociguat`) | sGC stimulator (PAH) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 424 | Duloxetine (`duloxetine`) | SNRI | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 425 | Levomilnacipran (`levomilnacipran`) | SNRI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 426 | Venlafaxine (`venlafaxine`) | SNRI | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 427 | Vilazodone (`vilazodone`) | SPAR antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 428 | Zoliflodacin (`zoliflodacin`) | Spiropyrimidinetrione antibacterial (bacterial topoisomerase inhibitor) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 429 | Citalopram (`citalopram`) | SSRI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 430 | Escitalopram (`escitalopram`) | SSRI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 431 | Fluvoxamine (`fluvoxamine`) | SSRI | none → moderate | new Stribild CYP3A4 substrate role × Fluvoxamine (moderate inhibitor) |
+| 432 | Paroxetine (`paroxetine`) | SSRI | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 433 | Sertraline (`sertraline`) | SSRI | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 434 | Paltusotine (`paltusotine`) | SSTR2 agonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 435 | Atorvastatin (`atorvastatin`) | Statin | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 436 | Resveratrol (`resveratrol`) | Stilbene supplement | none → moderate | new Stribild CYP3A4 substrate role × Resveratrol (moderate inhibitor) |
+| 437 | Dirty 30 (pressed M30) (`dirty-30`) | Street pressed opioid | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 438 | Brorphine (`brorphine`) | Street synthetic opioid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 439 | U-47700 (`u-47700`) | Street synthetic opioid (AH-series related) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 440 | Acrylfentanyl (`acrylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 441 | Cyclopropylfentanyl (`cyclopropylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 442 | Furanylfentanyl (`furanylfentanyl`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 443 | Ocfentanil (`ocfentanil`) | Street synthetic opioid (fentanyl analog) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 444 | Dapsone (`dapsone`) | Sulfone | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 445 | Glyburide (`glyburide`) | Sulfonylurea | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 446 | Cabazitaxel (`cabazitaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 447 | Docetaxel (`docetaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 448 | Nab-paclitaxel (`nab-paclitaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 449 | Paclitaxel (`paclitaxel`) | Taxane | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 450 | Amoxapine (`amoxapine`) | Tetracyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 451 | Maprotiline (`maprotiline`) | Tetracyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 452 | Pioglitazone (`pioglitazone`) | Thiazolidinedione | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 453 | Etizolam (`etizolam`) | Thienodiazepine | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 454 | Deschloroetizolam (`deschloroetizolam`) | Thienodiazepine (designer) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 455 | Flubrotizolam (`flubrotizolam`) | Thienodiazepine (designer) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 456 | Nintedanib (`nintedanib`) | TKI (IPF) | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 457 | O-Desmethyltramadol (`o-dsmt`) | Tramadol active metabolite / street opioid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 458 | Gepotidacin (`gepotidacin`) | Triazaacenaphthylene antibiotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 459 | Amitriptyline (`amitriptyline`) | Tricyclic antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 460 | Clomipramine (`clomipramine`) | Tricyclic antidepressant | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 461 | Desipramine (`desipramine`) | Tricyclic antidepressant | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 462 | Doxepin (`doxepin`) | Tricyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 463 | Imipramine (`imipramine`) | Tricyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 464 | Nortriptyline (`nortriptyline`) | Tricyclic antidepressant | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 465 | Trimipramine (`trimipramine`) | Tricyclic antidepressant | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 466 | Almotriptan (`almotriptan`) | Triptan | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 467 | Eletriptan (`eletriptan`) | Triptan | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 468 | Ibrexafungerp (`ibrexafungerp`) | Triterpenoid antifungal (glucan synthase inhibitor) | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 469 | Chlorpromazine (`chlorpromazine`) | Typical antipsychotic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 470 | Fluphenazine (`fluphenazine`) | Typical antipsychotic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 471 | Haloperidol (`haloperidol`) | Typical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 472 | Perphenazine (`perphenazine`) | Typical antipsychotic | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 473 | Pimozide (`pimozide`) | Typical antipsychotic | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 474 | Thioridazine (`thioridazine`) | Typical antipsychotic | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive NTI substrate |
+| 475 | Carfentanil (`carfentanil`) | Ultra-potent veterinary opioid | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 476 | Conivaptan (`conivaptan`) | V1a/V2 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 477 | Tolvaptan (`tolvaptan`) | V2 antagonist | none → major | new Stribild CYP3A4 strong inhibitor × sensitive substrate |
+| 478 | Axitinib (`axitinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 479 | Cabozantinib (`cabozantinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 480 | Fruquintinib (`fruquintinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 481 | Lenvatinib (`lenvatinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 482 | Pazopanib (`pazopanib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 483 | Regorafenib (`regorafenib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 484 | Sorafenib (`sorafenib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 485 | Sunitinib (`sunitinib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 486 | Tivozanib (`tivozanib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 487 | Vandetanib (`vandetanib`) | VEGF TKI | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 488 | Eribulin (`eribulin`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 489 | Ixabepilone (`ixabepilone`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 490 | Vinblastine (`vinblastine`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 491 | Vincristine (`vincristine`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 492 | Vinorelbine (`vinorelbine`) | Vinca / microtubule | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 493 | Vitamin D (cholecalciferol) (`vitamin-d`) | Vitamin D3 | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 494 | Warfarin (`warfarin`) | Vitamin K antagonist | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 495 | Deutetrabenazine (`deutetrabenazine`) | VMAT2 inhibitor | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 496 | Tetrabenazine (`tetrabenazine`) | VMAT2 inhibitor | none → moderate | new Stribild CYP2D6 weak inhibitor × sensitive substrate |
+| 497 | Valbenazine (`valbenazine`) | VMAT2 inhibitor | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 498 | Armodafinil (`armodafinil`) | Wake-promoting agent | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 499 | Modafinil (`modafinil`) | Wake-promoting agent | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 500 | Eszopiclone (`eszopiclone`) | Z-hypnotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 501 | Zaleplon (`zaleplon`) | Z-hypnotic | none → major | new Stribild CYP3A4 strong inhibitor × minor substrate |
+| 502 | Zolpidem (`zolpidem`) | Z-hypnotic | none → major | new Stribild CYP3A4 strong inhibitor × major substrate |
+| 503 | Lofexidine (`lofexidine`) | α2-agonist (opioid withdrawal) | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |
+| 504 | Yohimbine (`yohimbine`) | α2-antagonist (sexual / stimulant herb) | none → minor | new Stribild CYP2D6 weak inhibitor × major substrate |

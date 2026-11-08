@@ -61,7 +61,7 @@ Per row (the label's own words, or why the row is not named):
 
 Before: `origin/claude/project-thread-u8ylj3-clin-hiv @ 95266f4`, saved in `scripts/fixtures/methadone-arv-before.json` (cards of methadone with each listed row, and a SHA-256 digest of the cards of methadone with every other catalog row). After: this branch. Both run the app's own `analyze(["methadone", row])`; a card is any finding that names both drugs, written as suffix, severity and effect. Pair grade is the highest such card (the `pairSeverity` rule in the label tests). Default host is the primary scan; the no-host scan is shown where it differs. Two-drug pairs only.
 
-Methadone with every other catalog row (1892 pairs): unchanged (digest matches).
+Methadone with every other catalog row (1899 pairs): unchanged (digest matches).
 
 ## Summary
 
