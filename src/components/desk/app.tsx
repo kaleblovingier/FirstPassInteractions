@@ -325,7 +325,7 @@ export function DeskApp() {
       </a>
       <StripeReturn ready={hydrated} />
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
             <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
@@ -353,8 +353,8 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2 xl:w-auto xl:justify-end">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap xl:flex-nowrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1 xl:w-auto xl:rounded-full">
+          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1">
               {DESK_VIEWS.map(([id, label]) => (
                 <button
                   key={id}
@@ -461,7 +461,15 @@ export function DeskApp() {
       ) : null}
 
       <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
-        <ViewBoundary resetKey={view} atHome={view === "desk"} onHome={() => setView("desk")}>
+        <ViewBoundary
+          resetKey={view}
+          atHome={view === "desk"}
+          onHome={() => {
+            setView("desk");
+            // The button unmounts with the error; keep keyboard focus in the page.
+            document.getElementById("main")?.focus();
+          }}
+        >
         {view === "plans" ? (
           <>
             <PlansPage />
