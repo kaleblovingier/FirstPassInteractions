@@ -2,6 +2,7 @@ import { SEVERITY_LABEL, SEVERITY_RANK, type Severity } from "@/lib/drugs/types"
 import { pairPages, type PairPage } from "./pair-pages";
 import { drugHubs, type DrugHub } from "./drug-hubs";
 import { SITE_URL } from "./pair-copy";
+import { PROGRAM_AUDIENCES, type ProgramAudience } from "./for-programs-audiences";
 
 /** Line printed on every share image. */
 export const OG_DISCLAIMER = "Educational reference only. Not FDA-cleared.";
@@ -54,9 +55,21 @@ export const STATIC_OG_JOBS: OgImageJob[] = [
   { path: ogImagePath("page", "for-programs"), kicker: "For programs", heading: "Group and site licenses", sub: "For teaching and care programs", severity: null, gradeLabel: null },
 ];
 
+/** Share image for a /for-programs/<audience> page. */
+export function audienceOgJob(a: ProgramAudience): OgImageJob {
+  return {
+    path: ogImagePath("page", `for-programs-${a.slug}`),
+    kicker: "For programs",
+    heading: a.name,
+    sub: "Group and site licenses for teaching",
+    severity: null,
+    gradeLabel: null,
+  };
+}
+
 /** Every share image the build must produce. Derived from data, so slug renames follow automatically. */
 export function ogImageJobs(): OgImageJob[] {
-  return [...pairPages().map(pairOgJob), ...drugHubs().map(hubOgJob), ...STATIC_OG_JOBS];
+  return [...pairPages().map(pairOgJob), ...drugHubs().map(hubOgJob), ...STATIC_OG_JOBS, ...PROGRAM_AUDIENCES.map(audienceOgJob)];
 }
 
 /** Alt text for a share image: what the image says, in words. */
