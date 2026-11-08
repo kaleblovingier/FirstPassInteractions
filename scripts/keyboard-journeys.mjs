@@ -280,6 +280,58 @@ for (const name of ["Unlock", "Plans"]) {
   await ctx.close();
 }
 
+// 10. Shortcut sheet: "?" opens it with focus inside, Escape returns focus; "/" jumps to the drug search.
+{
+  const { ctx, page } = await fresh("/");
+  const opener = page.getByRole("button", { name: "Library", exact: true }).first();
+  await opener.focus();
+  await page.keyboard.press("Shift+Slash");
+  await page.waitForTimeout(400);
+  const sheet = page.getByRole("dialog", { name: "Keyboard shortcuts" });
+  check((await sheet.count()) === 1, "shortcuts: ? opens the shortcut sheet");
+  check((await focusInfo(page)).inDialog, "shortcuts: focus moves into the sheet");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(400);
+  check((await sheet.count()) === 0 && (await opener.evaluate((b) => b === document.activeElement)), "shortcuts: Escape closes the sheet and returns focus");
+  await opener.focus();
+  await page.keyboard.press("Slash");
+  await page.waitForTimeout(400);
+  check((await page.evaluate(() => document.activeElement?.id)) === "drug-search", "shortcuts: / focuses the drug search");
+  await ctx.close();
+}
+
+// 11. Try a swap by keyboard: pick a replacement, apply it, focus stays on the panel's field.
+{
+  const { ctx, page } = await fresh("/");
+  for (const d of ["clarithromycin", "simvastatin"]) {
+    await page.locator("#drug-search").fill(d);
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(500);
+  }
+  const panel = page.getByTestId("swap-preview");
+  await panel.waitFor({ timeout: 15000 });
+  const field = panel.getByPlaceholder("Generic or brand name");
+  await field.focus();
+  await page.keyboard.type("azithromycin");
+  await page.waitForTimeout(400);
+  await panel.getByRole("list", { name: "Replacement matches" }).getByRole("button").first().focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  check((await panel.getByTestId("swap-result").count()) === 1, "swap: Enter on a match shows the what-if result");
+  let f = await focusInfo(page);
+  check(!f.body, `swap: focus has somewhere to go after picking a match (got ${f.desc})`);
+  await panel.getByRole("button", { name: "Apply swap" }).focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(600);
+  const tray = await page.locator('button[title="Remove from regimen"] span.font-medium').allInnerTexts();
+  check(tray.includes("Azithromycin") && !tray.includes("Simvastatin"), `swap: Apply swap replaces the item on the tray (${tray.join(", ")})`);
+  f = await focusInfo(page);
+  check(!f.body, `swap: focus has somewhere to go after Apply swap (got ${f.desc})`);
+  check(/Swapped Simvastatin for Azithromycin/.test(await liveText(page)), "swap: the swap is announced");
+  await ctx.close();
+}
+
 await browser.close();
 console.log(`\n${notes.length} passed, ${failures.length} failed`);
 process.exit(failures.length ? 1 : 0);
