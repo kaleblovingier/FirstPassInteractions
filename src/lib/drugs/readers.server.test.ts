@@ -154,6 +154,16 @@ describe("readers.server - readWithBots", () => {
     assert.equal((await readWithBots(brief("Lead 0"), "203.0.113.5")).ok, true, "cached reads stay free");
     assert.equal((await readWithBots(brief("Other caller"), "198.51.100.5")).ok, true);
   });
+
+  it("holds the per-caller cap when one caller sends its asks all at once", async () => {
+    const calls = stubFetch(() => chat("A plain restatement."));
+    const burst = await Promise.all(
+      Array.from({ length: ASKS_PER_IP + 5 }, (_, i) => readWithBots(brief(`Burst ${i}`), "203.0.113.9")),
+    );
+    assert.equal(burst.filter((r) => r.ok).length, ASKS_PER_IP);
+    assert.equal(calls.length, ASKS_PER_IP * 3);
+    assert.equal((await readWithBots(brief("Someone else"), "198.51.100.9")).ok, true, "the desk budget is left for others");
+  });
 });
 
 describe("readers.server - caps shared across instances", () => {
