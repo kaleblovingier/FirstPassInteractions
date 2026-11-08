@@ -92,7 +92,8 @@ test("shipped copy makes no regulatory or clinical-review claim", () => {
   const hits: string[] = [];
   for (const dir of ["src", "public"]) {
     for (const file of shippedFiles(join(ROOT, dir))) {
-      const rel = file.slice(ROOT.length + 1);
+      // The allow-list uses "/" paths; Windows hands back "\".
+      const rel = file.slice(ROOT.length + 1).replaceAll("\\", "/");
       for (const hit of claimHits(readFileSync(file, "utf8"))) {
         if (!allowed(rel, hit)) hits.push(`${rel}: ${hit}`);
       }
