@@ -10,9 +10,67 @@ import {
   isSofosbuvirAmio,
   isClozapineBenzo,
   isClopidogrelPpi,
+  isWarfarinCyp2c9,
+  isMtxNsaid,
+  isMaoiSerotonergic,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
+  it("detects Warfarin × TMP-SMX / Metronidazole CYP2C9 inhibition collision", () => {
+    assert.equal(isWarfarinCyp2c9("warfarin", "tmp-smx"), true);
+    assert.equal(isWarfarinCyp2c9("metronidazole", "warfarin"), true);
+    assert.equal(isWarfarinCyp2c9("warfarin", "amoxicillin"), false);
+
+    const tmpHits = safetyOnDesk(["warfarin", "tmp-smx"]);
+    assert.equal(tmpHits.length, 1);
+    assert.equal(tmpHits[0].id, "warfarin-cyp2c9");
+    assert.equal(tmpHits[0].severity, "major");
+    assert.equal(tmpHits[0].tone, "danger");
+    assert.match(tmpHits[0].mechanism, /CYP2C9 blockade \/ extreme INR surge/i);
+    assert.match(tmpHits[0].clinical, /\(S\)-warfarin.*intracranial hemorrhage/i);
+    assert.match(tmpHits[0].source, /Coumadin.*Bactrim.*Flagyl/i);
+
+    const metroHits = safetyOnDesk(["warfarin", "metronidazole"]);
+    assert.equal(metroHits.length, 1);
+    assert.equal(metroHits[0].id, "warfarin-cyp2c9");
+  });
+
+  it("detects Methotrexate × Systemic NSAIDs collision as major risk", () => {
+    assert.equal(isMtxNsaid("methotrexate", "ibuprofen"), true);
+    assert.equal(isMtxNsaid("naproxen", "methotrexate"), true);
+    assert.equal(isMtxNsaid("methotrexate", "indomethacin"), true);
+    assert.equal(isMtxNsaid("methotrexate", "celecoxib"), true);
+    assert.equal(isMtxNsaid("methotrexate", "ketorolac"), true);
+    assert.equal(isMtxNsaid("methotrexate", "acetaminophen"), false);
+
+    const hits = safetyOnDesk(["methotrexate", "ibuprofen"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "mtx-nsaid");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /OAT1\/3 blockade \/ renal clearance failure/i);
+    assert.match(hits[0].clinical, /OAT1 and OAT3.*Boxed Warning.*bone marrow suppression/i);
+    assert.match(hits[0].source, /Methotrexate FDA Boxed Warning/i);
+  });
+
+  it("detects MAOIs × Serotonergic agents as contraindicated serotonin toxicity", () => {
+    assert.equal(isMaoiSerotonergic("phenelzine", "fluoxetine"), true);
+    assert.equal(isMaoiSerotonergic("tranylcypromine", "tramadol"), true);
+    assert.equal(isMaoiSerotonergic("isocarboxazid", "dextromethorphan"), true);
+    assert.equal(isMaoiSerotonergic("methylene-blue", "sertraline"), true);
+    assert.equal(isMaoiSerotonergic("linezolid", "meperidine"), true);
+    assert.equal(isMaoiSerotonergic("phenelzine", "gabapentin"), false);
+
+    const hits = safetyOnDesk(["phenelzine", "fluoxetine"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "maoi-serotonergic");
+    assert.equal(hits[0].severity, "contraindicated");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /life-threatening serotonin toxicity/i);
+    assert.match(hits[0].clinical, /Hunter criteria.*14-day washout.*5-week/i);
+    assert.match(hits[0].source, /Boyer EW.*Dunkley EJ/i);
+  });
+
   it("detects Colchicine × strong CYP3A4 / P-gp inhibitor collision as contraindicated", () => {
     assert.equal(isColchicineInhibitor("colchicine", "clarithromycin"), true);
     assert.equal(isColchicineInhibitor("cyclosporine", "colchicine"), true);
@@ -103,14 +161,14 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.equal(isMtxTmpsmx("methotrexate", "amoxicillin"), false);
 
     const hits = safetyOnDesk(["methotrexate", "tmp-smx"]);
+    // Note: mtx-tmpsmx matches; mtx-nsaid does not match since tmp-smx is not an NSAID
     assert.equal(hits.length, 1);
-    const hit = hits[0];
-    assert.equal(hit.id, "mtx-tmpsmx");
-    assert.equal(hit.severity, "contraindicated");
-    assert.equal(hit.tone, "danger");
-    assert.match(hit.clinical, /tubular secretion/i);
-    assert.match(hit.clinical, /bone marrow aplasia/i);
-    assert.match(hit.source, /Methotrexate and Bactrim/i);
+    assert.equal(hits[0].id, "mtx-tmpsmx");
+    assert.equal(hits[0].severity, "contraindicated");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].clinical, /tubular secretion/i);
+    assert.match(hits[0].clinical, /bone marrow aplasia/i);
+    assert.match(hits[0].source, /Methotrexate and Bactrim/i);
   });
 
   it("continues to detect existing high-risk safety collisions", () => {

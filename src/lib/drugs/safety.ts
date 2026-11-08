@@ -130,7 +130,10 @@ export type SafetyKind =
   | "xo-thiopurine"
   | "mtx-tmpsmx"
   | "colchicine-inhibitor"
-  | "statin-strong-3a4";
+  | "statin-strong-3a4"
+  | "warfarin-cyp2c9"
+  | "mtx-nsaid"
+  | "maoi-serotonergic";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -404,6 +407,108 @@ export function isStatinStrong3a4(a: string, b: string) {
   return (
     (STATIN_3A4_VICTIMS.has(a) && STATIN_STRONG_3A4_PERPETRATORS.has(b)) ||
     (STATIN_3A4_VICTIMS.has(b) && STATIN_STRONG_3A4_PERPETRATORS.has(a))
+  );
+}
+
+export const WARFARIN_CYP2C9_INHIBITORS = new Set([
+  "tmp-smx",
+  "metronidazole",
+]);
+
+export const SYSTEMIC_NSAIDS = new Set([
+  "ibuprofen",
+  "naproxen",
+  "indomethacin",
+  "meloxicam",
+  "celecoxib",
+  "ketorolac",
+  "diclofenac",
+  "piroxicam",
+  "sulindac",
+  "etodolac",
+  "nabumetone",
+  "flurbiprofen",
+  "ketoprofen",
+  "oxaprozin",
+]);
+
+export const MAOI_DRUGS = new Set([
+  "phenelzine",
+  "tranylcypromine",
+  "isocarboxazid",
+  "linezolid",
+  "methylene-blue",
+  "selegiline",
+  "rasagiline",
+  "safinamide",
+  "moclobemide",
+]);
+
+export const SEROTONIN_REUPTAKE_DRUGS = new Set([
+  "fluoxetine",
+  "sertraline",
+  "paroxetine",
+  "citalopram",
+  "escitalopram",
+  "fluvoxamine",
+  "venlafaxine",
+  "duloxetine",
+  "desvenlafaxine",
+  "milnacipran",
+  "levomilnacipran",
+  "vilazodone",
+  "vortioxetine",
+  "amitriptyline",
+  "nortriptyline",
+  "imipramine",
+  "clomipramine",
+  "doxepin",
+  "desipramine",
+  "dextromethorphan",
+  "tramadol",
+  "tapentadol",
+  "meperidine",
+  "methadone",
+  "mdma",
+]);
+
+export function isWarfarinCyp2c9(a: string, b: string) {
+  return (
+    (a === "warfarin" && WARFARIN_CYP2C9_INHIBITORS.has(b)) ||
+    (b === "warfarin" && WARFARIN_CYP2C9_INHIBITORS.has(a))
+  );
+}
+
+export function isSystemicNsaid(id: string) {
+  return SYSTEMIC_NSAIDS.has(id) || (/(^|\s|\/)NSAID(\s|\/|$)/i.test(clsOf(id)) && id !== "aspirin");
+}
+
+export function isMtxNsaid(a: string, b: string) {
+  return (
+    (a === "methotrexate" && isSystemicNsaid(b)) ||
+    (b === "methotrexate" && isSystemicNsaid(a))
+  );
+}
+
+export function isMaoiDrug(id: string) {
+  return MAOI_DRUGS.has(id) || Boolean(DRUG_BY_ID[id]?.pd.includes("maoi"));
+}
+
+export function isSerotonergicDrug(id: string) {
+  if (isMaoiDrug(id)) return false;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  return (
+    SEROTONIN_REUPTAKE_DRUGS.has(id) ||
+    d.pd.includes("ssri-snri") ||
+    d.pd.includes("serotonergic")
+  );
+}
+
+export function isMaoiSerotonergic(a: string, b: string) {
+  return (
+    (isMaoiDrug(a) && isSerotonergicDrug(b)) ||
+    (isMaoiDrug(b) && isSerotonergicDrug(a))
   );
 }
 
@@ -738,6 +843,60 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Simvastatin, lovastatin, and monacolin K (red yeast rice) are lipophilic lactone prodrugs dependent on CYP3A4 for extensive first-pass hepatic extraction. Strong CYP3A4 inhibitors (clarithromycin, erythromycin, ketoconazole, itraconazole, posaconazole, voriconazole, ritonavir, cobicistat, Paxlovid) increase active statin acid AUC up to 5- to 20-fold. Gemfibrozil (OATP1B1/UGT inhibitor) and cyclosporine also multiply exposure. Concomitant use is an absolute labeled contraindication due to high risk of severe skeletal muscle myonecrosis (rhabdomyolysis), myoglobinuria, hyperkalemia, acute tubular necrosis, and fatal renal failure. Labeling recommends suspending the statin during short antimicrobial courses or switching to non-CYP3A4 statins (pravastatin, rosuvastatin) with dose caps.",
         "Unexplained proximal muscle pain, tenderness, or weakness; dark/brown tea-colored urine; creatine kinase (CK >10× ULN defines myopathy; >40× ULN with myoglobinuria indicates rhabdomyolysis); serum creatinine, BUN, potassium. This desk does not pick the statin alternative.",
         "Zocor (simvastatin) and Mevacor (lovastatin) Prescribing Information contraindications. FDA Drug Safety Communication (2011). Neuvonen 2008 (PMID 18596677). Wiggins 2016 AHA Statement (PMID 27754879).",
+      ),
+    );
+  }
+
+  const wm = pair(ids, (id) => id === "warfarin", (id) => WARFARIN_CYP2C9_INHIBITORS.has(id));
+  if (wm) {
+    out.push(
+      hit(
+        "warfarin-cyp2c9",
+        wm[0],
+        wm[1],
+        names(wm[0], wm[1]),
+        "major",
+        "danger",
+        "warfarin × TMP-SMX / metronidazole — CYP2C9 blockade / extreme INR surge",
+        "Warfarin is administered as a racemic mixture where (S)-warfarin is roughly 3- to 5-fold more potent than (R)-warfarin at inhibiting VKORC1. Metabolism of (S)-warfarin depends almost entirely on hepatic CYP2C9. Sulfamethoxazole (in TMP-SMX) and metronidazole potently inhibit CYP2C9, severely impeding (S)-warfarin clearance and precipitating dramatic, unpredictable INR surges (>5.0 to >10.0) within 2 to 5 days. This interaction carries catastrophic risk of fatal gastrointestinal and intracranial hemorrhage. Prescribing information warns of marked PT/INR prolongation. Alternative non-interacting antimicrobials should be prioritized; if coadministration is unavoidable, empiric preemptive warfarin dose reduction (often 30–50%) and frequent INR monitoring (every 24–48 hours) are standard teaching.",
+        "Serial INR (baseline, day 2–3, and post-antimicrobial completion), signs of overt or occult hemorrhage (hematuria, melena, hematemesis, epistaxis, severe headache or acute neurological changes), hemoglobin/hematocrit. This desk does not pick the warfarin dose reduction.",
+        "Coumadin (warfarin), Bactrim (TMP-SMX), and Flagyl (metronidazole) Prescribing Information. O'Reilly 1979 (PMID 428735). Juurlink 2005 (PMID 15897539).",
+      ),
+    );
+  }
+
+  const mn = pair(ids, (id) => id === "methotrexate", isSystemicNsaid);
+  if (mn) {
+    out.push(
+      hit(
+        "mtx-nsaid",
+        mn[0],
+        mn[1],
+        names(mn[0], mn[1]),
+        "major",
+        "danger",
+        "methotrexate × systemic NSAID — OAT1/3 blockade / renal clearance failure",
+        "Methotrexate is eliminated >80% renally via glomerular filtration and active tubular secretion mediated by basolateral organic anion transporters OAT1 and OAT3. Systemic NSAIDs (ibuprofen, naproxen, indomethacin, meloxicam, ketorolac, diclofenac, celecoxib) suppress renal prostaglandins (reducing GFR) and competitively inhibit OAT1/OAT3 tubular excretion, while displacing methotrexate from plasma albumin. Concomitant administration elevates and prolongs serum methotrexate concentrations. FDA labeling carries a Boxed Warning for severe, sometimes fatal bone marrow suppression, aplastic anemia, and gastrointestinal toxicity/enteritis with NSAIDs. While low-dose weekly methotrexate for rheumatoid arthritis is sometimes co-managed under rheumatology with stable chronic NSAIDs, introduction of high-dose NSAIDs or ketorolac can precipitate life-threatening myelosuppression and acute kidney injury.",
+        "CBC with differential (absolute neutrophil count, thrombocytopenia nadir), serum creatinine, BUN, severe stomatitis/oral ulceration, diarrhea, fever. Leucovorin rescue protocols are governed by oncology/poison guidance. This desk does not pick the analgesic alternative.",
+        "Methotrexate FDA Boxed Warning / Prescribing Information. Toradol, Indocin, and Celebrex labels. Tracey 1986 (PMID 3959871). Frenia 1992 (PMID 1625902).",
+      ),
+    );
+  }
+
+  const ms = pair(ids, isMaoiDrug, isSerotonergicDrug);
+  if (ms) {
+    out.push(
+      hit(
+        "maoi-serotonergic",
+        ms[0],
+        ms[1],
+        names(ms[0], ms[1]),
+        "contraindicated",
+        "danger",
+        "MAOI × serotonergic agent — life-threatening serotonin toxicity",
+        "Monoamine oxidase inhibitors (phenelzine, tranylcypromine, isocarboxazid, linezolid, methylene blue) irreversibly or reversibly block the catabolism of serotonin (5-HT). Concomitant administration with serotonin reuptake inhibitors (SSRIs, SNRIs, TCAs), serotonergic analgesics (tramadol, tapentadol, meperidine, methadone), or dextromethorphan leads to massive, unregulated intrasynaptic serotonin accumulation and hyperstimulation of 5-HT1A and 5-HT2A receptors. This combination is an absolute labeled contraindication due to fulminant Serotonin Toxicity (Hunter criteria: spontaneous clonus, tremor, hyperreflexia, rigidity, autonomic instability, and malignant hyperthermia >40°C leading to rhabdomyolysis, DIC, multi-organ failure, and death). Labeling mandates a strict 14-day washout interval when switching between MAOIs and most serotonergic agents, and a mandatory 5-week (35-day) washout after fluoxetine before initiating an MAOI.",
+        "Hunter Toxicity Criteria (spontaneous or ocular clonus, diaphoresis, agitation, tremor, hyperreflexia), core body temperature, muscular rigidity, blood pressure instability. Discontinue all serotonergic agents immediately; active cooling and cyproheptadine protocol under emergency/ICU care. This desk does not time the washout clock.",
+        "Nardil, Parnate, Marplan, Zyvox, and ProvayBlue Prescribing Information contraindications. Boyer EW, Shannon M. The Serotonin Syndrome. N Engl J Med 2005 (PMID 15784664). Dunkley EJ et al. Hunter Serotonin Toxicity Criteria. QJM 2003 (PMID 12925720).",
       ),
     );
   }

@@ -17,8 +17,9 @@ import {
   AnalyticsStore,
   setAnalyticsStore,
 } from "./store.server";
-import { handleGetSiteStats } from "./stats.server";
+import { handleGetSiteStats, handleStatsRequest, STATS_SECURITY_HEADERS } from "./stats.server";
 import { STATS_RANGES, type Device } from "./contract";
+import { resetPinThrottle } from "../billing/license.server";
 import type { Sql } from "../db";
 
 test("sanitizePath extracts pathname and strictly strips queries and hashes", () => {
@@ -495,5 +496,165 @@ test("AnalyticsStore retention pruning and aggregate queries on live PGlite data
   } finally {
     await pg.close();
   }
+});
+
+test("handleStatsRequest enforces HTTP method, security headers, and JSON structure", async () => {
+  // Method other than POST returns 405
+  const getReq = new Request("http://localhost/api/stats", { method: "GET" });
+  const getRes = await handleStatsRequest(getReq);
+  assert.equal(getRes.status, 405);
+  assert.equal(getRes.headers.get("allow"), "POST");
+  assert.match(getRes.headers.get("cache-control") ?? "", /no-store/);
+  assert.equal(getRes.headers.get("x-content-type-options"), "nosniff");
+
+  // Invalid JSON returns 400 with security headers
+  const badJsonReq = new Request("http://localhost/api/stats", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: "{ malformed json",
+  });
+  const badJsonRes = await handleStatsRequest(badJsonReq);
+  assert.equal(badJsonRes.status, 400);
+  assert.match(badJsonRes.headers.get("cache-control") ?? "", /no-store/);
+});
+
+test("handleStatsRequest and handleGetSiteStats enforce brute-force backoff and 429 refusal on repeated invalid PINs", async () => {
+  resetPinThrottle();
+  const vercel = process.env.VERCEL;
+  process.env.VERCEL = "1";
+
+  try {
+    const ip = "203.0.113.88";
+    const postPin = (pin: string) =>
+      new Request("http://localhost/api/stats", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-real-ip": ip,
+        },
+        body: JSON.stringify({ pin, days: 30 }),
+      });
+
+    // First 5 invalid guesses consume free strikes and return 401 Unauthorized
+    for (let i = 0; i < 5; i++) {
+      const res = await handleStatsRequest(postPin(`wrong-pin-${i}`));
+      assert.equal(res.status, 401, `attempt ${i + 1} should return 401`);
+      const body = (await res.json()) as { ok: boolean; reason: string };
+      assert.equal(body.ok, false);
+      assert.equal(body.reason, "Operator PIN is wrong.");
+      assert.match(res.headers.get("cache-control") ?? "", /no-store/);
+      assert.equal(res.headers.get("x-content-type-options"), "nosniff");
+    }
+
+    // 6th invalid guess trips the rate limiter and returns 429 Too Many Requests
+    const floodRes = await handleStatsRequest(postPin("wrong-pin-flood"));
+    assert.equal(floodRes.status, 429, "6th failed attempt must return 429");
+    assert.ok(floodRes.headers.get("retry-after"), "must include Retry-After header");
+    assert.match(floodRes.headers.get("cache-control") ?? "", /no-store/);
+    const floodBody = (await floodRes.json()) as { ok: boolean; reason: string };
+    assert.equal(floodBody.ok, false);
+    assert.match(floodBody.reason, /^Too many wrong PINs from here/);
+
+    // Direct call to handleGetSiteStats from same IP is also refused
+    const directRes = await handleGetSiteStats({ pin: "wrong-pin-direct", days: 30 }, ip);
+    assert.equal(directRes.ok, false);
+    assert.match(directRes.reason, /^Too many wrong PINs from here/);
+  } finally {
+    if (vercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = vercel;
+    resetPinThrottle();
+  }
+});
+
+test("handleStatsRequest retrieves aggregate stats with zero leakage of salt or visitor IP data", async () => {
+  resetPinThrottle();
+  const migration = readFileSync(
+    new URL("../../../migrations/0003_analytics.sql", import.meta.url),
+    "utf8",
+  );
+  const pg = new PGlite({ parsers: { 20: Number } });
+  await pg.waitReady;
+  await pg.exec(migration);
+
+  try {
+    const pgliteSql = (async <T = Record<string, unknown>>(
+      strings: TemplateStringsArray,
+      ...values: unknown[]
+    ): Promise<T[]> => {
+      let query = strings[0]!;
+      for (let i = 0; i < values.length; i++) {
+        query += `$${i + 1}${strings[i + 1]}`;
+      }
+      return (await pg.query<T>(query, values)).rows;
+    }) as unknown as Sql;
+    pgliteSql.query = async <T = Record<string, unknown>>(
+      text: string,
+      params: unknown[] = [],
+    ): Promise<T[]> => (await pg.query<T>(text, params)).rows;
+
+    const store = new AnalyticsStore(pgliteSql);
+    setAnalyticsStore(store);
+
+    const secretIp = "198.51.100.77";
+    const secretUa = "ConfidentialBrowser/9.9";
+    const now = 1794170000000;
+
+    await store.recordView({
+      path: "/pairs",
+      referrerHost: "partner.org",
+      country: "US",
+      device: "desktop",
+      ip: secretIp,
+      userAgent: secretUa,
+      now,
+    });
+
+    const validPinReq = new Request("http://localhost/api/stats", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ pin: "heme-450", days: 7 }),
+    });
+
+    const res = await handleStatsRequest(validPinReq);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get("cache-control") ?? "", /no-store/);
+    assert.equal(res.headers.get("x-content-type-options"), "nosniff");
+
+    const text = await res.text();
+    const json = JSON.parse(text) as { ok: boolean; stats: Record<string, unknown> };
+
+    assert.equal(json.ok, true);
+    assert.ok(json.stats);
+
+    // Strict privacy invariant assertion: zero leakage of raw IP, user agent, or salts
+    assert.doesNotMatch(text, new RegExp(secretIp));
+    assert.doesNotMatch(text, new RegExp(secretUa));
+    assert.doesNotMatch(text, /"salt"/i);
+    assert.doesNotMatch(text, /"visitor_code"/i);
+  } finally {
+    setAnalyticsStore(undefined);
+    await pg.close();
+    resetPinThrottle();
+  }
+});
+
+test("handleStatsRequest maintains stability and idempotency under high concurrent volume", async () => {
+  resetPinThrottle();
+  const requests = Array.from({ length: 50 }, () =>
+    new Request("http://localhost/api/stats", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ pin: "heme-450", days: 30 }),
+    }),
+  );
+
+  const responses = await Promise.all(requests.map((r) => handleStatsRequest(r)));
+  assert.equal(responses.length, 50);
+
+  for (const res of responses) {
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get("cache-control") ?? "", /no-store/);
+  }
+  resetPinThrottle();
 });
 
