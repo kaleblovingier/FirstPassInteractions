@@ -5,6 +5,7 @@ import { setLogSink } from "../server/log";
 import { handleCollectLicenses, handleDraftCollected } from "./collect";
 import { handleClaimPaypalCheckout } from "./paypal";
 import {
+  handleMintApiKey,
   handleMintLicenseBatch,
   handleMintLicenseKey,
   handleMintProgramLicense,
@@ -15,6 +16,7 @@ import {
   BILLING_INPUT_REASON,
   CollectInput,
   DraftCollectedInput,
+  MintApiInput,
   MintBatchInput,
   MintLicenseInput,
   MintProgramInput,
@@ -120,6 +122,30 @@ describe("billing rpc input — mint and redeem reject bad payloads", () => {
     if (!res.ok) return;
     assert.match(res.key, /^FP-ORG-P202706-/);
     assert.equal(res.tier, "program");
+  });
+
+  it("rejects a program tier or a wrong PIN on the API key mint", async () => {
+    const badTier = await handleMintApiKey(
+      gate("mintApiLicense", MintApiInput, { pin: PIN, tier: "site", org: "Cascade College", end: "2027-06" }),
+    );
+    assert.deepEqual(badTier, { ok: false, reason: BILLING_INPUT_REASON });
+    const wrongPin = await handleMintApiKey(
+      gate("mintApiLicense", MintApiInput, { pin: "wrong", tier: "education", org: "Cascade College", end: "2027-06" }),
+    );
+    assert.deepEqual(wrongPin, { ok: false, reason: "Operator PIN is wrong." });
+  });
+
+  it("mints an API key only from a tier, org and end month", async () => {
+    const now = new Date();
+    const total = now.getUTCFullYear() * 12 + now.getUTCMonth() + 3;
+    const end = `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, "0")}`;
+    const res = await handleMintApiKey(
+      gate("mintApiLicense", MintApiInput, { pin: PIN, tier: "education", org: "Cascade College", end }),
+    );
+    assert.equal(res.ok, true);
+    if (!res.ok) return;
+    assert.match(res.key, new RegExp(`^FP-API-E${end.replace("-", "")}-`));
+    assert.equal(res.tier, "education");
   });
 
   it("rejects a batch whose plan or name list is the wrong shape", async () => {

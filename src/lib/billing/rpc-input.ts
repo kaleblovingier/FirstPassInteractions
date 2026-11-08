@@ -30,6 +30,7 @@ export const issuedPlan = z.enum(["pro", "lab", "life"]);
 const checkoutPlan = z.enum(["pro", "lab"]);
 const interval = z.enum(["month", "year", "life"]);
 const tier = z.enum(["team", "program", "site"]);
+const apiTier = z.enum(["developer", "education"]);
 
 /** Empty is allowed (no buyer email). Anything else must be a single plain address. */
 const rowEmail = z
@@ -50,6 +51,13 @@ export const MintLicenseInput = z.strictObject({
 export const MintProgramInput = z.strictObject({
   pin,
   tier,
+  org: oneLine(200),
+  end: oneLine(32),
+});
+
+export const MintApiInput = z.strictObject({
+  pin,
+  tier: apiTier,
   org: oneLine(200),
   end: oneLine(32),
 });

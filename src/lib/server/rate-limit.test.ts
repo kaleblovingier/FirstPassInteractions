@@ -14,6 +14,18 @@ describe("SlidingWindow", () => {
     assert.equal(w.take("a", 1_050), false);
   });
 
+  it("reports hits used and when the oldest frees a slot", () => {
+    const w = new SlidingWindow(3, 1_000);
+    assert.equal(w.used("a", 0), 0);
+    assert.equal(w.resetMs("a", 0), 0);
+    w.take("a", 100);
+    w.take("a", 400);
+    assert.equal(w.used("a", 500), 2);
+    assert.equal(w.resetMs("a", 500), 600, "the hit at t=100 leaves at t=1100");
+    assert.equal(w.used("a", 1_100), 1);
+    assert.equal(w.resetMs("a", 1_100), 300);
+  });
+
   it("does not count refused takes", () => {
     const w = new SlidingWindow(1, 1_000);
     assert.equal(w.take("a", 0), true);

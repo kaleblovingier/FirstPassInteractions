@@ -159,6 +159,7 @@ export function sitemapXml(): string {
     `${SITE_URL}/pairs`,
     `${SITE_URL}/enzymes`,
     `${SITE_URL}/for-programs`,
+    `${SITE_URL}/developers`,
     `${SITE_URL}/practice`,
     `${SITE_URL}/glossary`,
     `${SITE_URL}/workup`,

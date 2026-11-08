@@ -104,12 +104,31 @@ export function problemInternal(
   });
 }
 
-export function toProblemResponse(problem: ProblemDetails): Response {
-  return new Response(JSON.stringify(problem), {
-    status: problem.status,
-    headers: {
-      "Content-Type": "application/problem+json; charset=utf-8",
-      "Cache-Control": "no-store",
-    },
+export function problemUnauthorized(detail: string, instance?: string): ProblemDetails {
+  return createProblemDetails(401, "Unauthorized", detail, {
+    type: "https://firstpass.app/errors/invalid-api-key",
+    instance,
   });
+}
+
+export function problemTooManyRequests(detail: string, instance?: string): ProblemDetails {
+  return createProblemDetails(429, "Too Many Requests", detail, {
+    type: "https://firstpass.app/errors/rate-limited",
+    instance,
+  });
+}
+
+export function problemUnavailable(detail: string, instance?: string): ProblemDetails {
+  return createProblemDetails(503, "Service Unavailable", detail, {
+    type: "https://firstpass.app/errors/service-unavailable",
+    instance,
+  });
+}
+
+/** `headers` are added after the content type, e.g. Retry-After or WWW-Authenticate. */
+export function toProblemResponse(problem: ProblemDetails, headers?: HeadersInit): Response {
+  const out = new Headers(headers);
+  out.set("Content-Type", "application/problem+json; charset=utf-8");
+  out.set("Cache-Control", "no-store");
+  return new Response(JSON.stringify(problem), { status: problem.status, headers: out });
 }
