@@ -60,7 +60,7 @@ const CALL_TIMEOUT_MS = 6_000;
 const LOOKUP_BUDGET_MS = 10_000;
 
 export const liveCache = new BoundedLRUCache<LiveOutcome>(500, LIVE_TTL_MS);
-const UA = "FirstPass/1.0 (educational CYP desk; kaleblovingier@gmail.com)";
+const UA = "FirstPass/1.0 (educational CYP desk; FirstPassInteractions@gmail.com)";
 
 const LABELED_SOURCES: LiveSource[] = ["label", "faers", "rxnorm", "pubchem", "dailymed", "shortage", "ndc", "recalls"];
 const UNLABELED_SOURCES: LiveSource[] = ["rxnorm", "pubchem"];
