@@ -89,6 +89,25 @@ function safeEq(a: string, b: string) {
 }
 
 /**
+ * For other key families signed with the same pepper (API keys, ./api-keys.server.ts). Each family
+ * must prefix its payloads with its own tag ("API:", "api:") so no key from one family verifies as another.
+ * All three throw while the pepper is unset in production, like the license mint.
+ */
+export function pepperSig(payload: string): string {
+  return hmac(payload);
+}
+
+/** 8 upper-case hex of the pepper-keyed HMAC of `payload`: a deterministic key body. */
+export function pepperDigest(payload: string): string {
+  return createHmac("sha256", resolvePepper()).update(payload).digest("hex").slice(0, 8).toUpperCase();
+}
+
+/** Constant-time string compare. */
+export function sameSecret(a: string, b: string): boolean {
+  return safeEq(a, b);
+}
+
+/**
  * Wrong-PIN throttling in two layers, neither of which can lock the operator out:
  * - Per client (IPv4 address or IPv6 /64, see clientKey): the first `free` wrong PINs cost nothing, then each
  *   wait doubles from `baseMs` up to `maxMs`. A right PIN, or `resetMs` without a wrong one, starts the client

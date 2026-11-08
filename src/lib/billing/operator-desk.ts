@@ -284,11 +284,13 @@ export function filterIssued<T extends { key: string; soldTo: string; plan: stri
   );
 }
 
-/** `program:team` displays as "Program · team". Other plan ids pass through. */
+/** `program:team` displays as "Program · team", `api:education` as "API · education". Other plan ids pass through. */
 export function issuedPlanLabel(plan: string): string {
-  if (plan.startsWith("program:")) {
-    const tier = plan.slice("program:".length).trim();
-    return tier ? `Program · ${tier}` : "Program";
+  for (const [prefix, name] of [["program:", "Program"], ["api:", "API"]] as const) {
+    if (plan.startsWith(prefix)) {
+      const tier = plan.slice(prefix.length).trim();
+      return tier ? `${name} · ${tier}` : name;
+    }
   }
   return plan;
 }

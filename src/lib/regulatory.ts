@@ -208,6 +208,10 @@ export const PRIMARY_SOURCES = [
   { name: "DanceSafe · reagent instructions", href: "https://dancesafe.org/testing-kit-instructions/" },
 ] as const;
 
+/** Carried on every /api/cds answer and shown on /developers. */
+export const STATUTORY_CDS_DISCLAIMER =
+  "FirstPass API output is educational interaction reference information for licensed healthcare professionals. It is not FDA-cleared. Each finding carries its basis; an integration must show that basis next to the finding. Not for time-critical use, patient-facing display, or automated ordering. The FDA-approved Prescribing Information governs.";
+
 export const NOT_CLEARED =
   "This software has not been cleared or approved by the U.S. Food and Drug Administration. Display of FDA-label text does not make FirstPass an FDA-cleared device.";
 

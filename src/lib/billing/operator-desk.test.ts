@@ -268,6 +268,7 @@ test("issued-key search matches key, buyer, and plan, and program plans get a la
   assert.equal(filterIssued(rows, "life")[0]?.key, "FP-LIFE-AAAA");
   assert.equal(issuedPlanLabel("life"), "life");
   assert.equal(issuedPlanLabel("program:team"), "Program · team");
+  assert.equal(issuedPlanLabel("api:education"), "API · education");
   assert.equal(issuedPlanLabel("program:"), "Program");
 });
 

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as EnzymesRouteImport } from './routes/enzymes'
 import { Route as ForProgramsRouteImport } from './routes/for-programs'
 import { Route as GlossaryRouteImport } from './routes/glossary'
@@ -41,6 +42,11 @@ const IndexRoute = IndexRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnzymesRoute = EnzymesRouteImport.update({
@@ -152,6 +158,7 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/developers': typeof DevelopersRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/glossary': typeof GlossaryRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/developers': typeof DevelopersRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/glossary': typeof GlossaryRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/developers': typeof DevelopersRoute
   '/enzymes': typeof EnzymesRoute
   '/for-programs': typeof ForProgramsRoute
   '/glossary': typeof GlossaryRoute
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cookies'
+    | '/developers'
     | '/enzymes'
     | '/for-programs'
     | '/glossary'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cookies'
+    | '/developers'
     | '/enzymes'
     | '/for-programs'
     | '/glossary'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/cookies'
+    | '/developers'
     | '/enzymes'
     | '/for-programs'
     | '/glossary'
@@ -306,6 +318,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
+  DevelopersRoute: typeof DevelopersRoute
   EnzymesRoute: typeof EnzymesRoute
   ForProgramsRoute: typeof ForProgramsRoute
   GlossaryRoute: typeof GlossaryRoute
@@ -343,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enzymes': {
@@ -498,6 +518,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
+  DevelopersRoute: DevelopersRoute,
   EnzymesRoute: EnzymesRoute,
   ForProgramsRoute: ForProgramsRoute,
   GlossaryRoute: GlossaryRoute,

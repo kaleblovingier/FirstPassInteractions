@@ -10,12 +10,14 @@
  * Conforms to 21 U.S.C. § 360j(o)(1)(E) and RFC 7807 problem details error format.
  */
 
+import { API_OPEN_PATHS } from "../../billing/api-tiers";
 import { SOFTWARE } from "../../regulatory";
 import { withinNodeBudget } from "../rpc-input";
 import {
   ClinicalDecisionService,
   STATUTORY_CDS_DISCLAIMER,
 } from "./cds-service";
+import { admitCdsRequest, withHeaders } from "./api-access.server";
 import {
   createProblemDetails,
   problemBadRequest,
@@ -45,11 +47,28 @@ function problemMethodNotAllowed(detail: string, instance?: string): ProblemDeta
 
 /**
  * Dispatches incoming HTTP requests to corresponding CDS service handlers.
+ * Every path but /api/cds/health first passes the key check and rate limit (api-access.server.ts),
+ * and its answer carries the RateLimit headers.
  */
 export async function handleCdsRequest(request: Request): Promise<Response> {
   try {
     const url = new URL(request.url, "http://localhost");
     const pathname = url.pathname.replace(/\/+$/, "") || "/";
+    if (API_OPEN_PATHS.includes(pathname)) return await route(request, url, pathname);
+    const access = await admitCdsRequest(request, pathname);
+    if (!access.ok) return access.response;
+    return withHeaders(await route(request, url, pathname), access.headers);
+  } catch {
+    return toProblemResponse(
+      problemInternal(
+        "An unexpected error occurred while processing the CDS request",
+      ),
+    );
+  }
+}
+
+async function route(request: Request, url: URL, pathname: string): Promise<Response> {
+  try {
     const method = request.method.toUpperCase();
 
     // GET /api/cds/health

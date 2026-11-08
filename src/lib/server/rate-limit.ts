@@ -61,6 +61,17 @@ export class SlidingWindow {
     return (this.hits.get(key) ?? []).filter((t) => now - t < this.windowMs);
   }
 
+  /** Hits `key` has in the window now (at most `max`). */
+  used(key: string, now = Date.now()): number {
+    return this.live(key, now).length;
+  }
+
+  /** Milliseconds until `key`'s oldest live hit leaves the window and frees a slot; 0 with no hits. */
+  resetMs(key: string, now = Date.now()): number {
+    const oldest = this.live(key, now)[0];
+    return oldest === undefined ? 0 : Math.max(1, this.windowMs - (now - oldest));
+  }
+
   /** True once `key` has used all `max` hits in the window. */
   full(key: string, now = Date.now()): boolean {
     return this.live(key, now).length >= this.max;

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import {
   billingRejected,
   checkBillingInput,
+  MintApiInput,
   MintBatchInput,
   MintLicenseInput,
   MintProgramInput,
@@ -13,6 +14,7 @@ import type { LicenseVerdict } from "./license-verdict";
 type RedeemBody = BillingChecked<{ key: string }>;
 type MintBody = BillingChecked<{ pin: string; plan: "pro" | "lab" | "life"; soldTo: string }>;
 type ProgramBody = BillingChecked<{ pin: string; tier: "team" | "program" | "site"; org: string; end: string }>;
+type ApiBody = BillingChecked<{ pin: string; tier: "developer" | "education"; org: string; end: string }>;
 type BatchBody = BillingChecked<{ pin: string; plan: "pro" | "lab" | "life"; names: string }>;
 
 export async function handleRedeemLicense(data: RedeemBody) {
@@ -68,6 +70,16 @@ export async function handleMintProgramLicense(data: ProgramBody) {
   return mintProgramForOperator(data.value);
 }
 
+/**
+ * API key for /api/cds/* (FP-API-…). PIN-checked like every operator mint.
+ * `end` is the last month the key works, as "YYYY-MM".
+ */
+export async function handleMintApiKey(data: ApiBody) {
+  if (!data.ok) return billingRejected();
+  const { mintApiKeyForOperator } = await import("./api-keys.server");
+  return mintApiKeyForOperator(data.value);
+}
+
 export async function handleMintLicenseBatch(data: BatchBody) {
   if (!data.ok) return billingRejected();
   const { mintKeyedRows, parseNameList, pinOk, defaultPinSet, defaultPepperSet } = await import("./license.server");
@@ -108,6 +120,10 @@ export const mintLicenseKey = createServerFn({ method: "POST" })
 export const mintProgramLicense = createServerFn({ method: "POST" })
   .validator((input: unknown) => checkBillingInput("mintProgramLicense", MintProgramInput, input))
   .handler(async ({ data }) => handleMintProgramLicense(data));
+
+export const mintApiLicense = createServerFn({ method: "POST" })
+  .validator((input: unknown) => checkBillingInput("mintApiLicense", MintApiInput, input))
+  .handler(async ({ data }) => handleMintApiKey(data));
 
 export const mintLicenseBatch = createServerFn({ method: "POST" })
   .validator((input: unknown) => checkBillingInput("mintLicenseBatch", MintBatchInput, input))

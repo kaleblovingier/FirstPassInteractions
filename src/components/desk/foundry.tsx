@@ -28,7 +28,8 @@ import {
   storedPipeIsReadable,
   type PipeSaveOpts,
 } from "@/lib/billing/operator-desk";
-import { mintLicenseKey, mintProgramLicense } from "@/lib/billing/license";
+import { mintApiLicense, mintLicenseKey, mintProgramLicense } from "@/lib/billing/license";
+import { API_LIMITS, API_TIERS, API_TIER_BY_ID, type ApiTierId } from "@/lib/billing/api-tiers";
 import { priceFor } from "@/lib/billing/plans";
 import {
   PROGRAM_TIERS,
@@ -917,6 +918,8 @@ function CloseDesk({
 
       <ProgramKeyDesk pin={pin} copied={copied} copy={copy} onIssued={onIssued} />
 
+      <ApiKeyDesk pin={pin} copied={copied} copy={copy} onIssued={onIssued} />
+
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xs font-medium uppercase tracking-wide text-muted">
@@ -1248,6 +1251,145 @@ function ProgramKeyDesk({
           : copied === "program-note"
             ? "Onboarding note copied"
             : ""}
+      </span>
+    </section>
+  );
+}
+
+type MintedApi = { key: string; org: string; tier: ApiTierId; endsAt: string };
+
+/** End month a few months out, inside every API tier's cap. */
+function defaultApiEndMonth(now: Date = new Date()) {
+  const total = now.getUTCFullYear() * 12 + now.getUTCMonth() + 6;
+  return endMonthValue(Math.floor(total / 12), (total % 12) + 1);
+}
+
+/** A key for the /api/cds JSON API, for education content publishers. Same PIN as every mint. */
+function ApiKeyDesk({
+  pin,
+  copied,
+  copy,
+  onIssued,
+}: {
+  pin: string;
+  copied: string;
+  copy: (label: string, text: string) => void;
+  onIssued: (row: Issued) => void;
+}) {
+  const [org, setOrg] = useState("");
+  const [tier, setTier] = useState<ApiTierId>("education");
+  const [end, setEnd] = useState(() => defaultApiEndMonth());
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [warn, setWarn] = useState("");
+  const [minted, setMinted] = useState<MintedApi | null>(null);
+  const endParsed = parseEndMonth(end);
+  const lastDay = endParsed ? formatEndDay(programKeyEndsAt(endParsed.year, endParsed.month)) : "";
+
+  async function mint() {
+    setBusy(true);
+    setErr("");
+    setWarn("");
+    try {
+      const res = await mintApiLicense({ data: { pin, tier, org, end } });
+      if (!res.ok) {
+        setErr(res.reason);
+        setMinted(null);
+        return;
+      }
+      if (res.defaultPin || res.defaultPepper) {
+        setWarn("Minted with the development PIN or pepper. Set the production PIN and license pepper before you send a real API key.");
+      }
+      setMinted({ key: res.key, org: res.org, tier: res.tier, endsAt: res.endsAt });
+      onIssued({ key: res.key, plan: `api:${res.tier}`, at: new Date().toISOString(), soldTo: res.org });
+    } catch {
+      setErr("Could not mint. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
+      <div className="flex items-center gap-2">
+        <KeyRound className="size-4 text-accent" />
+        <h2 className="font-serif text-xl tracking-tight text-fg">API key</h2>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-muted">
+        A key for the JSON API at /api/cds, for education and teaching content only (see /developers). Not for
+        anyone wiring FirstPass into an EHR or other clinical system. The same organization, tier and end month
+        always mint the same key. Limits are a draft in api-tiers.ts.
+      </p>
+
+      <label className="mt-4 block text-xs font-medium text-muted" htmlFor="api-org">
+        Organization
+      </label>
+      <Input
+        id="api-org"
+        className="mt-1.5"
+        value={org}
+        maxLength={PROGRAM_ORG_MAX}
+        placeholder="Courseware publisher, LMS team or study app"
+        onChange={(e) => setOrg(e.target.value)}
+      />
+
+      <p className="mt-4 text-xs font-medium text-muted" id="api-tier-label">
+        Tier
+      </p>
+      <div className="mt-1.5 grid gap-1 sm:grid-cols-2" role="group" aria-labelledby="api-tier-label">
+        {API_TIERS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            aria-pressed={tier === t.id}
+            onClick={() => setTier(t.id)}
+            className={cn(
+              "flex min-h-11 flex-col items-start justify-center rounded-sm px-3 py-2 text-left",
+              tier === t.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+            )}
+          >
+            <span className="text-sm font-medium">{t.name}</span>
+            <span className="font-mono text-[11px] opacity-80">
+              {API_LIMITS[t.id].max}/min · up to {t.maxMonthsAhead} months
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <label className="mt-4 block text-xs font-medium text-muted" htmlFor="api-end">
+        Last month the key works
+      </label>
+      <div className="mt-1.5 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
+        <Input
+          id="api-end"
+          type="month"
+          value={end}
+          aria-describedby="api-end-hint"
+          onChange={(e) => setEnd(e.target.value)}
+        />
+        <Button onClick={() => void mint()} disabled={busy || !pin || !org.trim() || !endParsed}>
+          {busy ? "Minting…" : "Mint API key"}
+        </Button>
+      </div>
+      <p id="api-end-hint" className="mt-1.5 text-xs text-muted">
+        {lastDay ? `Works through ${lastDay} (UTC). ` : "Pick a month. "}
+        {API_TIER_BY_ID[tier].name} keys can end at most {API_TIER_BY_ID[tier].maxMonthsAhead} months out.
+      </p>
+
+      {err ? <p className="mt-3 text-sm text-danger">{err}</p> : null}
+      {warn ? <p className="mt-3 text-sm text-warn">{warn}</p> : null}
+
+      {minted ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-md bg-ok-soft px-3 py-2">
+          <span className="min-w-0 break-all font-mono text-sm text-ok">{minted.key}</span>
+          <Button size="sm" variant="secondary" onClick={() => void copy("api-key", minted.key)}>
+            {copied === "api-key" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            {copied === "api-key" ? "Copied" : "Copy key"}
+          </Button>
+        </div>
+      ) : null}
+      <span role="status" className="sr-only">
+        {copied === "api-key" ? "API key copied" : ""}
       </span>
     </section>
   );

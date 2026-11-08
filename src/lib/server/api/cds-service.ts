@@ -35,7 +35,7 @@ import {
   type Report,
   type Severity,
 } from "../../drugs/types";
-import { SOFTWARE } from "../../regulatory";
+import { SOFTWARE, STATUTORY_CDS_DISCLAIMER } from "../../regulatory";
 import { BoundedLRUCache } from "../cache";
 import { errorKind, logEvent } from "../log";
 import {
@@ -92,8 +92,8 @@ import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
 import { EXPORT_EMPTY } from "../../drugs/brief";
 
-export const STATUTORY_CDS_DISCLAIMER =
-  "FirstPass API output is educational interaction reference information for licensed healthcare professionals. It is not FDA-cleared. Each finding carries its basis; an integration must show that basis next to the finding. Not for time-critical use, patient-facing display, or automated ordering. The FDA-approved Prescribing Information governs.";
+/** Lives in regulatory.ts so the /developers page can show it without loading the drug catalog. */
+export { STATUTORY_CDS_DISCLAIMER };
 
 export interface ApiDrugSummary {
   id: string;
