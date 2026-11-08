@@ -1271,7 +1271,7 @@ export type WithoutWeightMath<T> = T extends readonly (infer U)[]
     ? { [K in keyof T as K extends WeightMathKey ? never : K]: WithoutWeightMath<T[K]> }
     : T;
 
-function withoutWeightMath<T>(v: T): WithoutWeightMath<T> {
+export function withoutWeightMath<T>(v: T): WithoutWeightMath<T> {
   if (Array.isArray(v)) return v.map(withoutWeightMath) as WithoutWeightMath<T>;
   if (v && typeof v === "object") {
     const kept = Object.entries(v).filter(([k]) => !/^calculated|^patientWeightKg$/.test(k));
