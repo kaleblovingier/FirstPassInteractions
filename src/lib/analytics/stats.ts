@@ -7,4 +7,7 @@ import type { StatsRange, StatsResult } from "./contract";
  */
 export const getSiteStats = createServerFn({ method: "POST" })
   .validator((input: unknown) => input as { pin: string; days: StatsRange })
-  .handler(async (): Promise<StatsResult> => ({ ok: false, reason: "Visitor stats are not built yet." }));
+  .handler(async ({ data }): Promise<StatsResult> => {
+    const { handleGetSiteStats } = await import("./stats.server");
+    return handleGetSiteStats(data);
+  });

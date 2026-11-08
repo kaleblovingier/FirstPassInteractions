@@ -8,6 +8,7 @@ import { showsSiteHeader } from "@/lib/seo/site-nav";
 import { siteOgMeta } from "@/lib/seo/og-meta";
 import { SITE_URL } from "@/lib/seo/pair-copy";
 import { siteJsonLdMeta } from "@/lib/seo/site-jsonld";
+import { COLLECT_PATH, OPT_OUT_KEY } from "@/lib/analytics/contract";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "FirstPass";
@@ -25,6 +26,36 @@ function OfflineVisitReporter() {
       navigator.serviceWorker?.controller?.postMessage({ type: "fp-visit", path });
     } catch {
       /* no worker, or it is being replaced */
+    }
+  }, [path]);
+  return null;
+}
+
+let firstPageReported = false;
+
+function AnalyticsReporter() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined" || !path) return;
+      if (localStorage.getItem(OPT_OUT_KEY) === "1") return;
+
+      const referrer = !firstPageReported && document.referrer ? document.referrer : undefined;
+      firstPageReported = true;
+
+      const payload = JSON.stringify({ path, referrer });
+      if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+        navigator.sendBeacon(COLLECT_PATH, new Blob([payload], { type: "application/json" }));
+      } else {
+        void fetch(COLLECT_PATH, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch {
+      /* ignore beacon transport errors */
     }
   }, [path]);
   return null;
@@ -90,6 +121,7 @@ function RootDocument() {
       <body className="bg-bg text-fg">
         <PreviewHostBridge />
         <OfflineVisitReporter />
+        <AnalyticsReporter />
         {site ? <SiteHeader pathname={path} /> : null}
         <AuthProvider>
           {/* Target of the public pages' skip link. The desk has its own, to #main. */}

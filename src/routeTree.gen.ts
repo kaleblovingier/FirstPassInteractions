@@ -25,6 +25,7 @@ import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as WorkupRouteImport } from './routes/workup'
+import { Route as ApiCollectRouteImport } from './routes/api/collect'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as ForProgramsAudienceRouteImport } from './routes/for-programs_.$audience'
@@ -114,6 +115,11 @@ const WorkupRoute = WorkupRouteImport.update({
   path: '/workup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCollectRoute = ApiCollectRouteImport.update({
+  id: '/api/collect',
+  path: '/api/collect',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DrugSlugRoute = DrugSlugRouteImport.update({
   id: '/drug/$slug',
   path: '/drug/$slug',
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/workup': typeof WorkupRoute
+  '/api/collect': typeof ApiCollectRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/workup': typeof WorkupRoute
+  '/api/collect': typeof ApiCollectRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/trust': typeof TrustRoute
   '/workup': typeof WorkupRoute
+  '/api/collect': typeof ApiCollectRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs_/$audience': typeof ForProgramsAudienceRoute
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/workup'
+    | '/api/collect'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/workup'
+    | '/api/collect'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trust'
     | '/workup'
+    | '/api/collect'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs_/$audience'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   TrustRoute: typeof TrustRoute
   WorkupRoute: typeof WorkupRoute
+  ApiCollectRoute: typeof ApiCollectRoute
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
   ForProgramsAudienceRoute: typeof ForProgramsAudienceRoute
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/collect': {
+      id: '/api/collect'
+      path: '/api/collect'
+      fullPath: '/api/collect'
+      preLoaderRoute: typeof ApiCollectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drug/$slug': {
       id: '/drug/$slug'
       path: '/drug/$slug'
@@ -532,6 +552,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   TrustRoute: TrustRoute,
   WorkupRoute: WorkupRoute,
+  ApiCollectRoute: ApiCollectRoute,
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
   ForProgramsAudienceRoute: ForProgramsAudienceRoute,

@@ -55,6 +55,7 @@ import { cn } from "@/lib/utils";
 import { HuntDesk } from "./hunt";
 import { LaunchDesk } from "./launch";
 import { Plate } from "./plate";
+import { SiteStatsDesk } from "@/components/foundry/site-stats";
 
 type Issued = { key: string; plan: string; at: string; soldTo: string };
 type Collected = {
@@ -919,6 +920,8 @@ function CloseDesk({
       <ProgramKeyDesk pin={pin} copied={copied} copy={copy} onIssued={onIssued} />
 
       <ApiKeyDesk pin={pin} copied={copied} copy={copy} onIssued={onIssued} />
+
+      <SiteStatsDesk pin={pin} />
 
       <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
         <div className="flex flex-wrap items-center justify-between gap-2">
