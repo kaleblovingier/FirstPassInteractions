@@ -28,6 +28,7 @@ import {
   FOR_PROGRAMS_INTRO,
   FOR_PROGRAMS_KEY_STEPS,
   FOR_PROGRAMS_MAILTO,
+  FOR_PROGRAMS_PATH,
   FOR_PROGRAMS_USERS,
   formatUsd,
   formatUsdCents,
@@ -228,6 +229,14 @@ export function ForProgramsView() {
           {FOR_PROGRAMS_AUDIENCES.map((a) => (
             <li key={a.name}>
               <strong>{a.name}.</strong> {a.use}
+              {a.page ? (
+                <>
+                  {" "}
+                  <a href={`${FOR_PROGRAMS_PATH}/${a.page}`} data-testid={`audience-link-${a.page}`} className={LINK}>
+                    {a.name}: teaching uses and example pairs
+                  </a>
+                </>
+              ) : null}
             </li>
           ))}
         </ul>
@@ -352,7 +361,8 @@ export function ForProgramsView() {
 
 /* ---------------- tiers ---------------- */
 
-function TierCard({ tier, onPayByCard }: { tier: ProgramTier; onPayByCard?: () => void }) {
+/** One tier, as /for-programs shows it. `askHref` is where "Ask about" goes; audience pages point it at /for-programs#inquiry. `onPayByCard` shows the card button when program checkout is live. */
+export function TierCard({ tier, askHref = "#inquiry", onPayByCard }: { tier: ProgramTier; askHref?: string; onPayByCard?: () => void }) {
   return (
     <li
       data-testid={`tier-${tier.id}`}
@@ -384,7 +394,7 @@ function TierCard({ tier, onPayByCard }: { tier: ProgramTier; onPayByCard?: () =
         ))}
       </ul>
       <a
-        href="#inquiry"
+        href={askHref}
         className={cn(buttonVariants({ variant: tier.highlighted ? "default" : "secondary" }), "mt-5 min-h-[44px] w-full")}
       >
         Ask about {tier.name}

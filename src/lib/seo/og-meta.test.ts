@@ -16,7 +16,7 @@ describe("og-meta defaults", () => {
     for (const k of ["og:title", "og:description", "og:image", "og:image:alt", "twitter:card"]) assert.ok(keys.includes(k), k);
   });
   it("every public route head ships a share card", () => {
-    for (const r of ["__root", "privacy", "terms", "cookies", "trust", "enzymes", "pairs", "for-programs", "pair.$slug", "drug.$slug", "enzyme.$slug"]) {
+    for (const r of ["__root", "privacy", "terms", "cookies", "trust", "enzymes", "pairs", "for-programs", "for-programs_.$audience", "pair.$slug", "drug.$slug", "enzyme.$slug"]) {
       const src = readFileSync(`src/routes/${r}.tsx`, "utf8");
       assert.match(src, /\b(siteOgMeta|ogMeta)\(/, r);
     }

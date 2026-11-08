@@ -36,12 +36,18 @@ export const FOR_PROGRAMS_INTRO =
 export const FOR_PROGRAMS_USERS =
   "FirstPass is for licensed healthcare professionals and for students in accredited health-professions programs working under faculty or preceptor supervision.";
 
-export const FOR_PROGRAMS_AUDIENCES: { name: string; use: string }[] = [
-  { name: "Pharmacy schools", use: "Pharmacology and therapeutics courses that teach students to read interaction sections of the Prescribing Information." },
-  { name: "Residency programs", use: "Pharmacy and medical residency teaching: journal clubs, topic discussions and precepting on how labels word interactions." },
-  { name: "Pharmacy-tech programs", use: "Community college and online programs training techs to recognize label-named interactions." },
-  { name: "Ketamine clinics", use: "In-services for licensed clinic staff on what labels say about common co-prescribed medicines." },
-  { name: "MAT and OTP programs", use: "Opioid treatment and office-based buprenorphine teams learning the label wording on common co-prescribed drugs." },
+/**
+ * Who it's for. `page` is the slug of the audience's own /for-programs/<slug>
+ * page (copy in for-programs-audiences.ts), when there is one.
+ */
+export const FOR_PROGRAMS_AUDIENCES: { name: string; use: string; page?: string }[] = [
+  { name: "Pharmacy schools", use: "Pharmacology and therapeutics courses that teach students to read interaction sections of the Prescribing Information.", page: "pharmacy-schools" },
+  { name: "Nursing and NP programs", use: "Nursing and nurse practitioner pharmacology courses that teach students to find and read the label's wording.", page: "nursing-and-np-programs" },
+  { name: "PA programs", use: "Physician assistant clinical pharmacology, from the didactic year to rotations.", page: "pa-programs" },
+  { name: "Residency programs", use: "Pharmacy and medical residency teaching: journal clubs, topic discussions and precepting on how labels word interactions.", page: "residency-programs" },
+  { name: "Pharmacy-tech programs", use: "Community college and online programs training techs to recognize label-named interactions.", page: "pharmacy-tech-programs" },
+  { name: "Ketamine clinics", use: "In-services for licensed clinic staff on what labels say about common co-prescribed medicines.", page: "ketamine-and-psychiatry-clinics" },
+  { name: "MAT and OTP programs", use: "Opioid treatment and office-based buprenorphine teams learning the label wording on common co-prescribed drugs.", page: "opioid-treatment-programs" },
   { name: "Harm-reduction groups", use: "Licensed clinicians and supervised students on harm-reduction teams who want plain-language label wording with a source link." },
 ];
 
@@ -213,7 +219,7 @@ export function forProgramsJsonLd() {
     description:
       "Group and site licenses to FirstPass, an educational drug-interaction reference for licensed healthcare professionals and supervised health-professions students. Label-sourced pairs in the FDA label's own wording, with DailyMed links.",
     url: FOR_PROGRAMS_URL,
-    audience: { "@type": "Audience", audienceType: "Pharmacy schools, residency programs, pharmacy-tech programs and clinic teams" },
+    audience: { "@type": "Audience", audienceType: "Pharmacy schools, nursing and NP programs, PA programs, residency programs, pharmacy-tech programs and clinic teams" },
     provider: { "@type": "Organization", name: "FirstPass", url: FOR_PROGRAMS_URL.replace(/\/for-programs$/, "/") },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
