@@ -27,6 +27,7 @@ import { Route as TrustRouteImport } from './routes/trust'
 import { Route as WorkupRouteImport } from './routes/workup'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
+import { Route as ForProgramsAudienceRouteImport } from './routes/for-programs_.$audience'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
@@ -123,6 +124,11 @@ const EnzymeSlugRoute = EnzymeSlugRouteImport.update({
   path: '/enzyme/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForProgramsAudienceRoute = ForProgramsAudienceRouteImport.update({
+  id: '/for-programs_/$audience',
+  path: '/for-programs/$audience',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PairSlugRoute = PairSlugRouteImport.update({
   id: '/pair/$slug',
   path: '/pair/$slug',
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
+  '/for-programs/$audience': typeof ForProgramsAudienceRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
+  '/for-programs/$audience': typeof ForProgramsAudienceRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/workup': typeof WorkupRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
+  '/for-programs_/$audience': typeof ForProgramsAudienceRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
+    | '/for-programs/$audience'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
+    | '/for-programs/$audience'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/workup'
     | '/drug/$slug'
     | '/enzyme/$slug'
+    | '/for-programs_/$audience'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -322,6 +334,7 @@ export interface RootRouteChildren {
   WorkupRoute: typeof WorkupRoute
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
+  ForProgramsAudienceRoute: typeof ForProgramsAudienceRoute
   PairSlugRoute: typeof PairSlugRoute
   ApiCdsSplatRoute: typeof ApiCdsSplatRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
@@ -457,6 +470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnzymeSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/for-programs_/$audience': {
+      id: '/for-programs_/$audience'
+      path: '/for-programs/$audience'
+      fullPath: '/for-programs/$audience'
+      preLoaderRoute: typeof ForProgramsAudienceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pair/$slug': {
       id: '/pair/$slug'
       path: '/pair/$slug'
@@ -514,6 +534,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkupRoute: WorkupRoute,
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
+  ForProgramsAudienceRoute: ForProgramsAudienceRoute,
   PairSlugRoute: PairSlugRoute,
   ApiCdsSplatRoute: ApiCdsSplatRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,

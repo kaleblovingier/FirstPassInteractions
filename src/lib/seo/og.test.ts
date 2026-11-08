@@ -3,10 +3,11 @@ import assert from "node:assert/strict";
 import { OG_BANNED, OG_DISCLAIMER, ogAlt, ogImageJobs, ogMeta } from "./og";
 import { pairPages } from "./pair-pages";
 import { drugHubs } from "./drug-hubs";
+import { PROGRAM_AUDIENCES } from "./for-programs-audiences";
 
 test("one share image per pair page, drug hub and static page, unique paths", () => {
   const jobs = ogImageJobs();
-  assert.equal(jobs.length, pairPages().length + drugHubs().length + 2);
+  assert.equal(jobs.length, pairPages().length + drugHubs().length + 2 + PROGRAM_AUDIENCES.length);
   assert.equal(new Set(jobs.map((j) => j.path)).size, jobs.length);
   for (const j of jobs) assert.match(j.path, /^\/og\/(pair|drug|page)\/[a-z0-9-]+\.png$/);
 });

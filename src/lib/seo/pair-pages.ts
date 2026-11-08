@@ -7,6 +7,7 @@ import { buildBriefUrl } from "@/lib/drugs/brief";
 import { gradeBases, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { drugHubs } from "./drug-hubs";
 import { enzymeHubUrls } from "./enzyme-hubs";
+import { audienceUrls } from "./for-programs-audiences";
 import {
   PAIR_DESCRIPTION_TEMPLATE,
   PAIR_TITLE_TEMPLATE,
@@ -160,6 +161,7 @@ export function sitemapXml(): string {
     `${SITE_URL}/enzymes`,
     `${SITE_URL}/for-programs`,
     `${SITE_URL}/developers`,
+    ...audienceUrls(),
     `${SITE_URL}/practice`,
     `${SITE_URL}/glossary`,
     `${SITE_URL}/workup`,
