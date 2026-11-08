@@ -18,7 +18,7 @@ const CALL_TIMEOUT_MS = 6_000;
 const SCAN_BUDGET_MS = 20_000;
 const DRUG_CONCURRENCY = 4;
 const MAX_DRUGS = 8;
-const UA = "FirstPass/1.0 (educational CYP desk; kaleblovingier@gmail.com)";
+const UA = "FirstPass/1.0 (educational CYP desk; FirstPassInteractions@gmail.com)";
 
 const CLASS_SOURCES = ["ATC", "FDASPL"] as const;
 type ClassSource = (typeof CLASS_SOURCES)[number];

@@ -28,7 +28,7 @@ type CpicRow = {
 const TTL = 30 * 60 * 1000;
 const CALL_TIMEOUT_MS = 6_000;
 const LOOKUP_BUDGET_MS = 10_000;
-const UA = "FirstPass/1.0 (educational CYP desk; kaleblovingier@gmail.com)";
+const UA = "FirstPass/1.0 (educational CYP desk; FirstPassInteractions@gmail.com)";
 
 export const cpicCache = new BoundedLRUCache<CpicResult>(300, TTL);
 
