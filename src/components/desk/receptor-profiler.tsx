@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   Search,
@@ -137,6 +137,8 @@ export function ReceptorProfiler() {
   const [compareDrug1Id, setCompareDrug1Id] = useState("haloperidol");
   const [compareDrug2Id, setCompareDrug2Id] = useState("clozapine");
   const [activeReceptorKey, setActiveReceptorKey] = useState<string | null>(null);
+  // The dialog has no Radix trigger, so it cannot find its way back on its own.
+  const receptorOpener = useRef<HTMLElement | null>(null);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
   // Subscribe to current selected drugs on desk
@@ -418,11 +420,12 @@ export function ReceptorProfiler() {
                               <button
                                 key={b.receptor}
                                 type="button"
-                                onClick={() =>
+                                onClick={(e) => {
+                                  receptorOpener.current = e.currentTarget;
                                   setActiveReceptorKey(
                                     activeReceptorKey === b.receptor ? null : b.receptor,
-                                  )
-                                }
+                                  );
+                                }}
                                 title={`${b.receptor} (${b.targetFamily}): ${b.affinityTier} ${b.functionalActivity}. ${b.clinicalSignificance}`}
                                 className={cn(
                                   "inline-flex min-h-[32px] items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium transition-transform hover:scale-105",
@@ -431,7 +434,7 @@ export function ReceptorProfiler() {
                               >
                                 <span className={cn("size-1.5 rounded-full", tierStyles.dot)} />
                                 <span className="font-bold">{b.receptor}</span>
-                                <span className="opacity-75">· {kiLabel}</span>
+                                <span>· {kiLabel}</span>
                                 <span className="text-[10px] opacity-90">({b.functionalActivity})</span>
                               </button>
                             );
@@ -737,11 +740,12 @@ export function ReceptorProfiler() {
                         <td className="py-3.5 px-4 font-bold text-fg">
                           <button
                             type="button"
-                            onClick={() =>
+                            onClick={(e) => {
+                              receptorOpener.current = e.currentTarget;
                               setActiveReceptorKey(
                                 activeReceptorKey === row.receptor ? null : row.receptor,
-                              )
-                            }
+                              );
+                            }}
                             className="inline-flex min-h-[44px] items-center text-accent hover:underline"
                           >
                             {row.receptor}
@@ -892,7 +896,13 @@ export function ReceptorProfiler() {
         {activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey] ? (
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs" />
-          <Dialog.Content className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100dvh-2rem)] max-w-md -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <Dialog.Content
+            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100dvh-2rem)] max-w-md -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4"
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              receptorOpener.current?.focus();
+            }}
+          >
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2">
