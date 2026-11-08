@@ -50,6 +50,12 @@
    "effective": "2020-06-30",
    "checkedOn": "2026-10-28"
   },
+  "b1fc1ee7-facc-4099-b3db-a4c1daeaa4be": {
+   "labelDrug": "Baxfendy (baxdrostat)",
+   "version": 4,
+   "effective": "2026-08-07",
+   "checkedOn": "2026-11-07"
+  },
   "e5b72731-1acb-45b7-9c13-290ad12d3951": {
    "labelDrug": "Belsomra (suvorexant)",
    "version": 21,
@@ -91,6 +97,12 @@
    "version": 23,
    "effective": "2026-06-15",
    "checkedOn": "2026-10-28"
+  },
+  "254a1c01-4a4c-4bdd-85d6-1f23f2e4e6f8": {
+   "labelDrug": "Bysanti (milsaperidone)",
+   "version": 2,
+   "effective": "2026-02-27",
+   "checkedOn": "2026-11-07"
   },
   "4db7eece-2eef-bc1b-e063-6394a90a98cb": {
    "labelDrug": "Cafergot (ergotamine/caffeine)",
@@ -259,6 +271,12 @@
    "version": 10,
    "effective": "2026-04-21",
    "checkedOn": "2026-11-05"
+  },
+  "1ae6df6e-6ca0-420f-bec9-effa7acdd085": {
+   "labelDrug": "Juvmo (tavapadon)",
+   "version": 3,
+   "effective": "2026-10-08",
+   "checkedOn": "2026-11-07"
   },
   "8290add3-4449-4e58-6c97-8fe1eec972e3": {
    "labelDrug": "Kaletra (lopinavir/ritonavir)",
@@ -583,6 +601,12 @@
    "version": 9,
    "effective": "2026-09-17",
    "checkedOn": "2026-10-28"
+  },
+  "ecfa41cc-c8c8-419b-8da3-ee5b819398c2": {
+   "labelDrug": "Simtriyo (centanafadine)",
+   "version": 1,
+   "effective": "2026-07-31",
+   "checkedOn": "2026-11-07"
   },
   "a4d555fa-787c-40fb-bb7d-b0d4f7318fd0": {
    "labelDrug": "Sporanox (itraconazole)",
