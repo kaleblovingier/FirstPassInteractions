@@ -272,6 +272,12 @@
    "effective": "2026-04-21",
    "checkedOn": "2026-11-05"
   },
+  "fa1b14c6-957f-d326-5099-911bfe33e391": {
+   "labelDrug": "Jascayd (nerandomilast)",
+   "version": 6,
+   "effective": "2026-08-14",
+   "checkedOn": "2026-11-07"
+  },
   "1ae6df6e-6ca0-420f-bec9-effa7acdd085": {
    "labelDrug": "Juvmo (tavapadon)",
    "version": 3,
@@ -530,6 +536,12 @@
    "effective": "2026-01-29",
    "checkedOn": "2026-10-28"
   },
+  "13a65923-d072-4dac-8620-8eabbf8c3641": {
+   "labelDrug": "Rasonque (daraxonrasib)",
+   "version": 1,
+   "effective": "2026-08-27",
+   "checkedOn": "2026-11-07"
+  },
   "d4c5fead-bc4a-fb02-e053-2a95a90ae4fc": {
    "labelDrug": "Recorlev (levoketoconazole)",
    "version": 13,
@@ -691,6 +703,12 @@
    "version": 3,
    "effective": "2026-09-08",
    "checkedOn": "2026-10-28"
+  },
+  "484e21ba-8fe1-4c6d-b923-8ba4cf5b2f20": {
+   "labelDrug": "Veppanu (vepdegestrant)",
+   "version": 1,
+   "effective": "2026-06-12",
+   "checkedOn": "2026-11-07"
   },
   "08d08721-1f4c-478a-8abf-d9c402d50553": {
    "labelDrug": "Vfend (voriconazole)",

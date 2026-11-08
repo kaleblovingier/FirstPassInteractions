@@ -6,7 +6,15 @@ import { MODERN_WAVE5_FORMULARY } from "./catalog-modern-wave5.ts";
 import { analyze } from "./engine.ts";
 import { labelFreshnessLine, noteLabelBasis } from "./grade-provenance.ts";
 
-const WAVE5_IDS = ["milsaperidone", "centanafadine", "baxdrostat", "tavapadon"] as const;
+const WAVE5_IDS = [
+  "milsaperidone",
+  "centanafadine",
+  "baxdrostat",
+  "tavapadon",
+  "vepdegestrant",
+  "nerandomilast",
+  "daraxonrasib",
+] as const;
 
 const versions = JSON.parse(readFileSync("src/lib/drugs/reference/label-versions.json", "utf8")) as {
   labels: Record<string, { version: number; effective: string; checkedOn: string }>;
@@ -82,6 +90,13 @@ const PK_CASES: { drug: string; partner: string; enzyme: string; kind: "inhibito
   { drug: "baxdrostat", partner: "efavirenz", enzyme: "CYP3A4", kind: "inducer", severity: "moderate", label: "Baxfendy 7.2 moderate CYP3A inducers may reduce efficacy" },
   { drug: "tavapadon", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Juvmo 7.1 reduce dosing frequency with strong CYP3A inhibitors" },
   { drug: "tavapadon", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Juvmo 7.1 strong CYP3A inducer not recommended" },
+  { drug: "vepdegestrant", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Veppanu 7.1 avoid strong CYP3A inhibitors or reduce the dosage" },
+  { drug: "vepdegestrant", partner: "carbamazepine", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Veppanu 7.1 avoid strong CYP3A inducers or increase the dosage" },
+  { drug: "nerandomilast", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Jascayd 7.1 dosage reduction with strong CYP3A inhibitors" },
+  { drug: "nerandomilast", partner: "rifampin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Jascayd 7.1 avoid strong CYP3A inducers" },
+  { drug: "daraxonrasib", partner: "itraconazole", enzyme: "CYP3A4", kind: "inhibitor", severity: "major", label: "Rasonque 7.1 avoid strong CYP3A inhibitors with P-gp inhibition" },
+  { drug: "daraxonrasib", partner: "quinidine", enzyme: "P-gp", kind: "inhibitor", severity: "major", label: "Rasonque 7.1 dosage reduction with P-gp inhibitors" },
+  { drug: "daraxonrasib", partner: "phenytoin", enzyme: "CYP3A4", kind: "inducer", severity: "major", label: "Rasonque 7.1 avoid strong CYP3A inducers" },
 ];
 
 test("known label partners produce the finding the label describes", () => {
@@ -125,4 +140,11 @@ test("tavapadon keeps its ungraded CYP3A induction and CYP2C8 inhibition in pros
   assert.equal(row.enzymes.some((r) => r.kind !== "substrate"), false);
   assert.match(row.note ?? "", /JUVMO is an inducer of CYP3A/);
   assert.match(row.toxicityHint, /strength ungraded and not scored here/);
+});
+
+test("milsaperidone and vepdegestrant read major with another QT-prolonging drug, as their labels say to avoid", () => {
+  for (const id of ["milsaperidone", "vepdegestrant"]) {
+    const hit = analyze([id, "ondansetron"]).findings.find((f) => f.tags.includes("qt"));
+    assert.equal(hit?.severity, "major", id);
+  }
 });
