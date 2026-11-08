@@ -114,7 +114,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
         </div>
 
         {/* FD&C Act Banner */}
-        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-bg-sunken p-3 text-xs text-muted-foreground">
           <ShieldAlert className="size-4 shrink-0 text-amber-400" />
           <div>
             <span className="font-medium text-foreground">FD&C Act § 520(o)(1)(E) Non-Device CDS:</span> {NOT_CLEARED}
@@ -193,7 +193,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
 
               <div>
                 <label className="text-muted-foreground">Post-Transplant Timing</label>
-                <div className="mt-1 flex gap-2">
+                <div className="mt-1 flex flex-wrap gap-2">
                   <Button
                     variant={postTransplantEra === "early" ? "default" : "outline"}
                     size="sm"
@@ -235,7 +235,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 text-xs">
-                <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-2">
+                <div className="rounded-lg border border-border/60 bg-bg-sunken p-3 space-y-2">
                   <h4 className="font-semibold text-foreground">Nephrotoxicity Hallmarks</h4>
                   <ul className="space-y-1.5 text-muted-foreground">
                     {currentCniGuide.nephrotoxicityHallmarks.map((h, i) => (
@@ -246,7 +246,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
                   </ul>
                 </div>
 
-                <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-2">
+                <div className="rounded-lg border border-border/60 bg-bg-sunken p-3 space-y-2">
                   <h4 className="font-semibold text-foreground">Neurotoxicity Hallmarks</h4>
                   <ul className="space-y-1.5 text-muted-foreground">
                     {currentCniGuide.neurotoxicityHallmarks.map((h, i) => (
@@ -302,7 +302,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
               {ehcResult.rejectionRiskAlert}
             </p>
 
-            <div className="rounded-lg bg-muted/40 p-3 text-xs">
+            <div className="rounded-lg bg-bg-sunken p-3 text-xs">
               <h4 className="font-semibold text-foreground">Biochemical Pathway</h4>
               <p className="mt-1 text-muted-foreground leading-relaxed">{ehcResult.biochemicalMechanism}</p>
             </div>
@@ -346,7 +346,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
               {steroidResult.clinicalAction}
             </p>
 
-            <div className="rounded-lg bg-muted/40 p-3 text-xs">
+            <div className="rounded-lg bg-bg-sunken p-3 text-xs">
               <h4 className="font-semibold text-foreground">Molecular De-Induction Mechanism</h4>
               <p className="mt-1 text-muted-foreground leading-relaxed">{steroidResult.biochemicalMechanism}</p>
             </div>
@@ -375,7 +375,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
             <span className="font-bold">MANDATORY RULE:</span> {thiopurineResult.mandatoryDoseReductionRule}
           </div>
 
-          <div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-xs space-y-2">
+          <div className="rounded-lg border border-border/60 bg-bg-sunken p-3 text-xs space-y-2">
             <h4 className="font-semibold text-foreground">Biochemical Pathway & Cytotoxic Mechanism</h4>
             <p className="text-muted-foreground leading-relaxed">
               {thiopurineResult.molecularPathwayShunt}

@@ -256,10 +256,11 @@ export function NarcoticBridge({ ids, findings = [] }: { ids: string[]; findings
               <a
                 key={line.name}
                 href={`tel:${line.phone}`}
-                aria-label={`${line.name}, ${line.phoneLabel}`}
                 className="inline-flex h-11 items-center rounded-full bg-ink px-3 text-xs font-medium text-bg hover:opacity-90"
               >
                 {CHIP[line.name] ?? line.phoneLabel}
+                {/* The spoken name starts with the visible words (WCAG 2.5.3), then the full line name and number. */}
+                <span className="sr-only">, {line.name}, {line.phoneLabel}</span>
               </a>
             ))}
             <a

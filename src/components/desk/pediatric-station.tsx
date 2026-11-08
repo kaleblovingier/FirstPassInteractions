@@ -280,7 +280,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
         </div>
 
         {/* FD&C Act Banner */}
-        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-bg-sunken p-3 text-xs text-muted-foreground">
           <ShieldAlert className="size-4 shrink-0 text-amber-400" />
           <div>
             <span className="font-medium text-foreground">FD&C Act § 520(o)(1)(E) Non-Device CDS:</span> {NOT_CLEARED}
@@ -961,8 +961,9 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                 </div>
 
                 <div>
-                  <label className="text-muted-foreground">Prescribed Dose (mg/kg)</label>
+                  <label htmlFor="pediatric-field-1" className="text-muted-foreground">Prescribed Dose (mg/kg)</label>
                   <Input
+                    id="pediatric-field-1"
                     type="number"
                     value={customDoseMgPerKg}
                     onChange={(e) => setCustomDoseMgPerKg(Number(e.target.value))}
@@ -971,8 +972,9 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                 </div>
 
                 <div>
-                  <label className="text-muted-foreground">Maximum Adult Ceiling (mg)</label>
+                  <label htmlFor="pediatric-field-2" className="text-muted-foreground">Maximum Adult Ceiling (mg)</label>
                   <Input
+                    id="pediatric-field-2"
                     type="number"
                     value={customAdultMaxMg}
                     onChange={(e) => setCustomAdultMaxMg(Number(e.target.value))}

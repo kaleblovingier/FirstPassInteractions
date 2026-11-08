@@ -22,9 +22,10 @@ test("tab bar keeps wrapping at 640px", () => {
   assert.equal(nav.includes("flex-wrap"), true);
   assert.equal(nav.includes("sm:flex-nowrap"), false);
   assert.equal(nav.includes("md:flex-nowrap"), false);
-  assert.equal(nav.includes("xl:flex-nowrap"), true);
+  // The one-row xl header pushed the menu past its column at 1280px and wider; it stays stacked and wrapping.
+  assert.equal(nav.includes("xl:flex-nowrap"), false);
   assert.equal(header.includes("sm:flex-row"), false);
-  assert.equal(header.includes("xl:flex-row"), true);
+  assert.equal(header.includes("xl:flex-row"), false);
 });
 
 test("clinical board buttons expose pressed state", () => {

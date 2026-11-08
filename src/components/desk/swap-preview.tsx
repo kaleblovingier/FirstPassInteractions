@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { ArrowLeftRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,7 +84,7 @@ export function SwapResult({ diff, outId, inId }: { diff: SwapDiff; outId: strin
         </div>
       )}
       <p className="text-[11px] text-subtle">
-        {diff.kept} finding{diff.kept === 1 ? "" : "s"} stay the same on both trays.
+        {diff.kept === 1 ? "1 finding stays" : `${diff.kept} findings stay`} the same on both trays.
       </p>
     </div>
   );
@@ -107,6 +107,9 @@ export function SwapPreview({
   const [note, setNote] = useState("");
   const selectId = useId();
   const searchId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  // Picking a match, Apply swap and Pick another each unmount the button that was pressed.
+  const refocus = () => requestAnimationFrame(() => inputRef.current?.focus());
   const outId = outPick && ids.includes(outPick) ? outPick : ids[ids.length - 1];
   const matches = useMemo(() => (query.trim() ? searchDrugs(query, ids).slice(0, PICKS) : []), [query, ids]);
   const diff = useMemo(
@@ -117,6 +120,7 @@ export function SwapPreview({
   function reset() {
     setInId(null);
     setQuery("");
+    refocus();
   }
 
   function apply() {
@@ -176,6 +180,7 @@ export function SwapPreview({
           </label>
           <Input
             id={searchId}
+            ref={inputRef}
             className="mt-1"
             value={inId ? name(inId) : query}
             readOnly={Boolean(inId)}
@@ -190,7 +195,10 @@ export function SwapPreview({
         <ul aria-label="Replacement matches" className="mt-2 flex flex-wrap gap-2">
           {matches.map((d) => (
             <li key={d.id}>
-              <Button variant="secondary" size="sm" className="h-11 sm:h-9" onClick={() => setInId(d.id)}>
+              <Button variant="secondary" size="sm" className="h-11 sm:h-9" onClick={() => {
+                  setInId(d.id);
+                  refocus();
+                }}>
                 {d.name}
               </Button>
             </li>

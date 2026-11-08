@@ -145,7 +145,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
         </div>
 
         {/* FD&C Act Banner */}
-        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-border/60 bg-bg-sunken p-3 text-xs text-muted-foreground">
           <ShieldAlert className="size-4 shrink-0 text-amber-400" />
           <div>
             <span className="font-medium text-foreground">FD&C Act § 520(o)(1)(E) Non-Device CDS:</span> {NOT_CLEARED}
@@ -213,8 +213,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-muted-foreground">Systolic BP (mmHg)</label>
+                <label htmlFor="vaso-field-1" className="text-muted-foreground">Systolic BP (mmHg)</label>
                 <Input
+                  id="vaso-field-1"
                   type="number"
                   value={sbp}
                   onChange={(e) => setSbp(Number(e.target.value))}
@@ -223,8 +224,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Mean Arterial Pressure MAP (mmHg)</label>
+                <label htmlFor="vaso-field-2" className="text-muted-foreground">Mean Arterial Pressure MAP (mmHg)</label>
                 <Input
+                  id="vaso-field-2"
                   type="number"
                   value={map}
                   onChange={(e) => setMap(Number(e.target.value))}
@@ -233,8 +235,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Heart Rate (bpm)</label>
+                <label htmlFor="vaso-field-3" className="text-muted-foreground">Heart Rate (bpm)</label>
                 <Input
+                  id="vaso-field-3"
                   type="number"
                   value={hr}
                   onChange={(e) => setHr(Number(e.target.value))}
@@ -243,8 +246,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Serum Lactate (mmol/L)</label>
+                <label htmlFor="vaso-field-4" className="text-muted-foreground">Serum Lactate (mmol/L)</label>
                 <Input
+                  id="vaso-field-4"
                   type="number"
                   step="0.1"
                   value={lactate}
@@ -254,8 +258,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Central Venous Oxygen Sat ScvO2 (%)</label>
+                <label htmlFor="vaso-field-5" className="text-muted-foreground">Central Venous Oxygen Sat ScvO2 (%)</label>
                 <Input
+                  id="vaso-field-5"
                   type="number"
                   value={scvO2}
                   onChange={(e) => setScvO2(Number(e.target.value))}
@@ -264,8 +269,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Hourly Urine Output (mL/h)</label>
+                <label htmlFor="vaso-field-6" className="text-muted-foreground">Hourly Urine Output (mL/h)</label>
                 <Input
+                  id="vaso-field-6"
                   type="number"
                   value={urineOutput}
                   onChange={(e) => setUrineOutput(Number(e.target.value))}
@@ -326,7 +332,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               <p className="mt-2 text-xs text-muted-foreground">{scaiResult.description}</p>
 
               {/* Criteria Met */}
-              <div className="mt-4 rounded-lg bg-muted/40 p-3">
+              <div className="mt-4 rounded-lg bg-bg-sunken p-3">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Physiological Criteria Satisfied
                 </h4>
@@ -478,31 +484,31 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
                   Expected Directional Hemodynamic Response
                 </h4>
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
-                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                  <div className="rounded-lg border border-border/60 bg-bg-sunken p-2.5 text-center">
                     <div className="text-[10px] uppercase text-muted-foreground">MAP</div>
                     <div className="mt-1 font-mono text-sm font-semibold capitalize">
                       {selectedAgent.receptorProfile.hemodynamicEffect.map}
                     </div>
                   </div>
-                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                  <div className="rounded-lg border border-border/60 bg-bg-sunken p-2.5 text-center">
                     <div className="text-[10px] uppercase text-muted-foreground">SVR</div>
                     <div className="mt-1 font-mono text-sm font-semibold capitalize">
                       {selectedAgent.receptorProfile.hemodynamicEffect.svr}
                     </div>
                   </div>
-                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                  <div className="rounded-lg border border-border/60 bg-bg-sunken p-2.5 text-center">
                     <div className="text-[10px] uppercase text-muted-foreground">Cardiac Output</div>
                     <div className="mt-1 font-mono text-sm font-semibold capitalize">
                       {selectedAgent.receptorProfile.hemodynamicEffect.co}
                     </div>
                   </div>
-                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                  <div className="rounded-lg border border-border/60 bg-bg-sunken p-2.5 text-center">
                     <div className="text-[10px] uppercase text-muted-foreground">Heart Rate</div>
                     <div className="mt-1 font-mono text-sm font-semibold capitalize">
                       {selectedAgent.receptorProfile.hemodynamicEffect.hr}
                     </div>
                   </div>
-                  <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 text-center">
+                  <div className="rounded-lg border border-border/60 bg-bg-sunken p-2.5 text-center">
                     <div className="text-[10px] uppercase text-muted-foreground">MVO2 Demand</div>
                     <div className="mt-1 font-mono text-sm font-semibold capitalize">
                       {selectedAgent.receptorProfile.hemodynamicEffect.mvo2}
@@ -515,11 +521,11 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
                     Pharmacokinetic & Clearance Dynamics
                   </h4>
                   <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
-                    <div className="rounded-lg bg-muted/30 p-2.5">
+                    <div className="rounded-lg bg-bg-sunken p-2.5">
                       <span className="font-medium text-foreground">Onset / Half-Life:</span>{" "}
                       {selectedAgent.onsetMinutes} min onset · {selectedAgent.halfLifeMinutes} min t1/2
                     </div>
-                    <div className="rounded-lg bg-muted/30 p-2.5">
+                    <div className="rounded-lg bg-bg-sunken p-2.5">
                       <span className="font-medium text-foreground">Renal Elimination Fraction:</span>{" "}
                       {Math.round(selectedAgent.renalClearanceFraction * 100)}% unchanged
                     </div>
@@ -557,8 +563,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-muted-foreground">Serum Lactate (mmol/L)</label>
+                <label htmlFor="vaso-field-7" className="text-muted-foreground">Serum Lactate (mmol/L)</label>
                 <Input
+                  id="vaso-field-7"
                   type="number"
                   step="0.1"
                   value={lactate}
@@ -568,8 +575,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Arterial pH</label>
+                <label htmlFor="vaso-field-8" className="text-muted-foreground">Arterial pH</label>
                 <Input
+                  id="vaso-field-8"
                   type="number"
                   step="0.01"
                   value={arterialPh}
@@ -579,8 +587,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Central Venous Oxygen Saturation ScvO2 (%)</label>
+                <label htmlFor="vaso-field-9" className="text-muted-foreground">Central Venous Oxygen Saturation ScvO2 (%)</label>
                 <Input
+                  id="vaso-field-9"
                   type="number"
                   value={scvO2}
                   onChange={(e) => setScvO2(Number(e.target.value))}
@@ -589,8 +598,9 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               </div>
 
               <div>
-                <label className="text-muted-foreground">Hourly Urine Output (mL/h)</label>
+                <label htmlFor="vaso-field-10" className="text-muted-foreground">Hourly Urine Output (mL/h)</label>
                 <Input
+                  id="vaso-field-10"
                   type="number"
                   value={urineOutput}
                   onChange={(e) => setUrineOutput(Number(e.target.value))}
@@ -612,7 +622,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
               {lactateResult.physiologicalRationale}
             </p>
 
-            <div className="rounded-lg border border-border/60 bg-muted/40 p-3 text-xs">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3 text-xs">
               <h4 className="font-semibold text-foreground">Clinical Strategy</h4>
               <p className="mt-1 text-muted-foreground">{lactateResult.clinicalActionSummary}</p>
             </div>
@@ -711,27 +721,27 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
           </div>
 
           <div className="mt-5 space-y-3 text-xs">
-            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3">
               <span className="font-semibold text-foreground">Dose & Dilution:</span>{" "}
               {extravasationProtocol.doseAndPreparation}
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3">
               <span className="font-semibold text-foreground">Infiltration Technique:</span>{" "}
               {extravasationProtocol.administrationTechnique}
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3">
               <span className="font-semibold text-foreground">Therapeutic Window:</span> Administer within{" "}
               {extravasationProtocol.timeWindowHours} hours of extravasation for maximum tissue salvage.
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3">
               <span className="font-semibold text-foreground">Topical Alternative:</span>{" "}
               {extravasationProtocol.alternativeAgent}
             </div>
 
-            <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+            <div className="rounded-lg border border-border/60 bg-bg-sunken p-3">
               <span className="font-semibold text-foreground">Monitoring:</span>{" "}
               {extravasationProtocol.monitoringGuidance}
             </div>
