@@ -2,13 +2,15 @@
  * Practice mode: quiz questions built only from existing pair pages (gold set + label pins).
  * Adds no pairs, grades, enzyme strengths or dose text. Educational recall practice only.
  */
-import { z } from "zod";
 import { pairPages, type PairPage } from "@/lib/seo/pair-pages";
 import { analyze } from "@/lib/drugs/engine";
 import { bySeed } from "@/lib/drugs/learn/learn-order";
 import { isDue, normalizeStudyMarks, scheduleStudyMark, type StudyMark } from "@/lib/drugs/study-marks";
 import { GLOSSARY_BY_ID } from "@/lib/learn/glossary";
 import { SEVERITY_LABEL, type Severity } from "@/lib/drugs/types";
+import { GRADES, type PracticeSearch } from "./practice-meta";
+
+export { PRACTICE_DESCRIPTION, PRACTICE_TITLE, parsePracticeSearch, type PracticeSearch } from "./practice-meta";
 
 export type EnzymeRole = "inhibitor" | "inducer" | "substrate";
 
@@ -24,7 +26,6 @@ export interface PracticeQuestion {
   quote: { labelDrug: string; labelSection: string; quote: string; url: string } | null;
 }
 
-const GRADES = ["contraindicated", "major", "moderate", "minor"] as const satisfies readonly Severity[];
 export const GRADE_CHOICES: string[] = GRADES.map((s) => SEVERITY_LABEL[s]);
 export const ROLE_CHOICES: EnzymeRole[] = ["inhibitor", "inducer", "substrate"];
 
@@ -110,16 +111,6 @@ export function scoreAnswer(q: PracticeQuestion, a: { grade: string; enzyme?: st
   return { grade, enzyme, role, all: grade && enzyme !== false && role !== false };
 }
 
-const PRACTICE_SEARCH = z
-  .object({ enzyme: z.string().optional().catch(undefined), grade: z.enum(GRADES).optional().catch(undefined) })
-  .catch({});
-export type PracticeSearch = z.infer<typeof PRACTICE_SEARCH>;
-
-/** Deck filters from the URL, e.g. `?enzyme=CYP3A4&grade=major`. Malformed values are dropped, never thrown. */
-export function parsePracticeSearch(raw: unknown): PracticeSearch {
-  return PRACTICE_SEARCH.parse(raw);
-}
-
 /** Enzymes and grades that occur in the question set: the only values the deck filters offer. */
 export function deckFacets(qs: PracticeQuestion[]): { enzymes: string[]; grades: Severity[] } {
   return {
@@ -190,8 +181,5 @@ export function saveMarks(storage: Pick<Storage, "setItem"> | undefined, marks: 
   try { storage?.setItem(MARKS_KEY, JSON.stringify(marks)); } catch { /* private mode etc. */ }
 }
 
-export const PRACTICE_TITLE = "Practice: drug-pair recall | FirstPass";
-export const PRACTICE_DESCRIPTION =
-  "Study drug pairs from FDA label quotes. Guess the grade and the enzyme, then check the label text. Educational practice only.";
 export const PRACTICE_INTRO =
   "Recall practice for students and trainees. Each card is a pair already on FirstPass with a quote from its FDA label. Pick your answers, then reveal the label text. This is a study aid, not a clinical tool. The Prescribing Information governs.";

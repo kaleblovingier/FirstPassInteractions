@@ -6,6 +6,9 @@
  * Measured 2026-11: entry 523066 B raw / 165945 B gzip; catalog 536903 B raw
  * / 149707 B gzip. Entry limit is +10%. The catalog gets +20% because new
  * drugs are added to it; raise a limit deliberately, with the reason.
+ * 2026-11-07: route loaders split out of the entry, which fell to 387161 B raw /
+ * 125706 B gzip; entry limit is now that +3%. Route heads and search parsers
+ * land in the entry, so keep their imports light (see src/lib/learn/*-meta.ts).
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
@@ -14,7 +17,7 @@ import assert from "node:assert/strict";
 
 const DIR = ".vercel/output/static/assets";
 const BUDGET = {
-  index: { raw: 575_400, gzip: 182_500 },
+  index: { raw: 398_800, gzip: 129_500 },
   catalog: { raw: 644_300, gzip: 179_700 },
 };
 const files = readdirSync(DIR);

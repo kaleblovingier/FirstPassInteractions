@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { PairDisclaimer } from "@/components/seo/pair-page";
-import { GLOSSARY, GLOSSARY_BY_ID, GLOSSARY_H1, GLOSSARY_INTRO, filterGlossary, groupByLetter } from "@/lib/learn/glossary";
+import { GLOSSARY, GLOSSARY_BY_ID, GLOSSARY_H1, GLOSSARY_INTRO, filterGlossary, glossaryJsonLdText, groupByLetter } from "@/lib/learn/glossary";
 
 const chip = "inline-flex min-h-11 items-center underline";
+// In the page, not the route head: route heads ship in every page's entry bundle, and this needs every term.
+const JSON_LD = glossaryJsonLdText();
 
 export function GlossaryView() {
   const [query, setQuery] = useState("");
@@ -17,6 +19,7 @@ export function GlossaryView() {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10" data-testid="glossary">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON_LD }} />
       <a href="#terms" className="skip-link">Skip to the terms</a>
       <p className="text-xs text-muted">
         <a href="/pairs" className="underline">All pairs</a> · <a href="/enzymes" className="underline">All enzymes</a> ·{" "}

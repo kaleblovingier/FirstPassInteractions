@@ -8,7 +8,7 @@ import { DOSE_PATTERN } from "@/lib/guards/dose-rule";
 import { enzymeHubBySlug } from "@/lib/seo/enzyme-hubs";
 import {
   GLOSSARY, GLOSSARY_BY_ID, GLOSSARY_DESCRIPTION, GLOSSARY_INTRO, GLOSSARY_MAX_CHARS, GLOSSARY_MAX_SENTENCES,
-  GLOSSARY_TITLE, GLOSSARY_URL, filterGlossary, glossaryJsonLd, groupByLetter,
+  GLOSSARY_TITLE, GLOSSARY_URL, filterGlossary, glossaryJsonLd, glossaryJsonLdText, groupByLetter,
 } from "./glossary";
 
 const sentences = (s: string) => (s.match(/[.!?](?=\s|$)/g) ?? []).length;
@@ -102,6 +102,15 @@ test("JSON-LD is a DefinedTermSet with one DefinedTerm per entry", () => {
     assert.equal(d.inDefinedTermSet, GLOSSARY_URL);
   });
   assert.deepEqual(JSON.parse(JSON.stringify(ld)), ld);
+});
+
+test("the page carries the JSON-LD once, escaped so no term can close the script tag", () => {
+  const text = glossaryJsonLdText();
+  assert.deepEqual(JSON.parse(text), glossaryJsonLd());
+  assert.doesNotMatch(text, /[<>&]/);
+  const html = renderToStaticMarkup(createElement(GlossaryView));
+  assert.equal(html.split('<script type="application/ld+json">').length, 2);
+  assert.ok(html.includes(`<script type="application/ld+json">${text}</script>`));
 });
 
 test("server render lists every term as a heading anchor, the same way every time", () => {

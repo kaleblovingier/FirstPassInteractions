@@ -218,9 +218,7 @@ export function saveDone(ids: string[], storage?: Pick<Storage, "setItem">): voi
   }
 }
 
-export const WORKUP_TITLE = "Workup: find the interactions | FirstPass";
-export const WORKUP_DESCRIPTION =
-  "Work up a sample regimen as you would on rounds: call which drug pairs interact and how, then compare with the desk's findings and sources. Educational practice only.";
+export { WORKUP_DESCRIPTION, WORKUP_TITLE } from "./workup-meta";
 export const WORKUP_INTRO =
   "A study aid for clinicians and for medical, pharmacy, nursing, NP, PA and other health-professions students. Read the medicine list and call each pair: no interaction, a change in levels (PK, through enzymes or transporters), or an additive effect (PD). Then check your workup against the desk's findings and the source behind each one. It is not a clinical tool. The Prescribing Information governs.";
 /** README wording. */
