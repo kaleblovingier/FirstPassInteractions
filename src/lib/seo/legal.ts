@@ -97,6 +97,7 @@ export const PRIVACY_DOC: LegalDoc = {
         "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
         "Reader asks and wrong operator PINs are also counted per IP address. These counts are kept in server memory, and when FirstPass's database is connected they are also kept there so the limits hold across servers. The database stores a keyed one-way hash of the address, never the address itself. Each count expires when its limit window ends (an hour at most) and is deleted the next time a limit is checked.",
         "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
+        "Cookieless page views: FirstPass runs an aggregate, cookieless page counter (/api/collect) to understand overall traffic volume. It sets no cookies, records no IP addresses or user agents, logs no drug names or search queries, and isolates daily visitor pseudonyms using rotating daily salts so visits cannot be linked across days. You can opt out at any time in your browser (fp_analytics_opt_out in local storage). Views are kept for 90 days as aggregate counts.",
       ],
     },
     {

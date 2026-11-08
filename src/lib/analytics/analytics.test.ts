@@ -1,11 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { PGlite } from "@electric-sql/pglite";
 import {
   parseDevice,
   sanitizePath,
   sanitizeReferrer,
   extractCountry,
   handleCollectRequest,
+  resetCollectLimiter,
+  COLLECT_RATE_LIMIT,
 } from "./collect.server";
 import {
   computeVisitorCode,
@@ -15,6 +19,7 @@ import {
 } from "./store.server";
 import { handleGetSiteStats } from "./stats.server";
 import { STATS_RANGES, type Device } from "./contract";
+import type { Sql } from "../db";
 
 test("sanitizePath extracts pathname and strictly strips queries and hashes", () => {
   assert.equal(sanitizePath("/pairs?q=warfarin+aspirin"), "/pairs");
@@ -289,5 +294,206 @@ test("AnalyticsStore records views and produces zero-filled aggregate stats", as
   assert.equal(stats.countries.find((c) => c.code === "CA")?.views, 1);
   assert.equal(stats.devices.find((d) => d.device === "desktop")?.views, 2);
   assert.equal(stats.devices.find((d) => d.device === "phone")?.views, 1);
+});
+
+test("handleCollectRequest enforces sliding window rate limit per client key and guards against flood attacks", async () => {
+  resetCollectLimiter();
+  const vercel = process.env.VERCEL;
+  process.env.VERCEL = "1";
+  try {
+    const ipA = "203.0.113.50";
+    const ipB = "203.0.113.51";
+    const t0 = 1794150000000;
+
+    const makeReq = (ip: string, path = "/pairs") =>
+      new Request("http://localhost/api/collect", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-real-ip": ip,
+        },
+        body: JSON.stringify({ path }),
+      });
+
+    // Client A sends exactly COLLECT_RATE_LIMIT.max (120) requests at t0
+    for (let i = 0; i < COLLECT_RATE_LIMIT.max; i++) {
+      const res = await handleCollectRequest(makeReq(ipA), t0 + i * 10);
+      assert.equal(res.status, 204, `request ${i + 1} should succeed`);
+    }
+
+    // Client A sends 121st request at t0 + 2000ms: must return 429
+    const floodRes = await handleCollectRequest(makeReq(ipA), t0 + 2000);
+    assert.equal(floodRes.status, 429, "121st request must be rate limited");
+    assert.ok(floodRes.headers.get("retry-after"), "must provide Retry-After header");
+    assert.match(floodRes.headers.get("cache-control") ?? "", /no-store/);
+
+    // Client B from another IP is independent and must NOT be blocked
+    const clientBRes = await handleCollectRequest(makeReq(ipB), t0 + 2050);
+    assert.equal(clientBRes.status, 204, "client B must succeed independently");
+
+    // Once window advances past 60s, client A's oldest slots free up
+    const futureRes = await handleCollectRequest(
+      makeReq(ipA),
+      t0 + COLLECT_RATE_LIMIT.windowMs + 500,
+    );
+    assert.equal(futureRes.status, 204, "request after window moves should succeed");
+  } finally {
+    if (vercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = vercel;
+    resetCollectLimiter();
+  }
+});
+
+test("migrations/0003_analytics.sql executes cleanly and idempotently multiple times on PGlite", async () => {
+  const migration = readFileSync(
+    new URL("../../../migrations/0003_analytics.sql", import.meta.url),
+    "utf8",
+  );
+  // Guarantee no non-idempotent or destructive statements
+  assert.doesNotMatch(migration, /\b(drop|alter|truncate)\b/i);
+
+  const pg = new PGlite();
+  await pg.waitReady;
+
+  try {
+    // Run 1: initial table & index creation
+    await pg.exec(migration);
+
+    // Run 2: idempotent re-execution (simulating redeploy or restart)
+    await pg.exec(migration);
+
+    // Run 3: third execution to assert stability
+    await pg.exec(migration);
+
+    // Assert tables exist and are queryable
+    const saltsRes = await pg.query<{ cnt: number | string }>("SELECT COUNT(*) as cnt FROM analytics_salts");
+    assert.equal(Number(saltsRes.rows[0]?.cnt), 0);
+
+    const viewsRes = await pg.query<{ cnt: number | string }>("SELECT COUNT(*) as cnt FROM analytics_views");
+    assert.equal(Number(viewsRes.rows[0]?.cnt), 0);
+
+    // Assert all 5 expected indexes exist in pg_indexes
+    const indexesRes = await pg.query<{ indexname: string }>(
+      "SELECT indexname FROM pg_indexes WHERE tablename IN ('analytics_salts', 'analytics_views')",
+    );
+    const indexNames = indexesRes.rows.map((r) => r.indexname);
+    assert.ok(indexNames.includes("analytics_salts_pkey"), "analytics_salts_pkey must exist");
+    assert.ok(indexNames.includes("analytics_salts_expires"), "analytics_salts_expires must exist");
+    assert.ok(indexNames.includes("analytics_views_day"), "analytics_views_day must exist");
+    assert.ok(indexNames.includes("analytics_views_path"), "analytics_views_path must exist");
+    assert.ok(indexNames.includes("analytics_views_created"), "analytics_views_created must exist");
+  } finally {
+    await pg.close();
+  }
+});
+
+test("AnalyticsStore retention pruning and aggregate queries on live PGlite database", async () => {
+  const migration = readFileSync(
+    new URL("../../../migrations/0003_analytics.sql", import.meta.url),
+    "utf8",
+  );
+  const pg = new PGlite({ parsers: { 20: Number } });
+  await pg.waitReady;
+  await pg.exec(migration);
+
+  try {
+    // Construct Sql tagged-template adapter over PGlite
+    const pgliteSql = (async <T = Record<string, unknown>>(
+      strings: TemplateStringsArray,
+      ...values: unknown[]
+    ): Promise<T[]> => {
+      let query = strings[0]!;
+      for (let i = 0; i < values.length; i++) {
+        query += `$${i + 1}${strings[i + 1]}`;
+      }
+      const res = await pg.query<T>(query, values);
+      return res.rows;
+    }) as unknown as Sql;
+    pgliteSql.query = async <T = Record<string, unknown>>(
+      text: string,
+      params: unknown[] = [],
+    ): Promise<T[]> => (await pg.query<T>(text, params)).rows;
+
+    const store = new AnalyticsStore(pgliteSql);
+    const now = 1794160000000;
+    const day = utcDayString(now);
+
+    // Record legitimate page views
+    await store.recordView({
+      path: "/pairs",
+      referrerHost: "google.com",
+      country: "US",
+      device: "desktop",
+      ip: "203.0.113.1",
+      userAgent: "Mozilla/5.0 Chrome",
+      now,
+    });
+
+    await store.recordView({
+      path: "/pairs",
+      referrerHost: "google.com",
+      country: "US",
+      device: "desktop",
+      ip: "203.0.113.2",
+      userAgent: "Mozilla/5.0 Firefox",
+      now: now + 1000,
+    });
+
+    await store.recordView({
+      path: "/drug/metformin",
+      referrerHost: "bing.com",
+      country: "CA",
+      device: "phone",
+      ip: "203.0.113.3",
+      userAgent: "Mozilla/5.0 Mobile",
+      now: now + 2000,
+    });
+
+    // Manually insert an expired view (> 90 days old)
+    const ninetyFiveDaysAgo = now - 95 * 24 * 60 * 60 * 1000;
+    await pg.query(
+      `INSERT INTO analytics_views (day, visitor_code, path, referrer_host, country, device, created_at_ms)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [utcDayString(ninetyFiveDaysAgo), "old-code", "/old-path", "", "US", "desktop", ninetyFiveDaysAgo],
+    );
+
+    // Manually insert an expired salt (> 48h expired)
+    await pg.query(
+      `INSERT INTO analytics_salts (day, salt, expires_ms)
+       VALUES ($1, $2, $3)`,
+      ["2026-08-01", "old-salt-value", now - 1000],
+    );
+
+    // Verify initial count includes the expired records
+    const preViews = await pg.query<{ cnt: number | string }>("SELECT COUNT(*) as cnt FROM analytics_views");
+    assert.equal(Number(preViews.rows[0]?.cnt), 4);
+    const preSalts = await pg.query<{ cnt: number | string }>("SELECT COUNT(*) as cnt FROM analytics_salts");
+    assert.equal(Number(preSalts.rows[0]?.cnt), 2);
+
+    // Trigger sweep after SWEEP_EVERY_MS (1 hour) has passed
+    const oneHourLater = now + 60 * 60 * 1000 + 1000;
+    await store.sweep(oneHourLater);
+
+    // Verify expired records were pruned
+    const postViews = await pg.query<{ cnt: number | string }>("SELECT COUNT(*) as cnt FROM analytics_views");
+    assert.equal(Number(postViews.rows[0]?.cnt), 3, "expired view (> 90d) must be pruned");
+
+    const postSalts = await pg.query<{ cnt: number | string }>("SELECT COUNT(*) as cnt FROM analytics_salts");
+    assert.equal(Number(postSalts.rows[0]?.cnt), 1, "expired salt (> 48h) must be pruned");
+
+    // Verify aggregate statistics on live PGlite
+    const stats = await store.getStats(7, now + 5000);
+    assert.equal(stats.enabled, true);
+    assert.equal(stats.totals.views, 3);
+    assert.equal(stats.totals.visitors, 3);
+    assert.equal(stats.pages[0]?.path, "/pairs");
+    assert.equal(stats.pages[0]?.views, 2);
+    assert.equal(stats.pages[1]?.path, "/drug/metformin");
+    assert.equal(stats.pages[1]?.views, 1);
+    assert.equal(stats.referrers.find((r) => r.host === "google.com")?.views, 2);
+    assert.equal(stats.referrers.find((r) => r.host === "bing.com")?.views, 1);
+  } finally {
+    await pg.close();
+  }
 });
 

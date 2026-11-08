@@ -353,8 +353,8 @@ export function DeskApp() {
               </Button>
             ) : null}
           </div>
-          <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-2">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap items-center justify-center gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1">
+          <div className="flex w-full min-w-0 flex-wrap items-center justify-start gap-2">
+            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap items-center justify-start gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1">
               {DESK_VIEWS.map(([id, label]) => (
                 <button
                   key={id}

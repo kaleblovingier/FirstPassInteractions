@@ -148,6 +148,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "cyclosporine",
       "fentanyl",
       "apixaban",
+      "daraxonrasib",
     ],
     inhibitors: [
       "verapamil",
@@ -156,6 +157,8 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "clarithromycin",
       "itraconazole",
       "ritonavir",
+      "vepdegestrant",
+      "daraxonrasib",
     ],
     inducers: [
       "rifampin",
@@ -306,6 +309,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "lapatinib",
       "cyclosporine",
       "regorafenib",
+      "tavapadon",
     ],
     inducers: [],
     probeOrInvestigationalInhibitors: [

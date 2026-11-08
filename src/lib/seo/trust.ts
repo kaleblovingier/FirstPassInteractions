@@ -62,11 +62,11 @@ export const WHAT_SECTION = {
 export const PRIVACY: TrustSection = {
   id: "privacy",
   title: "Privacy",
-  intro: "FirstPass has no accounts and no database. The desk runs in your browser.",
+  intro: "FirstPass has no accounts. The desk runs in your browser.",
   points: [
     {
       lead: "No accounts.",
-      text: "There is no sign-up and no sign-in. No database holds learner data.",
+      text: "There is no sign-up and no sign-in. No database holds learner or user profile data.",
     },
     {
       lead: "What stays in your browser.",
@@ -97,8 +97,8 @@ export const PRIVACY: TrustSection = {
       text: "Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent. To limit abuse, the server counts requests by email and IP address in memory. Those counters are lost when that server instance restarts, and they are not written to disk or a database.",
     },
     {
-      lead: "No analytics.",
-      text: "FirstPass has no analytics, advertising or tracking code. The feedback link opens your own email app.",
+      lead: "No analytics cookies.",
+      text: "FirstPass has no analytics cookies, advertising or third-party tracking code. An aggregate, cookieless page counter records total visits without storing IP addresses, user agents, or drug queries, using rotating daily salts so visits cannot be linked across days. You can opt out at any time in local storage (fp_analytics_opt_out). The feedback link opens your own email app.",
     },
     {
       lead: "Outside resources on every page.",
@@ -127,6 +127,8 @@ export const PRIVACY: TrustSection = {
     "src/lib/billing/license-mail.server.ts",
     "src/lib/billing/recover.server.ts",
     "src/lib/drugs/feedback.ts",
+    "src/lib/analytics/collect.server.ts",
+    "src/lib/analytics/store.server.ts",
     "src/lib/regulatory.ts",
     "README.md",
     "src/routes/__root.tsx",

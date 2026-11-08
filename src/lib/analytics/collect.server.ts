@@ -10,7 +10,32 @@
 
 import { type Device, type CollectBody, MAX_PATH_LENGTH } from "./contract";
 import { recordPageView } from "./store.server";
-import { clientKey } from "../server/rate-limit";
+import { clientKey, SHARED_CLIENT, SlidingWindow } from "../server/rate-limit";
+
+export const COLLECT_RATE_LIMIT = {
+  max: 120,
+  sharedMax: 1_200,
+  windowMs: 60 * 1000,
+  maxKeys: 10_000,
+} as const;
+
+const clientLimiter = new SlidingWindow(
+  COLLECT_RATE_LIMIT.max,
+  COLLECT_RATE_LIMIT.windowMs,
+  COLLECT_RATE_LIMIT.maxKeys,
+);
+
+const sharedLimiter = new SlidingWindow(
+  COLLECT_RATE_LIMIT.sharedMax,
+  COLLECT_RATE_LIMIT.windowMs,
+  1,
+);
+
+/** Test hook: forget rate limiter hit history across both buckets. */
+export function resetCollectLimiter(): void {
+  clientLimiter.reset();
+  sharedLimiter.reset();
+}
 
 export function parseDevice(ua: string): Device {
   const lower = ua.toLowerCase();
@@ -59,9 +84,22 @@ export function extractCountry(request: Request): string {
   return /^[A-Z]{2}$/.test(upper) ? upper : "";
 }
 
-export async function handleCollectRequest(request: Request): Promise<Response> {
+export async function handleCollectRequest(request: Request, now = Date.now()): Promise<Response> {
   if (request.method !== "POST") {
     return new Response(null, { status: 405, headers: { Allow: "POST" } });
+  }
+
+  const ip = clientKey(request);
+  const limiter = ip === SHARED_CLIENT ? sharedLimiter : clientLimiter;
+  if (!limiter.take(ip, now)) {
+    const retryAfterSec = Math.max(1, Math.ceil(limiter.resetMs(ip, now) / 1000));
+    return new Response(null, {
+      status: 429,
+      headers: {
+        "Retry-After": String(retryAfterSec),
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      },
+    });
   }
 
   try {
@@ -80,7 +118,6 @@ export async function handleCollectRequest(request: Request): Promise<Response> 
     const ua = request.headers.get("user-agent") || "";
     const device = parseDevice(ua);
     const country = extractCountry(request);
-    const ip = clientKey(request);
 
     // Record view asynchronously in the background
     void recordPageView({
@@ -90,7 +127,7 @@ export async function handleCollectRequest(request: Request): Promise<Response> 
       device,
       ip,
       userAgent: ua,
-      now: Date.now(),
+      now,
     });
 
     return new Response(null, {

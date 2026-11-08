@@ -128,7 +128,9 @@ export type SafetyKind =
   | "sglt2-loop"
   | "pde5-nitrate"
   | "xo-thiopurine"
-  | "mtx-tmpsmx";
+  | "mtx-tmpsmx"
+  | "colchicine-inhibitor"
+  | "statin-strong-3a4";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -357,6 +359,54 @@ export function isMtxTmpsmx(a: string, b: string) {
   return (a === "methotrexate" && b === "tmp-smx") || (b === "methotrexate" && a === "tmp-smx");
 }
 
+export const COLCHICINE_INHIBITORS = new Set([
+  "clarithromycin",
+  "ketoconazole",
+  "itraconazole",
+  "posaconazole",
+  "voriconazole",
+  "ritonavir",
+  "cobicistat",
+  "paxlovid",
+  "cyclosporine",
+]);
+
+export const STATIN_3A4_VICTIMS = new Set([
+  "simvastatin",
+  "lovastatin",
+  "red-yeast-rice",
+]);
+
+export const STATIN_STRONG_3A4_PERPETRATORS = new Set([
+  "clarithromycin",
+  "erythromycin",
+  "telithromycin",
+  "ketoconazole",
+  "itraconazole",
+  "posaconazole",
+  "voriconazole",
+  "ritonavir",
+  "cobicistat",
+  "paxlovid",
+  "gemfibrozil",
+  "cyclosporine",
+  "nefazodone",
+]);
+
+export function isColchicineInhibitor(a: string, b: string) {
+  return (
+    (a === "colchicine" && COLCHICINE_INHIBITORS.has(b)) ||
+    (b === "colchicine" && COLCHICINE_INHIBITORS.has(a))
+  );
+}
+
+export function isStatinStrong3a4(a: string, b: string) {
+  return (
+    (STATIN_3A4_VICTIMS.has(a) && STATIN_STRONG_3A4_PERPETRATORS.has(b)) ||
+    (STATIN_3A4_VICTIMS.has(b) && STATIN_STRONG_3A4_PERPETRATORS.has(a))
+  );
+}
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -576,10 +626,10 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         names(cp[0], cp[1]),
         "major",
         "warn",
-        "omeprazole / esomeprazole blunt clopidogrel activation",
-        "Clopidogrel is a 2C19 activation substrate. Omeprazole and esomeprazole phenocopy a 2C19 PM — less active thiol, more stent-era worry. The CYP map already fires; this row names the switch. Pantoprazole is the quieter PPI on this desk. Do not 'give more Plavix.'",
-        "Pantoprazole if a PPI is required. Open the PI. This desk does not pick the milligram.",
-        "Plavix boxed warning / FDA PPI communication. CPIC CYP2C19–clopidogrel.",
+        "omeprazole / esomeprazole blunts clopidogrel bioactivation",
+        "Clopidogrel is an inactive prodrug requiring two-step hepatic CYP2C19 bioactivation into its active antiplatelet thiol metabolite. Omeprazole and esomeprazole competitively and mechanism-inhibit CYP2C19, cutting active thiol exposure by ~40–45% and significantly blunting platelet inhibition, which increases ischemic and stent thrombosis risks. The FDA Boxed Warning advises avoiding omeprazole/esomeprazole with clopidogrel. Acid-suppressive alternatives with low CYP2C19 liability (pantoprazole or H2-receptor antagonists except cimetidine) can be reviewed if gastroprotection is clinically indicated.",
+        "Platelet responsiveness, recurrent ischemic symptoms, stent thrombosis surveillance. This desk does not pick the gastroprotective agent or dose.",
+        "Plavix boxed warning / FDA Drug Safety Communication (2009/2010). CPIC CYP2C19–clopidogrel guideline (PMID 23698643, 35434823).",
       ),
     );
   }
@@ -613,9 +663,9 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "contraindicated",
         "danger",
         "PDE5 inhibitor × nitrate / sGC stimulator — refractory hypotension",
-        "PDE5 inhibitors plus organic nitrates or soluble guanylate cyclase stimulators cause profound intracellular cGMP accumulation, triggering massive systemic vasodilation, refractory hypotension, and cardiovascular collapse. Concomitant use is an absolute labeled contraindication. Do not give nitrates within 24 hours of sildenafil or 48 hours of tadalafil.",
-        "Blood pressure, syncope, ischemic chest pain. This desk does not time the washout.",
-        "Viagra, Cialis, Nitrostat, Imdur, and Adempas Prescribing Information. ACC/AHA guidelines.",
+        "PDE5 inhibitors prevent cGMP degradation, while organic nitrates (nitroglycerin, isosorbide) donate nitric oxide to stimulate cGMP synthesis and soluble guanylate cyclase (sGC) stimulators (riociguat) directly stimulate cGMP generation. Concomitant use causes profound, unregulated intracellular cGMP accumulation, provoking severe systemic vasodilation, refractory hypotension, coronary hypoperfusion, and cardiovascular collapse. Concomitant administration is an absolute labeled contraindication. Official prescribing information establishes labeled separation windows: at least 24 hours after sildenafil/vardenafil and at least 48 hours after tadalafil before nitrate therapy may be considered under close hemodynamic monitoring.",
+        "Blood pressure, orthostasis, syncope, ischemic chest pain. This desk does not time the washout.",
+        "Viagra, Cialis, Levitra, Nitrostat, Imdur, and Adempas Prescribing Information. ACC/AHA NSTE-ACS Guidelines (PMID 25249585).",
       ),
     );
   }
@@ -631,9 +681,9 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "contraindicated",
         "danger",
         "xanthine oxidase inhibitor × thiopurine — fatal marrow aplasia",
-        "Xanthine oxidase catabolizes 6-mercaptopurine into inactive 6-thiouric acid. XO inhibition diverts thiopurine flux into cytotoxic thioguanine nucleotides (6-TGN), multiplying bone marrow exposure and causing severe, potentially fatal pancytopenia. Febuxostat is labeled contraindicated; allopurinol requires a mandatory 66–75% dose reduction under close hematologic monitoring.",
-        "CBC with differential, signs of infection, mucosal bleeding. This desk does not pick the thiopurine dose.",
-        "Imuran, Purixan, Zyloprim, and Uloric Prescribing Information.",
+        "Xanthine oxidase catabolizes 6-mercaptopurine into inactive 6-thiouric acid. Concomitant XO inhibition diverts metabolic flux into hypoxanthine-guanine phosphoribosyltransferase (HGPRT), creating a 4- to 5-fold surge in cytotoxic thioguanine nucleotides (6-TGN) that precipitate severe, potentially fatal bone marrow aplasia and pancytopenia. Febuxostat labeling lists thiopurines as contraindicated; allopurinol labeling mandates an immediate 66–75% reduction of the thiopurine dose with intensive hematologic monitoring.",
+        "CBC with differential (absolute neutrophil count, platelets), signs of febrile infection, mucosal hemorrhage. This desk does not pick the thiopurine dose.",
+        "Imuran (azathioprine), Purixan (mercaptopurine), Zyloprim (allopurinol), and Uloric (febuxostat) Prescribing Information. CPIC Guidelines for Thiopurines (PMID 30447069).",
       ),
     );
   }
@@ -649,9 +699,45 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "contraindicated",
         "danger",
         "methotrexate × TMP-SMX — tubular blockade / additive antifolate",
-        "Trimethoprim impairs renal tubular secretion of methotrexate via OAT1/OAT3 and OCT2 transporters, while sulfamethoxazole displaces methotrexate from albumin. Concurrently, both agents inhibit dihydrofolate reductase, synergistically extinguishing folate-dependent nucleotide synthesis. Fatal pancytopenia and toxic epidermal necrolysis are documented. Avoid coadministration.",
-        "CBC with differential, renal function, severe mucositis or skin detachment. Consider leucovorin rescue under oncology/poison guidance.",
-        "Methotrexate and Bactrim Prescribing Information. Groenendal 1990 (PMID 2225539).",
+        "Trimethoprim competitively inhibits renal tubular secretion of methotrexate via OAT1/OAT3 and OCT2 transporters, while sulfamethoxazole displaces methotrexate from plasma albumin binding sites. Concurrently, both agents inhibit dihydrofolate reductase (DHFR), synergistically halting intracellular folate-dependent nucleotide synthesis. Even low-dose weekly methotrexate coadministered with standard-dose TMP-SMX has triggered fatal bone marrow aplasia, severe leukopenic sepsis, and toxic epidermal necrolysis. Prescribing information advises avoiding the combination.",
+        "CBC with differential (neutrophil and platelet nadir), renal function panels, severe oral mucositis, or epidermal detachment. Leucovorin rescue protocols are directed by oncology/poison control.",
+        "Methotrexate and Bactrim Prescribing Information. Groenendal 1990 (PMID 2225539). Thomas 2007 (PMID 17618956).",
+      ),
+    );
+  }
+
+  const ci = pair(ids, (id) => id === "colchicine", (id) => COLCHICINE_INHIBITORS.has(id));
+  if (ci) {
+    out.push(
+      hit(
+        "colchicine-inhibitor",
+        ci[0],
+        ci[1],
+        names(ci[0], ci[1]),
+        "contraindicated",
+        "danger",
+        "colchicine × strong CYP3A4 / P-gp inhibitor — fatal colchicine toxicity",
+        "Colchicine relies on hepatic CYP3A4 metabolism and intestinal/renal/biliary P-glycoprotein efflux. Strong dual inhibitors (clarithromycin, ketoconazole, itraconazole, posaconazole, voriconazole, ritonavir, cobicistat, cyclosporine) multiply systemic colchicine exposure. In patients with renal or hepatic impairment, concomitant use is an absolute labeled contraindication due to life-threatening and fatal multi-organ toxicity reported at standard doses. In patients with normal organ function, labeling mandates substantial dose reductions or treatment interruption. Toxicity manifests as severe gastrointestinal distress, progressive ascending paralysis, profound rhabdomyolysis, acute kidney injury, arrhythmias, and fatal bone marrow aplasia.",
+        "Early diarrhea/vomiting (herald sign of systemic toxicity), diffuse muscle pain/weakness, dark urine (myoglobinuria), CK, serum creatinine, electrolytes, CBC with differential (pancytopenia nadir days 3–7). This desk does not pick the dose reduction or substitute.",
+        "Colcrys (colchicine) Prescribing Information. FDA Drug Safety Communications (2009, 2012). Hung 2005 (PMID 16007523). Terkeltaub 2010 (PMID 20131255).",
+      ),
+    );
+  }
+
+  const ss = pair(ids, (id) => STATIN_3A4_VICTIMS.has(id), (id) => STATIN_STRONG_3A4_PERPETRATORS.has(id));
+  if (ss) {
+    out.push(
+      hit(
+        "statin-strong-3a4",
+        ss[0],
+        ss[1],
+        names(ss[0], ss[1]),
+        "contraindicated",
+        "danger",
+        "simvastatin / lovastatin × strong CYP3A4 inhibitor — rhabdomyolysis / AKI",
+        "Simvastatin, lovastatin, and monacolin K (red yeast rice) are lipophilic lactone prodrugs dependent on CYP3A4 for extensive first-pass hepatic extraction. Strong CYP3A4 inhibitors (clarithromycin, erythromycin, ketoconazole, itraconazole, posaconazole, voriconazole, ritonavir, cobicistat, Paxlovid) increase active statin acid AUC up to 5- to 20-fold. Gemfibrozil (OATP1B1/UGT inhibitor) and cyclosporine also multiply exposure. Concomitant use is an absolute labeled contraindication due to high risk of severe skeletal muscle myonecrosis (rhabdomyolysis), myoglobinuria, hyperkalemia, acute tubular necrosis, and fatal renal failure. Labeling recommends suspending the statin during short antimicrobial courses or switching to non-CYP3A4 statins (pravastatin, rosuvastatin) with dose caps.",
+        "Unexplained proximal muscle pain, tenderness, or weakness; dark/brown tea-colored urine; creatine kinase (CK >10× ULN defines myopathy; >40× ULN with myoglobinuria indicates rhabdomyolysis); serum creatinine, BUN, potassium. This desk does not pick the statin alternative.",
+        "Zocor (simvastatin) and Mevacor (lovastatin) Prescribing Information contraindications. FDA Drug Safety Communication (2011). Neuvonen 2008 (PMID 18596677). Wiggins 2016 AHA Statement (PMID 27754879).",
       ),
     );
   }

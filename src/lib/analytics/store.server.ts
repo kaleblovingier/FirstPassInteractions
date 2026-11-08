@@ -112,9 +112,10 @@ export class AnalyticsStore {
 
     const retentionFloorMs = now - RETENTION_DAYS * 24 * 60 * 60 * 1000;
 
-    // Prune old salt cache in memory
+    // Prune expired salt cache in memory (salts expire after 48h)
+    const saltFloorMs = now - 48 * 60 * 60 * 1000;
     for (const [day] of this.saltCache) {
-      if (new Date(day).getTime() < retentionFloorMs) {
+      if (new Date(day).getTime() < saltFloorMs) {
         this.saltCache.delete(day);
       }
     }
