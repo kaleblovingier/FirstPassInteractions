@@ -18,8 +18,16 @@ import {
   setAnalyticsStore,
 } from "./store.server";
 import { handleGetSiteStats, handleStatsRequest, STATS_SECURITY_HEADERS } from "./stats.server";
-import { STATS_RANGES, type Device } from "./contract";
+import { STATS_RANGES, type Device, type SiteStats } from "./contract";
 import { resetPinThrottle } from "../billing/license.server";
+import {
+  exportStatsToJson,
+  exportStatsToCsv,
+  generateExportFilename,
+  sanitizeExportPath,
+  downloadAnalyticsExport,
+  type AnalyticsExportReport,
+} from "./export";
 import type { Sql } from "../db";
 
 test("sanitizePath extracts pathname and strictly strips queries and hashes", () => {
@@ -656,5 +664,179 @@ test("handleStatsRequest maintains stability and idempotency under high concurre
     assert.match(res.headers.get("cache-control") ?? "", /no-store/);
   }
   resetPinThrottle();
+});
+
+test("aggregate export produces structured zero-PHI JSON and multi-section CSV reports with format integrity", () => {
+  const mockStats: SiteStats = {
+    enabled: true,
+    days: 30,
+    totals: { views: 4200, visitors: 1850 },
+    daily: [
+      { day: "2026-11-01", views: 200, visitors: 90 },
+      { day: "2026-11-02", views: 250, visitors: 110 },
+    ],
+    pages: [
+      { path: "/pairs", views: 2100, visitors: 950 },
+      { path: "/catalog", views: 1500, visitors: 700 },
+    ],
+    referrers: [
+      { host: "pubmed.ncbi.nlm.nih.gov", views: 800 },
+      { host: "google.com", views: 600 },
+    ],
+    countries: [
+      { code: "US", views: 3000 },
+      { code: "CA", views: 700 },
+    ],
+    devices: [
+      { device: "desktop", views: 2600 },
+      { device: "phone", views: 1400 },
+      { device: "tablet", views: 200 },
+    ],
+  };
+
+  const fixedTimestamp = 1794171600000; // 2026-11-08T21:00:00.000Z
+  const jsonStr = exportStatsToJson(mockStats, fixedTimestamp);
+  const parsed = JSON.parse(jsonStr) as AnalyticsExportReport;
+
+  // Verify JSON schema and structure
+  assert.equal(parsed.schema, "firstpass-analytics-aggregate-v1");
+  assert.equal(parsed.timeframeDays, 30);
+  assert.equal(parsed.totals.views, 4200);
+  assert.equal(parsed.totals.visitors, 1850);
+  assert.equal(parsed.daily.length, 2);
+  assert.equal(parsed.daily[0]?.day, "2026-11-01");
+  assert.equal(parsed.daily[0]?.views, 200);
+  assert.equal(parsed.daily[0]?.visitors, 90);
+  assert.equal(parsed.pages.length, 2);
+  assert.equal(parsed.pages[0]?.path, "/pairs");
+  assert.equal(parsed.referrers[0]?.host, "pubmed.ncbi.nlm.nih.gov");
+  assert.equal(parsed.countries[0]?.code, "US");
+  assert.equal(parsed.devices[0]?.device, "desktop");
+
+  // Verify CSV format and RFC 4180 escaping
+  const csvStr = exportStatsToCsv(mockStats, fixedTimestamp);
+  assert.ok(csvStr.includes("# FirstPass Analytics Aggregate Export"));
+  assert.ok(csvStr.includes("[TOTALS]"));
+  assert.ok(csvStr.includes("Total Page Views,4200"));
+  assert.ok(csvStr.includes("Unique Daily Visitors,1850"));
+  assert.ok(csvStr.includes("[DAILY BREAKDOWN]"));
+  assert.ok(csvStr.includes("2026-11-01,200,90"));
+  assert.ok(csvStr.includes("[TOP PAGES]"));
+  assert.ok(csvStr.includes("/pairs,2100,950"));
+  assert.ok(csvStr.includes("[TOP REFERRERS]"));
+  assert.ok(csvStr.includes("pubmed.ncbi.nlm.nih.gov,800"));
+  assert.ok(csvStr.includes("[GEOGRAPHIC REACH]"));
+  assert.ok(csvStr.includes("US,3000"));
+  assert.ok(csvStr.includes("[DEVICE BREAKDOWN]"));
+  assert.ok(csvStr.includes("desktop,2600"));
+
+  // Verify standard export filenames
+  assert.equal(
+    generateExportFilename(30, "json", fixedTimestamp),
+    "firstpass-analytics-30d-2026-11-08.json",
+  );
+  assert.equal(
+    generateExportFilename(7, "csv", fixedTimestamp),
+    "firstpass-analytics-7d-2026-11-08.csv",
+  );
+});
+
+test("aggregate export strictly guarantees zero-PHI, zero IPs, and zero drug query patterns", () => {
+  const secretIpV4 = "192.0.2.146";
+  const secretIpV6 = "2001:db8::8a2e:370:7334";
+  const secretSalt = "daily-salt-secret-alpha99";
+  const secretVisitorHash = "a3f5b7c9e1d2f4a6b8c0d2e4f6a8b0c2";
+  const sensitiveQuery1 = "warfarin+aspirin";
+  const sensitiveQuery2 = "metformin+contrast";
+
+  const dirtyStats: SiteStats = {
+    enabled: true,
+    days: 7,
+    totals: { views: 50, visitors: 20 },
+    daily: [{ day: "2026-11-08", views: 50, visitors: 20 }],
+    pages: [
+      { path: `/pairs?q=${sensitiveQuery1}&patient_mrn=98765#results`, views: 30, visitors: 15 },
+      { path: `/search?drug=${sensitiveQuery2}`, views: 20, visitors: 10 },
+      { path: "relative/path/without/slash", views: 5, visitors: 3 },
+    ],
+    referrers: [{ host: "external.com", views: 10 }],
+    countries: [{ code: "US", views: 50 }],
+    devices: [{ device: "desktop", views: 50 }],
+  };
+
+  const jsonOutput = exportStatsToJson(dirtyStats);
+  const csvOutput = exportStatsToCsv(dirtyStats);
+
+  for (const output of [jsonOutput, csvOutput]) {
+    // Assert zero IPv4 addresses
+    assert.doesNotMatch(
+      output,
+      /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
+    );
+    assert.doesNotMatch(output, new RegExp(secretIpV4));
+    assert.doesNotMatch(output, new RegExp(secretIpV6));
+
+    // Assert zero visitor hashes or salts
+    assert.doesNotMatch(output, new RegExp(secretSalt));
+    assert.doesNotMatch(output, new RegExp(secretVisitorHash));
+    assert.doesNotMatch(output, /"salt"/i);
+    assert.doesNotMatch(output, /"visitor_code"/i);
+    assert.doesNotMatch(output, /"ip"/i);
+
+    // Assert zero drug query strings or clinical search queries
+    assert.doesNotMatch(output, new RegExp(sensitiveQuery1.replace(/\+/g, "\\+")));
+    assert.doesNotMatch(output, new RegExp(sensitiveQuery2.replace(/\+/g, "\\+")));
+    assert.doesNotMatch(output, /patient_mrn/i);
+    assert.doesNotMatch(output, /\?q=/i);
+    assert.doesNotMatch(output, /\?drug=/i);
+  }
+
+  // Verify paths are strictly normalized
+  const parsedJson = JSON.parse(jsonOutput) as AnalyticsExportReport;
+  assert.equal(parsedJson.pages[0]?.path, "/pairs");
+  assert.equal(parsedJson.pages[1]?.path, "/search");
+  assert.equal(parsedJson.pages[2]?.path, "/relative/path/without/slash");
+
+  // Verify sanitizeExportPath edge cases
+  assert.equal(sanitizeExportPath("/pairs?q=amiodarone"), "/pairs");
+  assert.equal(sanitizeExportPath("/drug/metformin#section-dosing"), "/drug/metformin");
+  assert.equal(sanitizeExportPath(""), "/");
+  assert.equal(sanitizeExportPath(null), "/");
+  assert.equal(sanitizeExportPath(123), "/");
+});
+
+test("aggregate export handles empty datasets idempotently without throwing", () => {
+  const emptyStats: SiteStats = {
+    enabled: true,
+    days: 90,
+    totals: { views: 0, visitors: 0 },
+    daily: [],
+    pages: [],
+    referrers: [],
+    countries: [],
+    devices: [],
+  };
+
+  const fixedTime = 1794171600000;
+  const json1 = exportStatsToJson(emptyStats, fixedTime);
+  const json2 = exportStatsToJson(emptyStats, fixedTime);
+  assert.equal(json1, json2);
+
+  const parsed = JSON.parse(json1) as AnalyticsExportReport;
+  assert.equal(parsed.totals.views, 0);
+  assert.equal(parsed.totals.visitors, 0);
+  assert.deepEqual(parsed.daily, []);
+  assert.deepEqual(parsed.pages, []);
+
+  const csv1 = exportStatsToCsv(emptyStats, fixedTime);
+  const csv2 = exportStatsToCsv(emptyStats, fixedTime);
+  assert.equal(csv1, csv2);
+  assert.ok(csv1.includes("Total Page Views,0"));
+
+  // Verify downloadAnalyticsExport is safe in non-DOM (Node.js) environments
+  assert.doesNotThrow(() => {
+    downloadAnalyticsExport(emptyStats, "json");
+    downloadAnalyticsExport(emptyStats, "csv");
+  });
 });
 

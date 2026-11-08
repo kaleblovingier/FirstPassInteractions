@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, BarChart2, Eye, Globe, Smartphone, Users } from "lucide-react";
+import { Activity, BarChart2, Download, Eye, Globe, Smartphone, Users } from "lucide-react";
 import {
   type Device,
   type SiteStats,
@@ -8,6 +8,7 @@ import {
   STATS_RANGES,
 } from "@/lib/analytics/contract";
 import { getSiteStats } from "@/lib/analytics/stats";
+import { downloadAnalyticsExport } from "@/lib/analytics/export";
 import { Button } from "@/components/ui/button";
 
 interface SiteStatsDeskProps {
@@ -67,6 +68,16 @@ export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
     }
   }, [pin, days]);
 
+  function handleExportJson() {
+    if (!stats || !stats.enabled) return;
+    downloadAnalyticsExport(stats, "json");
+  }
+
+  function handleExportCsv() {
+    if (!stats || !stats.enabled) return;
+    downloadAnalyticsExport(stats, "csv");
+  }
+
   return (
     <section className="rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
@@ -82,7 +93,7 @@ export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {STATS_RANGES.map((r) => (
             <Button
               key={r}
@@ -103,6 +114,26 @@ export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
             disabled={loading || !pin}
           >
             Refresh
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportJson}
+            disabled={loading || !stats || !stats.enabled}
+            title="Download active metrics snapshot as JSON"
+          >
+            <Download className="mr-1.5 size-3.5" />
+            Export JSON
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportCsv}
+            disabled={loading || !stats || !stats.enabled}
+            title="Download active metrics snapshot as CSV"
+          >
+            <Download className="mr-1.5 size-3.5" />
+            Export CSV
           </Button>
         </div>
       </div>

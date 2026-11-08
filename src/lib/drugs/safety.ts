@@ -133,7 +133,10 @@ export type SafetyKind =
   | "statin-strong-3a4"
   | "warfarin-cyp2c9"
   | "mtx-nsaid"
-  | "maoi-serotonergic";
+  | "maoi-serotonergic"
+  | "lithium-renal-clearance"
+  | "digoxin-pgp"
+  | "doac-inducer";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -509,6 +512,88 @@ export function isMaoiSerotonergic(a: string, b: string) {
   return (
     (isMaoiDrug(a) && isSerotonergicDrug(b)) ||
     (isMaoiDrug(b) && isSerotonergicDrug(a))
+  );
+}
+
+export const THIAZIDE_DIURETICS = new Set([
+  "hctz",
+  "hydrochlorothiazide",
+  "chlorthalidone",
+  "indapamide",
+  "metolazone",
+  "chlorothiazide",
+  "bendroflumethiazide",
+  "hydrochlorothiazide-triamterene",
+  "losartan-hctz",
+  "valsartan-hctz",
+]);
+
+export function isThiazide(id: string) {
+  return (
+    THIAZIDE_DIURETICS.has(id) ||
+    /thiazide|chlorthalidone|indapamide|metolazone/i.test(id) ||
+    /thiazide/i.test(clsOf(id))
+  );
+}
+
+export function isLithiumClearanceInteracting(id: string) {
+  return isThiazide(id) || isSystemicNsaid(id) || isAcei(id) || isArb(id);
+}
+
+export function isLithiumRenalClearance(a: string, b: string) {
+  return (
+    (a === "lithium" && isLithiumClearanceInteracting(b)) ||
+    (b === "lithium" && isLithiumClearanceInteracting(a))
+  );
+}
+
+export const DIGOXIN_PGP_PERPETRATORS = new Set([
+  "amiodarone",
+  "verapamil",
+  "clarithromycin",
+  "erythromycin",
+  "quinidine",
+  "quinidine-gluconate",
+  "itraconazole",
+  "dronedarone",
+]);
+
+export function isDigoxinPgp(a: string, b: string) {
+  return (
+    (a === "digoxin" && DIGOXIN_PGP_PERPETRATORS.has(b)) ||
+    (b === "digoxin" && DIGOXIN_PGP_PERPETRATORS.has(a))
+  );
+}
+
+export const DOAC_DRUGS = new Set([
+  "apixaban",
+  "rivaroxaban",
+  "dabigatran",
+  "edoxaban",
+]);
+
+export const DOAC_INDUCERS = new Set([
+  "rifampin",
+  "carbamazepine",
+  "carbamazepine-xr",
+  "carbamazepine-equetro",
+  "phenytoin",
+  "fosphenytoin",
+  "phenytoin-fosphenytoin",
+  "phenobarbital",
+  "primidone",
+  "st-johns-wort",
+]);
+
+export function isDoac(id: string) {
+  return DOAC_DRUGS.has(id) || /Direct oral anticoagulant|Direct thrombin inhibitor/i.test(clsOf(id));
+}
+
+export function isDoacInducer(a: string, b: string) {
+  const inducer = (id: string) => DOAC_INDUCERS.has(id) || OCP_INDUCER.has(id);
+  return (
+    (isDoac(a) && inducer(b)) ||
+    (isDoac(b) && inducer(a))
   );
 }
 
@@ -897,6 +982,60 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Monoamine oxidase inhibitors (phenelzine, tranylcypromine, isocarboxazid, linezolid, methylene blue) irreversibly or reversibly block the catabolism of serotonin (5-HT). Concomitant administration with serotonin reuptake inhibitors (SSRIs, SNRIs, TCAs), serotonergic analgesics (tramadol, tapentadol, meperidine, methadone), or dextromethorphan leads to massive, unregulated intrasynaptic serotonin accumulation and hyperstimulation of 5-HT1A and 5-HT2A receptors. This combination is an absolute labeled contraindication due to fulminant Serotonin Toxicity (Hunter criteria: spontaneous clonus, tremor, hyperreflexia, rigidity, autonomic instability, and malignant hyperthermia >40°C leading to rhabdomyolysis, DIC, multi-organ failure, and death). Labeling mandates a strict 14-day washout interval when switching between MAOIs and most serotonergic agents, and a mandatory 5-week (35-day) washout after fluoxetine before initiating an MAOI.",
         "Hunter Toxicity Criteria (spontaneous or ocular clonus, diaphoresis, agitation, tremor, hyperreflexia), core body temperature, muscular rigidity, blood pressure instability. Discontinue all serotonergic agents immediately; active cooling and cyproheptadine protocol under emergency/ICU care. This desk does not time the washout clock.",
         "Nardil, Parnate, Marplan, Zyvox, and ProvayBlue Prescribing Information contraindications. Boyer EW, Shannon M. The Serotonin Syndrome. N Engl J Med 2005 (PMID 15784664). Dunkley EJ et al. Hunter Serotonin Toxicity Criteria. QJM 2003 (PMID 12925720).",
+      ),
+    );
+  }
+
+  const lr = pair(ids, (id) => id === "lithium", isLithiumClearanceInteracting);
+  if (lr) {
+    out.push(
+      hit(
+        "lithium-renal-clearance",
+        lr[0],
+        lr[1],
+        names(lr[0], lr[1]),
+        "major",
+        "danger",
+        "lithium × thiazide / NSAID / ACEI / ARB — impaired renal clearance / neurotoxicity",
+        "Lithium is a monovalent cation with a narrow therapeutic index (target trough 0.6–1.2 mEq/L; toxic >1.5 mEq/L, severe/life-threatening >2.0 mEq/L) cleared >95% renally with ~80% reabsorbed in the proximal tubule. (1) Thiazide diuretics (HCTZ, chlorthalidone, indapamide, metolazone) induce natriuresis, triggering compensatory proximal tubular hyper-reabsorption of sodium and lithium; this decreases lithium clearance by 25–40% and causes rapid toxic accumulation. (2) Systemic NSAIDs (ibuprofen, naproxen, indomethacin, meloxicam, celecoxib) inhibit renal vasodilatory prostaglandins, reducing GFR and blunting tubular lithium excretion (elevating serum lithium levels by 10–60%). (3) ACE inhibitors and ARBs decrease efferent arteriolar resistance, reducing intraglomerular pressure and GFR, leading to progressive, often delayed lithium retention. Concomitant therapy precipitates severe neurotoxicity: coarse tremor, ataxia, dysarthria, hyperreflexia, confusion, seizures, encephalopathy, and permanent cerebellar deficits (SILENT syndrome). Labeling advises preemptive lithium dose reductions (often 25–50% with thiazides) and frequent level monitoring.",
+        "Serum lithium trough (12 hours post-dose; goal 0.6–1.0 mEq/L maintenance), serum creatinine, BUN, electrolytes (sodium, potassium), neurological signs (coarse tremor, ataxia, confusion). Discontinue lithium if toxic symptoms emerge; hemodialysis is indicated for levels >4.0 mEq/L (or >2.5 mEq/L with severe neurologic symptoms or renal failure). This desk does not adjust the dose.",
+        "Lithobid (lithium carbonate) Prescribing Information. Finley PR. Clin Pharmacokinet 2016 (PMID 27129971). Juurlink DN et al. J Clin Psychopharmacol 2004 (PMID 15538128).",
+      ),
+    );
+  }
+
+  const dp = pair(ids, (id) => id === "digoxin", (id) => DIGOXIN_PGP_PERPETRATORS.has(id));
+  if (dp) {
+    out.push(
+      hit(
+        "digoxin-pgp",
+        dp[0],
+        dp[1],
+        names(dp[0], dp[1]),
+        "major",
+        "danger",
+        "digoxin × strong P-gp inhibitor / macrolide — P-gp efflux blockade / digitalis toxicity",
+        "Digoxin is a cardiac glycoside with a narrow therapeutic index (0.5–0.9 ng/mL for heart failure; toxicity >2.0 ng/mL) eliminated 50–70% unchanged in urine via apical P-glycoprotein (P-gp/ABCB1) efflux in renal proximal tubules and enterocytes. (1) Potent P-gp inhibitors (amiodarone, verapamil, quinidine, dronedarone, itraconazole) block intestinal and renal P-gp efflux, doubling to tripling systemic digoxin exposure (amiodarone increases digoxin AUC by 70–100%; verapamil by 60–90%; quinidine by >100%). (2) Macrolides (clarithromycin, erythromycin) eradicate gut Eggerthella lenta (which metabolizes digoxin to inactive dihydrodigoxin in ~10% of patients) while inhibiting intestinal P-gp, triggering sudden surges in bioavailability. Digitalis toxicity produces lethal cardiac arrhythmias (bidirectional ventricular tachycardia, accelerated junctional rhythm, high-grade AV block, sinus arrest), exacerbated by hypokalemia and hypomagnesemia, along with GI distress and xanthopsia (yellow-green halos). Prescribing information mandates an empiric 30–50% digoxin dose reduction when initiating amiodarone, verapamil, or quinidine, with frequent level checks.",
+        "Serum digoxin trough (draw ≥6–8 hours post-dose, ideally 12–24 hours; goal 0.5–0.9 ng/mL for HF), ECG (PR prolongation, ST scooping, bidirectional VT, heart block), potassium, magnesium, BUN/creatinine. Administer Digoxin Immune Fab (DigiFab) for life-threatening arrhythmias or severe hyperkalemia. This desk does not pick the dose reduction.",
+        "Lanoxin (digoxin) Prescribing Information. Hager WD et al. N Engl J Med 1979 (PMID 449969). Lindenbaum J et al. N Engl J Med 1981 (PMID 7278972). Hinderling PH. J Clin Pharmacol 2009 (PMID 19661474).",
+      ),
+    );
+  }
+
+  const di = pair(ids, isDoac, (id) => DOAC_INDUCERS.has(id) || OCP_INDUCER.has(id));
+  if (di) {
+    out.push(
+      hit(
+        "doac-inducer",
+        di[0],
+        di[1],
+        names(di[0], di[1]),
+        "major",
+        "danger",
+        "DOAC × strong CYP3A4 / P-gp inducer — clearance surge / thromboembolic failure",
+        "Direct oral anticoagulants (apixaban, rivaroxaban, dabigatran etexilate, edoxaban) are substrates of the intestinal/renal/hepatic efflux transporter P-glycoprotein (P-gp), and apixaban and rivaroxaban undergo significant hepatic CYP3A4 metabolism (~25% and ~36% clearance, respectively). Potent combined inducers of CYP3A4 and P-gp (rifampin, carbamazepine, phenytoin, phenobarbital, primidone, St. John's wort) profoundly accelerate DOAC metabolism and active efflux, slashing systemic DOAC exposure (AUC) by 50% to 70% (e.g., rifampin reduces dabigatran AUC by ~67%, rivaroxaban by ~50%, apixaban by ~54%). This causes severe subtherapeutic anticoagulation and catastrophic failure of thromboprophylaxis, with high risk of acute ischemic stroke, massive pulmonary embolism, and recurrent venous thromboembolism. FDA labeling for Eliquis, Xarelto, Pradaxa, and Savaysa carries an explicit recommendation to avoid concomitant use with strong dual inducers (or strong P-gp inducers for dabigatran/edoxaban). Alternative anticoagulation (e.g., enoxaparin or warfarin with INR titration) or non-inducing anticonvulsant/antimicrobial regimens should be evaluated.",
+        "Surveillance for acute thrombosis (focal neurologic signs, acute dyspnea, pleuritic chest pain, asymmetric lower extremity swelling). DOAC drug levels or chromogenic anti-Xa assays (for apixaban/rivaroxaban/edoxaban) or dilute thrombin time (for dabigatran) where available. Concomitant use is labeled for avoidance. This desk does not pick the replacement anticoagulant.",
+        "Eliquis, Xarelto, Pradaxa, and Savaysa Prescribing Information. Wiggins BS et al. AHA Scientific Statement: Drug-Drug Interactions with DOACs. Circulation 2020 (PMID 33170732). Huisman MV et al. Thromb Haemost 2017 (PMID 28722097).",
       ),
     );
   }

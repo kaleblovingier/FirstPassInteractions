@@ -13,6 +13,9 @@ import {
   isWarfarinCyp2c9,
   isMtxNsaid,
   isMaoiSerotonergic,
+  isLithiumRenalClearance,
+  isDigoxinPgp,
+  isDoacInducer,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -69,6 +72,66 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.match(hits[0].mechanism, /life-threatening serotonin toxicity/i);
     assert.match(hits[0].clinical, /Hunter criteria.*14-day washout.*5-week/i);
     assert.match(hits[0].source, /Boyer EW.*Dunkley EJ/i);
+  });
+
+  it("detects Lithium × Thiazides / NSAIDs / ACEIs / ARBs renal clearance collision as major risk", () => {
+    assert.equal(isLithiumRenalClearance("lithium", "hctz"), true);
+    assert.equal(isLithiumRenalClearance("chlorthalidone", "lithium"), true);
+    assert.equal(isLithiumRenalClearance("lithium", "ibuprofen"), true);
+    assert.equal(isLithiumRenalClearance("naproxen", "lithium"), true);
+    assert.equal(isLithiumRenalClearance("lithium", "lisinopril"), true);
+    assert.equal(isLithiumRenalClearance("losartan", "lithium"), true);
+    assert.equal(isLithiumRenalClearance("lithium", "atorvastatin"), false);
+
+    const thiazideHits = safetyOnDesk(["lithium", "hctz"]);
+    assert.equal(thiazideHits.length, 1);
+    assert.equal(thiazideHits[0].id, "lithium-renal-clearance");
+    assert.equal(thiazideHits[0].severity, "major");
+    assert.equal(thiazideHits[0].tone, "danger");
+    assert.match(thiazideHits[0].mechanism, /impaired renal clearance \/ neurotoxicity/i);
+    assert.match(thiazideHits[0].clinical, /narrow therapeutic index.*proximal tubule.*SILENT syndrome/i);
+    assert.match(thiazideHits[0].source, /Lithobid.*Finley PR.*Juurlink DN/i);
+
+    const nsaidHits = safetyOnDesk(["lithium", "ibuprofen"]);
+    assert.equal(nsaidHits.length, 1);
+    assert.equal(nsaidHits[0].id, "lithium-renal-clearance");
+  });
+
+  it("detects Digoxin × Strong P-gp Inhibitors / Macrolides collision as major risk", () => {
+    assert.equal(isDigoxinPgp("digoxin", "amiodarone"), true);
+    assert.equal(isDigoxinPgp("verapamil", "digoxin"), true);
+    assert.equal(isDigoxinPgp("digoxin", "clarithromycin"), true);
+    assert.equal(isDigoxinPgp("erythromycin", "digoxin"), true);
+    assert.equal(isDigoxinPgp("digoxin", "quinidine"), true);
+    assert.equal(isDigoxinPgp("itraconazole", "digoxin"), true);
+    assert.equal(isDigoxinPgp("digoxin", "metoprolol"), false);
+
+    const hits = safetyOnDesk(["digoxin", "amiodarone"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "digoxin-pgp");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /P-gp efflux blockade \/ digitalis toxicity/i);
+    assert.match(hits[0].clinical, /cardiac glycoside.*Eggerthella lenta.*bidirectional ventricular tachycardia/i);
+    assert.match(hits[0].source, /Lanoxin.*Hager WD.*Lindenbaum J/i);
+  });
+
+  it("detects DOACs × Strong CYP3A4 / P-gp Inducers collision as major risk", () => {
+    assert.equal(isDoacInducer("apixaban", "rifampin"), true);
+    assert.equal(isDoacInducer("carbamazepine", "rivaroxaban"), true);
+    assert.equal(isDoacInducer("dabigatran", "phenytoin"), true);
+    assert.equal(isDoacInducer("edoxaban", "st-johns-wort"), true);
+    assert.equal(isDoacInducer("apixaban", "phenobarbital"), true);
+    assert.equal(isDoacInducer("apixaban", "amoxicillin"), false);
+
+    const hits = safetyOnDesk(["apixaban", "rifampin"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "doac-inducer");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /clearance surge \/ thromboembolic failure/i);
+    assert.match(hits[0].clinical, /subtherapeutic anticoagulation.*ischemic stroke.*avoid/i);
+    assert.match(hits[0].source, /Eliquis.*Xarelto.*Wiggins BS.*AHA/i);
   });
 
   it("detects Colchicine × strong CYP3A4 / P-gp inhibitor collision as contraindicated", () => {
