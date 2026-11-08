@@ -10,6 +10,8 @@
  */
 
 import type { StateStorage } from "zustand/middleware";
+// Before the schemas below: the server bundle runs this module ahead of src/router.tsx.
+import "@/lib/zod-config";
 import { z } from "zod";
 import type { PlanId } from "@/lib/billing/plans";
 import {
