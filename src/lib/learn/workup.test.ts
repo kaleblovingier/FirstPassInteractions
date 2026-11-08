@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { analyze } from "@/lib/drugs/engine";
 import { SAMPLE_REGIMENS, sampleNeedsPro } from "@/lib/drugs/samples";
 import { DEFAULT_HOST, type Finding } from "@/lib/drugs/types";
@@ -176,8 +177,27 @@ test("copy: educational framing, no pricing, no decision-support claims", () => 
   assert.match(WORKUP_INTRO, /not a clinical tool/);
 });
 
+test("listed cases: medicines are in the catalog, and every pair a story sets up is one analyze() maps", () => {
+  assert.equal(new Set(cases.map((c) => c.id)).size, cases.length, "case ids are unique");
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  for (const l of WORKUP_LISTS) {
+    for (const id of l.drugIds) assert.ok(DRUG_BY_ID[id], `${l.id}: ${id} is in the catalog`);
+    const mapped = new Set(analyze(l.drugIds, DEFAULT_HOST).findings.map(scoredKey));
+    assert.ok(l.focus.length > 0, `${l.id}: names the pairs its story is about`);
+    for (const [a, b] of l.focus) {
+      assert.ok(l.drugIds.includes(a) && l.drugIds.includes(b), `${l.id}: ${a} and ${b} are on the list`);
+      assert.ok(mapped.has(pairKey(a, b)), `${l.id}: the desk maps ${a} + ${b}`);
+    }
+    // A brand name in the story always comes with its generic.
+    const text = `${l.title} ${l.blurb}`;
+    for (const d of Object.values(DRUG_BY_ID))
+      for (const brand of d.brands)
+        if (new RegExp(`\\b${esc(brand)}\\b`, "i").test(text)) assert.match(text, new RegExp(esc(d.name), "i"), `${l.id}: ${brand} without ${d.name}`);
+  }
+});
+
 test("every case has a mapped and an unmapped pair, so marking everything is never perfect", () => {
-  assert.ok(cases.length >= 10, "at least ten cases");
+  assert.ok(cases.length >= 20, "at least twenty cases");
   assert.ok(cases.some((c) => c.pairs.some((p) => p.pagePath?.startsWith("/pair/"))), "some pair links to its public page");
   assert.equal(cases.length, WORKUP_LISTS.length, "every listed case passes the page's eligibility checks");
   for (const c of cases) {
