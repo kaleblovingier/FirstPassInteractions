@@ -29,6 +29,7 @@ import {
 import { BoundedLRUCache } from "../server/cache";
 import { fetchJson, joinNames, sharedFailurePhrase } from "../server/http";
 import { errorKind, logEvent } from "../server/log";
+import { SlidingWindow } from "../server/rate-limit";
 
 export type {
   DailyMedHit,
@@ -60,7 +61,19 @@ const CALL_TIMEOUT_MS = 6_000;
 const LOOKUP_BUDGET_MS = 10_000;
 
 export const liveCache = new BoundedLRUCache<LiveOutcome>(500, LIVE_TTL_MS);
-const UA = "FirstPass/1.0 (educational CYP desk; kaleblovingier@gmail.com)";
+/**
+ * A refresh skips liveCache, so each one costs a full set of upstream calls. Past this many a minute on
+ * one instance, a refresh is answered like an ordinary open. Counted for everyone, so no address is kept.
+ */
+export const REFRESHES_PER_MIN = 60;
+const refreshes = new SlidingWindow(REFRESHES_PER_MIN, 60 * 1000, 1);
+
+/** Test hook: forget this instance's refreshes. */
+export function resetLiveRefreshes() {
+  refreshes.reset();
+}
+
+const UA = "FirstPass/1.0 (educational CYP desk; FirstPassInteractions@gmail.com)";
 
 const LABELED_SOURCES: LiveSource[] = ["label", "faers", "rxnorm", "pubchem", "dailymed", "shortage", "ndc", "recalls"];
 const UNLABELED_SOURCES: LiveSource[] = ["rxnorm", "pubchem"];
@@ -474,7 +487,7 @@ function logLookup(cache: "hit" | "miss", started: number, outcome: LiveOutcome)
 }
 
 export interface LiveLookupOptions {
-  /** Skip liveCache for this pin and pull again. The RxClass cache is not touched. */
+  /** Skip liveCache for this pin and pull again, within REFRESHES_PER_MIN. The RxClass cache is not touched. */
   bypassCache?: boolean;
 }
 
@@ -496,7 +509,7 @@ export async function lookupLiveOutcome(
   const preferred = noteSetids(id);
   const cacheKey = liveCacheKey(chem, preferred);
   const started = Date.now();
-  if (options?.bypassCache) {
+  if (options?.bypassCache && refreshes.take("all")) {
     liveCache.delete(cacheKey);
   } else {
     const cached = liveCache.get(cacheKey);

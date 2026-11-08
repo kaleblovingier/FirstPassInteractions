@@ -8,7 +8,7 @@ import { logEvent } from "../server/log";
 export type { LiveCite, LiveResult };
 
 const TOOL = "firstpass";
-const EMAIL = "kaleblovingier@gmail.com";
+const EMAIL = "FirstPassInteractions@gmail.com";
 const BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
 const MAX = 8;
 

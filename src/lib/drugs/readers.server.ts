@@ -98,7 +98,8 @@ export async function readWithBots(
     logEvent("info", "readers.ask", { cache: "hit", durationMs: 0, answered: cached.length });
     return { ok: true, readers: cached };
   }
-  if (await askers.full(ip)) {
+  // Check and count the caller in one step: a separate check and hit let a burst of parallel asks all pass.
+  if (!(await askers.take(ip))) {
     logEvent("warn", "readers.ask", { cache: "miss", limited: "caller" });
     return { ok: false, error: "Too many reader asks from here. Try again in a minute." };
   }
@@ -106,7 +107,6 @@ export async function readWithBots(
     logEvent("warn", "readers.ask", { cache: "miss", limited: true });
     return { ok: false, error: "The readers are busy right now. Try again in a minute." };
   }
-  await askers.hit(ip);
 
   const readers = await readCache.getOrFetch(
     key,

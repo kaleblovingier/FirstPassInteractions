@@ -20,7 +20,7 @@ export type { LiveCombo, PsychonautPack, WikiPage };
 const TTL = 30 * 60 * 1000;
 const WIKI_TIMEOUT_MS = 6_000;
 const TRIPSIT_TIMEOUT_MS = 5_000;
-const UA = "FirstPass/1.5 (educational CDS; kaleblovingier@gmail.com)";
+const UA = "FirstPass/1.5 (educational CDS; FirstPassInteractions@gmail.com)";
 
 interface MwPage {
   title?: string;

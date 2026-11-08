@@ -57,8 +57,9 @@ export function WorkupView({ cases, caseId }: { cases: WorkupCase[]; caseId?: st
               const on = c.id === current?.id;
               return (
                 <li key={c.id}>
+                  {/* Opens the case at its heading, so a phone or keyboard user does not start above the whole picker again. */}
                   <a
-                    href={workupPath(c.id)}
+                    href={`${workupPath(c.id)}#workup-case`}
                     aria-current={on ? "page" : undefined}
                     className={cn(
                       "block min-h-11 rounded-lg px-3 py-2.5 shadow-[var(--shadow-border)]",
@@ -173,6 +174,7 @@ function CaseWorkup({ c, onChecked }: { c: WorkupCase; onChecked: () => void }) 
             </section>
           ) : null}
           <p className="mt-6">
+            {/* No #fragment here: a link that only adds or repeats one scrolls instead of reloading, which would keep the answers. */}
             <a href={workupPath(c.id)} className="inline-flex min-h-11 items-center text-sm text-accent underline">
               Try this case again
             </a>

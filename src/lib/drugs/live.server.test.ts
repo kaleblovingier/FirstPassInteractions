@@ -1,6 +1,14 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { lookupLive, lookupLiveOutcome, liveCache, liveQueryName, orderEnforcementByInitiation } from "./live.server";
+import {
+  REFRESHES_PER_MIN,
+  lookupLive,
+  lookupLiveOutcome,
+  liveCache,
+  liveQueryName,
+  orderEnforcementByInitiation,
+  resetLiveRefreshes,
+} from "./live.server";
 import type { LiveSources } from "./live";
 import { DRUG_BY_ID } from "./catalog";
 import { OPENFDA_NO_DATE, setidsInText } from "./label-identity";
@@ -74,6 +82,7 @@ function healthyRoute(url: string): Response {
 describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled", () => {
   beforeEach(() => {
     liveCache.clear();
+    resetLiveRefreshes();
     logLines = [];
     setLogSink((_level, line) => logLines.push(line));
   });
@@ -444,6 +453,19 @@ describe("live.server - lookupLive with BoundedLRUCache and Promise.allSettled",
     } finally {
       classCache.delete("watch-sentinel");
     }
+  });
+
+  it("answers a refresh from liveCache once the minute's refreshes are used", async () => {
+    const { urls } = stubFetch(healthyRoute);
+    await lookupLive("warfarin", "Warfarin");
+    for (let i = 0; i < REFRESHES_PER_MIN; i++) await lookupLive("warfarin", "Warfarin", { bypassCache: true });
+    const spent = urls.length;
+    const capped = await lookupLive("warfarin", "Warfarin", { bypassCache: true });
+    assert.equal(urls.length, spent, "an over-budget refresh makes no upstream call");
+    assert.equal(capped.ok, true);
+    resetLiveRefreshes();
+    await lookupLive("warfarin", "Warfarin", { bypassCache: true });
+    assert.ok(urls.length > spent, "a new minute refreshes again");
   });
 
   it("maintains FD&C Act § 520(o)(1)(E) non-prescriptive regulatory posture", () => {

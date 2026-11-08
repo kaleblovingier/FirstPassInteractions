@@ -7,7 +7,7 @@ import { logEvent } from "../server/log";
 
 const TTL = 20 * 60 * 1000;
 const CALL_TIMEOUT_MS = 8_000;
-const UA = "FirstPass/1.0 (educational CYP desk; kaleblovingier@gmail.com)";
+const UA = "FirstPass/1.0 (educational CYP desk; FirstPassInteractions@gmail.com)";
 
 export const trialsCache = new BoundedLRUCache<TrialResult>(300, TTL);
 

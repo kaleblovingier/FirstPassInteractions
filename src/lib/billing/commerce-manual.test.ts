@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 
 /** Assert buyer-facing manual-pay copy without importing Vite-bound commerce.ts. */
 const src = await readFile(new URL("./commerce.ts", import.meta.url), "utf8");
@@ -145,6 +145,15 @@ test("public contact email is FirstPassInteractions, not the old gmail", () => {
   assert.doesNotMatch(op, /kaleblovingier@gmail\.com/);
   assert.match(op, /venmo: "kaleblovingier"/);
   assert.match(op, /cashApp: "kaleblovingier7"/);
+});
+
+test("live lookups identify FirstPass to upstream APIs by the public inbox, not the old gmail", async () => {
+  const dir = new URL("../drugs/", import.meta.url);
+  const files = (await readdir(dir)).filter((f) => f.endsWith(".server.ts"));
+  assert.ok(files.length >= 6);
+  for (const f of files) {
+    assert.doesNotMatch(await readFile(new URL(f, dir), "utf8"), /kaleblovingier@gmail\.com/, f);
+  }
 });
 
 test("Pages pitch lists founding pay rails, contact email, and live teaching packs", async () => {
