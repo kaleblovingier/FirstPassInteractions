@@ -167,7 +167,9 @@ test("rendered page: a labelled radio group per pair, a live result region, desk
   }
   const picker = renderToStaticMarkup(createElement(WorkupView, { cases }));
   assert.doesNotMatch(picker, /<fieldset/);
-  for (const c of cases) assert.ok(picker.includes(`href="${workupPath(c.id)}"`), c.id);
+  // Each case link opens at the case heading, past the picker.
+  for (const c of cases) assert.ok(picker.includes(`href="${workupPath(c.id)}#workup-case"`), c.id);
+  assert.match(renderToStaticMarkup(createElement(WorkupView, { cases, caseId: cases[0]!.id })), /<h2 id="workup-case"/);
 });
 
 test("copy: educational framing, no pricing, no decision-support claims", () => {
