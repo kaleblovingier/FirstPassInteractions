@@ -863,6 +863,9 @@ export function DeskApp() {
   );
 }
 
+// The page first renders this many examples, not all ~270: the full list was most of the desk's HTML and hydration work.
+const FIRST_EXAMPLES = 12;
+
 function EmptyState({
   onLoad,
   onLoadSample,
@@ -881,6 +884,8 @@ function EmptyState({
   onTrayBump: () => void;
 }) {
   const [lane, setLane] = useState<SampleLane | "all">("all");
+  const [showAll, setShowAll] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null);
   const plan = usePlan();
   const setView = useDesk((s) => s.setView);
   const shown = samplesInLane(lane);
@@ -1085,8 +1090,8 @@ function EmptyState({
             Examples load into the checker so you can see how its summaries and source links work.
           </p>
         </div>
-        <ul className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
-          {shown.map((s) => (
+        <ul ref={listRef} className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
+          {(showAll ? shown : shown.slice(0, FIRST_EXAMPLES)).map((s) => (
             <li key={s.id} className="relative min-w-0">
               <button
                 type="button"
@@ -1109,6 +1114,22 @@ function EmptyState({
             </li>
           ))}
         </ul>
+        {!showAll && shown.length > FIRST_EXAMPLES ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-3"
+            onClick={() => {
+              setShowAll(true);
+              // The button goes away; carry keyboard focus to the first example it revealed.
+              requestAnimationFrame(() =>
+                listRef.current?.children[FIRST_EXAMPLES]?.querySelector<HTMLButtonElement>("button")?.focus(),
+              );
+            }}
+          >
+            Show all {shown.length} examples
+          </Button>
+        ) : null}
       </div>
     </section>
   );
