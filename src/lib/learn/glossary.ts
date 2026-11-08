@@ -3,8 +3,7 @@
  * in plain words first and the precise term second. Every definition was checked
  * against the source cited on its entry. Educational reference only, no doses.
  */
-import type { JSX } from "react";
-import { SITE_URL } from "@/lib/seo/pair-copy";
+import { GLOSSARY_DESCRIPTION, GLOSSARY_TITLE, GLOSSARY_URL } from "./glossary-meta";
 
 export interface GlossarySource {
   title: string;
@@ -30,11 +29,8 @@ export interface GlossaryTerm {
 export const GLOSSARY_MAX_SENTENCES = 2;
 export const GLOSSARY_MAX_CHARS = 340;
 
-export const GLOSSARY_URL = `${SITE_URL}/glossary`;
+export { GLOSSARY_DESCRIPTION, GLOSSARY_TITLE, GLOSSARY_URL };
 export const GLOSSARY_H1 = "Clinical pharmacology glossary";
-export const GLOSSARY_TITLE = "Clinical pharmacology glossary | FirstPass";
-export const GLOSSARY_DESCRIPTION =
-  "Plain-language definitions of the drug-interaction, pharmacokinetic, pharmacogenomic and safety terms used on FirstPass, each checked against a cited source. Educational reference only.";
 export const GLOSSARY_INTRO =
   "The words on FirstPass cards, in plain language first and the precise term second, for clinicians, medical, PharmD, nursing, NP and PA learners and other health-professions students. Each entry says where the term shows up on the desk and which source it was checked against.";
 
@@ -780,7 +776,7 @@ export function glossaryJsonLd() {
   };
 }
 
-/** Head meta entry rendered as <script type="application/ld+json"> (see breadcrumbMeta). */
-export function glossaryJsonLdMeta(): JSX.IntrinsicElements["meta"] {
-  return { "script:ld+json": glossaryJsonLd() } as unknown as JSX.IntrinsicElements["meta"];
+/** glossaryJsonLd() as <script> text, with <, > and & escaped as the router escapes head JSON-LD, so no term can close the tag. */
+export function glossaryJsonLdText(): string {
+  return JSON.stringify(glossaryJsonLd()).replace(/[<>&]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
 }

@@ -194,6 +194,13 @@ export default defineConfig(({ command, isPreview }) => ({
     swVersionPlugin(),
     tailwindcss(),
     tanstackStart({
+      router: {
+        // Loaders get their own chunks too. Pages arrive with their loader data, so a public page no longer
+        // downloads the catalog, engine and label tables that only its loader (run at build or on the server) needs.
+        codeSplittingOptions: {
+          defaultBehavior: [["loader"], ["component"], ["errorComponent"], ["notFoundComponent"]],
+        },
+      },
       // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /for-programs, /trust, /sources, /help, /glossary, sitemap.xml). /workup stays server-rendered: its ?case= view differs from a static page.
       // /pairs links to every pair page and /enzymes to every enzyme page, so crawling covers them all.
       // The desk itself stays server-rendered as before.

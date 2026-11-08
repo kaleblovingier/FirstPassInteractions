@@ -13,7 +13,6 @@ import { LABEL_GOLD_SET } from "@/lib/drugs/reference/label-gold-set";
 import labelVersionsFile from "@/lib/drugs/reference/label-versions.json" with { type: "json" };
 import { dailymedSetUrl } from "@/lib/regulatory";
 import { enzymeDisplayName, enzymeHubBySlug, enzymePath, enzymeSlug } from "./enzyme-hubs";
-import { PAIR_DISCLAIMER, SITE_URL } from "./pair-copy";
 import { pairSlug } from "./pair-pages";
 
 /**
@@ -23,10 +22,7 @@ import { pairSlug } from "./pair-pages";
  * quotes and table rows as stored, and no severity.
  */
 
-export const SOURCES_PATH = "/sources";
-export const SOURCES_URL = `${SITE_URL}${SOURCES_PATH}`;
-export const SOURCES_TITLE = "Sources: FDA label library and interaction table index | FirstPass";
-export const SOURCES_DESCRIPTION = `Every FDA label excerpt FirstPass has saved, with the DailyMed set ID, SPL version and check date, plus an index of the FDA CYP and transporter table rows it uses. ${PAIR_DISCLAIMER}`;
+export { SOURCES_PATH, SOURCES_URL, SOURCES_TITLE, SOURCES_DESCRIPTION } from "./sources-meta";
 export const SOURCES_H1 = "Sources and label library";
 export const SOURCES_INTRO =
   "FirstPass quotes FDA drug labels in their own words and compares its enzyme roles with FDA's table of example substrates, inhibitors and inducers. This page lists both, so you can open the source behind any line on the desk.";

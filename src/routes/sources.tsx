@@ -2,14 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SourcesView } from "@/components/seo/sources-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { siteOgMeta } from "@/lib/seo/og-meta";
-import {
-  SOURCES_DESCRIPTION,
-  SOURCES_TITLE,
-  SOURCES_URL,
-  fdaDdiIndex,
-  labelLibrary,
-  otherLabels,
-} from "@/lib/seo/sources";
+import { SOURCES_DESCRIPTION, SOURCES_TITLE, SOURCES_URL } from "@/lib/seo/sources-meta";
+import { fdaDdiIndex, labelLibrary, otherLabels } from "@/lib/seo/sources";
 
 export const Route = createFileRoute("/sources")({
   head: () => ({
