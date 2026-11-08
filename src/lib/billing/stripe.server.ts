@@ -37,7 +37,12 @@ function client(): Stripe | null {
   return new Stripe(key);
 }
 
-function publicOrigin(): string | null {
+/** The server's Stripe client, or null when no secret key is set. */
+export function stripeClient(): Stripe | null {
+  return client();
+}
+
+export function publicOrigin(): string | null {
   const fallback =
     env("PUBLIC_ORIGIN") ||
     env("APP_URL") ||
@@ -379,9 +384,12 @@ export async function listPaidSessions(): Promise<
  * Stripe signs the raw body. The trust check is `constructEventAsync`, not a zod
  * parse: reading the JSON first would change the bytes the signature covers.
  */
-export async function handleStripeWebhook(request: Request): Promise<Response> {
-  const stripe = client();
-  const hookSecret = env("STRIPE_WEBHOOK_SECRET");
+export async function handleStripeWebhook(
+  request: Request,
+  deps: { stripe?: Stripe | null; hookSecret?: string | null } = {},
+): Promise<Response> {
+  const stripe = deps.stripe === undefined ? client() : deps.stripe;
+  const hookSecret = deps.hookSecret === undefined ? env("STRIPE_WEBHOOK_SECRET") : deps.hookSecret;
   if (!stripe || !hookSecret) {
     return Response.json({ ok: false, reason: "webhook unconfigured" }, { status: 503 });
   }
@@ -404,6 +412,12 @@ export async function handleStripeWebhook(request: Request): Promise<Response> {
     if (session.payment_status === "paid") {
       try {
         session = await stripe.checkout.sessions.retrieve(session.id, { expand: ["payment_intent"] });
+        const { PROGRAM_PRODUCT, handleProgramWebhookSession } = await import("./program-checkout.server");
+        if (session.metadata?.product === PROGRAM_PRODUCT) {
+          const retry = await handleProgramWebhookSession(stripe, session);
+          if (retry) return retry;
+          return Response.json({ received: true });
+        }
         const valid = validatePaidSession(session);
         if (valid.ok) {
           const done = await fulfillPaidSession(stripe, session);

@@ -98,3 +98,10 @@ browser, confirm founding unlocks) is **operator-only and done privately** by th
 operator. It uses private credentials that must never appear in this repo, in CI,
 in logs, in tickets, or in chat. Do not automate it and do not paste any key,
 PIN, or secret from it anywhere.
+
+## Program card checkout
+
+Card checkout for Team and Program licenses on `/for-programs` is off unless
+`PROGRAM_CHECKOUT=on` and a Stripe key are set. How to turn it on, and the DRAFT
+prices to set first, are in [program-card-checkout.md](./program-card-checkout.md).
+This smoke script does not test it.

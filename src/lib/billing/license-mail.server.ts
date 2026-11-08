@@ -16,6 +16,9 @@ export async function sendLicenseMail(opts: {
   key: string;
   soldTo?: string;
   idempotencyKey?: string;
+  /** Override the founding subject and body, e.g. for a program key. */
+  subject?: string;
+  text?: string;
 }): Promise<boolean> {
   const apiKey = env("RESEND_API_KEY");
   if (!apiKey || !opts.to) return false;
@@ -32,8 +35,8 @@ export async function sendLicenseMail(opts: {
         from,
         to: [opts.to],
         bcc: [OPERATOR.email],
-        subject: "Your FirstPass founding license",
-        text: fulfillKey({ key: opts.key, soldTo: opts.soldTo || opts.to }),
+        subject: opts.subject ?? "Your FirstPass founding license",
+        text: opts.text ?? fulfillKey({ key: opts.key, soldTo: opts.soldTo || opts.to }),
       }),
     });
     return res.ok;
