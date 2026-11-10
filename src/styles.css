@@ -163,7 +163,10 @@ html:has([data-sticky-bar="top"]) {
 }
 @media (max-width: 39.99rem) {
   html:has([data-sticky-bar="bottom"]) {
-    scroll-padding-bottom: 6rem;
+    scroll-padding-bottom: 7.5rem;
+  }
+  html:has([data-sticky-bar="bottom"]) body {
+    padding-bottom: 7.5rem;
   }
 }
 
@@ -243,6 +246,23 @@ html[data-fp-paid] [data-fp-prehydrate="unlock"] { display: none !important; }
 /* 1.4.12: long unbroken names in headings (e.g. "(nirmatrelvir/ritonavir)") may wrap
    inside the word when user text spacing would otherwise push them past 320px. */
 main :is(h1, h2) { overflow-wrap: anywhere; }
+
+/* 1.4.12: dialogs, Plans view, and footer handles/emails wrap cleanly at 320px under
+   user text spacing without forcing horizontal overflow. */
+[role="dialog"],
+[role="dialog"] :is(h1, h2, h3, p, span, a, button),
+[data-plans-page],
+[data-plans-page] :is(a, dd, p, span, button),
+footer :is(a, li, p) {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 39.99rem) {
+  [data-plans-page] a,
+  footer a {
+    max-width: 100%;
+  }
+}
 
 /* 1.4.12: enzyme-map columns size to the longest name (en dashes, slashes).
    With text spacing that min-content is wider than a 320px viewport.

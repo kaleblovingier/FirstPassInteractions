@@ -2,19 +2,20 @@
  * Zero-PHI Export Formatter for FirstPass Aggregate Visitor Analytics.
  *
  * Produces structured JSON and multi-section RFC 4180 CSV snapshots of the active
- * metrics window (totals, daily breakdown, top pages, referrers, geographic reach,
- * and device breakdown).
+ * metrics window (totals, summary insights, daily breakdown, top pages, referrers,
+ * geographic reach, and device breakdown).
  *
  * Guaranteed Privacy & Compliance Invariants:
  * 1. ZERO individual visitor identifiers, visitor codes, salts, or sessions.
  * 2. ZERO IP addresses (IPv4 or IPv6) or network identifiers.
  * 3. ZERO drug querying patterns or clinical search terms (page paths strictly stripped of queries/hashes).
- * 4. Formula injection hardening: All CSV cells starting with `=`, `+`, `-`, `@`, `\t`, `\r`
- *    are neutralized by prepending a single quote `'` per spreadsheet security best practices.
+ * 4. Formula injection hardening: All CSV cells starting with optional whitespace/control chars
+ *    before `=`, `+`, `-`, `@`, `\t`, `\r`, or `\n` (as well as embedded newlines followed by formula
+ *    triggers) are neutralized by prepending a single quote `'`.
  * 5. Strict adherence to RFC 4180 CSV specifications and HIPAA Safe Harbor de-identification principles.
  */
 
-import type { Device, SiteStats } from "./contract";
+import type { AnalyticsSummary, Device, SiteStats } from "./contract";
 
 export interface AnalyticsExportReport {
   schema: "firstpass-analytics-aggregate-v1";
@@ -25,6 +26,7 @@ export interface AnalyticsExportReport {
     views: number;
     visitors: number;
   };
+  summary: AnalyticsSummary;
   daily: Array<{
     day: string;
     views: number;
@@ -68,27 +70,126 @@ export function sanitizeExportPath(rawPath: unknown): string {
   return withSlash.slice(0, 200);
 }
 
+const FORMULA_TRIGGERS = new Set(["=", "+", "-", "@"]);
+
+function neutralizeEmbeddedNewlineFormulas(str: string): string {
+  let out = "";
+  let i = 0;
+  while (i < str.length) {
+    const ch = str[i]!;
+    out += ch;
+    i++;
+    if (ch !== "\r" && ch !== "\n" && i < str.length && (str[i] === "\r" || str[i] === "\n")) {
+      let nlEnd = i;
+      while (nlEnd < str.length && (str[nlEnd] === "\r" || str[nlEnd] === "\n")) {
+        nlEnd++;
+      }
+      out += str.slice(i, nlEnd);
+      let probe = nlEnd;
+      while (probe < str.length) {
+        const c = str[probe]!;
+        const code = c.charCodeAt(0);
+        if (c === " " || c === "\t" || (code <= 0x1f && c !== "\r" && c !== "\n")) {
+          probe++;
+        } else {
+          break;
+        }
+      }
+      if (probe < str.length && FORMULA_TRIGGERS.has(str[probe]!)) {
+        out += "'";
+      }
+      i = nlEnd;
+    }
+  }
+  return out;
+}
+
+function hasLeadingFormulaTrigger(str: string): boolean {
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i]!;
+    if (c === "\t" || c === "\r" || c === "\n" || FORMULA_TRIGGERS.has(c)) {
+      return true;
+    }
+    const code = c.charCodeAt(0);
+    if (code <= 0x1f || /\s/.test(c)) {
+      continue;
+    }
+    return false;
+  }
+  return false;
+}
+
 /**
  * Escapes values for standard RFC 4180 CSV and neutralizes spreadsheet formula injection (CSV/DDE).
  *
- * Any cell beginning with `=`, `+`, `-`, `@`, `\t`, or `\r` is neutralized by prepending a single quote `'`
- * so that spreadsheet applications (Excel, Google Sheets, LibreOffice Calc) treat it strictly as text
- * rather than an executable formula or dynamic data exchange command.
+ * Neutralizes:
+ * - Any cell starting with optional whitespace or control characters followed by `=`, `+`, `-`, `@`, `\t`, `\r`, or `\n`.
+ * - Any embedded newline inside a multi-line cell followed by optional whitespace/control chars and a formula trigger.
  */
 export function escapeCsv(val: unknown): string {
   if (val === null || val === undefined) return "";
   const str = String(val);
   if (str === "") return "";
 
-  // Neutralize formula injection / DDE attacks:
-  // If string starts with =, +, -, @, \t, or \r, prepend a single quote (')
-  const neutralized = /^[=+\-@\t\r]/.test(str) ? `'${str}` : str;
+  // 1. Neutralize formula triggers immediately after embedded newlines (e.g., "note\n=CMD")
+  let safe = neutralizeEmbeddedNewlineFormulas(str);
 
-  // RFC 4180 escaping: fields containing double quotes, commas, or line breaks must be enclosed in quotes
-  if (/[",\n\r]/.test(neutralized)) {
-    return `"${neutralized.replace(/"/g, '""')}"`;
+  // 2. Neutralize leading whitespace/control chars before formula triggers (=, +, -, @, \t, \r, \n)
+  if (hasLeadingFormulaTrigger(safe)) {
+    safe = `'${safe}`;
   }
-  return neutralized;
+
+  // 3. RFC 4180 escaping: fields containing double quotes, commas, or line breaks must be enclosed in quotes
+  if (/[",\n\r]/.test(safe)) {
+    return `"${safe.replace(/"/g, '""')}"`;
+  }
+  return safe;
+}
+
+/**
+ * Computes deterministic, zero-PHI summary insights solely from aggregate SiteStats.
+ */
+export function computeExportSummary(stats: SiteStats): AnalyticsSummary {
+  const daily = stats.daily ?? [];
+  const totalViews =
+    stats.totals !== undefined && stats.totals !== null
+      ? Math.max(0, Number(stats.totals.views) || 0)
+      : daily.reduce((sum, entry) => sum + Math.max(0, Number(entry.views) || 0), 0);
+
+  const rawDays = Number(stats.days);
+  const divisor =
+    Number.isFinite(rawDays) && rawDays > 0
+      ? rawDays
+      : Math.max(1, daily.length);
+
+  const averageDailyViews =
+    totalViews <= 0 || divisor <= 0
+      ? 0
+      : Math.round((totalViews / divisor) * 10) / 10;
+
+  let activeDays = 0;
+  let peakDay: { day: string; views: number } | null = null;
+
+  for (const entry of daily) {
+    const views = Math.max(0, Number(entry.views) || 0);
+    const day = String(entry.day);
+    if (views > 0) {
+      activeDays++;
+      if (
+        !peakDay ||
+        views > peakDay.views ||
+        (views === peakDay.views && day > peakDay.day)
+      ) {
+        peakDay = { day, views };
+      }
+    }
+  }
+
+  return {
+    averageDailyViews,
+    peakDay,
+    activeDays,
+  };
 }
 
 /**
@@ -137,6 +238,7 @@ export function exportStatsToJson(
   exportedAt?: Date | number | string,
 ): string {
   const isoDate = formatIsoTimestamp(exportedAt);
+  const summary = computeExportSummary(stats);
 
   const report: AnalyticsExportReport = {
     schema: "firstpass-analytics-aggregate-v1",
@@ -144,30 +246,31 @@ export function exportStatsToJson(
     timeframeDays: stats.days,
     privacy: PRIVACY_STATEMENT,
     totals: {
-      views: Number(stats.totals?.views ?? 0),
-      visitors: Number(stats.totals?.visitors ?? 0),
+      views: Math.max(0, Number(stats.totals?.views ?? 0) || 0),
+      visitors: Math.max(0, Number(stats.totals?.visitors ?? 0) || 0),
     },
+    summary,
     daily: (stats.daily ?? []).map((d) => ({
       day: String(d.day),
-      views: Number(d.views),
-      visitors: Number(d.visitors),
+      views: Math.max(0, Number(d.views) || 0),
+      visitors: Math.max(0, Number(d.visitors) || 0),
     })),
     pages: (stats.pages ?? []).map((p) => ({
       path: sanitizeExportPath(p.path),
-      views: Number(p.views),
-      visitors: Number(p.visitors),
+      views: Math.max(0, Number(p.views) || 0),
+      visitors: Math.max(0, Number(p.visitors) || 0),
     })),
     referrers: (stats.referrers ?? []).map((r) => ({
       host: String(r.host),
-      views: Number(r.views),
+      views: Math.max(0, Number(r.views) || 0),
     })),
     countries: (stats.countries ?? []).map((c) => ({
       code: String(c.code),
-      views: Number(c.views),
+      views: Math.max(0, Number(c.views) || 0),
     })),
     devices: (stats.devices ?? []).map((d) => ({
       device: d.device,
-      views: Number(d.views),
+      views: Math.max(0, Number(d.views) || 0),
     })),
   };
 
@@ -182,6 +285,7 @@ export function exportStatsToCsv(
   exportedAt?: Date | number | string,
 ): string {
   const isoDate = formatIsoTimestamp(exportedAt);
+  const summary = computeExportSummary(stats);
   const lines: string[] = [];
 
   // Metadata headers (commented with # for standard parsers)
@@ -192,50 +296,74 @@ export function exportStatsToCsv(
   lines.push("");
 
   // Section 1: KPI Totals
+  const totalViews = Math.max(0, Number(stats.totals?.views ?? 0) || 0);
+  const totalVisitors = Math.max(0, Number(stats.totals?.visitors ?? 0) || 0);
   lines.push("[TOTALS]");
   lines.push("Metric,Value");
-  lines.push(`Total Page Views,${escapeCsv(Number(stats.totals?.views ?? 0))}`);
-  lines.push(`Unique Daily Visitors,${escapeCsv(Number(stats.totals?.visitors ?? 0))}`);
+  lines.push(`Total Page Views,${escapeCsv(totalViews)}`);
+  lines.push(`Unique Daily Visitors,${escapeCsv(totalVisitors)}`);
   lines.push(`Timeframe Days,${escapeCsv(stats.days)}`);
   lines.push("");
 
-  // Section 2: Daily Breakdown
+  // Section 2: Computed Summary Insights
+  lines.push("[SUMMARY METRICS]");
+  lines.push("Metric,Value");
+  lines.push(`Average Daily Views,${escapeCsv(summary.averageDailyViews)}`);
+  lines.push(`Active Days,${escapeCsv(summary.activeDays)}`);
+  lines.push(`Peak Day,${escapeCsv(summary.peakDay ? summary.peakDay.day : "None")}`);
+  lines.push(`Peak Day Views,${escapeCsv(summary.peakDay ? summary.peakDay.views : 0)}`);
+  lines.push("");
+
+  // Section 3: Daily Breakdown
   lines.push("[DAILY BREAKDOWN]");
   lines.push("Date,Page Views,Unique Visitors");
   for (const d of stats.daily ?? []) {
-    lines.push(`${escapeCsv(d.day)},${escapeCsv(Number(d.views))},${escapeCsv(Number(d.visitors))}`);
+    lines.push(
+      `${escapeCsv(d.day)},${escapeCsv(Math.max(0, Number(d.views) || 0))},${escapeCsv(Math.max(0, Number(d.visitors) || 0))}`,
+    );
   }
   lines.push("");
 
-  // Section 3: Top Visited Pages
+  // Section 4: Top Visited Pages
   lines.push("[TOP PAGES]");
   lines.push("Path,Page Views,Unique Visitors");
   for (const p of stats.pages ?? []) {
-    lines.push(`${escapeCsv(sanitizeExportPath(p.path))},${escapeCsv(Number(p.views))},${escapeCsv(Number(p.visitors))}`);
+    lines.push(
+      `${escapeCsv(sanitizeExportPath(p.path))},${escapeCsv(Math.max(0, Number(p.views) || 0))},${escapeCsv(Math.max(0, Number(p.visitors) || 0))}`,
+    );
   }
   lines.push("");
 
-  // Section 4: Top Referrers
+  // Section 5: Top Referrers
   lines.push("[TOP REFERRERS]");
   lines.push("Referring Host,Page Views");
   for (const r of stats.referrers ?? []) {
-    lines.push(`${escapeCsv(r.host)},${escapeCsv(Number(r.views))}`);
+    lines.push(`${escapeCsv(r.host)},${escapeCsv(Math.max(0, Number(r.views) || 0))}`);
   }
   lines.push("");
 
-  // Section 5: Geographic Reach
+  // Section 6: Geographic Reach
   lines.push("[GEOGRAPHIC REACH]");
   lines.push("Country Code,Page Views");
   for (const c of stats.countries ?? []) {
-    lines.push(`${escapeCsv(c.code)},${escapeCsv(Number(c.views))}`);
+    lines.push(`${escapeCsv(c.code)},${escapeCsv(Math.max(0, Number(c.views) || 0))}`);
   }
   lines.push("");
 
-  // Section 6: Device Distribution
+  // Section 7: Device Distribution (with zero-division-safe percentage share)
+  const totalDeviceViews = (stats.devices ?? []).reduce(
+    (sum, d) => sum + Math.max(0, Number(d.views) || 0),
+    0,
+  );
+  const pctBase = totalViews > 0 ? totalViews : totalDeviceViews;
+
   lines.push("[DEVICE BREAKDOWN]");
-  lines.push("Device,Page Views");
+  lines.push("Device,Page Views,Share");
   for (const d of stats.devices ?? []) {
-    lines.push(`${escapeCsv(d.device)},${escapeCsv(Number(d.views))}`);
+    const devViews = Math.max(0, Number(d.views) || 0);
+    const pct =
+      pctBase > 0 ? `${(Math.round((devViews / pctBase) * 1000) / 10).toFixed(1)}%` : "0.0%";
+    lines.push(`${escapeCsv(d.device)},${escapeCsv(devViews)},${escapeCsv(pct)}`);
   }
 
   return lines.join("\r\n");

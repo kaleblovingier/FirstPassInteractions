@@ -6,7 +6,7 @@
 import { SOFTWARE } from "@/lib/regulatory";
 import { SITE_URL } from "@/lib/seo/pair-copy";
 
-export const LEGAL_EFFECTIVE = "October 19, 2026";
+export const LEGAL_EFFECTIVE = "November 9, 2026";
 export const LEGAL_EMAIL = SOFTWARE.email;
 
 export type LegalSection = { id: string; title: string; paras: readonly string[] };
@@ -81,7 +81,7 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "browser",
       title: "What stays in your browser",
       paras: [
-        "The drugs on your desk, host toggles, any amounts you type, study marks, practice scores, lab-book answers, saved briefs, recent trays, watch pins, a search-shortcut setting and your license key are kept in your browser's local storage. They are not sent to a FirstPass database (there is none). Clearing site data for this site removes them.",
+        "The drugs on your desk, host toggles, any amounts you type, study marks, practice scores, lab-book answers, saved briefs, recent trays, watch pins, a search-shortcut setting, any analytics opt-out preference (firstpass.analytics.optout) and your license key are kept in your browser's local storage. FirstPass keeps no database for learner or desk data, so they stay in your browser. Clearing site data for this site removes them.",
         "Your license key is sent to the server when it is checked. The server checks its signature and does not store it.",
       ],
     },
@@ -94,10 +94,10 @@ export const PRIVACY_DOC: LegalDoc = {
         "Interaction API: software that calls FirstPass's interaction API sends drug names and, if it chooses, context such as age, sex, weight, kidney function or eGFR, urine pH, pregnancy, breastfeeding or smoking status. Do not send names, record numbers, dates or any other identifier. The server uses the context to compute the answer and keeps the context and the computed answer in server memory for up to 10 minutes so a repeat request is fast. It does not write them to disk or a database, and FirstPass's own logs do not record the request body. The desk itself does not use this API.",
         "Program inquiry form (/for-programs): your name, work email, organization, role, program type, seat count, years and start date, and your message are emailed to the FirstPass inbox through Resend, with your email as reply-to. The form does not store them in a database. They then live in the FirstPass email inbox.",
         "Lost-key recovery (/recover): Lost-key recovery checks only card purchases, and card checkout is switched off. If you paid by Venmo, Cash App or PayPal, email FirstPassInteractions@gmail.com to have your key resent.",
-        "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. Those counters are not written to disk and reset when a server instance restarts.",
-        "Reader asks and wrong operator PINs are also counted per IP address. These counts are kept in server memory, and when FirstPass's database is connected they are also kept there so the limits hold across servers. The database stores a keyed one-way hash of the address, never the address itself. Each count expires when its limit window ends (an hour at most) and is deleted the next time a limit is checked.",
+        "Abuse limits: the recovery and inquiry forms count requests per IP address and per email in server memory only. The cookieless page-view counter (/api/collect) also enforces an in-memory per-instance sliding-window limit (120 requests per minute per client IP, or 1,200 requests per minute shared when callers cannot be distinguished). Those in-memory counters are not written to disk or a database and reset when a server instance restarts.",
+        "Reader asks, metered calls to FirstPass's interaction API, and wrong operator PINs (protecting key minting, order lists, and /api/stats aggregate visitor analytics) are counted per IP address (or API key identifier). These counts are kept in server memory, and when FirstPass's database is connected they are also kept there (migrations/0002_throttle.sql) so the limits and PIN brute-force backoff (doubling waits from 1 second up to 15 minutes after 5 wrong guesses per IP, plus a 2-second slowdown after 30 wrong guesses in 15 minutes) hold across server instances. The database stores a keyed one-way hash (HMAC-SHA256) of the caller key, never the raw IP address itself. Each count or strike expires when its limit window ends (an hour at most) and is swept automatically.",
         "FirstPass's own server logs record event names, status, timing and counts, and are designed not to record request contents, emails or keys. Vercel, our host, keeps its own request logs (which include IP addresses) under its own policy.",
-        "Cookieless page views: FirstPass runs an aggregate, cookieless page counter (/api/collect) to understand overall traffic volume. It sets no cookies, records no IP addresses or user agents, logs no drug names or search queries, and isolates daily visitor pseudonyms using rotating daily salts so visits cannot be linked across days. You can opt out at any time in your browser (fp_analytics_opt_out in local storage). Views are kept for 90 days as aggregate counts.",
+        "Cookieless page views and analytics exports: FirstPass runs an aggregate, cookieless page counter (/api/collect, limited in server memory to 120 requests per minute per IP or 1,200 per minute shared) to understand overall traffic volume. It sets no cookies, strips query strings and URL fragments from page paths, keeps only external referrer hostnames and coarse device categories, and derives daily visitor codes using rotating UTC-day salts (which expire and are deleted within 48 hours) so visits cannot be linked across days or traced back to an IP address or user agent. It records no IP addresses, user agents, cookies, or drug queries. You can opt out at any time in Foundry or in your browser (firstpass.analytics.optout set to \"1\" in local storage). Aggregate views are retained for 90 days when a database is configured and automatically purged afterward. Reading or exporting aggregate metrics (/api/stats and Foundry) requires the operator PIN (verified in constant time with database-backed brute-force throttling), and exported JSON or CSV snapshots contain zero protected health information (PHI), zero IP addresses, zero visitor codes or salts, and zero drug queries.",
       ],
     },
     {
@@ -113,14 +113,14 @@ export const PRIVACY_DOC: LegalDoc = {
       id: "processors",
       title: "Who else handles data",
       paras: [
-        "Vercel (hosting and request logs), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI, when you use the readers, and xAI's Grok connector service, which the operator may use to read payment emails and draft key emails in the FirstPass Gmail inbox, and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
+        "Vercel (hosting and request logs), Postgres database host (when configured, storing only keyed abuse-limit hashes and cookieless aggregate page-view counts), Venmo, Block (Cash App) and PayPal (payments), Stripe (Stripe checkout is built but switched off), Resend (email delivery), Google (Gmail inbox for FirstPass email; Google Fonts, which sees your IP address and browser when pages load fonts), xAI, when you use the readers, and xAI's Grok connector service, which the operator may use to read payment emails and draft key emails in the FirstPass Gmail inbox, and grok.com, which serves a \"Created with Grok\" badge script on desk pages. FirstPass does not sell or share personal information for advertising.",
       ],
     },
     {
       id: "retention",
       title: "How long we keep it",
       paras: [
-        "Browser data: until you clear it. Rate-limit counters: in server memory until the instance restarts, and at most a day; in the database (when connected) until the limit window ends, then deleted the next time a limit is checked. Reader answers: up to 10 minutes. Emails (key deliveries, inquiries, payment notices): in the FirstPass inbox until deleted. Venmo, Cash App and PayPal records: kept by those companies under their own rules, which include legal record-keeping. Vercel logs: per Vercel's retention.",
+        "Browser data: until you clear it. Rate-limit counters: in server memory until the instance restarts, and at most a day (1 minute for /api/collect); in the database (when connected) until the limit window ends (an hour at most), then swept automatically. Cookieless aggregate page-view counts (when connected): retained for 90 days, with daily visitor salts expiring within 48 hours and automatically purged. Reader answers: up to 10 minutes. Emails (key deliveries, inquiries, payment notices): in the FirstPass inbox until deleted. Venmo, Cash App and PayPal records: kept by those companies under their own rules, which include legal record-keeping. Vercel logs: per Vercel's retention.",
       ],
     },
     {
@@ -164,6 +164,7 @@ export const COOKIES_DOC: LegalDoc = {
       title: "Local and session storage",
       paras: [
         "The desk keeps your work (drugs on the desk, toggles, study marks, practice scores, lab answers, saved briefs, trays, watch pins, settings and your license key) in local storage so it is there next time. This is needed for the desk to work and stays in your browser. FirstPass has no database for it. Your license key is sent to the server only to check it, and isn't stored. Clear site data to remove it.",
+        "If you opt out of FirstPass's cookieless page-view counter (via Foundry or setting firstpass.analytics.optout to \"1\"), that preference is stored only in your browser's local storage.",
         "The desk also uses your browser's cache storage (a service worker) so pages open offline. It holds copies of FirstPass pages and files, not your desk.",
       ],
     },

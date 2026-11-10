@@ -21,6 +21,15 @@ import { errorKind, logEvent } from "../server/log";
 
 export const ANALYTICS_STORE_TIMEOUT_MS = 2_000;
 const SWEEP_EVERY_MS = 60 * 60 * 1000; // 1 hour
+const DAY_MS = 24 * 60 * 60 * 1000;
+export const MAX_SALT_CACHE_ENTRIES = 64;
+
+export interface SweepResult {
+  swept: boolean;
+  retentionPruned: number;
+  saltsPruned: number;
+  saltCacheEvicted: number;
+}
 
 export interface PageViewInput {
   path: string;
@@ -63,9 +72,53 @@ export function computeVisitorCode(salt: string, ip: string, userAgent: string):
 
 export class AnalyticsStore {
   private lastSweep = 0;
+  private lastRetentionPruned = 0;
   private saltCache = new Map<string, string>();
 
   constructor(private readonly sql: Sql) {}
+
+  /** Current in-memory salt cache entry count (observability / test guard). */
+  get saltCacheSize(): number {
+    return this.saltCache.size;
+  }
+
+  /** Number of expired view rows pruned during the most recent sweep. */
+  get retentionPruned(): number {
+    return this.lastRetentionPruned;
+  }
+
+  /** Stores a day salt in the bounded LRU-like memory cache. */
+  private cacheSalt(day: string, salt: string): void {
+    if (this.saltCache.has(day)) {
+      this.saltCache.delete(day);
+    } else if (this.saltCache.size >= MAX_SALT_CACHE_ENTRIES) {
+      const oldestKey = this.saltCache.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.saltCache.delete(oldestKey);
+      }
+    }
+    this.saltCache.set(day, salt);
+  }
+
+  /** Evicts expired or malformed salt entries and enforces the memory cap. */
+  private pruneSaltCache(now: number): number {
+    const saltFloorMs = now - 48 * 60 * 60 * 1000;
+    let evicted = 0;
+    for (const [day] of this.saltCache) {
+      const dayMs = Date.parse(`${day}T00:00:00.000Z`);
+      if (!Number.isFinite(dayMs) || dayMs < saltFloorMs) {
+        this.saltCache.delete(day);
+        evicted++;
+      }
+    }
+    while (this.saltCache.size > MAX_SALT_CACHE_ENTRIES) {
+      const oldestKey = this.saltCache.keys().next().value;
+      if (oldestKey === undefined) break;
+      this.saltCache.delete(oldestKey);
+      evicted++;
+    }
+    return evicted;
+  }
 
   /**
    * Retrieves or creates the salt for the given UTC day.
@@ -79,7 +132,7 @@ export class AnalyticsStore {
       SELECT salt FROM analytics_salts WHERE day = ${day} LIMIT 1
     `;
     if (rows.length && rows[0]?.salt) {
-      this.saltCache.set(day, rows[0].salt);
+      this.cacheSalt(day, rows[0].salt);
       return rows[0].salt;
     }
 
@@ -99,34 +152,59 @@ export class AnalyticsStore {
       SELECT salt FROM analytics_salts WHERE day = ${day} LIMIT 1
     `;
     const resolved = fresh[0]?.salt || newSalt;
-    this.saltCache.set(day, resolved);
+    this.cacheSalt(day, resolved);
     return resolved;
   }
 
   /**
    * Sweeps expired salts and view logs past the 90-day retention window.
    */
-  async sweep(now: number): Promise<void> {
-    if (now - this.lastSweep < SWEEP_EVERY_MS) return;
+  async sweep(now: number): Promise<SweepResult> {
+    if (this.lastSweep !== 0 && Math.abs(now - this.lastSweep) < SWEEP_EVERY_MS) {
+      return {
+        swept: false,
+        retentionPruned: 0,
+        saltsPruned: 0,
+        saltCacheEvicted: 0,
+      };
+    }
     this.lastSweep = now;
 
-    const retentionFloorMs = now - RETENTION_DAYS * 24 * 60 * 60 * 1000;
-
-    // Prune expired salt cache in memory (salts expire after 48h)
-    const saltFloorMs = now - 48 * 60 * 60 * 1000;
-    for (const [day] of this.saltCache) {
-      if (new Date(day).getTime() < saltFloorMs) {
-        this.saltCache.delete(day);
-      }
-    }
+    const retentionFloorMs = now - RETENTION_DAYS * DAY_MS;
+    const saltCacheEvicted = this.pruneSaltCache(now);
 
     try {
-      await Promise.all([
-        this.sql`DELETE FROM analytics_views WHERE created_at_ms < ${retentionFloorMs}`,
-        this.sql`DELETE FROM analytics_salts WHERE expires_ms < ${now}`,
+      const [viewsDeletedRows, saltsDeletedRows] = await Promise.all([
+        this.sql<{ cnt: string | number }>`
+          WITH deleted AS (
+            DELETE FROM analytics_views WHERE created_at_ms < ${retentionFloorMs} RETURNING 1
+          )
+          SELECT COUNT(*) as cnt FROM deleted
+        `,
+        this.sql<{ cnt: string | number }>`
+          WITH deleted AS (
+            DELETE FROM analytics_salts WHERE expires_ms < ${now} RETURNING 1
+          )
+          SELECT COUNT(*) as cnt FROM deleted
+        `,
       ]);
+      const retentionPruned = Math.max(0, Number(viewsDeletedRows[0]?.cnt ?? 0) || 0);
+      const saltsPruned = Math.max(0, Number(saltsDeletedRows[0]?.cnt ?? 0) || 0);
+      this.lastRetentionPruned = retentionPruned;
+      return {
+        swept: true,
+        retentionPruned,
+        saltsPruned,
+        saltCacheEvicted,
+      };
     } catch (err) {
       logEvent("warn", "analytics.sweep_error", { error: errorKind(err) });
+      return {
+        swept: true,
+        retentionPruned: 0,
+        saltsPruned: 0,
+        saltCacheEvicted,
+      };
     }
   }
 
@@ -147,7 +225,8 @@ export class AnalyticsStore {
       )
     `;
 
-    void this.sweep(now);
+    // Await sweep cleanly so tests/lambdas never leave dangling async DB queries on close.
+    await this.sweep(now);
     return true;
   }
 
@@ -155,16 +234,22 @@ export class AnalyticsStore {
    * Reads site stats for the given range of days.
    */
   async getStats(days: StatsRange, now = Date.now()): Promise<SiteStats> {
-    const rangeStartMs = now - days * 24 * 60 * 60 * 1000;
+    const safeDays = Math.max(1, Math.min(RETENTION_DAYS, Math.floor(Number(days) || 30)));
 
-    // Build the zero-filled daily slots
+    // Build the zero-filled daily slots oldest-first and align rangeStartMs to UTC midnight
     const dailyMap = new Map<string, { views: number; visitors: number }>();
-    for (let i = days - 1; i >= 0; i--) {
-      const d = utcDayString(now - i * 24 * 60 * 60 * 1000);
+    let earliestDay = utcDayString(now);
+    for (let i = safeDays - 1; i >= 0; i--) {
+      const d = utcDayString(now - i * DAY_MS);
+      if (i === safeDays - 1) earliestDay = d;
       dailyMap.set(d, { views: 0, visitors: 0 });
     }
+    const parsedEarliest = Date.parse(`${earliestDay}T00:00:00.000Z`);
+    const rangeStartMs = Number.isFinite(parsedEarliest)
+      ? parsedEarliest
+      : now - safeDays * DAY_MS;
 
-    // Run parallel queries
+    // Run parallel aggregate queries using the analytics_views_created index with deterministic tie-breakers
     const [dailyRows, pageRows, referrerRows, countryRows, deviceRows] = await Promise.all([
       // Daily views & visitors
       this.sql<{ day: string; views: string | number; visitors: string | number }>`
@@ -174,40 +259,40 @@ export class AnalyticsStore {
         GROUP BY day
         ORDER BY day ASC
       `,
-      // Top pages (capped at 25)
+      // Top pages (capped at 25, deterministic ordering)
       this.sql<{ path: string; views: string | number; visitors: string | number }>`
         SELECT path, COUNT(*) as views, COUNT(DISTINCT visitor_code) as visitors
         FROM analytics_views
         WHERE created_at_ms >= ${rangeStartMs}
         GROUP BY path
-        ORDER BY views DESC
+        ORDER BY views DESC, visitors DESC, path ASC
         LIMIT 25
       `,
-      // Top referrers (exclude empty/direct)
+      // Top referrers (exclude empty/direct, deterministic ordering)
       this.sql<{ host: string; views: string | number }>`
         SELECT referrer_host as host, COUNT(*) as views
         FROM analytics_views
         WHERE created_at_ms >= ${rangeStartMs} AND referrer_host != ''
         GROUP BY referrer_host
-        ORDER BY views DESC
+        ORDER BY views DESC, referrer_host ASC
         LIMIT 20
       `,
-      // Top countries
+      // Top countries (deterministic ordering)
       this.sql<{ code: string; views: string | number }>`
         SELECT country as code, COUNT(*) as views
         FROM analytics_views
         WHERE created_at_ms >= ${rangeStartMs}
         GROUP BY country
-        ORDER BY views DESC
+        ORDER BY views DESC, country ASC
         LIMIT 20
       `,
-      // Device breakdown
+      // Device breakdown (deterministic ordering)
       this.sql<{ device: string; views: string | number }>`
         SELECT device, COUNT(*) as views
         FROM analytics_views
         WHERE created_at_ms >= ${rangeStartMs}
         GROUP BY device
-        ORDER BY views DESC
+        ORDER BY views DESC, device ASC
       `,
     ]);
 
@@ -215,13 +300,13 @@ export class AnalyticsStore {
     let totalVisitors = 0;
 
     for (const row of dailyRows) {
-      const v = Number(row.views) || 0;
-      const u = Number(row.visitors) || 0;
+      const dayKey = String(row.day);
+      if (!dailyMap.has(dayKey)) continue;
+      const v = Math.max(0, Number(row.views) || 0);
+      const u = Math.max(0, Number(row.visitors) || 0);
       totalViews += v;
       totalVisitors += u;
-      if (dailyMap.has(row.day)) {
-        dailyMap.set(row.day, { views: v, visitors: u });
-      }
+      dailyMap.set(dayKey, { views: v, visitors: u });
     }
 
     const daily = Array.from(dailyMap.entries()).map(([day, val]) => ({
@@ -232,23 +317,23 @@ export class AnalyticsStore {
 
     const pages = pageRows.map((r) => ({
       path: r.path,
-      views: Number(r.views) || 0,
-      visitors: Number(r.visitors) || 0,
+      views: Math.max(0, Number(r.views) || 0),
+      visitors: Math.max(0, Number(r.visitors) || 0),
     }));
 
     const referrers = referrerRows.map((r) => ({
       host: r.host,
-      views: Number(r.views) || 0,
+      views: Math.max(0, Number(r.views) || 0),
     }));
 
     const countries = countryRows.map((r) => ({
       code: r.code,
-      views: Number(r.views) || 0,
+      views: Math.max(0, Number(r.views) || 0),
     }));
 
     const devices = deviceRows.map((r) => ({
       device: (r.device === "phone" || r.device === "tablet" ? r.device : "desktop") as Device,
-      views: Number(r.views) || 0,
+      views: Math.max(0, Number(r.views) || 0),
     }));
 
     return {

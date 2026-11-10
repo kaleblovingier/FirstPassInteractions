@@ -95,12 +95,15 @@ describe("Transmembrane Transporter & Barrier Network Database", () => {
     assert.ok(pgp.substrates.includes("dabigatran"));
     assert.ok(pgp.substrates.includes("colchicine"));
     assert.ok(pgp.substrates.includes("cyclosporine"));
+    assert.ok(pgp.substrates.includes("tacrolimus"));
+    assert.ok(pgp.substrates.includes("sirolimus"));
 
     // Required inhibitors
     assert.ok(pgp.inhibitors.includes("verapamil"));
     assert.ok(pgp.inhibitors.includes("quinidine"));
     assert.ok(pgp.inhibitors.includes("amiodarone"));
     assert.ok(pgp.inhibitors.includes("clarithromycin"));
+    assert.ok(pgp.inhibitors.includes("paxlovid"));
 
     // Required inducers
     assert.ok(pgp.inducers.includes("rifampin"));
@@ -119,6 +122,19 @@ describe("Transmembrane Transporter & Barrier Network Database", () => {
       (c) => c.drugPair.includes("digoxin") && c.drugPair.includes("amiodarone"),
     );
     assert.ok(digoxinAmiodarone, "Must contain Digoxin + Amiodarone collision");
+
+    const tacrolimusPaxlovid = pgp.clinicalCollisions.find(
+      (c) => c.id === "tacrolimus-paxlovid" && c.drugPair.includes("tacrolimus") && c.drugPair.includes("paxlovid"),
+    );
+    assert.ok(tacrolimusPaxlovid, "Must contain Tacrolimus + Paxlovid P-gp/CYP3A4 collision");
+    assert.match(tacrolimusPaxlovid.description, /CYP3A4/);
+    assert.match(tacrolimusPaxlovid.description, /50-fold/);
+
+    const sirolimusPaxlovid = pgp.clinicalCollisions.find(
+      (c) => c.id === "sirolimus-paxlovid" && c.drugPair.includes("sirolimus") && c.drugPair.includes("paxlovid"),
+    );
+    assert.ok(sirolimusPaxlovid, "Must contain Sirolimus + Paxlovid P-gp/CYP3A4 collision");
+    assert.match(sirolimusPaxlovid.description, /11-fold/);
   });
 
   it("verifies BCRP (bcrp-abcg2) clinical profile", () => {
@@ -130,6 +146,14 @@ describe("Transmembrane Transporter & Barrier Network Database", () => {
     assert.ok(bcrp.substrates.includes("sulfasalazine"));
     assert.ok(bcrp.substrates.includes("topotecan"));
     assert.ok(bcrp.inhibitors.includes("gefitinib"));
+    assert.ok(bcrp.inhibitors.includes("cyclosporine"));
+
+    const rosuCyA = bcrp.clinicalCollisions.find(
+      (c) => c.drugPair.includes("rosuvastatin") && c.drugPair.includes("cyclosporine"),
+    );
+    assert.ok(rosuCyA, "BCRP must capture Rosuvastatin + Cyclosporine ABCG2/SLCO1B1 double-hit");
+    assert.match(rosuCyA.description, /7\.1-fold/);
+    assert.match(rosuCyA.hazard, /rhabdomyolysis/i);
   });
 
   it("verifies OATP1B1/1B3 (oatp1b1-1b3-slco) sinusoidal influx and statin collisions", () => {
@@ -178,6 +202,15 @@ describe("Transmembrane Transporter & Barrier Network Database", () => {
     );
     assert.ok(cimetidineMetformin);
     assert.match(cimetidineMetformin.hazard, /lactic acidosis/i);
+    assert.match(cimetidineMetformin.description, /MATE1\/MATE2-K/i);
+    assert.match(cimetidineMetformin.mechanismDetail, /intracellular/i);
+
+    const dolutegravirMetformin = oct.clinicalCollisions.find(
+      (c) => c.drugPair.includes("dolutegravir") && c.drugPair.includes("metformin"),
+    );
+    assert.ok(dolutegravirMetformin);
+    assert.match(dolutegravirMetformin.description, /OCT2.*1\.9/);
+    assert.match(dolutegravirMetformin.hazard, /lactic acidosis/i);
   });
 });
 
@@ -215,6 +248,11 @@ describe("Helper Functions", () => {
     assert.ok(cyclosporineResults.length >= 2);
     assert.ok(cyclosporineResults.some((t) => t.id === "pgp-abcb1"));
     assert.ok(cyclosporineResults.some((t) => t.id === "oatp1b1-1b3-slco"));
+
+    // Tacrolimus / Sirolimus / Paxlovid -> P-gp
+    assert.ok(findTransportersForDrug("tacrolimus").some((t) => t.id === "pgp-abcb1"));
+    assert.ok(findTransportersForDrug("sirolimus").some((t) => t.id === "pgp-abcb1"));
+    assert.ok(findTransportersForDrug("paxlovid").some((t) => t.id === "pgp-abcb1"));
 
     // Non-existent drug
     assert.deepEqual(findTransportersForDrug("non_existent_drug_xyz"), []);

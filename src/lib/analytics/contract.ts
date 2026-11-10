@@ -48,4 +48,11 @@ export interface SiteStats {
   devices: { device: Device; views: number }[];
 }
 
+/** Deterministic zero-PHI summary insights computed solely from aggregate SiteStats. */
+export interface AnalyticsSummary {
+  averageDailyViews: number;
+  peakDay: { day: string; views: number } | null;
+  activeDays: number;
+}
+
 export type StatsResult = { ok: true; stats: SiteStats } | { ok: false; reason: string };

@@ -146,6 +146,8 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "dabigatran",
       "colchicine",
       "cyclosporine",
+      "tacrolimus",
+      "sirolimus",
       "fentanyl",
       "apixaban",
       "daraxonrasib",
@@ -157,6 +159,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "clarithromycin",
       "itraconazole",
       "ritonavir",
+      "paxlovid",
       "vepdegestrant",
       "daraxonrasib",
     ],
@@ -239,6 +242,34 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
           "Dual inhibition of hepatic canalicular and intestinal P-gp combined with CYP3A4 block abolishes the clearance pathways of colchicine.",
         literatureCitation:
           "Hung IFN, et al. Fatal interaction between clarithromycin and colchicine in patients with renal insufficiency: a retrospective study. Clin Infect Dis. 2005;41(3):291-300.",
+      },
+      {
+        id: "tacrolimus-paxlovid",
+        title: "Tacrolimus + Paxlovid Gut P-gp & CYP3A4 Dual-Barrier Collapse",
+        drugPair: ["tacrolimus", "paxlovid"],
+        description:
+          "Tacrolimus oral bioavailability and systemic elimination are jointly restricted by enterocyte apical P-gp (ABCB1) back-transport and CYP3A4 presystemic metabolism. The ritonavir booster in Paxlovid (nirmatrelvir/ritonavir) irreversibly inactivates CYP3A4 and suppresses intestinal/hepatic P-gp, cutting apparent clearance by >65% and triggering 10- to >50-fold tacrolimus AUC surges.",
+        hazard:
+          "Life-threatening calcineurin inhibitor toxicity: acute kidney injury, hyperkalemia, neurotoxicity/PRES, and severe immunosuppression.",
+        severity: "critical",
+        mechanismDetail:
+          "Synergistic knockout of enterocyte brush-border ABCB1 efflux and mechanism-based CYP3A4 inactivation collapses gut-wall extraction and hepatic clearance, sustaining supratherapeutic troughs for days after completing Paxlovid.",
+        literatureCitation:
+          "FDA Prescribing Information for PAXLOVID (nirmatrelvir/ritonavir); Clin Case Rep / Transplant Pharmacokinet DDI Models (PMID: 35599203, PMID: 37924724).",
+      },
+      {
+        id: "sirolimus-paxlovid",
+        title: "Sirolimus + Paxlovid mTOR Inhibitor P-gp / CYP3A4 Surge",
+        drugPair: ["sirolimus", "paxlovid"],
+        description:
+          "Sirolimus undergoes concerted intestinal P-gp efflux and CYP3A4 metabolism. Co-administration with Paxlovid (nirmatrelvir/ritonavir) disables both enterocyte P-gp extrusion and CYP3A4 clearance, escalating sirolimus AUC approximately 11-fold across an already prolonged elimination half-life.",
+        hazard:
+          "Profound mTOR inhibitor toxicity: severe stomatitis/mucositis, myelosuppression, pneumonitis, hyperlipidemia, and impaired wound healing.",
+        severity: "critical",
+        mechanismDetail:
+          "Inhibition of apical ABCB1 efflux in enterocytes and bile canaliculi compounds suicidal CYP3A4 inactivation, sharply amplifying absorbed fraction (F) and prolonging systemic persistence.",
+        literatureCitation:
+          "Lemaitre F, et al. Therapeutic Drug Monitoring & SFPT Guidance on Nirmatrelvir/Ritonavir Immunosuppressant DDIs; FDA Prescribing Information for PAXLOVID.",
       },
     ],
     pharmacokineticImpact:
@@ -361,6 +392,20 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         literatureCitation:
           "Dahan A, Amidon GL. Small intestinal efflux mechanisms: impact of BCRP and P-gp on oral drug absorption. Eur J Pharm Sci. 2009;36(1):11-23.",
       },
+      {
+        id: "rosuvastatin-cyclosporine-bcrp",
+        title: "Rosuvastatin + Cyclosporine Intestinal/Canalicular BCRP & Hepatic OATP1B1 Double-Hit",
+        drugPair: ["rosuvastatin", "cyclosporine"],
+        description:
+          "Rosuvastatin undergoes minimal CYP metabolism and relies critically on intestinal/canalicular BCRP (ABCG2) efflux and sinusoidal OATP1B1 (SLCO1B1) hepatic uptake. Cyclosporine blocks both transporters concurrently, spiking rosuvastatin AUC 7.1-fold and Cmax 10.6-fold.",
+        hazard:
+          "Severe statin-induced myopathy, fulminant rhabdomyolysis, myoglobinuric AKI, and hepatic transaminitis.",
+        severity: "critical",
+        mechanismDetail:
+          "Apical ABCG2 inhibition increases intestinal absorption fraction and halts biliary extrusion while sinusoidal SLCO1B1 inhibition traps statin in circulating systemic blood and skeletal muscle.",
+        literatureCitation:
+          "Simonson SG, et al. Rosuvastatin pharmacokinetics in healthy subjects coadministered cyclosporine. Clin Pharmacol Ther. 2004;76(2):167-177.",
+      },
     ],
     pharmacokineticImpact:
       "Dictates oral bioavailability (especially of rosuvastatin and sulfasalazine), biliary elimination of conjugates, and blood-brain barrier restriction. Polymorphisms (c.421C>A) further amplify susceptibility.",
@@ -417,12 +462,12 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Cyclosporine Shutoff of Hepatic Sinusoidal OATP1B1 Statin Uptake",
         drugPair: ["cyclosporine", "atorvastatin"],
         description:
-          "Cyclosporine potently inhibits sinusoidal OATP1B1 and OATP1B3 influx, arresting hepatic first-pass uptake and triggering an 8- to 10-fold increase in systemic circulating atorvastatin exposure.",
+          "Cyclosporine potently inhibits hepatic sinusoidal OATP1B1/1B3 (SLCO1B1/3) influx alongside CYP3A4 and canalicular BCRP/P-gp efflux, collapsing hepatic first-pass extraction and producing an ~8.7-fold increase in atorvastatin AUC and 10.7-fold increase in Cmax.",
         hazard:
           "Massive systemic statin exposure, fulminant rhabdomyolysis, myoglobinuria, and acute tubular necrosis.",
         severity: "critical",
         mechanismDetail:
-          "Potent non-competitive inhibition of SLCO1B1/3 sinusoidal carriers blocks entry into the metabolic compartment, causing statin molecules to spill over into the systemic circulation and peripheral muscle tissue.",
+          "Potent inhibition of SLCO1B1/3 sinusoidal uptake carriers (sub-to-low micromolar Ki) blocks entry into the hepatic metabolic compartment while concurrent CYP3A4/BCRP blockade prevents clearance, spilling active atorvastatin acid into skeletal muscle.",
         literatureCitation:
           "Niemi M, et al. Organic anion transporting polypeptide 1B1: a genetically polymorphic transporter of major importance for hepatic drug disposition. Pharmacol Rev. 2011;63(1):157-181.",
       },
@@ -445,12 +490,12 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Cyclosporine Dual Influx/Efflux Trap of Rosuvastatin",
         drugPair: ["cyclosporine", "rosuvastatin"],
         description:
-          "Cyclosporine inhibits both sinusoidal OATP1B1 uptake and canalicular BCRP efflux, increasing rosuvastatin steady-state AUC up to 7.1-fold.",
+          "Cyclosporine simultaneously inhibits sinusoidal OATP1B1/1B3 (SLCO1B1) hepatic uptake and intestinal/canalicular BCRP (ABCG2) efflux, increasing rosuvastatin steady-state AUC 7.1-fold and Cmax 10.6-fold.",
         hazard:
-          "Severe statin-associated musculoskeletal toxicity and hepatocellular injury.",
+          "Severe statin-associated musculoskeletal toxicity, rhabdomyolysis, and hepatocellular injury.",
         severity: "critical",
         mechanismDetail:
-          "Blockade of OATP1B1 sinusoidal influx traps rosuvastatin in circulating plasma, compounded by inhibition of canalicular ABCG2 biliary excretion.",
+          "Blockade of OATP1B1 sinusoidal influx traps hydrophilic rosuvastatin in circulating plasma (bypassing liver uptake), compounded by intestinal and canalicular ABCG2 inhibition that surges oral absorption and halts biliary elimination.",
         literatureCitation:
           "Simonson SG, et al. Rosuvastatin pharmacokinetics in healthy subjects coadministered cyclosporine. Clin Pharmacol Ther. 2004;76(2):167-177.",
       },
@@ -634,29 +679,29 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
     clinicalCollisions: [
       {
         id: "cimetidine-metformin",
-        title: "Cimetidine Competitive Inhibition of Renal OCT2/MATE Metformin Clearance",
+        title: "Cimetidine Asymmetric MATE1/MATE2-K & OCT2 Blockade of Renal Metformin Secretion",
         drugPair: ["cimetidine", "metformin"],
         description:
-          "Cimetidine competitively inhibits basolateral OCT2 uptake and apical MATE1 secretion in renal proximal tubules, reducing metformin renal clearance by 27% to 35% and escalating circulating plasma concentrations.",
+          "Cimetidine exhibits substantially higher affinity for apical MATE1/MATE2-K (Ki ≈ 1–7 µM) than basolateral OCT2 (Ki ≈ 95–150 µM). Entering proximal tubular cells via OCT2, cimetidine arrests apical H+-coupled MATE extrusion of metformin into urine, reducing renal clearance by 27% to 35% and trapping metformin intracellularly.",
         hazard:
-          "Severe metformin accumulation, elevated risk of metformin-associated lactic acidosis (MALA), and severe GI distress.",
+          "Renal tubular and systemic metformin accumulation, mitochondrial complex I inhibition, metformin-associated lactic acidosis (MALA), and severe GI distress.",
         severity: "critical",
         mechanismDetail:
-          "Cimetidine potently inhibits both basolateral OCT2 and apical MATE1/2-K transporters, blocking the transcellular flux of cationic metformin into urine.",
+          "Asymmetric apical MATE1/MATE2-K efflux blockade coupled with intact basolateral OCT2 entry elevates intracellular proximal tubular metformin accumulation alongside plasma exposure, amplifying lactic acidosis risk especially in reduced eGFR.",
         literatureCitation:
-          "Somogyi A, et al. Reduction of metformin renal tubular secretion by cimetidine in normal subjects. Br J Clin Pharmacol. 1987;23(5):545-551.",
+          "Somogyi A, et al. Br J Clin Pharmacol. 1987;23(5):545-551; Ito S, et al. Clin Pharmacol Ther. 2012 (cimetidine MATE1 vs OCT2 selectivity).",
       },
       {
         id: "dolutegravir-metformin",
-        title: "Dolutegravir Inhibition of Renal Tubular Metformin Secretion",
+        title: "Dolutegravir OCT2 & MATE1 Blockade of Renal Metformin Secretion",
         drugPair: ["dolutegravir", "metformin"],
         description:
-          "Dolutegravir selectively inhibits basolateral renal OCT2 and apical MATE1, producing an approximately 79% increase in metformin AUC and 66% rise in Cmax without impairing glomerular filtration rate (GFR).",
+          "Dolutegravir potently inhibits basolateral renal OCT2 (IC50 ≈ 1.9 µM) and apical MATE1 (IC50 ≈ 6.3 µM), blocking active transcellular cation secretion and driving an ~79% increase in metformin AUC (up to 2.4-fold with higher exposure) and 66% rise in Cmax without reducing true GFR.",
         hazard:
-          "Substantial increase in metformin exposure, hypoglycemia, and potential lactic acidosis risk.",
+          "Substantial intracellular and systemic metformin accumulation, hypoglycemia, gastrointestinal intolerance, and lactic acidosis risk.",
         severity: "high",
         mechanismDetail:
-          "Dolutegravir is a potent inhibitor of OCT2 (IC50 ~1.9 uM) and MATE1, slowing active tubular secretion of unchanged metformin into urine.",
+          "Potent inhibition of SLC22A2 basolateral influx and SLC47A1 apical extrusion impedes urinary elimination of unchanged metformin while also blocking tubular creatinine secretion (causing benign pseudo-elevation of serum creatinine unrelated to GFR loss).",
         literatureCitation:
           "Song IH, et al. Effect of dolutegravir on the pharmacokinetics of metformin in healthy subjects. J Acquir Immune Defic Syndr. 2016;72(4):400-407.",
       },
@@ -766,7 +811,7 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
         direction: "efflux",
         vectorLabel: "Enterocyte Cytoplasm -> Gut Lumen",
         arrowDirection: "up",
-        mechanismNote: "Extrudes dabigatran, colchicine, digoxin back into gut lumen, restricting oral bioavailability.",
+        mechanismNote: "Extrudes dabigatran, colchicine, digoxin, tacrolimus, and sirolimus back into gut lumen, acting in tandem with enterocyte CYP3A4.",
       },
       {
         transporterId: "bcrp-abcg2",

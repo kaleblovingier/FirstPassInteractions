@@ -32,6 +32,8 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
       "TPMT",
       "NUDT15",
       "G6PD",
+      "CYP3A5",
+      "UGT1A1",
     ];
 
     for (const gid of expectedGeneIds) {
@@ -186,6 +188,36 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
       assert.match(g6pd.molecularMechanism, /NADPH/i);
       assert.match(g6pd.molecularMechanism, /glutathione/i);
       assert.match(g6pd.molecularMechanism, /Heinz/i);
+    });
+
+    it("validates CYP3A5 alleles (*1, *3 rs776746, *6, *7) and UGT1A1 alleles (*1, *28 TA7, *6 rs4148323, *37, *80)", () => {
+      const cyp3a5 = getGeneById("CYP3A5")!;
+      assert.ok(cyp3a5);
+      assert.equal(cyp3a5.chromosomeLocation, "7q22.1");
+      assert.equal(cyp3a5.ncbiGeneId, "1577");
+      const a3 = cyp3a5.alleles.find((a) => a.allele === "*3")!;
+      assert.ok(a3);
+      assert.equal(a3.rsId, "rs776746");
+      assert.equal(a3.functionality, "No Function");
+      assert.ok(cyp3a5.alleles.some((a) => a.allele === "*1" && a.functionality === "Normal Function"));
+      assert.ok(cyp3a5.alleles.some((a) => a.allele === "*6" && a.rsId === "rs10264272"));
+      assert.ok(cyp3a5.alleles.some((a) => a.allele === "*7" && a.rsId === "rs41303343"));
+      assert.ok(cyp3a5.citations.some((c) => c.includes("25801146")));
+
+      const ugt1a1 = getGeneById("UGT1A1")!;
+      assert.ok(ugt1a1);
+      assert.equal(ugt1a1.chromosomeLocation, "2q37.1");
+      assert.equal(ugt1a1.ncbiGeneId, "54658");
+      const u28 = ugt1a1.alleles.find((a) => a.allele === "*28")!;
+      assert.ok(u28);
+      assert.match(u28.description, /TATA box|A\(TA\)7TAA/i);
+      assert.equal(u28.functionality, "Decreased Function");
+      const u6 = ugt1a1.alleles.find((a) => a.allele === "*6")!;
+      assert.ok(u6);
+      assert.equal(u6.rsId, "rs4148323");
+      assert.match(u6.proteinChange ?? "", /Gly71Arg/);
+      assert.ok(ugt1a1.alleles.some((a) => a.allele === "*80" && a.rsId === "rs887829"));
+      assert.ok(ugt1a1.citations.some((c) => c.includes("26417955")));
     });
   });
 
@@ -417,6 +449,38 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
       const nitro = getInteractionsForDrug("nitrofurantoin");
       assert.ok(nitro.length > 0);
       assert.equal(nitro[0].cpicLevel, "Level B");
+    });
+
+    it("verifies Tacrolimus with CYP3A5 expresser clearance and Irinotecan/Atazanavir with UGT1A1 glucuronidation", () => {
+      const tacIx = getInteractionsForDrug("tacrolimus").find((x) => x.geneId === "CYP3A5")!;
+      assert.ok(tacIx, "Tacrolimus must map to CYP3A5");
+      assert.equal(tacIx.cpicLevel, "Level A");
+      assert.match(tacIx.molecularMechanism, /trough-to-dose|C0\/D/i);
+      const tacEm = tacIx.phenotypeRisks.find((r) => r.phenotype.includes("Extensive"))!;
+      assert.ok(tacEm);
+      assert.match(tacEm.clinicalConsequence, /rejection/i);
+
+      const irinoIx = getInteractionsForDrug("irinotecan").find((x) => x.geneId === "UGT1A1")!;
+      assert.ok(irinoIx, "Irinotecan must map to UGT1A1");
+      assert.equal(irinoIx.cpicLevel, "Level A");
+      assert.equal(irinoIx.fdaBoxedWarning, true);
+      assert.match(irinoIx.molecularMechanism, /SN-38/);
+      const irinoPm = irinoIx.phenotypeRisks.find((r) => r.phenotype.includes("Poor"))!;
+      assert.equal(irinoPm.severity, "critical");
+      assert.match(irinoPm.clinicalConsequence, /neutropenia/i);
+      assert.match(irinoPm.clinicalConsequence, /diarrhea/i);
+
+      const atazIx = getInteractionsForDrug("atazanavir").find((x) => x.geneId === "UGT1A1")!;
+      assert.ok(atazIx, "Atazanavir must map to UGT1A1");
+      assert.equal(atazIx.cpicLevel, "Level A");
+      const atazPm = atazIx.phenotypeRisks.find((r) => r.phenotype.includes("Poor"))!;
+      assert.match(atazPm.clinicalConsequence, /unconjugated hyperbilirubinemia/i);
+      assert.match(atazPm.clinicalConsequence, /icterus/i);
+
+      const risks = detectPgxRisksOnTray(["tacrolimus", "irinotecan", "atazanavir"]);
+      assert.equal(risks.length, 3);
+      assert.equal(risks[0].drugId, "irinotecan");
+      assert.equal(risks[0].severity, "critical");
     });
   });
 

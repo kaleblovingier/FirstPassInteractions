@@ -19,7 +19,7 @@ export const TRUST_DESCRIPTION = `How FirstPass handles data, security, content 
 export const TRUST_H1 = "Trust, privacy and validation";
 
 /** The day these points were last checked against the code. Update it when you re-check. */
-export const TRUST_REVIEWED = "2026-10-18";
+export const TRUST_REVIEWED = "2026-11-09";
 
 export const REPO_URL = "https://github.com/kaleblovingier/FirstPassInteractions";
 
@@ -98,7 +98,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "No analytics cookies.",
-      text: "FirstPass has no analytics cookies, advertising or third-party tracking code. An aggregate, cookieless page counter records total visits without storing IP addresses, user agents, or drug queries, using rotating daily salts so visits cannot be linked across days. You can opt out at any time in local storage (fp_analytics_opt_out). The feedback link opens your own email app.",
+      text: "FirstPass has no analytics cookies, advertising or third-party tracking code. An aggregate, cookieless page counter (/api/collect) records total visits by pathname without storing IP addresses, raw user agents, query strings, URL hashes, or drug queries, isolating daily visitor pseudonyms with rotating daily salts (deleted within 48 hours) so visits cannot be linked across days, and retaining aggregate counts for 90 days when a database is configured. Reading or exporting those stats in Foundry (/api/stats) requires the operator PIN, and JSON/CSV exports contain zero protected health information (PHI), zero IP addresses, zero visitor codes or salts, and zero drug queries. You can opt out at any time in Foundry or in local storage (firstpass.analytics.optout set to \"1\"). The feedback link opens your own email app.",
     },
     {
       lead: "Outside resources on every page.",
@@ -127,8 +127,14 @@ export const PRIVACY: TrustSection = {
     "src/lib/billing/license-mail.server.ts",
     "src/lib/billing/recover.server.ts",
     "src/lib/drugs/feedback.ts",
+    "src/lib/analytics/contract.ts",
     "src/lib/analytics/collect.server.ts",
     "src/lib/analytics/store.server.ts",
+    "src/lib/analytics/stats.server.ts",
+    "src/lib/analytics/export.ts",
+    "src/lib/server/throttle-store.ts",
+    "migrations/0002_throttle.sql",
+    "migrations/0003_analytics.sql",
     "src/lib/regulatory.ts",
     "README.md",
     "src/routes/__root.tsx",
@@ -147,7 +153,7 @@ export const SECURITY: TrustSection = {
     },
     {
       lead: "Secrets stay on the server.",
-      text: "Stripe, Resend, PayPal, xAI and signing secrets are read from server environment variables. None use the VITE_ prefix that would ship them to the browser, and .env files are kept out of the repository.",
+      text: "Stripe, Resend, PayPal, xAI, database and signing secrets are read from server environment variables. None use the VITE_ prefix that would ship them to the browser, and .env files are kept out of the repository.",
     },
     {
       lead: "Fails closed in production.",
@@ -155,7 +161,7 @@ export const SECURITY: TrustSection = {
     },
     {
       lead: "Rate limits.",
-      text: "Key recovery allows 5 requests per IP address per 15 minutes and 3 per email per hour. The readers allow 30 asks per minute. These counters live in each server instance's memory, so they reset when an instance restarts. Other endpoints have no rate limit of their own. They rely on input checks: lists and text are capped, and unknown drug ids are dropped before any outside call.",
+      text: "Key recovery allows 5 requests per IP address per 15 minutes and 3 per email per hour, and program inquiries allow 5 per IP per hour and 3 per email per 24 hours; those counters live in each server instance's memory. The cookieless page-view counter (/api/collect) enforces an in-memory per-instance sliding window of 120 requests per minute per client IP (1,200 per minute shared when callers cannot be distinguished). Other abuse limits are shared across instances in Postgres (migrations/0002_throttle.sql, storing only keyed HMAC-SHA256 hashes of caller keys, never raw IP addresses) when DATABASE_URL is configured and fall back to per-instance memory otherwise: the readers allow 30 fresh asks per minute overall and 10 per IP; FirstPass's interaction API (except its health route) allows 10 requests per minute per IP without a key, 60 with a Developer key, and 600 with an Education key; and operator PIN checks (key minting, order lists, and /api/stats visitor analytics) enforce doubling brute-force backoff from 1 second up to 15 minutes after 5 wrong guesses per IP, plus a 2-second slowdown after 30 wrong guesses in 15 minutes. Other server endpoints rely on input checks: lists and text are capped, and unknown drug ids are dropped before any outside call.",
     },
     {
       lead: "HTTPS.",
@@ -163,11 +169,11 @@ export const SECURITY: TrustSection = {
     },
     {
       lead: "No stored learner data.",
-      text: "There is no database. Learner work stays in the learner's own browser.",
+      text: "No database holds learner work, drug checks, accounts, or license keys; learner work stays in the learner's own browser. When a database is configured, it is used only for cross-instance rate-limit hashes and cookieless aggregate page-view analytics.",
     },
     {
       lead: "Operator tools.",
-      text: "Minting keys and listing paid orders need an operator PIN, which the server checks in constant time.",
+      text: "Minting keys (desk, program, and API keys), listing paid orders, and reading or exporting aggregate visitor stats (/api/stats and Foundry) require an operator PIN. The server verifies the PIN in constant time (timingSafeEqual over SHA-256 digests) and enforces database-backed brute-force backoff (falling back to in-memory per-instance throttling when no database is configured).",
     },
     {
       lead: "Certifications.",
@@ -177,12 +183,22 @@ export const SECURITY: TrustSection = {
   sources: [
     "src/lib/billing/license.server.ts",
     "src/lib/billing/license.ts",
+    "src/lib/billing/api-keys.server.ts",
+    "src/lib/billing/api-tiers.ts",
     "src/lib/env.server.ts",
     ".gitignore",
     "src/lib/billing/stripe.server.ts",
     "src/lib/billing/recover.server.ts",
+    "src/lib/billing/program-inquiry.server.ts",
     "src/lib/drugs/readers.server.ts",
+    "src/lib/server/api/api-access.server.ts",
+    "src/lib/server/rate-limit.ts",
+    "src/lib/server/throttle-store.ts",
     "src/lib/server/rpc-input.ts",
+    "src/lib/analytics/collect.server.ts",
+    "src/lib/analytics/stats.server.ts",
+    "src/lib/analytics/export.ts",
+    "migrations/0002_throttle.sql",
     "README.md",
     "vercel.json",
     "docs/automatic-license-delivery.md",

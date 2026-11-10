@@ -19,6 +19,10 @@ import {
   isTheophyllineCyp1a2,
   isOpioidBenzo,
   isQtHypokalemicDiuretic,
+  isTizanidineCyp1a2,
+  isCniStrong3a4,
+  isValproateCarbapenem,
+  isHyperkalemiaRaasK,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -196,6 +200,128 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.match(hits[0].clinical, /rapid delayed rectifier potassium current.*IKr.*Torsades de Pointes/i);
     assert.match(hits[0].watch, /Serial 12-lead ECG.*magnesium sulfate.*overdrive/i);
     assert.match(hits[0].source, /Betapace.*Tikosyn.*Drew BJ.*CredibleMeds/i);
+  });
+
+  it("detects Tizanidine × Strong CYP1A2 Inhibitors collision as contraindicated", () => {
+    assert.equal(isTizanidineCyp1a2("tizanidine", "ciprofloxacin"), true);
+    assert.equal(isTizanidineCyp1a2("fluvoxamine", "tizanidine"), true);
+    assert.equal(isTizanidineCyp1a2("tizanidine", "levofloxacin"), false);
+    assert.equal(isTizanidineCyp1a2("tizanidine", "ciprofloxacin-ophthalmic"), false);
+    assert.equal(isTizanidineCyp1a2("tizanidine", "sertraline"), false);
+
+    const fluvHits = safetyOnDesk(["tizanidine", "fluvoxamine"]);
+    assert.equal(fluvHits.length, 1);
+    assert.equal(fluvHits[0].id, "tizanidine-cyp1a2");
+    assert.equal(fluvHits[0].severity, "contraindicated");
+    assert.equal(fluvHits[0].tone, "danger");
+    assert.match(fluvHits[0].mechanism, /first-pass blockade.*hypotension & coma/i);
+    assert.match(fluvHits[0].clinical, /10-fold.*33-fold.*alpha-2.*contraindication/i);
+    assert.match(fluvHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(fluvHits[0].source, /Zanaflex.*Granfors MT.*15060511.*15592331/i);
+
+    const ciproHits = safetyOnDesk(["tizanidine", "ciprofloxacin"]);
+    assert.equal(ciproHits.length, 1);
+    assert.equal(ciproHits[0].id, "tizanidine-cyp1a2");
+  });
+
+  it("detects CNI / mTOR Immunosuppressants × Strong CYP3A4 / P-gp Inhibitors as contraindicated", () => {
+    assert.equal(isCniStrong3a4("tacrolimus", "paxlovid"), true);
+    assert.equal(isCniStrong3a4("ritonavir", "cyclosporine"), true);
+    assert.equal(isCniStrong3a4("sirolimus", "voriconazole"), true);
+    assert.equal(isCniStrong3a4("everolimus", "cobicistat"), true);
+    assert.equal(isCniStrong3a4("tacrolimus", "itraconazole"), true);
+    assert.equal(isCniStrong3a4("cyclosporine-modified", "posaconazole"), true);
+    assert.equal(isCniStrong3a4("tacrolimus-xr", "clarithromycin"), true);
+    assert.equal(isCniStrong3a4("sirolimus", "ketoconazole"), true);
+    assert.equal(isCniStrong3a4("everolimus", "nefazodone"), true);
+    assert.equal(isCniStrong3a4("tacrolimus", "amoxicillin"), false);
+    assert.equal(isCniStrong3a4("tacrolimus", "azithromycin"), false);
+    assert.equal(isCniStrong3a4("tacrolimus-topical", "paxlovid"), false);
+    assert.equal(isCniStrong3a4("cyclosporine-ophthalmic", "voriconazole"), false);
+
+    const paxHits = safetyOnDesk(["tacrolimus", "paxlovid"]);
+    assert.equal(paxHits.length, 1);
+    assert.equal(paxHits[0].id, "cni-strong-3a4");
+    assert.equal(paxHits[0].severity, "contraindicated");
+    assert.equal(paxHits[0].tone, "danger");
+    assert.match(paxHits[0].mechanism, /catastrophic trough surge/i);
+    assert.match(paxHits[0].clinical, /nephrotoxicity.*PRES.*thrombotic microangiopathy/i);
+    assert.match(paxHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(paxHits[0].source, /Paxlovid.*35599203.*25708713/i);
+
+    const mtorHits = safetyOnDesk(["everolimus", "ritonavir"]);
+    assert.equal(mtorHits.length, 1);
+    assert.equal(mtorHits[0].id, "cni-strong-3a4");
+  });
+
+  it("detects Valproate × Carbapenem collision as major risk", () => {
+    assert.equal(isValproateCarbapenem("valproate", "meropenem"), true);
+    assert.equal(isValproateCarbapenem("ertapenem", "divalproex"), true);
+    assert.equal(isValproateCarbapenem("valproate-iv", "imipenem-cilastatin"), true);
+    assert.equal(isValproateCarbapenem("valproate-sprinkle", "doripenem"), true);
+    assert.equal(isValproateCarbapenem("divalproex", "meropenem-vaborbactam"), true);
+    assert.equal(isValproateCarbapenem("valproate", "cefepime"), false);
+    assert.equal(isValproateCarbapenem("valproate", "levetiracetam"), false);
+    assert.equal(isValproateCarbapenem("valproate", "sulopenem"), false);
+
+    const hits = safetyOnDesk(["divalproex", "meropenem"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "valproate-carbapenem");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /irreversible APEH blockade \/ rapid valproate crash/i);
+    assert.match(hits[0].clinical, /acylpeptide hydrolase.*60–90%.*status epilepticus/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Depakote.*17609232.*20551238.*21770850/i);
+
+    const ertaHits = safetyOnDesk(["valproate", "ertapenem"]);
+    assert.equal(ertaHits.length, 1);
+    assert.equal(ertaHits[0].id, "valproate-carbapenem");
+  });
+
+  it("detects Hyperkalemia RAAS × K-Retaining / ENaC collision without dual-raas or combo misfires", () => {
+    assert.equal(isHyperkalemiaRaasK("lisinopril", "spironolactone"), true);
+    assert.equal(isHyperkalemiaRaasK("losartan", "tmp-smx"), true);
+    assert.equal(isHyperkalemiaRaasK("sacubitril-valsartan", "eplerenone"), true);
+    assert.equal(isHyperkalemiaRaasK("enalapril", "amiloride"), true);
+    assert.equal(isHyperkalemiaRaasK("valsartan", "triamterene"), true);
+    assert.equal(isHyperkalemiaRaasK("lisinopril", "potassium-chloride"), true);
+    assert.equal(isHyperkalemiaRaasK("ramipril", "trimethoprim"), true);
+    assert.equal(isHyperkalemiaRaasK("losartan-hctz", "spironolactone"), true);
+    assert.equal(isHyperkalemiaRaasK("spironolactone", "potassium-chloride"), true);
+    assert.equal(isHyperkalemiaRaasK("spironolactone", "tmp-smx"), true);
+    assert.equal(isHyperkalemiaRaasK("amiloride", "potassium-chloride"), true);
+    assert.equal(isHyperkalemiaRaasK("eplerenone", "trimethoprim"), true);
+
+    assert.equal(isHyperkalemiaRaasK("losartan-hctz", "losartan-hctz"), false);
+    assert.equal(isHyperkalemiaRaasK("spironolactone", "spironolactone-hctz"), false);
+    assert.equal(isHyperkalemiaRaasK("triamterene", "hydrochlorothiazide-triamterene"), false);
+    assert.equal(isHyperkalemiaRaasK("lisinopril", "losartan"), false);
+    assert.equal(isHyperkalemiaRaasK("lisinopril", "spironolactone-derm"), false);
+    assert.equal(isHyperkalemiaRaasK("lisinopril", "trimethoprim-polymyxin-eye"), false);
+    assert.equal(isHyperkalemiaRaasK("lisinopril", "furosemide"), false);
+
+    assert.equal(safetyOnDesk(["losartan-hctz"]).length, 0);
+    assert.equal(safetyOnDesk(["spironolactone-hctz"]).length, 0);
+    assert.equal(safetyOnDesk(["hydrochlorothiazide-triamterene"]).length, 0);
+
+    const dualRaasHits = safetyOnDesk(["lisinopril", "losartan"]);
+    assert.equal(dualRaasHits.length, 1);
+    assert.equal(dualRaasHits[0].id, "dual-raas");
+
+    const raasMraHits = safetyOnDesk(["lisinopril", "spironolactone"]);
+    assert.equal(raasMraHits.length, 1);
+    assert.equal(raasMraHits[0].id, "hyperkalemia-raas-k");
+    assert.equal(raasMraHits[0].severity, "major");
+    assert.equal(raasMraHits[0].tone, "danger");
+    assert.match(raasMraHits[0].mechanism, /additive hyperkalemia & fatal arrhythmia/i);
+    assert.match(raasMraHits[0].clinical, /ENaC.*>= 6\.0 mEq\/L.*sine-wave/i);
+    assert.match(raasMraHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(raasMraHits[0].source, /Antoniou T.*20585070.*21911446.*Fralick M.*25359996/i);
+
+    const spironoTmpHits = safetyOnDesk(["spironolactone", "tmp-smx"]);
+    assert.equal(spironoTmpHits.length, 1);
+    assert.equal(spironoTmpHits[0].id, "hyperkalemia-raas-k");
   });
 
   it("detects Colchicine × strong CYP3A4 / P-gp inhibitor collision as contraindicated", () => {

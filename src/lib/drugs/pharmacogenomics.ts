@@ -872,6 +872,187 @@ export const PHARMACOGENES: Pharmacogene[] = [
       "Luzzatto L, et al. Blood. 2020;136(11):1225-1240.",
     ],
   },
+  {
+    id: "CYP3A5",
+    symbol: "CYP3A5",
+    name: "Cytochrome P450 Family 3 Subfamily A Member 5",
+    chromosomeLocation: "7q22.1",
+    ncbiGeneId: "1577",
+    systemRole: "Phase I Microsomal Monooxygenase (Polymorphic Tacrolimus Intrinsic Clearance)",
+    molecularMechanism:
+      "CYP3A5 shares broad substrate overlap with CYP3A4 in the small intestinal mucosa and hepatocyte endoplasmic reticulum, notably driving tacrolimus oxidative biotransformation. Expression is bimodally governed by an intronic cryptic splice variant (*3, rs776746, g.6986A>G / c.219-237A>G). Carriers of at least one wild-type *1 allele (CYP3A5 expressers: *1/*1 or *1/*3) express functional CYP3A5 representing up to ~50% of total hepatic/intestinal CYP3A capacity, accelerating tacrolimus intrinsic clearance (CL/F roughly 1.5- to 2-fold higher) and depressing the baseline trough-to-dose ratio (C0/D). Non-expressers (*3/*3, *3/*6, *6/*7) produce truncated, unstable mRNA and rely exclusively on CYP3A4/P-gp.",
+    alleles: [
+      {
+        allele: "*1",
+        name: "Wild Type (CYP3A5 Expresser)",
+        functionality: "Normal Function",
+        activityScore: 1.0,
+        description:
+          "Functional CYP3A5 allele driving active intestinal and hepatic tacrolimus oxidation and lowering baseline trough-to-dose (C0/D) ratios relative to non-expressers.",
+      },
+      {
+        allele: "*3",
+        name: "rs776746 Intron 3 Cryptic Splice Defect",
+        functionality: "No Function",
+        activityScore: 0.0,
+        description:
+          "Canonical intronic A>G transition (c.219-237A>G / g.6986A>G) introducing a cryptic splice site in intron 3 that retains intronic sequence with a premature stop codon, causing nonsense-mediated mRNA decay and absent CYP3A5 protein (~85–95% allele frequency in Europeans; ~30–50% in African ancestries).",
+        nucleotideChange: "c.219-237A>G (g.6986A>G)",
+        rsId: "rs776746",
+      },
+      {
+        allele: "*6",
+        name: "c.624G>A Exon 7 Splice Defect",
+        functionality: "No Function",
+        activityScore: 0.0,
+        description:
+          "Synonymous splicing defect in exon 7 causing exon 7 skipping, reading-frame disruption, and loss of functional CYP3A5 expression; primarily observed in African ancestries (~10–20%).",
+        nucleotideChange: "c.624G>A",
+        rsId: "rs10264272",
+      },
+      {
+        allele: "*7",
+        name: "c.1035_1036insT Frameshift Insertion",
+        functionality: "No Function",
+        activityScore: 0.0,
+        description:
+          "Single-nucleotide T insertion in exon 11 generating a premature termination codon and catalytically inactive truncated protein; observed primarily in African ancestries.",
+        nucleotideChange: "c.1035_1036insT",
+        proteinChange: "p.Thr346TyrfsTer12",
+        rsId: "rs41303343",
+      },
+    ],
+    phenotypes: [
+      {
+        code: "EM",
+        name: "Extensive Metabolizer (CYP3A5 Expresser)",
+        activityScoreRange: "Two *1 alleles",
+        genotypeExamples: ["*1/*1"],
+        clinicalSummary:
+          "High CYP3A5 intestinal and hepatic expression. Tacrolimus intrinsic clearance (CL/F) is roughly 2-fold higher and trough-to-dose (C0/D) ratios are markedly lower than in *3/*3 non-expressers, risking early subtherapeutic exposure and acute allograft rejection.",
+        populationFrequencyNotes: "Most frequent in African ancestries (~45–70% carry at least one *1); ~10–15% in European ancestries.",
+      },
+      {
+        code: "IM",
+        name: "Intermediate Metabolizer (Heterozygous CYP3A5 Expresser)",
+        activityScoreRange: "One *1 + one no-function allele",
+        genotypeExamples: ["*1/*3", "*1/*6", "*1/*7"],
+        clinicalSummary:
+          "Functional CYP3A5 expression present; tacrolimus clearance is significantly accelerated (~1.5-fold) with depressed baseline trough-to-dose ratios (C0/D), frequently delaying attainment of target immunosuppressive troughs.",
+        populationFrequencyNotes: "Common across African, Admixed American, and East/South Asian ancestries (~35–55%).",
+      },
+      {
+        code: "PM",
+        name: "Poor Metabolizer (CYP3A5 Non-Expresser)",
+        activityScoreRange: "Two no-function alleles",
+        genotypeExamples: ["*3/*3", "*3/*6", "*6/*7"],
+        clinicalSummary:
+          "Complete absence of functional CYP3A5 protein. Serves as the reference phenotype for standard tacrolimus starting regimens; because CYP3A4 alone handles oxidative clearance, non-expressers experience steeper trough surges when co-exposed to strong CYP3A4 inhibitors (azoles, Paxlovid).",
+        populationFrequencyNotes: "~80–90% in European populations; ~10–25% in African populations.",
+      },
+    ],
+    primaryDrugs: ["tacrolimus"],
+    citations: [
+      "Birdwell KA, et al. Clin Pharmacol Ther. 2015;98(1):19-24 (PMID: 25801146).",
+      "FDA Prescribing Information (PROGRAF / Tacrolimus): Clinical Pharmacology & Drug Interactions.",
+    ],
+  },
+  {
+    id: "UGT1A1",
+    symbol: "UGT1A1",
+    name: "UDP Glucuronosyltransferase Family 1 Member A1",
+    chromosomeLocation: "2q37.1",
+    ncbiGeneId: "54658",
+    systemRole: "Phase II Hepatic Glucuronidation Enzyme (Bilirubin & SN-38 Detoxification)",
+    molecularMechanism:
+      "Principal Phase II conjugating transferase responsible for glucuronidating endogenous unconjugated bilirubin into water-soluble diglucuronides (excreted via canalicular MRP2) as well as detoxifying SN-38, the active topoisomerase I inhibitor metabolite of irinotecan, into inactive SN-38 glucuronide (SN-38G). Promoter TA-repeat expansion (*28, A(TA)7TAA vs wild-type *1 A(TA)6TAA) impairs TFIID TATA-box binding and cuts transcription ~30–70%; East Asian coding missense variant *6 (c.211G>A, p.Gly71Arg, rs4148323) lowers catalytic stability. Deficient genotypes (Gilbert-like phenotype) magnify SN-38 exposure (severe neutropenia/diarrhea) with irinotecan and precipitate unconjugated hyperbilirubinemia/scleral icterus during UGT1A1 inhibition by atazanavir.",
+    alleles: [
+      {
+        allele: "*1",
+        name: "Wild Type (TA6 Promoter Repeat)",
+        functionality: "Normal Function",
+        activityScore: 1.0,
+        description: "Reference A(TA)6TAA TATA-box motif supporting full transcriptional expression and glucuronidation rate.",
+        rsId: "rs3064744",
+      },
+      {
+        allele: "*28",
+        name: "Promoter TA7 Repeat (A(TA)7TAA)",
+        functionality: "Decreased Function",
+        activityScore: 0.5,
+        description:
+          "Extra TA dinucleotide insertion in the TATA box promoter reducing UGT1A1 mRNA transcription by ~30–70%; homozygous *28/*28 confers Gilbert syndrome phenotype and high SN-38 / atazanavir bilirubin accumulation.",
+        nucleotideChange: "A(TA)7TAA",
+        rsId: "rs3064744",
+      },
+      {
+        allele: "*6",
+        name: "c.211G>A (p.Gly71Arg)",
+        functionality: "Decreased Function",
+        activityScore: 0.5,
+        description:
+          "Exon 1 missense substitution impairing catalytic turnover and protein stability (~40–60% activity reduction per allele); predominant UGT1A1 variant in East Asian populations (~15–20% allele frequency).",
+        nucleotideChange: "c.211G>A",
+        proteinChange: "p.Gly71Arg",
+        rsId: "rs4148323",
+      },
+      {
+        allele: "*37",
+        name: "Promoter TA8 Repeat (A(TA)8TAA)",
+        functionality: "Decreased Function",
+        activityScore: 0.25,
+        description:
+          "Eight-repeat TATA-box expansion causing profound transcriptional repression below *28; most commonly identified in African ancestries.",
+        nucleotideChange: "A(TA)8TAA",
+        rsId: "rs3064744",
+      },
+      {
+        allele: "*80",
+        name: "-364C>T Linkage Tag Variant",
+        functionality: "Decreased Function",
+        activityScore: 0.5,
+        description:
+          "Promoter tag variant (c.-364C>T) in near-complete linkage disequilibrium with *28 and *37; validated in CPIC guidelines for atazanavir-induced hyperbilirubinemia risk stratification.",
+        nucleotideChange: "c.-364C>T",
+        rsId: "rs887829",
+      },
+    ],
+    phenotypes: [
+      {
+        code: "NM",
+        name: "Normal Metabolizer",
+        activityScoreRange: "Two normal-function alleles",
+        genotypeExamples: ["*1/*1", "*1/*36"],
+        clinicalSummary:
+          "Standard Phase II glucuronidation of bilirubin and SN-38; lower baseline incidence of severe irinotecan neutropenia or visible atazanavir scleral icterus.",
+        populationFrequencyNotes: "~40–50% in Europeans; ~65–75% in East Asians.",
+      },
+      {
+        code: "IM",
+        name: "Intermediate Metabolizer",
+        activityScoreRange: "One normal + one decreased-function allele",
+        genotypeExamples: ["*1/*28", "*1/*6", "*1/*80"],
+        clinicalSummary:
+          "Moderately reduced UGT1A1 transcription/catalysis. Mild unconjugated bilirubin rise under atazanavir and modestly heightened SN-38 toxicity sensitivity at high irinotecan schedules.",
+        populationFrequencyNotes: "~40% in Europeans (*1/*28); ~25–30% in East Asians (*1/*6 or *1/*28).",
+      },
+      {
+        code: "PM",
+        name: "Poor Metabolizer (Gilbert Phenotype)",
+        activityScoreRange: "Two decreased-function alleles",
+        genotypeExamples: ["*28/*28", "*6/*6", "*6/*28", "*80/*80", "*28/*37"],
+        clinicalSummary:
+          "Severely blunted glucuronidation (20–30% of normal). Irinotecan SN-38 accumulates markedly, precipitating grade 3–4 neutropenia and severe delayed diarrhea; atazanavir yields >80% risk of Gilbert-like unconjugated hyperbilirubinemia and visible jaundice.",
+        populationFrequencyNotes: "~8–15% in European and African ancestries (*28/*28); ~3–7% in East Asians (combining *6 and *28).",
+      },
+    ],
+    primaryDrugs: ["irinotecan", "atazanavir"],
+    citations: [
+      "Gammal RS, et al. Clin Pharmacol Ther. 2016;99(4):363-369 (PMID: 26417955).",
+      "Hulshof EC, et al. Eur J Hum Genet. 2023;31(9):982-987 (PMID: 36443477).",
+      "FDA Prescribing Information (CAMPTOSAR / Irinotecan): Warnings and Precautions & Clinical Pharmacology.",
+    ],
+  },
 ];
 
 /**
@@ -1720,6 +1901,163 @@ export const PGX_INTERACTIONS: PgxInteraction[] = [
       "Nitrofuran reduction by intracellular reductases generates free radical intermediates that oxidatively damage erythrocyte membranes and hemoglobin.",
     fdaLabelSection: "Contraindications, Warnings and Precautions",
     citations: ["Gammal RS, et al. Clin Pharmacol Ther. 2023;113(4):773-785."],
+  },
+
+  // 22. Tacrolimus / CYP3A5
+  {
+    id: "tacrolimus-cyp3a5",
+    drugId: "tacrolimus",
+    drugName: "Tacrolimus",
+    geneId: "CYP3A5",
+    geneSymbol: "CYP3A5",
+    cpicLevel: "Level A",
+    therapeuticArea: "Rheumatology & Immunology",
+    guidelineTitle: "CPIC Guideline for CYP3A5 Genotype and Tacrolimus",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-tacrolimus-and-cyp3a5/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Extensive Metabolizer (*1/*1 Expresser)",
+        clinicalConsequence:
+          "Markedly accelerated tacrolimus intrinsic clearance (CL/F ~2-fold higher) and severely depressed baseline trough-to-dose ratio (C0/D), yielding subtherapeutic trough concentrations and elevated risk of acute cellular allograft rejection.",
+        pharmacokineticMechanism:
+          "Functional CYP3A5 expression in intestinal enterocytes and hepatocytes augments CYP3A4-mediated demethylation/hydroxylation, shrinking oral bioavailability and increasing systemic clearance.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Increase starting regimen by 1.5- to 2-fold relative to standard non-expresser initiation (within standard weight-adjusted upper bounds) accompanied by early therapeutic drug monitoring (TDM) to reach target trough concentrations.",
+        severity: "high",
+      },
+      {
+        phenotype: "Intermediate Metabolizer (*1/*3, *1/*6, *1/*7 Expresser)",
+        clinicalConsequence:
+          "Substantially elevated tacrolimus clearance (~1.5-fold) and lowered trough-to-dose ratio (C0/D), delaying attainment of target immunosuppressive exposure.",
+        pharmacokineticMechanism:
+          "Presence of one functional *1 allele drives substantial supplemental CYP3A5 catalytic clearance alongside CYP3A4.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Increase starting regimen by 1.5- to 2-fold relative to standard non-expresser initiation guided by close serial TDM trough surveillance.",
+        severity: "high",
+      },
+      {
+        phenotype: "Poor Metabolizer (*3/*3 Non-Expresser)",
+        clinicalConsequence:
+          "Standard reference baseline clearance via CYP3A4 alone; lacks CYP3A5 metabolic bypass, amplifying susceptibility to steep trough surges upon strong CYP3A4/P-gp co-inhibition.",
+        pharmacokineticMechanism:
+          "Homozygous *3 (rs776746) cryptic splicing abolishes CYP3A5 protein synthesis, leaving clearance dependent on CYP3A4 and apical P-gp.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Standard starting regimen per prescribing information alongside routine TDM.",
+        severity: "informational",
+      },
+    ],
+    molecularMechanism:
+      "Tacrolimus is a narrow therapeutic index calcineurin inhibitor cleared by intestinal and hepatic CYP3A4/5 oxidation and P-gp efflux. Unlike CYP3A4, polymorphic CYP3A5 expression (*1 expresser vs *3 rs776746 non-expresser) creates a ~2-fold divergence in baseline clearance and trough-to-dose ratio (C0/D).",
+    fluxComparison: {
+      normalPhenotype: "Non-Expresser (*3/*3 Reference)",
+      alteredPhenotype: "Expresser (*1/*1 or *1/*3)",
+      nodes: [
+        { label: "CYP3A4 Oxidation", fractionInNormal: 0.85, fractionInAltered: 0.45, description: "Primary constitutive CYP3A clearance pathway" },
+        { label: "CYP3A5 Oxidation", fractionInNormal: 0.0, fractionInAltered: 0.45, description: "Additional polymorphic intestinal/hepatic clearance in *1 expressers" },
+        { label: "Unchanged Parent / Biliary Efflux", fractionInNormal: 0.15, fractionInAltered: 0.10, description: "Remaining P-gp/biliary disposition" },
+      ],
+    },
+    fdaLabelSection: "Boxed Warning, Clinical Pharmacology, Drug Interactions",
+    citations: [
+      "Birdwell KA, et al. Clin Pharmacol Ther. 2015;98(1):19-24 (PMID: 25801146).",
+      "FDA Prescribing Information (PROGRAF / Tacrolimus): Clinical Pharmacology.",
+    ],
+  },
+
+  // 23. Irinotecan / UGT1A1
+  {
+    id: "irinotecan-ugt1a1",
+    drugId: "irinotecan",
+    drugName: "Irinotecan",
+    geneId: "UGT1A1",
+    geneSymbol: "UGT1A1",
+    cpicLevel: "Level A",
+    therapeuticArea: "Oncology",
+    guidelineTitle: "DPWG & FDA UGT1A1 Pharmacogenomic Guidance for Irinotecan (SN-38)",
+    guidelineUrl: "https://cpicpgx.org/genes-drugs/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*28/*28, *6/*6, *6/*28)",
+        clinicalConsequence:
+          "High risk of life-threatening grade 3–4 neutropenia, febrile neutropenia, and severe delayed-onset secretory diarrhea driven by systemic and enterohepatic SN-38 overexposure.",
+        pharmacokineticMechanism:
+          "Carboxylesterases bioactivate irinotecan to SN-38 (~100- to 1000-fold more cytotoxic). Reduced UGT1A1 transcription (*28 TA7) or catalysis (*6 rs4148323) severely blocks SN-38 glucuronidation (SN-38G), elevating systemic SN-38 AUC while intestinal bacterial beta-glucuronidases regenerate mucosal SN-38.",
+        cpicRecommendation:
+          "DPWG and FDA labeling guidance: Initiate therapy with a reduced starting intensity (DPWG consensus recommends starting at 70% of standard intensity) and avoid concomitant UGT1A1 or strong CYP3A4 inhibitors, monitoring ANC closely.",
+        severity: "critical",
+      },
+      {
+        phenotype: "Intermediate Metabolizer (*1/*28, *1/*6)",
+        clinicalConsequence:
+          "Modestly elevated SN-38 systemic exposure; heightened risk of severe neutropenia or diarrhea primarily during intensive high-exposure schedules.",
+        pharmacokineticMechanism:
+          "Single decreased-function allele reduces hepatic SN-38 glucuronidation capacity by roughly 25–35%.",
+        cpicRecommendation:
+          "DPWG guidance notes standard initiation is generally tolerated at conventional monotherapy schedules, with heightened vigilance for hematologic and diarrheal toxicities.",
+        severity: "moderate",
+      },
+    ],
+    molecularMechanism:
+      "Irinotecan is a camptothecin prodrug hydrolyzed by hepatic/intestinal carboxylesterases to SN-38, a potent topoisomerase I poison. Phase II glucuronidation via UGT1A1 converts SN-38 to inactive SN-38G for biliary excretion; *28 and *6 variants stall this detoxification, causing severe bone marrow and intestinal crypt toxicity.",
+    fluxComparison: {
+      normalPhenotype: "Normal Metabolizer (*1/*1)",
+      alteredPhenotype: "Poor Metabolizer (*28/*28 or *6/*6)",
+      nodes: [
+        { label: "Hepatic SN-38G Glucuronidation", fractionInNormal: 0.70, fractionInAltered: 0.20, description: "Primary UGT1A1 detoxification pathway (severely impaired)" },
+        { label: "CYP3A4 APC/NPC Oxidation", fractionInNormal: 0.20, fractionInAltered: 0.25, description: "Alternative oxidative parent clearance" },
+        { label: "Unconjugated Cytotoxic SN-38", fractionInNormal: 0.10, fractionInAltered: 0.55, description: "Marked toxic SN-38 retention driving neutropenia & diarrhea" },
+      ],
+    },
+    fdaLabelSection: "Boxed Warning, Dosage and Administration, Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Hulshof EC, et al. Eur J Hum Genet. 2023;31(9):982-987 (PMID: 36443477).",
+      "FDA Prescribing Information (CAMPTOSAR / Irinotecan): Boxed Warning & Clinical Pharmacology.",
+    ],
+  },
+
+  // 24. Atazanavir / UGT1A1
+  {
+    id: "atazanavir-ugt1a1",
+    drugId: "atazanavir",
+    drugName: "Atazanavir",
+    geneId: "UGT1A1",
+    geneSymbol: "UGT1A1",
+    cpicLevel: "Level A",
+    therapeuticArea: "Infectious Disease",
+    guidelineTitle: "CPIC Guideline for UGT1A1 and Atazanavir Prescribing",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-atazanavir-and-ugt1a1/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*28/*28, *6/*6, *80/*80)",
+        clinicalConsequence:
+          "Gilbert-like unconjugated hyperbilirubinemia (>2.5–3.0 mg/dL indirect bilirubin) with >80% incidence of visible jaundice or scleral icterus, elevating risk of cosmetic regimen discontinuation and HIV non-adherence despite normal hepatic transaminases.",
+        pharmacokineticMechanism:
+          "Atazanavir directly and competitively inhibits UGT1A1 (Ki ≈ 1.9 µM). When superimposed on genetically reduced UGT1A1 expression (*28 TA7, *6 rs4148323, or *80 rs887829), hepatic bilirubin glucuronidation collapses, causing isolated unconjugated hyperbilirubinemia.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Consider an alternative antiretroviral agent (e.g., an integrase strand transfer inhibitor or darunavir) particularly if jaundice-driven non-adherence is likely; counsel that bilirubin elevation reflects benign competitive UGT1A1 inhibition rather than hepatocellular injury.",
+        severity: "high",
+      },
+      {
+        phenotype: "Intermediate Metabolizer (*1/*28, *1/*6, *1/*80)",
+        clinicalConsequence:
+          "Low-to-moderate risk of mild unconjugated bilirubin elevation; clinically significant jaundice occurs less frequently (~20%) than in poor metabolizers.",
+        pharmacokineticMechanism:
+          "Residual wild-type *1 UGT1A1 allele maintains sufficient bilirubin conjugation buffer against atazanavir competitive inhibition in most patients.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Atazanavir initiation is acceptable without preemptive change purely for genotype; monitor indirect bilirubin and adherence if icterus develops.",
+        severity: "informational",
+      },
+    ],
+    molecularMechanism:
+      "Atazanavir acts as a potent competitive inhibitor of UGT1A1 (Ki ≈ 1.9 µM), blocking conjugation of endogenous unconjugated bilirubin. In individuals carrying reduced-function UGT1A1 diplotypes (*28/*28, *6/*6, or *80/*80), enzymatic reserve drops below threshold, triggering Gilbert-syndrome-like indirect hyperbilirubinemia.",
+    fdaLabelSection: "Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Gammal RS, et al. Clin Pharmacol Ther. 2016;99(4):363-369 (PMID: 26417955).",
+      "FDA Prescribing Information (REYATAZ / Atazanavir): Warnings and Precautions.",
+    ],
   },
 ];
 

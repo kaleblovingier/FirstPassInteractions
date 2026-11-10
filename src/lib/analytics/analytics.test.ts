@@ -16,6 +16,7 @@ import {
   utcDayString,
   AnalyticsStore,
   setAnalyticsStore,
+  MAX_SALT_CACHE_ENTRIES,
 } from "./store.server";
 import { handleGetSiteStats, handleStatsRequest, STATS_SECURITY_HEADERS } from "./stats.server";
 import { STATS_RANGES, type Device, type SiteStats } from "./contract";
@@ -28,6 +29,7 @@ import {
   downloadAnalyticsExport,
   escapeCsv,
   formatIsoTimestamp,
+  computeExportSummary,
   type AnalyticsExportReport,
 } from "./export";
 import type { Sql } from "../db";
@@ -1006,5 +1008,207 @@ test("aggregate CSV export strictly adheres to RFC 4180 and zero-PHI Safe Harbor
   assert.doesNotMatch(json, /"salt"/i);
   assert.doesNotMatch(json, /"visitor_code"/i);
   assert.doesNotMatch(json, /mrn|ssn|patient|session|token/i);
+});
+
+test("escapeCsv neutralizes leading-whitespace, control-char, and embedded-newline formula payloads", () => {
+  // Leading spaces before formula triggers
+  assert.equal(escapeCsv(" =1+1"), "' =1+1");
+  assert.equal(escapeCsv("  @SUM(A1)"), "'  @SUM(A1)");
+  assert.equal(escapeCsv("   +cmd|' /C calc'!A0"), "'   +cmd|' /C calc'!A0");
+  assert.equal(escapeCsv("  -2+3"), "'  -2+3");
+
+  // Leading control chars and newlines
+  assert.equal(escapeCsv("\u0000-100"), "'\u0000-100");
+  assert.equal(escapeCsv("\u000b=1+1"), "'\u000b=1+1");
+  assert.equal(escapeCsv("\n=CMD"), `"'\n=CMD"`);
+  assert.equal(escapeCsv("  \n@IMPORTXML()"), `"'  \n'@IMPORTXML()"`);
+
+  // Embedded newlines followed by formula triggers in multi-line text
+  assert.equal(escapeCsv("note\n=HYPERLINK()"), `"note\n'=HYPERLINK()"`);
+  assert.equal(escapeCsv("note\r\n +1"), `"note\r\n' +1"`);
+  assert.equal(escapeCsv("a\n=\n+1"), `"a\n'=\n'+1"`);
+
+  // Ordinary text and numbers remain untouched (no spurious leading single quotes)
+  assert.equal(escapeCsv("   hello"), "   hello");
+  assert.equal(escapeCsv("desktop"), "desktop");
+  assert.equal(escapeCsv("US"), "US");
+  assert.equal(escapeCsv("/pairs"), "/pairs");
+  assert.equal(escapeCsv(4200), "4200");
+  assert.equal(escapeCsv("line1\nline2"), `"line1\nline2"`);
+});
+
+test("computeExportSummary enriches JSON and CSV with accurate zero-PHI insights and zero-division safety", () => {
+  const richStats: SiteStats = {
+    enabled: true,
+    days: 7,
+    totals: { views: 355, visitors: 200 },
+    daily: [
+      { day: "2026-11-01", views: 0, visitors: 0 },
+      { day: "2026-11-02", views: 100, visitors: 60 },
+      { day: "2026-11-03", views: 150, visitors: 80 },
+      { day: "2026-11-04", views: 0, visitors: 0 },
+      { day: "2026-11-05", views: 105, visitors: 60 },
+    ],
+    pages: [{ path: "/pairs", views: 355, visitors: 200 }],
+    referrers: [],
+    countries: [{ code: "US", views: 355 }],
+    devices: [
+      { device: "desktop", views: 255 },
+      { device: "phone", views: 100 },
+    ],
+  };
+
+  const fixedIso = "2026-11-06T00:00:00.000Z";
+  const summary = computeExportSummary(richStats);
+  assert.equal(summary.averageDailyViews, 50.7); // 355 / 7 = 50.714 -> 50.7
+  assert.equal(summary.activeDays, 3);
+  assert.deepEqual(summary.peakDay, { day: "2026-11-03", views: 150 });
+
+  // Verify JSON report embeds summary backward-compatibly
+  const jsonParsed = JSON.parse(exportStatsToJson(richStats, fixedIso)) as AnalyticsExportReport;
+  assert.equal(jsonParsed.schema, "firstpass-analytics-aggregate-v1");
+  assert.equal(jsonParsed.totals.views, 355);
+  assert.deepEqual(jsonParsed.summary, summary);
+
+  // Verify CSV report embeds [SUMMARY METRICS] and [DEVICE BREAKDOWN] % share
+  const csv = exportStatsToCsv(richStats, fixedIso);
+  assert.ok(csv.includes("[SUMMARY METRICS]"));
+  assert.ok(csv.includes("Average Daily Views,50.7"));
+  assert.ok(csv.includes("Active Days,3"));
+  assert.ok(csv.includes("Peak Day,2026-11-03"));
+  assert.ok(csv.includes("Peak Day Views,150"));
+  assert.ok(csv.includes("Device,Page Views,Share"));
+  assert.ok(csv.includes("desktop,255,71.8%"));
+  assert.ok(csv.includes("phone,100,28.2%"));
+
+  // Zero-division & empty-day safety
+  const zeroStats: SiteStats = {
+    enabled: true,
+    days: 0 as unknown as SiteStats["days"],
+    totals: { views: 0, visitors: 0 },
+    daily: [],
+    pages: [],
+    referrers: [],
+    countries: [],
+    devices: [{ device: "desktop", views: 0 }],
+  };
+  const zeroSummary = computeExportSummary(zeroStats);
+  assert.equal(zeroSummary.averageDailyViews, 0);
+  assert.equal(zeroSummary.activeDays, 0);
+  assert.equal(zeroSummary.peakDay, null);
+
+  const zeroCsv = exportStatsToCsv(zeroStats, fixedIso);
+  assert.ok(zeroCsv.includes("Average Daily Views,0"));
+  assert.ok(zeroCsv.includes("Peak Day,None"));
+  assert.ok(zeroCsv.includes("desktop,0,0.0%"));
+  assert.doesNotMatch(zeroCsv, /NaN|Infinity/);
+
+  // Zero-filled daily array with 0 views also yields peakDay: null
+  const zeroFilledDaily: SiteStats = {
+    ...richStats,
+    totals: { views: 0, visitors: 0 },
+    daily: [
+      { day: "2026-11-01", views: 0, visitors: 0 },
+      { day: "2026-11-02", views: 0, visitors: 0 },
+    ],
+  };
+  assert.equal(computeExportSummary(zeroFilledDaily).peakDay, null);
+  assert.equal(computeExportSummary(zeroFilledDaily).activeDays, 0);
+});
+
+test("AnalyticsStore recordView awaits sweep deterministically on PGlite, bounds saltCache, and sorts ties cleanly", async () => {
+  const migration = readFileSync(
+    new URL("../../../migrations/0003_analytics.sql", import.meta.url),
+    "utf8",
+  );
+  const pg = new PGlite({ parsers: { 20: Number } });
+  await pg.waitReady;
+  await pg.exec(migration);
+
+  try {
+    const pgliteSql = (async <T = Record<string, unknown>>(
+      strings: TemplateStringsArray,
+      ...values: unknown[]
+    ): Promise<T[]> => {
+      let query = strings[0]!;
+      for (let i = 0; i < values.length; i++) {
+        query += `$${i + 1}${strings[i + 1]}`;
+      }
+      return (await pg.query<T>(query, values)).rows;
+    }) as unknown as Sql;
+    pgliteSql.query = async <T = Record<string, unknown>>(
+      text: string,
+      params: unknown[] = [],
+    ): Promise<T[]> => (await pg.query<T>(text, params)).rows;
+
+    const store = new AnalyticsStore(pgliteSql);
+    const now = 1794160000000;
+    const oldViewTs = now - 95 * 24 * 60 * 60 * 1000;
+
+    // Seed expired views and expired salts BEFORE recordView runs
+    await pg.query(
+      `INSERT INTO analytics_views (day, visitor_code, path, referrer_host, country, device, created_at_ms)
+       VALUES ($1, $2, $3, $4, $5, $6, $7), ($1, $2, $3, $4, $5, $6, $7)`,
+      [utcDayString(oldViewTs), "expired-visitor", "/stale", "", "US", "desktop", oldViewTs],
+    );
+    await pg.query(
+      `INSERT INTO analytics_salts (day, salt, expires_ms) VALUES ($1, $2, $3)`,
+      ["2026-07-01", "expired-salt", now - 5000],
+    );
+
+    // Populate > MAX_SALT_CACHE_ENTRIES synthetic days to verify bounded saltCache eviction
+    for (let i = 0; i < MAX_SALT_CACHE_ENTRIES + 8; i++) {
+      const syntheticTs = now - i * 24 * 60 * 60 * 1000;
+      await store.getDaySalt(utcDayString(syntheticTs), now);
+    }
+    assert.ok(
+      store.saltCacheSize <= MAX_SALT_CACHE_ENTRIES,
+      `saltCacheSize (${store.saltCacheSize}) must not exceed ${MAX_SALT_CACHE_ENTRIES}`,
+    );
+
+    // recordView awaits sweep(now) inline: immediately after resolving, expired rows must be gone
+    await store.recordView({
+      path: "/zeta",
+      referrerHost: "z-ref.org",
+      country: "US",
+      device: "desktop",
+      ip: "203.0.113.10",
+      userAgent: "TestBrowser/1",
+      now,
+    });
+    assert.equal(store.retentionPruned, 2, "retentionPruned must reflect awaited sweep count");
+
+    const remainingViews = await pg.query<{ cnt: number | string }>(
+      "SELECT COUNT(*) as cnt FROM analytics_views",
+    );
+    assert.equal(Number(remainingViews.rows[0]?.cnt), 1, "expired views must be pruned before recordView returns");
+
+    const remainingOldSalts = await pg.query<{ cnt: number | string }>(
+      "SELECT COUNT(*) as cnt FROM analytics_salts WHERE day = '2026-07-01'",
+    );
+    assert.equal(Number(remainingOldSalts.rows[0]?.cnt), 0, "expired salt must be pruned before recordView returns");
+
+    // Verify deterministic alphabetical tie-breaking on equal view counts
+    await store.recordView({
+      path: "/alpha",
+      referrerHost: "a-ref.org",
+      country: "CA",
+      device: "phone",
+      ip: "203.0.113.11",
+      userAgent: "TestBrowser/2",
+      now: now + 1000,
+    });
+
+    const stats = await store.getStats(7, now + 2000);
+    assert.equal(stats.pages[0]?.path, "/alpha");
+    assert.equal(stats.pages[1]?.path, "/zeta");
+    assert.equal(stats.referrers[0]?.host, "a-ref.org");
+    assert.equal(stats.referrers[1]?.host, "z-ref.org");
+    assert.equal(stats.countries[0]?.code, "CA");
+    assert.equal(stats.countries[1]?.code, "US");
+  } finally {
+    // Immediate close right after recordView / getStats must not trigger unhandled rejection
+    await pg.close();
+  }
 });
 

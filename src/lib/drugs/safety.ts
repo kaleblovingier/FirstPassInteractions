@@ -4,7 +4,7 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
-import { ACEI, ARNI, isArniAcei } from "./wards";
+import { ACEI, ARNI, CARBAPENEMS, VALPROATES, isArniAcei } from "./wards";
 import type { Severity } from "./types";
 
 export const SOFOSBUVIR = new Set([
@@ -139,7 +139,11 @@ export type SafetyKind =
   | "doac-inducer"
   | "theophylline-cyp1a2"
   | "opioid-benzo"
-  | "qt-hypokalemic-diuretic";
+  | "qt-hypokalemic-diuretic"
+  | "tizanidine-cyp1a2"
+  | "cni-strong-3a4"
+  | "valproate-carbapenem"
+  | "hyperkalemia-raas-k";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -661,6 +665,131 @@ export function isQtHypokalemicDiuretic(a: string, b: string) {
   );
 }
 
+export const STRONG_CYP1A2_INHIBITORS = THEOPHYLLINE_CYP1A2_INHIBITORS;
+
+export function isTizanidineCyp1a2(a: string, b: string) {
+  return (
+    (a === "tizanidine" && STRONG_CYP1A2_INHIBITORS.has(b)) ||
+    (b === "tizanidine" && STRONG_CYP1A2_INHIBITORS.has(a))
+  );
+}
+
+export const CNI_MTOR_SUBSTRATES = new Set([
+  "tacrolimus",
+  "tacrolimus-xr",
+  "cyclosporine",
+  "cyclosporine-modified",
+  "cyclosporine-non-modified",
+  "sirolimus",
+  "everolimus",
+  "temsirolimus",
+  "voclosporin",
+]);
+
+export const CNI_STRONG_3A4_INHIBITORS = new Set([
+  "paxlovid",
+  "ritonavir",
+  "cobicistat",
+  "darunavir-cobicistat",
+  "darunavir-cobicistat-ftc-taf",
+  "elvitegravir-cobicistat-ftc-taf",
+  "elvitegravir-cobicistat-ftc-tdf",
+  "atazanavir-cobicistat",
+  "voriconazole",
+  "itraconazole",
+  "posaconazole",
+  "ketoconazole",
+  "clarithromycin",
+  "nefazodone",
+  "telithromycin",
+  "idelalisib",
+  "ceritinib",
+  "mifepristone",
+]);
+
+export function isCniMtorSubstrate(id: string) {
+  return CNI_MTOR_SUBSTRATES.has(id);
+}
+
+export function isCniStrong3a4(a: string, b: string) {
+  return (
+    (isCniMtorSubstrate(a) && CNI_STRONG_3A4_INHIBITORS.has(b)) ||
+    (isCniMtorSubstrate(b) && CNI_STRONG_3A4_INHIBITORS.has(a))
+  );
+}
+
+export const VALPROATE_AGENTS = new Set([
+  "valproate",
+  "valproate-sprinkle",
+  "divalproex",
+  "valproate-iv",
+]);
+
+export function isValproateAgent(id: string) {
+  return VALPROATE_AGENTS.has(id) || VALPROATES.has(id);
+}
+
+export function isValproateCarbapenem(a: string, b: string) {
+  return (
+    (isValproateAgent(a) && CARBAPENEMS.has(b)) ||
+    (isValproateAgent(b) && CARBAPENEMS.has(a))
+  );
+}
+
+export const K_RETAINING_AGENTS = new Set([
+  "spironolactone",
+  "spironolactone-hctz",
+  "eplerenone",
+  "finerenone",
+  "amiloride",
+  "triamterene",
+  "hydrochlorothiazide-triamterene",
+  "potassium-chloride",
+  "potassium-chloride-iv",
+  "potassium",
+  "potassium-citrate",
+  "potassium-phosphate",
+]);
+
+export const ENAC_SULFONAMIDES = new Set(["trimethoprim", "tmp-smx"]);
+
+export function isKRetainingOrEnac(id: string) {
+  return K_RETAINING_AGENTS.has(id) || ENAC_SULFONAMIDES.has(id);
+}
+
+export function isRaasForHyperkalemia(id: string) {
+  return isAcei(id) || isArb(id) || ARNI.has(id);
+}
+
+function isSameHyperkalemiaIngredient(a: string, b: string) {
+  if (a === b) return true;
+  const pairSet = new Set([a, b]);
+  if (pairSet.has("spironolactone") && pairSet.has("spironolactone-hctz")) return true;
+  if (pairSet.has("triamterene") && pairSet.has("hydrochlorothiazide-triamterene")) return true;
+  if (pairSet.has("trimethoprim") && pairSet.has("tmp-smx")) return true;
+  return false;
+}
+
+export function isHyperkalemiaRaasK(a: string, b: string) {
+  if (isSameHyperkalemiaIngredient(a, b)) return false;
+  const kA = isKRetainingOrEnac(a);
+  const kB = isKRetainingOrEnac(b);
+  const raasA = isRaasForHyperkalemia(a);
+  const raasB = isRaasForHyperkalemia(b);
+  if ((kA && raasB) || (kB && raasA)) return true;
+  if (kA && kB) return true;
+  return false;
+}
+
+function firstHyperkalemiaRaasK(ids: string[]): [string, string] | null {
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) {
+      if (isHyperkalemiaRaasK(ids[i], ids[j])) return [ids[i], ids[j]];
+    }
+  }
+  return null;
+}
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -1154,6 +1283,78 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "High-risk QT-prolonging agents (sotalol, dofetilide, amiodarone, ibutilide, quinidine, procainamide, haloperidol, methadone) block the cardiac rapid delayed rectifier potassium current (IKr), prolonging the ventricular action potential and QTc interval. Concomitant loop (furosemide, bumetanide, torsemide) or thiazide (HCTZ, chlorthalidone, metolazone) diuretics cause urinary potassium and magnesium wasting. Extracellular hypokalemia (K+ < 4.0 mEq/L) paradoxically intensifies IKr channel blockade and impairs repolarization reserve, triggering early afterdepolarizations (EADs) that provoke polymorphic ventricular tachycardia (Torsades de Pointes [TdP]) and sudden cardiac death. Official labeling for sotalol (Betapace) and dofetilide (Tikosyn) mandates maintaining serum potassium >= 4.0 mEq/L and magnesium >= 2.0 mg/dL throughout therapy.",
         "Serial 12-lead ECG (baseline and post-diuretic QTc; QTc >500 ms or delta QTc >60 ms warrants urgent evaluation), serum potassium (target >= 4.0 mEq/L), serum magnesium (target >= 2.0 mg/dL), BUN, serum creatinine. In acute Torsades de Pointes: discontinue offending agents, administer IV magnesium sulfate per protocol, correct hypokalemia, and initiate overdrive transvenous pacing or isoproterenol for pause-dependent TdP. The Prescribing Information governs. This desk does not adjust doses, order naloxone, or select alternative agents.",
         "Betapace (sotalol) Boxed Warning, Tikosyn (dofetilide) Boxed Warning, and Cordarone (amiodarone) Prescribing Information. Drew BJ et al. Prevention of Torsade de Pointes in Hospital Settings: A Scientific Statement From the AHA and ACC. Circulation 2010 (PMID 20142454). CredibleMeds Category 1: Known Risk of TdP.",
+      ),
+    );
+  }
+
+  const tz = pair(ids, (id) => id === "tizanidine", (id) => STRONG_CYP1A2_INHIBITORS.has(id));
+  if (tz) {
+    out.push(
+      hit(
+        "tizanidine-cyp1a2",
+        tz[0],
+        tz[1],
+        names(tz[0], tz[1]),
+        "contraindicated",
+        "danger",
+        "tizanidine × strong CYP1A2 inhibitor — first-pass blockade / profound hypotension & coma",
+        "Tizanidine undergoes massive presystemic hepatic CYP1A2 extraction, leaving baseline oral bioavailability at only ~2–4%. Potent CYP1A2 inhibitors abolish this first-pass clearance, elevating tizanidine AUC ~10-fold with ciprofloxacin and ~33-fold (up to >100-fold) with fluvoxamine. Concomitant administration precipitates severe central alpha-2 adrenergic toxicity: profound hypotension, bradycardia, psychomotor impairment, extreme somnolence, respiratory depression, and coma. Co-administration of tizanidine with fluvoxamine or ciprofloxacin is an absolute labeled contraindication.",
+        "Supine and standing blood pressure, heart rate, sedation depth, and respiratory/airway status. Do not co-administer; select an alternative muscle relaxant or non-CYP1A2-inhibiting antimicrobial/antidepressant. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Zanaflex (tizanidine), Cipro (ciprofloxacin), and Luvox (fluvoxamine) Prescribing Information contraindications. Granfors MT et al. Clin Pharmacol Ther 2004 (PMID 15060511; PMID 15592331).",
+      ),
+    );
+  }
+
+  const cn = pair(ids, isCniMtorSubstrate, (id) => CNI_STRONG_3A4_INHIBITORS.has(id));
+  if (cn) {
+    out.push(
+      hit(
+        "cni-strong-3a4",
+        cn[0],
+        cn[1],
+        names(cn[0], cn[1]),
+        "contraindicated",
+        "danger",
+        "CNI / mTOR immunosuppressant × strong CYP3A4 / P-gp inhibitor — catastrophic trough surge",
+        "Calcineurin inhibitors (tacrolimus, cyclosporine, voclosporin) and mTOR inhibitors (sirolimus, everolimus, temsirolimus) are narrow therapeutic index substrates of intestinal/hepatic CYP3A4 and P-glycoprotein (P-gp). Strong dual CYP3A4/P-gp inhibitors (Paxlovid [nirmatrelvir/ritonavir], ritonavir, cobicistat, voriconazole, itraconazole, posaconazole, ketoconazole, clarithromycin, nefazodone) block presystemic and hepatic clearance, triggering 5- to 50-fold trough surges. Acute supratherapeutic toxicity precipitates severe afferent arteriolar nephrotoxicity (AKI), posterior reversible encephalopathy syndrome (PRES), hyperkalemia, thrombotic microangiopathy (TMA), life-threatening neurotoxicity, opportunistic infection, and sirolimus pneumonitis. Paxlovid labeling warns to avoid/contraindicate co-administration when immunosuppressant concentrations cannot be closely monitored or adjusted under transplant specialist supervision.",
+        "Serial whole-blood immunosuppressant trough concentrations, serum creatinine, urine output, serum potassium and magnesium, blood pressure, and neurologic status (tremor, headache, visual change, encephalopathy/PRES). Immediate transplant/ID coordination is required before starting strong inhibitors. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Paxlovid Prescribing Information Boxed Warning; Prograf, Neoral, Rapamune, Zortress/Afinitor, Vfend, Sporanox, and Norvir Prescribing Information. Prikis M, Cameron A. Transplant Proc 2022 (PMID 35599203). Badri P et al. Am J Transplant 2015 (PMID 25708713).",
+      ),
+    );
+  }
+
+  const vc = pair(ids, isValproateAgent, (id) => CARBAPENEMS.has(id));
+  if (vc) {
+    out.push(
+      hit(
+        "valproate-carbapenem",
+        vc[0],
+        vc[1],
+        names(vc[0], vc[1]),
+        "major",
+        "danger",
+        "valproate × carbapenem — irreversible APEH blockade / rapid valproate crash",
+        "Carbapenem antibiotics (meropenem, ertapenem, imipenem-cilastatin, doripenem) irreversibly inhibit hepatic cytosolic acylpeptide hydrolase (APEH), preventing deconjugation of valproate-glucuronide (VPA-G) back to active valproic acid while accelerating glucuronidation and MRP-mediated renal VPA-G elimination. Serum valproate concentrations plummet by 60–90% within 24–48 hours and often remain unresponsive even to escalating valproate therapy, placing patients at high risk for breakthrough seizures and generalized status epilepticus. Depakote and carbapenem Prescribing Information advise avoiding concomitant use whenever possible.",
+        "Total and free serum valproate concentrations (note: levels crash within 24 hours despite escalation), seizure recurrence, mental status, and continuous EEG if indicated. Evaluate non-carbapenem antimicrobial coverage or alternative antiepileptic bridging under neurology/ID supervision. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Depakote (divalproex / valproate), Merrem (meropenem), Invanz (ertapenem), and Primaxin (imipenem-cilastatin) Prescribing Information. Spriet I et al. Ann Pharmacother 2007 (PMID 17609232). Suzuki E et al. Drug Metab Dispos 2010 (PMID 20551238); Xenobiotica 2011 (PMID 21770850).",
+      ),
+    );
+  }
+
+  const hk = firstHyperkalemiaRaasK(ids);
+  if (hk) {
+    out.push(
+      hit(
+        "hyperkalemia-raas-k",
+        hk[0],
+        hk[1],
+        names(hk[0], hk[1]),
+        "major",
+        "danger",
+        "RAAS blockade × K-retaining agent / ENaC blocker — additive hyperkalemia & fatal arrhythmia",
+        "ACE inhibitors, ARBs, and ARNIs suppress aldosterone-mediated distal potassium excretion; combining them with mineralocorticoid receptor antagonists (spironolactone, eplerenone, finerenone), epithelial sodium channel (ENaC) blockers (amiloride, triamterene), ENaC-blocking sulfonamides (trimethoprim, TMP-SMX), or exogenous potassium supplements — or stacking two potassium-retaining/raising agents — additively impairs renal potassium clearance in the cortical collecting duct. This multi-hit collision precipitates life-threatening hyperkalemia (serum potassium >= 6.0 mEq/L), producing progressive cardiac conduction toxicity (peaked T waves, PR prolongation, QRS widening, sine-wave pattern), ventricular fibrillation, asystole, and sudden arrhythmic death, particularly in older adults and chronic kidney disease.",
+        "Baseline and serial serum potassium (monitor closely for serum potassium >= 5.5–6.0 mEq/L), serum creatinine/eGFR, bicarbonate, and 12-lead ECG for hyperkalemic conduction changes (note: normal ECG does not exclude severe hyperkalemia). Evaluate non-hyperkalemic antimicrobial alternatives (when TMP-SMX is the trigger) or discontinue unnecessary potassium loads. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Aldactone (spironolactone), Inspra (eplerenone), Midamor (amiloride), Bactrim (TMP-SMX), Prinivil (lisinopril), Cozaar (losartan), and Entresto (sacubitril-valsartan) Prescribing Information. Antoniou T et al. Arch Intern Med 2010 (PMID 20585070); BMJ 2011 (PMID 21911446). Fralick M, Antoniou T, Juurlink DN et al. BMJ 2014 (PMID 25359996).",
       ),
     );
   }

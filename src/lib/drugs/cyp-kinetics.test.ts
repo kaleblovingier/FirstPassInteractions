@@ -47,9 +47,11 @@ describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
         "phenytoin",
         "charred-meat",
         "fluconazole",
+        "fluvoxamine",
         "ciprofloxacin",
         "quinidine",
         "st-johns-wort",
+        "tizanidine",
       ];
       for (const drugId of requiredExemplars) {
         assert.ok(
@@ -151,6 +153,7 @@ describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
       assert.ok(mode.onsetKinetics.includes("Rapid"));
       assert.ok(mode.offsetKinetics.includes("half-life") || mode.offsetKinetics.includes("clearance"));
       assert.ok(mode.exemplarDrugIds.includes("fluconazole"));
+      assert.ok(mode.exemplarDrugIds.includes("fluvoxamine"));
       assert.ok(mode.exemplarDrugIds.includes("ciprofloxacin"));
       assert.ok(mode.exemplarDrugIds.includes("quinidine"));
       assert.ok(mode.governingParameters.some((p) => p.includes("Ki")));
@@ -393,6 +396,51 @@ describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
       const result = detectTdiInductionOnTray(["charred-meat", "clozapine"]);
       assert.equal(result.hasCollision, true);
       assert.ok(result.kineticAlerts.some((a) => a.id === "pah-cessation-warning"));
+    });
+
+    it("models CYP1A2 Fluvoxamine and Ciprofloxacin competitive kinetics with Tizanidine extraction collapse and Theophylline Michaelis-Menten saturation", () => {
+      const fluv = getCompetitiveInhibitorById("fluvoxamine")!;
+      assert.ok(fluv);
+      assert.ok(fluv.targetIsoforms.includes("CYP1A2"));
+      assert.ok(fluv.kiMicromolar < 0.05, "Fluvoxamine Ki must reflect nanomolar CYP1A2 potency");
+      assert.ok(fluv.highRiskVictimSubstrates.includes("tizanidine"));
+      assert.ok(fluv.highRiskVictimSubstrates.includes("theophylline"));
+      assert.match(fluv.clinicalPearl, /33-fold/);
+      assert.match(fluv.clinicalPearl, /0\.96–0\.98/);
+
+      const cipro = getCompetitiveInhibitorById("ciprofloxacin")!;
+      assert.ok(cipro);
+      assert.ok(cipro.highRiskVictimSubstrates.includes("tizanidine"));
+      assert.match(cipro.clinicalPearl, /10-fold/);
+
+      const tiz = SENSITIVE_VICTIM_SUBSTRATES.find((v) => v.drugId === "tizanidine")!;
+      assert.ok(tiz);
+      assert.equal(tiz.primaryCyp, "CYP1A2");
+      assert.ok((tiz.hepaticExtractionRatio ?? 0) >= 0.95);
+      assert.ok((tiz.fractionMetabolizedPrimaryCyp ?? 0) >= 0.9);
+
+      const theo = SENSITIVE_VICTIM_SUBSTRATES.find((v) => v.drugId === "theophylline")!;
+      assert.ok(theo);
+      assert.match(theo.kmOrSaturationNote ?? "", /10–15 µg\/mL/);
+
+      // Trajectory test for Fluvoxamine reversible washout
+      const fluvTraj = calculateEnzymeTrajectory(["fluvoxamine"], 30, 10);
+      assert.equal(fluvTraj.dominantMechanism, "Competitive Reversible");
+      assert.ok(fluvTraj.nadirPct <= 20, "Strong Ki < 1 µM inhibition must yield <=20% nadir");
+      assert.ok(fluvTraj.points[14].activePoolPct >= 90, "Reversible washout restores >=90% within 4 days");
+
+      // Tray collision detection tests
+      const fluvTiz = detectTdiInductionOnTray(["fluvoxamine", "tizanidine"]);
+      assert.equal(fluvTiz.hasCollision, true);
+      assert.equal(fluvTiz.collisionType, "competitive-inhibition");
+      assert.ok(fluvTiz.kineticAlerts.some((a) => a.id === "competitive-victim-fluvoxamine-tizanidine" && a.severity === "critical"));
+      assert.match(fluvTiz.kineticAlerts[0].mechanism, /0\.70–0\.85/);
+
+      const ciproTheo = detectTdiInductionOnTray(["ciprofloxacin", "theophylline"]);
+      assert.equal(ciproTheo.hasCollision, true);
+      assert.equal(ciproTheo.collisionType, "competitive-inhibition");
+      assert.ok(ciproTheo.kineticAlerts.some((a) => a.id === "competitive-victim-ciprofloxacin-theophylline"));
+      assert.match(ciproTheo.kineticAlerts[0].mechanism, /zero-order saturation/i);
     });
   });
 

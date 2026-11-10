@@ -119,6 +119,8 @@ export interface CompetitiveInhibitor {
   targetIsoforms: string[];
   kiMicromolar: number;
   offsetHours: number;
+  inVivoFractionMetabolizedNote?: string;
+  extractionAndKmNotes?: string;
   clinicalPearl: string;
   highRiskVictimSubstrates: string[];
   citations: string[];
@@ -141,6 +143,9 @@ export interface SensitiveVictimSubstrate {
   name: string;
   primaryCyp: string;
   narrowTherapeuticIndex: boolean;
+  fractionMetabolizedPrimaryCyp?: number;
+  hepaticExtractionRatio?: number;
+  kmOrSaturationNote?: string;
   toxicityWithTdi: string;
   failureWithInducer: string;
 }
@@ -208,7 +213,7 @@ export interface TrayKineticsDetection {
   competitiveDrugs: CompetitiveInhibitor[];
   victimDrugs: SensitiveVictimSubstrate[];
   hasCollision: boolean;
-  collisionType: "tdi-knockout" | "nuclear-induction" | "opposing-tdi-induction" | "none";
+  collisionType: "tdi-knockout" | "nuclear-induction" | "opposing-tdi-induction" | "competitive-inhibition" | "none";
   summary: string;
   kineticAlerts: KineticAlert[];
   victimRisks: VictimRisk[];
@@ -231,7 +236,7 @@ export const MOLECULAR_MODES: readonly MolecularMode[] = [
     onsetKinetics: "Rapid (<12–24 hours), tracking perpetrator plasma absorption and Cmax",
     offsetKinetics: "Rapid (<24–48 hours), strictly paralleling perpetrator systemic elimination half-life",
     clinicalAphorism: "Clears with the drug: offset tracks systemic clearance half-life.",
-    exemplarDrugIds: ["fluconazole", "ciprofloxacin", "quinidine"],
+    exemplarDrugIds: ["fluconazole", "fluvoxamine", "ciprofloxacin", "quinidine"],
     biochemicalHallmarks: [
       "No covalent adducts or heme destruction",
       "Increases apparent Km of substrate without altering Vmax (surmountable at high substrate concentrations)",
@@ -518,15 +523,42 @@ export const COMPETITIVE_INHIBITORS: readonly CompetitiveInhibitor[] = [
     citations: ["Kunze KL, et al. Drug Metab Dispos 1996", "Niwa T, et al. Biol Pharm Bull 2005"],
   },
   {
+    drugId: "fluvoxamine",
+    name: "Fluvoxamine",
+    targetIsoforms: ["CYP1A2", "CYP2C19"],
+    kiMicromolar: 0.011,
+    offsetHours: 20,
+    inVivoFractionMetabolizedNote:
+      "Extreme reversible CYP1A2 blockade (unbound Ki ≈ 0.011 µM [11 nM]) impacting high-fm victims (tizanidine fm,CYP1A2 ≈ 0.95; clozapine fm,CYP1A2 ≈ 0.70; theophylline fm,CYP1A2 ≈ 0.75–0.85) alongside potent CYP2C19 inhibition.",
+    extractionAndKmNotes:
+      "Collapses high hepatic first-pass extraction of tizanidine (Eh ≈ 0.96–0.98; Fh jumps from 0.02–0.04 to 0.70–0.85, producing a mean 33-fold AUC and 12-fold Cmax surge). For low-extraction theophylline (Km ≈ 10–15 µg/mL), >65–70% CYP1A2 clearance loss forces elimination from pseudo-first-order into capacity-limited zero-order saturation.",
+    clinicalPearl:
+      "Nanomolar-potency reversible CYP1A2 inhibitor (unbound microsomal Ki ≈ 0.011 µM). Against high-extraction tizanidine (Eh ≈ 0.96–0.98, oral bioavailability F ≈ 2–4%), presystemic CYP1A2 blockade raises Fh toward 0.70–0.85, amplifying mean AUC 33-fold (up to 103-fold) with severe hypotension and sedation. Against capacity-limited theophylline (Km ≈ 10–15 µg/mL), >65% clearance drop saturates elimination toward zero-order kinetics. Rapid onset; reversible washout tracks plasma t1/2 (~15–22h).",
+    highRiskVictimSubstrates: ["tizanidine", "theophylline", "clozapine"],
+    citations: [
+      "Granfors MT, et al. Clin Pharmacol Ther. 2004;75(4):331-341 (PMID: 15060511)",
+      "Karjalainen MJ, et al. Basic Clin Pharmacol Toxicol. 2008;103(2):157-165",
+      "Brøsen K, et al. Biochem Pharmacol 1993",
+    ],
+  },
+  {
     drugId: "ciprofloxacin",
     name: "Ciprofloxacin",
     targetIsoforms: ["CYP1A2"],
     kiMicromolar: 12.0,
     offsetHours: 12,
+    inVivoFractionMetabolizedNote:
+      "Clinically strong-to-moderate CYP1A2 inhibition suppressing high-fm substrates (tizanidine fm,CYP1A2 ≈ 0.95; theophylline fm,CYP1A2 ≈ 0.75–0.85; clozapine).",
+    extractionAndKmNotes:
+      "Inhibits presystemic first-pass extraction of tizanidine (Eh ≈ 0.96–0.98; Fh climbs from 0.02–0.04 toward 0.30–0.45, causing a 10-fold AUC and 7-fold Cmax increase) and pushes theophylline (Km ≈ 10–15 µg/mL) toward non-linear Michaelis-Menten saturation (~30–65% clearance decline).",
     clinicalPearl:
-      "Potent reversible competitive inhibitor of CYP1A2. Fluoroquinolone ring occupies the narrow planar substrate cleft. Rapid onset within hours; rapid offset within 24 hours of discontinuation (ciprofloxacin t1/2 ~4h). Contrast with irreversible TDI or slow AhR turnover.",
-    highRiskVictimSubstrates: ["theophylline", "clozapine"],
-    citations: ["Fuhr U, et al. Clin Pharmacol Ther 1992", "McLellan RA, et al. Br J Clin Pharmacol 1996"],
+      "Potent reversible competitive inhibitor of CYP1A2 (apparent Ki ≈ 12 µM). Fluoroquinolone ring occupies the narrow planar substrate cleft, collapsing first-pass extraction of tizanidine (Eh ≈ 0.96–0.98; 10-fold AUC amplification, profound hypotension) and saturating capacity-limited theophylline clearance (Km ≈ 10–15 µg/mL). Rapid onset within hours; rapid offset within 24 hours of discontinuation (ciprofloxacin t1/2 ~4h). Contrast with irreversible TDI or slow AhR turnover.",
+    highRiskVictimSubstrates: ["tizanidine", "theophylline", "clozapine"],
+    citations: [
+      "Granfors MT, et al. Clin Pharmacol Ther. 2004;76(6):598-606 (PMID: 15592331)",
+      "Fuhr U, et al. Clin Pharmacol Ther 1992",
+      "McLellan RA, et al. Br J Clin Pharmacol 1996",
+    ],
   },
   {
     drugId: "quinidine",
@@ -638,8 +670,27 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Theophylline",
     primaryCyp: "CYP1A2",
     narrowTherapeuticIndex: true,
-    toxicityWithTdi: "Tachyarrhythmias, intractable seizures, vomiting",
+    fractionMetabolizedPrimaryCyp: 0.80,
+    hepaticExtractionRatio: 0.08,
+    kmOrSaturationNote:
+      "Capacity-limited Michaelis-Menten elimination (Km ≈ 10–15 µg/mL; fm,CYP1A2 ≈ 0.75–0.85). Above ~15 µg/mL or under >60–75% CYP1A2 clearance collapse (fluvoxamine, ciprofloxacin), kinetics shift from pseudo-first-order to near zero-order accumulation.",
+    toxicityWithTdi:
+      "Tachyarrhythmias, intractable seizures, hypokalemia, and persistent vomiting driven by non-linear zero-order accumulation above Km (10–15 µg/mL) when CYP1A2 clearance collapses (>60–75% reduction)",
     failureWithInducer: "Severe bronchospasm and acute asthma/COPD exacerbation",
+  },
+  {
+    drugId: "tizanidine",
+    name: "Tizanidine",
+    primaryCyp: "CYP1A2",
+    narrowTherapeuticIndex: true,
+    fractionMetabolizedPrimaryCyp: 0.95,
+    hepaticExtractionRatio: 0.97,
+    kmOrSaturationNote:
+      "Extreme high hepatic first-pass extraction (Eh ≈ 0.96–0.98; Fh ≈ 0.02–0.04; fm,CYP1A2 ≈ 0.95). CYP1A2 blockade flips hepatic bioavailability Fh = 1 - Eh toward 0.70–0.85, producing 10-fold (ciprofloxacin) to 33-fold (fluvoxamine) AUC surges.",
+    toxicityWithTdi:
+      "Profound arterial hypotension (SBP <= 80 mmHg), bradycardia, deep CNS somnolence, and psychomotor collapse from presystemic first-pass escape (Eh ≈ 0.96–0.98 -> Fh 0.70–0.85; 10x to 33x AUC increase)",
+    failureWithInducer:
+      "Loss of spasticity relief and accelerated presystemic CYP1A2 extraction under AhR induction (smoking/PAHs)",
   },
   {
     drugId: "clozapine",
@@ -682,6 +733,7 @@ export const ALL_REFERENCED_DRUG_IDS: readonly string[] = [
   "phenytoin",
   "charred-meat",
   "fluconazole",
+  "fluvoxamine",
   "ciprofloxacin",
   "quinidine",
   "midazolam",
@@ -689,6 +741,7 @@ export const ALL_REFERENCED_DRUG_IDS: readonly string[] = [
   "tacrolimus",
   "warfarin",
   "theophylline",
+  "tizanidine",
   "clozapine",
   "bupropion",
   "metoprolol",
@@ -1165,6 +1218,37 @@ export function detectTdiInductionOnTray(drugIds: string[]): TrayKineticsDetecti
     }
   }
 
+  // Check for Competitive Inhibitor + Sensitive Victim
+  for (const comp of competitiveDrugs) {
+    for (const victim of victimDrugs) {
+      if (comp.highRiskVictimSubstrates.includes(victim.drugId) || comp.targetIsoforms.some((iso) => victim.primaryCyp.includes(iso))) {
+        const isHighExtractionCollapse = victim.hepaticExtractionRatio !== undefined && victim.hepaticExtractionRatio >= 0.9;
+        const isNonlinearSaturation = victim.drugId === "theophylline";
+        const mechanisticNote = isHighExtractionCollapse
+          ? `${comp.name} (Ki = ${comp.kiMicromolar} µM) suppresses ${victim.primaryCyp} presystemic clearance of high-extraction ${victim.name} (Eh ≈ ${victim.hepaticExtractionRatio}; baseline Fh ≈ 0.02–0.04), driving first-pass escape toward Fh ≈ 0.70–0.85 and 10- to 33-fold AUC surges.`
+          : isNonlinearSaturation
+            ? `${comp.name} (Ki = ${comp.kiMicromolar} µM) reversibly inhibits ${victim.primaryCyp} oxidation of ${victim.name} (Km ≈ 10–15 µg/mL), collapsing clearance by >60–75% and shifting elimination from pseudo-first-order toward non-linear zero-order saturation.`
+            : `${comp.name} (Ki = ${comp.kiMicromolar} µM) competitively inhibits ${victim.primaryCyp}-mediated clearance of ${victim.name}, elevating exposure while present in plasma (offset tracks perpetrator half-life).`;
+        kineticAlerts.push({
+          id: `competitive-victim-${comp.drugId}-${victim.drugId}`,
+          severity: victim.narrowTherapeuticIndex || comp.kiMicromolar < 1 ? "critical" : "warning",
+          title: `Competitive CYP Inhibition Collision: ${comp.name} + ${victim.name}`,
+          mechanism: mechanisticNote,
+          action: `Monitor closely for ${victim.toxicityWithTdi}. Competitive blockade tracks ${comp.name} systemic clearance (~${comp.offsetHours}h washout half-life); evaluate non-interacting alternatives.`,
+          involvedDrugIds: [comp.drugId, victim.drugId],
+        });
+        victimRisks.push({
+          victimId: victim.drugId,
+          victimName: victim.name,
+          perpetratorId: comp.drugId,
+          perpetratorName: comp.name,
+          consequence: victim.toxicityWithTdi,
+          recommendation: "Evaluate non-interacting therapeutic alternatives or apply intensive serum concentration and hemodynamic/toxicity monitoring during co-exposure.",
+        });
+      }
+    }
+  }
+
   // Check for AhR PAH Cessation Alert
   if (normIds.includes("charred-meat") && victimDrugs.some((v) => v.primaryCyp === "CYP1A2")) {
     const clozapineTheoph = victimDrugs.filter((v) => v.primaryCyp === "CYP1A2");
@@ -1186,6 +1270,8 @@ export function detectTdiInductionOnTray(drugIds: string[]): TrayKineticsDetecti
     collisionType = "tdi-knockout";
   } else if (inducerDrugs.length > 0 && victimDrugs.length > 0) {
     collisionType = "nuclear-induction";
+  } else if (competitiveDrugs.length > 0 && victimDrugs.length > 0 && kineticAlerts.length > 0) {
+    collisionType = "competitive-inhibition";
   }
 
   let summary = "";

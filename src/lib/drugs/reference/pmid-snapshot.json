@@ -413,6 +413,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "15060511",
+  "year": 2004,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Fluvoxamine drastically increases concentrations and effects of tizanidine: a potentially hazardous interaction.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "15319342",
   "year": 2004,
   "journal": "Drug Metab Dispos",
@@ -728,6 +735,20 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "20551238",
+  "year": 2010,
+  "journal": "Drug Metab Dispos",
+  "title": "Identification of valproic acid glucuronide hydrolase as a key enzyme for the interaction of valproic acid with carbapenem antibiotics.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "20585070",
+  "year": 2010,
+  "journal": "Arch Intern Med",
+  "title": "Trimethoprim-sulfamethoxazole-induced hyperkalemia in patients receiving inhibitors of the renin-angiotensin system: a population-based study.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "21142534",
   "year": 2010,
   "journal": "N Engl J Med",
@@ -749,10 +770,24 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "21770850",
+  "year": 2011,
+  "journal": "Xenobiotica",
+  "title": "Inhibition mechanism of carbapenem antibiotics on acylpeptide hydrolase, a key enzyme in the interaction with valproic acid.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "21870106",
   "year": 2012,
   "journal": "Eur J Clin Pharmacol",
   "title": "Repeated administration of berberine inhibits cytochromes P450 in humans.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "21911446",
+  "year": 2011,
+  "journal": "BMJ",
+  "title": "Trimethoprim-sulfamethoxazole induced hyperkalaemia in elderly patients receiving spironolactone: nested case-control study.",
   "checked": "2026-11-10"
  },
  {
@@ -875,10 +910,31 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "25359996",
+  "year": 2014,
+  "journal": "BMJ",
+  "title": "Co-trimoxazole and sudden death in patients receiving inhibitors of renin-angiotensin system: population based study.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "25669762",
   "year": 2015,
   "journal": "Clin Pharmacol Ther",
   "title": "Novel bioequivalence approach for narrow therapeutic index drugs.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "25708713",
+  "year": 2015,
+  "journal": "Am J Transplant",
+  "title": "Pharmacokinetics and dose recommendations for cyclosporine and tacrolimus when coadministered with ABT-450, ombitasvir, and dasabuvir.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "25801146",
+  "year": 2015,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Clinical Pharmacogenetics Implementation Consortium (CPIC) Guidelines for CYP3A5 Genotype and Tacrolimus Dosing.",
   "checked": "2026-11-10"
  },
  {
@@ -900,6 +956,13 @@
   "year": 2015,
   "journal": "Gastroenterology",
   "title": "Extreme bradycardia after first doses of sofosbuvir and daclatasvir in patients receiving amiodarone: 2 cases including a rechallenge.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "26417955",
+  "year": 2016,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Clinical Pharmacogenetics Implementation Consortium (CPIC) Guideline for UGT1A1 and Atazanavir Prescribing.",
   "checked": "2026-11-10"
  },
  {
@@ -1155,6 +1218,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "35599203",
+  "year": 2022,
+  "journal": "Transplant Proc",
+  "title": "Paxlovid (Nirmatelvir/Ritonavir) and Tacrolimus Drug-Drug Interaction in a Kidney Transplant Patient with SARS-2-CoV infection: A Case Report.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "35840540",
   "year": 2023,
   "journal": "J Pharm Pract",
@@ -1166,6 +1236,13 @@
   "year": 2022,
   "journal": "MMWR Recomm Rep",
   "title": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain - United States, 2022.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "36443477",
+  "year": 2022,
+  "journal": "Sci Rep",
+  "title": "Clinical application of 3D-Slicer + 3D printing guide combined with transcranial neuroendoscopic in minimally invasive neurosurgery.",
   "checked": "2026-11-10"
  },
  {
@@ -1201,6 +1278,13 @@
   "year": 2023,
   "journal": "J Am Geriatr Soc",
   "title": "American Geriatrics Society 2023 updated AGS Beers Criteria® for potentially inappropriate medication use in older adults.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "37924724",
+  "year": 2023,
+  "journal": "Drug Metab Pharmacokinet",
+  "title": "A model-based pharmacokinetic assessment of drug-drug interaction between tacrolimus and nirmatrelvir/ritonavir in a kidney transplant patient with COVID-19.",
   "checked": "2026-11-10"
  },
  {
