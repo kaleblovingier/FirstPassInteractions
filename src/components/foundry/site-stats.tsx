@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Activity, BarChart2, Check, Download, Eye, Globe, Smartphone, Users } from "lucide-react";
 import {
   type SiteStats,
@@ -51,29 +51,32 @@ export function SiteStatsDesk({ pin, initialStats = null }: SiteStatsDeskProps) 
     }
   }
 
-  async function loadStats(targetDays = days) {
-    if (!pin) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await getSiteStats({ data: { pin, days: targetDays } });
-      if (res.ok) {
-        setStats(res.stats);
-      } else {
-        setError(res.reason);
+  const loadStats = useCallback(
+    async (targetDays = days) => {
+      if (!pin) return;
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await getSiteStats({ data: { pin, days: targetDays } });
+        if (res.ok) {
+          setStats(res.stats);
+        } else {
+          setError(res.reason);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load visitor statistics.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load visitor statistics.");
-    } finally {
-      setLoading(false);
-    }
-  }
+    },
+    [pin, days],
+  );
 
   useEffect(() => {
     if (pin) {
       void loadStats(days);
     }
-  }, [pin, days]);
+  }, [pin, days, loadStats]);
 
   function handleExportJson() {
     if (!stats || !stats.enabled) return;

@@ -103,13 +103,18 @@ export const DEVELOPERS_LIMITS: readonly DevelopersLimitRow[] = [
 ];
 
 export const DEVELOPERS_LIMITS_NOTE =
-  "Limits are a sliding window. Every limited answer carries RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset and RateLimit-Policy headers. Over the limit you get a 429 with a Retry-After header in seconds. These limits are a draft and may change before keys are issued widely.";
+  "Limits are a sliding window. Every limited answer carries RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset and RateLimit-Policy headers, and API responses carry Cache-Control: no-store and X-Content-Type-Options: nosniff. Over the limit you get a 429 with a Retry-After header in seconds. These limits are a draft and may change before keys are issued widely.";
 
 export const DEVELOPERS_ERRORS: { status: string; when: string }[] = [
-  { status: "400", when: "The body is not JSON, or it is too large." },
+  { status: "400", when: "The POST body is malformed JSON or exceeds the 1,000-node item budget." },
   { status: "401", when: "The key is malformed, does not verify or has ended. Carries a WWW-Authenticate header." },
   { status: "404", when: "No drug matched, or the endpoint does not exist." },
-  { status: "405", when: "Wrong method for the endpoint." },
+  { status: "405", when: "Wrong method for the endpoint. Carries an Allow header listing supported methods." },
+  { status: "413", when: "The POST body exceeds the 10 MiB transport limit." },
+  {
+    status: "415",
+    when: "Unsupported Media Type: when a POST request includes a Content-Type header, it must be application/json.",
+  },
   { status: "422", when: "The body failed validation. invalidParams names each field." },
   { status: "429", when: "Over the rate limit. Wait the Retry-After seconds." },
   { status: "503", when: "Keys cannot be checked right now. Calls without a key still work." },
@@ -125,7 +130,7 @@ export const DEVELOPERS_ERROR_SHAPE = `{
 }`;
 
 export const DEVELOPERS_ERRORS_NOTE =
-  "Errors are RFC 7807 problem details, sent as application/problem+json.";
+  "Errors are RFC 7807 problem details, sent as application/problem+json with Cache-Control: no-store and X-Content-Type-Options: nosniff.";
 
 export const DEVELOPERS_INTEGRATION_RULES: string[] = [
   "Show each finding's basis (its mechanism and sources) next to the finding. A grade on its own is not enough.",

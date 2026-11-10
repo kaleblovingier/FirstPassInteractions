@@ -17,11 +17,29 @@ import {
 import { buildClinicalPacket, reversalLine, withoutDose, type ClinicalPacketData } from "@/lib/drugs/clinical-packet";
 import { EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
 import { NOT_CLEARED, PI_FOOTER } from "@/lib/regulatory";
-import { SEVERITY_HINT, SEVERITY_PLAIN } from "@/lib/drugs/types";
-import type { Finding, HostContext } from "@/lib/drugs/types";
+import { SEVERITY_PLAIN } from "@/lib/drugs/types";
+import type { Finding, HostContext, Severity } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { useModalFocus } from "@/lib/a11y/use-modal-focus";
 import { Button } from "@/components/ui/button";
+
+export interface LabeledCollisionAlertItem {
+  id: string;
+  kind: "safety" | "ward";
+  title: string;
+  severity: Severity;
+  tone: "danger" | "warn";
+  mechanism: string;
+  clinical: string;
+  watch: string;
+  source: string;
+}
+
+type PacketWithLabeledCollisions = ClinicalPacketData & {
+  labeledCollisions?: readonly LabeledCollisionAlertItem[];
+};
+
+const EMPTY_DOSES: Record<string, string> = {};
 
 interface ClinicalPacketDialogProps {
   open: boolean;
@@ -42,13 +60,98 @@ const CHECKLIST_ITEMS = [
   { id: "naloxone", label: "Overdose risk assessed and take-home naloxone co-prescribed / access confirmed" },
 ];
 
+export function LabeledCollisionsSection({
+  items,
+}: {
+  items: readonly LabeledCollisionAlertItem[];
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <section
+      aria-labelledby="packet-labeled-collisions-title"
+      className="print-break-inside min-w-0 space-y-3 rounded-xl border border-border bg-surface p-4"
+    >
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <ShieldAlert className="size-4 shrink-0 text-danger" aria-hidden="true" />
+          <h3
+            id="packet-labeled-collisions-title"
+            className="min-w-0 font-serif text-base font-semibold text-fg [overflow-wrap:anywhere]"
+          >
+            High-Alert Labeled &amp; Institutional Safety Collisions
+          </h3>
+        </div>
+        <span className="shrink-0 rounded-full border border-danger bg-danger-soft px-2.5 py-0.5 font-mono text-[11px] font-semibold text-danger">
+          {items.length} alert{items.length === 1 ? "" : "s"}
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        {items.map((item) => {
+          const isDanger = item.tone === "danger";
+          const Icon = isDanger ? ShieldAlert : AlertTriangle;
+          const severityLabel = SEVERITY_PLAIN[item.severity];
+          const kindLabel = item.kind === "ward" ? "Institutional Safety Rail" : "Labeled Safety Collision";
+          return (
+            <article
+              key={item.id}
+              className={cn(
+                "min-w-0 rounded-xl border p-3.5 text-xs",
+                isDanger ? "border-danger bg-danger-soft" : "border-warn bg-warn-soft",
+              )}
+            >
+              <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
+                <h4 className="min-w-0 flex-1 font-serif text-sm font-semibold text-fg [overflow-wrap:anywhere]">
+                  {item.title}
+                </h4>
+                <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded border bg-surface px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide",
+                      isDanger ? "border-danger text-danger" : "border-warn text-warn",
+                    )}
+                  >
+                    <Icon className="size-3 shrink-0" aria-hidden="true" />
+                    <span>{severityLabel}</span>
+                  </span>
+                  <span className="rounded border border-border bg-surface px-2 py-0.5 font-mono text-[10px] font-medium text-muted">
+                    {kindLabel}
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-2 leading-relaxed text-fg [overflow-wrap:anywhere]">
+                <strong className="font-semibold">Mechanism: </strong>
+                {withoutDose(item.mechanism)}
+              </p>
+
+              <div className="mt-2 rounded-lg border border-border bg-surface p-2.5 leading-relaxed text-fg [overflow-wrap:anywhere]">
+                <strong className="font-mono text-[10px] uppercase tracking-wider text-accent">
+                  Bedside Watch:{" "}
+                </strong>
+                <span>{withoutDose(item.watch)}</span>
+              </div>
+
+              <p className="mt-2 text-[11px] leading-relaxed text-muted [overflow-wrap:anywhere]">
+                <strong className="font-medium text-fg">Official PI Source: </strong>
+                {item.source}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export function ClinicalPacketDialog({
   open,
   onClose,
   selected,
   host,
   findings,
-  doses = {},
+  doses = EMPTY_DOSES,
   onOpenHelp,
 }: ClinicalPacketDialogProps) {
   const [copiedState, setCopiedState] = useState<"ehr" | "handout" | null>(null);
@@ -63,7 +166,9 @@ export function ClinicalPacketDialog({
 
   const packet: ClinicalPacketData = useMemo(() => {
     return buildClinicalPacket(selected, host, findings, doses, { activeBleeding, activeTdp });
-  }, [selected.join("|"), JSON.stringify(host), findings, JSON.stringify(doses), activeBleeding, activeTdp]);
+  }, [selected, host, findings, doses, activeBleeding, activeTdp]);
+
+  const labeledCollisions = (packet as PacketWithLabeledCollisions).labeledCollisions ?? [];
 
   // Focus moves in on open, Tab stays inside, Escape closes, focus returns to the opener.
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -139,68 +244,86 @@ export function ClinicalPacketDialog({
         }
       `}</style>
 
-      <div className="relative flex max-h-[92vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-surface shadow-2xl print-dialog-card">
+      <div className="relative flex max-h-[92vh] w-full max-w-4xl min-w-0 flex-col rounded-2xl border border-border bg-surface shadow-2xl print-dialog-card">
+        <span role="status" aria-live="polite" className="sr-only">
+          {copiedState === "ehr"
+            ? "EHR Note copied to clipboard"
+            : copiedState === "handout"
+              ? "Patient Medication Guide copied to clipboard"
+              : ""}
+        </span>
         {/* Sticky Utility Header */}
-        <div className="no-print sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface/95 px-5 py-3.5 backdrop-blur-sm rounded-t-2xl">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-accent-soft text-accent">
-              <FileText className="size-4" />
+        <div className="no-print sticky top-0 z-10 flex min-w-0 flex-wrap items-center justify-between gap-2.5 border-b border-border bg-surface/95 px-4 py-3 sm:px-5 sm:py-3.5 backdrop-blur-sm rounded-t-2xl">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent">
+              <FileText className="size-4" aria-hidden="true" />
             </div>
-            <div>
-              <h2 id="packet-dialog-title" className="font-serif text-lg font-medium text-fg">
+            <div className="min-w-0">
+              <h2 id="packet-dialog-title" className="font-serif text-lg font-medium text-fg [overflow-wrap:anywhere]">
                 Clinical Sign-Off Packet
               </h2>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted">
-                Pre-Visit Regimen Review & Consultation Document
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted [overflow-wrap:anywhere]">
+                Pre-Visit Regimen Review &amp; Consultation Document
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={handlePrint}
-              className="h-8 gap-1.5 text-xs font-medium"
+              className="h-auto min-h-[44px] sm:min-h-8 sm:h-8 gap-1.5 whitespace-normal py-1.5 text-center text-xs font-medium [overflow-wrap:anywhere]"
             >
-              <Printer className="size-3.5" />
-              Print / Save PDF
+              <Printer className="size-3.5 shrink-0" aria-hidden="true" />
+              <span>Print / Save PDF</span>
             </Button>
 
             <Button
+              type="button"
               variant="secondary"
               size="sm"
               onClick={() => copyToClipboard("ehr", packet.ehrNoteText)}
-              className="h-8 gap-1.5 text-xs font-medium"
+              className="h-auto min-h-[44px] sm:min-h-8 sm:h-8 gap-1.5 whitespace-normal py-1.5 text-center text-xs font-medium [overflow-wrap:anywhere]"
             >
-              {copiedState === "ehr" ? <Check className="size-3.5 text-accent" /> : <Clipboard className="size-3.5" />}
-              {copiedState === "ehr" ? "Copied EHR Note!" : "Copy EHR Note"}
+              {copiedState === "ehr" ? (
+                <Check className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
+              ) : (
+                <Clipboard className="size-3.5 shrink-0" aria-hidden="true" />
+              )}
+              <span>{copiedState === "ehr" ? "Copied EHR Note!" : "Copy EHR Note"}</span>
             </Button>
 
             <Button
+              type="button"
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard("handout", packet.patientHandoutText)}
-              className="h-8 gap-1.5 text-xs font-medium text-muted hover:text-fg"
+              className="h-auto min-h-[44px] sm:min-h-8 sm:h-8 gap-1.5 whitespace-normal py-1.5 text-center text-xs font-medium text-muted hover:text-fg [overflow-wrap:anywhere]"
             >
-              {copiedState === "handout" ? <Check className="size-3.5 text-accent" /> : <Clipboard className="size-3.5" />}
-              {copiedState === "handout" ? "Copied Handout!" : "Patient Handout"}
+              {copiedState === "handout" ? (
+                <Check className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
+              ) : (
+                <Clipboard className="size-3.5 shrink-0" aria-hidden="true" />
+              )}
+              <span>{copiedState === "handout" ? "Copied Handout!" : "Patient Handout"}</span>
             </Button>
 
             <button
               type="button"
               onClick={onClose}
               aria-label="Close clinical packet"
-              className="ml-1 inline-flex size-8 items-center justify-center rounded-full text-muted hover:bg-bg-sunken hover:text-fg"
+              className="ml-1 inline-flex size-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full text-muted hover:bg-bg-sunken hover:text-fg sm:size-8 sm:min-h-8 sm:min-w-8"
             >
-              <X className="size-4" />
+              <X className="size-4" aria-hidden="true" />
             </button>
           </div>
         </div>
 
         {/* Scrollable Packet Body */}
-        <div className="space-y-6 overflow-y-auto p-5 sm:p-7 text-fg leading-relaxed">
-          <div className="no-print flex flex-wrap items-center gap-2 text-xs">
+        <div className="min-w-0 space-y-6 overflow-y-auto p-4 sm:p-7 text-fg leading-relaxed">
+          <div className="no-print flex min-w-0 flex-wrap items-center gap-2 text-xs">
             <span className="text-muted">Mark only if present now:</span>
             {([
               ["Active bleeding", activeBleeding, setActiveBleeding],
@@ -212,7 +335,7 @@ export function ClinicalPacketDialog({
                 aria-pressed={on}
                 onClick={() => set(!on)}
                 className={cn(
-                  "rounded-full border px-3 py-1.5 font-medium",
+                  "min-h-[44px] sm:min-h-0 rounded-full border px-3 py-1.5 text-left font-medium [overflow-wrap:anywhere]",
                   on ? "border-danger bg-danger-soft text-danger" : "border-border bg-bg-sunken text-muted",
                 )}
               >
@@ -223,17 +346,19 @@ export function ClinicalPacketDialog({
           </div>
 
           {/* Document Header & Regulatory Guardrail */}
-          <div className="border-b border-border pb-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <div>
+          <div className="min-w-0 border-b border-border pb-4">
+            <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
+              <div className="min-w-0">
                 <p className="font-mono text-xs uppercase tracking-widest text-accent">FirstPass Clinical Pharmacology</p>
-                <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-fg">
-                  Regimen Interaction Analysis & Sign-Off Summary
+                <h1 className="mt-1 font-serif text-2xl font-bold tracking-tight text-fg [overflow-wrap:anywhere]">
+                  Regimen Interaction Analysis &amp; Sign-Off Summary
                 </h1>
               </div>
-              <div className="text-right">
+              <div className="min-w-0 text-left sm:text-right">
                 <p className="font-mono text-xs text-muted">Generated: {packet.generatedAt}</p>
-                <p className="font-mono text-[11px] text-subtle">Review ID: FP-PKT-{packet.encounterDate.replace(/\s+/g, "-")}</p>
+                <p className="font-mono text-[11px] text-subtle [overflow-wrap:anywhere]">
+                  Review ID: FP-PKT-{packet.encounterDate.replace(/\s+/g, "-")}
+                </p>
               </div>
             </div>
 
@@ -242,6 +367,9 @@ export function ClinicalPacketDialog({
               This packet is an educational interaction and risk assessment reference for licensed healthcare professionals and supervised trainees. It does not replace individualized clinical judgment, complete health records, or current FDA-approved Prescribing Information. Product labeling and the attending clinician govern.
             </aside>
           </div>
+
+          {/* High-Alert Labeled & Institutional Safety Collisions */}
+          <LabeledCollisionsSection items={labeledCollisions} />
 
           {/* Section 1: Modeled Host Context & CPIC Phenotypes */}
           <section className="print-break-inside space-y-3">
@@ -600,10 +728,10 @@ export function ClinicalPacketDialog({
           </section>
 
           {/* Section 4: Collision Triage */}
-          <section className="print-break-inside space-y-3">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="size-4 text-accent" />
-              <h3 className="font-serif text-base font-semibold text-fg">
+          <section className="print-break-inside min-w-0 space-y-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <AlertTriangle className="size-4 shrink-0 text-accent" aria-hidden="true" />
+              <h3 className="min-w-0 font-serif text-base font-semibold text-fg [overflow-wrap:anywhere]">
                 4. Pharmacological Collision Triage ({findings.length} mapped findings)
               </h3>
             </div>
@@ -615,49 +743,49 @@ export function ClinicalPacketDialog({
             ) : (
               <div className="space-y-2.5">
                 {packet.collisions.contraindicated.map((f) => (
-                  <div key={f.id} className="rounded-lg border border-danger/30 bg-danger-soft/20 p-3 text-xs">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-semibold text-fg">{f.headline}</span>
-                      <span className="font-mono text-[10px] uppercase font-bold text-danger">Avoid together</span>
+                  <div key={f.id} className="min-w-0 rounded-lg border border-danger/30 bg-danger-soft/20 p-3 text-xs">
+                    <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
+                      <span className="min-w-0 font-semibold text-fg [overflow-wrap:anywhere]">{f.headline}</span>
+                      <span className="shrink-0 font-mono text-[10px] uppercase font-bold text-danger">Avoid together</span>
                     </div>
-                    <p className="mt-1 text-muted">
+                    <p className="mt-1 text-muted [overflow-wrap:anywhere]">
                       <strong className="text-fg">Mechanism: </strong>
                       {f.mechanism}
                     </p>
-                    <p className="mt-0.5 text-fg">
+                    <p className="mt-0.5 text-fg [overflow-wrap:anywhere]">
                       <strong className="text-accent">Clinical Watch: </strong>
                       {f.clinical}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-subtle">Source: {findingSourceLine(f)}</p>
+                    <p className="mt-0.5 text-[11px] text-subtle [overflow-wrap:anywhere]">Source: {findingSourceLine(f)}</p>
                   </div>
                 ))}
 
                 {packet.collisions.major.map((f) => (
-                  <div key={f.id} className="rounded-lg border border-warn/30 bg-warn-soft/20 p-3 text-xs">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-semibold text-fg">{f.headline}</span>
-                      <span className="font-mono text-[10px] uppercase font-bold text-warn">Serious concern</span>
+                  <div key={f.id} className="min-w-0 rounded-lg border border-warn/30 bg-warn-soft/20 p-3 text-xs">
+                    <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
+                      <span className="min-w-0 font-semibold text-fg [overflow-wrap:anywhere]">{f.headline}</span>
+                      <span className="shrink-0 font-mono text-[10px] uppercase font-bold text-warn">Serious concern</span>
                     </div>
-                    <p className="mt-1 text-muted">
+                    <p className="mt-1 text-muted [overflow-wrap:anywhere]">
                       <strong className="text-fg">Mechanism: </strong>
                       {f.mechanism}
                     </p>
-                    <p className="mt-0.5 text-fg">
+                    <p className="mt-0.5 text-fg [overflow-wrap:anywhere]">
                       <strong className="text-accent">Clinical Watch: </strong>
                       {f.clinical}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-subtle">Source: {findingSourceLine(f)}</p>
+                    <p className="mt-0.5 text-[11px] text-subtle [overflow-wrap:anywhere]">Source: {findingSourceLine(f)}</p>
                   </div>
                 ))}
 
                 {packet.collisions.moderate.map((f) => (
-                  <div key={f.id} className="rounded-lg border border-border bg-bg-sunken p-2.5 text-xs">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-medium text-fg">{f.headline}</span>
-                      <span className="font-mono text-[10px] uppercase text-muted">Use care</span>
+                  <div key={f.id} className="min-w-0 rounded-lg border border-border bg-bg-sunken p-2.5 text-xs">
+                    <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-2">
+                      <span className="min-w-0 font-medium text-fg [overflow-wrap:anywhere]">{f.headline}</span>
+                      <span className="shrink-0 font-mono text-[10px] uppercase text-muted">Use care</span>
                     </div>
-                    <p className="mt-0.5 text-muted">{f.clinical}</p>
-                    <p className="mt-0.5 text-[11px] text-subtle">Source: {findingSourceLine(f)}</p>
+                    <p className="mt-0.5 text-muted [overflow-wrap:anywhere]">{f.clinical}</p>
+                    <p className="mt-0.5 text-[11px] text-subtle [overflow-wrap:anywhere]">Source: {findingSourceLine(f)}</p>
                   </div>
                 ))}
               </div>
@@ -770,15 +898,27 @@ export function ClinicalPacketDialog({
         </div>
 
         {/* Footer actions */}
-        <div className="no-print flex flex-wrap items-center justify-between gap-3 border-t border-border bg-surface/90 px-5 py-3 rounded-b-2xl">
-          <p className="text-[11px] text-muted">
+        <div className="no-print flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-border bg-surface/90 px-4 py-3 sm:px-5 rounded-b-2xl">
+          <p className="min-w-0 text-[11px] text-muted">
             Ready to chart? Copy the structured EHR Note to paste directly into Epic, Cerner, or Athena.
           </p>
-          <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={() => copyToClipboard("ehr", packet.ehrNoteText)}>
+          <div className="flex w-full min-w-0 flex-wrap gap-2 sm:w-auto">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="h-auto min-h-[44px] flex-1 whitespace-normal py-2 text-center [overflow-wrap:anywhere] sm:min-h-9 sm:flex-initial"
+              onClick={() => copyToClipboard("ehr", packet.ehrNoteText)}
+            >
               {copiedState === "ehr" ? "Copied EHR Note!" : "Copy EHR Note"}
             </Button>
-            <Button variant="outline" size="sm" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-auto min-h-[44px] flex-1 whitespace-normal py-2 text-center [overflow-wrap:anywhere] sm:min-h-9 sm:flex-initial"
+              onClick={onClose}
+            >
               Done
             </Button>
           </div>

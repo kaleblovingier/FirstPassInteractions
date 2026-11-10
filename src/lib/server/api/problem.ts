@@ -111,6 +111,20 @@ export function problemUnauthorized(detail: string, instance?: string): ProblemD
   });
 }
 
+export function problemPayloadTooLarge(detail: string, instance?: string): ProblemDetails {
+  return createProblemDetails(413, "Payload Too Large", detail, {
+    type: "https://firstpass.app/errors/payload-too-large",
+    instance,
+  });
+}
+
+export function problemUnsupportedMediaType(detail: string, instance?: string): ProblemDetails {
+  return createProblemDetails(415, "Unsupported Media Type", detail, {
+    type: "https://firstpass.app/errors/unsupported-media-type",
+    instance,
+  });
+}
+
 export function problemTooManyRequests(detail: string, instance?: string): ProblemDetails {
   return createProblemDetails(429, "Too Many Requests", detail, {
     type: "https://firstpass.app/errors/rate-limited",

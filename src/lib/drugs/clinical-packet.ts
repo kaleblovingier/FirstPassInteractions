@@ -17,6 +17,8 @@ import { deriveTisdaleDefaults, evaluateTisdaleScore, type TisdaleResult } from 
 import { doacReportOnDesk, type DoacReport, type ReversalEvaluation } from "./doac";
 import { potassiumReportOnDesk, potassiumOnDesk, type PotassiumEvaluation } from "./potassium";
 import { sglt2ReportOnDesk, sglt2OnDesk, type Sglt2Report } from "./sglt2";
+import { safetyOnDesk, type SafetyHit } from "./safety";
+import { wardsOnDesk, type WardHit } from "./wards";
 import { plainLanguageSummary } from "./interaction-summary";
 import {
   AGE_LABEL,
@@ -29,6 +31,7 @@ import {
   PHENOTYPE_ENZYMES,
   PREG_LABEL,
   SEVERITY_LABEL,
+  SEVERITY_RANK,
   type EnzymeRole,
   type Finding,
   type HostContext,
@@ -118,6 +121,18 @@ export interface ClinicalRiskIndexes {
   };
 }
 
+export interface LabeledCollisionAlert {
+  id: string;
+  kind: "safety" | "ward";
+  title: string;
+  severity: Severity;
+  tone: "danger" | "warn";
+  mechanism: string;
+  clinical: string;
+  watch: string;
+  source: string;
+}
+
 export interface ClinicalPacketData {
   generatedAt: string;
   encounterDate: string;
@@ -144,6 +159,7 @@ export interface ClinicalPacketData {
     moderate: Finding[];
     minor: Finding[];
   };
+  labeledCollisions?: LabeledCollisionAlert[];
   counselingPoints: string[];
   ehrNoteText: string;
   patientHandoutText: string;

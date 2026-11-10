@@ -67,9 +67,30 @@ describe("/developers", () => {
     assert.match(body, /x-api-key/);
     assert.ok(body.includes(`${API_LIMITS.anonymous.max} requests per minute, per address`));
     for (const t of API_TIERS) assert.ok(body.includes(`${API_LIMITS[t.id].max.toLocaleString("en-US")} requests per minute, per key`), t.id);
-    for (const s of ["401", "429", "Retry-After", "RateLimit-Remaining", "application/problem+json", "RFC 7807"]) {
+    for (const s of [
+      "400",
+      "401",
+      "404",
+      "405",
+      "Allow",
+      "413",
+      "10 MiB",
+      "415",
+      "Content-Type",
+      "application/json",
+      "422",
+      "429",
+      "503",
+      "Retry-After",
+      "RateLimit-Remaining",
+      "Cache-Control: no-store",
+      "X-Content-Type-Options: nosniff",
+      "application/problem+json",
+      "RFC 7807",
+    ]) {
       assert.ok(body.includes(s), s);
     }
+    assert.match(body, /1,000-node item budget/);
   });
 
   it("has no prices: licensing goes to the FirstPass mailbox", () => {
