@@ -143,7 +143,11 @@ export type SafetyKind =
   | "tizanidine-cyp1a2"
   | "cni-strong-3a4"
   | "valproate-carbapenem"
-  | "hyperkalemia-raas-k";
+  | "hyperkalemia-raas-k"
+  | "ergot-strong-3a4"
+  | "maoi-tyramine-sympathomimetic"
+  | "amiodarone-warfarin"
+  | "isoniazid-acetaminophen";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -790,6 +794,98 @@ function firstHyperkalemiaRaasK(ids: string[]): [string, string] | null {
   return null;
 }
 
+export const ERGOT_ALKALOIDS = new Set([
+  "ergotamine",
+  "dihydroergotamine",
+  "methylergonovine",
+]);
+
+export const ERGOT_EXTRA_3A4_INHIBITORS = new Set([
+  "erythromycin",
+  "darunavir",
+  "atazanavir",
+  "lopinavir",
+  "indinavir",
+  "nelfinavir",
+  "saquinavir",
+  "tipranavir",
+  "elvitegravir-and-ritonavir",
+  "indinavir-and-ritonavir",
+  "tipranavir-and-ritonavir",
+  "paritaprevir-and-ritonavir-and-ombitasvir-and-or-dasabuvir",
+  "troleandomycin",
+  "levoketoconazole",
+  "ensitrelvir",
+  "tucatinib",
+  "adagrasib",
+  "relacorilant",
+  "lonafarnib",
+]);
+
+export function isErgotAlkaloid(id: string) {
+  return ERGOT_ALKALOIDS.has(id);
+}
+
+export function isErgotStrong3a4Inhibitor(id: string) {
+  if (/-topical$|-eye$|-ophthalmic$/.test(id)) return false;
+  if (CNI_STRONG_3A4_INHIBITORS.has(id) || ERGOT_EXTRA_3A4_INHIBITORS.has(id)) return true;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  return d.enzymes.some((r) => r.enzyme === "CYP3A4" && r.kind === "inhibitor" && r.strength === "strong");
+}
+
+export function isErgotStrong3a4(a: string, b: string) {
+  return (
+    (isErgotAlkaloid(a) && isErgotStrong3a4Inhibitor(b)) ||
+    (isErgotAlkaloid(b) && isErgotStrong3a4Inhibitor(a))
+  );
+}
+
+export const MAOI_PRESSOR_TRIGGERS = new Set([
+  "tyramine-foods",
+  "pseudoephedrine",
+  "phenylephrine",
+  "phenylephrine-oral",
+  "methylphenidate",
+  "methylphenidate-oros",
+  "methylphenidate-patch",
+  "methylphenidate-chew",
+  "dexmethylphenidate",
+  "serdexmethylphenidate-dexmethylphenidate",
+  "lisdexamfetamine",
+  "amphetamine",
+  "dextroamphetamine",
+  "methamphetamine",
+  "amphetamine-mixed-salts-xr",
+  "amphetamine-mixed-salts-ir",
+  "amphetamine-odt",
+  "ephedrine",
+  "ephedra",
+  "dopamine",
+  "droxidopa",
+]);
+
+export function isMaoiPressorTrigger(id: string) {
+  // Keep serotonergic collisions isolated to maoi-serotonergic.
+  if (isMaoiDrug(id) || isSerotonergicDrug(id)) return false;
+  return MAOI_PRESSOR_TRIGGERS.has(id);
+}
+
+export function isMaoiTyramineSympathomimetic(a: string, b: string) {
+  return (
+    (isMaoiDrug(a) && isMaoiPressorTrigger(b)) ||
+    (isMaoiDrug(b) && isMaoiPressorTrigger(a))
+  );
+}
+
+export function isAmiodaroneWarfarin(a: string, b: string) {
+  return (a === "amiodarone" && b === "warfarin") || (b === "amiodarone" && a === "warfarin");
+}
+
+export function isIsoniazidAcetaminophen(a: string, b: string) {
+  return (a === "isoniazid" && b === "acetaminophen") || (b === "isoniazid" && a === "acetaminophen");
+}
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -1355,6 +1451,78 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "ACE inhibitors, ARBs, and ARNIs suppress aldosterone-mediated distal potassium excretion; combining them with mineralocorticoid receptor antagonists (spironolactone, eplerenone, finerenone), epithelial sodium channel (ENaC) blockers (amiloride, triamterene), ENaC-blocking sulfonamides (trimethoprim, TMP-SMX), or exogenous potassium supplements — or stacking two potassium-retaining/raising agents — additively impairs renal potassium clearance in the cortical collecting duct. This multi-hit collision precipitates life-threatening hyperkalemia (serum potassium >= 6.0 mEq/L), producing progressive cardiac conduction toxicity (peaked T waves, PR prolongation, QRS widening, sine-wave pattern), ventricular fibrillation, asystole, and sudden arrhythmic death, particularly in older adults and chronic kidney disease.",
         "Baseline and serial serum potassium (monitor closely for serum potassium >= 5.5–6.0 mEq/L), serum creatinine/eGFR, bicarbonate, and 12-lead ECG for hyperkalemic conduction changes (note: normal ECG does not exclude severe hyperkalemia). Evaluate non-hyperkalemic antimicrobial alternatives (when TMP-SMX is the trigger) or discontinue unnecessary potassium loads. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
         "Aldactone (spironolactone), Inspra (eplerenone), Midamor (amiloride), Bactrim (TMP-SMX), Prinivil (lisinopril), Cozaar (losartan), and Entresto (sacubitril-valsartan) Prescribing Information. Antoniou T et al. Arch Intern Med 2010 (PMID 20585070); BMJ 2011 (PMID 21911446). Fralick M, Antoniou T, Juurlink DN et al. BMJ 2014 (PMID 25359996).",
+      ),
+    );
+  }
+
+  const es = pair(ids, isErgotAlkaloid, isErgotStrong3a4Inhibitor);
+  if (es) {
+    out.push(
+      hit(
+        "ergot-strong-3a4",
+        es[0],
+        es[1],
+        names(es[0], es[1]),
+        "contraindicated",
+        "danger",
+        "ergot alkaloid × strong CYP3A4 inhibitor — vasospastic ergotism & ischemia",
+        "FDA Boxed Warning: Ergotamine, dihydroergotamine, and methylergonovine undergo extensive presystemic and hepatic CYP3A4 clearance. Strong CYP3A4 inhibitors (Paxlovid, ritonavir, cobicistat, darunavir-cobicistat, voriconazole, itraconazole, posaconazole, ketoconazole, clarithromycin, erythromycin, nefazodone, telithromycin, mifepristone) block CYP3A4 metabolism and spike systemic ergot exposure multi-fold. Extreme alpha-adrenergic and 5-HT1B/1D/2A receptor stimulation drives intense, persistent arterial vasospasm (vasospastic ergotism), causing cerebral ischemia and stroke, coronary vasospasm and myocardial ischemia, mesenteric ischemia, renal infarction, and severe peripheral arterial insufficiency progressing to absent distal pulses, factitiously low noninvasive blood pressure, and digital or limb gangrene. Co-administration is an absolute labeled contraindication.",
+        "Distal pulses, capillary refill, cool or cyanotic extremities, claudication, angina, focal neurologic deficits, and abdominal pain (severe brachial vasospasm can produce factitiously low cuff blood pressure). Discontinue both offending agents immediately and seek urgent emergency/vascular vasodilator evaluation. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Cafergot (ergotamine), Migranal (dihydroergotamine), Methergine (methylergonovine), Norvir (ritonavir), Paxlovid, and Biaxin (clarithromycin) Prescribing Information FDA Boxed Warnings. Srisuma S et al. Clin Toxicol (Phila) 2014 (PMID 24978905). Horowitz RS et al. Arch Intern Med 1996 (PMID 8607732). Spiegel M et al. Neurology 2001 (PMID 11524501). Leroy F et al. Ann Intern Med 1988 (PMID 3389610).",
+      ),
+    );
+  }
+
+  const mtp = pair(ids, isMaoiDrug, isMaoiPressorTrigger);
+  if (mtp) {
+    out.push(
+      hit(
+        "maoi-tyramine-sympathomimetic",
+        mtp[0],
+        mtp[1],
+        names(mtp[0], mtp[1]),
+        "contraindicated",
+        "danger",
+        "MAOI × tyramine / indirect sympathomimetic — catecholamine storm / hypertensive crisis",
+        "Loss of intestinal and neuronal MAO-A deamination (phenelzine, tranylcypromine, isocarboxazid, linezolid, methylene blue, nonselective/high-exposure selegiline, rasagiline, safinamide, moclobemide) prevents first-pass breakdown of dietary tyramine and enlarges vesicular norepinephrine stores inside sympathetic nerve terminals. Dietary tyramine (aged cheeses, cured meats, fermented soy, tap beer) and indirect or mixed-acting sympathomimetics (pseudoephedrine, phenylephrine, methylphenidate, lisdexamfetamine, amphetamine, ephedrine) enter adrenergic terminals via NET and displace massive vesicular norepinephrine stores into synaptic clefts. Unopposed vascular alpha-1 vasoconstriction triggers an acute catecholamine storm and hypertensive crisis, risking severe occipital headache, hypertensive encephalopathy, hemorrhagic stroke, aortic dissection, myocardial ischemia, and flash pulmonary edema.",
+        "Sudden severe occipital headache, rapid blood pressure surge, chest pain, dyspnea, palpitations, diaphoresis, neck stiffness, or focal neurologic signs. Seek emergency evaluation immediately; parenteral short-acting alpha-adrenergic blockade or vasodilator titration is managed in acute care (avoid unopposed beta-blockade). Maintain labeled dietary tyramine and sympathomimetic avoidance through the post-MAOI washout window. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Nardil (phenelzine), Parnate (tranylcypromine), Marplan (isocarboxazid), Zyvox (linezolid), Emsam (selegiline), Azilect (rasagiline), Xadago (safinamide), Adderall XR, and Vyvanse Prescribing Information contraindications. Lippman SB, Nash K. Drug Saf 1990 (PMID 2190595). Finberg JPM, Gillman K. Int Rev Neurobiol 2011 (PMID 21971008). Cantarini MV et al. Br J Clin Pharmacol 2004 (PMID 15521893). Van den Eynde V et al. Psychopharmacol Bull 2022 (PMID 35721816).",
+      ),
+    );
+  }
+
+  const aw = pair(ids, (id) => id === "amiodarone", (id) => id === "warfarin");
+  if (aw) {
+    out.push(
+      hit(
+        "amiodarone-warfarin",
+        aw[0],
+        aw[1],
+        names(aw[0], aw[1]),
+        "major",
+        "danger",
+        "amiodarone × warfarin — dual-enantiomer CYP2C9/1A2/3A4 blockade & delayed INR surge",
+        "Amiodarone and its accumulating metabolites (N-desethylamiodarone and N,N-didesethylamiodarone) inhibit hepatic CYP2C9 clearance of the potent (S)-warfarin enantiomer as well as CYP1A2 and CYP3A4 clearance of (R)-warfarin, elevating INR by 50–100%+ and creating high risk for gastrointestinal, retroperitoneal, and intracranial hemorrhage. Because amiodarone has extensive tissue distribution with a terminal half-life of 40–55 days, anticoagulation potentiation typically takes 1–4 weeks to reach peak impact and hyper-anticoagulation persists for weeks to months even after amiodarone is discontinued. Prescribing information recommends empiric preemptive warfarin reduction upon initiating amiodarone with frequent INR monitoring.",
+        "Baseline and serial INR (at least weekly during the first 4–8 weeks after amiodarone initiation, loading, dose change, or cessation—prolonged surveillance is required for months after stopping amiodarone), plus signs of occult or overt bleeding (epistaxis, hematuria, melena, hematemesis, severe headache, or focal neurologic change). The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Coumadin (warfarin) and Cordarone / Pacerone (amiodarone) Prescribing Information. O'Reilly RA et al. Clin Pharmacol Ther 1987 (PMID 3621782). Kerin NZ et al. Arch Intern Med 1988 (PMID 3401099). Heimark LD et al. Clin Pharmacol Ther 1992 (PMID 1563209). McDonald MG et al. Clin Pharmacol Ther 2012 (PMID 22398967).",
+      ),
+    );
+  }
+
+  const ia = pair(ids, (id) => id === "isoniazid", (id) => id === "acetaminophen");
+  if (ia) {
+    out.push(
+      hit(
+        "isoniazid-acetaminophen",
+        ia[0],
+        ia[1],
+        names(ia[0], ia[1]),
+        "major",
+        "danger",
+        "isoniazid × acetaminophen — CYP2E1 induction & NAPQI hepatotoxicity",
+        "Isoniazid produces biphasic CYP2E1 modulation: acute competitive inhibition while parent isoniazid occupies the active site, coupled with protein stabilization that induces hepatic CYP2E1 abundance as isoniazid clears between doses (especially in fast NAT2 acetylators) or after interruption. Induced CYP2E1 accelerates conversion of acetaminophen to reactive N-acetyl-p-benzoquinone imine (NAPQI). When hepatic glutathione detoxification reserves are depleted—worsened by malnutrition, fasting, or alcohol exposure—excess NAPQI binds hepatocellular proteins and drives centrilobular hepatocellular necrosis with steep AST/ALT surges, coagulopathy (elevated INR), hyperbilirubinemia, hepatic encephalopathy, and acute liver failure even at labeled therapeutic acetaminophen exposure.",
+        "Serial hepatic transaminases (AST/ALT), total bilirubin, PT/INR, serum creatinine/lactate, mental status (asterixis or encephalopathy), and right upper quadrant pain or jaundice. Evaluate prompt N-acetylcysteine (NAC) antidote initiation if acetaminophen hepatotoxicity is suspected. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Isoniazid and Acetaminophen Prescribing Information. Zand R et al. Clin Pharmacol Ther 1993 (PMID 8354023). Chien JY et al. Clin Pharmacol Ther 1997 (PMID 9024171). Murphy R et al. Ann Intern Med 1990 (PMID 2240884). Crippin JS. Am J Gastroenterol 1993 (PMID 8470644). Nolan CM et al. Chest 1994 (PMID 7508362).",
       ),
     );
   }

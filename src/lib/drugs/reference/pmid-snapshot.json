@@ -28,6 +28,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "1563209",
+  "year": 1992,
+  "journal": "Clin Pharmacol Ther",
+  "title": "The mechanism of the interaction between amiodarone and warfarin in humans.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "1625902",
   "year": 1992,
   "journal": "Paraplegia",
@@ -56,10 +63,24 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "2190595",
+  "year": 1990,
+  "journal": "Drug Saf",
+  "title": "Monoamine oxidase inhibitor update. Potential adverse food and drug interactions.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "2225539",
   "year": 1990,
   "journal": "Clin Exp Dermatol",
   "title": "Methotrexate and trimethoprim-sulphamethoxazole--a potentially hazardous combination.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "2240884",
+  "year": 1990,
+  "journal": "Ann Intern Med",
+  "title": "Severe acetaminophen toxicity in a patient receiving isoniazid.",
   "checked": "2026-11-10"
  },
  {
@@ -77,6 +98,27 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "3389610",
+  "year": 1988,
+  "journal": "Ann Intern Med",
+  "title": "Dihydroergotamine-erythromycin-induced ergotism.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "3401099",
+  "year": 1988,
+  "journal": "Arch Intern Med",
+  "title": "The incidence, magnitude, and time course of the amiodarone-warfarin interaction.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "3621782",
+  "year": 1987,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Interaction of amiodarone with racemic warfarin and its separated enantiomorphs in humans.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "3632369",
   "year": 1987,
   "journal": "Arch Neurol",
@@ -91,10 +133,24 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "4572648",
+  "year": 1973,
+  "journal": "N Engl J Med",
+  "title": "Salicylate intoxication.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "4763428",
   "year": 1973,
   "journal": "N Engl J Med",
   "title": "Hyperglycemia-induced hyponatremia--calculation of expected serum sodium depression.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "4880484",
+  "year": 1966,
+  "journal": "Arzneimittelforschung",
+  "title": "The amphetamines: clinical and pharmacokinetic implications of recent studies of an assay procedure and urinary excretion in man.",
   "checked": "2026-11-10"
  },
  {
@@ -126,6 +182,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "7508362",
+  "year": 1994,
+  "journal": "Chest",
+  "title": "Hepatotoxicity associated with acetaminophen usage in patients receiving multiple drug therapy for tuberculosis.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "7628179",
   "year": 1995,
   "journal": "Clin Pharmacol Ther",
@@ -154,10 +217,24 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "8354023",
+  "year": 1993,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Inhibition and induction of cytochrome P4502E1-catalyzed oxidation by isoniazid in humans.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "8445035",
   "year": 1993,
   "journal": "J Clin Endocrinol Metab",
   "title": "Octreotide reverses hyperinsulinemia and prevents hypoglycemia induced by sulfonylurea overdoses.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "8470644",
+  "year": 1993,
+  "journal": "Am J Gastroenterol",
+  "title": "Acetaminophen hepatotoxicity: potentiation by isoniazid.",
   "checked": "2026-11-10"
  },
  {
@@ -189,10 +266,24 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "8607732",
+  "year": 1996,
+  "journal": "Arch Intern Med",
+  "title": "Clinical ergotism with lingual ischemia induced by clarithromycin-ergotamine interaction.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "8889906",
   "year": 1996,
   "journal": "J Clin Psychopharmacol",
   "title": "Cytochrome P450 enzymes: interpretation of their interactions with selective serotonin reuptake inhibitors. Part II.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "9024171",
+  "year": 1997,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Influence of polymorphic N-acetyltransferase phenotype on the inhibition and induction of acetaminophen bioactivation with long-term isoniazid.",
   "checked": "2026-11-10"
  },
  {
@@ -221,6 +312,13 @@
   "year": 1998,
   "journal": "Thyroid",
   "title": "Effects of pharmacological fiber supplements on levothyroxine absorption.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "9824071",
+  "year": 1998,
+  "journal": "Crit Care Med",
+  "title": "Anion gap and hypoalbuminemia.",
   "checked": "2026-11-10"
  },
  {
@@ -312,6 +410,13 @@
   "year": 2001,
   "journal": "J Clin Psychopharmacol",
   "title": "Drug interactions with grapefruit juice: an update.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "11524501",
+  "year": 2001,
+  "journal": "Neurology",
+  "title": "Cerebral ergotism under treatment with ergotamine and ritonavir.",
   "checked": "2026-11-10"
  },
  {
@@ -420,6 +525,20 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "15083932",
+  "year": 2004,
+  "journal": "J Toxicol Clin Toxicol",
+  "title": "Position Paper on urine alkalinization.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "15181662",
+  "year": 2003,
+  "journal": "Toxicol Rev",
+  "title": "Does urine alkalinization increase salicylate elimination? If so, why?",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "15319342",
   "year": 2004,
   "journal": "Drug Metab Dispos",
@@ -441,6 +560,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "15521893",
+  "year": 2004,
+  "journal": "Br J Clin Pharmacol",
+  "title": "Effect of oral linezolid on the pressor response to intravenous tyramine.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "15538128",
   "year": 2004,
   "journal": "J Clin Psychopharmacol",
@@ -452,6 +578,13 @@
   "year": 2004,
   "journal": "Clin Pharmacol Ther",
   "title": "Ciprofloxacin greatly increases concentrations and hypotensive effect of tizanidine by inhibiting its cytochrome P450 1A2-mediated presystemic metabolism.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "15676048",
+  "year": 2005,
+  "journal": "Br J Clin Pharmacol",
+  "title": "Drug combinations and impaired renal function -- the 'triple whammy'.",
   "checked": "2026-11-10"
  },
  {
@@ -791,6 +924,20 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "21942976",
+  "year": 2011,
+  "journal": "Drugs",
+  "title": "Clinically significant drug interactions with antacids: an update.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "21971008",
+  "year": 2011,
+  "journal": "Int Rev Neurobiol",
+  "title": "Selective inhibitors of monoamine oxidase type B and the \"cheese effect\".",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "22265699",
   "year": 2012,
   "journal": "Lancet",
@@ -805,10 +952,24 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "22398967",
+  "year": 2012,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Warfarin-amiodarone drug-drug interactions: determination of [I](u)/K(I,u) for amiodarone and its plasma metabolites.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "22528274",
   "year": 2012,
   "journal": "Neurocrit Care",
   "title": "Guidelines for the evaluation and management of status epilepticus.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "22739140",
+  "year": 2012,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Drug absorption interactions between oral targeted anticancer agents and PPIs: is pH-dependent solubility the Achilles heel of targeted therapy?",
   "checked": "2026-11-10"
  },
  {
@@ -882,6 +1043,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "24646860",
+  "year": 2014,
+  "journal": "Kidney Int",
+  "title": "Contribution of the organic anion transporter OAT2 to the renal active tubular secretion of creatinine and mechanism for serum creatinine elevations caused by cobicistat.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "24913012",
   "year": 2015,
   "journal": "Br J Clin Pharmacol",
@@ -896,6 +1064,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "24978905",
+  "year": 2014,
+  "journal": "Clin Toxicol (Phila)",
+  "title": "Ergotism and factitious hypotension associated with interaction of ergotamine with CYP3A4 inhibitors.",
+  "checked": "2026-11-10"
+ },
+ {
   "pmid": "24986836",
   "year": 2014,
   "journal": "J Anal Toxicol",
@@ -907,6 +1082,13 @@
   "year": 2014,
   "journal": "Circulation",
   "title": "2014 AHA/ACC guideline for the management of patients with non-ST-elevation acute coronary syndromes: a report of the American College of Cardiology/American Heart Association Task Force on Practice Guidelines.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "25274610",
+  "year": 2014,
+  "journal": "AAPS J",
+  "title": "The use of betaine HCl to enhance dasatinib absorption in healthy volunteers with rabeprazole-induced hypochlorhydria.",
   "checked": "2026-11-10"
  },
  {
@@ -977,6 +1159,13 @@
   "year": 2016,
   "journal": "Epilepsy Curr",
   "title": "Evidence-Based Guideline: Treatment of Convulsive Status Epilepticus in Children and Adults: Report of the Guideline Committee of the American Epilepsy Society.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "26974526",
+  "year": 2016,
+  "journal": "J Acquir Immune Defic Syndr",
+  "title": "The Effect of Dolutegravir on the Pharmacokinetics of Metformin in Healthy Subjects.",
   "checked": "2026-11-10"
  },
  {
@@ -1222,6 +1411,13 @@
   "year": 2022,
   "journal": "Transplant Proc",
   "title": "Paxlovid (Nirmatelvir/Ritonavir) and Tacrolimus Drug-Drug Interaction in a Kidney Transplant Patient with SARS-2-CoV infection: A Case Report.",
+  "checked": "2026-11-10"
+ },
+ {
+  "pmid": "35721816",
+  "year": 2022,
+  "journal": "Psychopharmacol Bull",
+  "title": "The Prescriber's Guide to the MAOI Diet-Thinking Through Tyramine Troubles.",
   "checked": "2026-11-10"
  },
  {

@@ -341,3 +341,315 @@ test("handleCdsRequest: handles internal exceptions gracefully with 500 problem 
   assert.equal(problem.status, 500);
   assert.equal(problem.title, "Internal Server Error");
 });
+
+function assertSecurityHeaders(res: Response, context: string): void {
+  for (const [name, expected] of Object.entries(CDS_SECURITY_HEADERS)) {
+    assert.equal(
+      res.headers.get(name),
+      expected,
+      `${context}: expected header ${name} = ${expected}`,
+    );
+  }
+}
+
+function syntheticPostRequest(
+  url: string,
+  headers: Record<string, string>,
+  body: ReadableStream<Uint8Array> | null = null,
+): Request {
+  return {
+    url,
+    method: "POST",
+    headers: new Headers(headers),
+    body,
+  } as unknown as Request;
+}
+
+function streamFromChunks(chunks: Uint8Array[]): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      for (const chunk of chunks) {
+        controller.enqueue(chunk);
+      }
+      controller.close();
+    },
+  });
+}
+
+test("CDS security headers: present on 200, 400, 404, 405, 413, 415, 422, and 500 responses", async () => {
+  assert.equal(MAX_CDS_BODY_BYTES, 10 * 1024 * 1024);
+
+  const okHealth = await handleCdsRequest(new Request("http://localhost/api/cds/health"));
+  assert.equal(okHealth.status, 200);
+  assertSecurityHeaders(okHealth, "200 /api/cds/health");
+
+  const okSearch = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?q=warfarin&limit=1"),
+  );
+  assert.equal(okSearch.status, 200);
+  assertSecurityHeaders(okSearch, "200 /api/cds/search");
+
+  const okCheck = await handleCdsRequest(
+    jsonRequest("http://localhost/api/cds/check", "POST", { drugs: ["warfarin", "fluconazole"] }),
+  );
+  assert.equal(okCheck.status, 200);
+  assertSecurityHeaders(okCheck, "200 /api/cds/check");
+
+  const badJson = await handleCdsRequest(
+    new Request("http://localhost/api/cds/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{not-json",
+    }),
+  );
+  assert.equal(badJson.status, 400);
+  assertSecurityHeaders(badJson, "400 malformed JSON");
+
+  const unprocessable = await handleCdsRequest(
+    jsonRequest("http://localhost/api/cds/check", "POST", {}),
+  );
+  assert.equal(unprocessable.status, 422);
+  assertSecurityHeaders(unprocessable, "422 validation failure");
+
+  const notFound = await handleCdsRequest(new Request("http://localhost/api/cds/missing-route"));
+  assert.equal(notFound.status, 404);
+  assertSecurityHeaders(notFound, "404 missing route");
+
+  const methodNotAllowed = await handleCdsRequest(
+    new Request("http://localhost/api/cds/health", { method: "DELETE" }),
+  );
+  assert.equal(methodNotAllowed.status, 405);
+  assertSecurityHeaders(methodNotAllowed, "405 method not allowed");
+
+  const tooLarge = await handleCdsRequest(
+    syntheticPostRequest("http://localhost/api/cds/check", {
+      "Content-Type": "application/json",
+      "Content-Length": String(MAX_CDS_BODY_BYTES + 1),
+    }),
+  );
+  assert.equal(tooLarge.status, 413);
+  assertSecurityHeaders(tooLarge, "413 payload too large");
+
+  const unsupportedType = await handleCdsRequest(
+    new Request("http://localhost/api/cds/check", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ drugs: ["warfarin"] }),
+    }),
+  );
+  assert.equal(unsupportedType.status, 415);
+  assertSecurityHeaders(unsupportedType, "415 unsupported media type");
+
+  const internalErr = await handleCdsRequest({
+    get url(): string {
+      throw new Error("Simulated unexpected failure");
+    },
+    method: "GET",
+  } as unknown as Request);
+  assert.equal(internalErr.status, 500);
+  assertSecurityHeaders(internalErr, "500 internal error");
+});
+
+test("handleCdsRequest: 405 Method Not Allowed emits exact route Allow headers", async () => {
+  const getOnlyRoutes = ["/api/cds/health", "/api/cds/search"];
+  for (const path of getOnlyRoutes) {
+    for (const method of ["POST", "PUT", "DELETE", "OPTIONS"]) {
+      const res = await handleCdsRequest(new Request(`http://localhost${path}`, { method }));
+      assert.equal(res.status, 405, `${method} ${path}`);
+      assert.equal(res.headers.get("allow"), "GET", `${method} ${path} Allow header`);
+      assertSecurityHeaders(res, `405 ${method} ${path}`);
+      const problem = (await res.json()) as ProblemDetails;
+      assert.equal(problem.type, "https://firstpass.app/errors/method-not-allowed");
+      assert.equal(problem.instance, path);
+    }
+  }
+
+  const postOnlyRoutes = ["/api/cds/check", "/api/cds/kinetics"];
+  for (const path of postOnlyRoutes) {
+    for (const method of ["GET", "PUT", "DELETE", "OPTIONS"]) {
+      const res = await handleCdsRequest(new Request(`http://localhost${path}`, { method }));
+      assert.equal(res.status, 405, `${method} ${path}`);
+      assert.equal(res.headers.get("allow"), "POST", `${method} ${path} Allow header`);
+      assertSecurityHeaders(res, `405 ${method} ${path}`);
+      const problem = (await res.json()) as ProblemDetails;
+      assert.equal(problem.type, "https://firstpass.app/errors/method-not-allowed");
+      assert.equal(problem.instance, path);
+    }
+  }
+});
+
+test("handleCdsRequest: enforces 415 Unsupported Media Type while permitting JSON subtypes and omitted headers", async () => {
+  const rejectedTypes = [
+    "text/plain",
+    "application/x-www-form-urlencoded",
+    "multipart/form-data; boundary=----firstpass",
+    "application/xml",
+  ];
+  for (const contentType of rejectedTypes) {
+    for (const path of ["/api/cds/check", "/api/cds/kinetics"]) {
+      const res = await handleCdsRequest(
+        new Request(`http://localhost${path}`, {
+          method: "POST",
+          headers: { "Content-Type": contentType },
+          body: JSON.stringify({ drugs: ["warfarin"] }),
+        }),
+      );
+      assert.equal(res.status, 415, `${contentType} -> ${path}`);
+      assert.ok(res.headers.get("content-type")?.includes("application/problem+json"));
+      assertSecurityHeaders(res, `415 ${contentType} ${path}`);
+      const problem = (await res.json()) as ProblemDetails;
+      assert.equal(problem.status, 415);
+      assert.equal(problem.title, "Unsupported Media Type");
+      assert.equal(problem.type, "https://firstpass.app/errors/unsupported-media-type");
+      assert.equal(problem.instance, path);
+    }
+  }
+
+  // application/json with charset and structured +json media types succeed
+  for (const contentType of [
+    "application/json; charset=utf-8",
+    "application/ld+json; charset=utf-8",
+  ]) {
+    const res = await handleCdsRequest(
+      new Request("http://localhost/api/cds/check", {
+        method: "POST",
+        headers: { "Content-Type": contentType },
+        body: JSON.stringify({ drugs: ["warfarin", "fluconazole"] }),
+      }),
+    );
+    assert.equal(res.status, 200, `${contentType} should be accepted`);
+    assertSecurityHeaders(res, `200 ${contentType}`);
+  }
+
+  // POST without a Content-Type header uses raw binary/stream without Fetch auto text/plain
+  const rawJsonBytes = new TextEncoder().encode(JSON.stringify({ drugs: ["warfarin", "fluconazole"] }));
+  const omittedCt = await handleCdsRequest(
+    syntheticPostRequest("http://localhost/api/cds/check", {}, streamFromChunks([rawJsonBytes])),
+  );
+  assert.equal(omittedCt.status, 200);
+  assertSecurityHeaders(omittedCt, "200 omitted Content-Type");
+});
+
+test("readBoundedCdsBody & handleCdsRequest: enforce 10 MiB Content-Length and streaming caps and reject malformed Content-Length", async () => {
+  // Declared Content-Length > MAX_CDS_BODY_BYTES -> 413 Payload Too Large before stream read
+  let canceled = false;
+  const mockBody = new ReadableStream<Uint8Array>({
+    pull() {
+      // Never read if declared Content-Length fails first
+    },
+    cancel() {
+      canceled = true;
+    },
+  });
+  const declaredTooLarge = await handleCdsRequest(
+    syntheticPostRequest(
+      "http://localhost/api/cds/check",
+      {
+        "Content-Type": "application/json",
+        "Content-Length": String(MAX_CDS_BODY_BYTES + 1),
+      },
+      mockBody,
+    ),
+  );
+  assert.equal(declaredTooLarge.status, 413);
+  assert.equal(canceled, true, "oversized body stream should be canceled immediately");
+  assertSecurityHeaders(declaredTooLarge, "413 declared Content-Length");
+  const problem413 = (await declaredTooLarge.json()) as ProblemDetails;
+  assert.equal(problem413.status, 413);
+  assert.equal(problem413.type, "https://firstpass.app/errors/payload-too-large");
+
+  // Streaming chunk cap (without Content-Length) cancels reader when cumulative bytes exceed maxBytes
+  let streamCanceled = false;
+  let pulls = 0;
+  const oversizedStream = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      pulls++;
+      controller.enqueue(new Uint8Array(64).fill(97));
+    },
+    cancel() {
+      streamCanceled = true;
+    },
+  });
+  const streamRes = await readBoundedCdsBody(
+    syntheticPostRequest("http://localhost/api/cds/kinetics", {}, oversizedStream),
+    100,
+  );
+  assert.deepEqual(streamRes, { ok: false, reason: "too-large" });
+  assert.equal(streamCanceled, true);
+  assert.ok(pulls <= 3);
+
+  // Within custom cap decodes UTF-8 across chunks cleanly
+  const encoder = new TextEncoder();
+  const validStream = streamFromChunks([
+    encoder.encode('{"drugs":['),
+    encoder.encode('"warfarin","fluconazole"]}'),
+  ]);
+  const okRead = await readBoundedCdsBody(
+    syntheticPostRequest("http://localhost/api/cds/check", {}, validStream),
+    256,
+  );
+  assert.deepEqual(okRead, { ok: true, text: '{"drugs":["warfarin","fluconazole"]}' });
+
+  // Malformed Content-Length values -> 400 Bad Request
+  for (const badLen of ["-1", "12.5", "not-a-number", "12 bytes"]) {
+    const direct = await readBoundedCdsBody(
+      syntheticPostRequest("http://localhost/api/cds/check", { "Content-Length": badLen }),
+    );
+    assert.deepEqual(direct, { ok: false, reason: "invalid-content-length" }, badLen);
+
+    const httpRes = await handleCdsRequest(
+      syntheticPostRequest("http://localhost/api/cds/check", {
+        "Content-Type": "application/json",
+        "Content-Length": badLen,
+      }),
+    );
+    assert.equal(httpRes.status, 400, badLen);
+    assertSecurityHeaders(httpRes, `400 invalid Content-Length (${badLen})`);
+    const problem = (await httpRes.json()) as ProblemDetails;
+    assert.equal(problem.detail, "Invalid Content-Length header.");
+  }
+});
+
+test("handleCdsRequest: attaches CDS_SECURITY_HEADERS on 401 Unauthorized and 429 Too Many Requests", async () => {
+  const prevVercel = process.env.VERCEL;
+  process.env.VERCEL = "1";
+  setThrottleStore(null);
+  resetApiMeters();
+
+  try {
+    // 401 Unauthorized on malformed API key
+    const res401 = await handleCdsRequest(
+      new Request("http://localhost/api/cds/search?q=warfarin", {
+        headers: { "x-real-ip": "198.51.100.77", "x-api-key": "invalid-key" },
+      }),
+    );
+    assert.equal(res401.status, 401);
+    assertSecurityHeaders(res401, "401 unauthorized");
+
+    // Exhaust anonymous per-minute limit from an isolated test IP -> 429 Too Many Requests
+    const testIp = "198.51.100.88";
+    for (let i = 0; i < API_LIMITS.anonymous.max; i++) {
+      const ok = await handleCdsRequest(
+        new Request("http://localhost/api/cds/search?q=warfarin&limit=1", {
+          headers: { "x-real-ip": testIp },
+        }),
+      );
+      assert.equal(ok.status, 200, `anonymous call #${i + 1}`);
+      assertSecurityHeaders(ok, `200 metered #${i + 1}`);
+    }
+
+    const res429 = await handleCdsRequest(
+      new Request("http://localhost/api/cds/search?q=warfarin&limit=1", {
+        headers: { "x-real-ip": testIp },
+      }),
+    );
+    assert.equal(res429.status, 429);
+    assert.ok(res429.headers.get("retry-after"));
+    assertSecurityHeaders(res429, "429 too many requests");
+  } finally {
+    if (prevVercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = prevVercel;
+    setThrottleStore(undefined);
+    resetApiMeters();
+  }
+});

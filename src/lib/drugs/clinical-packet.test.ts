@@ -265,6 +265,9 @@ test("buildClinicalPacket: renal rails and reversal lines keep agent and status 
   }
 });
 
+const BANNED_REGULATORY_RE =
+  /\b(?:FDA[- ]registered|510\(k\)[- ]cleared|clinically (?:validated|proven|tested|verified)|medically reviewed|HIPAA[- ]compliant)\b/i;
+
 test("ClinicalPacketDialog: bleeding and TdP marks start off and the printed card shows no computed dose", () => {
   for (const [ids, host] of DOAC_DESKS) {
     const html = renderToStaticMarkup(
@@ -274,5 +277,182 @@ test("ClinicalPacketDialog: bleeding and TdP marks start off and the printed car
     assert.doesNotMatch(html, /Emergency Reversal Pathway/);
     const text = html.replace(/<[^>]+>/g, "\n").split("\n").filter(doseIn);
     assert.deepEqual(text, [], ids.join("+"));
+  }
+});
+
+test("buildClinicalPacket: captures wardsOnDesk and safetyOnDesk in labeledCollisions sorted by severity, tone, kind, and title", () => {
+  const arniPacket = buildClinicalPacket(
+    ["sacubitril-valsartan", "lisinopril"],
+    DEFAULT_HOST,
+    analyze(["sacubitril-valsartan", "lisinopril"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(arniPacket.labeledCollisions?.some((c) => c.kind === "ward" && c.id === "arni-acei" && c.severity === "contraindicated"));
+
+  const theoPacket = buildClinicalPacket(
+    ["theophylline", "ciprofloxacin"],
+    DEFAULT_HOST,
+    analyze(["theophylline", "ciprofloxacin"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(theoPacket.labeledCollisions?.some((c) => c.kind === "safety" && c.id === "theophylline-cyp1a2" && c.severity === "contraindicated"));
+
+  const tizPacket = buildClinicalPacket(
+    ["tizanidine", "fluvoxamine"],
+    DEFAULT_HOST,
+    analyze(["tizanidine", "fluvoxamine"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(tizPacket.labeledCollisions?.some((c) => c.kind === "safety" && c.id === "tizanidine-cyp1a2" && c.severity === "contraindicated"));
+
+  // Combined regimen verifying deterministic ordering:
+  // contraindicated before major before moderate; danger before warn; safety before ward; title.localeCompare
+  const multiIds = [
+    "sacubitril-valsartan",
+    "lisinopril",
+    "tizanidine",
+    "fluvoxamine",
+    "theophylline",
+    "ciprofloxacin",
+    "vancomycin",
+    "piperacillin-tazobactam",
+    "clopidogrel",
+    "omeprazole",
+    "semaglutide",
+    "insulin-glargine",
+  ];
+  const multiPacket = buildClinicalPacket(multiIds, DEFAULT_HOST, analyze(multiIds, DEFAULT_HOST).findings, {});
+  const items = multiPacket.labeledCollisions ?? [];
+  assert.deepEqual(
+    items.map((c) => `${c.severity}:${c.tone}:${c.kind}:${c.id}`),
+    [
+      "contraindicated:danger:safety:theophylline-cyp1a2",
+      "contraindicated:danger:safety:tizanidine-cyp1a2",
+      "contraindicated:danger:ward:arni-acei",
+      "major:danger:ward:vanco-zosyn",
+      "major:warn:safety:clopidogrel-ppi",
+      "moderate:warn:ward:glp-insulin",
+    ],
+  );
+});
+
+test("buildClinicalPacket: renders HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS in ehrNoteText with Mechanism, Bedside Watch, and Source", () => {
+  const cases: { ids: string[]; expectedId: string; expectedBadge: string }[] = [
+    { ids: ["sacubitril-valsartan", "lisinopril"], expectedId: "arni-acei", expectedBadge: "[AVOID TOGETHER]" },
+    { ids: ["theophylline", "ciprofloxacin"], expectedId: "theophylline-cyp1a2", expectedBadge: "[AVOID TOGETHER]" },
+    { ids: ["tizanidine", "fluvoxamine"], expectedId: "tizanidine-cyp1a2", expectedBadge: "[AVOID TOGETHER]" },
+    { ids: ["vancomycin", "piperacillin-tazobactam"], expectedId: "vanco-zosyn", expectedBadge: "[SERIOUS CONCERN]" },
+  ];
+
+  for (const { ids, expectedId, expectedBadge } of cases) {
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, analyze(ids, DEFAULT_HOST).findings, {});
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId}`);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), ids.join("+"));
+    assert.ok(packet.ehrNoteText.includes(expectedBadge), ids.join("+"));
+    assert.ok(packet.ehrNoteText.includes(alert.title), ids.join("+"));
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), ids.join("+"));
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), ids.join("+"));
+    assert.ok(packet.ehrNoteText.includes(`Source: ${alert.source}`), ids.join("+"));
+    assert.ok(!packet.ehrNoteText.includes(EXPORT_EMPTY), ids.join("+"));
+  }
+
+  // Even if caller passes empty findings while labeled collisions exist, labeled collisions still print without EXPORT_EMPTY.
+  const arniEmptyFindings = buildClinicalPacket(["sacubitril-valsartan", "lisinopril"], DEFAULT_HOST, [], {});
+  assert.ok(arniEmptyFindings.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"));
+  assert.ok(!arniEmptyFindings.ehrNoteText.includes(EXPORT_EMPTY));
+
+  // Empty desk still outputs EXPORT_EMPTY and omits labeled collision header.
+  const emptyPacket = buildClinicalPacket([], DEFAULT_HOST, [], {});
+  assert.equal(emptyPacket.labeledCollisions?.length, 0);
+  assert.ok(emptyPacket.ehrNoteText.includes(EXPORT_EMPTY));
+  assert.ok(!emptyPacket.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"));
+});
+
+test("buildClinicalPacket: counselingPoints and patientHandoutText surface non-dosing, zero-claim high-alert guidance without duplicating opioid/benzo warnings", () => {
+  const arniPacket = buildClinicalPacket(
+    ["sacubitril-valsartan", "lisinopril"],
+    DEFAULT_HOST,
+    analyze(["sacubitril-valsartan", "lisinopril"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(arniPacket.counselingPoints.some((cp) => /angioedema|swelling of the face/i.test(cp)));
+  assert.ok(/angioedema|swelling of the face/i.test(arniPacket.patientHandoutText));
+
+  const theoPacket = buildClinicalPacket(
+    ["theophylline", "ciprofloxacin"],
+    DEFAULT_HOST,
+    analyze(["theophylline", "ciprofloxacin"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(theoPacket.counselingPoints.some((cp) => /theophylline/i.test(cp) && /seizures/i.test(cp)));
+  assert.ok(/theophylline/i.test(theoPacket.patientHandoutText));
+
+  const tizPacket = buildClinicalPacket(
+    ["tizanidine", "fluvoxamine"],
+    DEFAULT_HOST,
+    analyze(["tizanidine", "fluvoxamine"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(tizPacket.counselingPoints.some((cp) => /tizanidine/i.test(cp) && /blood pressure/i.test(cp)));
+  assert.ok(/tizanidine/i.test(tizPacket.patientHandoutText));
+
+  // Opioid + benzo should not emit duplicate overdose/naloxone/benzo points from safetyOnDesk
+  const opBenzoPacket = buildClinicalPacket(
+    ["oxycodone", "alprazolam"],
+    DEFAULT_HOST,
+    analyze(["oxycodone", "alprazolam"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.equal(opBenzoPacket.counselingPoints.filter((cp) => /naloxone/i.test(cp)).length, 1);
+  assert.equal(opBenzoPacket.counselingPoints.filter((cp) => /sedative|benzodiazepines/i.test(cp)).length, 2);
+
+  // Overlapping ward + safety hits (meropenem + valproate) should deduplicate patient counseling
+  const carbVpaPacket = buildClinicalPacket(
+    ["meropenem", "valproate"],
+    DEFAULT_HOST,
+    analyze(["meropenem", "valproate"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.equal(carbVpaPacket.labeledCollisions?.length, 2);
+  assert.equal(
+    carbVpaPacket.counselingPoints.filter((cp) => /Carbapenem antibiotics can cause valproate levels to drop/i.test(cp)).length,
+    1,
+  );
+
+  // Verify zero DOSE_PATTERN leaks and zero banned regulatory claims across packets and dialog SSR
+  for (const ids of [
+    ["sacubitril-valsartan", "lisinopril"],
+    ["theophylline", "ciprofloxacin"],
+    ["tizanidine", "fluvoxamine"],
+    ["oxycodone", "alprazolam"],
+    ["meropenem", "valproate"],
+  ]) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+    for (const cp of packet.counselingPoints) {
+      assert.equal(doseIn(cp), false, `${ids.join("+")} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${ids.join("+")} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(
+      packet.ehrNoteText.split("\n").filter(doseIn),
+      [],
+      `${ids.join("+")} ehrNoteText leaked dose`,
+    );
+    assert.deepEqual(
+      packet.patientHandoutText.split("\n").filter(doseIn),
+      [],
+      `${ids.join("+")} patientHandoutText leaked dose`,
+    );
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${ids.join("+")} ehrNoteText leaked regulatory claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${ids.join("+")} patientHandoutText leaked regulatory claim`);
+
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+    );
+    assert.ok(html.includes("High-Alert Labeled &amp; Institutional Safety Collisions"), ids.join("+"));
+    const dialogText = html.replace(/<[^>]+>/g, "\n").split("\n").filter(doseIn);
+    assert.deepEqual(dialogText, [], `${ids.join("+")} dialog leaked dose`);
   }
 });

@@ -31,7 +31,15 @@ export const RENAL_MECHANISMS_CITATIONS: readonly string[] = [
   "Hamm LL, Nakhoul N, Hering-Smith KS. Acid-Base Homeostasis. Clin J Am Soc Nephrol. 2015;10(12):2232-2242. doi:10.2215/CJN.07400715.",
   "Loffing J, Korbmacher C. Regulated sodium transport in the renal connecting tubule (CNT) and cortical collecting duct (CCD). Curr Opin Nephrol Hypertens. 2009;18(5):409-415. doi:10.1097/MNH.0b013e32832f57b6.",
   "Bedford LE, et al. Lithium-induced nephrogenic diabetes insipidus: Pathophysiology and amiloride rescue. Kidney Int. 2008;74(1):28-36. doi:10.1038/ki.2008.92.",
-  "Loboz KK, Shenfield GM. Drug-induced acute kidney injury: The 'triple whammy'. Br J Clin Pharmacol. 2005;59(2):239-243. doi:10.1111/j.1365-2125.2004.02188.x.",
+  "Loboz KK, Shenfield GM. Drug combinations and impaired renal function -- the 'triple whammy'. Br J Clin Pharmacol. 2005;59(2):239-243. PMID 15676048.",
+  "Antoniou T, Gomes T, Juurlink DN, Loutfy MR, Glazier RH, Mamdani MM. Trimethoprim-sulfamethoxazole-induced hyperkalemia in patients receiving inhibitors of the renin-angiotensin system: a population-based study. Arch Intern Med. 2010;170(12):1045-1049. PMID 20585070.",
+  "Antoniou T, Gomes T, Mamdani MM, Yao Z, Hellings C, Garg AX, Weir MA, Juurlink DN. Trimethoprim-sulfamethoxazole induced hyperkalaemia in elderly patients receiving spironolactone: nested case-control study. BMJ. 2011;343:d5228. PMID 21911446.",
+  "Fralick M, Macdonald EM, Gomes T, et al. Co-trimoxazole and sudden death in patients receiving inhibitors of renin-angiotensin system: population based study. BMJ. 2014;349:g6196. PMID 25359996.",
+  "Song IH, Zong J, Borland J, et al. The Effect of Dolutegravir on the Pharmacokinetics of Metformin in Healthy Subjects. J Acquir Immune Defic Syndr. 2016;72(4):400-407. PMID 26974526.",
+  "Lepist EI, Zhang X, Hao J, et al. Contribution of the organic anion transporter OAT2 to the renal active tubular secretion of creatinine and mechanism for serum creatinine elevations caused by cobicistat. Kidney Int. 2014;86(2):350-357. PMID 24646860.",
+  "Luther MK, Timbrook TT, Caffrey AR, Dosa D, Lodise TP, LaPlante KL. Vancomycin Plus Piperacillin-Tazobactam and Acute Kidney Injury in Adults: A Systematic Review and Meta-Analysis. Crit Care Med. 2018;46(1):12-20. PMID 29088001.",
+  "Finley PR, Warner MD, Peabody CA. Clinical relevance of drug interactions with lithium. Clin Pharmacokinet. 1995;29(3):172-191. PMID 8521679.",
+  "Yusuf S, Teo KK, Pogue J, et al. Telmisartan, ramipril, or both in patients at high risk for vascular events. N Engl J Med. 2008;358(15):1547-1559. PMID 18378520.",
 ];
 
 export type NephronSegmentId =
@@ -156,6 +164,76 @@ export interface RenalCollision {
   literatureCitation: string;
 }
 
+export interface GlomerularHemodynamicsProfile {
+  id: "glomerulus";
+  name: string;
+  shortName: string;
+  ultrafiltrationEquation: string;
+  normalAutoregulationMapRangeMmHg: string;
+  afferentArteriole: {
+    dilators: string[];
+    constrictors: string[];
+    nsaidMechanism: string;
+    cniMechanism: string;
+    sglt2TgfMechanism: string;
+  };
+  efferentArteriole: {
+    constrictors: string[];
+    dilators: string[];
+    aceiArbMechanism: string;
+  };
+  drugClassTargets: {
+    nsaidIds: string[];
+    cniIds: string[];
+    sglt2Ids: string[];
+    aceiArbArniIds: string[];
+  };
+}
+
+export const GLOMERULAR_HEMODYNAMICS: GlomerularHemodynamicsProfile = {
+  id: "glomerulus",
+  name: "Glomerulus & Juxtaglomerular Apparatus (Pre-Tubular Filtration Unit)",
+  shortName: "Glomerulus (JGA)",
+  ultrafiltrationEquation: "GFR = K_f * (P_GC - P_BS - pi_GC)",
+  normalAutoregulationMapRangeMmHg: "80 to 180 mmHg (myogenic reflex + macula densa tubuloglomerular feedback)",
+  afferentArteriole: {
+    dilators: ["Prostaglandin E2 (PGE2)", "Prostacyclin (PGI2)", "Nitric oxide", "Atrial natriuretic peptide"],
+    constrictors: ["Adenosine (A1R via macula densa TGF)", "Endothelin-1", "Thromboxane A2", "Norepinephrine"],
+    nsaidMechanism:
+      "NSAIDs block COX-1/COX-2 synthesis of PGE2 and PGI2, abolishing compensatory afferent arteriolar dilation during hypovolemia or low effective arterial blood volume (PMID 15676048).",
+    cniMechanism:
+      "Calcineurin inhibitors (tacrolimus, cyclosporine, voclosporin) stimulate endothelin-1 and thromboxane A2 release, inducing potent reversible afferent arteriolar vasoconstriction.",
+    sglt2TgfMechanism:
+      "SGLT2 inhibitors increase NaCl delivery to the macula densa; basolateral adenosine release triggers A1-receptor-mediated afferent constriction, relieving diabetic intraglomerular hyperfiltration (expected initial eGFR dip of 3–5 mL/min/1.73m2).",
+  },
+  efferentArteriole: {
+    constrictors: ["Angiotensin II (via AT1 receptor)"],
+    dilators: ["ACE inhibitors", "ARBs", "ARNIs (sacubitril-valsartan)"],
+    aceiArbMechanism:
+      "ACE inhibitors and ARBs block Angiotensin II-mediated efferent arteriolar tone, lowering intraglomerular capillary hydrostatic pressure (P_GC) — nephroprotective chronically, but causing acute GFR collapse when paired with afferent NSAID constriction and diuretic volume contraction (PMID 15676048).",
+  },
+  drugClassTargets: {
+    nsaidIds: ["ibuprofen", "naproxen", "ketorolac", "indomethacin", "meloxicam", "diclofenac", "celecoxib", "aspirin"],
+    cniIds: ["tacrolimus", "cyclosporine", "voclosporin"],
+    sglt2Ids: ["empagliflozin", "dapagliflozin", "canagliflozin", "ertugliflozin", "bexagliflozin", "sotagliflozin"],
+    aceiArbArniIds: [
+      "lisinopril",
+      "enalapril",
+      "ramipril",
+      "benazepril",
+      "captopril",
+      "trandolapril",
+      "losartan",
+      "valsartan",
+      "candesartan",
+      "telmisartan",
+      "olmesartan",
+      "azilsartan",
+      "sacubitril-valsartan",
+    ],
+  },
+};
+
 // ============================================================================
 // 1. NEPHRON TRANSPORTERS DATABASE
 // ============================================================================
@@ -174,7 +252,7 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "1 Na+ : 1 Glucose",
     drivingForce: "Transmembrane Na+ chemical gradient created by basolateral Na+/K+ ATPase",
     physiologicalRole: "Responsible for high-capacity, low-affinity reabsorption of ~90% of filtered glucose in the early S1/S2 segments of the PCT.",
-    inhibitedByDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin"],
+    inhibitedByDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin", "ertugliflozin", "bexagliflozin", "sotagliflozin"],
     clinicalRelevance: "SGLT2 inhibitors block glucose and sodium reabsorption in the PCT. The increased distal delivery of sodium to the macula densa restores tubuloglomerular feedback (TGF), inducing afferent arteriolar constriction and mitigating intraglomerular hyperfiltration, providing nephroprotective and cardioprotective benefits.",
   },
   {
@@ -189,8 +267,8 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "Equilibrium catalytic hydration/dehydration (CO2 + H2O <-> H2CO3 <-> H+ + HCO3-)",
     drivingForce: "Catalytic acceleration of CO2 and carbonic acid equilibrium across apical brush border (CA IV) and intracellular cytoplasm (CA II)",
     physiologicalRole: "Apical CA IV dehydrates luminal H2CO3 to CO2 and H2O. CO2 diffuses into the proximal cell where cytoplasmic CA II rehydrates it to H+ and HCO3-. H+ is extruded via NHE3 to drive further HCO3- reclamation, while HCO3- exits basolaterally via NBCe1.",
-    inhibitedByDrugIds: ["acetazolamide"],
-    clinicalRelevance: "Inhibition by acetazolamide blocks proximal proton recycling, resulting in profound bicarbonaturia (alkaline urine, pH > 7.5), secondary sodium wasting, and hyperchloremic non-anion gap metabolic acidosis. Used for altitude sickness (stimulates respiratory drive) and metabolic alkalosis correction.",
+    inhibitedByDrugIds: ["acetazolamide", "topiramate", "zonisamide"],
+    clinicalRelevance: "Inhibition by acetazolamide (and weakly by topiramate/zonisamide) blocks proximal proton recycling, resulting in profound bicarbonaturia (alkaline urine, pH > 7.5), secondary sodium wasting, calcium phosphate nephrolithiasis risk, and hyperchloremic non-anion gap metabolic acidosis.",
   },
   {
     id: "nhe3",
@@ -200,13 +278,13 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     segmentId: "pct",
     membrane: "apical",
     direction: "reabsorption",
-    solutes: ["Na+ (in)", "H+ (out)"],
+    solutes: ["Na+ (in)", "Li+ (competes with Na+)", "H+ (out)"],
     stoichiometry: "1 Na+ (reabsorbed) : 1 H+ (secreted)",
     drivingForce: "Steep basolateral-driven inward Na+ concentration gradient",
-    physiologicalRole: "Principal driver of proximal sodium and fluid reabsorption, accounting for ~60% of all filtered Na+ entry into PCT cells. Pumps protons into the lumen to titrate filtered bicarbonate.",
+    physiologicalRole: "Principal driver of proximal sodium and fluid reabsorption, accounting for ~60% of all filtered Na+ entry into PCT cells, and mediating ~80% of filtered lithium (Li+) proximal reclamation alongside paracellular bulk reabsorption.",
     inhibitedByDrugIds: ["acetazolamide"],
     stimulatedBy: ["Angiotensin II", "Endothelin-1", "Sympathetic nervous system"],
-    clinicalRelevance: "Stimulated strongly by angiotensin II and sympathetic tone during volume contraction; indirectly shut down by carbonic anhydrase inhibitors due to intracellular proton depletion.",
+    clinicalRelevance: "Stimulated strongly by angiotensin II and sympathetic tone during volume contraction (such as from thiazides or dehydration), which dramatically accelerates proximal Li+ reabsorption and precipitates systemic lithium toxicity (PMID 8521679); indirectly blunted by carbonic anhydrase inhibitors.",
   },
   {
     id: "oat1-3",
@@ -216,12 +294,12 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     segmentId: "pct",
     membrane: "basolateral",
     direction: "secretion",
-    solutes: ["Organic Anions", "Alpha-Ketoglutarate"],
+    solutes: ["Organic Anions", "Alpha-Ketoglutarate", "Methotrexate", "Loop/Thiazide Diuretics", "Beta-Lactams"],
     stoichiometry: "1 Organic Anion (inward) : 1 Alpha-Ketoglutarate (outward)",
     drivingForce: "Tertiary active transport: driven by outward dicarboxylate gradient maintained by sodium-dicarboxylate cotransporters (NaDC3)",
-    physiologicalRole: "Extracts endogenous anions (urate, prostaglandins) and acidic drugs from peritubular capillaries into proximal tubular cells for subsequent luminal extrusion.",
-    inhibitedByDrugIds: ["probenecid", "furosemide", "hydrochlorothiazide"],
-    clinicalRelevance: "Crucial pathway for loop and thiazide diuretics to reach the tubular lumen where their luminal target transporters (NKCC2, NCC) reside. Probenecid competitively inhibits OAT1/3, reducing diuretic delivery to the tubular lumen and extending beta-lactam half-life.",
+    physiologicalRole: "Extracts endogenous anions (urate, prostaglandins) and acidic drugs (methotrexate, penicillins, loop/thiazide diuretics) from peritubular capillaries into proximal tubular cells for subsequent luminal extrusion.",
+    inhibitedByDrugIds: ["probenecid", "furosemide", "hydrochlorothiazide", "ibuprofen", "naproxen", "indomethacin", "ketorolac", "piperacillin-tazobactam"],
+    clinicalRelevance: "Crucial gateway for loop and thiazide diuretics to reach their luminal targets (NKCC2, NCC) and for renal clearance of methotrexate. Probenecid, NSAIDs, and piperacillin competitively inhibit OAT1/3, blunting diuretic response and dangerously slowing methotrexate elimination.",
   },
   {
     id: "oct2",
@@ -231,12 +309,27 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     segmentId: "pct",
     membrane: "basolateral",
     direction: "secretion",
-    solutes: ["Organic Cations", "Creatinine"],
+    solutes: ["Organic Cations", "Metformin", "Creatinine"],
     stoichiometry: "Facilitated electrogenic cation uptake",
     drivingForce: "Inside-negative membrane potential (-70 mV)",
-    physiologicalRole: "Mediates basolateral influx of positively charged organic cations, including endogenous creatinine and xenobiotics, into proximal tubular cells.",
-    inhibitedByDrugIds: ["cimetidine"],
-    clinicalRelevance: "Transports metformin and creatinine. Cimetidine inhibits OCT2, causing a benign, non-GFR elevation in serum creatinine by blocking tubular secretion.",
+    physiologicalRole: "Mediates basolateral influx of positively charged organic cations, including metformin, dofetilide, and endogenous creatinine, into proximal tubular cells (coupled with apical MATE1/2-K extrusion).",
+    inhibitedByDrugIds: ["cimetidine", "dolutegravir", "bictegravir", "cobicistat", "trimethoprim", "tmp-smx", "ranolazine"],
+    clinicalRelevance: "Dolutegravir, bictegravir, cobicistat (also OAT2), trimethoprim, and cimetidine block OCT2/MATE1 tubular secretion, producing a benign, non-GFR serum creatinine increase (+0.1 to +0.2 mg/dL, 'pseudo-creatinine bump', PMID 24646860) while simultaneously elevating systemic metformin exposure (~79% AUC increase with dolutegravir, PMID 26974526).",
+  },
+  {
+    id: "mate1-2k",
+    name: "MATE1 & MATE2-K (Multidrug and Toxin Extrusion 1 / 2-K)",
+    gene: "SLC47A1 / SLC47A2",
+    aliases: ["SLC47A1", "SLC47A2", "MATE1", "MATE2-K"],
+    segmentId: "pct",
+    membrane: "apical",
+    direction: "secretion",
+    solutes: ["Organic Cations", "Metformin", "Creatinine", "H+ (counter-ion)"],
+    stoichiometry: "1 Organic Cation (efflux into urine) : 1 H+ (influx into cell)",
+    drivingForce: "Inward lumen-to-cell proton (H+) gradient across the apical brush border",
+    physiologicalRole: "Completes transcellular proximal tubular cation secretion initiated by basolateral OCT2, extruding metformin, creatinine, and cationic xenobiotics into tubular fluid.",
+    inhibitedByDrugIds: ["cimetidine", "dolutegravir", "bictegravir", "cobicistat", "trimethoprim", "tmp-smx"],
+    clinicalRelevance: "Cimetidine and dolutegravir inhibit apical MATE1/2-K at clinically relevant exposures, trapping metformin inside proximal tubular cells and systemic plasma (increasing MALA risk in CKD) while causing an isolated, reversible rise in serum creatinine without loss of true GFR (PMID 26974526, PMID 24646860).",
   },
 
   // --- Thick Ascending Limb (TAL) ---
@@ -252,7 +345,7 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "1 Na+ : 1 K+ : 2 Cl- (electroneutral)",
     drivingForce: "Transmembrane inward Na+ gradient created by basolateral Na+/K+ ATPase",
     physiologicalRole: "Mediates reabsorption of ~25% of filtered NaCl in the thick ascending limb. Coupled with apical ROMK K+ recycling, it drives the corticomedullary osmotic gradient for urinary concentration.",
-    inhibitedByDrugIds: ["furosemide", "torsemide", "bumetanide"],
+    inhibitedByDrugIds: ["furosemide", "torsemide", "bumetanide", "ethacrynic-acid"],
     clinicalRelevance: "Pharmacologic target of loop diuretics. Inhibition disrupts the +10 mV lumen-positive potential, abolishing paracellular divalent cation reabsorption (causing hypercalciuria and hypomagnesemia) and producing massive natriuresis ('high-ceiling' diuresis).",
   },
   {
@@ -282,7 +375,7 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "Passive paracellular divalent cation flux",
     drivingForce: "+10 mV transepithelial lumen-positive potential generated by apical ROMK and basolateral CLC-Kb",
     physiologicalRole: "Permits paracellular reabsorption of ~60% of filtered magnesium and ~20-25% of filtered calcium in the TAL.",
-    inhibitedByDrugIds: ["furosemide", "torsemide", "bumetanide"],
+    inhibitedByDrugIds: ["furosemide", "torsemide", "bumetanide", "ethacrynic-acid"],
     clinicalRelevance: "Loop diuretics indirectly inactivate this pathway by collapsing the transepithelial voltage, resulting in profound urinary wasting of Ca2+ (hypercalciuria, causing hypocalcemia risk) and Mg2+ (hypomagnesemia).",
   },
 
@@ -299,7 +392,7 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "1 Na+ : 1 Cl- (electroneutral)",
     drivingForce: "Transmembrane inward Na+ gradient created by basolateral Na+/K+ ATPase",
     physiologicalRole: "Mediates reabsorption of 5-7% of filtered sodium in the early and late DCT. Water-impermeable segment continuing tubular fluid dilution.",
-    inhibitedByDrugIds: ["hydrochlorothiazide", "chlorthalidone", "metolazone"],
+    inhibitedByDrugIds: ["hydrochlorothiazide", "chlorthalidone", "metolazone", "indapamide", "chlorothiazide"],
     clinicalRelevance: "Target of thiazide and thiazide-like diuretics. Inhibition lowers intracellular sodium, which dramatically steepens the basolateral electrochemical gradient driving NCX1 (Na+/Ca2+ exchanger), promoting active calcium reabsorption (hypocalciuria, mild hypercalcemia).",
   },
   {
@@ -347,9 +440,9 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "Electrogenic Na+ channel influx",
     drivingForce: "Strong inward electrochemical gradient (-70 mV inside cell, low intracellular Na+)",
     physiologicalRole: "Reabsorbs the final 2-3% of filtered sodium. Because Na+ enters without a co-transported anion, this electrogenic influx generates a substantial transepithelial lumen-negative potential (-10 to -35 mV).",
-    inhibitedByDrugIds: ["amiloride", "triamterene"],
+    inhibitedByDrugIds: ["amiloride", "triamterene", "trimethoprim", "tmp-smx"],
     stimulatedBy: ["Aldosterone (via SGK1 / Nedd4-2 phosphorylation)"],
-    clinicalRelevance: "Blocked by amiloride and triamterene. Eliminating electrogenic Na+ reabsorption collapses the lumen-negative charge, which eliminates the electrical driving force for ROMK K+ secretion, preserving potassium (potassium-sparing effect). Crucially, lithium enters principal cells almost exclusively via ENaC.",
+    clinicalRelevance: "Directly blocked by amiloride, triamterene, and structurally analogous trimethoprim (TMP-SMX, PMID 20585070, PMID 21911446). Eliminating electrogenic Na+ reabsorption collapses the lumen-negative charge and abolishes the driving force for ROMK K+ secretion, causing potassium retention and hyperkalemic Type 4 RTA. Crucially, lithium enters principal cells almost exclusively via ENaC.",
   },
   {
     id: "mr-aldosterone",
@@ -363,8 +456,8 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "Nuclear steroid transcription factor",
     drivingForce: "Lipophilic ligand diffusion across basolateral membrane",
     physiologicalRole: "Binds aldosterone, translocates to nucleus, and upregulates SGK1 (which phosphorylates and inhibits Nedd4-2, preventing ENaC ubiquitination/degradation) and stimulates basolateral Na+/K+ ATPase expression.",
-    inhibitedByDrugIds: ["spironolactone", "eplerenone"],
-    clinicalRelevance: "Target of mineralocorticoid receptor antagonists (MRAs). Antagonism downregulates apical ENaC channels and basolateral Na+/K+ pumps, reducing sodium retention, preventing potassium excretion, and blunting proton excretion.",
+    inhibitedByDrugIds: ["spironolactone", "eplerenone", "finerenone"],
+    clinicalRelevance: "Target of steroidal (spironolactone, eplerenone) and nonsteroidal (finerenone) mineralocorticoid receptor antagonists (MRAs). Antagonism downregulates apical ENaC channels and basolateral Na+/K+ pumps, reducing sodium retention, preventing potassium excretion, and blunting proton excretion.",
   },
   {
     id: "romk-ccd",
@@ -393,9 +486,9 @@ export const NEPHRON_TRANSPORTERS: readonly NephronTransporter[] = [
     stoichiometry: "Passive osmotic water flux through tetrameric water channels",
     drivingForce: "Transmedullary interstitial osmotic gradient generated by TAL countercurrent multiplication",
     physiologicalRole: "Vasopressin binds basolateral Gs-coupled V2 receptors, raising intracellular cAMP via adenylate cyclase, activating PKA, and inducing exocytic insertion of AQP2-containing vesicles into the apical membrane.",
-    inhibitedByDrugIds: ["tolvaptan"],
+    inhibitedByDrugIds: ["tolvaptan", "conivaptan"],
     stimulatedBy: ["desmopressin"],
-    clinicalRelevance: "Tolvaptan blocks V2R, inducing aquaresis (free water excretion without electrolyte loss) for euvolemic/hypervolemic hyponatremia. Desmopressin activates V2R for central DI. Chronic lithium therapy downregulates AQP2 transcription and apical membrane trafficking via GSK3-beta inhibition, causing nephrogenic diabetes insipidus.",
+    clinicalRelevance: "Tolvaptan and conivaptan block V2R, inducing aquaresis (free water excretion without electrolyte loss) for euvolemic/hypervolemic hyponatremia. Desmopressin activates V2R for central DI. Chronic lithium therapy downregulates AQP2 transcription and apical membrane trafficking via GSK3-beta inhibition, causing nephrogenic diabetes insipidus.",
   },
 
   // --- Cortical Collecting Duct - Intercalated Cells (Alpha & Beta) ---
@@ -486,7 +579,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "SGLT2 Inhibitors",
         targetMolecule: "SGLT2 (SLC5A2)",
-        representativeDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin"],
+        representativeDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin", "ertugliflozin", "bexagliflozin", "sotagliflozin"],
         mechanismSummary: "Selective inhibition of apical sodium-glucose cotransporter 2, inducing osmotic glucosuria and natriuresis, restoring tubuloglomerular feedback and reducing intraglomerular hypertension.",
         electrolyteConsequences: {
           sodium: "Mild natriuresis (osmotic diuresis, 1-2% fractional excretion)",
@@ -502,7 +595,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "Carbonic Anhydrase Inhibitors",
         targetMolecule: "Carbonic Anhydrase II (intracellular) & IV (apical brush border)",
-        representativeDrugIds: ["acetazolamide"],
+        representativeDrugIds: ["acetazolamide", "topiramate", "zonisamide"],
         mechanismSummary: "Reversible catalytic inhibition of CA II and IV, paralyzing apical proton recycling, causing massive proximal bicarbonate wasting and blunting NHE3-mediated sodium reabsorption.",
         electrolyteConsequences: {
           sodium: "Mild natriuresis (2-3% fractional sodium excretion)",
@@ -545,7 +638,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "Loop Diuretics ('High-Ceiling')",
         targetMolecule: "NKCC2 (SLC12A1)",
-        representativeDrugIds: ["furosemide", "torsemide", "bumetanide"],
+        representativeDrugIds: ["furosemide", "torsemide", "bumetanide", "ethacrynic-acid"],
         mechanismSummary: "Reversible competitive inhibition of the chloride-binding site of apical NKCC2, abolishing the +10 mV lumen-positive transepithelial potential and blocking medullary concentration gradient generation.",
         electrolyteConsequences: {
           sodium: "Massive natriuresis ('high ceiling', up to 20-25% fractional excretion)",
@@ -588,7 +681,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "Thiazide & Thiazide-Like Diuretics",
         targetMolecule: "NCC (SLC12A3)",
-        representativeDrugIds: ["hydrochlorothiazide", "chlorthalidone", "metolazone"],
+        representativeDrugIds: ["hydrochlorothiazide", "chlorthalidone", "metolazone", "indapamide", "chlorothiazide"],
         mechanismSummary: "Competitive inhibition of the chloride site of the apical NCC cotransporter, inhibiting 5-7% of sodium reabsorption and secondarily accelerating active transcellular calcium reclamation.",
         electrolyteConsequences: {
           sodium: "Moderate natriuresis (5-8% fractional excretion)",
@@ -632,7 +725,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "Potassium-Sparing Diuretics: ENaC Blockers",
         targetMolecule: "ENaC (SCNN1A/B/G)",
-        representativeDrugIds: ["amiloride", "triamterene"],
+        representativeDrugIds: ["amiloride", "triamterene", "trimethoprim", "tmp-smx"],
         mechanismSummary: "Direct, reversible blockade of the apical epithelial sodium channel, eliminating electrogenic Na+ entry, abolishing the lumen-negative transepithelial potential, and halting ROMK-mediated K+ secretion.",
         electrolyteConsequences: {
           sodium: "Weak natriuresis (1-2% fractional excretion)",
@@ -648,7 +741,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "Potassium-Sparing Diuretics: Aldosterone Antagonists (MRAs)",
         targetMolecule: "Mineralocorticoid Receptor (NR3C2)",
-        representativeDrugIds: ["spironolactone", "eplerenone"],
+        representativeDrugIds: ["spironolactone", "eplerenone", "finerenone"],
         mechanismSummary: "Competitive antagonism of cytosolic mineralocorticoid receptors, preventing aldosterone-mediated transcription of SGK1, downregulating apical ENaC abundance and basolateral Na+/K+ ATPase pumps.",
         electrolyteConsequences: {
           sodium: "Mild natriuresis (1-2% fractional excretion)",
@@ -664,7 +757,7 @@ export const NEPHRON_SEGMENTS: readonly NephronSegment[] = [
       {
         drugClass: "Vasopressin V2 Receptor Antagonists (Vaptans)",
         targetMolecule: "V2 Vasopressin Receptor (AVPR2)",
-        representativeDrugIds: ["tolvaptan"],
+        representativeDrugIds: ["tolvaptan", "conivaptan"],
         mechanismSummary: "Selective antagonism of basolateral V2 receptors, preventing Gs-mediated cAMP generation and blocking AQP2 apical membrane insertion, producing pure aquaresis.",
         electrolyteConsequences: {
           sodium: "Systemic serum sodium increase (pure water clearance without natriuresis)",
@@ -746,7 +839,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     tubularSite: "Proximal Convoluted Tubule (PCT)",
     segmentId: "pct",
     molecularTarget: "Carbonic Anhydrase II (cytoplasmic) & IV (luminal brush border)",
-    representativeDrugIds: ["acetazolamide"],
+    representativeDrugIds: ["acetazolamide", "topiramate", "zonisamide"],
     fractionalSodiumExcretion: "2% to 3% (mild natriuresis due to extensive downstream reabsorption in TAL and DCT)",
     calciumEffect: "Mildly increased urinary calcium excretion",
     calciumMechanism: "Inhibition of proximal fluid reabsorption slightly reduces proximal passive calcium reclamation; increases risk of calcium phosphate stone precipitation in alkaline urine.",
@@ -774,7 +867,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     tubularSite: "Thick Ascending Limb of Loop of Henle (TAL)",
     segmentId: "tal",
     molecularTarget: "NKCC2 (SLC12A1) apical electroneutral 1Na+-1K+-2Cl- cotransporter",
-    representativeDrugIds: ["furosemide", "torsemide", "bumetanide"],
+    representativeDrugIds: ["furosemide", "torsemide", "bumetanide", "ethacrynic-acid"],
     fractionalSodiumExcretion: "20% to 25% ('High-ceiling' diuresis)",
     calciumEffect: "Hypercalciuria (Hypocalcemia Risk; 'Loops lose calcium')",
     calciumMechanism: "Inhibition of NKCC2 abolishes ROMK potassium recycling, collapsing the +10 mV lumen-positive transepithelial potential. This eliminates the thermodynamic repulsive force driving paracellular Ca2+ through claudin-16/19 tight junctions.",
@@ -804,7 +897,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     tubularSite: "Distal Convoluted Tubule (DCT)",
     segmentId: "dct",
     molecularTarget: "NCC (SLC12A3) apical electroneutral Na+-Cl- cotransporter",
-    representativeDrugIds: ["hydrochlorothiazide", "chlorthalidone", "metolazone"],
+    representativeDrugIds: ["hydrochlorothiazide", "chlorthalidone", "metolazone", "indapamide", "chlorothiazide"],
     fractionalSodiumExcretion: "5% to 8% (moderate natriuresis)",
     calciumEffect: "Hypocalciuria (Hypercalcemia Risk; 'Thiazides take calcium in')",
     calciumMechanism: "Inhibition of apical NCC reduces intracellular Na+, steepening the chemical gradient for basolateral NCX1 (3 Na+ in : 1 Ca2+ out). This accelerates basolateral Ca2+ extrusion and pulls Ca2+ across apical TRPV5 channels into the cell, reducing urine calcium excretion by up to 50%.",
@@ -862,7 +955,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     tubularSite: "Cortical Collecting Duct (CCD) - Principal & Intercalated Cells",
     segmentId: "ccd-principal",
     molecularTarget: "Mineralocorticoid Receptor (NR3C2 cytosolic/nuclear receptor)",
-    representativeDrugIds: ["spironolactone", "eplerenone"],
+    representativeDrugIds: ["spironolactone", "eplerenone", "finerenone"],
     fractionalSodiumExcretion: "1% to 2% (weak natriuretic alone)",
     calciumEffect: "Neutral",
     calciumMechanism: "No direct effect on renal calcium transport.",
@@ -890,7 +983,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     tubularSite: "Proximal Convoluted Tubule (PCT) - S1/S2 Segments",
     segmentId: "pct",
     molecularTarget: "SGLT2 (SLC5A2) apical Na+-Glucose cotransporter",
-    representativeDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin"],
+    representativeDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin", "ertugliflozin", "bexagliflozin", "sotagliflozin"],
     fractionalSodiumExcretion: "1% to 2% (mild osmotic natriuresis coupled with glucosuria)",
     calciumEffect: "Neutral to slight transient increase",
     calciumMechanism: "Mild uricosuric and osmotic effect; no clinically significant calcium disturbances.",
@@ -917,7 +1010,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     tubularSite: "Cortical and Medullary Collecting Duct",
     segmentId: "ccd-principal",
     molecularTarget: "V2 Vasopressin Receptor (AVPR2 basolateral Gs-coupled GPCR)",
-    representativeDrugIds: ["tolvaptan"],
+    representativeDrugIds: ["tolvaptan", "conivaptan"],
     fractionalSodiumExcretion: "0% (Pure aquaresis: electrolyte-free water excretion)",
     calciumEffect: "Neutral",
     calciumMechanism: "No effect on renal calcium transport.",
@@ -947,20 +1040,38 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
 export const RENAL_COLLISIONS: readonly RenalCollision[] = [
   {
     id: "triple-whammy",
-    title: "Triple Whammy: Pre-Renal Glomerular Shutdown (ACEi/ARB + Loop Diuretic + NSAID)",
+    title: "Triple Whammy: Pre-Renal Glomerular Shutdown (ACEi/ARB + Loop/Thiazide Diuretic + NSAID)",
     severity: "critical",
     summary: "Simultaneous afferent vasoconstriction, efferent vasodilation, and intravascular volume depletion precipitating acute prerenal renal failure.",
     mechanismsInvolved: {
       afferentArteriole: "NSAIDs inhibit COX-1 and COX-2 enzymes, suppressing vasodilatory renal prostaglandins (PGE2 and PGI2), causing intense afferent arteriolar vasoconstriction and choking glomerular inflow.",
       efferentArteriole: "ACE inhibitors or ARBs block Angiotensin II action on AT1 receptors, preventing compensatory efferent arteriolar vasoconstriction and causing uninhibited efferent vasodilation.",
-      tubularTransport: "Loop diuretics inhibit apical NKCC2 in the TAL, inducing significant natriuresis and intravascular volume contraction.",
+      tubularTransport: "Loop (NKCC2) or thiazide (NCC) diuretics induce significant natriuresis and intravascular volume contraction.",
       hormonalResponse: "Volume depletion triggers intense renin release, but downstream efferent resistance cannot be maintained due to ACEi/ARB blockade, while NSAIDs block prostaglandin-mediated autoregulatory compensation.",
       hemodynamicConsequence: "Catastrophic collapse of intraglomerular capillary hydrostatic pressure (delta P), causing abrupt cessation of glomerular filtration and acute kidney injury.",
     },
-    triggerDrugClasses: ["ACE inhibitor / ARB", "Loop Diuretic", "NSAID"],
-    interactingDrugIds: ["lisinopril", "losartan", "enalapril", "valsartan", "furosemide", "torsemide", "bumetanide", "ibuprofen", "naproxen", "ketorolac", "celecoxib", "indomethacin"],
+    triggerDrugClasses: ["ACE inhibitor / ARB / ARNI", "Loop or Thiazide Diuretic", "NSAID"],
+    interactingDrugIds: [
+      "lisinopril",
+      "furosemide",
+      "ibuprofen",
+      "losartan",
+      "enalapril",
+      "valsartan",
+      "torsemide",
+      "bumetanide",
+      "hctz",
+      "chlorthalidone",
+      "lisinopril-hctz",
+      "losartan-hctz",
+      "valsartan-hctz",
+      "naproxen",
+      "ketorolac",
+      "celecoxib",
+      "indomethacin",
+    ],
     pathophysiologyDetail:
-      "Normal renal autoregulation maintains a constant glomerular filtration rate across mean arterial pressures of 80 to 180 mmHg. In states of volume depletion induced by loop diuretics, glomerular perfusion pressure drops. The kidney preserves GFR via two compensatory mechanisms: 1) local prostaglandins (PGE2, PGI2) dilate the afferent arteriole to maximize blood entering the glomerulus, and 2) angiotensin II constricts the efferent arteriole to maintain intraglomerular hydrostatic pressure. Co-administering an NSAID eliminates prostaglandin-dependent afferent dilation, while an ACEi or ARB prevents angiotensin II-dependent efferent constriction. The glomerulus loses both ends of its autoregulatory clamp, resulting in a sudden, precipitous drop in transcapillary filtration pressure and acute renal failure.",
+      "Normal renal autoregulation maintains a constant glomerular filtration rate across mean arterial pressures of 80 to 180 mmHg. In states of volume depletion induced by loop or thiazide diuretics (including fixed-dose ACEi/ARB-thiazide combinations), glomerular perfusion pressure drops. The kidney preserves GFR via two compensatory mechanisms: 1) local prostaglandins (PGE2, PGI2) dilate the afferent arteriole to maximize blood entering the glomerulus, and 2) angiotensin II constricts the efferent arteriole to maintain intraglomerular hydrostatic pressure. Co-administering an NSAID eliminates prostaglandin-dependent afferent dilation, while an ACEi or ARB prevents angiotensin II-dependent efferent constriction. The glomerulus loses both ends of its autoregulatory clamp, resulting in a sudden, precipitous drop in transcapillary filtration pressure and acute renal failure.",
     clinicalRisks: [
       "Acute Kidney Injury (AKI) with doubling or tripling of serum creatinine within 48 to 72 hours",
       "Severe hyperkalemia (attenuated GFR plus ACEi/ARB-mediated aldosterone suppression)",
@@ -974,8 +1085,8 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
       "Blood pressure and orthostatic vitals",
     ],
     mitigationPhysiology:
-      "Physiological mitigation involves identifying and discontinuing the NSAID, temporarily holding the loop diuretic if volume status permits, providing cautious volume restoration if hypovolemic, and monitoring until intraglomerular hemodynamics and GFR recover.",
-    literatureCitation: "Loboz KK, Shenfield GM. Drug-induced acute kidney injury: The 'triple whammy'. Br J Clin Pharmacol. 2005;59(2):239-243.",
+      "Physiological mitigation involves identifying and discontinuing the NSAID, temporarily holding the diuretic if volume status permits, providing cautious volume restoration if hypovolemic, and monitoring until intraglomerular hemodynamics and GFR recover.",
+    literatureCitation: "Loboz KK, Shenfield GM. Drug combinations and impaired renal function -- the 'triple whammy'. Br J Clin Pharmacol. 2005;59(2):239-243. PMID 15676048.",
   },
   {
     id: "sequential-nephron-blockade",
@@ -988,7 +1099,7 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
       hemodynamicConsequence: "Massive natriuresis and diuresis; overcomes the 'braking phenomenon' of chronic loop diuretic resistance.",
     },
     triggerDrugClasses: ["Loop Diuretic", "Thiazide / Thiazide-like Diuretic (Metolazone, HCTZ, Chlorthalidone)"],
-    interactingDrugIds: ["furosemide", "torsemide", "bumetanide", "metolazone", "hydrochlorothiazide", "chlorthalidone"],
+    interactingDrugIds: ["furosemide", "metolazone", "hydrochlorothiazide", "torsemide", "bumetanide", "chlorthalidone", "indapamide"],
     pathophysiologyDetail:
       "Chronic loop diuretic monotherapy delivers massive sodium and chloride loads to the distal tubule. Over weeks, the DCT undergoes compensatory structural hypertrophy and hyperplasia, with marked transcriptional upregulation of apical NCC cotransporters (the 'braking phenomenon'). As a result, the hypertrophied DCT avidly reabsorbs the sodium delivered from the TAL, rendering the patient diuretic-resistant. Adding a thiazide or metolazone blocks the hypertrophied NCC cotransporters, producing a synergistic, torrential natriuresis that overcomes diuretic resistance. However, delivering this massive fluid and sodium load to the downstream CCD drives extreme ENaC sodium reabsorption and unrestricted ROMK potassium and H+-ATPase proton wasting.",
     clinicalRisks: [
@@ -1018,7 +1129,7 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
       hemodynamicConsequence: "Aldosterone stimulates apical H+-ATPase in alpha-intercalated cells and ENaC in principal cells, while chloride depletion halts Pendrin-mediated bicarbonate secretion in beta-intercalated cells.",
     },
     triggerDrugClasses: ["High-Dose Loop Diuretic", "Thiazide Diuretic"],
-    interactingDrugIds: ["furosemide", "torsemide", "bumetanide", "hydrochlorothiazide", "chlorthalidone", "metolazone"],
+    interactingDrugIds: ["furosemide", "torsemide", "bumetanide", "ethacrynic-acid", "hydrochlorothiazide", "chlorthalidone", "metolazone"],
     pathophysiologyDetail:
       "Contraction alkalosis involves both generation and maintenance phases. Generation occurs when potent diuretics cause loss of extracellular fluid containing sodium and chloride with low bicarbonate content, concentrating the remaining systemic bicarbonate. Maintenance occurs through three interlocking physiological mechanisms: 1) Secondary hyperaldosteronism directly stimulates alpha-intercalated H+-ATPase proton secretion, regenerating systemic bicarbonate; 2) Hypokalemia causes intracellular potassium to exit cells in exchange for extracellular H+, creating intracellular acidosis in renal tubular cells, which accelerates proximal ammoniagenesis and bicarbonate reclamation; 3) Severe hypochloremia starves beta-intercalated Pendrin (SLC26A4) of luminal chloride, preventing it from secreting excess bicarbonate into urine. The result is a persistent 'chloride-responsive' metabolic alkalosis.",
     clinicalRisks: [
@@ -1045,7 +1156,7 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
     mechanismsInvolved: {
       tubularTransport: "Lithium (Li+) is a monovalent cation that permeates apical ENaC channels with high conductance in principal cells. Basolateral Na+/K+ ATPase cannot efficiently pump Li+ out, causing intracellular lithium accumulation.",
       hormonalResponse: "Intracellular lithium inhibits glycogen synthase kinase 3-beta (GSK3-beta) and impairs vasopressin-stimulated adenylyl cyclase signaling.",
-      hemodynamicConsequence: "Profoun downregulation of AQP2 mRNA transcription and loss of apical AQP2 water channel trafficking, rendering collecting ducts completely resistant to vasopressin (polyuria, polydipsia).",
+      hemodynamicConsequence: "Profound downregulation of AQP2 mRNA transcription and loss of apical AQP2 water channel trafficking, rendering collecting ducts completely resistant to vasopressin (polyuria, polydipsia).",
     },
     triggerDrugClasses: ["Lithium (Mood Stabilizer)", "ENaC Interactors (Amiloride)"],
     interactingDrugIds: ["lithium", "amiloride"],
@@ -1067,19 +1178,73 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
     literatureCitation: "Bedford LE, et al. Lithium-induced nephrogenic diabetes insipidus: Pathophysiology and amiloride rescue. Kidney Int. 2008;74(1):28-36.",
   },
   {
-    id: "dual-raas-hyperkalemia",
-    title: "Dual RAAS / Aldosterone Blockade: Severe Hyperkalemia Hazard (ACEi/ARB + K+-Sparing Diuretic)",
+    id: "lithium-proximal-reabsorption",
+    title: "Lithium Proximal Tubular Reabsorption & Clearance Collapse (Lithium + Thiazide / NSAID / ACEi / ARB)",
     severity: "critical",
-    summary: "Simultaneous inhibition of angiotensin II and mineralocorticoid receptors paralyzing principal cell potassium secretion.",
+    summary: "Volume contraction or reduced GFR triggers compensatory proximal NHE3 upregulation, increasing proximal Li+ reabsorption by 25–50% and precipitating acute lithium neurotoxicity.",
     mechanismsInvolved: {
-      tubularTransport: "Potassium-sparing diuretics (spironolactone, eplerenone, amiloride, triamterene) block ENaC or mineralocorticoid receptors in CCD principal cells.",
-      hormonalResponse: "ACE inhibitors or ARBs suppress systemic angiotensin II and reduce adrenal aldosterone secretion.",
+      afferentArteriole: "NSAIDs abolish prostaglandin-mediated afferent arteriolar dilation, reducing GFR and filtered lithium load.",
+      efferentArteriole: "ACE inhibitors or ARBs lower intraglomerular pressure and stimulate proximal Angiotensin II-sensitive reabsorption responses upon volume contraction.",
+      tubularTransport: "Roughly 80% of filtered lithium is reabsorbed in the PCT alongside Na+ via apical NHE3 and paracellular bulk transport. Thiazide blockade of NCC in the DCT induces volume depletion that sharply upregulates PCT NHE3-mediated Na+ and Li+ reclamation.",
+      hormonalResponse: "Compensatory RAAS and sympathetic activation drive maximal proximal sodium and lithium avidity.",
+      hemodynamicConsequence: "Marked drop in fractional excretion of lithium, elevating serum lithium into the neurotoxic and nephrotoxic range (> 1.5 to 2.0 mEq/L).",
+    },
+    triggerDrugClasses: ["Lithium", "Thiazide / Loop Diuretic", "NSAID / ACEi / ARB"],
+    interactingDrugIds: [
+      "lithium",
+      "hctz",
+      "ibuprofen",
+      "chlorthalidone",
+      "metolazone",
+      "indapamide",
+      "lisinopril",
+      "losartan",
+      "naproxen",
+      "furosemide",
+    ],
+    pathophysiologyDetail:
+      "Lithium is handled by the proximal convoluted tubule nearly identically to sodium, with ~80% of the filtered load reclaimed in the PCT via NHE3 and paracellular pathways. When thiazide diuretics deplete extracellular volume (or when NSAIDs/ACE inhibitors reduce GFR), Angiotensin II and renal sympathetic nerve activity stimulate apical NHE3 in the PCT. Because lithium cannot escape distally when proximal avidity surges, lithium clearance falls by 25–50% within days of adding a thiazide or NSAID, risking coarse tremor, ataxia, dysarthria, myoclonus, seizures, and irreversible cerebellar or renal injury (PMID 8521679, PMID 22265699).",
+    clinicalRisks: [
+      "Acute-on-chronic lithium neurotoxicity (coarse tremor, confusion, cerebellar ataxia, encephalopathy, seizures)",
+      "QRS/T-wave ECG conduction abnormalities and sinus node dysfunction",
+      "Compounded nephrogenic diabetes insipidus and acute kidney injury",
+    ],
+    monitoredParameters: [
+      "Trough serum lithium concentration (12-hour post-dose level; reference 0.6–1.2 mEq/L)",
+      "Serum creatinine, eGFR, and serum sodium",
+      "Neurological examination for tremor, ataxia, or altered mental status",
+    ],
+    mitigationPhysiology:
+      "Mitigation relies on avoiding unmonitored thiazide or NSAID co-administration with lithium, restoring volume and sodium balance with isotonic saline if toxic/dehydrated to downregulate PCT NHE3 lithium avidity, and serial lithium monitoring.",
+    literatureCitation: "Finley PR, Warner MD, Peabody CA. Clinical relevance of drug interactions with lithium. Clin Pharmacokinet. 1995;29(3):172-191. PMID 8521679.",
+  },
+  {
+    id: "dual-raas-hyperkalemia",
+    title: "Dual RAAS / Aldosterone Blockade: Severe Hyperkalemia Hazard (ACEi/ARB + K+-Sparing Diuretic / Dual RAAS)",
+    severity: "critical",
+    summary: "Simultaneous inhibition of angiotensin II and mineralocorticoid receptors or ENaC paralyzes principal cell potassium secretion.",
+    mechanismsInvolved: {
+      tubularTransport: "Potassium-sparing diuretics (spironolactone, eplerenone, finerenone, amiloride, triamterene) block ENaC or mineralocorticoid receptors in CCD principal cells.",
+      hormonalResponse: "ACE inhibitors, ARBs, or ARNIs suppress systemic angiotensin II and reduce adrenal aldosterone secretion; dual ACEi + ARB blockade further magnifies hyperkalemia and hypotensive AKI risk (ONTARGET, PMID 18378520).",
       hemodynamicConsequence: "Synergistic arrest of principal cell ROMK K+ secretion and intercalated cell H+-ATPase proton pumping, resulting in severe hyperkalemia and Type 4 RTA metabolic acidosis.",
     },
-    triggerDrugClasses: ["ACE inhibitor / ARB", "Potassium-Sparing Diuretic (MRA or ENaC Blocker)"],
-    interactingDrugIds: ["lisinopril", "losartan", "enalapril", "valsartan", "spironolactone", "eplerenone", "amiloride", "triamterene"],
+    triggerDrugClasses: ["ACE inhibitor / ARB / ARNI", "Potassium-Sparing Diuretic (MRA or ENaC Blocker) or Second RAAS Blocker"],
+    interactingDrugIds: [
+      "lisinopril",
+      "losartan",
+      "spironolactone",
+      "eplerenone",
+      "finerenone",
+      "amiloride",
+      "triamterene",
+      "enalapril",
+      "valsartan",
+      "sacubitril-valsartan",
+      "spironolactone-hctz",
+      "hydrochlorothiazide-triamterene",
+    ],
     pathophysiologyDetail:
-      "Combining an ACE inhibitor or ARB with a mineralocorticoid receptor antagonist (e.g. spironolactone, eplerenone) or ENaC blocker (amiloride, triamterene) achieves additive inhibition of the renal potassium excretion axis. The ACEi/ARB reduces circulating aldosterone levels, while the MRA prevents remaining aldosterone from binding intracellular receptors in principal cells. The combined lack of SGK1 stimulation and ENaC activity eliminates the lumen-negative transepithelial voltage driving ROMK K+ secretion into urine. In patients with reduced GFR, diabetes, or baseline potassium > 4.5 mEq/L, this combination frequently precipitates life-threatening hyperkalemia (> 6.0 mEq/L) and hyperkalemic metabolic acidosis (Type 4 RTA).",
+      "Combining an ACE inhibitor or ARB with a mineralocorticoid receptor antagonist (spironolactone, eplerenone, finerenone) or ENaC blocker (amiloride, triamterene), or stacking an ACEi with an ARB (ONTARGET, PMID 18378520), achieves additive inhibition of the renal potassium excretion axis. The ACEi/ARB reduces circulating aldosterone levels, while the MRA prevents remaining aldosterone from binding intracellular receptors in principal cells. The combined lack of SGK1 stimulation and ENaC activity eliminates the lumen-negative transepithelial voltage driving ROMK K+ secretion into urine. In patients with reduced GFR, diabetes, or baseline potassium > 4.5 mEq/L, this combination frequently precipitates life-threatening hyperkalemia (> 6.0 mEq/L) and hyperkalemic metabolic acidosis (Type 4 RTA).",
     clinicalRisks: [
       "Life-threatening hyperkalemia (peaked T waves, PR prolongation, widened QRS, ventricular arrest)",
       "Type 4 renal tubular acidosis (hyperkalemic non-anion gap metabolic acidosis)",
@@ -1091,8 +1256,145 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
       "12-lead ECG if serum K+ exceeds 5.5 mEq/L",
     ],
     mitigationPhysiology:
-      "Mitigation relies on strict patient selection, avoiding potassium supplements, maintaining cautious titration, monitoring serial serum potassium, and having clear thresholds for temporary dose suspension if serum potassium exceeds 5.0 to 5.5 mEq/L.",
-    literatureCitation: "Palmer BF, Clegg DJ. Physiology and pathophysiology of potassium homeostasis. Adv Physiol Educ. 2016;40(4):480-490.",
+      "Mitigation relies on avoiding dual ACEi + ARB therapy, avoiding potassium supplements, maintaining cautious monitoring, and having clear thresholds for holding therapy if serum potassium exceeds 5.0 to 5.5 mEq/L.",
+    literatureCitation: "Palmer BF, Clegg DJ. Physiology and pathophysiology of potassium homeostasis. Adv Physiol Educ. 2016;40(4):480-490; Yusuf S, et al. N Engl J Med. 2008;358(15):1547-1559. PMID 18378520.",
+  },
+  {
+    id: "trimethoprim-enac-hyperkalemia",
+    title: "Trimethoprim ENaC Blockade + RAAS / MRA: Collecting Duct Hyperkalemia & Sudden Arrhythmia Hazard",
+    severity: "critical",
+    summary: "Trimethoprim acts as a structural amiloride-like ENaC blocker in CCD principal cells, precipitating fatal hyperkalemia when combined with ACEi, ARB, or spironolactone.",
+    mechanismsInvolved: {
+      tubularTransport: "Trimethoprim directly blocks apical ENaC channels in cortical collecting duct principal cells, collapsing the -10 to -35 mV lumen-negative potential required for ROMK K+ secretion and alpha-intercalated H+ secretion.",
+      hormonalResponse: "Co-present ACEi/ARB/ARNI or MRA suppresses aldosterone synthesis or mineralocorticoid receptor signaling, removing all distal compensatory K+ excretion.",
+      hemodynamicConsequence: "Marked impairment of urinary potassium clearance (Type 4 RTA phenotype), linked to sharp spikes in emergency hyperkalemia hospitalization and sudden death in older adults (PMID 20585070, PMID 21911446, PMID 25359996).",
+    },
+    triggerDrugClasses: ["Trimethoprim / TMP-SMX", "ACEi / ARB / ARNI or K+-Sparing Diuretic / MRA"],
+    interactingDrugIds: [
+      "tmp-smx",
+      "lisinopril",
+      "spironolactone",
+      "trimethoprim",
+      "losartan",
+      "enalapril",
+      "valsartan",
+      "eplerenone",
+      "finerenone",
+      "amiloride",
+      "triamterene",
+    ],
+    pathophysiologyDetail:
+      "Trimethoprim is a heterocyclic weak base structurally analogous to amiloride and triamterene that directly plugs the apical ENaC pore in cortical collecting duct principal cells. Even at standard outpatient exposures, trimethoprim decreases renal potassium excretion by ~40%. When layered onto an ACE inhibitor, ARB, or mineralocorticoid receptor antagonist (especially spironolactone), population-based nested case-control cohorts demonstrate a multi-fold surge in severe hyperkalemia and sudden cardiac death within 7–14 days of initiating TMP-SMX (PMID 20585070, PMID 21911446, PMID 25359996). Simultaneously, trimethoprim inhibits OCT2/MATE1 tubular creatinine secretion, making serum creatinine rise slightly even before true AKI develops.",
+    clinicalRisks: [
+      "Severe, rapid-onset hyperkalemia (serum K+ > 6.0 mEq/L) and hyperkalemic cardiac arrest",
+      "Type 4 renal tubular acidosis (hyperkalemic non-anion gap acidosis)",
+      "Concurrent OCT2/MATE1 pseudo-creatinine bump masking true vs secretory SCr changes",
+    ],
+    monitoredParameters: [
+      "Serum potassium within 3 to 5 days of co-administration",
+      "Serum creatinine, bicarbonate, and eGFR",
+      "12-lead ECG if serum K+ > 5.5 mEq/L or bradyarrhythmia occurs",
+    ],
+    mitigationPhysiology:
+      "Physiological mitigation favors selecting non-ENaC-blocking antimicrobial alternatives (when spectrum allows) in patients taking spironolactone or RAAS inhibitors with impaired eGFR, or performing close serial potassium surveillance.",
+    literatureCitation: "Antoniou T, et al. Arch Intern Med. 2010;170(12):1045-1049. PMID 20585070; Antoniou T, et al. BMJ. 2011;343:d5228. PMID 21911446; Fralick M, et al. BMJ. 2014;349:g6196. PMID 25359996.",
+  },
+  {
+    id: "oct2-mate1-cation-blockade",
+    title: "OCT2 / MATE1 Cationic Secretion Blockade: Metformin / Dofetilide Accumulation & Pseudo-Creatinine Artifact",
+    severity: "high",
+    summary: "Inhibition of proximal tubular OCT2/MATE1 traps organic cation substrates (metformin, dofetilide) systemically while producing a benign non-GFR pseudo-creatinine rise.",
+    mechanismsInvolved: {
+      tubularTransport: "Basolateral OCT2 (SLC22A2) and apical proton-coupled MATE1/2-K (SLC47A1/2) mediate active proximal secretion of metformin, dofetilide, and 10–20% of urinary creatinine. Inhibitors (dolutegravir, bictegravir, cobicistat, cimetidine, trimethoprim, ranolazine) arrest transcellular cation efflux.",
+      hormonalResponse: "Independent of RAAS or glomerular autoregulation; true glomerular filtration rate (measured via cystatin-C or iohexol) remains unchanged by pure transporter blockade.",
+      hemodynamicConsequence: "Markedly elevated metformin AUC (~79% increase with dolutegravir, PMID 26974526) or dofetilide TdP exposure, coupled with a rapid, plateauing +0.1 to +0.2 mg/dL serum creatinine artifact (PMID 24646860).",
+    },
+    triggerDrugClasses: ["OCT2 / MATE1 Inhibitor (Dolutegravir, Bictegravir, Cobicistat, Cimetidine, TMP-SMX, Ranolazine)", "Cationic Substrate (Metformin, Dofetilide)"],
+    interactingDrugIds: [
+      "dolutegravir",
+      "metformin",
+      "cimetidine",
+      "bictegravir",
+      "cobicistat",
+      "trimethoprim",
+      "tmp-smx",
+      "ranolazine",
+      "dofetilide",
+      "empagliflozin-metformin",
+      "dapagliflozin-metformin",
+    ],
+    pathophysiologyDetail:
+      "Proximal tubular cells secrete organic cations in a two-step vector: basolateral electrogenic influx via OCT2 (SLC22A2) followed by apical H+-coupled efflux via MATE1 and MATE2-K (SLC47A1/2). Potent blockers such as dolutegravir (OCT2 IC50 ~1.9 uM; MATE1 IC50 ~6.3 uM), bictegravir, cobicistat (which also inhibits OAT2 creatinine uptake, PMID 24646860), trimethoprim, and cimetidine competitively arrest both metformin/dofetilide elimination and active tubular creatinine secretion. In healthy subjects, dolutegravir raises metformin AUC by ~79% and Cmax by ~66% without reducing true GFR (PMID 26974526), while elevating serum creatinine by ~0.1–0.2 mg/dL within days ('pseudo-creatinine bump').",
+    clinicalRisks: [
+      "Metformin accumulation and Metformin-Associated Lactic Acidosis (MALA), especially when baseline eGFR is reduced (< 45–60 mL/min/1.73m2)",
+      "Life-threatening QTc prolongation and Torsades de Pointes with dofetilide + cimetidine/trimethoprim (contraindicated)",
+      "Misinterpretation of benign secretory pseudo-creatinine elevation as acute kidney injury",
+    ],
+    monitoredParameters: [
+      "Serum cystatin-C (confirms true GFR independent of OCT2/MATE1 creatinine secretion artifact)",
+      "Serum lactate, bicarbonate, and anion gap if metformin exposure rises",
+      "QTc interval on 12-lead ECG for dofetilide",
+    ],
+    mitigationPhysiology:
+      "Distinguish true GFR decline from tubular creatinine secretion blockade using cystatin-C; observe FDA Prescribing Information exposure limits for metformin when co-prescribed with dolutegravir/cimetidine, and strictly avoid OCT2/MATE1 inhibitors with dofetilide.",
+    literatureCitation: "Song IH, et al. J Acquir Immune Defic Syndr. 2016;72(4):400-407. PMID 26974526; Lepist EI, et al. Kidney Int. 2014;86(2):350-357. PMID 24646860.",
+  },
+  {
+    id: "vancomycin-piperacillin-tazobactam-aki",
+    title: "Vancomycin + Piperacillin-Tazobactam / Aminoglycoside Nephrotoxicity & OAT Secretion Kinetics",
+    severity: "critical",
+    summary: "Synergistic rise in AKI incidence with vancomycin + piperacillin-tazobactam or aminoglycosides, requiring differentiation of structural tubular injury vs OAT creatinine transport interference.",
+    mechanismsInvolved: {
+      tubularTransport: "Vancomycin induces proximal tubular mitochondrial oxidative stress and luminal cast formation; aminoglycosides undergo megalin-mediated proximal apical endocytosis and lysosomal phospholipidosis. Piperacillin competes at basolateral OAT1/OAT3 and may add acute interstitial nephritis or subclinical tubular stress.",
+      hormonalResponse: "Tubular injury activates tubuloglomerular feedback (macula densa), secondarily constricting the afferent arteriole and reducing true GFR.",
+      hemodynamicConsequence: "Meta-analyses demonstrate a ~2- to 3-fold higher odds of KDIGO-defined AKI with vancomycin + piperacillin-tazobactam compared to vancomycin + cefepime or meropenem (PMID 29088001).",
+    },
+    triggerDrugClasses: ["Vancomycin", "Piperacillin-Tazobactam or Aminoglycoside (Gentamicin / Tobramycin / Amikacin)"],
+    interactingDrugIds: ["vancomycin", "piperacillin-tazobactam", "gentamicin", "tobramycin", "amikacin", "amphotericin-b", "cisplatin"],
+    pathophysiologyDetail:
+      "Co-administration of IV vancomycin with piperacillin-tazobactam is consistently associated with a 2- to 3-fold higher incidence of AKI than vancomycin paired with cefepime or carbapenems (PMID 29088001). Proposed mechanisms combine vancomycin-induced proximal tubular reactive oxygen species and uromodulin cast formation with piperacillin-tazobactam-mediated acute interstitial nephritis and competitive OAT1/OAT3 inhibition (which can partially impair tubular creatinine excretion—a 'pseudo-nephrotoxicity' debate partly clarified by cystatin-C monitoring). Adding aminoglycosides (megalin endocytosis) or loop diuretics compounds structural tubular necrosis.",
+    clinicalRisks: [
+      "KDIGO Stage 1–3 Acute Kidney Injury (typically manifesting 3–5 days into combination therapy)",
+      "Vancomycin accumulation (AUC24/MIC > 600) amplifying nephrotoxicity in a positive feedback loop",
+      "Synergistic ototoxicity and AKI when aminoglycosides and loop diuretics coexist",
+    ],
+    monitoredParameters: [
+      "Daily serum creatinine, BUN, and serum cystatin-C (to confirm true structural GFR drop vs OAT1/3 secretion artifact)",
+      "Daily urine output and urinalysis (eosinophils/casts)",
+      "Vancomycin Bayesian AUC monitoring and aminoglycoside trough concentrations",
+    ],
+    mitigationPhysiology:
+      "Physiological mitigation involves selecting non-piperacillin anti-pseudomonal beta-lactams (e.g. cefepime or meropenem) when clinically appropriate alongside vancomycin, maintaining euvolemia, and monitoring cystatin-C alongside SCr.",
+    literatureCitation: "Luther MK, et al. Vancomycin Plus Piperacillin-Tazobactam and Acute Kidney Injury in Adults: A Systematic Review and Meta-Analysis. Crit Care Med. 2018;46(1):12-20. PMID 29088001.",
+  },
+  {
+    id: "oat1-3-methotrexate-clearance-blockade",
+    title: "OAT1 / OAT3 Proximal Secretion Blockade: Methotrexate Clearance Collapse (MTX + Probenecid / NSAIDs / Pip-Tazo / TMP-SMX)",
+    severity: "critical",
+    summary: "Competitive inhibition of basolateral OAT1/OAT3 traps methotrexate in systemic circulation, triggering severe myelosuppression, mucositis, and crystal nephropathy.",
+    mechanismsInvolved: {
+      afferentArteriole: "NSAIDs additionally constrict the afferent arteriole via COX inhibition, dropping filtered methotrexate load.",
+      tubularTransport: "Methotrexate is cleared >80% renally via glomerular filtration plus active basolateral OAT1/OAT3 uptake and apical MRP2/4 / BCRP extrusion in the PCT. Probenecid, NSAIDs, and piperacillin-tazobactam competitively inhibit OAT1/3.",
+      hormonalResponse: "Volume depletion or acidic urine (pH < 6.0) further impairs tubular solubility of methotrexate and 7-hydroxymethotrexate.",
+      hemodynamicConsequence: "Marked prolongation of methotrexate elimination half-life, driving sustained toxic plasma concentrations and acute intratubular crystal injury.",
+    },
+    triggerDrugClasses: ["Methotrexate", "OAT1/3 Inhibitor (Probenecid, NSAID, Piperacillin-Tazobactam) or TMP-SMX"],
+    interactingDrugIds: ["methotrexate", "probenecid", "ibuprofen", "naproxen", "ketorolac", "indomethacin", "aspirin", "piperacillin-tazobactam", "tmp-smx", "trimethoprim"],
+    pathophysiologyDetail:
+      "High- and intermediate-dose methotrexate relies heavily on active proximal tubular secretion via basolateral OAT1 (SLC22A6) and OAT3 (SLC22A8). Probenecid, NSAIDs, and piperacillin-tazobactam compete directly for OAT1/3 uptake, while NSAIDs simultaneously lower GFR by constricting the afferent arteriole. Furthermore, TMP-SMX blocks OAT transport while synergizing with methotrexate's dihydrofolate reductase inhibition, causing catastrophic pancytopenia (PMID 2225539).",
+    clinicalRisks: [
+      "Life-threatening pancytopenia, neutropenic sepsis, and severe mucositis",
+      "Intratubular methotrexate / 7-hydroxymethotrexate crystal precipitation and oliguric AKI",
+      "Delayed methotrexate clearance requiring prolonged leucovorin / glucarpidase rescue",
+    ],
+    monitoredParameters: [
+      "Serial plasma methotrexate levels (24h, 48h, 72h until < 0.05–0.1 uM)",
+      "Daily serum creatinine and urine output",
+      "Urine pH (maintain pH >= 7.0–7.5 via bicarbonate/alkalinization in high-dose regimens) and CBC",
+    ],
+    mitigationPhysiology:
+      "Physiological protection relies on avoiding concurrent NSAIDs, probenecid, piperacillin-tazobactam, and TMP-SMX during methotrexate exposure, maintaining brisk alkaline diuresis (urine pH 7.5–8.0) so methotrexate remains >99.8% ionized and soluble.",
+    literatureCitation: "Leowattana W / Groenendal-van de Meent D; Methotrexate and trimethoprim-sulphamethoxazole--a potentially hazardous combination. Clin Exp Dermatol. 1990;15(4):308-310. PMID 2225539.",
   },
   {
     id: "sglt2-loop-hypovolemia",
@@ -1105,7 +1407,7 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
       hemodynamicConsequence: "Potentiated reduction in effective circulating volume, arterial blood pressure, and intraglomerular capillary hydrostatic pressure.",
     },
     triggerDrugClasses: ["SGLT2 Inhibitor", "Loop Diuretic"],
-    interactingDrugIds: ["empagliflozin", "dapagliflozin", "canagliflozin", "furosemide", "torsemide", "bumetanide"],
+    interactingDrugIds: ["empagliflozin", "furosemide", "torsemide", "dapagliflozin", "canagliflozin", "ertugliflozin", "bexagliflozin", "sotagliflozin", "bumetanide"],
     pathophysiologyDetail:
       "SGLT2 inhibitors produce modest natriuresis and substantial osmotic diuresis via unabsorbed luminal glucose. When combined with a potent loop diuretic, the additive solute and water loss from both the PCT and TAL can precipitate rapid intravascular volume contraction, particularly in elderly patients or those with heart failure on stable loop diuretic regimens. This can manifest as symptomatic orthostatic hypotension, falls, and a transient rise in serum creatinine reflecting prerenal hypoperfusion.",
     clinicalRisks: [
@@ -1127,6 +1429,157 @@ export const RENAL_COLLISIONS: readonly RenalCollision[] = [
 // ============================================================================
 // 5. HELPER FUNCTIONS
 // ============================================================================
+
+/**
+ * Returns the Glomerulus & Juxtaglomerular Apparatus hemodynamic autoregulation profile.
+ */
+export function getGlomerularHemodynamics(): GlomerularHemodynamicsProfile {
+  return GLOMERULAR_HEMODYNAMICS;
+}
+
+export interface GlomerularHemodynamicEvaluation {
+  afferentModifiers: { drugId: string; effect: "constricts-pg-blockade" | "constricts-et1" | "constricts-tgf-restoration" }[];
+  efferentModifiers: { drugId: string; effect: "dilates-ang-ii-blockade" }[];
+  netFiltrationRisk: "autoregulation-collapse" | "hyperfiltration-relief" | "afferent-or-efferent-shift" | "neutral";
+  summary: string;
+}
+
+/**
+ * Evaluates pre-tubular glomerular afferent and efferent arteriolar hemodynamic effects for tray drugs.
+ */
+export function evaluateGlomerularHemodynamics(drugIds: string[]): GlomerularHemodynamicEvaluation {
+  const normalized = new Set(drugIds.map((id) => id.toLowerCase().trim()));
+  const afferentModifiers: GlomerularHemodynamicEvaluation["afferentModifiers"] = [];
+  const efferentModifiers: GlomerularHemodynamicEvaluation["efferentModifiers"] = [];
+
+  for (const id of normalized) {
+    if (GLOMERULAR_HEMODYNAMICS.drugClassTargets.nsaidIds.includes(id)) {
+      afferentModifiers.push({ drugId: id, effect: "constricts-pg-blockade" });
+    }
+    if (GLOMERULAR_HEMODYNAMICS.drugClassTargets.cniIds.includes(id)) {
+      afferentModifiers.push({ drugId: id, effect: "constricts-et1" });
+    }
+    if (GLOMERULAR_HEMODYNAMICS.drugClassTargets.sglt2Ids.includes(id)) {
+      afferentModifiers.push({ drugId: id, effect: "constricts-tgf-restoration" });
+    }
+    const d = DRUG_BY_ID[id];
+    if (
+      GLOMERULAR_HEMODYNAMICS.drugClassTargets.aceiArbArniIds.includes(id) ||
+      (d && (d.cls.includes("ACE") || d.cls.includes("ARB") || d.pd.includes("acei-arb")))
+    ) {
+      efferentModifiers.push({ drugId: id, effect: "dilates-ang-ii-blockade" });
+    }
+  }
+
+  const hasNsaidOrCni = afferentModifiers.some((m) => m.effect === "constricts-pg-blockade" || m.effect === "constricts-et1");
+  const hasSglt2 = afferentModifiers.some((m) => m.effect === "constricts-tgf-restoration");
+  const hasEfferentDilator = efferentModifiers.length > 0;
+
+  if (hasNsaidOrCni && hasEfferentDilator) {
+    return {
+      afferentModifiers,
+      efferentModifiers,
+      netFiltrationRisk: "autoregulation-collapse",
+      summary:
+        "Dual glomerular clamp failure: afferent constriction (NSAID/CNI) combined with efferent vasodilation (ACEi/ARB/ARNI) sharply drops intraglomerular hydrostatic pressure P_GC and risks acute GFR collapse (PMID 15676048).",
+    };
+  }
+  if (hasSglt2 && hasEfferentDilator) {
+    return {
+      afferentModifiers,
+      efferentModifiers,
+      netFiltrationRisk: "hyperfiltration-relief",
+      summary:
+        "Complementary intraglomerular hyperfiltration unloading: SGLT2i restores macula densa TGF afferent tone while ACEi/ARB reduces efferent tone (transient 3–5 mL/min/1.73m2 eGFR dip reflects nephroprotective pressure unloading).",
+    };
+  }
+  if (afferentModifiers.length > 0 || efferentModifiers.length > 0) {
+    return {
+      afferentModifiers,
+      efferentModifiers,
+      netFiltrationRisk: "afferent-or-efferent-shift",
+      summary: "Single-pole arteriolar modulation present; verify volume status and serial SCr/eGFR.",
+    };
+  }
+
+  return {
+    afferentModifiers,
+    efferentModifiers,
+    netFiltrationRisk: "neutral",
+    summary: "No direct glomerular afferent or efferent arteriolar modifiers identified on tray.",
+  };
+}
+
+export interface PseudoCreatinineProfile {
+  drugId: string;
+  transportersBlocked: readonly string[];
+  typicalScrRiseMgDl: string;
+  mechanismNote: string;
+}
+
+const PSEUDO_CREATININE_AGENTS: Record<string, Omit<PseudoCreatinineProfile, "drugId">> = {
+  dolutegravir: {
+    transportersBlocked: ["OCT2 (SLC22A2)", "MATE1 (SLC47A1)"],
+    typicalScrRiseMgDl: "+0.1 to +0.2 mg/dL (plateaus in 1–2 weeks)",
+    mechanismNote: "Inhibits proximal tubular creatinine secretion via OCT2/MATE1 without reducing true GFR; cystatin-C remains normal (PMID 26974526, PMID 24646860).",
+  },
+  bictegravir: {
+    transportersBlocked: ["OCT2 (SLC22A2)", "MATE1 (SLC47A1)"],
+    typicalScrRiseMgDl: "+0.1 mg/dL",
+    mechanismNote: "Inhibits OCT2/MATE1-mediated tubular creatinine secretion without affecting true glomerular filtration rate.",
+  },
+  cobicistat: {
+    transportersBlocked: ["MATE1 (SLC47A1)", "OAT2 (SLC22A7)"],
+    typicalScrRiseMgDl: "+0.1 to +0.2 mg/dL",
+    mechanismNote: "Blocks proximal tubular creatinine uptake/efflux via OAT2 and MATE1 without altering measured iohexol GFR (PMID 24646860).",
+  },
+  cimetidine: {
+    transportersBlocked: ["MATE1/2-K (SLC47A1/2)", "OCT2 (SLC22A2)"],
+    typicalScrRiseMgDl: "+0.1 to +0.3 mg/dL",
+    mechanismNote: "Potently inhibits apical MATE1/2-K and basolateral OCT2 creatinine secretion, raising SCr without true GFR decline.",
+  },
+  trimethoprim: {
+    transportersBlocked: ["OCT2 (SLC22A2)", "MATE1 (SLC47A1)"],
+    typicalScrRiseMgDl: "+0.1 to +0.3 mg/dL",
+    mechanismNote: "Reversibly blocks proximal OCT2/MATE1 creatinine secretion (distinct from true interstitial nephritis or ENaC-mediated hyperkalemia).",
+  },
+  "tmp-smx": {
+    transportersBlocked: ["OCT2 (SLC22A2)", "MATE1 (SLC47A1)"],
+    typicalScrRiseMgDl: "+0.1 to +0.3 mg/dL",
+    mechanismNote: "Trimethoprim component blocks proximal OCT2/MATE1 creatinine secretion without altering true GFR; verify cystatin-C if AKI is suspected.",
+  },
+};
+
+/**
+ * Identifies agents on tray that produce non-GFR pseudo-creatinine elevations via OCT2/MATE1/OAT2 blockade.
+ */
+export function evaluatePseudoCreatinineElevation(drugIds: string[]): {
+  detected: PseudoCreatinineProfile[];
+  confirmatoryBiomarker: string;
+} {
+  const detected: PseudoCreatinineProfile[] = [];
+  const seen = new Set<string>();
+
+  for (const rawId of drugIds) {
+    const id = rawId.toLowerCase().trim();
+    const matchKeys = Object.keys(PSEUDO_CREATININE_AGENTS).filter(
+      (k) => id === k || id.startsWith(`${k}-`) || id.includes(`-${k}`),
+    );
+    for (const k of matchKeys) {
+      if (seen.has(k)) continue;
+      seen.add(k);
+      detected.push({
+        drugId: id,
+        ...PSEUDO_CREATININE_AGENTS[k],
+      });
+    }
+  }
+
+  return {
+    detected,
+    confirmatoryBiomarker: "Serum cystatin-C (freely filtered at the glomerulus without OCT2/MATE1 tubular secretion)",
+  };
+}
 
 /**
  * Returns all 5 nephron segments with comprehensive physiological and pharmacological modeling.
@@ -1182,15 +1635,30 @@ export function detectRenalCollisions(drugIds: string[]): Array<{
 
   // Normalize input drug IDs (handle hydrochlorothiazide vs hctz)
   const normalizedIds = new Set<string>();
-  for (const id of drugIds) {
+  for (const raw of drugIds) {
+    const id = raw.toLowerCase().trim();
+    if (!id) continue;
     normalizedIds.add(id);
     if (id === "hctz") normalizedIds.add("hydrochlorothiazide");
     if (id === "hydrochlorothiazide") normalizedIds.add("hctz");
   }
 
   // Classification lookup sets
-  const loopDiuretics = new Set(["furosemide", "torsemide", "bumetanide"]);
-  const thiazides = new Set(["hydrochlorothiazide", "hctz", "chlorthalidone", "metolazone", "indapamide"]);
+  const loopDiuretics = new Set(["furosemide", "torsemide", "bumetanide", "ethacrynic-acid"]);
+  const thiazides = new Set([
+    "hydrochlorothiazide",
+    "hctz",
+    "chlorthalidone",
+    "metolazone",
+    "indapamide",
+    "chlorothiazide",
+    "bendroflumethiazide",
+    "lisinopril-hctz",
+    "losartan-hctz",
+    "valsartan-hctz",
+    "spironolactone-hctz",
+    "hydrochlorothiazide-triamterene",
+  ]);
   const aceiArbs = new Set([
     "lisinopril",
     "losartan",
@@ -1201,6 +1669,13 @@ export function detectRenalCollisions(drugIds: string[]): Array<{
     "telmisartan",
     "benazepril",
     "olmesartan",
+    "captopril",
+    "trandolapril",
+    "azilsartan",
+    "sacubitril-valsartan",
+    "lisinopril-hctz",
+    "losartan-hctz",
+    "valsartan-hctz",
   ]);
   const nsaids = new Set([
     "ibuprofen",
@@ -1211,14 +1686,71 @@ export function detectRenalCollisions(drugIds: string[]): Array<{
     "meloxicam",
     "diclofenac",
     "aspirin",
+    "nabumetone",
   ]);
   const potassiumSparing = new Set([
     "spironolactone",
+    "spironolactone-hctz",
     "eplerenone",
+    "finerenone",
     "amiloride",
     "triamterene",
+    "hydrochlorothiazide-triamterene",
   ]);
-  const sglt2s = new Set(["empagliflozin", "dapagliflozin", "canagliflozin"]);
+  const trimethoprimAgents = new Set(["trimethoprim", "tmp-smx"]);
+  const sglt2s = new Set([
+    "empagliflozin",
+    "dapagliflozin",
+    "canagliflozin",
+    "ertugliflozin",
+    "bexagliflozin",
+    "sotagliflozin",
+    "empagliflozin-metformin",
+    "dapagliflozin-metformin",
+    "empagliflozin-linagliptin",
+  ]);
+  const oct2Mate1Inhibitors = new Set([
+    "dolutegravir",
+    "dolutegravir-abacavir-lamivudine",
+    "dolutegravir-lamivudine",
+    "dolutegravir-rilpivirine",
+    "bictegravir",
+    "bictegravir-emtricitabine-taf",
+    "bictegravir-lenacapavir",
+    "cobicistat",
+    "atazanavir-cobicistat",
+    "darunavir-cobicistat",
+    "darunavir-cobicistat-ftc-taf",
+    "elvitegravir-cobicistat-ftc-taf",
+    "elvitegravir-cobicistat-ftc-tdf",
+    "cimetidine",
+    "trimethoprim",
+    "tmp-smx",
+    "ranolazine",
+  ]);
+  const oct2Substrates = new Set([
+    "metformin",
+    "empagliflozin-metformin",
+    "dapagliflozin-metformin",
+    "sitagliptin-metformin",
+    "saxagliptin-metformin",
+    "dofetilide",
+  ]);
+  const aminoglycosides = new Set(["gentamicin", "tobramycin", "amikacin"]);
+  const oatInhibitorsForMtx = new Set([
+    "probenecid",
+    "piperacillin-tazobactam",
+    "piperacillin",
+    "ibuprofen",
+    "naproxen",
+    "ketorolac",
+    "indomethacin",
+    "meloxicam",
+    "diclofenac",
+    "aspirin",
+    "tmp-smx",
+    "trimethoprim",
+  ]);
 
   const matchedCollisions: Array<{
     collision: RenalCollision;
@@ -1226,26 +1758,31 @@ export function detectRenalCollisions(drugIds: string[]): Array<{
     triggeredBy: string[];
   }> = [];
 
-  // 1. Triple Whammy: ACEi/ARB + Loop Diuretic + NSAID
   const hasAceiArb = [...normalizedIds].filter((id) => {
     if (aceiArbs.has(id)) return true;
     const d = DRUG_BY_ID[id];
-    return d && (d.cls.includes("ACE") || d.cls.includes("ARB") || d.pd.includes("acei-arb"));
+    return Boolean(d && (d.cls.includes("ACE") || d.cls.includes("ARB") || d.pd.includes("acei-arb")));
   });
   const hasLoop = [...normalizedIds].filter((id) => loopDiuretics.has(id) || DRUG_BY_ID[id]?.cls.toLowerCase().includes("loop diuretic"));
+  const hasThiazide = [...normalizedIds].filter((id) => thiazides.has(id) || DRUG_BY_ID[id]?.cls.toLowerCase().includes("thiazide"));
   const hasNsaid = [...normalizedIds].filter((id) => nsaids.has(id) || DRUG_BY_ID[id]?.cls.toLowerCase().includes("nsaid"));
+  const hasDiureticForTriple = [...new Set([...hasLoop, ...hasThiazide])];
 
-  if (hasAceiArb.length > 0 && hasLoop.length > 0 && hasNsaid.length > 0) {
+  // 1. Triple Whammy: ACEi/ARB/ARNI + (Loop OR Thiazide Diuretic) + NSAID
+  if (hasAceiArb.length > 0 && hasDiureticForTriple.length > 0 && hasNsaid.length > 0) {
     const col = RENAL_COLLISIONS.find((c) => c.id === "triple-whammy")!;
     matchedCollisions.push({
       collision: col,
-      matchedDrugIds: [...new Set([...hasAceiArb, ...hasLoop, ...hasNsaid])],
-      triggeredBy: ["ACEi/ARB", "Loop Diuretic", "NSAID"],
+      matchedDrugIds: [...new Set([...hasAceiArb, ...hasDiureticForTriple, ...hasNsaid])],
+      triggeredBy: [
+        "ACEi/ARB",
+        hasLoop.length > 0 && hasThiazide.length > 0 ? "Loop & Thiazide Diuretic" : hasLoop.length > 0 ? "Loop Diuretic" : "Thiazide Diuretic",
+        "NSAID",
+      ],
     });
   }
 
   // 2. Sequential Nephron Blockade: Loop + Thiazide/Metolazone
-  const hasThiazide = [...normalizedIds].filter((id) => thiazides.has(id) || DRUG_BY_ID[id]?.cls.toLowerCase().includes("thiazide"));
   if (hasLoop.length > 0 && hasThiazide.length > 0) {
     const col = RENAL_COLLISIONS.find((c) => c.id === "sequential-nephron-blockade")!;
     matchedCollisions.push({
@@ -1255,7 +1792,7 @@ export function detectRenalCollisions(drugIds: string[]): Array<{
     });
   }
 
-  // 3. Contraction Alkalosis Risk: High-dose loop or multiple diuretics
+  // 3. Contraction Alkalosis Risk: Loop diuretics
   if (hasLoop.length > 0) {
     const col = RENAL_COLLISIONS.find((c) => c.id === "contraction-alkalosis-risk")!;
     matchedCollisions.push({
@@ -1283,18 +1820,93 @@ export function detectRenalCollisions(drugIds: string[]): Array<{
     });
   }
 
-  // 5. Dual RAAS / Hyperkalemia Hazard: ACEi/ARB + K+-sparing
+  // 4B. Lithium Proximal Tubular Reabsorption & Clearance Collapse
+  const lithiumInteractors = [...new Set([...hasThiazide, ...hasLoop, ...hasNsaid, ...hasAceiArb])];
+  if (hasLithium && lithiumInteractors.length > 0) {
+    const col = RENAL_COLLISIONS.find((c) => c.id === "lithium-proximal-reabsorption")!;
+    matchedCollisions.push({
+      collision: col,
+      matchedDrugIds: ["lithium", ...lithiumInteractors],
+      triggeredBy: ["Lithium", "Proximal NHE3 / GFR Reducer (Thiazide, Loop, NSAID, or ACEi/ARB)"],
+    });
+  }
+
+  // 5. Dual RAAS / Hyperkalemia Hazard: ACEi/ARB + K+-sparing OR Dual ACEi + ARB
   const hasKSparing = [...normalizedIds].filter((id) => potassiumSparing.has(id) || DRUG_BY_ID[id]?.pd.includes("k-sparing"));
-  if (hasAceiArb.length > 0 && hasKSparing.length > 0) {
+  const hasDualAceiAndArb =
+    hasAceiArb.some((id) => DRUG_BY_ID[id]?.cls.includes("ACE") || id === "lisinopril" || id === "enalapril" || id === "ramipril" || id === "benazepril") &&
+    hasAceiArb.some((id) => DRUG_BY_ID[id]?.cls.includes("ARB") || id === "losartan" || id === "valsartan" || id === "candesartan" || id === "telmisartan" || id === "olmesartan");
+
+  if ((hasAceiArb.length > 0 && hasKSparing.length > 0) || hasDualAceiAndArb) {
     const col = RENAL_COLLISIONS.find((c) => c.id === "dual-raas-hyperkalemia")!;
     matchedCollisions.push({
       collision: col,
       matchedDrugIds: [...new Set([...hasAceiArb, ...hasKSparing])],
-      triggeredBy: ["ACEi/ARB", "Potassium-Sparing Diuretic"],
+      triggeredBy: hasKSparing.length > 0 ? ["ACEi/ARB", "Potassium-Sparing Diuretic"] : ["Dual RAAS Blockade (ACEi + ARB)"],
     });
   }
 
-  // 6. SGLT2 + Loop Diuretic Potentiation
+  // 5B. Trimethoprim ENaC Blockade + RAAS / K+-Sparing Hyperkalemia
+  const hasTrimethoprim = [...normalizedIds].filter((id) => trimethoprimAgents.has(id));
+  const hyperkalemiaPartners = [...new Set([...hasAceiArb, ...hasKSparing])];
+  if (hasTrimethoprim.length > 0 && hyperkalemiaPartners.length > 0) {
+    const col = RENAL_COLLISIONS.find((c) => c.id === "trimethoprim-enac-hyperkalemia")!;
+    matchedCollisions.push({
+      collision: col,
+      matchedDrugIds: [...new Set([...hasTrimethoprim, ...hyperkalemiaPartners])],
+      triggeredBy: ["Trimethoprim (ENaC Blockade)", "RAAS Inhibitor / MRA / K+-Sparing Agent"],
+    });
+  }
+
+  // 6. OCT2 / MATE1 Cationic Secretion Blockade
+  const hasOct2Inhibitors = [...normalizedIds].filter((id) => oct2Mate1Inhibitors.has(id));
+  const hasOct2Substrates = [...normalizedIds].filter((id) => oct2Substrates.has(id));
+  if (hasOct2Inhibitors.length > 0 && hasOct2Substrates.length > 0) {
+    const col = RENAL_COLLISIONS.find((c) => c.id === "oct2-mate1-cation-blockade")!;
+    matchedCollisions.push({
+      collision: col,
+      matchedDrugIds: [...new Set([...hasOct2Inhibitors, ...hasOct2Substrates])],
+      triggeredBy: ["OCT2 / MATE1 Inhibitor", "Organic Cation Substrate (Metformin / Dofetilide)"],
+    });
+  }
+
+  // 7. Vancomycin + Piperacillin-Tazobactam / Aminoglycoside Nephrotoxicity
+  const hasVancomycin = normalizedIds.has("vancomycin");
+  const hasPipTazo = normalizedIds.has("piperacillin-tazobactam") || normalizedIds.has("piperacillin");
+  const hasAminoglycoside = [...normalizedIds].filter((id) => aminoglycosides.has(id));
+  const hasOtherTubularToxin = [...normalizedIds].filter((id) => id === "amphotericin-b" || id === "cisplatin");
+  if (
+    (hasVancomycin && (hasPipTazo || hasAminoglycoside.length > 0 || hasOtherTubularToxin.length > 0)) ||
+    (hasAminoglycoside.length > 0 && (hasLoop.length > 0 || hasNsaid.length > 0))
+  ) {
+    const col = RENAL_COLLISIONS.find((c) => c.id === "vancomycin-piperacillin-tazobactam-aki")!;
+    const matched = [
+      ...(hasVancomycin ? ["vancomycin"] : []),
+      ...(hasPipTazo ? [...normalizedIds].filter((id) => id === "piperacillin-tazobactam" || id === "piperacillin") : []),
+      ...hasAminoglycoside,
+      ...hasOtherTubularToxin,
+      ...(hasAminoglycoside.length > 0 ? [...hasLoop, ...hasNsaid] : []),
+    ];
+    matchedCollisions.push({
+      collision: col,
+      matchedDrugIds: [...new Set(matched)],
+      triggeredBy: ["Proximal Tubular / Interstitial Nephrotoxin Synergy"],
+    });
+  }
+
+  // 8. OAT1 / OAT3 Methotrexate Clearance Blockade
+  const hasMtx = normalizedIds.has("methotrexate");
+  const hasMtxOatInhibitors = [...normalizedIds].filter((id) => oatInhibitorsForMtx.has(id));
+  if (hasMtx && hasMtxOatInhibitors.length > 0) {
+    const col = RENAL_COLLISIONS.find((c) => c.id === "oat1-3-methotrexate-clearance-blockade")!;
+    matchedCollisions.push({
+      collision: col,
+      matchedDrugIds: ["methotrexate", ...hasMtxOatInhibitors],
+      triggeredBy: ["Methotrexate", "OAT1/OAT3 Secretion Inhibitor / NSAID / TMP-SMX"],
+    });
+  }
+
+  // 9. SGLT2 + Loop Diuretic Potentiation
   const hasSglt2 = [...normalizedIds].filter((id) => sglt2s.has(id) || DRUG_BY_ID[id]?.cls.toLowerCase().includes("sglt2"));
   if (hasSglt2.length > 0 && hasLoop.length > 0) {
     const col = RENAL_COLLISIONS.find((c) => c.id === "sglt2-loop-hypovolemia")!;
@@ -1316,10 +1928,16 @@ export function getRenalPharmacologySummary(drugIds: string[]): {
   activeTransporters: NephronTransporter[];
   collisions: ReturnType<typeof detectRenalCollisions>;
   diureticClasses: DiureticClassProfile[];
+  glomerularHemodynamics: GlomerularHemodynamicEvaluation;
+  pseudoCreatinine: ReturnType<typeof evaluatePseudoCreatinineElevation>;
 } {
-  const normalizedIds = new Set(drugIds);
-  if (normalizedIds.has("hctz")) normalizedIds.add("hydrochlorothiazide");
-  if (normalizedIds.has("hydrochlorothiazide")) normalizedIds.add("hctz");
+  const normalizedIds = new Set<string>();
+  for (const raw of drugIds) {
+    const id = raw.toLowerCase().trim();
+    normalizedIds.add(id);
+    if (id === "hctz") normalizedIds.add("hydrochlorothiazide");
+    if (id === "hydrochlorothiazide") normalizedIds.add("hctz");
+  }
 
   // Find active transporters
   const activeTransporters = NEPHRON_TRANSPORTERS.filter((t) =>
@@ -1343,5 +1961,7 @@ export function getRenalPharmacologySummary(drugIds: string[]): {
     activeTransporters,
     collisions,
     diureticClasses,
+    glomerularHemodynamics: evaluateGlomerularHemodynamics(drugIds),
+    pseudoCreatinine: evaluatePseudoCreatinineElevation(drugIds),
   };
 }

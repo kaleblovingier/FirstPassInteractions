@@ -35,8 +35,14 @@
  *    - CRITICAL ODS SAFETY CEILING: Maximum safe rate <= 8 mEq/L in 24h (<= 4-6 mEq/L in high-risk patients:
  *      chronic > 48h, malnutrition, advanced cirrhosis, alcoholism, baseline Na < 105 mEq/L).
  *    - Adrogue-Madias Formula: Delta Na per 1 L infusate = (Infusate Na - Serum Na) / (TBW + 1).
- *    - 3% Hypertonic Saline Emergency Rescue: 100 mL IV bolus over 10 min, repeatable up to 3 times prn.
- *    - Desmopressin (DDAVP) Clamp / Re-lowering Strategy: DDAVP 1-2 mcg + D5W if rapid autodiresis threatens ceiling.
+ *    - 3% Hypertonic Saline Emergency Rescue: isotonic-vs-hypertonic rescue guidance & DDAVP clamp reference.
+ *    - Katz & Hillier hyperglycemia sodium correction and serum osmolal gap evaluation.
+ * 5. Henderson-Hasselbalch Ionization, Urinary Ion Trapping & Gastric pH Absorption Kinetics:
+ *    - Weak acids: f_i = 1 / (1 + 10^(pKa - pH)); Weak bases: f_i = 1 / (1 + 10^(pH - pKa)).
+ *    - Weak acid urinary alkalinization (salicylate, phenobarbital, methotrexate) & acidemia BBB/CSF trapping.
+ *    - Weak base alkaline-urine clearance impairment (amphetamine, quinidine, flecainide).
+ *    - Gastric pH elevation (PPI / H2RA / P-CAB) impairing weak-base dissolution (ketoconazole, itraconazole,
+ *      posaconazole suspension, atazanavir, rilpivirine, dasatinib, erlotinib, pazopanib).
  */
 
 import { type Unsized, withoutUnentered } from "./assumed-inputs";
@@ -48,11 +54,11 @@ import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
  * Statutory Non-Device Clinical Decision Support disclaimer under FD&C Act § 520(o)(1)(E).
  */
 export const ACID_BASE_CDS_DISCLAIMER =
-  "FD&C Act § 520(o)(1)(E) Non-Device Clinical Decision Support: This educational acid-base and hyponatremia reference engine is intended solely for licensed healthcare professionals and supervised health-professions trainees. It models physical-chemical equilibria, Figge albumin corrections, Winter's respiratory compensation, Delta-Delta ratios, and Adrogué-Madias sodium kinetics to enable independent verification of clinical rationale in critical care and nephrology. It does not provide automated diagnostic conclusions, does not generate infusion orders or prescription directives, and does not replace individualized bedside clinical judgment, arterial blood gas confirmation, or the FDA-approved Prescribing Information.";
+  "FD&C Act § 520(o)(1)(E) Non-Device Clinical Decision Support: This educational acid-base and hyponatremia reference engine is intended solely for licensed healthcare professionals and supervised health-professions trainees. It models physical-chemical equilibria, Figge albumin corrections, Winter's respiratory compensation, Delta-Delta ratios, Henderson-Hasselbalch ionization, urinary ion trapping, gastric pH dissolution, and Adrogué-Madias sodium kinetics to enable independent verification of clinical rationale in critical care and nephrology. It does not provide automated diagnostic conclusions, does not generate infusion orders or prescription directives, and does not replace individualized bedside clinical judgment, arterial blood gas confirmation, or the FDA-approved Prescribing Information.";
 
 export const ACID_BASE_CITATIONS: readonly string[] = [
   "Winter SD, Pearson JR, Gabow PA, Schultz AL, Lepoff RB. The fall of the serum anion gap. Arch Intern Med. 1990;150(2):311-313.",
-  "Figge J, Jabor A, Kazda A, Fencl V. Anion gap and hypoalbuminemia. Crit Care Med. 1998;26(11):1807-1810.",
+  "Figge J, Jabor A, Kazda A, Fencl V. Anion gap and hypoalbuminemia. Crit Care Med. 1998;26(11):1807-1810. PMID 9824071.",
   "Emmett M, Narins RG. Clinical use of the anion gap. Medicine (Baltimore). 1977;56(1):38-54.",
   "Adrogué HJ, Madias NE. Hyponatremia. N Engl J Med. 2000;342(21):1581-1589.",
   "Sterns RH. Disorders of plasma sodium--causes, consequences, and correction. N Engl J Med. 2015;372(1):55-65.",
@@ -62,15 +68,36 @@ export const ACID_BASE_CITATIONS: readonly string[] = [
   "Rondon-Berrios H, Tandukar S, Sterns RH. Rapid re-lowering for hyponatremia overcorrection: a systematic review. Kidney360. 2021;2(9):1428-1436.",
   "Kraut JA, Madias NE. Serum anion gap: its uses and limitations in clinical medicine. Clin J Am Soc Nephrol. 2007;2(1):162-174.",
   "Hamm LL, Nakhoul N, Hering-Smith KS. Acid-Base Homeostasis. Clin J Am Soc Nephrol. 2015;10(12):2232-2242.",
+  "Proudfoot AT, Krenzelok EP, Vale JA. Position Paper on urine alkalinization. J Toxicol Clin Toxicol. 2004;42(1):1-26. PMID 15083932.",
+  "Proudfoot AT, Krenzelok EP, Vale JA. Does urine alkalinization increase salicylate elimination? If so, why? Toxicol Rev. 2003;22(3):129-136. PMID 15181662.",
+  "Hill JB. Salicylate intoxication. N Engl J Med. 1973;288(21):1110-1113. PMID 4572648.",
+  "Beckett AH, Rowland M. The amphetamines: clinical and pharmacokinetic implications of recent studies of an assay procedure and urinary excretion in man. Arzneimittelforschung. 1966;16(11):1433-1437. PMID 4880484.",
+  "Budha NR, Frymoyer A, Smelick GS, et al. Drug absorption interactions between oral targeted anticancer agents and PPIs: is pH-dependent solubility the Achilles heel of targeted therapy? Clin Pharmacol Ther. 2012;92(2):203-213. PMID 22739140.",
+  "Yago MR, Frymoyer A, Benet LZ, et al. The use of betaine HCl to enhance dasatinib absorption in healthy volunteers with rabeprazole-induced hypochlorhydria. AAPS J. 2014;16(6):1358-1365. PMID 25274610.",
+  "Ogawa R, Echizen H. Clinically significant drug interactions with antacids: an update. Drugs. 2011;71(14):1839-1864. PMID 21942976.",
+  "Katz MA. Hyperglycemia-induced hyponatremia--calculation of expected serum sodium depression. N Engl J Med. 1973;289(16):843-844. PMID 4763428.",
+  "Hillier TA, Abbott RD, Barrett EJ. Hyponatremia: evaluating the correction factor for hyperglycemia. Am J Med. 1999;106(4):399-403. PMID 10225241.",
 ];
 
-// Helper rounding functions
+// Helper rounding & edge-case sanitization functions
 function round1(val: number): number {
+  if (!Number.isFinite(val)) return 0;
   return Math.round(val * 10) / 10;
 }
 
 function round2(val: number): number {
+  if (!Number.isFinite(val)) return 0;
   return Math.round(val * 100) / 100;
+}
+
+function round4(val: number): number {
+  if (!Number.isFinite(val)) return 0;
+  if (val > 0 && val < 0.001) return Number(val.toPrecision(5));
+  return Math.round(val * 10000) / 10000;
+}
+
+function finiteOrFallback(val: number, fallback: number): { value: number; replaced: boolean } {
+  return Number.isFinite(val) ? { value: val, replaced: false } : { value: fallback, replaced: true };
 }
 
 // ============================================================================
@@ -101,6 +128,8 @@ export interface AnionGapResult {
   interpretation: string;
   clinicalSignificance: string;
   etiologies: string[];
+  potassiumIncludedAnionGap?: number;
+  inputGuardWarning?: string;
 }
 
 /**
@@ -110,8 +139,37 @@ export interface AnionGapResult {
  * Formula: Corrected AG = Observed AG + 2.5 * (4.0 - Albumin_g_dL).
  */
 export function calculateAnionGap(input: AnionGapInput): AnionGapResult {
-  const { sodiumMeqL, chlorideMeqL, bicarbonateMeqL, albuminGdl } = input;
+  const guardNotes: string[] = [];
+  const naCheck = finiteOrFallback(input.sodiumMeqL, 140);
+  const clCheck = finiteOrFallback(input.chlorideMeqL, 104);
+  const hco3Check = finiteOrFallback(input.bicarbonateMeqL, 24);
+  if (naCheck.replaced || clCheck.replaced || hco3Check.replaced) {
+    guardNotes.push("Non-finite electrolyte input was replaced with physiological baseline for safe calculation.");
+  }
+
+  const sodiumMeqL = naCheck.value;
+  const chlorideMeqL = clCheck.value;
+  const bicarbonateMeqL = hco3Check.value;
+
+  let albuminGdl = input.albuminGdl;
+  if (albuminGdl !== undefined) {
+    if (!Number.isFinite(albuminGdl)) {
+      guardNotes.push("Non-finite albumin value ignored; Figge correction skipped.");
+      albuminGdl = undefined;
+    } else if (albuminGdl < 0) {
+      guardNotes.push(`Negative albumin (${albuminGdl} g/dL) clamped to 0 g/dL.`);
+      albuminGdl = 0;
+    } else if (albuminGdl > 10) {
+      guardNotes.push(`Implausible albumin (${albuminGdl} g/dL) clamped to 10 g/dL.`);
+      albuminGdl = 10;
+    }
+  }
+
   const observedAG = round1(sodiumMeqL - (chlorideMeqL + bicarbonateMeqL));
+  const potassiumIncludedAnionGap =
+    input.potassiumMeqL !== undefined && Number.isFinite(input.potassiumMeqL)
+      ? round1(sodiumMeqL + input.potassiumMeqL - (chlorideMeqL + bicarbonateMeqL))
+      : undefined;
   const baselineAlbumin = 4.0;
 
   let correctedAG = observedAG;
@@ -189,6 +247,8 @@ export function calculateAnionGap(input: AnionGapInput): AnionGapResult {
     interpretation,
     clinicalSignificance,
     etiologies,
+    ...(potassiumIncludedAnionGap !== undefined ? { potassiumIncludedAnionGap } : {}),
+    ...(guardNotes.length > 0 ? { inputGuardWarning: guardNotes.join(" ") } : {}),
   };
 }
 
@@ -220,6 +280,8 @@ export interface WintersResult {
   clinicalRationale: string;
   differentialDiagnosis: string[];
   actionGuidance: string;
+  hendersonHasselbalchCheck?: BloodGasHendersonHasselbalchResult;
+  inputGuardWarning?: string;
 }
 
 /**
@@ -228,7 +290,33 @@ export interface WintersResult {
  * Range: [1.5 * HCO3 + 6, 1.5 * HCO3 + 10].
  */
 export function evaluateWintersFormula(input: WintersInput): WintersResult {
-  const { bicarbonateMeqL, measuredPaco2MmHg } = input;
+  const guardNotes: string[] = [];
+  const hco3Check = finiteOrFallback(input.bicarbonateMeqL, 24);
+  const paco2Check = finiteOrFallback(input.measuredPaco2MmHg, 40);
+  if (hco3Check.replaced || paco2Check.replaced) {
+    guardNotes.push("Non-finite ABG/bicarbonate input replaced with physiological baseline.");
+  }
+
+  let bicarbonateMeqL = hco3Check.value;
+  let measuredPaco2MmHg = paco2Check.value;
+  if (bicarbonateMeqL <= 0) {
+    guardNotes.push(`Non-positive HCO3- (${bicarbonateMeqL} mEq/L) clamped to 1 mEq/L.`);
+    bicarbonateMeqL = 1;
+  }
+  if (measuredPaco2MmHg <= 0) {
+    guardNotes.push(`Non-positive PaCO2 (${measuredPaco2MmHg} mmHg) clamped to 5 mmHg.`);
+    measuredPaco2MmHg = 5;
+  }
+
+  const hhCheck =
+    input.measuredPh !== undefined && Number.isFinite(input.measuredPh)
+      ? calculateBloodGasHendersonHasselbalch({
+          bicarbonateMeqL,
+          paco2MmHg: measuredPaco2MmHg,
+          measuredPh: input.measuredPh,
+        }) ?? undefined
+      : undefined;
+
   const expectedPaco2 = round1(1.5 * bicarbonateMeqL + 8);
   const expectedPaco2Min = round1(1.5 * bicarbonateMeqL + 6);
   const expectedPaco2Max = round1(1.5 * bicarbonateMeqL + 10);
@@ -252,6 +340,8 @@ export function evaluateWintersFormula(input: WintersInput): WintersResult {
       ],
       actionGuidance:
         "Evaluate clinical volume status, urine chloride, and ABG pH to differentiate metabolic alkalosis from respiratory compensation.",
+      ...(hhCheck ? { hendersonHasselbalchCheck: hhCheck } : {}),
+      ...(guardNotes.length > 0 ? { inputGuardWarning: guardNotes.join(" ") } : {}),
     };
   }
 
@@ -312,6 +402,8 @@ export function evaluateWintersFormula(input: WintersInput): WintersResult {
     clinicalRationale,
     differentialDiagnosis,
     actionGuidance,
+    ...(hhCheck ? { hendersonHasselbalchCheck: hhCheck } : {}),
+    ...(guardNotes.length > 0 ? { inputGuardWarning: guardNotes.join(" ") } : {}),
   };
 }
 
@@ -344,6 +436,7 @@ export interface DeltaDeltaResult {
   pathophysiology: string;
   etiologies: string[];
   clinicalSignificance: string;
+  inputGuardWarning?: string;
 }
 
 /**
@@ -358,7 +451,15 @@ export interface DeltaDeltaResult {
  * - Ratio > 2.0: Mixed HAGMA + concurrent Metabolic Alkalosis.
  */
 export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
-  const { correctedAnionGap, bicarbonateMeqL } = input;
+  const agCheck = finiteOrFallback(input.correctedAnionGap, 12);
+  const hco3Check = finiteOrFallback(input.bicarbonateMeqL, 24);
+  const inputGuardWarning =
+    agCheck.replaced || hco3Check.replaced
+      ? "Non-finite corrected anion gap or bicarbonate replaced with baseline reference for safe calculation."
+      : undefined;
+
+  const correctedAnionGap = agCheck.value;
+  const bicarbonateMeqL = hco3Check.value;
   const deltaAG = round1(correctedAnionGap - 12);
   const deltaHCO3 = round1(24 - bicarbonateMeqL);
   const predictedBaselineHCO3 = round1(bicarbonateMeqL + deltaAG);
@@ -387,6 +488,7 @@ export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
         ],
         clinicalSignificance:
           "Calculate Urine Anion Gap (Na + K - Cl) to differentiate gastrointestinal bicarbonate loss (negative UAG with high urinary NH4+) from renal tubular acidification defects (positive UAG with impaired NH4+ excretion).",
+        ...(inputGuardWarning ? { inputGuardWarning } : {}),
       };
     }
 
@@ -403,6 +505,7 @@ export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
       pathophysiology: "Serum unmeasured anions and bicarbonate are both within physiological limits.",
       etiologies: ["Normal acid-base equilibrium"],
       clinicalSignificance: "No high anion gap or normal anion gap metabolic acidosis present on current panel.",
+      ...(inputGuardWarning ? { inputGuardWarning } : {}),
     };
   }
 
@@ -429,6 +532,7 @@ export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
       ],
       clinicalSignificance:
         `Predicted baseline bicarbonate is markedly elevated at ${predictedBaselineHCO3} mEq/L (normal ~24 mEq/L). Patient has two powerful opposing metabolic derangements.`,
+      ...(inputGuardWarning ? { inputGuardWarning } : {}),
     };
   }
 
@@ -456,6 +560,7 @@ export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
       ],
       clinicalSignificance:
         `Predicted baseline bicarbonate is subnormal (${predictedBaselineHCO3} mEq/L vs normal 24 mEq/L), confirming an occult hyperchloremic non-gap acidosis co-existing with the high anion gap process. Switch crystalloid from 0.9% Normal Saline to balanced crystalloid (e.g. Plasma-Lyte, Lactated Ringer's) to prevent worsening hyperchloremic acidosis.`,
+      ...(inputGuardWarning ? { inputGuardWarning } : {}),
     };
   }
 
@@ -480,6 +585,7 @@ export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
       ],
       clinicalSignificance:
         `Predicted baseline bicarbonate is elevated at ${predictedBaselineHCO3} mEq/L (normal 24 mEq/L), unmasking a concurrent metabolic alkalosis. As the organic acidosis resolves, the patient risks severe post-acidosis rebound metabolic alkalemia!`,
+      ...(inputGuardWarning ? { inputGuardWarning } : {}),
     };
   }
 
@@ -503,6 +609,7 @@ export function calculateDeltaDelta(input: DeltaDeltaInput): DeltaDeltaResult {
     ],
     clinicalSignificance:
       `Predicted baseline bicarbonate is near normal (${predictedBaselineHCO3} mEq/L, reference 22–26 mEq/L). No significant co-existing NAGMA or metabolic alkalosis identified.`,
+    ...(inputGuardWarning ? { inputGuardWarning } : {}),
   };
 }
 
@@ -526,6 +633,11 @@ export interface HyponatremiaTriageInput {
   hasChronicAlcoholism?: boolean;
 }
 
+export type HyponatremiaTonicity =
+  | "hypotonic"
+  | "isotonic-pseudohyponatremia"
+  | "hypertonic-translocational";
+
 export interface HyponatremiaEvaluationResult {
   serumSodiumMeqL: number;
   hyponatremiaSeverity: "mild" | "moderate" | "severe" | "normonatremic" | "hypernatremic";
@@ -538,6 +650,8 @@ export interface HyponatremiaEvaluationResult {
   urineFindingsSummary: string;
   odsPathophysiologySummary: string;
   clinicalSafeguards: string[];
+  tonicityClassification?: HyponatremiaTonicity;
+  inputGuardWarning?: string;
 }
 
 /**
@@ -545,11 +659,23 @@ export interface HyponatremiaEvaluationResult {
  * Enforces strict non-prescriptive CDS guidance for maximum 24h sodium elevation limits.
  */
 export function evaluateHyponatremia(input: HyponatremiaTriageInput): HyponatremiaEvaluationResult {
+  const guardNotes: string[] = [];
+  const naCheck = finiteOrFallback(input.serumSodiumMeqL, 135);
+  if (naCheck.replaced) {
+    guardNotes.push("Non-finite serum sodium replaced with normonatremic baseline.");
+  }
+
+  let serumSodiumMeqL = naCheck.value;
+  if (serumSodiumMeqL <= 0) {
+    guardNotes.push(`Non-positive serum sodium (${serumSodiumMeqL} mEq/L) clamped to 80 mEq/L.`);
+    serumSodiumMeqL = 80;
+  }
+
   const {
-    serumSodiumMeqL,
     volumeStatus,
     urineSodiumMeqL,
     urineOsmolalityMosmKg,
+    serumOsmolalityMosmKg,
     serumPotassiumMeqL,
     durationHours,
     isMalnourished,
@@ -570,7 +696,8 @@ export function evaluateHyponatremia(input: HyponatremiaTriageInput): Hyponatrem
     severity = "severe";
   }
 
-  const isChronicOrUnknownDuration = durationHours === undefined || durationHours > 48;
+  const isChronicOrUnknownDuration =
+    durationHours === undefined || !Number.isFinite(durationHours) || durationHours > 48;
   const highRiskFactors: string[] = [];
 
   if (isChronicOrUnknownDuration) {
@@ -588,21 +715,43 @@ export function evaluateHyponatremia(input: HyponatremiaTriageInput): Hyponatrem
   if (hasChronicAlcoholism) {
     highRiskFactors.push("Chronic alcohol use disorder / hypokalemia / hypomagnesemia");
   }
-  if (serumPotassiumMeqL !== undefined && serumPotassiumMeqL < 3.0) {
+  if (serumPotassiumMeqL !== undefined && Number.isFinite(serumPotassiumMeqL) && serumPotassiumMeqL < 3.0) {
     highRiskFactors.push(`Severe concomitant hypokalemia (${serumPotassiumMeqL} mEq/L; K+ repletion elevates serum Na+)`);
   }
 
   const isHighRiskForOds = highRiskFactors.length > 0 && severity !== "normonatremic" && severity !== "hypernatremic";
   const safeCorrectionCeiling24h = isHighRiskForOds ? 6 : 8;
 
+  let tonicityClassification: HyponatremiaTonicity | undefined;
+  let tonicityPrefix = "";
+  if (serumOsmolalityMosmKg !== undefined && Number.isFinite(serumOsmolalityMosmKg) && serumOsmolalityMosmKg > 0) {
+    if (serumOsmolalityMosmKg < 275) {
+      tonicityClassification = "hypotonic";
+    } else if (serumOsmolalityMosmKg <= 295) {
+      tonicityClassification = "isotonic-pseudohyponatremia";
+      tonicityPrefix = `Isotonic pseudohyponatremia (Serum Osm ${serumOsmolalityMosmKg} mOsm/kg; evaluate for severe hypertriglyceridemia or paraproteinemia; direct ion-selective electrode unaffected). `;
+    } else {
+      tonicityClassification = "hypertonic-translocational";
+      tonicityPrefix = `Hypertonic translocational hyponatremia (Serum Osm ${serumOsmolalityMosmKg} mOsm/kg; osmotic water shift from hyperglycemia or mannitol—apply Katz/Hillier glucose correction [PMID 4763428, PMID 10225241]). `;
+    }
+  }
+
   // Etiological volume differentiation
   let etiologyCategory = "Undifferentiated Hyponatremia";
   let etiologyDetails = "Requires clinical assessment of extracellular fluid volume, urine sodium, and urine osmolality.";
   let urineFindingsSummary = "Urine electrolytes pending or unmeasured.";
 
-  if (volumeStatus === "hypovolemic") {
+  if (tonicityClassification === "isotonic-pseudohyponatremia") {
+    etiologyCategory = "Isotonic Pseudohyponatremia (Laboratory Electrolyte Exclusion Artifact)";
+    etiologyDetails =
+      "Measured plasma osmolality is normal (275–295 mOsm/kg). Indirect potentiometry dilutes plasma water displaced by marked lipids or paraproteins; water-phase sodium activity is normal.";
+  } else if (tonicityClassification === "hypertonic-translocational") {
+    etiologyCategory = "Hypertonic Translocational Hyponatremia (Effective Osmole Shift)";
+    etiologyDetails =
+      "Measured plasma osmolality is elevated (> 295 mOsm/kg) from impermeant extracellular osmoles (hyperglycemia, mannitol, hypertonic contrast) drawing intracellular water into plasma.";
+  } else if (volumeStatus === "hypovolemic") {
     etiologyCategory = "Hypovolemic Hyponatremia (Volume Depletion)";
-    if (urineSodiumMeqL !== undefined) {
+    if (urineSodiumMeqL !== undefined && Number.isFinite(urineSodiumMeqL)) {
       if (urineSodiumMeqL < 20) {
         etiologyDetails =
           "Extrarenal sodium losses (vomiting, diarrhea, third-spacing, burns). Kidneys are avidly conserving sodium (UNa < 20 mEq/L).";
@@ -616,7 +765,7 @@ export function evaluateHyponatremia(input: HyponatremiaTriageInput): Hyponatrem
     }
   } else if (volumeStatus === "euvolemic") {
     etiologyCategory = "Euvolemic Hyponatremia (Normal Extracellular Volume)";
-    if (urineOsmolalityMosmKg !== undefined && urineOsmolalityMosmKg < 100) {
+    if (urineOsmolalityMosmKg !== undefined && Number.isFinite(urineOsmolalityMosmKg) && urineOsmolalityMosmKg < 100) {
       etiologyDetails =
         "Maximally dilute urine (UOsm < 100 mOsm/kg): Suggests primary polydipsia, beer potomania, or very low solute intake ('tea and toast' diet). ADH is appropriately suppressed.";
     } else {
@@ -625,7 +774,7 @@ export function evaluateHyponatremia(input: HyponatremiaTriageInput): Hyponatrem
     }
   } else if (volumeStatus === "hypervolemic") {
     etiologyCategory = "Hypervolemic Hyponatremia (Volume Expansion with Edema/Ascites)";
-    if (urineSodiumMeqL !== undefined && urineSodiumMeqL < 20) {
+    if (urineSodiumMeqL !== undefined && Number.isFinite(urineSodiumMeqL) && urineSodiumMeqL < 20) {
       etiologyDetails =
         "Effective arterial blood volume underfilling (Congestive Heart Failure, Cirrhosis, Nephrotic Syndrome). Splanchnic/arterial pooling triggers intense baroreceptor-mediated non-osmotic ADH secretion and renal sodium avidity.";
     } else {
@@ -634,10 +783,19 @@ export function evaluateHyponatremia(input: HyponatremiaTriageInput): Hyponatrem
     }
   }
 
-  if (urineSodiumMeqL !== undefined || urineOsmolalityMosmKg !== undefined) {
+  if (tonicityPrefix && tonicityClassification !== "hypotonic") {
+    etiologyDetails = `${tonicityPrefix}${etiologyDetails}`;
+  }
+
+  if (
+    (urineSodiumMeqL !== undefined && Number.isFinite(urineSodiumMeqL)) ||
+    (urineOsmolalityMosmKg !== undefined && Number.isFinite(urineOsmolalityMosmKg))
+  ) {
     const parts: string[] = [];
-    if (urineSodiumMeqL !== undefined) parts.push(`Urine Na: ${urineSodiumMeqL} mEq/L`);
-    if (urineOsmolalityMosmKg !== undefined) parts.push(`Urine Osm: ${urineOsmolalityMosmKg} mOsm/kg`);
+    if (urineSodiumMeqL !== undefined && Number.isFinite(urineSodiumMeqL)) parts.push(`Urine Na: ${urineSodiumMeqL} mEq/L`);
+    if (urineOsmolalityMosmKg !== undefined && Number.isFinite(urineOsmolalityMosmKg)) {
+      parts.push(`Urine Osm: ${urineOsmolalityMosmKg} mOsm/kg`);
+    }
     urineFindingsSummary = parts.join(", ");
   }
 
@@ -663,6 +821,8 @@ export function evaluateHyponatremia(input: HyponatremiaTriageInput): Hyponatrem
     urineFindingsSummary,
     odsPathophysiologySummary,
     clinicalSafeguards,
+    ...(tonicityClassification ? { tonicityClassification } : {}),
+    ...(guardNotes.length > 0 ? { inputGuardWarning: guardNotes.join(" ") } : {}),
   };
 }
 
@@ -764,6 +924,7 @@ export interface AdrogueMadiasResult {
   safe24hCeilingMeqL: number;
   odsWarning: string | null;
   formulaUsed: string;
+  inputGuardWarning?: string;
 }
 
 /**
@@ -776,9 +937,25 @@ export interface AdrogueMadiasResult {
  * - Geriatric female (>= 65): 0.45 * weight
  */
 export function calculateAdrogueMadias(input: AdrogueMadiasInput): AdrogueMadiasResult {
+  const guardNotes: string[] = [];
+  const naCheck = finiteOrFallback(input.serumSodiumMeqL, 135);
+  const wtCheck = finiteOrFallback(input.weightKg, 70);
+  if (naCheck.replaced) guardNotes.push("Non-finite serum sodium replaced with 135 mEq/L.");
+  if (wtCheck.replaced) guardNotes.push("Non-finite body weight replaced with 70 kg.");
+
+  let serumSodiumMeqL = naCheck.value;
+  if (serumSodiumMeqL <= 0) {
+    guardNotes.push(`Non-positive serum sodium (${serumSodiumMeqL} mEq/L) clamped to 80 mEq/L.`);
+    serumSodiumMeqL = 80;
+  }
+
+  let weightKg = wtCheck.value;
+  if (weightKg <= 0) {
+    guardNotes.push(`Non-positive body weight (${weightKg} kg) clamped to 1 kg to prevent TBW divide-by-zero.`);
+    weightKg = 1;
+  }
+
   const {
-    serumSodiumMeqL,
-    weightKg,
     sex,
     isGeriatric,
     infusateType,
@@ -794,7 +971,7 @@ export function calculateAdrogueMadias(input: AdrogueMadiasInput): AdrogueMadias
     tbwFactor = isGeriatric ? 0.5 : 0.6;
   }
 
-  const tbw = round1(weightKg * tbwFactor);
+  const tbw = Math.max(0.5, round1(weightKg * tbwFactor));
   const infusate = INFUSATE_PROFILES[infusateType];
   const infusateCations = infusate.sodiumMeqL + infusate.potassiumMeqL;
 
@@ -806,7 +983,7 @@ export function calculateAdrogueMadias(input: AdrogueMadiasInput): AdrogueMadias
   let volumeNeededForTargetMl: number | undefined;
   let hourlyRateFor24hTargetMlH: number | undefined;
 
-  if (targetDeltaNa24h !== undefined && deltaNaPerLiter !== 0) {
+  if (targetDeltaNa24h !== undefined && Number.isFinite(targetDeltaNa24h) && deltaNaPerLiter !== 0) {
     const volumeLiters = targetDeltaNa24h / deltaNaPerLiter;
     if (volumeLiters > 0) {
       volumeNeededForTargetMl = Math.round(volumeLiters * 1000);
@@ -818,13 +995,17 @@ export function calculateAdrogueMadias(input: AdrogueMadiasInput): AdrogueMadias
   let exceedsSafe24hCeiling = false;
   let odsWarning: string | null = null;
 
-  if (infusionVolumeMl !== undefined) {
-    predictedDeltaNaForVolume = round1(deltaNaPerLiter * (infusionVolumeMl / 1000));
+  if (infusionVolumeMl !== undefined && Number.isFinite(infusionVolumeMl)) {
+    const safeVolumeMl = Math.max(0, infusionVolumeMl);
+    if (infusionVolumeMl < 0) {
+      guardNotes.push(`Negative infusion volume (${infusionVolumeMl}) clamped to 0.`);
+    }
+    predictedDeltaNaForVolume = round1(deltaNaPerLiter * (safeVolumeMl / 1000));
     if (predictedDeltaNaForVolume > safe24hCeilingMeqL) {
       exceedsSafe24hCeiling = true;
-      odsWarning = `CRITICAL ODS ALERT: Projected sodium rise of +${predictedDeltaNaForVolume} mEq/L from ${infusionVolumeMl} mL of ${infusate.name} exceeds the safe 24-hour ceiling (${safe24hCeilingMeqL} mEq/L)! Rapid correction risks irreversible osmotic demyelination syndrome.`;
+      odsWarning = `CRITICAL ODS ALERT: Projected sodium rise of +${predictedDeltaNaForVolume} mEq/L from ${safeVolumeMl} mL of ${infusate.name} exceeds the safe 24-hour ceiling (${safe24hCeilingMeqL} mEq/L)! Rapid correction risks irreversible osmotic demyelination syndrome.`;
     }
-  } else if (targetDeltaNa24h !== undefined && targetDeltaNa24h > safe24hCeilingMeqL) {
+  } else if (targetDeltaNa24h !== undefined && Number.isFinite(targetDeltaNa24h) && targetDeltaNa24h > safe24hCeilingMeqL) {
     exceedsSafe24hCeiling = true;
     odsWarning = `Target correction of +${targetDeltaNa24h} mEq/L exceeds the safe 24-hour ceiling (${safe24hCeilingMeqL} mEq/L). Standard recommendations cap total 24h elevation at <= 8 mEq/L (<= 6 mEq/L in high-risk patients).`;
   }
@@ -841,7 +1022,809 @@ export function calculateAdrogueMadias(input: AdrogueMadiasInput): AdrogueMadias
     safe24hCeilingMeqL,
     odsWarning,
     formulaUsed: `Delta Na per 1 L = (Infusate_Na [${infusate.sodiumMeqL}] + Infusate_K [${infusate.potassiumMeqL}] - Serum_Na [${serumSodiumMeqL}]) / (TBW [${tbw} L] + 1) = ${deltaNaPerLiter} mEq/L`,
+    ...(guardNotes.length > 0 ? { inputGuardWarning: guardNotes.join(" ") } : {}),
   };
+}
+
+// ============================================================================
+// 5A. SERUM OSMOLAL GAP & HYPERGLYCEMIA-CORRECTED SODIUM
+// ============================================================================
+
+export interface OsmolalGapInput {
+  measuredOsmolalityMosmKg: number;
+  sodiumMeqL: number;
+  glucoseMgDl: number;
+  bunMgDl: number;
+  ethanolMgDl?: number;
+  ethanolDivisor?: 4.6 | 3.7;
+}
+
+export interface OsmolalGapResult {
+  measuredOsmolalityMosmKg: number;
+  calculatedOsmolalityMosmKg: number;
+  osmolalGapMosmKg: number;
+  ethanolContributionMosmKg: number;
+  ethanolDivisorUsed: 4.6 | 3.7;
+  category: "normal" | "borderline" | "elevated";
+  interpretation: string;
+  formulaUsed: string;
+  differentialToxicAlcohols: string[];
+}
+
+/**
+ * Computes calculated serum osmolality and osmolal gap for toxic alcohol / unmeasured osmole evaluation.
+ * Calculated Osm = 2 * Na + Glucose / 18 + BUN / 2.8 + Ethanol / divisor (default 4.6 theoretical; 3.7 empirical).
+ * Returns null if any input is non-finite or physiologically invalid (Na <= 0, negative solutes, measuredOsm <= 0).
+ */
+export function calculateOsmolalGap(input: OsmolalGapInput): OsmolalGapResult | null {
+  const {
+    measuredOsmolalityMosmKg,
+    sodiumMeqL,
+    glucoseMgDl,
+    bunMgDl,
+    ethanolMgDl = 0,
+    ethanolDivisor = 4.6,
+  } = input;
+
+  if (
+    !Number.isFinite(measuredOsmolalityMosmKg) ||
+    !Number.isFinite(sodiumMeqL) ||
+    !Number.isFinite(glucoseMgDl) ||
+    !Number.isFinite(bunMgDl) ||
+    !Number.isFinite(ethanolMgDl) ||
+    measuredOsmolalityMosmKg <= 0 ||
+    sodiumMeqL <= 0 ||
+    glucoseMgDl < 0 ||
+    bunMgDl < 0 ||
+    ethanolMgDl < 0
+  ) {
+    return null;
+  }
+
+  const divisor: 4.6 | 3.7 = ethanolDivisor === 3.7 ? 3.7 : 4.6;
+  const ethanolContributionMosmKg = round1(ethanolMgDl > 0 ? ethanolMgDl / divisor : 0);
+  const rawCalculated = 2 * sodiumMeqL + glucoseMgDl / 18 + bunMgDl / 2.8 + (ethanolMgDl > 0 ? ethanolMgDl / divisor : 0);
+  const calculatedOsmolalityMosmKg = round1(rawCalculated);
+  const osmolalGapMosmKg = round1(measuredOsmolalityMosmKg - calculatedOsmolalityMosmKg);
+
+  let category: OsmolalGapResult["category"] = "normal";
+  let interpretation =
+    "Normal serum osmolal gap (<= 10 mOsm/kg). Note: late toxic alcohol presentation can exhibit a normal osmolal gap alongside severe HAGMA once parent alcohol has been oxidized to organic acids.";
+
+  if (osmolalGapMosmKg >= 15) {
+    category = "elevated";
+    interpretation = `Significantly elevated osmolal gap (${osmolalGapMosmKg} mOsm/kg >= 15 mOsm/kg), strongly suggesting unmeasured low-molecular-weight active osmoles (methanol, ethylene glycol, isopropanol, propylene glycol, or mannitol).`;
+  } else if (osmolalGapMosmKg > 10) {
+    category = "borderline";
+    interpretation = `Borderline elevated osmolal gap (${osmolalGapMosmKg} mOsm/kg, 10–14.9 mOsm/kg). Correlate with corrected anion gap, ketonemia, lactic acid, and alcohol dehydrogenase inhibitor considerations.`;
+  }
+
+  return {
+    measuredOsmolalityMosmKg,
+    calculatedOsmolalityMosmKg,
+    osmolalGapMosmKg,
+    ethanolContributionMosmKg,
+    ethanolDivisorUsed: divisor,
+    category,
+    interpretation,
+    formulaUsed: `Osm_calc = 2*${sodiumMeqL} + ${glucoseMgDl}/18 + ${bunMgDl}/2.8${ethanolMgDl > 0 ? ` + ${ethanolMgDl}/${divisor}` : ""} = ${calculatedOsmolalityMosmKg} mOsm/kg; Gap = ${measuredOsmolalityMosmKg} - ${calculatedOsmolalityMosmKg} = ${osmolalGapMosmKg} mOsm/kg`,
+    differentialToxicAlcohols: [
+      "Methanol (oxidized via ADH/ALDH to formic acid -> retinal/optic nerve toxicity + severe HAGMA)",
+      "Ethylene glycol (oxidized to glycolic and oxalic acids -> calcium oxalate crystalluria + AKI + severe HAGMA)",
+      "Isopropanol (oxidized to acetone -> ketosis/ketonuria with osmolar gap and WITHOUT HAGMA)",
+      "Propylene glycol (IV lorazepam/phenobarbital/etomidate solvent -> lactic acidosis + elevated osmolar gap)",
+    ],
+  };
+}
+
+export interface HyperglycemiaSodiumResult {
+  measuredSodiumMeqL: number;
+  glucoseMgDl: number;
+  katzCorrectedSodiumMeqL: number;
+  hillierCorrectedSodiumMeqL: number;
+  recommendedCorrectedSodiumMeqL: number;
+  formulaNote: string;
+}
+
+/**
+ * Corrects serum sodium for osmotic water translocation induced by hyperglycemia.
+ * - Katz (1973, PMID 4763428): +1.6 mEq/L per 100 mg/dL glucose above 100 mg/dL.
+ * - Hillier (1999, PMID 10225241): +2.4 mEq/L per 100 mg/dL glucose above 100 mg/dL (better fit when glucose > 400 mg/dL).
+ */
+export function calculateHyperglycemiaCorrectedSodium(
+  measuredSodiumMeqL: number,
+  glucoseMgDl: number,
+): HyperglycemiaSodiumResult | null {
+  if (!Number.isFinite(measuredSodiumMeqL) || !Number.isFinite(glucoseMgDl) || measuredSodiumMeqL <= 0 || glucoseMgDl < 0) {
+    return null;
+  }
+  const excessGlucoseSteps = Math.max(0, (glucoseMgDl - 100) / 100);
+  const katzCorrectedSodiumMeqL = round1(measuredSodiumMeqL + 1.6 * excessGlucoseSteps);
+  const hillierCorrectedSodiumMeqL = round1(measuredSodiumMeqL + 2.4 * excessGlucoseSteps);
+  const recommendedCorrectedSodiumMeqL =
+    glucoseMgDl > 400 ? hillierCorrectedSodiumMeqL : katzCorrectedSodiumMeqL;
+
+  return {
+    measuredSodiumMeqL,
+    glucoseMgDl,
+    katzCorrectedSodiumMeqL,
+    hillierCorrectedSodiumMeqL,
+    recommendedCorrectedSodiumMeqL,
+    formulaNote:
+      glucoseMgDl > 400
+        ? "Glucose > 400 mg/dL: Hillier 2.4 mEq/L factor per 100 mg/dL excess glucose preferred (PMID 10225241); Katz 1.6 factor shown for reference (PMID 4763428)."
+        : "Glucose <= 400 mg/dL: Katz 1.6 mEq/L factor per 100 mg/dL excess glucose above 100 mg/dL applied (PMID 4763428).",
+  };
+}
+
+// ============================================================================
+// 5B. HENDERSON-HASSELBALCH IONIZATION, URINARY ION TRAPPING & GASTRIC pH
+// ============================================================================
+
+export type IonizableDrugClass = "weak-acid" | "weak-base";
+
+export interface HendersonHasselbalchIonizationInput {
+  pKa: number;
+  pH: number;
+  drugClass: IonizableDrugClass;
+  referenceCompartmentPh?: number;
+}
+
+export interface HendersonHasselbalchIonizationResult {
+  pKa: number;
+  pH: number;
+  drugClass: IonizableDrugClass;
+  referenceCompartmentPh: number;
+  ionizedFraction: number;
+  unionizedFraction: number;
+  ionizedPercent: number;
+  unionizedPercent: number;
+  logIonizedToUnionizedRatio: number;
+  ionizedToUnionizedRatio: number;
+  aqueousSolubilityMultiplier: number;
+  compartmentToReferenceTotalRatio: number;
+  formulaUsed: string;
+}
+
+function safePow10(exp: number): number {
+  const clamped = Math.max(-15, Math.min(15, exp));
+  return Math.pow(10, clamped);
+}
+
+/**
+ * Exact Henderson-Hasselbalch ionization and transmembrane equilibrium partitioning calculator.
+ * - Weak acids (HA <-> H+ + A-): ionized fraction f_i = 1 / (1 + 10^(pKa - pH)); unionized f_u = 1 / (1 + 10^(pH - pKa)).
+ * - Weak bases (BH+ <-> B + H+): ionized fraction f_i = 1 / (1 + 10^(pH - pKa)); unionized f_u = 1 / (1 + 10^(pKa - pH)).
+ * - Aqueous solubility multiplier S(pH)/S0 = 1 + 10^logRatio = 1 / f_u.
+ * - Compartment-to-reference total equilibrium ratio assumes passive equilibration of unionized species across membranes.
+ */
+export function calculateHendersonHasselbalchIonization(
+  input: HendersonHasselbalchIonizationInput,
+): HendersonHasselbalchIonizationResult | null {
+  const { pKa, pH, drugClass, referenceCompartmentPh = 7.4 } = input;
+  if (
+    !Number.isFinite(pKa) ||
+    !Number.isFinite(pH) ||
+    !Number.isFinite(referenceCompartmentPh) ||
+    pH < 0 ||
+    pH > 14 ||
+    referenceCompartmentPh < 0 ||
+    referenceCompartmentPh > 14 ||
+    pKa < -5 ||
+    pKa > 18
+  ) {
+    return null;
+  }
+
+  const logRatio = drugClass === "weak-acid" ? pH - pKa : pKa - pH;
+  const refLogRatio = drugClass === "weak-acid" ? referenceCompartmentPh - pKa : pKa - referenceCompartmentPh;
+
+  const ionizedFraction = 1 / (1 + safePow10(-logRatio));
+  const unionizedFraction = 1 / (1 + safePow10(logRatio));
+  const ionizedToUnionizedRatio = safePow10(logRatio);
+  const aqueousSolubilityMultiplier = 1 + ionizedToUnionizedRatio;
+  const refSolubilityMultiplier = 1 + safePow10(refLogRatio);
+  const compartmentToReferenceTotalRatio = aqueousSolubilityMultiplier / refSolubilityMultiplier;
+
+  return {
+    pKa,
+    pH,
+    drugClass,
+    referenceCompartmentPh,
+    ionizedFraction: round4(ionizedFraction),
+    unionizedFraction: round4(unionizedFraction),
+    ionizedPercent: round2(ionizedFraction * 100),
+    unionizedPercent: round2(unionizedFraction * 100),
+    logIonizedToUnionizedRatio: round2(logRatio),
+    ionizedToUnionizedRatio: ionizedToUnionizedRatio >= 100 ? Math.round(ionizedToUnionizedRatio * 10) / 10 : round4(ionizedToUnionizedRatio),
+    aqueousSolubilityMultiplier:
+      aqueousSolubilityMultiplier >= 100 ? Math.round(aqueousSolubilityMultiplier * 10) / 10 : round4(aqueousSolubilityMultiplier),
+    compartmentToReferenceTotalRatio:
+      compartmentToReferenceTotalRatio >= 100
+        ? Math.round(compartmentToReferenceTotalRatio * 10) / 10
+        : round4(compartmentToReferenceTotalRatio),
+    formulaUsed:
+      drugClass === "weak-acid"
+        ? `Weak Acid: f_i = 1 / (1 + 10^(pKa [${pKa}] - pH [${pH}])) = ${round4(ionizedFraction)}`
+        : `Weak Base: f_i = 1 / (1 + 10^(pH [${pH}] - pKa [${pKa}])) = ${round4(ionizedFraction)}`,
+  };
+}
+
+export interface BloodGasHendersonHasselbalchInput {
+  bicarbonateMeqL: number;
+  paco2MmHg: number;
+  measuredPh?: number;
+}
+
+export interface BloodGasHendersonHasselbalchResult {
+  expectedPh: number;
+  expectedHydrogenIonNeqL: number;
+  measuredPh?: number;
+  phDiscrepancy?: number;
+  isInternallyConsistent: boolean;
+  interpretation: string;
+}
+
+/**
+ * Evaluates internal consistency of blood gas pH, PaCO2, and [HCO3-] using plasma Henderson-Hasselbalch
+ * (pH = 6.1 + log10([HCO3-] / (0.03 * PaCO2))) and Kassirer-Bleich ([H+] = 24 * PaCO2 / [HCO3-]).
+ */
+export function calculateBloodGasHendersonHasselbalch(
+  input: BloodGasHendersonHasselbalchInput,
+): BloodGasHendersonHasselbalchResult | null {
+  const { bicarbonateMeqL, paco2MmHg, measuredPh } = input;
+  if (
+    !Number.isFinite(bicarbonateMeqL) ||
+    !Number.isFinite(paco2MmHg) ||
+    bicarbonateMeqL <= 0 ||
+    paco2MmHg <= 0
+  ) {
+    return null;
+  }
+
+  const expectedPh = round2(6.1 + Math.log10(bicarbonateMeqL / (0.03 * paco2MmHg)));
+  const expectedHydrogenIonNeqL = round1((24 * paco2MmHg) / bicarbonateMeqL);
+
+  if (measuredPh !== undefined && Number.isFinite(measuredPh)) {
+    const phDiscrepancy = round2(measuredPh - expectedPh);
+    const isInternallyConsistent = Math.abs(phDiscrepancy) <= 0.05;
+    return {
+      expectedPh,
+      expectedHydrogenIonNeqL,
+      measuredPh,
+      phDiscrepancy,
+      isInternallyConsistent,
+      interpretation: isInternallyConsistent
+        ? `ABG values are internally consistent with Henderson-Hasselbalch equilibrium (expected pH ${expectedPh} vs measured ${measuredPh}, delta ${phDiscrepancy}).`
+        : `DISCORDANT BLOOD GAS: Expected pH ${expectedPh} differs from measured pH ${measuredPh} by ${phDiscrepancy} units (> 0.05). Verify non-simultaneous chemistry/ABG timing, transcription error, or pre-analytical air bubble.`,
+    };
+  }
+
+  return {
+    expectedPh,
+    expectedHydrogenIonNeqL,
+    isInternallyConsistent: true,
+    interpretation: `Predicted arterial pH = ${expectedPh} (expected [H+] = ${expectedHydrogenIonNeqL} nEq/L).`,
+  };
+}
+
+export interface UrinaryIonTrappingProfile {
+  drugId: string;
+  drugName: string;
+  aliases: readonly string[];
+  drugClass: IonizableDrugClass;
+  pKa: number;
+  renalExcretionUnchangedPercent: string;
+  alkalinizationEffect: "enhances-clearance" | "impairs-clearance";
+  targetUrinePhForEnhancedClearance?: string;
+  acidemiaCnsTrappingHazard?: string;
+  clinicalMechanism: string;
+  hazardOrCaveat: string;
+  citations: readonly string[];
+}
+
+export const URINARY_ION_TRAPPING_PROFILES: readonly UrinaryIonTrappingProfile[] = [
+  {
+    drugId: "aspirin",
+    drugName: "Salicylate / Aspirin",
+    aliases: ["salicylate", "bismuth-subsalicylate"],
+    drugClass: "weak-acid",
+    pKa: 3.0,
+    renalExcretionUnchangedPercent: "~10% at acidic urine pH 5.5 rising to >30–80% total salicylate clearance with alkalinization",
+    alkalinizationEffect: "enhances-clearance",
+    targetUrinePhForEnhancedClearance: "pH 7.5 to 8.0",
+    acidemiaCnsTrappingHazard:
+      "CRITICAL CNS/BBB ION-TRAPPING HAZARD (PMID 4572648): When systemic arterial pH falls below 7.35 (e.g. hypoventilation during intubation/sedation or progressive metabolic acidemia), plasma unionized salicylic acid [HA] rises exponentially (~2-fold per 0.30 pH drop), crossing the lipophilic blood-brain barrier and becoming trapped inside CNS cells, triggering cerebral edema, seizures, and cardiovascular collapse.",
+    clinicalMechanism:
+      "Raising urine pH from 5.5 to 7.5–8.0 shifts urinary ionized fraction from 99.69% to 99.997–99.999% and slashes the unionized, membrane-permeant salicylic acid fraction by 100- to 316-fold (urine-to-plasma equilibrium ratio R_U/P rises from 0.013 at pH 5.5 to 3.98 at pH 8.0), preventing distal tubular back-diffusion (PMID 15083932, PMID 15181662).",
+    hazardOrCaveat:
+      "Hypokalemia blocks urinary alkalinization: K+ depletion forces distal intercalated H+/K+-ATPase to secrete H+ in exchange for K+ conservation ('paradoxical aciduria'), making urinary alkalinization ineffective until potassium is repleted.",
+    citations: ["PMID 15083932", "PMID 15181662", "PMID 4572648"],
+  },
+  {
+    drugId: "phenobarbital",
+    drugName: "Phenobarbital",
+    aliases: [],
+    drugClass: "weak-acid",
+    pKa: 7.3,
+    renalExcretionUnchangedPercent: "~25% unchanged at baseline, rising substantially under alkaline diuresis",
+    alkalinizationEffect: "enhances-clearance",
+    targetUrinePhForEnhancedClearance: "pH 7.5 to 8.0",
+    clinicalMechanism:
+      "Because phenobarbital's pKa (7.3) sits directly within the physiological urine pH window, shifting urine pH from 5.5 to 7.5–8.0 dramatically converts the drug from 98.4% unionized (only 1.56% ionized at pH 5.5, favoring near-complete tubular reabsorption) to 61.3–83.4% ionized (a 39- to 53-fold jump in ionized fraction and 100- to 316-fold jump in [A-]/[HA], PMID 15083932).",
+    hazardOrCaveat:
+      "Monitor for respiratory depression and hypotension; multi-dose activated charcoal remains first-line GI/enterohepatic clearance enhancer alongside urinary alkalinization or extracorporeal clearance in severe toxicity.",
+    citations: ["PMID 15083932"],
+  },
+  {
+    drugId: "methotrexate",
+    drugName: "Methotrexate",
+    aliases: [],
+    drugClass: "weak-acid",
+    pKa: 4.8,
+    renalExcretionUnchangedPercent: ">80–90% excreted unchanged via glomerular filtration and active OAT1/OAT3 tubular secretion",
+    alkalinizationEffect: "enhances-clearance",
+    targetUrinePhForEnhancedClearance: "pH >= 7.0 (typically 7.5 to 8.0 in high-dose regimens)",
+    clinicalMechanism:
+      "Raising urine pH from 5.5 to 7.5–8.0 elevates ionized methotrexate from 83.4% to 99.80–99.94% (cutting unionized fraction by 83- to 264-fold) and boosts aqueous solubility of both methotrexate and its poorly soluble 7-hydroxymethotrexate metabolite >10-fold, preventing intratubular crystal precipitation and obstructive AKI.",
+    hazardOrCaveat:
+      "Acidic urine (pH < 6.0), volume depletion, or third-space effusions precipitate crystal nephropathy; competitive OAT1/3 inhibitors (NSAIDs, probenecid, piperacillin-tazobactam) further block proximal clearance.",
+    citations: ["PMID 2225539"],
+  },
+  {
+    drugId: "amphetamine",
+    drugName: "Amphetamine / Dextroamphetamine / Methamphetamine",
+    aliases: [
+      "dextroamphetamine",
+      "methamphetamine",
+      "amphetamine-mixed-salts-ir",
+      "amphetamine-mixed-salts-xr",
+      "amphetamine-odt",
+    ],
+    drugClass: "weak-base",
+    pKa: 9.9,
+    renalExcretionUnchangedPercent: "~55–70% unchanged in acidic urine (pH ~5.5), dropping to <5% in alkaline urine (pH ~8.0)",
+    alkalinizationEffect: "impairs-clearance",
+    clinicalMechanism:
+      "In acidic urine (pH 5.5), amphetamine is 99.996% protonated/ionized (f_u = 0.004%, R_U/P = 79.2), trapping it in urine for rapid elimination. Alkaline urine (pH 7.5–8.0, e.g. from acetazolamide, sodium bicarbonate, or potassium citrate) increases the lipophilic unionized free base f_u 100- to 316-fold (to 0.40–1.24%, R_U/P dropping to 0.25), driving passive distal reabsorption and lengthening elimination half-life from ~7 h to 18–34 h (PMID 4880484).",
+    hazardOrCaveat:
+      "Alkaline urine dangerously prolongs sympathomimetic toxicity (agitation, hyperthermia, hypertension, arrhythmia). However, forced urinary acidification is contraindicated in overdose because aciduria precipitates myoglobin casts during rhabdomyolysis and worsens acute kidney injury (PMID 15083932).",
+    citations: ["PMID 4880484", "PMID 15083932"],
+  },
+  {
+    drugId: "quinidine",
+    drugName: "Quinidine",
+    aliases: ["quinidine-gluconate"],
+    drugClass: "weak-base",
+    pKa: 8.5,
+    renalExcretionUnchangedPercent: "~15–25% unchanged renally with pronounced pH-dependent distal reabsorption",
+    alkalinizationEffect: "impairs-clearance",
+    clinicalMechanism:
+      "Alkalinizing urine from pH 5.5 to 7.5–8.0 collapses quinidine ionization from 99.90% down to 90.91% (pH 7.5) and 75.97% (pH 8.0), raising the membrane-permeant unionized base fraction 91- to 240-fold (from 0.10% to 9.09–24.03%) and decreasing renal quinidine clearance.",
+    hazardOrCaveat:
+      "Concurrent carbonic anhydrase inhibitors or systemic alkalinizers reduce renal quinidine clearance, elevating plasma levels and magnifying QTc prolongation / Torsades de Pointes risk.",
+    citations: ["PMID 15083932"],
+  },
+  {
+    drugId: "flecainide",
+    drugName: "Flecainide",
+    aliases: [],
+    drugClass: "weak-base",
+    pKa: 9.3,
+    renalExcretionUnchangedPercent: "~25–35% excreted unchanged in urine (pH-dependent)",
+    alkalinizationEffect: "impairs-clearance",
+    clinicalMechanism:
+      "Raising urine pH from 5.5 to 7.5–8.0 elevates unionized flecainide from 0.016% to 1.56–4.77% (~99- to 301-fold rise in lipophilic free base), increasing distal tubular reabsorption and prolonging flecainide elimination half-life.",
+    hazardOrCaveat:
+      "Chronic urinary alkalinization (acetazolamide, potassium citrate) impairs flecainide clearance and risks Class Ic QRS widening / proarrhythmia. Distinction: acute IV sodium bicarbonate remains a mechanistic rescue in flecainide overdose specifically to overcome Nav1.5 blockade via high extracellular Na+ and serum pH-mediated unbinding, despite slowing urinary elimination.",
+    citations: ["PMID 15083932"],
+  },
+];
+
+const URINARY_TRAPPING_BY_ID = new Map<string, UrinaryIonTrappingProfile>();
+for (const profile of URINARY_ION_TRAPPING_PROFILES) {
+  URINARY_TRAPPING_BY_ID.set(profile.drugId, profile);
+  for (const alias of profile.aliases) {
+    URINARY_TRAPPING_BY_ID.set(alias, profile);
+  }
+}
+
+export function getUrinaryIonTrappingProfile(drugId: string): UrinaryIonTrappingProfile | undefined {
+  return URINARY_TRAPPING_BY_ID.get(drugId.toLowerCase().trim());
+}
+
+export interface UrinaryIonTrappingEvaluation {
+  profile: UrinaryIonTrappingProfile;
+  catalogDrugName: string;
+  baselineUrinePh: number;
+  alkalinizedUrinePh: number;
+  baselineIonization: HendersonHasselbalchIonizationResult;
+  alkalinizedIonization: HendersonHasselbalchIonizationResult;
+  unionizedFractionFoldChange: number;
+  urineToPlasmaRatioShift: string;
+  systemicArterialPh?: number;
+  csfBbbAcidemiaHazard?: {
+    triggered: boolean;
+    plasmaUnionizedAt740Percent: number;
+    plasmaUnionizedAtMeasuredPhPercent: number;
+    unionizedIncreaseFoldVs740: number;
+    rationale: string;
+  };
+}
+
+/**
+ * Quantifies Henderson-Hasselbalch urinary ion trapping from acidic urine (default pH 5.5)
+ * to alkalinized urine (default pH 7.8) and evaluates BBB/CSF salicylate trapping under acidemia (pH < 7.35).
+ */
+export function evaluateUrinaryIonTrapping(input: {
+  drugId: string;
+  baselineUrinePh?: number;
+  targetUrinePh?: number;
+  systemicArterialPh?: number;
+}): UrinaryIonTrappingEvaluation | null {
+  const profile = getUrinaryIonTrappingProfile(input.drugId);
+  if (!profile) return null;
+
+  const baselineUrinePh =
+    input.baselineUrinePh !== undefined && Number.isFinite(input.baselineUrinePh) ? input.baselineUrinePh : 5.5;
+  const alkalinizedUrinePh =
+    input.targetUrinePh !== undefined && Number.isFinite(input.targetUrinePh) ? input.targetUrinePh : 7.8;
+
+  const baseHH = calculateHendersonHasselbalchIonization({
+    pKa: profile.pKa,
+    pH: baselineUrinePh,
+    drugClass: profile.drugClass,
+    referenceCompartmentPh: 7.4,
+  });
+  const alkHH = calculateHendersonHasselbalchIonization({
+    pKa: profile.pKa,
+    pH: alkalinizedUrinePh,
+    drugClass: profile.drugClass,
+    referenceCompartmentPh: 7.4,
+  });
+
+  if (!baseHH || !alkHH) return null;
+
+  const rawBaseFu =
+    1 / (1 + safePow10(profile.drugClass === "weak-acid" ? baselineUrinePh - profile.pKa : profile.pKa - baselineUrinePh));
+  const rawAlkFu =
+    1 / (1 + safePow10(profile.drugClass === "weak-acid" ? alkalinizedUrinePh - profile.pKa : profile.pKa - alkalinizedUrinePh));
+  const rawFold =
+    rawBaseFu > 0 && rawAlkFu > 0
+      ? profile.drugClass === "weak-acid"
+        ? rawBaseFu / rawAlkFu
+        : rawAlkFu / rawBaseFu
+      : 1;
+  const unionizedFractionFoldChange = round1(rawFold);
+
+  let csfBbbAcidemiaHazard: UrinaryIonTrappingEvaluation["csfBbbAcidemiaHazard"];
+  if (
+    profile.drugId === "aspirin" &&
+    input.systemicArterialPh !== undefined &&
+    Number.isFinite(input.systemicArterialPh)
+  ) {
+    const refPlasma = calculateHendersonHasselbalchIonization({
+      pKa: profile.pKa,
+      pH: 7.4,
+      drugClass: "weak-acid",
+    });
+    const currentPlasma = calculateHendersonHasselbalchIonization({
+      pKa: profile.pKa,
+      pH: input.systemicArterialPh,
+      drugClass: "weak-acid",
+    });
+    if (refPlasma && currentPlasma) {
+      const triggered = input.systemicArterialPh < 7.35;
+      const increaseFold = round2(currentPlasma.unionizedFraction / Math.max(1e-9, refPlasma.unionizedFraction));
+      csfBbbAcidemiaHazard = {
+        triggered,
+        plasmaUnionizedAt740Percent: round4(refPlasma.unionizedFraction * 100),
+        plasmaUnionizedAtMeasuredPhPercent: round4(currentPlasma.unionizedFraction * 100),
+        unionizedIncreaseFoldVs740: increaseFold,
+        rationale: triggered
+          ? `Systemic acidemia (arterial pH ${input.systemicArterialPh} < 7.35) raises plasma unionized salicylic acid ${increaseFold}x vs pH 7.40, accelerating passive BBB diffusion and CNS ion trapping (PMID 4572648).`
+          : `Arterial pH (${input.systemicArterialPh}) is >= 7.35, limiting BBB salicylate entry relative to acidemia; avoid hypoventilation/respiratory acidosis.`,
+      };
+    }
+  }
+
+  const normalizedKey = input.drugId.toLowerCase().trim();
+  const catalogDrugName = DRUG_BY_ID[normalizedKey]?.name ?? DRUG_BY_ID[profile.drugId]?.name ?? profile.drugName;
+
+  return {
+    profile,
+    catalogDrugName,
+    baselineUrinePh,
+    alkalinizedUrinePh,
+    baselineIonization: baseHH,
+    alkalinizedIonization: alkHH,
+    unionizedFractionFoldChange,
+    urineToPlasmaRatioShift: `R_U/P shifts from ${baseHH.compartmentToReferenceTotalRatio} (pH ${baselineUrinePh}) to ${alkHH.compartmentToReferenceTotalRatio} (pH ${alkalinizedUrinePh})`,
+    ...(input.systemicArterialPh !== undefined ? { systemicArterialPh: input.systemicArterialPh } : {}),
+    ...(csfBbbAcidemiaHazard ? { csfBbbAcidemiaHazard } : {}),
+  };
+}
+
+export interface GastricAcidSuppressantProfile {
+  drugId: string;
+  drugName: string;
+  classLabel: "PPI" | "P-CAB" | "H2RA";
+  typicalElevatedGastricPh: number;
+  mechanism: string;
+}
+
+export const GASTRIC_ACID_SUPPRESSANT_PROFILES: readonly GastricAcidSuppressantProfile[] = [
+  { drugId: "omeprazole", drugName: "Omeprazole", classLabel: "PPI", typicalElevatedGastricPh: 5.5, mechanism: "Irreversible parietal H+/K+-ATPase inhibition raising fasted intragastric pH from ~1.5 to 5.0–6.0" },
+  { drugId: "omeprazole-sodium-bicarbonate", drugName: "Omeprazole–sodium bicarbonate", classLabel: "PPI", typicalElevatedGastricPh: 5.5, mechanism: "Immediate-release PPI + bicarbonate buffer raising intragastric pH from ~1.5 to >5.5" },
+  { drugId: "esomeprazole", drugName: "Esomeprazole", classLabel: "PPI", typicalElevatedGastricPh: 5.5, mechanism: "Irreversible S-enantiomer H+/K+-ATPase inhibition sustaining intragastric pH >5.0" },
+  { drugId: "pantoprazole", drugName: "Pantoprazole", classLabel: "PPI", typicalElevatedGastricPh: 5.2, mechanism: "Irreversible parietal H+/K+-ATPase inhibition raising intragastric pH to ~5.0–5.5" },
+  { drugId: "lansoprazole", drugName: "Lansoprazole", classLabel: "PPI", typicalElevatedGastricPh: 5.4, mechanism: "Irreversible parietal H+/K+-ATPase inhibition raising intragastric pH to ~5.0–5.5" },
+  { drugId: "rabeprazole", drugName: "Rabeprazole", classLabel: "PPI", typicalElevatedGastricPh: 5.6, mechanism: "Rapid irreversible H+/K+-ATPase inhibition sustaining gastric pH >5.5" },
+  { drugId: "dexlansoprazole", drugName: "Dexlansoprazole", classLabel: "PPI", typicalElevatedGastricPh: 5.6, mechanism: "Dual-delayed-release R-lansoprazole sustaining 24h gastric pH >5.5" },
+  { drugId: "vonoprazan", drugName: "Vonoprazan", classLabel: "P-CAB", typicalElevatedGastricPh: 6.2, mechanism: "Potassium-competitive acid blocker achieving rapid, profound sustained gastric pH >= 6.0" },
+  { drugId: "famotidine", drugName: "Famotidine", classLabel: "H2RA", typicalElevatedGastricPh: 4.5, mechanism: "Competitive histamine H2 receptor antagonism raising gastric pH to ~4.0–5.0" },
+  { drugId: "cimetidine", drugName: "Cimetidine", classLabel: "H2RA", typicalElevatedGastricPh: 4.5, mechanism: "Competitive H2 receptor antagonism raising gastric pH ~4.0–5.0 (plus CYP and OCT2/MATE1 inhibition)" },
+  { drugId: "nizatidine", drugName: "Nizatidine", classLabel: "H2RA", typicalElevatedGastricPh: 4.5, mechanism: "Competitive histamine H2 receptor antagonism raising intragastric pH to ~4.0–5.0" },
+];
+
+export interface GastricPhDrugProfile {
+  drugId: string;
+  drugName: string;
+  aliases: readonly string[];
+  pKa: number;
+  drugClass: "weak-base";
+  expectedAucReductionWithPpi: string;
+  severity: "contraindicated-or-avoid" | "major-exposure-drop";
+  dissolutionMechanism: string;
+  formulationAndMitigation: string;
+  citations: readonly string[];
+}
+
+export const GASTRIC_PH_DRUG_PROFILES: readonly GastricPhDrugProfile[] = [
+  {
+    drugId: "ketoconazole",
+    drugName: "Ketoconazole",
+    aliases: ["levoketoconazole"],
+    pKa: 6.5,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "80% to >95% AUC loss",
+    severity: "contraindicated-or-avoid",
+    dissolutionMechanism:
+      "Oral ketoconazole is a poorly soluble dibasic weak base (pKa 6.5 / 2.9) that must be protonated in acidic gastric juice (pH ~1.5) to dissolve before duodenal transit. Raising gastric pH to >= 5.0 collapses aqueous solubility by orders of magnitude (PMID 21942976).",
+    formulationAndMitigation:
+      "Avoid PPIs/H2RAs/P-CABs with oral ketoconazole. Acidic beverages only partially rescue H2RA-mediated hypochlorhydria and fail against sustained PPI/P-CAB acid blockade.",
+    citations: ["PMID 21942976"],
+  },
+  {
+    drugId: "itraconazole",
+    drugName: "Itraconazole",
+    aliases: [],
+    pKa: 3.7,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~60% to 65% AUC loss (capsules)",
+    severity: "major-exposure-drop",
+    dissolutionMechanism:
+      "Itraconazole capsules exhibit sharp pH-dependent dissolution (pKa ~3.7): at pH 1.5, >99% is ionized and soluble, whereas at pH 5.5 ionization falls to ~1.5%, dropping relative solubility >100-fold and risking subtherapeutic antifungal levels (PMID 21942976).",
+    formulationAndMitigation:
+      "Oral hydroxypropyl-beta-cyclodextrin solution or SUBA-itraconazole formulations bypass gastric-acid dependence; conventional capsules require low gastric pH.",
+    citations: ["PMID 21942976"],
+  },
+  {
+    drugId: "posaconazole",
+    drugName: "Posaconazole",
+    aliases: [],
+    pKa: 4.6,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~32% to 45% AUC loss (oral suspension only)",
+    severity: "major-exposure-drop",
+    dissolutionMechanism:
+      "Posaconazole oral suspension (weak base, pKa 3.6 / 4.6) precipitates rapidly when gastric pH rises from 1.5 to >5.0 during PPI or cimetidine therapy, cutting bioavailability and exposing high-risk patients to breakthrough invasive mold infection (PMID 21942976).",
+    formulationAndMitigation:
+      "Delayed-release posaconazole tablets (released in small intestine via HPMCAS polymer matrix) and IV formulation are insensitive to gastric acid suppression.",
+    citations: ["PMID 21942976"],
+  },
+  {
+    drugId: "atazanavir",
+    drugName: "Atazanavir",
+    aliases: ["atazanavir-cobicistat"],
+    pKa: 4.4,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~75% AUC loss (unboosted); ~40–65% loss if uncompensated",
+    severity: "contraindicated-or-avoid",
+    dissolutionMechanism:
+      "Atazanavir solubility collapses >100-fold as gastric pH exceeds 4.0 (pKa ~4.4). Protonation at pH 1.5 drives dissolution, whereas PPI-induced hypochlorhydria (pH >= 5.0) causes un-dissolved drug passage and HIV virologic rebound (PMID 21942976).",
+    formulationAndMitigation:
+      "PPIs are contraindicated with unboosted atazanavir and treatment-experienced patients; check FDA Prescribing Information for strict boosted-regimen ceilings and temporal H2RA separation.",
+    citations: ["PMID 21942976"],
+  },
+  {
+    drugId: "rilpivirine",
+    drugName: "Rilpivirine",
+    aliases: ["dolutegravir-rilpivirine", "rilpivirine-ftc-taf", "rilpivirine-ftc-tdf"],
+    pKa: 5.6,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~40% AUC loss (up to 65% Cmin drop)",
+    severity: "contraindicated-or-avoid",
+    dissolutionMechanism:
+      "Oral rilpivirine (pKa ~5.6) requires acidic gastric pH plus food for dissolution. PPIs raise gastric pH to >= 5.0, slashing rilpivirine systemic exposure and risking HIV virologic failure and NNRTI resistance mutations (PMID 21942976).",
+    formulationAndMitigation:
+      "PPIs are strictly contraindicated with oral rilpivirine regimens; H2RAs require strict temporal separation per FDA label. Long-acting intramuscular cabotegravir-rilpivirine bypasses GI absorption.",
+    citations: ["PMID 21942976"],
+  },
+  {
+    drugId: "dasatinib",
+    drugName: "Dasatinib",
+    aliases: [],
+    pKa: 6.8,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~43% to 61% AUC and Cmax loss",
+    severity: "contraindicated-or-avoid",
+    dissolutionMechanism:
+      "Dasatinib (weak base, pKa ~6.8 / 3.1) solubility drops >2,000-fold from 18.4 mg/mL at pH 2.6 to <0.008 mg/mL at pH 6.0. Concomitant PPIs or H2RAs profoundly impair dissolution and compromise BCR-ABL molecular remission (PMID 22739140, PMID 25274610).",
+    formulationAndMitigation:
+      "Concurrent PPIs and H2RAs should be avoided; locally acting antacids separated from dasatinib by at least 2 hours minimize pH overlap per FDA Prescribing Information.",
+    citations: ["PMID 22739140", "PMID 25274610"],
+  },
+  {
+    drugId: "erlotinib",
+    drugName: "Erlotinib",
+    aliases: [],
+    pKa: 5.4,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~46% AUC and ~61% Cmax loss",
+    severity: "major-exposure-drop",
+    dissolutionMechanism:
+      "Erlotinib exhibits steep pH-dependent solubility (pKa ~5.4); elevating gastric pH above 5.0 with PPIs suppresses protonated dissolution and significantly reduces oral bioavailability (PMID 22739140).",
+    formulationAndMitigation:
+      "Avoid PPIs when feasible; consult FDA Prescribing Information for H2RA staggering windows.",
+    citations: ["PMID 22739140"],
+  },
+  {
+    drugId: "pazopanib",
+    drugName: "Pazopanib",
+    aliases: [],
+    pKa: 6.4,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~40% AUC loss",
+    severity: "major-exposure-drop",
+    dissolutionMechanism:
+      "Pazopanib is practically insoluble at pH > 4.0; esomeprazole co-administration elevates gastric pH >5.0 and cuts pazopanib AUC by ~40% (PMID 22739140).",
+    formulationAndMitigation:
+      "Avoid concomitant PPIs/H2RAs or separate short-acting acid suppression per label.",
+    citations: ["PMID 22739140"],
+  },
+  {
+    drugId: "mycophenolate-mofetil",
+    drugName: "Mycophenolate mofetil",
+    aliases: ["mycophenolate"],
+    pKa: 5.6,
+    drugClass: "weak-base",
+    expectedAucReductionWithPpi: "~30% to 50% MPA Cmax and early AUC reduction",
+    severity: "major-exposure-drop",
+    dissolutionMechanism:
+      "Mycophenolate mofetil (morpholinoethyl ester weak base, pKa ~5.6) requires low gastric pH for rapid ester dissolution and release; PPI-mediated gastric pH > 4.5–5.0 impairs dissolution and lowers active mycophenolic acid exposure.",
+    formulationAndMitigation:
+      "Enteric-coated mycophenolate sodium (EC-MPS) releases at neutral small-intestinal pH and is unaffected by PPI therapy.",
+    citations: ["PMID 21942976"],
+  },
+];
+
+const GASTRIC_SUPPRESSANT_BY_ID = new Map(GASTRIC_ACID_SUPPRESSANT_PROFILES.map((s) => [s.drugId, s]));
+const GASTRIC_PH_VICTIM_BY_ID = new Map<string, GastricPhDrugProfile>();
+for (const v of GASTRIC_PH_DRUG_PROFILES) {
+  GASTRIC_PH_VICTIM_BY_ID.set(v.drugId, v);
+  for (const alias of v.aliases) {
+    GASTRIC_PH_VICTIM_BY_ID.set(alias, v);
+  }
+}
+
+export interface GastricPhSolubilityEvaluation {
+  profile: GastricPhDrugProfile;
+  catalogDrugName: string;
+  baselineGastricPh: number;
+  elevatedGastricPh: number;
+  baselineIonization: HendersonHasselbalchIonizationResult;
+  elevatedIonization: HendersonHasselbalchIonizationResult;
+  relativeSolubilityRatio: number;
+  solubilityRetentionPercent: number;
+}
+
+/**
+ * Models Henderson-Hasselbalch weak-base aqueous solubility collapse when gastric acid suppression
+ * raises intragastric pH from ~1.5 to 5.0–6.0+.
+ */
+export function evaluateGastricPhSolubilityShift(input: {
+  drugId: string;
+  baselineGastricPh?: number;
+  elevatedGastricPh?: number;
+}): GastricPhSolubilityEvaluation | null {
+  const profile = GASTRIC_PH_VICTIM_BY_ID.get(input.drugId.toLowerCase().trim());
+  if (!profile) return null;
+
+  const baselineGastricPh =
+    input.baselineGastricPh !== undefined && Number.isFinite(input.baselineGastricPh) ? input.baselineGastricPh : 1.5;
+  const elevatedGastricPh =
+    input.elevatedGastricPh !== undefined && Number.isFinite(input.elevatedGastricPh) ? input.elevatedGastricPh : 5.5;
+
+  const baseHH = calculateHendersonHasselbalchIonization({
+    pKa: profile.pKa,
+    pH: baselineGastricPh,
+    drugClass: "weak-base",
+    referenceCompartmentPh: baselineGastricPh,
+  });
+  const elevHH = calculateHendersonHasselbalchIonization({
+    pKa: profile.pKa,
+    pH: elevatedGastricPh,
+    drugClass: "weak-base",
+    referenceCompartmentPh: baselineGastricPh,
+  });
+
+  if (!baseHH || !elevHH) return null;
+
+  const relativeSolubilityRatio = round2(baseHH.aqueousSolubilityMultiplier / Math.max(1e-9, elevHH.aqueousSolubilityMultiplier));
+  const solubilityRetentionPercent = round2((elevHH.aqueousSolubilityMultiplier / baseHH.aqueousSolubilityMultiplier) * 100);
+  const key = input.drugId.toLowerCase().trim();
+
+  return {
+    profile,
+    catalogDrugName: DRUG_BY_ID[key]?.name ?? DRUG_BY_ID[profile.drugId]?.name ?? profile.drugName,
+    baselineGastricPh,
+    elevatedGastricPh,
+    baselineIonization: baseHH,
+    elevatedIonization: elevHH,
+    relativeSolubilityRatio,
+    solubilityRetentionPercent,
+  };
+}
+
+export interface GastricPhCollision {
+  suppressant: GastricAcidSuppressantProfile;
+  victim: GastricPhDrugProfile;
+  victimCatalogId: string;
+  evaluation: GastricPhSolubilityEvaluation;
+  summary: string;
+}
+
+/**
+ * Detects active tray pairs where a PPI, P-CAB, or H2RA elevates gastric pH and impairs dissolution
+ * of a pH-dependent weakly basic drug.
+ */
+export function detectGastricPhCollisions(drugIds: string[]): GastricPhCollision[] {
+  const normalized = drugIds.map((id) => id.toLowerCase().trim());
+  const suppressants = normalized
+    .map((id) => GASTRIC_SUPPRESSANT_BY_ID.get(id))
+    .filter((s): s is GastricAcidSuppressantProfile => Boolean(s));
+  if (suppressants.length === 0) return [];
+
+  const collisions: GastricPhCollision[] = [];
+  const seenPairs = new Set<string>();
+
+  for (const id of normalized) {
+    const victimProfile = GASTRIC_PH_VICTIM_BY_ID.get(id);
+    if (!victimProfile) continue;
+    for (const sup of suppressants) {
+      const key = `${sup.drugId}::${id}`;
+      if (seenPairs.has(key)) continue;
+      seenPairs.add(key);
+
+      const evaluation = evaluateGastricPhSolubilityShift({
+        drugId: id,
+        baselineGastricPh: 1.5,
+        elevatedGastricPh: sup.typicalElevatedGastricPh,
+      });
+      if (!evaluation) continue;
+
+      collisions.push({
+        suppressant: sup,
+        victim: victimProfile,
+        victimCatalogId: id,
+        evaluation,
+        summary: `${sup.drugName} (${sup.classLabel}) raises gastric pH (~1.5 -> ${sup.typicalElevatedGastricPh}), collapsing ${evaluation.catalogDrugName} (pKa ${victimProfile.pKa}) theoretical protonated solubility ${evaluation.relativeSolubilityRatio}x (${victimProfile.expectedAucReductionWithPpi}).`,
+      });
+    }
+  }
+
+  return collisions;
 }
 
 // ============================================================================
@@ -953,37 +1936,56 @@ export interface AcidBaseOnDeskResult {
   hasMetformin: boolean;
   hasSalineOrFluid: boolean;
   hasCalcineurinInhibitor: boolean;
+  hasWeakAcidIonTrappingCandidate: boolean;
+  hasWeakBaseIonTrappingCandidate: boolean;
+  hasGastricAcidSuppressant: boolean;
+  hasGastricPhDependentDrug: boolean;
   matchedDrugIds: string[];
   riskSummaries: string[];
 }
 
-const CAI_DRUGS = new Set(["acetazolamide", "topiramate", "zonisamide"]);
+const CAI_DRUGS = new Set(["acetazolamide", "topiramate", "topiramate-xr", "zonisamide"]);
 const ALKALINIZER_DRUGS = new Set([
   "alkalinizer",
+  "sodium-bicarbonate",
+  "sodium-bicarbonate-iv",
+  "omeprazole-sodium-bicarbonate",
+  "potassium-citrate",
   "sodium bicarbonate",
   "baking soda",
   "potassium citrate",
   "citrate",
 ]);
-const LOOP_DRUGS = new Set(["furosemide", "bumetanide", "torsemide", "ethacrynic acid"]);
+const LOOP_DRUGS = new Set(["furosemide", "bumetanide", "torsemide", "ethacrynic-acid", "ethacrynic acid"]);
 const THIAZIDE_DRUGS = new Set([
   "hctz",
   "hydrochlorothiazide",
+  "chlorothiazide",
   "chlorthalidone",
   "metolazone",
   "indapamide",
+  "bendroflumethiazide",
 ]);
-const SGLT2_DRUGS = new Set(["empagliflozin", "dapagliflozin", "canagliflozin"]);
+const SGLT2_DRUGS = new Set([
+  "empagliflozin",
+  "dapagliflozin",
+  "canagliflozin",
+  "ertugliflozin",
+  "bexagliflozin",
+  "sotagliflozin",
+]);
 const VAPTAN_DRUGS = new Set(["tolvaptan", "conivaptan"]);
-const K_SPARING_DRUGS = new Set(["spironolactone", "eplerenone", "amiloride", "triamterene"]);
+const K_SPARING_DRUGS = new Set(["spironolactone", "eplerenone", "finerenone", "amiloride", "triamterene"]);
 const DDAVP_DRUGS = new Set(["desmopressin", "ddavp", "vasopressin"]);
-const SALICYLATE_DRUGS = new Set(["aspirin", "salicylate", "bismuth subsalicylate"]);
-const METFORMIN_DRUGS = new Set(["metformin"]);
+const SALICYLATE_DRUGS = new Set(["aspirin", "salicylate", "bismuth-subsalicylate", "bismuth subsalicylate"]);
+const METFORMIN_DRUGS = new Set(["metformin", "empagliflozin-metformin", "dapagliflozin-metformin"]);
 const SALINE_DRUGS = new Set(["saline", "hypertonic saline", "normal saline"]);
-const CNI_DRUGS = new Set(["tacrolimus", "cyclosporine"]);
+const CNI_DRUGS = new Set(["tacrolimus", "tacrolimus-xr", "cyclosporine", "voclosporin"]);
+const WEAK_BASE_TRAPPING_EXTRAS = new Set(["mexiletine", "procainamide", "pseudoephedrine"]);
 
 /**
- * Inspects drugs on the desk for acid-base, diuretic, electrolyte, or hyponatremia-modulating agents.
+ * Inspects drugs on the desk for acid-base, diuretic, electrolyte, ion-trapping,
+ * gastric-pH, or hyponatremia-modulating agents.
  */
 export function acidBaseOnDesk(drugIds: string[]): AcidBaseOnDeskResult {
   const normalized = new Set(drugIds.map((id) => id.toLowerCase().trim()));
@@ -1005,6 +2007,10 @@ export function acidBaseOnDesk(drugIds: string[]): AcidBaseOnDeskResult {
   let hasMetformin = false;
   let hasSalineOrFluid = false;
   let hasCalcineurinInhibitor = false;
+  let hasWeakAcidIonTrappingCandidate = false;
+  let hasWeakBaseIonTrappingCandidate = false;
+  let hasGastricAcidSuppressant = false;
+  let hasGastricPhDependentDrug = false;
 
   for (const id of normalized) {
     if (CAI_DRUGS.has(id)) {
@@ -1055,16 +2061,36 @@ export function acidBaseOnDesk(drugIds: string[]): AcidBaseOnDeskResult {
       hasCalcineurinInhibitor = true;
       matched.add(id);
     }
+    const urinaryProfile = URINARY_TRAPPING_BY_ID.get(id);
+    if (urinaryProfile) {
+      if (urinaryProfile.drugClass === "weak-acid") {
+        hasWeakAcidIonTrappingCandidate = true;
+      } else {
+        hasWeakBaseIonTrappingCandidate = true;
+      }
+      matched.add(id);
+    } else if (WEAK_BASE_TRAPPING_EXTRAS.has(id)) {
+      hasWeakBaseIonTrappingCandidate = true;
+      matched.add(id);
+    }
+    if (GASTRIC_SUPPRESSANT_BY_ID.has(id)) {
+      hasGastricAcidSuppressant = true;
+      matched.add(id);
+    }
+    if (GASTRIC_PH_VICTIM_BY_ID.has(id)) {
+      hasGastricPhDependentDrug = true;
+      matched.add(id);
+    }
   }
 
   if (hasCarbonicAnhydraseInhibitor) {
     riskSummaries.push(
-      "Carbonic Anhydrase Inhibitor on desk: Induces proximal tubular bicarbonaturia, predisposing to hyperchloremic Normal Anion Gap Metabolic Acidosis (NAGMA / Type 2 RTA) and hypokalemia.",
+      "Carbonic Anhydrase Inhibitor on desk: Induces proximal tubular bicarbonaturia (urine pH > 7.5), predisposing to hyperchloremic Normal Anion Gap Metabolic Acidosis (NAGMA / Type 2 RTA), hypokalemia, and weak-base urinary ion trapping.",
     );
   }
   if (hasBicarbonateOrAlkalinizer) {
     riskSummaries.push(
-      "Alkalinizing agent on desk: Exogenous bicarbonate load may induce or exacerbate metabolic alkalosis, hypokalemia, and hypernatremia.",
+      "Alkalinizing agent on desk: Exogenous bicarbonate/citrate load raises systemic and urinary pH (enhances weak-acid clearance for salicylate/phenobarbital/methotrexate; impairs weak-base clearance for amphetamine/quinidine/flecainide).",
     );
   }
   if (hasLoopDiuretic) {
@@ -1099,7 +2125,7 @@ export function acidBaseOnDesk(drugIds: string[]): AcidBaseOnDeskResult {
   }
   if (hasSalicylate) {
     riskSummaries.push(
-      "Salicylate on desk: Classic mixed acid-base disorder: direct medullary respiratory center stimulation causes respiratory alkalosis, while mitochondrial oxidative uncoupling generates lactic/ketoacidosis (HAGMA).",
+      "Salicylate on desk: Classic mixed acid-base disorder: direct medullary respiratory center stimulation causes respiratory alkalosis, while mitochondrial oxidative uncoupling generates lactic/ketoacidosis (HAGMA). Urinary alkalinization (pH 7.5–8.0) traps ionized salicylate in urine; systemic acidemia (pH < 7.35) drives CNS/BBB trapping (PMID 4572648, PMID 15083932).",
     );
   }
   if (hasMetformin) {
@@ -1110,6 +2136,21 @@ export function acidBaseOnDesk(drugIds: string[]): AcidBaseOnDeskResult {
   if (hasCalcineurinInhibitor) {
     riskSummaries.push(
       "Calcineurin Inhibitor on desk: Inhibits cortical collecting duct H+-ATPase and mineralocorticoid responsiveness, causing hyperkalemic NAGMA (Type 4 RTA).",
+    );
+  }
+  if (hasWeakAcidIonTrappingCandidate && !hasSalicylate) {
+    riskSummaries.push(
+      "pH-sensitive weak acid on desk (e.g. phenobarbital / methotrexate): Urinary alkalinization (pH 7.5–8.0) markedly increases urinary ionized fraction, accelerating renal clearance and preventing intratubular crystal precipitation (PMID 15083932).",
+    );
+  }
+  if (hasWeakBaseIonTrappingCandidate) {
+    riskSummaries.push(
+      "pH-sensitive weak base on desk (e.g. amphetamine / quinidine / flecainide): Alkaline urine (pH 7.5–8.0 from acetazolamide or bicarbonate) increases unionized free-base reabsorption, reducing renal clearance and prolonging systemic toxicity (PMID 4880484).",
+    );
+  }
+  if (hasGastricAcidSuppressant && hasGastricPhDependentDrug) {
+    riskSummaries.push(
+      "Gastric pH absorption collision on desk: Acid suppression raises intragastric pH (~1.5 -> 5.0+), collapsing protonated dissolution of co-present weakly basic oral agents (PMID 22739140, PMID 21942976).",
     );
   }
 
@@ -1126,6 +2167,10 @@ export function acidBaseOnDesk(drugIds: string[]): AcidBaseOnDeskResult {
     hasMetformin,
     hasSalineOrFluid,
     hasCalcineurinInhibitor,
+    hasWeakAcidIonTrappingCandidate,
+    hasWeakBaseIonTrappingCandidate,
+    hasGastricAcidSuppressant,
+    hasGastricPhDependentDrug,
     matchedDrugIds: Array.from(matched),
     riskSummaries,
   };
@@ -1191,6 +2236,8 @@ export interface AcidBaseReport {
   deltaDeltaEvaluation: DeltaDeltaResult;
   hyponatremiaEvaluation: HyponatremiaEvaluationResult;
   adrogueMadiasPredictions: AdrogueMadiasResult[];
+  urinaryIonTrappingEvaluations?: UrinaryIonTrappingEvaluation[];
+  gastricPhCollisions?: GastricPhCollision[];
   alerts: AcidBaseAlert[];
   protocols: {
     hypertonicSalineRescue: typeof HYPERTONIC_SALINE_RESCUE_PROTOCOL;
@@ -1256,7 +2303,7 @@ export function acidBaseReportOnDesk(drugIds: string[], host: HostContext, optio
       tier: "critical",
       category: "AnionGap",
       title: "Occult High Anion Gap Metabolic Acidosis Unmasked by Albumin Correction",
-      rationale: `Observed AG was ${anionGapEvaluation.observedAnionGap} mEq/L (falsely normal), but Figge albumin correction unmasks a true AG of ${anionGapEvaluation.correctedAnionGap} mEq/L due to profound hypoalbuminemia (albumin ${chem.albuminGdl} g/dL).`,
+      rationale: `Observed AG was ${anionGapEvaluation.observedAnionGap} mEq/L (falsely normal), but Figge albumin correction unmasks a true AG of ${anionGapEvaluation.correctedAnionGap} mEq/L due to profound hypoalbuminemia (albumin ${chem.albuminGdl ?? "unmeasured"} g/dL).`,
       actionGuidance:
         "Investigate for occult lactic acidosis, ketoacidosis, toxic alcohols, or uremic acid retention. Do not rely on uncorrected anion gap in hypoalbuminemic patients.",
     });
@@ -1424,6 +2471,55 @@ export function acidBaseReportOnDesk(drugIds: string[], host: HostContext, optio
     });
   }
 
+  // 8. Urinary Ion Trapping & Gastric pH Dissolution Evaluations
+  const urinaryIonTrappingEvaluations: UrinaryIonTrappingEvaluation[] = [];
+  for (const id of drugIds) {
+    const evalItem = evaluateUrinaryIonTrapping({
+      drugId: id,
+      systemicArterialPh: options?.abg?.measuredPh,
+    });
+    if (evalItem && !urinaryIonTrappingEvaluations.some((u) => u.profile.drugId === evalItem.profile.drugId)) {
+      urinaryIonTrappingEvaluations.push(evalItem);
+    }
+  }
+
+  const salicylateEval = urinaryIonTrappingEvaluations.find((u) => u.profile.drugId === "aspirin");
+  if (salicylateEval?.csfBbbAcidemiaHazard?.triggered) {
+    alerts.push({
+      tier: "critical",
+      category: "DrugCollision",
+      title: "Salicylate + Systemic Acidemia (pH < 7.35): CNS / BBB Ion-Trapping Hazard",
+      rationale: salicylateEval.csfBbbAcidemiaHazard.rationale,
+      actionGuidance:
+        "Avoid hypoventilation or uncompensated respiratory acidosis (including during airway intubation) and evaluate urinary alkalinization kinetics alongside potassium repletion per toxicology reference (PMID 4572648, PMID 15083932).",
+    });
+  }
+
+  const weakBaseOnTray = urinaryIonTrappingEvaluations.filter(
+    (u) => u.profile.alkalinizationEffect === "impairs-clearance",
+  );
+  if (weakBaseOnTray.length > 0 && (onDesk.hasBicarbonateOrAlkalinizer || onDesk.hasCarbonicAnhydraseInhibitor)) {
+    alerts.push({
+      tier: "warning",
+      category: "DrugCollision",
+      title: "Alkaline Urine Trapping Impairing Weak-Base Renal Clearance",
+      rationale: `${weakBaseOnTray.map((w) => w.catalogDrugName).join(", ")} undergoes pH-dependent passive distal reabsorption when urine pH rises (7.5–8.0), raising unionized free-base fraction and prolonging elimination half-life (PMID 4880484, PMID 15083932).`,
+      actionGuidance:
+        "Monitor for prolonged stimulant sympathomimetic toxicity or antiarrhythmic QRS/QTc excess when co-administered with acetazolamide, sodium bicarbonate, or potassium citrate.",
+    });
+  }
+
+  const gastricPhCollisions = detectGastricPhCollisions(drugIds);
+  for (const col of gastricPhCollisions) {
+    alerts.push({
+      tier: col.victim.severity === "contraindicated-or-avoid" ? "critical" : "warning",
+      category: "DrugCollision",
+      title: `Gastric pH Elevation Impairs ${col.victim.drugName} Dissolution (${col.suppressant.drugName})`,
+      rationale: `${col.summary} ${col.victim.dissolutionMechanism}`,
+      actionGuidance: col.victim.formulationAndMitigation,
+    });
+  }
+
   const report: AcidBaseReport = {
     onDesk,
     anionGapEvaluation,
@@ -1431,6 +2527,8 @@ export function acidBaseReportOnDesk(drugIds: string[], host: HostContext, optio
     deltaDeltaEvaluation,
     hyponatremiaEvaluation,
     adrogueMadiasPredictions,
+    ...(urinaryIonTrappingEvaluations.length > 0 ? { urinaryIonTrappingEvaluations } : {}),
+    ...(gastricPhCollisions.length > 0 ? { gastricPhCollisions } : {}),
     alerts,
     protocols: {
       hypertonicSalineRescue: HYPERTONIC_SALINE_RESCUE_PROTOCOL,

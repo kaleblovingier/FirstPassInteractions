@@ -4,10 +4,14 @@ import { DRUG_BY_ID } from "./catalog";
 import {
   RENAL_MECHANISMS_REGULATORY_DISCLAIMER,
   RENAL_MECHANISMS_CITATIONS,
+  GLOMERULAR_HEMODYNAMICS,
   NEPHRON_SEGMENTS,
   NEPHRON_TRANSPORTERS,
   DIURETIC_CLASS_PROFILES,
   RENAL_COLLISIONS,
+  getGlomerularHemodynamics,
+  evaluateGlomerularHemodynamics,
+  evaluatePseudoCreatinineElevation,
   getAllNephronSegments,
   getNephronSegmentById,
   getAllNephronTransporters,
@@ -407,6 +411,13 @@ describe("Renal Tubular Acidification, Secretion & Diuretic Segmental Pharmacolo
         }
       }
 
+      // From glomerular hemodynamics
+      for (const list of Object.values(GLOMERULAR_HEMODYNAMICS.drugClassTargets)) {
+        for (const id of list) {
+          allReferencedDrugIds.add(id);
+        }
+      }
+
       assert.ok(allReferencedDrugIds.size >= 15, `Expected >= 15 referenced drugs, got ${allReferencedDrugIds.size}`);
 
       const missing: string[] = [];
@@ -437,18 +448,150 @@ describe("Renal Tubular Acidification, Secretion & Diuretic Segmental Pharmacolo
         "amiloride",
         "spironolactone",
         "eplerenone",
+        "finerenone",
         "tolvaptan",
         "desmopressin",
         "lisinopril",
         "losartan",
         "ibuprofen",
         "lithium",
+        "dolutegravir",
+        "bictegravir",
+        "cobicistat",
+        "cimetidine",
+        "metformin",
+        "trimethoprim",
+        "tmp-smx",
+        "vancomycin",
+        "piperacillin-tazobactam",
+        "gentamicin",
+        "methotrexate",
+        "probenecid",
       ];
 
       for (const id of coreRequired) {
         assert.ok(
           DRUG_BY_ID[id],
           `Core drug '${id}' must be present in DRUG_BY_ID`,
+        );
+      }
+    });
+  });
+
+  describe("PhD Deepening: Glomerular Hemodynamics, MATE1/2-K, Pseudo-Creatinine & Extended Collisions", () => {
+    it("models Glomerular & JGA autoregulation and evaluates afferent vs efferent modifiers", () => {
+      const glom = getGlomerularHemodynamics();
+      assert.equal(glom.id, "glomerulus");
+      assert.match(glom.ultrafiltrationEquation, /P_GC/);
+
+      const collapse = evaluateGlomerularHemodynamics(["lisinopril", "ibuprofen"]);
+      assert.equal(collapse.netFiltrationRisk, "autoregulation-collapse");
+      assert.ok(collapse.afferentModifiers.some((m) => m.drugId === "ibuprofen"));
+      assert.ok(collapse.efferentModifiers.some((m) => m.drugId === "lisinopril"));
+
+      const relief = evaluateGlomerularHemodynamics(["empagliflozin", "losartan"]);
+      assert.equal(relief.netFiltrationRisk, "hyperfiltration-relief");
+      assert.ok(relief.summary.includes("hyperfiltration"));
+
+      const neutral = evaluateGlomerularHemodynamics(["acetaminophen"]);
+      assert.equal(neutral.netFiltrationRisk, "neutral");
+    });
+
+    it("includes coupled apical MATE1/MATE2-K alongside OCT2, plus trimethoprim ENaC and finerenone MR coverage", () => {
+      const pctTransporters = getTransportersBySegment("pct");
+      const mate = pctTransporters.find((t) => t.id === "mate1-2k");
+      assert.ok(mate);
+      assert.equal(mate.membrane, "apical");
+      assert.equal(mate.direction, "secretion");
+      assert.ok(mate.inhibitedByDrugIds.includes("dolutegravir"));
+      assert.ok(mate.inhibitedByDrugIds.includes("cimetidine"));
+      assert.ok(mate.inhibitedByDrugIds.includes("tmp-smx"));
+
+      const oct2 = pctTransporters.find((t) => t.id === "oct2")!;
+      assert.ok(oct2.inhibitedByDrugIds.includes("dolutegravir"));
+      assert.ok(oct2.inhibitedByDrugIds.includes("bictegravir"));
+      assert.ok(oct2.inhibitedByDrugIds.includes("cobicistat"));
+      assert.ok(oct2.inhibitedByDrugIds.includes("ranolazine"));
+
+      const nhe3 = pctTransporters.find((t) => t.id === "nhe3")!;
+      assert.match(nhe3.physiologicalRole, /lithium/i);
+
+      const enac = getTransportersBySegment("ccd-principal").find((t) => t.id === "enac")!;
+      assert.ok(enac.inhibitedByDrugIds.includes("trimethoprim"));
+      assert.ok(enac.inhibitedByDrugIds.includes("tmp-smx"));
+
+      const mr = getTransportersBySegment("ccd-principal").find((t) => t.id === "mr-aldosterone")!;
+      assert.ok(mr.inhibitedByDrugIds.includes("finerenone"));
+    });
+
+    it("detects Triple Whammy with Thiazide diuretics and fixed-dose ACEi/ARB-HCTZ combinations", () => {
+      const thiazideTriple = detectRenalCollisions(["lisinopril", "hctz", "ibuprofen"]);
+      assert.ok(thiazideTriple.some((c) => c.collision.id === "triple-whammy"));
+
+      const comboTriple = detectRenalCollisions(["lisinopril-hctz", "naproxen"]);
+      assert.ok(comboTriple.some((c) => c.collision.id === "triple-whammy"));
+    });
+
+    it("detects Trimethoprim ENaC hyperkalemia, Dual ACEi+ARB blockade, and Lithium proximal reabsorption", () => {
+      const tmpAcei = detectRenalCollisions(["tmp-smx", "lisinopril"]);
+      const tmpHit = tmpAcei.find((c) => c.collision.id === "trimethoprim-enac-hyperkalemia");
+      assert.ok(tmpHit);
+      assert.equal(tmpHit.collision.severity, "critical");
+
+      const tmpSpiro = detectRenalCollisions(["trimethoprim", "spironolactone"]);
+      assert.ok(tmpSpiro.some((c) => c.collision.id === "trimethoprim-enac-hyperkalemia"));
+
+      const dualRaas = detectRenalCollisions(["ramipril", "telmisartan"]);
+      assert.ok(dualRaas.some((c) => c.collision.id === "dual-raas-hyperkalemia"));
+
+      const lithiumThiazide = detectRenalCollisions(["lithium", "hctz"]);
+      const liProx = lithiumThiazide.find((c) => c.collision.id === "lithium-proximal-reabsorption");
+      assert.ok(liProx);
+      assert.equal(liProx.collision.severity, "critical");
+      assert.match(liProx.collision.pathophysiologyDetail, /NHE3/);
+    });
+
+    it("detects OCT2/MATE1 metformin/dofetilide blockade and evaluates non-GFR pseudo-creatinine artifacts", () => {
+      const dtgMet = detectRenalCollisions(["dolutegravir", "metformin"]);
+      assert.ok(dtgMet.some((c) => c.collision.id === "oct2-mate1-cation-blockade"));
+
+      const cimDof = detectRenalCollisions(["cimetidine", "dofetilide"]);
+      assert.ok(cimDof.some((c) => c.collision.id === "oct2-mate1-cation-blockade"));
+
+      const comboMet = detectRenalCollisions(["dolutegravir-lamivudine", "empagliflozin-metformin"]);
+      assert.ok(comboMet.some((c) => c.collision.id === "oct2-mate1-cation-blockade"));
+
+      const pseudo = evaluatePseudoCreatinineElevation(["dolutegravir-lamivudine", "cobicistat", "tmp-smx"]);
+      assert.equal(pseudo.detected.length, 3);
+      assert.match(pseudo.confirmatoryBiomarker, /cystatin-C/i);
+    });
+
+    it("detects Vancomycin + Piperacillin-Tazobactam / Aminoglycoside AKI and OAT1/3 Methotrexate clearance blockade", () => {
+      const vancoZosyn = detectRenalCollisions(["vancomycin", "piperacillin-tazobactam"]);
+      assert.ok(vancoZosyn.some((c) => c.collision.id === "vancomycin-piperacillin-tazobactam-aki"));
+
+      const vancoGent = detectRenalCollisions(["vancomycin", "gentamicin"]);
+      assert.ok(vancoGent.some((c) => c.collision.id === "vancomycin-piperacillin-tazobactam-aki"));
+
+      const mtxNsaid = detectRenalCollisions(["methotrexate", "ibuprofen"]);
+      assert.ok(mtxNsaid.some((c) => c.collision.id === "oat1-3-methotrexate-clearance-blockade"));
+
+      const mtxTmp = detectRenalCollisions(["methotrexate", "tmp-smx"]);
+      assert.ok(mtxTmp.some((c) => c.collision.id === "oat1-3-methotrexate-clearance-blockade"));
+
+      const summary = getRenalPharmacologySummary(["dolutegravir", "metformin", "lisinopril", "ibuprofen"]);
+      assert.equal(summary.glomerularHemodynamics.netFiltrationRisk, "autoregulation-collapse");
+      assert.equal(summary.pseudoCreatinine.detected.length, 1);
+      assert.ok(summary.collisions.some((c) => c.collision.id === "oct2-mate1-cation-blockade"));
+    });
+
+    it("ensures every RENAL_COLLISIONS preset sample slice(0, 3) triggers its own collision", () => {
+      for (const col of RENAL_COLLISIONS) {
+        const sample = col.interactingDrugIds.slice(0, 3);
+        const hits = detectRenalCollisions(sample);
+        assert.ok(
+          hits.some((h) => h.collision.id === col.id),
+          `Preset slice ${sample.join(", ")} should trigger ${col.id}`,
         );
       }
     });

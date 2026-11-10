@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { DRUG_BY_ID } from "./catalog";
 import {
   ACID_BASE_CDS_DISCLAIMER,
   ACID_BASE_CITATIONS,
@@ -8,6 +9,17 @@ import {
   calculateDeltaDelta,
   evaluateHyponatremia,
   calculateAdrogueMadias,
+  calculateOsmolalGap,
+  calculateHyperglycemiaCorrectedSodium,
+  calculateHendersonHasselbalchIonization,
+  calculateBloodGasHendersonHasselbalch,
+  URINARY_ION_TRAPPING_PROFILES,
+  getUrinaryIonTrappingProfile,
+  evaluateUrinaryIonTrapping,
+  GASTRIC_ACID_SUPPRESSANT_PROFILES,
+  GASTRIC_PH_DRUG_PROFILES,
+  evaluateGastricPhSolubilityShift,
+  detectGastricPhCollisions,
   INFUSATE_PROFILES,
   HYPERTONIC_SALINE_RESCUE_PROTOCOL,
   DDAVP_CLAMP_PROTOCOL,
@@ -559,6 +571,333 @@ describe("Acid-Base Disorders, Respiratory Compensation & Hyponatremia / ODS Eng
 
       // Regulatory disclaimer
       assert.ok(report.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
+    });
+  });
+
+  // ==========================================================================
+  // 8. EDGE-CASE GUARDS & INFUSATE PROFILES
+  // ==========================================================================
+  describe("Edge-Case Guards, Osmolal Gap & Hyperglycemia Sodium Correction", () => {
+    it("validates INFUSATE_PROFILES sodium and osmolarity constants", () => {
+      assert.equal(INFUSATE_PROFILES["3-percent-saline"].sodiumMeqL, 513);
+      assert.equal(INFUSATE_PROFILES["0.9-percent-saline"].sodiumMeqL, 154);
+      assert.equal(INFUSATE_PROFILES["lactated-ringers"].potassiumMeqL, 4);
+      assert.equal(INFUSATE_PROFILES.d5w.sodiumMeqL, 0);
+    });
+
+    it("guards Anion Gap, Winter's, Delta-Delta, Hyponatremia, and Adrogué-Madias against NaN, zero, and negative inputs", () => {
+      const agNaN = calculateAnionGap({
+        sodiumMeqL: Number.NaN,
+        chlorideMeqL: 104,
+        bicarbonateMeqL: 24,
+        albuminGdl: -1.5,
+      });
+      assert.ok(Number.isFinite(agNaN.observedAnionGap));
+      assert.ok(Number.isFinite(agNaN.correctedAnionGap));
+      assert.equal(agNaN.albuminGdl, 0);
+      assert.ok(agNaN.inputGuardWarning);
+
+      const agZeroAlb = calculateAnionGap({
+        sodiumMeqL: 140,
+        chlorideMeqL: 104,
+        bicarbonateMeqL: 24,
+        albuminGdl: 0,
+        potassiumMeqL: 4.5,
+      });
+      assert.equal(agZeroAlb.correctedAnionGap, 22);
+      assert.equal(agZeroAlb.potassiumIncludedAnionGap, 16.5);
+
+      const wintersZero = evaluateWintersFormula({
+        bicarbonateMeqL: 0,
+        measuredPaco2MmHg: Number.NaN,
+      });
+      assert.ok(Number.isFinite(wintersZero.expectedPaco2));
+      assert.ok(wintersZero.inputGuardWarning);
+
+      const deltaNaN = calculateDeltaDelta({
+        correctedAnionGap: Number.NaN,
+        bicarbonateMeqL: 24,
+      });
+      assert.ok(Number.isFinite(deltaNaN.deltaAnionGap));
+      assert.equal(deltaNaN.deltaRatio, null);
+
+      const adrogueZero = calculateAdrogueMadias({
+        serumSodiumMeqL: 118,
+        weightKg: 0,
+        sex: "female",
+        infusateType: "3-percent-saline",
+        infusionVolumeMl: -100,
+      });
+      assert.ok(Number.isFinite(adrogueZero.deltaNaPerLiter));
+      assert.ok(adrogueZero.totalBodyWaterLiters > 0);
+      assert.equal(adrogueZero.predictedDeltaNaForVolume, 0);
+      assert.ok(adrogueZero.inputGuardWarning);
+    });
+
+    it("differentiates hypotonic, isotonic pseudohyponatremia, and hypertonic translocational hyponatremia", () => {
+      const iso = evaluateHyponatremia({
+        serumSodiumMeqL: 126,
+        serumOsmolalityMosmKg: 286,
+      });
+      assert.equal(iso.tonicityClassification, "isotonic-pseudohyponatremia");
+      assert.ok(iso.etiologyCategory.includes("Pseudohyponatremia"));
+
+      const hyper = evaluateHyponatremia({
+        serumSodiumMeqL: 128,
+        serumOsmolalityMosmKg: 315,
+      });
+      assert.equal(hyper.tonicityClassification, "hypertonic-translocational");
+      assert.ok(hyper.etiologyDetails.includes("PMID 4763428"));
+    });
+
+    it("computes serum osmolal gap and guards invalid inputs cleanly", () => {
+      const elevated = calculateOsmolalGap({
+        measuredOsmolalityMosmKg: 340,
+        sodiumMeqL: 140,
+        glucoseMgDl: 90,
+        bunMgDl: 14,
+        ethanolMgDl: 46,
+      });
+      assert.ok(elevated);
+      // 2*140 + 90/18 + 14/2.8 + 46/4.6 = 280 + 5 + 5 + 10 = 300; Gap = 40
+      assert.equal(elevated.calculatedOsmolalityMosmKg, 300);
+      assert.equal(elevated.osmolalGapMosmKg, 40);
+      assert.equal(elevated.category, "elevated");
+
+      assert.equal(
+        calculateOsmolalGap({
+          measuredOsmolalityMosmKg: 290,
+          sodiumMeqL: 0,
+          glucoseMgDl: 90,
+          bunMgDl: 14,
+        }),
+        null,
+      );
+      assert.equal(
+        calculateOsmolalGap({
+          measuredOsmolalityMosmKg: Number.NaN,
+          sodiumMeqL: 140,
+          glucoseMgDl: 90,
+          bunMgDl: 14,
+        }),
+        null,
+      );
+    });
+
+    it("computes Katz and Hillier hyperglycemia-corrected sodium", () => {
+      const moderate = calculateHyperglycemiaCorrectedSodium(130, 300);
+      assert.ok(moderate);
+      assert.equal(moderate.katzCorrectedSodiumMeqL, 133.2);
+      assert.equal(moderate.recommendedCorrectedSodiumMeqL, 133.2);
+
+      const severe = calculateHyperglycemiaCorrectedSodium(124, 700);
+      assert.ok(severe);
+      // 6 steps of 100 mg/dL above 100: Hillier 2.4 * 6 = +14.4 -> 138.4
+      assert.equal(severe.hillierCorrectedSodiumMeqL, 138.4);
+      assert.equal(severe.recommendedCorrectedSodiumMeqL, 138.4);
+
+      assert.equal(calculateHyperglycemiaCorrectedSodium(135, -10), null);
+    });
+  });
+
+  // ==========================================================================
+  // 9. HENDERSON-HASSELBALCH, URINARY ION TRAPPING & GASTRIC pH KINETICS
+  // ==========================================================================
+  describe("Henderson-Hasselbalch Ionization, Urinary Trapping & Gastric pH Absorption", () => {
+    it("computes exact Henderson-Hasselbalch weak-acid and weak-base ionized fractions and blood gas consistency", () => {
+      // Weak acid: pKa 7.3 at pH 7.3 => 50% ionized, 50% unionized
+      const acidHalf = calculateHendersonHasselbalchIonization({
+        pKa: 7.3,
+        pH: 7.3,
+        drugClass: "weak-acid",
+      });
+      assert.ok(acidHalf);
+      assert.equal(acidHalf.ionizedFraction, 0.5);
+      assert.equal(acidHalf.unionizedFraction, 0.5);
+
+      // Weak base: pKa 9.9 at pH 7.9 => 1 / (1 + 10^(7.9 - 9.9)) = 1 / 1.01 = 0.9901
+      const base99 = calculateHendersonHasselbalchIonization({
+        pKa: 9.9,
+        pH: 7.9,
+        drugClass: "weak-base",
+      });
+      assert.ok(base99);
+      assert.equal(base99.ionizedFraction, 0.9901);
+      assert.equal(base99.unionizedFraction, 0.0099);
+
+      // Invalid bounds / NaN return null
+      assert.equal(calculateHendersonHasselbalchIonization({ pKa: 5, pH: 15, drugClass: "weak-acid" }), null);
+      assert.equal(calculateHendersonHasselbalchIonization({ pKa: Number.NaN, pH: 7.4, drugClass: "weak-base" }), null);
+
+      // Plasma Henderson-Hasselbalch consistency: HCO3 = 24, PaCO2 = 40 -> expected pH = 7.40, [H+] = 40
+      const abgOk = calculateBloodGasHendersonHasselbalch({ bicarbonateMeqL: 24, paco2MmHg: 40, measuredPh: 7.4 });
+      assert.ok(abgOk);
+      assert.equal(abgOk.expectedPh, 7.4);
+      assert.equal(abgOk.expectedHydrogenIonNeqL, 40);
+      assert.equal(abgOk.isInternallyConsistent, true);
+
+      const abgDiscordant = calculateBloodGasHendersonHasselbalch({ bicarbonateMeqL: 24, paco2MmHg: 40, measuredPh: 7.15 });
+      assert.ok(abgDiscordant);
+      assert.equal(abgDiscordant.isInternallyConsistent, false);
+      assert.equal(calculateBloodGasHendersonHasselbalch({ bicarbonateMeqL: 0, paco2MmHg: 40 }), null);
+    });
+
+    it("quantifies weak-acid urinary alkalinization (salicylate, phenobarbital, methotrexate) and salicylate acidemia CNS/BBB trapping", () => {
+      // Salicylate: pH 5.5 -> 7.8 decreases unionized permeant salicylic acid ~200x, R_U/P increases markedly
+      const sal = evaluateUrinaryIonTrapping({
+        drugId: "aspirin",
+        baselineUrinePh: 5.5,
+        targetUrinePh: 7.8,
+        systemicArterialPh: 7.1,
+      });
+      assert.ok(sal);
+      assert.equal(sal.profile.drugClass, "weak-acid");
+      assert.ok(sal.baselineIonization.ionizedPercent > 99.6 && sal.baselineIonization.ionizedPercent < 99.8);
+      assert.ok(sal.alkalinizedIonization.ionizedPercent > 99.99);
+      assert.ok(sal.unionizedFractionFoldChange >= 190 && sal.unionizedFractionFoldChange <= 210);
+      assert.ok(sal.alkalinizedIonization.compartmentToReferenceTotalRatio > sal.baselineIonization.compartmentToReferenceTotalRatio);
+      assert.ok(sal.csfBbbAcidemiaHazard?.triggered);
+      assert.ok(sal.csfBbbAcidemiaHazard!.unionizedIncreaseFoldVs740 >= 1.9);
+
+      // Phenobarbital (pKa 7.3): pH 5.5 (1.56% ionized, 98.44% unionized) -> pH 8.0 (83.37% ionized, 16.63% unionized)
+      // That yields a ~5.9x drop in unionized fraction, >50x rise in ionized fraction, and 316x shift in [A-]/[HA]
+      const pheno = evaluateUrinaryIonTrapping({
+        drugId: "phenobarbital",
+        baselineUrinePh: 5.5,
+        targetUrinePh: 8.0,
+      });
+      assert.ok(pheno);
+      assert.ok(pheno.baselineIonization.ionizedPercent < 2.0);
+      assert.ok(pheno.alkalinizedIonization.ionizedPercent > 82.0);
+      assert.ok(pheno.unionizedFractionFoldChange >= 5.5 && pheno.unionizedFractionFoldChange <= 6.2);
+      assert.ok(pheno.alkalinizedIonization.ionizedFraction / pheno.baselineIonization.ionizedFraction > 50);
+
+      // Methotrexate (pKa 4.8): pH 5.5 (~83.4% ionized) -> pH 7.8 (~99.9% ionized)
+      const mtx = evaluateUrinaryIonTrapping({
+        drugId: "methotrexate",
+        baselineUrinePh: 5.5,
+        targetUrinePh: 7.8,
+      });
+      assert.ok(mtx);
+      assert.ok(mtx.baselineIonization.ionizedPercent > 82 && mtx.baselineIonization.ionizedPercent < 85);
+      assert.ok(mtx.alkalinizedIonization.ionizedPercent > 99.8);
+      assert.ok(getUrinaryIonTrappingProfile("bismuth-subsalicylate")?.drugId === "aspirin");
+    });
+
+    it("quantifies weak-base alkaline-urine clearance impairment (amphetamine, quinidine, flecainide)", () => {
+      const amph = evaluateUrinaryIonTrapping({
+        drugId: "amphetamine",
+        baselineUrinePh: 5.5,
+        targetUrinePh: 8.0,
+      });
+      assert.ok(amph);
+      assert.equal(amph.profile.alkalinizationEffect, "impairs-clearance");
+      assert.ok(amph.baselineIonization.ionizedPercent > 99.99);
+      assert.ok(amph.alkalinizedIonization.unionizedPercent > amph.baselineIonization.unionizedPercent * 100);
+      assert.ok(amph.unionizedFractionFoldChange >= 300);
+
+      const quin = evaluateUrinaryIonTrapping({ drugId: "quinidine", baselineUrinePh: 5.5, targetUrinePh: 7.8 });
+      assert.ok(quin);
+      assert.equal(quin.profile.alkalinizationEffect, "impairs-clearance");
+      assert.ok(quin.alkalinizedIonization.unionizedPercent > 15);
+
+      const flec = evaluateUrinaryIonTrapping({ drugId: "flecainide", baselineUrinePh: 5.5, targetUrinePh: 8.0 });
+      assert.ok(flec);
+      assert.equal(flec.profile.alkalinizationEffect, "impairs-clearance");
+      assert.ok(flec.unionizedFractionFoldChange >= 250);
+    });
+
+    it("models gastric pH elevation (1.5 -> 5.0+) impairing dissolution of ketoconazole, itraconazole, posaconazole, atazanavir, rilpivirine, and dasatinib", () => {
+      for (const victimId of ["ketoconazole", "itraconazole", "posaconazole", "atazanavir", "rilpivirine", "dasatinib"]) {
+        const shift = evaluateGastricPhSolubilityShift({
+          drugId: victimId,
+          baselineGastricPh: 1.5,
+          elevatedGastricPh: 5.5,
+        });
+        assert.ok(shift, `Expected solubility evaluation for ${victimId}`);
+        assert.ok(
+          shift.relativeSolubilityRatio > 10,
+          `Expected >10x solubility collapse for ${victimId}, got ${shift.relativeSolubilityRatio}`,
+        );
+        assert.ok(shift.solubilityRetentionPercent < 10);
+      }
+
+      const ppiCollisions = detectGastricPhCollisions([
+        "omeprazole",
+        "dasatinib",
+        "rilpivirine",
+        "ketoconazole",
+      ]);
+      assert.equal(ppiCollisions.length, 3);
+      assert.ok(ppiCollisions.some((c) => c.victim.drugId === "dasatinib"));
+      assert.ok(ppiCollisions.some((c) => c.victim.drugId === "rilpivirine"));
+      assert.ok(ppiCollisions.some((c) => c.victim.drugId === "ketoconazole"));
+
+      const h2Collisions = detectGastricPhCollisions(["famotidine", "atazanavir", "itraconazole"]);
+      assert.equal(h2Collisions.length, 2);
+      const pcabCollisions = detectGastricPhCollisions(["vonoprazan", "posaconazole"]);
+      assert.equal(pcabCollisions.length, 1);
+    });
+
+    it("integrates ion-trapping and gastric-pH collisions into acidBaseOnDesk and acidBaseReportOnDesk, and validates catalog IDs", () => {
+      for (const profile of URINARY_ION_TRAPPING_PROFILES) {
+        assert.ok(DRUG_BY_ID[profile.drugId], `Missing catalog ID ${profile.drugId}`);
+        for (const alias of profile.aliases) {
+          if (alias === "salicylate") continue;
+          assert.ok(DRUG_BY_ID[alias], `Missing catalog alias ${alias}`);
+        }
+      }
+      for (const sup of GASTRIC_ACID_SUPPRESSANT_PROFILES) {
+        assert.ok(DRUG_BY_ID[sup.drugId], `Missing gastric suppressant catalog ID ${sup.drugId}`);
+      }
+      for (const v of GASTRIC_PH_DRUG_PROFILES) {
+        assert.ok(DRUG_BY_ID[v.drugId], `Missing gastric victim catalog ID ${v.drugId}`);
+        for (const alias of v.aliases) {
+          assert.ok(DRUG_BY_ID[alias], `Missing gastric victim alias ${alias}`);
+        }
+      }
+
+      const deskCheck = acidBaseOnDesk([
+        "sodium-bicarbonate-iv",
+        "amphetamine",
+        "omeprazole",
+        "dasatinib",
+        "ertugliflozin",
+        "finerenone",
+      ]);
+      assert.equal(deskCheck.hasBicarbonateOrAlkalinizer, true);
+      assert.equal(deskCheck.hasWeakBaseIonTrappingCandidate, true);
+      assert.equal(deskCheck.hasGastricAcidSuppressant, true);
+      assert.equal(deskCheck.hasGastricPhDependentDrug, true);
+      assert.equal(deskCheck.hasSglt2Inhibitor, true);
+      assert.equal(deskCheck.hasPotassiumSparingOrMra, true);
+
+      const salicylateAcidemiaReport = acidBaseReportOnDesk(
+        ["aspirin", "acetazolamide", "amphetamine", "omeprazole", "rilpivirine"],
+        DEFAULT_HOST,
+        {
+          chemistry: {
+            sodiumMeqL: 140,
+            chlorideMeqL: 102,
+            bicarbonateMeqL: 12,
+            albuminGdl: 4.0,
+          },
+          abg: {
+            measuredPh: 7.18,
+            measuredPaco2MmHg: 33,
+          },
+          patientBiometrics: {
+            weightKg: 70,
+            sex: "male",
+          },
+        },
+      );
+
+      assert.ok(salicylateAcidemiaReport.alerts.some((a) => a.title.includes("CNS / BBB Ion-Trapping Hazard")));
+      assert.ok(salicylateAcidemiaReport.alerts.some((a) => a.title.includes("Weak-Base Renal Clearance")));
+      assert.ok(salicylateAcidemiaReport.alerts.some((a) => a.title.includes("Gastric pH Elevation Impairs Rilpivirine")));
+      assert.ok((salicylateAcidemiaReport.gastricPhCollisions?.length ?? 0) === 1);
+      assert.ok((salicylateAcidemiaReport.urinaryIonTrappingEvaluations?.length ?? 0) === 2);
     });
   });
 });

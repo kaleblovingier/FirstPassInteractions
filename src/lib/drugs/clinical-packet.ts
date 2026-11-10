@@ -32,7 +32,6 @@ import {
   PREG_LABEL,
   SEVERITY_LABEL,
   SEVERITY_RANK,
-  type EnzymeRole,
   type Finding,
   type HostContext,
   type Severity,
@@ -178,6 +177,223 @@ const STREET_DRUG_IDS = new Set([
   "metonitazene",
   "etonitazene",
 ]);
+
+function toLabeledCollisionAlert(
+  hit: SafetyHit | WardHit,
+  kind: "safety" | "ward",
+): LabeledCollisionAlert {
+  return {
+    id: hit.id,
+    kind,
+    title: hit.title,
+    severity: hit.severity,
+    tone: hit.tone,
+    mechanism: hit.mechanism,
+    clinical: hit.clinical,
+    watch: hit.watch,
+    source: hit.source,
+  };
+}
+
+function collectLabeledCollisions(ids: string[]): LabeledCollisionAlert[] {
+  const raw: LabeledCollisionAlert[] = [
+    ...safetyOnDesk(ids).map((hit) => toLabeledCollisionAlert(hit, "safety")),
+    ...wardsOnDesk(ids).map((hit) => toLabeledCollisionAlert(hit, "ward")),
+  ];
+  const seen = new Set<string>();
+  const out: LabeledCollisionAlert[] = [];
+  for (const item of raw) {
+    const key = `${item.kind}:${item.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  out.sort((a, b) => {
+    const sevDiff = SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity];
+    if (sevDiff !== 0) return sevDiff;
+    const toneDiff = (b.tone === "danger" ? 1 : 0) - (a.tone === "danger" ? 1 : 0);
+    if (toneDiff !== 0) return toneDiff;
+    const kindDiff = (b.kind === "safety" ? 1 : 0) - (a.kind === "safety" ? 1 : 0);
+    if (kindDiff !== 0) return kindDiff;
+    const titleDiff = a.title.localeCompare(b.title);
+    if (titleDiff !== 0) return titleDiff;
+    return a.id.localeCompare(b.id);
+  });
+  return out;
+}
+
+const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> = {
+  "carbapenem-vpa": {
+    topic: "carbapenem-valproate",
+    text: "Carbapenem antibiotics can cause valproate levels to drop rapidly and trigger breakthrough seizures. Do not take these together without your prescriber's direction, never stop your seizure medicine on your own, and seek urgent medical care for any seizure activity.",
+  },
+  "valproate-carbapenem": {
+    topic: "carbapenem-valproate",
+    text: "Carbapenem antibiotics can cause valproate levels to drop rapidly and trigger breakthrough seizures. Do not take these together without your prescriber's direction, never stop your seizure medicine on your own, and seek urgent medical care for any seizure activity.",
+  },
+  "vanco-zosyn": {
+    topic: "vanco-zosyn",
+    text: "Receiving vancomycin together with piperacillin-tazobactam can place extra strain on your kidneys. Report decreased urination, leg or ankle swelling, unusual fatigue, or nausea to your care team right away.",
+  },
+  "arni-acei": {
+    topic: "arni-acei",
+    text: "Do not take sacubitril-valsartan (Entresto) together with an ACE inhibitor (such as lisinopril), as combining them can cause life-threatening swelling of the face, lips, tongue, or throat (angioedema). Confirm the required waiting period between stopping one and starting the other with your prescriber, and call 911 immediately for any facial swelling or trouble breathing.",
+  },
+  "capecitabine-warfarin": {
+    topic: "capecitabine-warfarin",
+    text: "Taking capecitabine or fluorouracil with warfarin can sharply increase blood-thinner activity and bleeding risk. Keep all scheduled INR blood checks, and seek medical care right away for unusual bruising, nosebleeds, or red or black stools.",
+  },
+  "warfarin-cyp2c9": {
+    topic: "warfarin-cyp2c9",
+    text: "Adding sulfamethoxazole-trimethoprim (Bactrim) or metronidazole to warfarin can make your blood too thin within days. Keep urgent INR blood-test checks, and seek immediate care for unusual bleeding, blood in urine or stool, severe headache, or large unexplained bruises.",
+  },
+  "cni-azole": {
+    topic: "cni-clearance-surge",
+    text: "Combining transplant medicines (such as tacrolimus, cyclosporine, or sirolimus) with strong enzyme-blocking antifungals, antibiotics, or antivirals can cause medicine levels to surge quickly. Do not start or stop either medicine without your transplant team's direction, keep all blood-level lab appointments, and report new tremors, severe headaches, vision changes, or decreased urination immediately.",
+  },
+  "cni-strong-3a4": {
+    topic: "cni-clearance-surge",
+    text: "Combining transplant medicines (such as tacrolimus, cyclosporine, or sirolimus) with strong enzyme-blocking antifungals, antibiotics, or antivirals can cause medicine levels to surge quickly. Do not start or stop either medicine without your transplant team's direction, keep all blood-level lab appointments, and report new tremors, severe headaches, vision changes, or decreased urination immediately.",
+  },
+  "linezolid-sero": {
+    topic: "serotonin-toxicity",
+    text: "Combining an MAOI medicine (including linezolid) with serotonergic antidepressants or pain medicines can trigger dangerous serotonin buildup. Never start or stop these together without specialist guidance and required waiting periods, and seek emergency care for high fever, confusion, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
+  },
+  "maoi-serotonergic": {
+    topic: "serotonin-toxicity",
+    text: "Combining an MAOI medicine (including linezolid) with serotonergic antidepressants or pain medicines can trigger dangerous serotonin buildup. Never start or stop these together without specialist guidance and required waiting periods, and seek emergency care for high fever, confusion, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
+  },
+  "sofosbuvir-amio": {
+    topic: "sofosbuvir-amio",
+    text: "Taking sofosbuvir-based hepatitis C treatment with amiodarone can cause dangerously slow heartbeats. Check with your prescriber before taking both, and seek emergency care for fainting, severe dizziness, shortness of breath, or chest discomfort.",
+  },
+  "clozapine-benzo": {
+    topic: "clozapine-benzo",
+    text: "Combining clozapine with a benzodiazepine carries a serious risk of extreme drowsiness, fainting, and dangerous breathing collapse. Contact your prescriber before taking them together, and seek emergency care for severe sleepiness, slow breathing, or trouble waking up.",
+  },
+  "lamotrigine-vpa": {
+    topic: "lamotrigine-vpa",
+    text: "Valproate slows how your body clears lamotrigine, raising the risk of serious skin reactions. Follow your prescriber's exact start schedule and seek urgent medical attention right away for any new skin rash, blisters, fever, or mouth sores.",
+  },
+  "tamoxifen-2d6": {
+    topic: "tamoxifen-2d6",
+    text: "Certain antidepressants and other medicines can block your body from activating tamoxifen, making it less effective. Check with your oncology prescriber or pharmacist before starting or stopping any prescription or over-the-counter medicine.",
+  },
+  "ocp-inducer": {
+    topic: "ocp-inducer",
+    text: "Enzyme-inducing medicines can speed up breakdown of hormonal birth control and cause it to fail. Ask your prescriber or pharmacist about reliable backup or alternative birth control while taking this combination.",
+  },
+  "isotretinoin-tetra": {
+    topic: "isotretinoin-tetra",
+    text: "Never take isotretinoin together with a tetracycline antibiotic (such as doxycycline or minocycline), as combining them can cause dangerous pressure around the brain. Seek immediate care for severe headaches, blurred or double vision, or ringing in the ears.",
+  },
+  "fq-steroid": {
+    topic: "fq-steroid",
+    text: "Taking a fluoroquinolone antibiotic together with a steroid raises the risk of painful tendon swelling or rupture, especially at the Achilles heel. Stop the antibiotic and contact your prescriber right away if you notice pain, swelling, or tenderness in any tendon, and rest the joint.",
+  },
+  "dual-raas": {
+    topic: "dual-raas",
+    text: "Combining two blood-pressure medicines that block the same kidney hormone pathway increases the risk of severe dizziness, kidney injury, and high potassium. Check with your prescriber to confirm whether both are intended, and report fainting, lightheadedness, or decreased urination right away.",
+  },
+  "ppi-acid": {
+    topic: "ppi-acid",
+    text: "Stomach acid reducers (proton pump inhibitors) can block absorption of certain HIV or antifungal medicines so they may stop working. Do not take over-the-counter heartburn pills without checking with your prescriber or pharmacist first.",
+  },
+  "pde5-nitrate": {
+    topic: "pde5-nitrate",
+    text: "Never take PDE5 medicines (for erectile dysfunction or pulmonary hypertension) together with nitroglycerin or other nitrate heart medicines, as the combination can cause a sudden, life-threatening drop in blood pressure. Seek emergency medical help for severe dizziness, fainting, or chest pain.",
+  },
+  "xo-thiopurine": {
+    topic: "xo-thiopurine",
+    text: "Combining gout medicines (allopurinol or febuxostat) with azathioprine or mercaptopurine can cause severe drops in blood counts. Do not take these together without direct specialist instructions, keep all blood-count checks, and report fever, sore throat, unusual bruising, or bleeding immediately.",
+  },
+  "mtx-tmpsmx": {
+    topic: "mtx-tmpsmx",
+    text: "Do not take Bactrim (TMP-SMX) together with methotrexate unless explicitly directed by your specialist, as this combination can cause dangerous drops in blood counts and painful mouth sores. Seek urgent medical attention for fever, chills, mouth ulcers, unusual bleeding, or widespread skin rash.",
+  },
+  "colchicine-inhibitor": {
+    topic: "colchicine-inhibitor",
+    text: "Combining colchicine with strong enzyme-blocking antibiotics or antifungals can cause dangerous colchicine buildup. Call your prescriber before taking them together, and seek urgent medical care for sudden severe diarrhea, vomiting, muscle pain or weakness, or numbness.",
+  },
+  "statin-strong-3a4": {
+    topic: "statin-strong-3a4",
+    text: "Taking simvastatin or lovastatin with strong enzyme-blocking antibiotics or antifungals can cause severe muscle breakdown and kidney injury. Check with your prescriber or pharmacist before taking both, and report unexplained muscle pain, tenderness, weakness, or dark brown urine right away.",
+  },
+  "mtx-nsaid": {
+    topic: "mtx-nsaid",
+    text: "NSAID pain relievers (such as ibuprofen or naproxen) can block methotrexate clearance and cause serious blood-count drops or kidney injury. Avoid NSAIDs unless your prescribing specialist specifically approves them, and report mouth sores, fever, dark stools, or unusual bruising right away.",
+  },
+  "lithium-renal-clearance": {
+    topic: "lithium-renal-clearance",
+    text: "Certain blood-pressure pills, water pills, and NSAID pain relievers (such as ibuprofen or naproxen) can raise lithium levels to toxic ranges. Check with your prescriber or pharmacist before starting or stopping pain or blood-pressure medicines, stay well hydrated, and report new hand shakiness, unsteadiness, slurred speech, confusion, or severe nausea right away.",
+  },
+  "digoxin-pgp": {
+    topic: "digoxin-pgp",
+    text: "Combining digoxin with certain heart-rhythm medicines or antibiotics can cause digoxin levels to climb. Keep scheduled lab and heart checks, and report nausea, vomiting, unusual fatigue, yellow-green vision halos, or a very slow or irregular heartbeat promptly.",
+  },
+  "doac-inducer": {
+    topic: "doac-inducer",
+    text: "Certain seizure medicines, rifampin, or St. John's wort can make your body clear blood thinners too fast, leaving you unprotected against blood clots or stroke. Do not start herbal products (especially St. John's wort) or change seizure medicines without telling your anticoagulation team, and seek emergency care for chest pain, sudden shortness of breath, leg swelling, or stroke symptoms.",
+  },
+  "theophylline-cyp1a2": {
+    topic: "theophylline-cyp1a2",
+    text: "Combining theophylline with ciprofloxacin or fluvoxamine can cause theophylline to build up to dangerous levels. Contact your prescriber before taking them together, and seek urgent medical care for persistent nausea or vomiting, rapid or pounding heartbeat, severe jitteriness, or seizures.",
+  },
+  "opioid-benzo": {
+    topic: "opioid-benzo",
+    text: "Combining opioids with benzodiazepines or other sedatives can cause life-threatening breathing slowdown and overdose. Never mix them without direct prescriber oversight, keep naloxone accessible at home, and call 911 for extreme drowsiness or slow breathing.",
+  },
+  "qt-hypokalemic-diuretic": {
+    topic: "qt-hypokalemic-diuretic",
+    text: "Water pills can lower potassium and magnesium and increase heart-rhythm risk when paired with QT-prolonging medicines. Keep all scheduled electrolyte blood checks, and seek prompt care for palpitations, dizziness, or fainting.",
+  },
+  "tizanidine-cyp1a2": {
+    topic: "tizanidine-cyp1a2",
+    text: "Never take tizanidine together with ciprofloxacin or fluvoxamine, as this combination can cause extreme drowsiness, dangerously low blood pressure, and fainting. Contact your prescriber or pharmacist right away to arrange an alternative medicine before taking both.",
+  },
+  "hyperkalemia-raas-k": {
+    topic: "hyperkalemia-raas-k",
+    text: "Combining medications that hold onto potassium can raise blood potassium to dangerous levels. Keep scheduled kidney and potassium lab checks, and seek urgent care for new muscle weakness, numbness or tingling, or an irregular heartbeat.",
+  },
+};
+
+function labeledCollisionCounseling(
+  c: LabeledCollisionAlert,
+  existingPoints: string[],
+  hasOpioid: boolean,
+  hasBenzo: boolean,
+  seenTopics: Set<string>,
+): string | null {
+  if (c.severity !== "contraindicated" && c.tone !== "danger") return null;
+
+  if (
+    c.id === "opioid-benzo" &&
+    ((hasOpioid && hasBenzo) || existingPoints.some((p) => /naloxone|sedatives/i.test(p)))
+  ) {
+    return null;
+  }
+
+  const mapped = LABELED_COUNSELING_BY_ID[c.id];
+  if (mapped) {
+    if (seenTopics.has(mapped.topic)) return null;
+    seenTopics.add(mapped.topic);
+    return withoutDose(mapped.text);
+  }
+
+  const topic = `${c.kind}:${c.id}`;
+  if (seenTopics.has(topic)) return null;
+  seenTopics.add(topic);
+
+  const pairNames = withoutDose(c.title).replace(/ × /g, " and ");
+  const watchClean = withoutDose(c.watch)
+    .replace(/\s*The Prescribing Information governs\.?/gi, "")
+    .replace(/\s*This desk (?:does not|is not) [^.]+\.?/gi, "")
+    .trim();
+  const watchTail = watchClean ? ` Watch for or review: ${watchClean}` : "";
+  return withoutDose(
+    `High-alert medication interaction (${pairNames}): check with your prescriber or pharmacist before taking these together.${watchTail}`,
+  );
+}
 
 export function buildClinicalPacket(
   ids: string[],
@@ -391,13 +607,14 @@ export function buildClinicalPacket(
     },
   };
 
-  // 4. Collisions by severity
+  // 4. Collisions by severity + high-alert labeled & institutional safety collisions
   const collisions = {
     contraindicated: findings.filter((f) => f.severity === "contraindicated"),
     major: findings.filter((f) => f.severity === "major"),
     moderate: findings.filter((f) => f.severity === "moderate"),
     minor: findings.filter((f) => f.severity === "minor"),
   };
+  const labeledCollisions = collectLabeledCollisions(ids);
 
   // 5. Patient counseling points
   const counselingPoints: string[] = [];
@@ -497,6 +714,17 @@ export function buildClinicalPacket(
     counselingPoints.push(
       "Drink plenty of water daily to prevent dehydration and dizziness, and seek urgent medical evaluation for any severe pain, redness, or swelling in the groin or genital area.",
     );
+  }
+  const seenLabeledCounselingTopics = new Set<string>();
+  for (const c of labeledCollisions) {
+    const note = labeledCollisionCounseling(
+      c,
+      counselingPoints,
+      hasOpioid,
+      hasBenzo,
+      seenLabeledCounselingTopics,
+    );
+    if (note) counselingPoints.push(note);
   }
   for (const f of collisions.contraindicated.slice(0, 3)) {
     counselingPoints.push(plainLanguageSummary(f));
@@ -670,9 +898,21 @@ export function buildClinicalPacket(
     `==================================================================`,
   );
 
-  if (findings.length === 0) {
+  if (findings.length === 0 && labeledCollisions.length === 0) {
     ehrLines.push(EXPORT_EMPTY);
   } else {
+    if (labeledCollisions.length > 0) {
+      ehrLines.push(`[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]`);
+      for (const c of labeledCollisions) {
+        const severityTag = SEVERITY_LABEL[c.severity].toUpperCase();
+        const kindTag = c.kind === "ward" ? "Institutional Safety Rail" : "Labeled Safety Collision";
+        ehrLines.push(`• [${severityTag}] ${withoutDose(c.title)} (${kindTag})`);
+        ehrLines.push(`  Mechanism: ${withoutDose(c.mechanism)}`);
+        ehrLines.push(`  Bedside Watch: ${withoutDose(c.watch)}`);
+        ehrLines.push(`  Official PI Source: ${withoutDose(c.source)}`);
+      }
+      ehrLines.push("");
+    }
     if (collisions.contraindicated.length > 0) {
       ehrLines.push(`[CONTRAINDICATED / AVOID TOGETHER]`);
       for (const f of collisions.contraindicated) {
@@ -758,6 +998,7 @@ export function buildClinicalPacket(
     hostSummary,
     riskIndexes,
     collisions,
+    labeledCollisions,
     counselingPoints,
     ehrNoteText,
     patientHandoutText,

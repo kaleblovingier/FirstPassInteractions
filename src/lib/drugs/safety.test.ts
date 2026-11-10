@@ -23,6 +23,10 @@ import {
   isCniStrong3a4,
   isValproateCarbapenem,
   isHyperkalemiaRaasK,
+  isErgotStrong3a4,
+  isMaoiTyramineSympathomimetic,
+  isAmiodaroneWarfarin,
+  isIsoniazidAcetaminophen,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -424,11 +428,135 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.match(hits[0].source, /Methotrexate and Bactrim/i);
   });
 
+  it("detects Ergot Alkaloids × Strong CYP3A4 Inhibitors collision as contraindicated vasospastic ergotism", () => {
+    assert.equal(isErgotStrong3a4("ergotamine", "paxlovid"), true);
+    assert.equal(isErgotStrong3a4("ritonavir", "ergotamine"), true);
+    assert.equal(isErgotStrong3a4("dihydroergotamine", "cobicistat"), true);
+    assert.equal(isErgotStrong3a4("methylergonovine", "darunavir-cobicistat"), true);
+    assert.equal(isErgotStrong3a4("ergotamine", "voriconazole"), true);
+    assert.equal(isErgotStrong3a4("dihydroergotamine", "itraconazole"), true);
+    assert.equal(isErgotStrong3a4("methylergonovine", "posaconazole"), true);
+    assert.equal(isErgotStrong3a4("ergotamine", "ketoconazole"), true);
+    assert.equal(isErgotStrong3a4("dihydroergotamine", "clarithromycin"), true);
+    assert.equal(isErgotStrong3a4("dihydroergotamine", "erythromycin"), true);
+    assert.equal(isErgotStrong3a4("ergotamine", "nefazodone"), true);
+    assert.equal(isErgotStrong3a4("ergotamine", "telithromycin"), true);
+    assert.equal(isErgotStrong3a4("methylergonovine", "mifepristone"), true);
+
+    assert.equal(isErgotStrong3a4("ergotamine", "azithromycin"), false);
+    assert.equal(isErgotStrong3a4("dihydroergotamine", "amoxicillin"), false);
+    assert.equal(isErgotStrong3a4("ergotamine", "ketoconazole-topical"), false);
+    assert.equal(isErgotStrong3a4("dihydroergotamine", "voriconazole-eye"), false);
+    assert.equal(isErgotStrong3a4("cabergoline", "ritonavir"), false);
+
+    const hits = safetyOnDesk(["ergotamine", "ritonavir"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "ergot-strong-3a4");
+    assert.equal(hits[0].severity, "contraindicated");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /vasospastic ergotism & ischemia/i);
+    assert.match(hits[0].clinical, /FDA Boxed Warning.*CYP3A4.*cerebral ischemia.*gangrene/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Cafergot.*Migranal.*24978905.*8607732.*11524501.*3389610/i);
+
+    const macrolideHits = safetyOnDesk(["dihydroergotamine", "erythromycin"]);
+    assert.equal(macrolideHits.length, 1);
+    assert.equal(macrolideHits[0].id, "ergot-strong-3a4");
+  });
+
+  it("detects MAOIs × Tyramine / Indirect & Mixed Sympathomimetics collision as contraindicated hypertensive crisis", () => {
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "tyramine-foods"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("tyramine-foods", "tranylcypromine"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("isocarboxazid", "pseudoephedrine"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("linezolid", "tyramine-foods"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("methylene-blue", "pseudoephedrine"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("selegiline", "phenylephrine"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("rasagiline", "phenylephrine-oral"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("safinamide", "methylphenidate"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("moclobemide", "amphetamine"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "lisdexamfetamine"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("tranylcypromine", "amphetamine-mixed-salts-xr"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "methylphenidate-oros"), true);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "ephedrine"), true);
+
+    // Distinct from maoi-serotonergic and excludes ophthalmic/topical/inert products
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "fluoxetine"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "sertraline"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("tranylcypromine", "venlafaxine"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("linezolid", "tramadol"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "phenylephrine-ophthalmic"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "oxymetazoline-topical"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "guaifenesin"), false);
+    assert.equal(isMaoiTyramineSympathomimetic("phenelzine", "tranylcypromine"), false);
+
+    const tyramineHits = safetyOnDesk(["phenelzine", "tyramine-foods"]);
+    assert.equal(tyramineHits.length, 1);
+    assert.equal(tyramineHits[0].id, "maoi-tyramine-sympathomimetic");
+    assert.equal(tyramineHits[0].severity, "contraindicated");
+    assert.equal(tyramineHits[0].tone, "danger");
+    assert.match(tyramineHits[0].mechanism, /catecholamine storm \/ hypertensive crisis/i);
+    assert.match(tyramineHits[0].clinical, /MAO-A.*vesicular norepinephrine.*hypertensive encephalopathy.*hemorrhagic stroke.*aortic dissection/i);
+    assert.match(tyramineHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(tyramineHits[0].source, /Nardil.*Parnate.*2190595.*21971008.*15521893.*35721816/i);
+
+    const decongestantHits = safetyOnDesk(["tranylcypromine", "pseudoephedrine"]);
+    assert.equal(decongestantHits.length, 1);
+    assert.equal(decongestantHits[0].id, "maoi-tyramine-sympathomimetic");
+
+    // Verify SSRI + MAOI still emits only maoi-serotonergic
+    const ssriHits = safetyOnDesk(["phenelzine", "sertraline"]);
+    assert.equal(ssriHits.length, 1);
+    assert.equal(ssriHits[0].id, "maoi-serotonergic");
+  });
+
+  it("detects Amiodarone × Warfarin collision as major risk distinct from warfarin-cyp2c9", () => {
+    assert.equal(isAmiodaroneWarfarin("amiodarone", "warfarin"), true);
+    assert.equal(isAmiodaroneWarfarin("warfarin", "amiodarone"), true);
+    assert.equal(isAmiodaroneWarfarin("warfarin", "tmp-smx"), false);
+    assert.equal(isAmiodaroneWarfarin("warfarin", "metronidazole"), false);
+    assert.equal(isAmiodaroneWarfarin("amiodarone", "digoxin"), false);
+
+    const hits = safetyOnDesk(["amiodarone", "warfarin"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "amiodarone-warfarin");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /CYP2C9\/1A2\/3A4 blockade & delayed INR surge/i);
+    assert.match(hits[0].clinical, /N-desethylamiodarone.*\(S\)-warfarin.*40–55 days.*1–4 weeks/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Coumadin.*3621782.*3401099.*1563209.*22398967/i);
+  });
+
+  it("detects Isoniazid × Acetaminophen collision as major CYP2E1 / NAPQI hepatotoxicity risk", () => {
+    assert.equal(isIsoniazidAcetaminophen("isoniazid", "acetaminophen"), true);
+    assert.equal(isIsoniazidAcetaminophen("acetaminophen", "isoniazid"), true);
+    assert.equal(isIsoniazidAcetaminophen("acetaminophen", "atorvastatin"), false);
+    assert.equal(isIsoniazidAcetaminophen("isoniazid", "ibuprofen"), false);
+
+    const hits = safetyOnDesk(["isoniazid", "acetaminophen"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "isoniazid-acetaminophen");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /CYP2E1 induction & NAPQI hepatotoxicity/i);
+    assert.match(hits[0].clinical, /biphasic CYP2E1.*NAPQI.*glutathione.*centrilobular hepatocellular necrosis/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Isoniazid.*Acetaminophen.*8354023.*9024171.*2240884.*8470644.*7508362/i);
+  });
+
   it("continues to detect existing high-risk safety collisions", () => {
+    assert.equal(isSofosbuvirAmio("sofosbuvir", "amiodarone"), true);
+    assert.equal(isSofosbuvirAmio("epclusa", "amiodarone"), true);
+    assert.equal(isSofosbuvirAmio("sofosbuvir", "metoprolol"), false);
+
     const amioHits = safetyOnDesk(["sofosbuvir", "amiodarone"]);
     assert.equal(amioHits.length, 1);
     assert.equal(amioHits[0].id, "sofosbuvir-amio");
     assert.equal(amioHits[0].severity, "contraindicated");
+
+    assert.equal(isClozapineBenzo("clozapine", "lorazepam"), true);
+    assert.equal(isClozapineBenzo("alprazolam", "clozapine"), true);
+    assert.equal(isClozapineBenzo("clozapine", "zolpidem"), false);
 
     const clozHits = safetyOnDesk(["clozapine", "lorazepam"]);
     assert.equal(clozHits.length, 1);
