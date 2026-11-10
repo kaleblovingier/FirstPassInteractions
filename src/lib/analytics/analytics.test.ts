@@ -26,6 +26,8 @@ import {
   generateExportFilename,
   sanitizeExportPath,
   downloadAnalyticsExport,
+  escapeCsv,
+  formatIsoTimestamp,
   type AnalyticsExportReport,
 } from "./export";
 import type { Sql } from "../db";
@@ -838,5 +840,171 @@ test("aggregate export handles empty datasets idempotently without throwing", ()
     downloadAnalyticsExport(emptyStats, "json");
     downloadAnalyticsExport(emptyStats, "csv");
   });
+});
+
+test("escapeCsv safely disarms spreadsheet formula injection triggers (=, +, -, @, \\t, \\r) per RFC 4180", () => {
+  // Test direct neutralization of all 6 formula injection trigger characters
+  assert.equal(escapeCsv("=CMD|' /C calc'!A0"), "'=CMD|' /C calc'!A0");
+  assert.equal(
+    escapeCsv('=HYPERLINK("http://evil.com","Click")'),
+    `"'=HYPERLINK(""http://evil.com"",""Click"")"`,
+  );
+  assert.equal(escapeCsv("+1+1"), "'+1+1");
+  assert.equal(escapeCsv("+cmd|' /C calc'!A0"), "'+cmd|' /C calc'!A0");
+  assert.equal(escapeCsv("-10+20*cmd"), "'-10+20*cmd");
+  assert.equal(escapeCsv("@SUM(A1:B5)"), "'@SUM(A1:B5)");
+  assert.equal(escapeCsv("\t=DDE"), "'\t=DDE");
+  assert.equal(
+    escapeCsv("\t=DDE(server,topic,item)"),
+    `"'\t=DDE(server,topic,item)"`,
+  );
+  assert.equal(escapeCsv("\r=ALERT(1)"), `"'\r=ALERT(1)"`);
+
+  // Verify non-formula cells are NOT prepended with a quote
+  assert.equal(escapeCsv(""), "");
+  assert.equal(escapeCsv(null), "");
+  assert.equal(escapeCsv(undefined), "");
+  assert.equal(escapeCsv(4200), "4200");
+  assert.equal(escapeCsv("desktop"), "desktop");
+  assert.equal(escapeCsv("US"), "US");
+  assert.equal(escapeCsv("/pairs"), "/pairs");
+  assert.equal(escapeCsv("2026-11-08"), "2026-11-08");
+  assert.equal(escapeCsv("google.com"), "google.com");
+  assert.equal(escapeCsv("A, B"), '"A, B"');
+  assert.equal(escapeCsv('Quote "Here"'), '"Quote ""Here"""');
+
+  // Integration test with adversarial formula payloads in SiteStats fields
+  const formulaStats: SiteStats = {
+    enabled: true,
+    days: 30,
+    totals: { views: 100, visitors: 50 },
+    daily: [{ day: "2026-11-08", views: 100, visitors: 50 }],
+    pages: [
+      { path: "/=calc", views: 60, visitors: 30 },
+      { path: "/+cmd", views: 40, visitors: 20 },
+    ],
+    referrers: [
+      { host: "=HYPERLINK(\"http://phish.org\",\"Verify\")", views: 40 },
+      { host: "@attacker.com", views: 30 },
+      { host: "+partner.org", views: 20 },
+      { host: "-evil.org", views: 10 },
+      { host: "\tbadhost.com", views: 5 },
+    ],
+    countries: [{ code: "@U", views: 100 }],
+    devices: [{ device: "desktop", views: 100 }],
+  };
+
+  const csv = exportStatsToCsv(formulaStats, 1794171600000);
+  const lines = csv.split("\r\n");
+
+  // Every line that isn't a comment (#) or section header ([...]) or header line must be neutralized
+  for (const line of lines) {
+    if (!line || line.startsWith("#") || line.startsWith("[")) continue;
+    // Split columns (taking into account quoted strings)
+    const columns = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    for (const col of columns) {
+      const trimmed = col.trim();
+      // If cell begins with a quote, inspect the unquoted content
+      const unquoted = trimmed.startsWith('"') && trimmed.endsWith('"')
+        ? trimmed.slice(1, -1).replace(/""/g, '"')
+        : trimmed;
+
+      // Assert that no cell raw content starts with executable formula triggers
+      assert.ok(
+        !/^[=+\-@\t\r]/.test(unquoted),
+        `Cell "${unquoted}" in line "${line}" starts with an unneutralized formula trigger!`,
+      );
+    }
+  }
+
+  // Specifically assert the presence of neutralized quotes
+  assert.ok(csv.includes("'=HYPERLINK"));
+  assert.ok(csv.includes("'@attacker.com"));
+  assert.ok(csv.includes("'+partner.org"));
+  assert.ok(csv.includes("'-evil.org"));
+  assert.ok(csv.includes("'\tbadhost.com"));
+  assert.ok(csv.includes("'@U"));
+});
+
+test("aggregate CSV export strictly adheres to RFC 4180 and zero-PHI Safe Harbor invariants", () => {
+  // Test formatIsoTimestamp normalization
+  const fixedIso = "2026-11-08T21:00:00.000Z";
+  assert.equal(formatIsoTimestamp(new Date(fixedIso)), fixedIso);
+  assert.equal(formatIsoTimestamp(1794171600000), fixedIso);
+  assert.equal(formatIsoTimestamp(fixedIso), fixedIso);
+  // Fallback on invalid input returns a valid ISO string
+  const fallback = formatIsoTimestamp("not-a-date");
+  assert.match(fallback, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+
+  const testStats: SiteStats = {
+    enabled: true,
+    days: 30,
+    totals: { views: 5000, visitors: 2200 },
+    daily: [
+      { day: "2026-11-01", views: 2500, visitors: 1100 },
+      { day: "2026-11-02", views: 2500, visitors: 1100 },
+    ],
+    pages: [
+      { path: "/pairs", views: 3000, visitors: 1400 },
+      { path: "/catalog", views: 1500, visitors: 600 },
+      { path: "/legal/terms", views: 500, visitors: 200 },
+    ],
+    referrers: [
+      { host: "pubmed.ncbi.nlm.nih.gov", views: 1800 },
+      { host: "cdc.gov", views: 1200 },
+    ],
+    countries: [
+      { code: "US", views: 4000 },
+      { code: "CA", views: 1000 },
+    ],
+    devices: [
+      { device: "desktop", views: 3500 },
+      { device: "phone", views: 1200 },
+      { device: "tablet", views: 300 },
+    ],
+  };
+
+  const csv = exportStatsToCsv(testStats, fixedIso);
+
+  // 1. RFC 4180 line endings: all lines terminated by \r\n
+  assert.ok(csv.includes("\r\n"), "CSV must use RFC 4180 CRLF line endings");
+  assert.doesNotMatch(csv, /(?<!\r)\n/, "No bare LF line breaks allowed");
+  assert.doesNotMatch(csv, /\r(?!\n)/, "No bare CR line breaks allowed");
+
+  // 2. Sections verification
+  assert.ok(csv.includes("[TOTALS]"));
+  assert.ok(csv.includes("[DAILY BREAKDOWN]"));
+  assert.ok(csv.includes("[TOP PAGES]"));
+  assert.ok(csv.includes("[TOP REFERRERS]"));
+  assert.ok(csv.includes("[GEOGRAPHIC REACH]"));
+  assert.ok(csv.includes("[DEVICE BREAKDOWN]"));
+
+  // 3. Zero-PHI Safe Harbor Invariants Audit
+  // Zero IPv4 or IPv6 addresses anywhere in the CSV
+  assert.doesNotMatch(
+    csv,
+    /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
+  );
+  assert.doesNotMatch(csv, /(?:[a-f0-9]{1,4}:){7}[a-f0-9]{1,4}/i);
+
+  // Zero visitor codes, daily salts, or session tokens in the data payload
+  const dataSection = csv.slice(csv.indexOf("[TOTALS]"));
+  assert.doesNotMatch(dataSection, /salt|visitor_code|token|session|cookie/i);
+  assert.doesNotMatch(csv, /"visitor_code"/i);
+  assert.doesNotMatch(csv, /"ip"/i);
+
+  // Zero patient or query-string identifiers
+  assert.doesNotMatch(csv, /\?q=/i);
+  assert.doesNotMatch(csv, /mrn|ssn|patient|dob/i);
+
+  // Check JSON export also adheres to identical zero-PHI invariants
+  const json = exportStatsToJson(testStats, fixedIso);
+  assert.doesNotMatch(
+    json,
+    /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/,
+  );
+  assert.doesNotMatch(json, /"salt"/i);
+  assert.doesNotMatch(json, /"visitor_code"/i);
+  assert.doesNotMatch(json, /mrn|ssn|patient|session|token/i);
 });
 

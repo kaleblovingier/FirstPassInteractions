@@ -16,6 +16,9 @@ import {
   isLithiumRenalClearance,
   isDigoxinPgp,
   isDoacInducer,
+  isTheophyllineCyp1a2,
+  isOpioidBenzo,
+  isQtHypokalemicDiuretic,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -132,6 +135,67 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.match(hits[0].mechanism, /clearance surge \/ thromboembolic failure/i);
     assert.match(hits[0].clinical, /subtherapeutic anticoagulation.*ischemic stroke.*avoid/i);
     assert.match(hits[0].source, /Eliquis.*Xarelto.*Wiggins BS.*AHA/i);
+  });
+
+  it("detects Theophylline × Strong CYP1A2 Inhibitors collision as contraindicated", () => {
+    assert.equal(isTheophyllineCyp1a2("theophylline", "ciprofloxacin"), true);
+    assert.equal(isTheophyllineCyp1a2("fluvoxamine", "theophylline"), true);
+    assert.equal(isTheophyllineCyp1a2("theophylline", "amoxicillin"), false);
+
+    const ciproHits = safetyOnDesk(["theophylline", "ciprofloxacin"]);
+    assert.equal(ciproHits.length, 1);
+    assert.equal(ciproHits[0].id, "theophylline-cyp1a2");
+    assert.equal(ciproHits[0].severity, "contraindicated");
+    assert.equal(ciproHits[0].tone, "danger");
+    assert.match(ciproHits[0].mechanism, /CYP1A2 blockade \/ fatal theophylline toxicity/i);
+    assert.match(ciproHits[0].clinical, /narrow therapeutic index.*tachydysrhythmias.*status epilepticus/i);
+    assert.match(ciproHits[0].source, /Theo-Dur.*Cipro.*Luvox/i);
+
+    const fluvoxHits = safetyOnDesk(["theophylline", "fluvoxamine"]);
+    assert.equal(fluvoxHits.length, 1);
+    assert.equal(fluvoxHits[0].id, "theophylline-cyp1a2");
+  });
+
+  it("detects Opioids × Benzodiazepines collision as major Boxed Warning", () => {
+    assert.equal(isOpioidBenzo("morphine", "lorazepam"), true);
+    assert.equal(isOpioidBenzo("alprazolam", "oxycodone"), true);
+    assert.equal(isOpioidBenzo("fentanyl", "diazepam"), true);
+    assert.equal(isOpioidBenzo("methadone", "clonazepam"), true);
+    assert.equal(isOpioidBenzo("hydrocodone", "temazepam"), true);
+    assert.equal(isOpioidBenzo("naloxone", "lorazepam"), false);
+    assert.equal(isOpioidBenzo("loperamide", "lorazepam"), false);
+    assert.equal(isOpioidBenzo("morphine", "acetaminophen"), false);
+
+    const hits = safetyOnDesk(["morphine", "lorazepam"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "opioid-benzo");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /synergistic respiratory depression \/ fatal overdose/i);
+    assert.match(hits[0].clinical, /FDA Boxed Warning.*pre-Bötzinger.*respiratory failure/i);
+    assert.match(hits[0].watch, /Pasero Opioid-Induced Sedation Scale.*naloxone nasal spray/i);
+    assert.match(hits[0].source, /Dowell D.*CDC Clinical Practice Guideline/i);
+  });
+
+  it("detects QT-Prolonging Antiarrhythmics × K-Wasting Diuretics collision as major risk", () => {
+    assert.equal(isQtHypokalemicDiuretic("sotalol", "furosemide"), true);
+    assert.equal(isQtHypokalemicDiuretic("dofetilide", "hctz"), true);
+    assert.equal(isQtHypokalemicDiuretic("amiodarone", "chlorthalidone"), true);
+    assert.equal(isQtHypokalemicDiuretic("haloperidol", "bumetanide"), true);
+    assert.equal(isQtHypokalemicDiuretic("ibutilide", "torsemide"), true);
+    assert.equal(isQtHypokalemicDiuretic("quinidine", "metolazone"), true);
+    assert.equal(isQtHypokalemicDiuretic("sotalol", "spironolactone"), false);
+    assert.equal(isQtHypokalemicDiuretic("amoxicillin", "furosemide"), false);
+
+    const hits = safetyOnDesk(["sotalol", "furosemide"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "qt-hypokalemic-diuretic");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /hypokalemia multi-hit \/ Torsades de Pointes/i);
+    assert.match(hits[0].clinical, /rapid delayed rectifier potassium current.*IKr.*Torsades de Pointes/i);
+    assert.match(hits[0].watch, /Serial 12-lead ECG.*magnesium sulfate.*overdrive/i);
+    assert.match(hits[0].source, /Betapace.*Tikosyn.*Drew BJ.*CredibleMeds/i);
   });
 
   it("detects Colchicine × strong CYP3A4 / P-gp inhibitor collision as contraindicated", () => {

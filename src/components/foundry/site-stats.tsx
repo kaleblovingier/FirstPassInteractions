@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, BarChart2, Download, Eye, Globe, Smartphone, Users } from "lucide-react";
+import { Activity, BarChart2, Check, Download, Eye, Globe, Smartphone, Users } from "lucide-react";
 import {
   type Device,
   type SiteStats,
@@ -8,11 +8,16 @@ import {
   STATS_RANGES,
 } from "@/lib/analytics/contract";
 import { getSiteStats } from "@/lib/analytics/stats";
-import { downloadAnalyticsExport } from "@/lib/analytics/export";
+import { downloadAnalyticsExport, formatIsoTimestamp } from "@/lib/analytics/export";
 import { Button } from "@/components/ui/button";
 
 interface SiteStatsDeskProps {
   pin: string;
+}
+
+interface ExportNotification {
+  format: "JSON" | "CSV";
+  isoTimestamp: string;
 }
 
 export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
@@ -21,6 +26,7 @@ export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<SiteStats | null>(null);
   const [isOptedOut, setIsOptedOut] = useState(false);
+  const [exportNotice, setExportNotice] = useState<ExportNotification | null>(null);
 
   useEffect(() => {
     try {
@@ -70,12 +76,20 @@ export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
 
   function handleExportJson() {
     if (!stats || !stats.enabled) return;
-    downloadAnalyticsExport(stats, "json");
+    const now = new Date();
+    const isoTimestamp = formatIsoTimestamp(now);
+    downloadAnalyticsExport(stats, "json", now);
+    setExportNotice({ format: "JSON", isoTimestamp });
+    window.setTimeout(() => setExportNotice(null), 4500);
   }
 
   function handleExportCsv() {
     if (!stats || !stats.enabled) return;
-    downloadAnalyticsExport(stats, "csv");
+    const now = new Date();
+    const isoTimestamp = formatIsoTimestamp(now);
+    downloadAnalyticsExport(stats, "csv", now);
+    setExportNotice({ format: "CSV", isoTimestamp });
+    window.setTimeout(() => setExportNotice(null), 4500);
   }
 
   return (
@@ -137,6 +151,27 @@ export function SiteStatsDesk({ pin }: SiteStatsDeskProps) {
           </Button>
         </div>
       </div>
+
+      {exportNotice && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-accent/30 bg-accent/10 px-3.5 py-2 text-xs text-foreground animate-in fade-in duration-150"
+        >
+          <div className="flex items-center gap-2">
+            <Check className="size-4 text-accent" />
+            <span>
+              Exported <strong>{exportNotice.format}</strong> metrics snapshot ({stats?.days}d)
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted">
+            <span>Snapshot ISO:</span>
+            <time dateTime={exportNotice.isoTimestamp} className="font-semibold text-foreground">
+              {exportNotice.isoTimestamp}
+            </time>
+          </div>
+        </div>
+      )}
 
       {!pin ? (
         <div className="py-8 text-center text-xs text-muted">

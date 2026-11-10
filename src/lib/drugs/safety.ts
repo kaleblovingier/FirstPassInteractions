@@ -136,7 +136,10 @@ export type SafetyKind =
   | "maoi-serotonergic"
   | "lithium-renal-clearance"
   | "digoxin-pgp"
-  | "doac-inducer";
+  | "doac-inducer"
+  | "theophylline-cyp1a2"
+  | "opioid-benzo"
+  | "qt-hypokalemic-diuretic";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -597,6 +600,67 @@ export function isDoacInducer(a: string, b: string) {
   );
 }
 
+export const THEOPHYLLINE_CYP1A2_INHIBITORS = new Set([
+  "ciprofloxacin",
+  "fluvoxamine",
+]);
+
+export function isTheophyllineCyp1a2(a: string, b: string) {
+  return (
+    (a === "theophylline" && THEOPHYLLINE_CYP1A2_INHIBITORS.has(b)) ||
+    (b === "theophylline" && THEOPHYLLINE_CYP1A2_INHIBITORS.has(a))
+  );
+}
+
+export function isOpioid(id: string) {
+  if (id === "loperamide") return false;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  if (d.pd.includes("opioid-antagonist") || /antagonist/i.test(d.cls)) return false;
+  return d.pd.includes("opioid") || /(^|\s|\/)Opioid(\s|\/|$)/i.test(d.cls);
+}
+
+export function isOpioidBenzo(a: string, b: string) {
+  return (
+    (isOpioid(a) && isBenzo(b)) ||
+    (isOpioid(b) && isBenzo(a))
+  );
+}
+
+export const HIGH_RISK_QT_DRUGS = new Set([
+  "sotalol",
+  "dofetilide",
+  "amiodarone",
+  "ibutilide",
+  "haloperidol",
+  "quinidine",
+  "quinidine-gluconate",
+  "procainamide",
+  "disopyramide",
+  "dronedarone",
+  "methadone",
+  "thioridazine",
+  "pimozide",
+]);
+
+export function isHighRiskQt(id: string) {
+  if (HIGH_RISK_QT_DRUGS.has(id)) return true;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  return /antiarrhythmic class (i[ac]|iii)/i.test(d.cls);
+}
+
+export function isKwastingDiuretic(id: string) {
+  return isLoop(id) || isThiazide(id);
+}
+
+export function isQtHypokalemicDiuretic(a: string, b: string) {
+  return (
+    (isHighRiskQt(a) && isKwastingDiuretic(b)) ||
+    (isHighRiskQt(b) && isKwastingDiuretic(a))
+  );
+}
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -1036,6 +1100,60 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Direct oral anticoagulants (apixaban, rivaroxaban, dabigatran etexilate, edoxaban) are substrates of the intestinal/renal/hepatic efflux transporter P-glycoprotein (P-gp), and apixaban and rivaroxaban undergo significant hepatic CYP3A4 metabolism (~25% and ~36% clearance, respectively). Potent combined inducers of CYP3A4 and P-gp (rifampin, carbamazepine, phenytoin, phenobarbital, primidone, St. John's wort) profoundly accelerate DOAC metabolism and active efflux, slashing systemic DOAC exposure (AUC) by 50% to 70% (e.g., rifampin reduces dabigatran AUC by ~67%, rivaroxaban by ~50%, apixaban by ~54%). This causes severe subtherapeutic anticoagulation and catastrophic failure of thromboprophylaxis, with high risk of acute ischemic stroke, massive pulmonary embolism, and recurrent venous thromboembolism. FDA labeling for Eliquis, Xarelto, Pradaxa, and Savaysa carries an explicit recommendation to avoid concomitant use with strong dual inducers (or strong P-gp inducers for dabigatran/edoxaban). Alternative anticoagulation (e.g., enoxaparin or warfarin with INR titration) or non-inducing anticonvulsant/antimicrobial regimens should be evaluated.",
         "Surveillance for acute thrombosis (focal neurologic signs, acute dyspnea, pleuritic chest pain, asymmetric lower extremity swelling). DOAC drug levels or chromogenic anti-Xa assays (for apixaban/rivaroxaban/edoxaban) or dilute thrombin time (for dabigatran) where available. Concomitant use is labeled for avoidance. This desk does not pick the replacement anticoagulant.",
         "Eliquis, Xarelto, Pradaxa, and Savaysa Prescribing Information. Wiggins BS et al. AHA Scientific Statement: Drug-Drug Interactions with DOACs. Circulation 2020 (PMID 33170732). Huisman MV et al. Thromb Haemost 2017 (PMID 28722097).",
+      ),
+    );
+  }
+
+  const tc = pair(ids, (id) => id === "theophylline", (id) => THEOPHYLLINE_CYP1A2_INHIBITORS.has(id));
+  if (tc) {
+    out.push(
+      hit(
+        "theophylline-cyp1a2",
+        tc[0],
+        tc[1],
+        names(tc[0], tc[1]),
+        "contraindicated",
+        "danger",
+        "theophylline × strong CYP1A2 inhibitor — CYP1A2 blockade / fatal theophylline toxicity",
+        "Theophylline has a narrow therapeutic index (target serum concentration 5–15 µg/mL; severe toxicity >20–25 µg/mL) with >85% of clearance mediated by hepatic CYP1A2. Strong CYP1A2 inhibitors (ciprofloxacin, fluvoxamine) profoundly impede theophylline metabolism, reducing systemic clearance by 50% to 70% and triggering 2- to 3-fold surges in theophylline levels. Theophylline toxicity produces severe intractable nausea/vomiting, tachydysrhythmias (multifocal atrial tachycardia, ventricular tachycardia, flutter/fibrillation), profound metabolic derangements (hypokalemia, hyperglycemia, metabolic acidosis), and refractory status epilepticus that is often unresponsive to standard anticonvulsants (benzodiazepines, phenytoin) and carries high mortality. Official prescribing information advises avoiding the combination; if co-administration is clinically unavoidable, immediate empiric theophylline dose reduction (typically 50% to 75%) and intensive therapeutic drug monitoring are required.",
+        "Serum theophylline concentration (peak/trough; draw 12–24 hours post-initiation of inhibitor; toxic >20 µg/mL, life-threatening >30–40 µg/mL), continuous cardiac telemetry (tachyarrhythmias), serial electrolytes (potassium, magnesium, acid-base status), and neurological assessment for tremor or seizure activity. In severe acute/chronic toxicity or refractory seizures, hemodialysis or charcoal hemoperfusion is indicated. The Prescribing Information governs. This desk does not adjust doses, order naloxone, or select alternative agents.",
+        "Theo-Dur / Elixophyllin (theophylline), Cipro (ciprofloxacin), and Luvox (fluvoxamine) Prescribing Information. Nix DE et al. Clin Pharmacol Ther 1992 (PMID 1526435). Brosen K et al. Br J Clin Pharmacol 1993 (PMID 8472545).",
+      ),
+    );
+  }
+
+  const ob = pair(ids, isOpioid, isBenzo);
+  if (ob) {
+    out.push(
+      hit(
+        "opioid-benzo",
+        ob[0],
+        ob[1],
+        names(ob[0], ob[1]),
+        "major",
+        "danger",
+        "opioid × benzodiazepine — synergistic respiratory depression / fatal overdose",
+        "FDA Boxed Warning: Concomitant use of opioids with benzodiazepines or other central nervous system (CNS) depressants results in profound sedation, respiratory depression, coma, and death. Opioids act on mu-opioid receptors in the brainstem pre-Bötzinger complex to blunt hypercapnic and hypoxic ventilatory drive, while benzodiazepines enhance GABA-A-mediated inhibitory chloride currents across the central nervous system. Combined use produces synergistic respiratory failure, loss of airway patency, and fatal overdose. The CDC Clinical Practice Guideline (2022) advises avoiding concurrent prescribing whenever possible. When coadministration is clinically unavoidable (e.g., palliative care, severe treatment-resistant anxiety with intractable pain), clinicians must prescribe the lowest effective doses, minimize duration, and co-prescribe take-home naloxone.",
+        "Respiratory rate (<10–12 breaths/min indicates severe depression), sedation score (e.g., Pasero Opioid-Induced Sedation Scale [POSS]), oxygen saturation (SpO2), pupillary size, and upper airway patency. Co-prescribe and instruct patient/caregiver on the use of naloxone nasal spray (Narcan). Titrate naloxone carefully in opioid-dependent patients to reverse respiratory depression without provoking acute severe withdrawal crisis. The Prescribing Information governs. This desk does not adjust doses, order naloxone, or select alternative agents.",
+        "FDA Drug Safety Communication (2016) / Class-wide Opioid and Benzodiazepine Boxed Warnings. Dowell D et al. CDC Clinical Practice Guideline for Prescribing Opioids — United States, 2022. MMWR Recomm Rep 2022 (PMID 36327391). Sun EC et al. BMJ 2017 (PMID 28292769).",
+      ),
+    );
+  }
+
+  const qd = pair(ids, isHighRiskQt, isKwastingDiuretic);
+  if (qd) {
+    out.push(
+      hit(
+        "qt-hypokalemic-diuretic",
+        qd[0],
+        qd[1],
+        names(qd[0], qd[1]),
+        "major",
+        "danger",
+        "high-risk QT agent × K-wasting diuretic — hypokalemia multi-hit / Torsades de Pointes",
+        "High-risk QT-prolonging agents (sotalol, dofetilide, amiodarone, ibutilide, quinidine, procainamide, haloperidol, methadone) block the cardiac rapid delayed rectifier potassium current (IKr), prolonging the ventricular action potential and QTc interval. Concomitant loop (furosemide, bumetanide, torsemide) or thiazide (HCTZ, chlorthalidone, metolazone) diuretics cause urinary potassium and magnesium wasting. Extracellular hypokalemia (K+ < 4.0 mEq/L) paradoxically intensifies IKr channel blockade and impairs repolarization reserve, triggering early afterdepolarizations (EADs) that provoke polymorphic ventricular tachycardia (Torsades de Pointes [TdP]) and sudden cardiac death. Official labeling for sotalol (Betapace) and dofetilide (Tikosyn) mandates maintaining serum potassium >= 4.0 mEq/L and magnesium >= 2.0 mg/dL throughout therapy.",
+        "Serial 12-lead ECG (baseline and post-diuretic QTc; QTc >500 ms or delta QTc >60 ms warrants urgent evaluation), serum potassium (target >= 4.0 mEq/L), serum magnesium (target >= 2.0 mg/dL), BUN, serum creatinine. In acute Torsades de Pointes: discontinue offending agents, administer IV magnesium sulfate per protocol, correct hypokalemia, and initiate overdrive transvenous pacing or isoproterenol for pause-dependent TdP. The Prescribing Information governs. This desk does not adjust doses, order naloxone, or select alternative agents.",
+        "Betapace (sotalol) Boxed Warning, Tikosyn (dofetilide) Boxed Warning, and Cordarone (amiodarone) Prescribing Information. Drew BJ et al. Prevention of Torsade de Pointes in Hospital Settings: A Scientific Statement From the AHA and ACC. Circulation 2010 (PMID 20142454). CredibleMeds Category 1: Known Risk of TdP.",
       ),
     );
   }

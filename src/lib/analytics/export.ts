@@ -9,7 +9,9 @@
  * 1. ZERO individual visitor identifiers, visitor codes, salts, or sessions.
  * 2. ZERO IP addresses (IPv4 or IPv6) or network identifiers.
  * 3. ZERO drug querying patterns or clinical search terms (page paths strictly stripped of queries/hashes).
- * 4. Deterministic and safe execution in both browser and server environments.
+ * 4. Formula injection hardening: All CSV cells starting with `=`, `+`, `-`, `@`, `\t`, `\r`
+ *    are neutralized by prepending a single quote `'` per spreadsheet security best practices.
+ * 5. Strict adherence to RFC 4180 CSV specifications and HIPAA Safe Harbor de-identification principles.
  */
 
 import type { Device, SiteStats } from "./contract";
@@ -47,7 +49,7 @@ export interface AnalyticsExportReport {
   }>;
 }
 
-const PRIVACY_STATEMENT =
+export const PRIVACY_STATEMENT =
   "Strictly cookieless, zero-PHI aggregate metrics. Zero IP addresses, user agents, cookies, or visitor identifiers.";
 
 /**
@@ -67,15 +69,40 @@ export function sanitizeExportPath(rawPath: unknown): string {
 }
 
 /**
- * Escapes values for standard RFC 4180 CSV.
+ * Escapes values for standard RFC 4180 CSV and neutralizes spreadsheet formula injection (CSV/DDE).
+ *
+ * Any cell beginning with `=`, `+`, `-`, `@`, `\t`, or `\r` is neutralized by prepending a single quote `'`
+ * so that spreadsheet applications (Excel, Google Sheets, LibreOffice Calc) treat it strictly as text
+ * rather than an executable formula or dynamic data exchange command.
  */
-function escapeCsv(val: unknown): string {
+export function escapeCsv(val: unknown): string {
   if (val === null || val === undefined) return "";
   const str = String(val);
-  if (/[",\n\r]/.test(str)) {
-    return `"${str.replace(/"/g, '""')}"`;
+  if (str === "") return "";
+
+  // Neutralize formula injection / DDE attacks:
+  // If string starts with =, +, -, @, \t, or \r, prepend a single quote (')
+  const neutralized = /^[=+\-@\t\r]/.test(str) ? `'${str}` : str;
+
+  // RFC 4180 escaping: fields containing double quotes, commas, or line breaks must be enclosed in quotes
+  if (/[",\n\r]/.test(neutralized)) {
+    return `"${neutralized.replace(/"/g, '""')}"`;
   }
-  return str;
+  return neutralized;
+}
+
+/**
+ * Formats any Date, timestamp, or valid date string into a canonical ISO 8601 UTC timestamp string.
+ */
+export function formatIsoTimestamp(input?: Date | number | string): string {
+  if (input instanceof Date) {
+    return !Number.isNaN(input.getTime()) ? input.toISOString() : new Date().toISOString();
+  }
+  if (typeof input === "number" || typeof input === "string") {
+    const d = new Date(input);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return new Date().toISOString();
 }
 
 /**
@@ -109,14 +136,7 @@ export function exportStatsToJson(
   stats: SiteStats,
   exportedAt?: Date | number | string,
 ): string {
-  const dateObj =
-    exportedAt instanceof Date
-      ? exportedAt
-      : typeof exportedAt === "number" || typeof exportedAt === "string"
-      ? new Date(exportedAt)
-      : new Date();
-
-  const isoDate = dateObj.toISOString();
+  const isoDate = formatIsoTimestamp(exportedAt);
 
   const report: AnalyticsExportReport = {
     schema: "firstpass-analytics-aggregate-v1",
@@ -161,14 +181,7 @@ export function exportStatsToCsv(
   stats: SiteStats,
   exportedAt?: Date | number | string,
 ): string {
-  const dateObj =
-    exportedAt instanceof Date
-      ? exportedAt
-      : typeof exportedAt === "number" || typeof exportedAt === "string"
-      ? new Date(exportedAt)
-      : new Date();
-
-  const isoDate = dateObj.toISOString();
+  const isoDate = formatIsoTimestamp(exportedAt);
   const lines: string[] = [];
 
   // Metadata headers (commented with # for standard parsers)
@@ -181,16 +194,16 @@ export function exportStatsToCsv(
   // Section 1: KPI Totals
   lines.push("[TOTALS]");
   lines.push("Metric,Value");
-  lines.push(`Total Page Views,${Number(stats.totals?.views ?? 0)}`);
-  lines.push(`Unique Daily Visitors,${Number(stats.totals?.visitors ?? 0)}`);
-  lines.push(`Timeframe Days,${stats.days}`);
+  lines.push(`Total Page Views,${escapeCsv(Number(stats.totals?.views ?? 0))}`);
+  lines.push(`Unique Daily Visitors,${escapeCsv(Number(stats.totals?.visitors ?? 0))}`);
+  lines.push(`Timeframe Days,${escapeCsv(stats.days)}`);
   lines.push("");
 
   // Section 2: Daily Breakdown
   lines.push("[DAILY BREAKDOWN]");
   lines.push("Date,Page Views,Unique Visitors");
   for (const d of stats.daily ?? []) {
-    lines.push(`${escapeCsv(d.day)},${Number(d.views)},${Number(d.visitors)}`);
+    lines.push(`${escapeCsv(d.day)},${escapeCsv(Number(d.views))},${escapeCsv(Number(d.visitors))}`);
   }
   lines.push("");
 
@@ -198,7 +211,7 @@ export function exportStatsToCsv(
   lines.push("[TOP PAGES]");
   lines.push("Path,Page Views,Unique Visitors");
   for (const p of stats.pages ?? []) {
-    lines.push(`${escapeCsv(sanitizeExportPath(p.path))},${Number(p.views)},${Number(p.visitors)}`);
+    lines.push(`${escapeCsv(sanitizeExportPath(p.path))},${escapeCsv(Number(p.views))},${escapeCsv(Number(p.visitors))}`);
   }
   lines.push("");
 
@@ -206,7 +219,7 @@ export function exportStatsToCsv(
   lines.push("[TOP REFERRERS]");
   lines.push("Referring Host,Page Views");
   for (const r of stats.referrers ?? []) {
-    lines.push(`${escapeCsv(r.host)},${Number(r.views)}`);
+    lines.push(`${escapeCsv(r.host)},${escapeCsv(Number(r.views))}`);
   }
   lines.push("");
 
@@ -214,7 +227,7 @@ export function exportStatsToCsv(
   lines.push("[GEOGRAPHIC REACH]");
   lines.push("Country Code,Page Views");
   for (const c of stats.countries ?? []) {
-    lines.push(`${escapeCsv(c.code)},${Number(c.views)}`);
+    lines.push(`${escapeCsv(c.code)},${escapeCsv(Number(c.views))}`);
   }
   lines.push("");
 
@@ -222,7 +235,7 @@ export function exportStatsToCsv(
   lines.push("[DEVICE BREAKDOWN]");
   lines.push("Device,Page Views");
   for (const d of stats.devices ?? []) {
-    lines.push(`${escapeCsv(d.device)},${Number(d.views)}`);
+    lines.push(`${escapeCsv(d.device)},${escapeCsv(Number(d.views))}`);
   }
 
   return lines.join("\r\n");
