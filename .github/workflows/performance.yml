@@ -39,7 +39,7 @@ jobs:
           lhci collect --config=./lighthouserc.json
           lhci assert --config=./lighthouserc.json
           lhci upload --config=./lighthouserc.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: firstpass-lighthouse
