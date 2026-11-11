@@ -41,9 +41,11 @@ import {
 } from "@/lib/drugs/types";
 import { useDesk, usePlan, type LoadExtras } from "@/lib/drugs/store";
 import {
+  emptyHistory,
   labelForIds,
   popUndo,
   readHistory,
+  type TrayHistoryState,
 } from "@/lib/drugs/tray-history";
 import { PLAN_BY_ID } from "@/lib/billing/plans";
 import { PROGRAM_TIER_BY_ID } from "@/lib/billing/programs";
@@ -133,6 +135,8 @@ import { AddictionSafetyBanner } from "./safety-banner";
 import { ViewBoundary } from "./view-boundary";
 import { NOT_CLEARED, PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 
+const EMPTY_SELECTED: string[] = [];
+
 export function DeskApp() {
   const view = useDesk((s) => s.view);
   const setView = useDesk((s) => s.setView);
@@ -154,14 +158,17 @@ export function DeskApp() {
       window.clearTimeout(t);
     };
   }, []);
-  const selected = hydrated ? selectedRaw : [];
+  const selected = useMemo(
+    () => (hydrated ? selectedRaw : EMPTY_SELECTED),
+    [hydrated, selectedRaw],
+  );
   const remove = useDesk((s) => s.remove);
   const clearRaw = useDesk((s) => s.clear);
   const load = useDesk((s) => s.load);
-  const [trayTick, setTrayTick] = useState(0);
+  const [trayHistory, setTrayHistory] = useState<TrayHistoryState>(() => emptyHistory());
   const [trayNote, setTrayNote] = useState({ text: "", n: 0 });
   const announceTray = (text: string) => setTrayNote((prev) => ({ text, n: prev.n + 1 }));
-  const bumpTray = () => setTrayTick((n) => n + 1);
+  const bumpTray = () => setTrayHistory(readHistory());
   const clear = () => {
     clearRaw();
     bumpTray();
@@ -172,7 +179,10 @@ export function DeskApp() {
     load(snap.ids, snap.ketamineRoute ? { ketamineRoute: snap.ketamineRoute } : undefined);
     bumpTray();
   };
-  const trayHistory = useMemo(() => readHistory(), [trayTick, hydrated]);
+  useEffect(() => {
+    if (!hydrated || selected.length > 0) return;
+    setTrayHistory(readHistory());
+  }, [hydrated, selected]);
   useEffect(() => {
     if (!hydrated || permalinkApplied.current) return;
     permalinkApplied.current = true;
@@ -297,6 +307,7 @@ export function DeskApp() {
 
   const secretTaps = useRef(0);
   const secretTimer = useRef(0);
+  useEffect(() => () => window.clearTimeout(secretTimer.current), []);
   function openFoundry() {
     secretTaps.current += 1;
     window.clearTimeout(secretTimer.current);
@@ -328,11 +339,16 @@ export function DeskApp() {
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-3 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-            <button type="button" className="shrink-0" onClick={openFoundry} aria-label="FirstPass">
+            <button
+              type="button"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md sm:min-h-9 sm:min-w-9 pointer-coarse:min-h-11 pointer-coarse:min-w-11"
+              onClick={openFoundry}
+              aria-label="FirstPass"
+            >
               <HemeMark className="size-8" />
             </button>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-serif text-lg leading-none tracking-tight">FirstPass</span>
                 {hydrated && plan !== "free" ? (
                   <span className="rounded-full bg-accent px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-accent-fg">
@@ -348,13 +364,13 @@ export function DeskApp() {
             </div>
             </div>
             {!hydrated || !pro ? (
-              <Button size="sm" className="sm:hidden" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
+              <Button size="sm" className="h-11 shrink-0 sm:hidden" data-fp-prehydrate={hydrated ? undefined : "unlock"} onClick={() => openCheckout("lab", foundingGateCopy("host").reason, "life")}>
                 Unlock
               </Button>
             ) : null}
           </div>
           <div className="flex w-full min-w-0 flex-wrap items-center justify-start gap-2">
-            <nav aria-label="Main navigation" className="flex min-w-0 flex-wrap items-center justify-start gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1">
+            <nav aria-label="Main navigation" className="flex max-w-full min-w-0 flex-wrap items-center justify-start gap-0.5 sm:gap-1 rounded-xl bg-bg-sunken p-1">
               {DESK_VIEWS.map(([id, label]) => (
                 <button
                   key={id}
@@ -433,7 +449,7 @@ export function DeskApp() {
       {justActivated ? (
         <div className="border-b border-border bg-ok-soft">
           <div className="mx-auto flex max-w-6xl items-start justify-between gap-3 px-4 py-3 sm:items-center sm:px-6">
-            <p className="text-sm leading-relaxed text-ok">
+            <p className="min-w-0 text-sm leading-relaxed text-ok [overflow-wrap:anywhere]">
               You're in. Host factors, the enzyme atlas, and export are open on this desk.
               {license ? (
                 <>
@@ -452,7 +468,7 @@ export function DeskApp() {
       {hydrated && programNote ? (
         <div role="status" className="border-b border-border bg-bg-sunken">
           <div className="mx-auto flex max-w-6xl items-start justify-between gap-3 px-4 py-3 sm:items-center sm:px-6">
-            <p className="text-sm leading-relaxed text-fg">{programNote}</p>
+            <p className="min-w-0 text-sm leading-relaxed text-fg [overflow-wrap:anywhere]">{programNote}</p>
             <button type="button" className="-my-2 inline-flex min-h-11 shrink-0 items-center px-2 text-sm text-muted underline hover:text-fg" onClick={dismissProgramNote}>
               Dismiss
             </button>
@@ -536,10 +552,10 @@ export function DeskApp() {
           </>
         ) : (
           <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
-            <div className="space-y-4">
+            <div className="min-w-0 space-y-4">
               <DrugSearch />
               {/* Chip live region often ignores removals; say them in a separate status. */}
-              <span key={trayNote.n} role="status" className="sr-only">
+              <span key={trayNote.n} role="status" aria-live="polite" className="sr-only">
                 {trayNote.text}
               </span>
               {selected.length > 0 ? (
@@ -565,10 +581,10 @@ export function DeskApp() {
                             target?.focus();
                           });
                         }}
-                        className="group flex min-h-10 max-w-full flex-wrap items-center gap-x-2 rounded-full py-1 bg-surface pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft"
+                        className="group flex min-h-11 max-w-full flex-wrap items-center gap-x-2 rounded-full bg-surface py-1 pl-3 pr-2 text-sm shadow-[var(--shadow-border)] hover:bg-danger-soft sm:min-h-10 pointer-coarse:min-h-11"
                         title="Remove from regimen"
                       >
-                        <span className="font-medium">{drug.name}</span>
+                        <span className="min-w-0 font-medium [overflow-wrap:anywhere]">{drug.name}</span>
                         {drug.brands[0] ? (
                           <span className="max-w-20 truncate font-mono text-[10px] uppercase tracking-wide text-muted">
                             {drug.brands[0]}
@@ -597,9 +613,10 @@ export function DeskApp() {
                             {ITEM_KIND_LABEL[drug.kind]}
                           </span>
                         ) : null}
-                        <span className="flex size-6 items-center justify-center rounded-full text-subtle group-hover:text-danger">
+                        <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full text-subtle group-hover:text-danger">
                           ×
                         </span>
+                        <span className="sr-only">, remove from regimen</span>
                       </button>
                     );
                   })}
@@ -757,15 +774,15 @@ export function DeskApp() {
                   <button
                     type="button"
                     onClick={() => setView("study")}
-                    className="flex w-full items-center justify-between rounded-xl bg-surface px-4 py-3 text-left shadow-[var(--shadow-border)]"
+                    className="flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 text-left shadow-[var(--shadow-border)]"
                   >
-                    <span>
+                    <span className="min-w-0">
                       <span className="font-serif text-lg tracking-tight text-fg">Study this pair</span>
                       <span className="mt-0.5 block text-xs text-muted">
                         Mechanism cards from this pair. Rounds, named pairs, and the enzyme map (CYP) live on Study. Not a milligram.
                       </span>
                     </span>
-                    <span className="font-mono text-[11px] uppercase tracking-wide text-muted">Study</span>
+                    <span className="shrink-0 font-mono text-[11px] uppercase tracking-wide text-muted">Study</span>
                   </button>
                   <RxnavBoard ids={selected} />
                   {pro ? (
@@ -820,7 +837,7 @@ export function DeskApp() {
               )}
             </div>
 
-            <aside className="space-y-4 lg:pt-0">
+            <aside className="min-w-0 space-y-4 lg:pt-0">
               <StatsCard
                 drugs={DRUGS.length}
                 selected={selected.length}
@@ -1082,7 +1099,7 @@ function EmptyState({
               aria-pressed={lane === l.id}
               onClick={() => setLane(l.id)}
               className={cn(
-                "h-10 rounded-full px-3 text-xs font-medium",
+                "h-10 pointer-coarse:min-h-11 rounded-full px-3 text-xs font-medium",
                 lane === l.id ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
               )}
             >
@@ -1157,7 +1174,7 @@ function SingleDrug({ id }: { id: string }) {
     <section className="overflow-hidden rounded-xl bg-surface shadow-[var(--shadow-border)]">
       <div className="grid sm:grid-cols-[220px_minmax(0,1fr)]">
         <Plate src={plateForDrug(drug)} alt="" className="h-40 w-full sm:h-full min-h-40" />
-        <div className="px-5 py-6">
+        <div className="min-w-0 px-5 py-6">
       <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Monograph</p>
       <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">{drug.name}</h2>
       <p className="mt-1 text-sm text-muted">
@@ -1214,7 +1231,7 @@ function UngradedMonograph({ id }: { id: string }) {
   const blocks = [...grouped.values()];
   const links = [...new Map(blocks.map((row) => [row.href, row])).values()];
   return (
-    <div className="mt-4 rounded-md bg-bg-sunken px-3 py-2.5">
+    <div className="mt-4 min-w-0 rounded-md bg-bg-sunken px-3 py-2.5 [overflow-wrap:anywhere]">
       <p className="text-xs font-medium uppercase tracking-wide text-muted">
         Label named a perpetrator · no strength assigned
       </p>
@@ -1238,7 +1255,7 @@ function UngradedMonograph({ id }: { id: string }) {
             href={row.href}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-10 items-center text-xs font-medium text-accent underline underline-offset-2"
+            className="inline-flex h-10 pointer-coarse:min-h-11 items-center text-xs font-medium text-accent underline underline-offset-2"
           >
             {row.linkLabel}
           </a>
@@ -1309,6 +1326,8 @@ function RiskBanner({
   onOpenPacket?: () => void;
 }) {
   const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
+  const copyTimer = useRef(0);
+  useEffect(() => () => window.clearTimeout(copyTimer.current), []);
   const openCheckout = useDesk((s) => s.openCheckout);
   const license = useDesk((s) => s.license);
   const highest = report.highest;
@@ -1320,8 +1339,9 @@ function RiskBanner({
   async function write(kind: "full" | "share" | "plain" | "link", text: string) {
     try {
       await navigator.clipboard.writeText(text);
+      window.clearTimeout(copyTimer.current);
       setCopied(kind);
-      window.setTimeout(() => setCopied(null), 1600);
+      copyTimer.current = window.setTimeout(() => setCopied(null), 1600);
     } catch {
       /* clipboard may be blocked */
     }
@@ -1378,17 +1398,17 @@ function RiskBanner({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
-      <div className="flex items-center gap-3">
+    <div className="flex min-w-0 flex-col gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
         <span
           className={cn(
-            "inline-flex min-w-28 items-center justify-center rounded-md px-2.5 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider",
+            "inline-flex min-w-28 shrink-0 items-center justify-center rounded-md px-2.5 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider",
             severitySurface(highest),
           )}
         >
           {RISK_SEVERITY_PLAIN[highest]}
         </span>
-        <div>
+        <div className="min-w-0">
           <div className="text-sm font-medium text-fg">
             {report.findings.length} possible concern{report.findings.length === 1 ? "" : "s"} across{" "}
             {selected.length} item{selected.length === 1 ? "" : "s"}
@@ -1399,7 +1419,18 @@ function RiskBanner({
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <span role="status" aria-live="polite" className="sr-only">
+        {copied === "link"
+          ? "Link copied"
+          : copied === "plain"
+            ? "Plain-language summary copied"
+            : copied === "share"
+              ? "Share summary copied"
+              : copied === "full"
+                ? "Full report copied"
+                : ""}
+      </span>
+      <div className="flex min-w-0 flex-wrap gap-2">
       {caseId ? (
         <Button
           variant="secondary"
@@ -1412,12 +1443,22 @@ function RiskBanner({
             )
           }
         >
-          {copied === "link" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+          {copied === "link" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
           {copied === "link" ? "Copied" : "Copy link"}
         </Button>
       ) : null}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => void copyPlain()}
+        className="h-10 min-w-28 shrink-0"
+        title="Copy plain-language summary"
+      >
+        {copied === "plain" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
+        {copied === "plain" ? "Copied" : "Plain summary"}
+      </Button>
       <Button variant="secondary" size="sm" onClick={() => void shareLine()} className="h-10 min-w-24 shrink-0">
-        {copied === "share" ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
+        {copied === "share" ? <Check className="size-3.5" aria-hidden="true" /> : <Share2 className="size-3.5" aria-hidden="true" />}
         {copied === "share" ? "Copied" : "Share"}
       </Button>
       {onOpenPacket ? (
@@ -1427,12 +1468,12 @@ function RiskBanner({
           onClick={onOpenPacket}
           className="h-10 min-w-28 shrink-0 border border-accent/30 text-fg hover:bg-accent-soft"
         >
-          <FileText className="size-3.5 text-accent" />
+          <FileText className="size-3.5 text-accent" aria-hidden="true" />
           Clinical packet
         </Button>
       ) : null}
       <Button variant="secondary" size="sm" onClick={() => void copySummary()} className="h-10 min-w-24 shrink-0">
-        {copied === "full" ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        {copied === "full" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
         {copied === "full" ? "Copied" : plan === "free" ? "Full report · Founding" : "Report"}
       </Button>
       {plan === "lab" ? (
@@ -1442,7 +1483,7 @@ function RiskBanner({
           className="h-10 shrink-0"
           onClick={() => exportDesk(report, selected, host, license)}
         >
-          <Download className="size-3.5" />
+          <Download className="size-3.5" aria-hidden="true" />
           JSON
         </Button>
       ) : (
@@ -1452,7 +1493,7 @@ function RiskBanner({
           className="h-10 shrink-0"
           onClick={() => openCheckout("lab", foundingGateCopy("export").reason, "life")}
         >
-          <Download className="size-3.5" />
+          <Download className="size-3.5" aria-hidden="true" />
           JSON · Founding
         </Button>
       )}
@@ -1463,7 +1504,7 @@ function RiskBanner({
           className="h-10 shrink-0"
           onClick={() => exportCsv(report, selected)}
         >
-          <Download className="size-3.5" />
+          <Download className="size-3.5" aria-hidden="true" />
           CSV
         </Button>
       ) : (
@@ -1473,7 +1514,7 @@ function RiskBanner({
           className="h-10 shrink-0"
           onClick={() => openCheckout("lab", foundingGateCopy("export").reason, "life")}
         >
-          <Download className="size-3.5" />
+          <Download className="size-3.5" aria-hidden="true" />
           CSV · Founding
         </Button>
       )}
@@ -1556,9 +1597,9 @@ function previewLabel(until: number | null) {
 
 function Stat({ k, v }: { k: string; v: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <dt className="text-[11px] text-muted">{k}</dt>
-      <dd className="font-mono text-sm tabular-nums text-fg">{v}</dd>
+      <dd className="font-mono text-sm tabular-nums text-fg [overflow-wrap:anywhere]">{v}</dd>
     </div>
   );
 }
@@ -1808,9 +1849,10 @@ function PackStrip({
             <button
               key={id}
               type="button"
+              aria-pressed={active}
               onClick={() => onSelect(id)}
               className={cn(
-                "h-9 rounded-full px-3 text-xs font-medium transition-colors",
+                "h-9 pointer-coarse:min-h-11 rounded-full px-3 text-xs font-medium transition-colors",
                 active ? "bg-accent text-accent-fg" : "bg-bg-sunken text-muted hover:text-fg",
               )}
               title={sample?.blurb}
@@ -1836,14 +1878,17 @@ function CopyCaseLink({
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const timer = useRef(0);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
   async function copy(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     const href = packId ? buildPackUrl(packId, { caseId: sampleId }) : buildCaseUrl(sampleId);
     try {
       await navigator.clipboard.writeText(href);
+      window.clearTimeout(timer.current);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
+      timer.current = window.setTimeout(() => setCopied(false), 1600);
     } catch {
       /* clipboard may be blocked */
     }
@@ -1854,16 +1899,16 @@ function CopyCaseLink({
         type="button"
         onClick={(e) => void copy(e)}
         className={cn(
-          "inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent hover:bg-accent hover:text-accent-fg",
+          "inline-flex h-8 pointer-coarse:min-h-11 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent hover:bg-accent hover:text-accent-fg",
           className,
         )}
         title={`Copy ${SITE.url} link`}
       >
-        {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+        {copied ? <Check className="size-3" aria-hidden="true" /> : <Copy className="size-3" aria-hidden="true" />}
         {copied ? "Copied" : label}
       </button>
       {/* Focus stays on the button, so announce the state change (WCAG 4.1.3). */}
-      <span role="status" className="sr-only">
+      <span role="status" aria-live="polite" className="sr-only">
         {copied ? "Link copied" : ""}
       </span>
     </>

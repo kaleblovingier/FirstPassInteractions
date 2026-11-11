@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { DRUG_BY_ID } from "./catalog.ts";
 import { CPIC_GENE_DRUG_LIST, PGX, cardLink, guidelineUrl } from "./pgx.ts";
 
 /**
@@ -19,11 +20,11 @@ const GUIDELINES: Record<string, { drugs: string[]; genes: string[] }> = {
   },
   "guideline-for-codeine-and-cyp2d6/": { drugs: ["codeine", "tramadol", "hydrocodone"], genes: ["CYP2D6"] },
   "cpic-guideline-for-proton-pump-inhibitors-and-cyp2c19/": {
-    drugs: ["omeprazole", "esomeprazole", "lansoprazole"],
+    drugs: ["omeprazole", "esomeprazole", "lansoprazole", "pantoprazole"],
     genes: ["CYP2C19"],
   },
   "cpic-guideline-for-statins/": {
-    drugs: ["simvastatin", "atorvastatin", "rosuvastatin"],
+    drugs: ["simvastatin", "atorvastatin", "rosuvastatin", "fluvastatin"],
     genes: ["SLCO1B1", "ABCG2", "CYP2C9"],
   },
   "cpic-guideline-for-nsaids-and-cyp2c9/": { drugs: ["celecoxib", "ibuprofen", "meloxicam"], genes: ["CYP2C9"] },
@@ -100,5 +101,53 @@ test("ancestry copy describes allele frequency, not ancestry-based dosing", () =
     const card = PGX[id]![0]!;
     const copy = [card.pearl, ...card.rows.map((r) => r.action)].join(" ");
     assert.match(copy, /the genotype, not ancestry, decides the row/i, id);
+  }
+});
+
+const REGULATORY_CLAIM_PATTERNS = [
+  /\bFDA[- ]cleared\b/i,
+  /\bFDA[- ]registered\b/i,
+  /\b510\(k\)[- ]cleared\b/i,
+  /\bFDA[- ]approved (?:software|app|device|tool|desk|checker|card)\b/i,
+  /\bclinically (?:validated|proven|tested|verified)\b/i,
+  /\bmedically reviewed\b/i,
+  /\b(?:reviewed|vetted|validated|approved|checked|built) by (?:a |an |our |licensed )?(?:pharmacists?|clinicians?|physicians?|doctors?|PharmDs?|nurses?)\b/i,
+  /\b(?:pharmacist|clinician|physician|doctor|PharmD)[- ](?:reviewed|built|vetted|approved|validated|verified)\b/i,
+  /\bHIPAA[- ]compliant\b/i,
+];
+const NEGATED_CLAIM_RE =
+  /\b(?:not|no|never|nor|without|isn['’]t|aren['’]t|hasn['’]t|doesn['’]t|cannot|can['’]t|neither|none)\b/i;
+
+test("every PGX key exists in DRUG_BY_ID and cards carry non-empty rows/pearls without affirmative regulatory claims", () => {
+  for (const [id, cards] of Object.entries(PGX)) {
+    assert.ok(DRUG_BY_ID[id], `PGX key "${id}" is missing from DRUG_BY_ID`);
+    assert.ok(cards.length > 0, `${id} has no PGX cards`);
+    for (const card of cards) {
+      assert.ok(card.gene.trim().length > 0, `${id} has a card with an empty gene`);
+      assert.ok(card.pearl.trim().length > 0, `${id} (${card.gene}) has an empty pearl`);
+      assert.ok(card.rows.length > 0, `${id} (${card.gene}) has no action rows`);
+      for (const row of card.rows) {
+        assert.ok(row.pheno.trim().length > 0, `${id} (${card.gene}) has a row with empty pheno`);
+        assert.ok(row.action.trim().length > 0, `${id} (${card.gene}, ${row.pheno}) has an empty action`);
+      }
+
+      const texts = [
+        card.pearl,
+        ...card.rows.map((r) => `${r.pheno}: ${r.action}`),
+        ...(card.source.kind === "guideline" ? [] : [card.source.note]),
+      ];
+      for (const text of texts) {
+        for (const sentence of text.split(/(?<=[.!?])\s+/)) {
+          for (const re of REGULATORY_CLAIM_PATTERNS) {
+            if (re.test(sentence)) {
+              assert.ok(
+                NEGATED_CLAIM_RE.test(sentence),
+                `${id} (${card.gene}) contains affirmative regulatory claim: ${sentence}`,
+              );
+            }
+          }
+        }
+      }
+    }
   }
 });

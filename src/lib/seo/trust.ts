@@ -19,7 +19,7 @@ export const TRUST_DESCRIPTION = `How FirstPass handles data, security, content 
 export const TRUST_H1 = "Trust, privacy and validation";
 
 /** The day these points were last checked against the code. Update it when you re-check. */
-export const TRUST_REVIEWED = "2026-11-09";
+export const TRUST_REVIEWED = "2026-11-10";
 
 export const REPO_URL = "https://github.com/kaleblovingier/FirstPassInteractions";
 
@@ -98,7 +98,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "No analytics cookies.",
-      text: "FirstPass has no analytics cookies, advertising or third-party tracking code. An aggregate, cookieless page counter (/api/collect) records total visits by pathname without storing IP addresses, raw user agents, query strings, URL hashes, or drug queries, isolating daily visitor pseudonyms with rotating daily salts (deleted within 48 hours) so visits cannot be linked across days, and retaining aggregate counts for 90 days when a database is configured. Reading or exporting those stats in Foundry (/api/stats) requires the operator PIN, and JSON/CSV exports contain zero protected health information (PHI), zero IP addresses, zero visitor codes or salts, and zero drug queries. You can opt out at any time in Foundry or in local storage (firstpass.analytics.optout set to \"1\"). The feedback link opens your own email app.",
+      text: "FirstPass has no analytics cookies, advertising or third-party tracking code. An aggregate, cookieless page counter (/api/collect, capped at 4,096 bytes) records total visits by pathname without storing IP addresses, raw user agents, query strings, URL hashes, or drug queries, rejecting control characters and backslashes on collected paths, isolating daily visitor pseudonyms with rotating daily salts (deleted within 48 hours) so visits cannot be linked across days, and retaining aggregate counts for 90 days when a database is configured. Reading or exporting those stats in Foundry (/api/stats, capped at 1,024 bytes with strict PIN-shape and timeframe checks) requires the operator PIN, and JSON/CSV exports strip control characters, neutralize spreadsheet formula triggers in CSV cells, and contain zero protected health information (PHI), zero IP addresses, zero visitor codes or salts, and zero drug queries. You can opt out at any time in Foundry or in local storage (firstpass.analytics.optout set to \"1\"). The feedback link opens your own email app.",
     },
     {
       lead: "Outside resources on every page.",
@@ -130,6 +130,7 @@ export const PRIVACY: TrustSection = {
     "src/lib/analytics/contract.ts",
     "src/lib/analytics/collect.server.ts",
     "src/lib/analytics/store.server.ts",
+    "src/lib/analytics/stats.ts",
     "src/lib/analytics/stats.server.ts",
     "src/lib/analytics/export.ts",
     "src/lib/server/throttle-store.ts",
@@ -164,6 +165,10 @@ export const SECURITY: TrustSection = {
       text: "Key recovery allows 5 requests per IP address per 15 minutes and 3 per email per hour, and program inquiries allow 5 per IP per hour and 3 per email per 24 hours; those counters live in each server instance's memory. The cookieless page-view counter (/api/collect) enforces an in-memory per-instance sliding window of 120 requests per minute per client IP (1,200 per minute shared when callers cannot be distinguished). Other abuse limits are shared across instances in Postgres (migrations/0002_throttle.sql, storing only keyed HMAC-SHA256 hashes of caller keys, never raw IP addresses) when DATABASE_URL is configured and fall back to per-instance memory otherwise: the readers allow 30 fresh asks per minute overall and 10 per IP; FirstPass's interaction API (except its health route) allows 10 requests per minute per IP without a key, 60 with a Developer key, and 600 with an Education key; and operator PIN checks (key minting, order lists, and /api/stats visitor analytics) enforce doubling brute-force backoff from 1 second up to 15 minutes after 5 wrong guesses per IP, plus a 2-second slowdown after 30 wrong guesses in 15 minutes. Other server endpoints rely on input checks: lists and text are capped, and unknown drug ids are dropped before any outside call.",
     },
     {
+      lead: "HTTP hardening and body caps.",
+      text: "FirstPass's interaction API and the /api/collect and /api/stats endpoints send Cache-Control: no-store, no-cache, must-revalidate, Pragma: no-cache, and X-Content-Type-Options: nosniff on every response, and return Allow headers on 405 wrong-method errors. The interaction API enforces a 10 MiB JSON POST body cap (canceling oversized streams and returning 413 RFC 7807 problem details), a 1,000-node item budget, and application/json Content-Type checks on POST requests (returning 415 otherwise). The analytics endpoints enforce a 4,096-byte cap on /api/collect beacons (rejecting control characters and backslashes on collected paths) and a 1,024-byte cap on /api/stats queries, and CSV analytics exports neutralize leading and embedded-newline formula triggers.",
+    },
+    {
       lead: "HTTPS.",
       text: "The desk is hosted on Vercel and served over HTTPS. Plain HTTP redirects to HTTPS.",
     },
@@ -192,10 +197,12 @@ export const SECURITY: TrustSection = {
     "src/lib/billing/program-inquiry.server.ts",
     "src/lib/drugs/readers.server.ts",
     "src/lib/server/api/api-access.server.ts",
+    "src/lib/server/api/problem.ts",
     "src/lib/server/rate-limit.ts",
     "src/lib/server/throttle-store.ts",
     "src/lib/server/rpc-input.ts",
     "src/lib/analytics/collect.server.ts",
+    "src/lib/analytics/stats.ts",
     "src/lib/analytics/stats.server.ts",
     "src/lib/analytics/export.ts",
     "migrations/0002_throttle.sql",
@@ -214,27 +221,32 @@ export const CONTENT: TrustSection = {
   points: [
     {
       lead: "Label gold set.",
-      text: "481 drug pairs, each tied to an FDA label statement quoted from DailyMed. The desk is at or above the tier the label supports on 481 of 481. Where the label says contraindicated, the desk says \"Avoid together\" on 446 of 446. Some pairs are held at that tier by a stored label line, so this shows the desk reproduces those labels. It says nothing about pairs outside the set.",
+      text: "556 drug pairs, each tied to an FDA label statement quoted from DailyMed. The desk is at or above the tier the label supports on 556 of 556. Where the label says contraindicated, the desk says \"Avoid together\" on 521 of 521 (0 under-calls). Some pairs are held at that tier by a stored label line, so this shows the desk reproduces those labels. It says nothing about pairs outside the set.",
       source: "docs/validation/label-gold-set.md",
     },
     {
+      lead: "Label quote drift check.",
+      text: "231 stored label quotes (617 pairs) across 98 DailyMed SPL labels retrieved 2026-10-28 were checked offline against the cited sections: 230 match in the cited section, 1 quote (rifampin with atazanavir) matches in another section of that label, and 0 have drifted. This check tracks quote accuracy and changes no grade.",
+      source: "docs/validation/label-drift.md",
+    },
+    {
       lead: "FDA interaction table.",
-      text: "The desk's enzyme and P-gp roles were compared with FDA's table of example drugs that interact with CYP enzymes and transporters, across 280 drug, target and role pairs. Same role: 97.9% (274 of 280). Same role and FDA strength class: 84.6% (237 of 280). FDA strong inhibitors and inducers: 100% (35 of 35). No direction mismatches. FDA calls its table illustrative, not complete.",
+      text: "The desk's enzyme and P-gp roles were compared with FDA's table of example drugs that interact with CYP enzymes and transporters, across 307 drug, target and role pairs. Same role: 98% (301 of 307). Same role and FDA strength class: 85.3% (262 of 307). FDA strong inhibitors and inducers: 100% (41 of 41). No direction mismatches. FDA calls its table illustrative, not complete.",
       source: "docs/validation/fda-ddi-agreement.md",
     },
     {
       lead: "Enzyme-only \"Avoid together\".",
-      text: "A scan of all 1,682,695 catalog pairs found 277 \"Avoid together\" findings that come from the enzyme rules. All 277 carry a label citation.",
+      text: "A scan of all 1,838,403 catalog pairs (1,918 entries) found 317 \"Avoid together\" findings that come from the enzyme rules (317 CYP, 0 P-gp). All 317 carry a label citation.",
       source: "docs/validation/severity-whatif.md",
     },
     {
       lead: "Clinical review.",
-      text: "No clinician has reviewed this content yet. A sign-off packet lists every rule that can produce an \"Avoid together\" or \"Serious concern\" finding (100 rules), with pair counts, examples, the current source and a blank column for a pharmacist reviewer.",
+      text: "No clinician has reviewed this content yet. A sign-off packet lists every rule that can produce an \"Avoid together\" or \"Serious concern\" finding (101 rules), with pair counts, examples, the current source and a blank column for a pharmacist reviewer.",
       source: "docs/clinical-review/signoff-packet.md",
     },
     {
       lead: "Not every finding has an outside source.",
-      text: "At the last full count (software 1.14.0, 2026-09-26), 48.9% of findings across all catalog pairs rested only on the desk's own map, with no FDA label, PubMed or CPIC source attached. Giving the contraindicated and major findings a specific outside source comes first.",
+      text: "At the last full count (software 1.79.0, 2026-11-07), 53.6% of findings across all catalog pairs rested only on the desk's own map, with no FDA label, PubMed or CPIC source attached (down to 0.8%, or 25 of 3,081, on \"Avoid together\" findings). Giving the contraindicated and major findings a specific outside source comes first.",
       source: "docs/regulatory/gap-assessment.md",
     },
     {
@@ -245,6 +257,7 @@ export const CONTENT: TrustSection = {
   ],
   sources: [
     "docs/validation/label-gold-set.md",
+    "docs/validation/label-drift.md",
     "docs/validation/fda-ddi-agreement.md",
     "docs/validation/severity-whatif.md",
     "docs/clinical-review/signoff-packet.md",
@@ -256,26 +269,26 @@ export const ACCESSIBILITY: TrustSection = {
   id: "accessibility",
   title: "Accessibility",
   intro:
-    "A draft Accessibility Conformance Report (VPAT 2.5, WCAG 2.2 edition, dated 2026-10-12) covers the desk and the public pair and drug pages. It is a draft. The owner has not yet verified every row, and no one has tested FirstPass with a screen reader. The full report goes out on request once every row is verified.",
+    "A draft Accessibility Conformance Report (VPAT 2.5, WCAG 2.2 edition, refreshed 2026-11-05) covers the desk and the public pages named in the report. It is a draft. The owner has not yet verified every row, and no one has tested FirstPass with a screen reader. The full report goes out on request once every row is verified.",
   points: [
     {
       lead: "Summary.",
-      text: "Of 56 Level A and AA rows: 15 Supports, 3 Partially Supports, 29 Not Evaluated and 9 Not Applicable. The report names each partial gap and its planned fix.",
+      text: "Of 56 Level A and AA rows: 17 Supports, 1 Partially Supports, 29 Not Evaluated and 9 Not Applicable. The report names the remaining partial row (status messages awaiting a screen reader pass) and open manual checks.",
     },
     {
       lead: "Automated checks.",
-      text: "axe-core scans at 320 and 1280 pixels wide find 0 violations on the scanned views. Lighthouse accessibility scored 100 on the tested pages.",
+      text: "Dated axe-core scans at 320 and 1280 pixels wide recorded 0 violations after the contrast and target-size fixes (not yet a finished CI gate result), and a unit test enforces the 4.5:1 text contrast floor on styles.css. Source fixes for 320-pixel text spacing and sticky-bar focus clearance in the Plans and checkout views landed on 2026-11-09, with live script re-verification pending.",
     },
     {
       lead: "Keyboard.",
-      text: "A keyboard script passes 36 of 36 checks on the core journeys, including search, the desk views and the unlock dialog.",
+      text: "A keyboard script passes 36 of 36 checks on the core journeys, including search, adding and removing drugs, the main desk views, and the unlock and recovery flows.",
     },
     {
       lead: "Not done yet.",
-      text: "Testing with a screen reader, speech input or switch access, and in browsers other than Chrome. Most Not Evaluated rows wait on that.",
+      text: "Testing with a screen reader, speech input or switch access, Windows high contrast (forced colors), and in browsers other than Chrome. Most Not Evaluated rows wait on that.",
     },
   ],
-  sources: ["docs/accessibility/wcag-conformance.md"],
+  sources: ["docs/accessibility/ACR-WCAG22.md", "docs/accessibility/wcag-conformance.md"],
 };
 
 export const PROCUREMENT = {

@@ -27,6 +27,11 @@ import {
   isMaoiTyramineSympathomimetic,
   isAmiodaroneWarfarin,
   isIsoniazidAcetaminophen,
+  isIvabradineCyp3a4NdhpCcb,
+  isPhenytoinCyp2c9Inhibition,
+  isSulfonylureaCyp2c9Hypoglycemia,
+  isDhpCcbMacrolideHypotension,
+  isNaltrexoneOpioidPrecipitatedOverdose,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -542,6 +547,157 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.match(hits[0].clinical, /biphasic CYP2E1.*NAPQI.*glutathione.*centrilobular hepatocellular necrosis/i);
     assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
     assert.match(hits[0].source, /Isoniazid.*Acetaminophen.*8354023.*9024171.*2240884.*8470644.*7508362/i);
+  });
+
+  it("detects Ivabradine × Strong CYP3A4 Inhibitors / Diltiazem & Verapamil as contraindicated SA-node arrest risk", () => {
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "diltiazem"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("verapamil", "ivabradine"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "clarithromycin"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("itraconazole", "ivabradine"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "ketoconazole"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "voriconazole"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "paxlovid"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ritonavir", "ivabradine"), true);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "nefazodone"), true);
+
+    // Excludes non-systemic topical/ophthalmic routes, azithromycin, DHP CCBs, and intranasal etripamil
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "ketoconazole-topical"), false);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "voriconazole-eye"), false);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "ciprofloxacin-ophthalmic"), false);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "azithromycin"), false);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "amlodipine"), false);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "etripamil"), false);
+    assert.equal(isIvabradineCyp3a4NdhpCcb("ivabradine", "metoprolol"), false);
+
+    const diltHits = safetyOnDesk(["ivabradine", "diltiazem"]);
+    assert.equal(diltHits.length, 1);
+    assert.equal(diltHits[0].id, "ivabradine-cyp3a4-ndhp-ccb");
+    assert.equal(diltHits[0].severity, "contraindicated");
+    assert.equal(diltHits[0].tone, "danger");
+    assert.match(diltHits[0].mechanism, /SA-node arrest & severe bradycardia/i);
+    assert.match(diltHits[0].clinical, /Corlanor Section 4 Contraindications.*diltiazem and verapamil.*sinus arrest/i);
+    assert.match(diltHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(diltHits[0].source, /Corlanor.*18217787.*33033962.*31486198.*25438492.*27012681/i);
+
+    const clarithroHits = safetyOnDesk(["clarithromycin", "ivabradine"]);
+    assert.equal(clarithroHits.length, 1);
+    assert.equal(clarithroHits[0].id, "ivabradine-cyp3a4-ndhp-ccb");
+  });
+
+  it("detects Phenytoin / Fosphenytoin × CYP2C9/2C19 Inhibitors as major Michaelis-Menten neurotoxicity risk", () => {
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin", "fluconazole"), true);
+    assert.equal(isPhenytoinCyp2c9Inhibition("voriconazole", "phenytoin"), true);
+    assert.equal(isPhenytoinCyp2c9Inhibition("fosphenytoin", "amiodarone"), true);
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin", "tmp-smx"), true);
+    assert.equal(isPhenytoinCyp2c9Inhibition("fluvoxamine", "phenytoin"), true);
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin-fosphenytoin", "metronidazole"), true);
+
+    // Distinct from warfarin-cyp2c9 and excludes topical/ophthalmic routes or unrelated AEDs
+    assert.equal(isPhenytoinCyp2c9Inhibition("warfarin", "tmp-smx"), false);
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin", "metronidazole-topical"), false);
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin", "voriconazole-eye"), false);
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin", "trimethoprim-polymyxin-eye"), false);
+    assert.equal(isPhenytoinCyp2c9Inhibition("phenytoin", "levetiracetam"), false);
+
+    const hits = safetyOnDesk(["phenytoin", "fluconazole"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "phenytoin-cyp2c9-inhibition");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /Michaelis-Menten saturation & neurotoxicity/i);
+    assert.match(hits[0].clinical, /Michaelis-Menten nonlinear zero-order elimination.*nystagmus.*dysarthria.*cerebellar ataxia.*encephalopathy/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Dilantin.*Cerebyx.*2015731.*14616412.*6486598.*284708.*11206048.*20405111/i);
+
+    const warfHits = safetyOnDesk(["warfarin", "tmp-smx"]);
+    assert.equal(warfHits.length, 1);
+    assert.equal(warfHits[0].id, "warfarin-cyp2c9");
+  });
+
+  it("detects Sulfonylureas × CYP2C9 Inhibitors as major prolonged hypoglycemia risk", () => {
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glipizide", "tmp-smx"), true);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("fluconazole", "glyburide"), true);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glimepiride", "voriconazole"), true);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glyburide", "tmp-smx"), true);
+
+    // Excludes non-sulfonylureas, topical/ophthalmic routes, and local miconazole entry
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("metformin", "tmp-smx"), false);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("repaglinide", "fluconazole"), false);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glipizide", "amoxicillin"), false);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glyburide", "voriconazole-eye"), false);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glimepiride", "trimethoprim-polymyxin-eye"), false);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("glipizide", "miconazole"), false);
+    assert.equal(isSulfonylureaCyp2c9Hypoglycemia("warfarin", "tmp-smx"), false);
+
+    const hits = safetyOnDesk(["glipizide", "tmp-smx"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "sulfonylurea-cyp2c9-hypoglycemia");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /prolonged, delayed-onset severe hypoglycemia/i);
+    assert.match(hits[0].clinical, /CYP2C9.*displaces protein-bound sulfonylurea.*neuroglycopenia/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Glucotrol.*Amaryl.*11309547.*12672733.*20592722.*25179404.*24858839/i);
+
+    const flucHits = safetyOnDesk(["glimepiride", "fluconazole"]);
+    assert.equal(flucHits.length, 1);
+    assert.equal(flucHits[0].id, "sulfonylurea-cyp2c9-hypoglycemia");
+  });
+
+  it("detects Dihydropyridine CCB × Clarithromycin / Erythromycin hypotension & AKI collision while excluding azithromycin", () => {
+    assert.equal(isDhpCcbMacrolideHypotension("amlodipine", "clarithromycin"), true);
+    assert.equal(isDhpCcbMacrolideHypotension("erythromycin", "nifedipine"), true);
+    assert.equal(isDhpCcbMacrolideHypotension("felodipine", "clarithromycin"), true);
+    assert.equal(isDhpCcbMacrolideHypotension("nicardipine", "clarithromycin"), true);
+    assert.equal(isDhpCcbMacrolideHypotension("nisoldipine", "erythromycin"), true);
+    assert.equal(isDhpCcbMacrolideHypotension("olmesartan-amlodipine", "clarithromycin"), true);
+    assert.equal(isDhpCcbMacrolideHypotension("atorvastatin-amlodipine", "erythromycin"), true);
+
+    // Crucial negative controls: azithromycin does not inhibit CYP3A4; clevidipine is esterase-cleared; diltiazem/verapamil are non-DHP
+    assert.equal(isDhpCcbMacrolideHypotension("amlodipine", "azithromycin"), false);
+    assert.equal(isDhpCcbMacrolideHypotension("nifedipine", "azithromycin"), false);
+    assert.equal(isDhpCcbMacrolideHypotension("amlodipine", "azithromycin-ophthalmic"), false);
+    assert.equal(isDhpCcbMacrolideHypotension("clevidipine", "clarithromycin"), false);
+    assert.equal(isDhpCcbMacrolideHypotension("diltiazem", "clarithromycin"), false);
+    assert.equal(isDhpCcbMacrolideHypotension("verapamil", "erythromycin"), false);
+
+    assert.equal(safetyOnDesk(["amlodipine", "azithromycin"]).length, 0);
+
+    const hits = safetyOnDesk(["amlodipine", "clarithromycin"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "dihydropyridine-ccb-macrolide-hypotension");
+    assert.equal(hits[0].severity, "major");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /CYP3A4 blockade & vasodilatory shock/i);
+    assert.match(hits[0].clinical, /azithromycin.*vasodilatory hypotension.*acute kidney injury.*Gandhi.*JAMA 2013/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Norvasc.*Biaxin.*24346990.*21242274.*28832423.*30893067/i);
+  });
+
+  it("detects Naltrexone × Opioid Agonist collision as contraindicated precipitated withdrawal & override overdose risk", () => {
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone", "oxycodone"), true);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("fentanyl", "naltrexone"), true);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone", "methadone"), true);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone", "buprenorphine"), true);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone", "morphine"), true);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone-bupropion", "methadone"), true);
+
+    // Excludes loperamide, rescue antagonists, PAMORAs, and non-opioid analgesics
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone", "loperamide"), false);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naloxone", "morphine"), false);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("methylnaltrexone", "oxycodone"), false);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naloxegol", "fentanyl"), false);
+    assert.equal(isNaltrexoneOpioidPrecipitatedOverdose("naltrexone", "acetaminophen"), false);
+
+    const hits = safetyOnDesk(["naltrexone", "fentanyl"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "naltrexone-opioid-precipitated-overdose");
+    assert.equal(hits[0].severity, "contraindicated");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /acute precipitated withdrawal & blockade-override fatal overdose/i);
+    assert.match(hits[0].clinical, /mu-opioid receptor antagonist.*precipitates abrupt, severe opioid withdrawal.*override|overcome/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Vivitrol.*Revia.*32511106.*29150198.*38967916.*40543362/i);
   });
 
   it("continues to detect existing high-risk safety collisions", () => {

@@ -52,33 +52,72 @@ export function parseDevice(ua: string): Device {
   return "desktop";
 }
 
+function hasControlChar(value: string): boolean {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code <= 0x1f || (code >= 0x7f && code <= 0x9f)) return true;
+  }
+  return false;
+}
+
 export function sanitizePath(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
-  const trimmed = raw.trim();
-  if (!trimmed) return null;
 
-  // Extract path only, stripping query string and fragment
-  const pathOnly = trimmed.split("?")[0]!.split("#")[0]!;
-  if (!pathOnly.startsWith("/")) return null;
+  // Extract path only, stripping query string and fragment before control-char / backslash checks
+  const pathOnly = raw.split("?")[0]!.split("#")[0]!;
+  if (hasControlChar(pathOnly) || pathOnly.includes("\\")) return null;
 
-  return pathOnly.slice(0, MAX_PATH_LENGTH);
+  const trimmed = pathOnly.trim();
+  if (!trimmed || !trimmed.startsWith("/")) return null;
+
+  return trimmed.slice(0, MAX_PATH_LENGTH);
+}
+
+function normalizeHostname(rawHost: string): string {
+  if (hasControlChar(rawHost)) return "";
+  const trimmed = rawHost.trim();
+  if (!trimmed) return "";
+  try {
+    const parsed = new URL(trimmed.includes("://") ? trimmed : `http://${trimmed}`);
+    return parsed.hostname
+      .toLowerCase()
+      .replace(/^www\./, "")
+      .replace(/\.+$/, "");
+  } catch {
+    return trimmed
+      .toLowerCase()
+      .split(":")[0]!
+      .replace(/^www\./, "")
+      .replace(/\.+$/, "");
+  }
 }
 
 export function sanitizeReferrer(raw: unknown, requestHost?: string | null): string {
-  if (typeof raw !== "string" || !raw.trim()) return "";
+  if (typeof raw !== "string" || hasControlChar(raw)) return "";
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
   try {
-    const url = new URL(raw);
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    if (!host) return "";
+    const url = new URL(trimmed);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    const host = url.hostname
+      .toLowerCase()
+      .replace(/^www\./, "")
+      .replace(/\.+$/, "");
+    if (!host || hasControlChar(host)) return "";
 
     // Ignore localhost, loopbacks, and same-host referrals
-    if (host === "localhost" || host === "127.0.0.1" || host === "::1") return "";
+    if (
+      host === "localhost" ||
+      host.endsWith(".localhost") ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host === "[::1]"
+    ) {
+      return "";
+    }
     if (requestHost) {
-      const cleanReqHost = requestHost
-        .toLowerCase()
-        .replace(/^www\./, "")
-        .split(":")[0];
-      if (host === cleanReqHost) return "";
+      const cleanReqHost = normalizeHostname(requestHost);
+      if (cleanReqHost && host === cleanReqHost) return "";
     }
     return host.slice(0, 100);
   } catch {
@@ -88,8 +127,10 @@ export function sanitizeReferrer(raw: unknown, requestHost?: string | null): str
 
 export function extractCountry(request: Request): string {
   const raw =
-    request.headers.get("x-vercel-ip-country") || request.headers.get("cf-ipcountry") || "";
-  const upper = raw.trim().toUpperCase();
+    request.headers.get("x-vercel-ip-country")?.trim() ||
+    request.headers.get("cf-ipcountry")?.trim() ||
+    "";
+  const upper = raw.toUpperCase();
   return /^[A-Z]{2}$/.test(upper) ? upper : "";
 }
 

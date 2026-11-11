@@ -11,6 +11,7 @@ import {
   PROCUREMENT_MAILTO,
   REPO_URL,
   TRUST_DESCRIPTION,
+  TRUST_REVIEWED,
   TRUST_SECTIONS,
   TRUST_TITLE,
   TRUST_URL,
@@ -129,5 +130,46 @@ describe("/trust page", () => {
 
   it("every section names its sources", () => {
     for (const s of TRUST_SECTIONS) assert.ok(s.sources.length > 0, s.id);
+  });
+
+  it("reflects Round 6/7 review date, HTTP security hardenings, and aligned report counts", () => {
+    assert.equal(TRUST_REVIEWED, "2026-11-10");
+    assert.ok(body.includes(`Checked against FirstPass ${SOFTWARE.version} on 2026-11-10.`));
+
+    for (const needle of [
+      "Cache-Control: no-store, no-cache, must-revalidate",
+      "Pragma: no-cache",
+      "X-Content-Type-Options: nosniff",
+      "Allow headers on 405",
+      "10 MiB",
+      "413",
+      "application/json",
+      "415",
+      "4,096-byte",
+      "1,024-byte",
+      "control characters and backslashes",
+      "neutralize leading and embedded-newline formula triggers",
+      "zero protected health information (PHI)",
+    ]) {
+      assert.ok(body.includes(needle), `missing security/privacy hardening: ${needle}`);
+    }
+
+    for (const stat of [
+      "556 of 556",
+      "521 of 521",
+      "231 stored label quotes",
+      "307 drug, target and role pairs",
+      "98% (301 of 307)",
+      "85.3% (262 of 307)",
+      "41 of 41",
+      "1,838,403 catalog pairs",
+      "317",
+      "101 rules",
+      "53.6%",
+      "17 Supports, 1 Partially Supports, 29 Not Evaluated and 9 Not Applicable",
+      "2026-11-05",
+    ]) {
+      assert.ok(body.includes(stat), `missing aligned report statistic: ${stat}`);
+    }
   });
 });

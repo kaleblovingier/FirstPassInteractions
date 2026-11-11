@@ -456,3 +456,132 @@ test("buildClinicalPacket: counselingPoints and patientHandoutText surface non-d
     assert.deepEqual(dialogText, [], `${ids.join("+")} dialog leaked dose`);
   }
 });
+
+test("buildClinicalPacket: renders Round 6 & Round 7 high-alert pairs into labeledCollisions, ehrNoteText, counselingPoints, and patientHandoutText with zero dose leaks or banned claims", () => {
+  const cases: {
+    ids: string[];
+    expectedId: string;
+    expectedSeverity: "contraindicated" | "major";
+    counselingPattern: RegExp;
+  }[] = [
+    {
+      ids: ["ergotamine", "ritonavir"],
+      expectedId: "ergot-strong-3a4",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /blood-vessel spasms.*fingers or toes/i,
+    },
+    {
+      ids: ["phenelzine", "pseudoephedrine"],
+      expectedId: "maoi-tyramine-sympathomimetic",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /spike in blood pressure.*never stop your MAOI abruptly/i,
+    },
+    {
+      ids: ["amiodarone", "warfarin"],
+      expectedId: "amiodarone-warfarin",
+      expectedSeverity: "major",
+      counselingPattern: /Never stop amiodarone or warfarin on your own.*INR/i,
+    },
+    {
+      ids: ["isoniazid", "acetaminophen"],
+      expectedId: "isoniazid-acetaminophen",
+      expectedSeverity: "major",
+      counselingPattern: /liver injury.*never stop isoniazid/i,
+    },
+    {
+      ids: ["ivabradine", "diltiazem"],
+      expectedId: "ivabradine-cyp3a4-ndhp-ccb",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /ivabradine.*slow your heartbeat.*never stop your prescribed heart medicines abruptly/i,
+    },
+    {
+      ids: ["glipizide", "tmp-smx"],
+      expectedId: "sulfonylurea-cyp2c9-hypoglycemia",
+      expectedSeverity: "major",
+      counselingPattern: /drops in blood sugar.*days afterward/i,
+    },
+    {
+      ids: ["phenytoin", "fluconazole"],
+      expectedId: "phenytoin-cyp2c9-inhibition",
+      expectedSeverity: "major",
+      counselingPattern: /Never stop taking phenytoin on your own.*severe seizures/i,
+    },
+    {
+      ids: ["amlodipine", "clarithromycin"],
+      expectedId: "dihydropyridine-ccb-macrolide-hypotension",
+      expectedSeverity: "major",
+      counselingPattern: /dangerously low blood pressure and kidney strain.*never stop your blood pressure medicine on your own/i,
+    },
+    {
+      ids: ["naltrexone", "oxycodone"],
+      expectedId: "naltrexone-opioid-precipitated-overdose",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /precipitated withdrawal.*override that blockade.*breathing arrest and overdose/i,
+    },
+  ];
+
+  for (const { ids, expectedId, expectedSeverity, counselingPattern } of cases) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId} for ${ids.join("+")}`);
+    assert.equal(alert.severity, expectedSeverity, expectedId);
+    assert.equal(alert.tone, "danger", expectedId);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), expectedId);
+    assert.ok(packet.ehrNoteText.includes(withoutDose(alert.title)), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Official PI Source: ${withoutDose(alert.source)}`), expectedId);
+
+    assert.ok(
+      !packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")),
+      `${expectedId} fell back to generic counseling instead of dedicated entry`,
+    );
+    assert.ok(
+      packet.counselingPoints.some((cp) => counselingPattern.test(cp)),
+      `${expectedId} missing expected dedicated counseling point`,
+    );
+    assert.match(packet.patientHandoutText, counselingPattern, `${expectedId} missing counseling in patientHandoutText`);
+
+    for (const cp of packet.counselingPoints) {
+      assert.equal(doseIn(cp), false, `${expectedId} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${expectedId} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(packet.ehrNoteText.split("\n").filter(doseIn), [], `${expectedId} ehrNoteText leaked dose`);
+    assert.deepEqual(packet.patientHandoutText.split("\n").filter(doseIn), [], `${expectedId} patientHandoutText leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${expectedId} ehrNoteText leaked claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
+
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+    );
+    assert.ok(html.includes("High-Alert Labeled &amp; Institutional Safety Collisions"), expectedId);
+    assert.deepEqual(html.replace(/<[^>]+>/g, "\n").split("\n").filter(doseIn), [], `${expectedId} dialog leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(html), false, `${expectedId} dialog leaked claim`);
+  }
+
+  // Naltrexone + opioid should keep a single generic naloxone line while preserving the acute blockade-override warning
+  const naltrexoneOxyPacket = buildClinicalPacket(
+    ["naltrexone", "oxycodone"],
+    DEFAULT_HOST,
+    analyze(["naltrexone", "oxycodone"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.equal(naltrexoneOxyPacket.counselingPoints.filter((cp) => /naloxone/i.test(cp)).length, 1);
+  assert.equal(
+    naltrexoneOxyPacket.counselingPoints.filter((cp) => /override that blockade/i.test(cp)).length,
+    1,
+  );
+
+  // Complementary warfarin CYP2C9 warnings: rapid TMP-SMX + prolonged amiodarone both surface cleanly
+  const multiWarfarinPacket = buildClinicalPacket(
+    ["amiodarone", "warfarin", "tmp-smx"],
+    DEFAULT_HOST,
+    analyze(["amiodarone", "warfarin", "tmp-smx"], DEFAULT_HOST).findings,
+    {},
+  );
+  assert.ok(multiWarfarinPacket.counselingPoints.some((cp) => /within days/i.test(cp)));
+  assert.ok(multiWarfarinPacket.counselingPoints.some((cp) => /months even after amiodarone is stopped/i.test(cp)));
+});

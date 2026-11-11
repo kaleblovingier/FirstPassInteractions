@@ -249,10 +249,14 @@ async function main() {
     if (r.status === "drifted")
       console.log("DRIFT", r.row.pairs.join(","), "|", r.missing?.slice(0, 120));
   if (check) {
+    // Windows checkouts (core.autocrlf) turn committed LF into CRLF.
     const stale = [
       [PATHS.md, out.md],
       [PATHS.versions, out.json],
-    ].filter(([p, want]) => !existsSync(p!) || readFileSync(p!, "utf8") !== want);
+    ].filter(
+      ([p, want]) =>
+        !existsSync(p!) || readFileSync(p!, "utf8").replace(/\r\n/g, "\n") !== want,
+    );
     if (stale.length) {
       console.error(
         `stale: ${stale.map(([p]) => p).join(", ")}. Re-run scripts/label-drift-check.ts.`,

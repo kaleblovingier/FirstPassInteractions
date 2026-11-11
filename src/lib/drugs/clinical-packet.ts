@@ -355,6 +355,42 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
     topic: "hyperkalemia-raas-k",
     text: "Combining medications that hold onto potassium can raise blood potassium to dangerous levels. Keep scheduled kidney and potassium lab checks, and seek urgent care for new muscle weakness, numbness or tingling, or an irregular heartbeat.",
   },
+  "ergot-strong-3a4": {
+    topic: "ergot-strong-3a4",
+    text: "Never take ergotamine, dihydroergotamine, or methylergonovine together with strong enzyme-blocking antivirals, antibiotics, or antifungals (such as ritonavir, Paxlovid, clarithromycin, or itraconazole), as this can trigger dangerous blood-vessel spasms that cut off blood flow to your brain, heart, and limbs. Contact your prescriber before taking them together, and call 911 immediately for cold, pale, numb, or bluish fingers or toes, chest pain, severe stomach pain, or sudden stroke symptoms.",
+  },
+  "maoi-tyramine-sympathomimetic": {
+    topic: "maoi-hypertensive-crisis",
+    text: "Combining an MAOI medicine with decongestants (such as pseudoephedrine or phenylephrine), stimulants, or high-tyramine foods (such as aged cheeses, cured meats, or tap beer) can trigger a sudden, life-threatening spike in blood pressure. Avoid these decongestants, stimulants, and restricted foods during therapy and through the required waiting period afterward, never stop your MAOI abruptly without your prescriber's guidance, and call 911 immediately for a sudden severe headache at the back of your head, chest pain, shortness of breath, stiff neck, or heavy sweating.",
+  },
+  "amiodarone-warfarin": {
+    topic: "amiodarone-warfarin",
+    text: "Amiodarone slows how your body clears warfarin, which can make your blood too thin over several weeks and keep raising bleeding risk for months even after amiodarone is stopped. Never stop amiodarone or warfarin on your own without your heart or anticoagulation prescriber's direction, keep every scheduled INR blood test, and seek immediate care for unusual bleeding, red or black stools, pink or bloody urine, or a sudden severe headache.",
+  },
+  "isoniazid-acetaminophen": {
+    topic: "isoniazid-acetaminophen",
+    text: "Taking acetaminophen (Tylenol) while on isoniazid can stress your liver and cause serious liver injury, even at ordinary labeled amounts. Check labels on over-the-counter cold, flu, and pain medicines to avoid hidden acetaminophen unless your prescriber specifically approves it, never stop isoniazid without talking to your care team, and seek urgent medical care for yellowing of your skin or eyes, dark urine, upper right stomach pain, persistent nausea or vomiting, or unusual confusion.",
+  },
+  "ivabradine-cyp3a4-ndhp-ccb": {
+    topic: "ivabradine-bradycardia",
+    text: "Combining ivabradine with diltiazem, verapamil, or strong enzyme-blocking antibiotics, antifungals, or antivirals can cause ivabradine levels to build up and slow your heartbeat to dangerous levels. Contact your heart prescriber or pharmacist right away before taking them together—never stop your prescribed heart medicines abruptly on your own—and call 911 or seek emergency care for fainting, severe dizziness, shortness of breath, chest pain, or a very slow pulse.",
+  },
+  "phenytoin-cyp2c9-inhibition": {
+    topic: "phenytoin-cyp2c9-inhibition",
+    text: "Adding certain antifungals, antibiotics, heart-rhythm medicines, or antidepressants (such as fluconazole, voriconazole, Bactrim, metronidazole, amiodarone, or fluvoxamine) can cause phenytoin levels to spike sharply. Never stop taking phenytoin on your own—stopping suddenly can trigger severe seizures—keep all scheduled phenytoin blood-level checks, and seek urgent medical care for slurred speech, unsteady walking, double vision, extreme sleepiness, or confusion.",
+  },
+  "sulfonylurea-cyp2c9-hypoglycemia": {
+    topic: "sulfonylurea-cyp2c9-hypoglycemia",
+    text: "Taking Bactrim (TMP-SMX), fluconazole, or voriconazole with a sulfonylurea diabetes pill (such as glipizide, glyburide, or glimepiride) can cause dangerous, long-lasting drops in blood sugar during treatment and for days afterward. Contact your prescriber before taking both, check your blood sugar closely, and seek emergency care for confusion, slurred speech, shakiness, cold sweats, or passing out—low blood sugar from this pairing can return even after initial treatment.",
+  },
+  "dihydropyridine-ccb-macrolide-hypotension": {
+    topic: "dhp-ccb-macrolide-hypotension",
+    text: "Taking clarithromycin or erythromycin with calcium-channel-blocker blood pressure pills (such as amlodipine or nifedipine) can cause blood pressure medicine levels to build up and trigger dangerously low blood pressure and kidney strain. Check with your prescriber or pharmacist before taking both—never stop your blood pressure medicine on your own—and seek emergency care for severe dizziness, fainting, confusion, or noticeably decreased urination.",
+  },
+  "naltrexone-opioid-precipitated-overdose": {
+    topic: "naltrexone-opioid",
+    text: "Naltrexone blocks opioid effects: starting it while opioids are still in your body can trigger sudden, severe precipitated withdrawal (intense vomiting, diarrhea, agitation, or confusion), while taking large amounts of opioids to try to override that blockade—or taking prior amounts after stopping or missing naltrexone when tolerance has dropped—can cause sudden, fatal breathing arrest and overdose. Talk with your prescriber before taking these together, never try to break through naltrexone with extra opioids, and call 911 immediately for severe withdrawal, slow breathing, or trouble waking up.",
+  },
 };
 
 function labeledCollisionCounseling(

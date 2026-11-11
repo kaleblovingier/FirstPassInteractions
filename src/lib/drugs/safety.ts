@@ -147,7 +147,12 @@ export type SafetyKind =
   | "ergot-strong-3a4"
   | "maoi-tyramine-sympathomimetic"
   | "amiodarone-warfarin"
-  | "isoniazid-acetaminophen";
+  | "isoniazid-acetaminophen"
+  | "ivabradine-cyp3a4-ndhp-ccb"
+  | "phenytoin-cyp2c9-inhibition"
+  | "sulfonylurea-cyp2c9-hypoglycemia"
+  | "dihydropyridine-ccb-macrolide-hypotension"
+  | "naltrexone-opioid-precipitated-overdose";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -886,6 +891,120 @@ export function isIsoniazidAcetaminophen(a: string, b: string) {
   return (a === "isoniazid" && b === "acetaminophen") || (b === "isoniazid" && a === "acetaminophen");
 }
 
+function isNonSystemicRoute(id: string) {
+  return /-topical$|-eye$|-ophthalmic$|-derm$/i.test(id);
+}
+
+function matchesSymmetricPair(
+  a: string,
+  b: string,
+  left: (id: string) => boolean,
+  right: (id: string) => boolean,
+) {
+  if (a === b) return false;
+  return (left(a) && right(b)) || (left(b) && right(a));
+}
+
+export const IVABRADINE_NDHP_CCBS = new Set(["diltiazem", "verapamil"]);
+
+export function isIvabradineStrong3a4OrNdhpPerpetrator(id: string) {
+  if (isNonSystemicRoute(id)) return false;
+  if (IVABRADINE_NDHP_CCBS.has(id) || CNI_STRONG_3A4_INHIBITORS.has(id)) return true;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  return d.enzymes.some((r) => r.enzyme === "CYP3A4" && r.kind === "inhibitor" && r.strength === "strong");
+}
+
+export function isIvabradineCyp3a4NdhpCcb(a: string, b: string) {
+  return matchesSymmetricPair(a, b, (id) => id === "ivabradine", isIvabradineStrong3a4OrNdhpPerpetrator);
+}
+
+export const PHENYTOIN_AGENTS = new Set(["phenytoin", "fosphenytoin", "phenytoin-fosphenytoin"]);
+
+export const PHENYTOIN_CYP2C9_2C19_INHIBITORS = new Set([
+  "fluconazole",
+  "voriconazole",
+  "amiodarone",
+  "tmp-smx",
+  "fluvoxamine",
+  "metronidazole",
+]);
+
+export function isPhenytoinAgent(id: string) {
+  return PHENYTOIN_AGENTS.has(id);
+}
+
+export function isPhenytoinCyp2c9Inhibitor(id: string) {
+  if (isNonSystemicRoute(id)) return false;
+  return PHENYTOIN_CYP2C9_2C19_INHIBITORS.has(id);
+}
+
+export function isPhenytoinCyp2c9Inhibition(a: string, b: string) {
+  return matchesSymmetricPair(a, b, isPhenytoinAgent, isPhenytoinCyp2c9Inhibitor);
+}
+
+export const SULFONYLUREA_AGENTS = new Set(["glipizide", "glyburide", "glimepiride"]);
+
+export const SULFONYLUREA_CYP2C9_INHIBITORS = new Set([
+  "tmp-smx",
+  "fluconazole",
+  "voriconazole",
+]);
+
+export function isSulfonylureaAgent(id: string) {
+  return SULFONYLUREA_AGENTS.has(id) || /Sulfonylurea/i.test(clsOf(id));
+}
+
+export function isSulfonylureaCyp2c9Inhibitor(id: string) {
+  if (isNonSystemicRoute(id)) return false;
+  return SULFONYLUREA_CYP2C9_INHIBITORS.has(id);
+}
+
+export function isSulfonylureaCyp2c9Hypoglycemia(a: string, b: string) {
+  return matchesSymmetricPair(a, b, isSulfonylureaAgent, isSulfonylureaCyp2c9Inhibitor);
+}
+
+export const DHP_CCB_3A4_SUBSTRATES = new Set([
+  "amlodipine",
+  "nifedipine",
+  "felodipine",
+  "nicardipine",
+  "nisoldipine",
+  "isradipine",
+  "nimodipine",
+  "olmesartan-amlodipine",
+  "atorvastatin-amlodipine",
+]);
+
+export const MACROLIDE_3A4_INHIBITORS = new Set([
+  "clarithromycin",
+  "erythromycin",
+]);
+
+export function isDhpCcb3a4Substrate(id: string) {
+  if (id === "clevidipine" || isNonSystemicRoute(id)) return false;
+  return DHP_CCB_3A4_SUBSTRATES.has(id) || /Dihydropyridine CCB/i.test(clsOf(id));
+}
+
+export function isMacrolide3a4Inhibitor(id: string) {
+  if (isNonSystemicRoute(id)) return false;
+  return MACROLIDE_3A4_INHIBITORS.has(id);
+}
+
+export function isDhpCcbMacrolideHypotension(a: string, b: string) {
+  return matchesSymmetricPair(a, b, isDhpCcb3a4Substrate, isMacrolide3a4Inhibitor);
+}
+
+export const NALTREXONE_AGENTS = new Set(["naltrexone", "naltrexone-bupropion"]);
+
+export function isNaltrexoneAgent(id: string) {
+  return NALTREXONE_AGENTS.has(id);
+}
+
+export function isNaltrexoneOpioidPrecipitatedOverdose(a: string, b: string) {
+  return matchesSymmetricPair(a, b, isNaltrexoneAgent, isOpioid);
+}
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -1523,6 +1642,96 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Isoniazid produces biphasic CYP2E1 modulation: acute competitive inhibition while parent isoniazid occupies the active site, coupled with protein stabilization that induces hepatic CYP2E1 abundance as isoniazid clears between doses (especially in fast NAT2 acetylators) or after interruption. Induced CYP2E1 accelerates conversion of acetaminophen to reactive N-acetyl-p-benzoquinone imine (NAPQI). When hepatic glutathione detoxification reserves are depleted—worsened by malnutrition, fasting, or alcohol exposure—excess NAPQI binds hepatocellular proteins and drives centrilobular hepatocellular necrosis with steep AST/ALT surges, coagulopathy (elevated INR), hyperbilirubinemia, hepatic encephalopathy, and acute liver failure even at labeled therapeutic acetaminophen exposure.",
         "Serial hepatic transaminases (AST/ALT), total bilirubin, PT/INR, serum creatinine/lactate, mental status (asterixis or encephalopathy), and right upper quadrant pain or jaundice. Evaluate prompt N-acetylcysteine (NAC) antidote initiation if acetaminophen hepatotoxicity is suspected. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
         "Isoniazid and Acetaminophen Prescribing Information. Zand R et al. Clin Pharmacol Ther 1993 (PMID 8354023). Chien JY et al. Clin Pharmacol Ther 1997 (PMID 9024171). Murphy R et al. Ann Intern Med 1990 (PMID 2240884). Crippin JS. Am J Gastroenterol 1993 (PMID 8470644). Nolan CM et al. Chest 1994 (PMID 7508362).",
+      ),
+    );
+  }
+
+  const iv = pair(ids, (id) => id === "ivabradine", isIvabradineStrong3a4OrNdhpPerpetrator);
+  if (iv) {
+    out.push(
+      hit(
+        "ivabradine-cyp3a4-ndhp-ccb",
+        iv[0],
+        iv[1],
+        names(iv[0], iv[1]),
+        "contraindicated",
+        "danger",
+        "ivabradine × strong CYP3A4 inhibitor / non-DHP CCB — SA-node arrest & severe bradycardia",
+        "Ivabradine selectively blocks the sinoatrial node pacemaker funny current (If / HCN4) and depends exclusively on CYP3A4 for metabolic clearance of both parent drug and its active N-demethylated metabolite. Strong CYP3A4 inhibitors (clarithromycin, itraconazole, ketoconazole, posaconazole, voriconazole, ritonavir, Paxlovid, cobicistat, nefazodone, telithromycin) drastically elevate ivabradine systemic exposure and are explicitly contraindicated in Corlanor Section 4 Contraindications. Non-dihydropyridine calcium channel blockers (diltiazem and verapamil) cause a dual collision: moderate CYP3A4 inhibition raises ivabradine AUC 2- to 3-fold while compounding direct negative chronotropic and AV-nodal slowing (explicitly avoided in Corlanor Prescribing Information and contraindicated in EMA Procoralan SmPC Section 4.3). Excessive sinoatrial suppression risks profound symptomatic bradycardia, prolonged sinus pauses, sinus arrest, junctional escape rhythms, heart block, and hemodynamic collapse.",
+        "Continuous cardiac telemetry and serial 12-lead ECGs for resting heart rate (<50–55 bpm), sinus pauses, junctional escape rhythm, or high-grade heart block; blood pressure, syncope, presyncope, worsening heart failure symptoms, and transient visual luminous phenomena (phosphenes). Discontinue offending interacting agents and manage symptomatic bradycardia or sinus arrest under acute cardiology monitoring. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Corlanor (ivabradine) Prescribing Information (Section 4 Contraindications & Section 5.2/7.1); EMA Procoralan SmPC (Section 4.3). Savelieva I, Camm AJ. Drug Saf 2008 (PMID 18217787). Lang J et al. AAPS J 2020 (PMID 33033962). Salem L et al. Pharmacoepidemiol Drug Saf 2019 (PMID 31486198). Mittal SR. J Assoc Physicians India 2014 (PMID 25438492). Romero-León JM, Gálvez-Contreras MC. Rev Esp Cardiol (Engl Ed) 2016 (PMID 27012681).",
+      ),
+    );
+  }
+
+  const ph = pair(ids, isPhenytoinAgent, isPhenytoinCyp2c9Inhibitor);
+  if (ph) {
+    out.push(
+      hit(
+        "phenytoin-cyp2c9-inhibition",
+        ph[0],
+        ph[1],
+        names(ph[0], ph[1]),
+        "major",
+        "danger",
+        "phenytoin / fosphenytoin × CYP2C9/2C19 inhibitor — Michaelis-Menten saturation & neurotoxicity",
+        "Phenytoin (and its prodrug fosphenytoin) exhibits saturable Michaelis-Menten nonlinear zero-order elimination mediated primarily by hepatic CYP2C9 (~90%) with secondary CYP2C19 metabolism (~10%). Because therapeutic concentrations (10–20 mcg/mL total; 1–2 mcg/mL free) approach or exceed the hepatic Michaelis constant (Km), enzymatic clearance operates near maximal capacity (Vmax). Co-administration of CYP2C9/2C19 inhibitors (fluconazole, voriconazole, amiodarone, TMP-SMX, fluvoxamine, metronidazole) depresses Vmax and causes disproportionate, exponential accumulation of total and unbound (free) phenytoin rather than a linear rise. In addition, phenytoin induces CYP2C19/3A4 clearance of voriconazole in a bidirectional collision. Elevated free phenytoin triggers progressive neurotoxicity: horizontal/gaze-evoked nystagmus, dysarthria, cerebellar ataxia, confusion, encephalopathy, stupor/coma, and paradoxical seizures.",
+        "Serial total and unbound (free) serum phenytoin concentrations (mandatory in hypoalbuminemia, uremia, or critical illness where total levels underestimate free drug; target total 10–20 mcg/mL, free 1–2 mcg/mL), serum albumin, hepatic transaminases, and serial neurologic examinations for nystagmus, slurred speech, gait ataxia, or encephalopathy. Monitor voriconazole trough exposure for subtherapeutic antifungal failure when paired with phenytoin. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Dilantin (phenytoin), Cerebyx (fosphenytoin), Diflucan (fluconazole), Vfend (voriconazole), Cordarone (amiodarone), Bactrim (TMP-SMX), and Luvox (fluvoxamine) Prescribing Information. Blum RA et al. Clin Pharmacol Ther 1991 (PMID 2015731). Purkins L et al. Br J Clin Pharmacol 2003 (PMID 14616412). McGovern B et al. Ann Intern Med 1984 (PMID 6486598). Hansen JM et al. Acta Med Scand Suppl 1979 (PMID 284708). Mamiya K et al. Ther Drug Monit 2001 (PMID 11206048). Helldén A et al. Eur J Clin Pharmacol 2010 (PMID 20405111).",
+      ),
+    );
+  }
+
+  const su = pair(ids, isSulfonylureaAgent, isSulfonylureaCyp2c9Inhibitor);
+  if (su) {
+    out.push(
+      hit(
+        "sulfonylurea-cyp2c9-hypoglycemia",
+        su[0],
+        su[1],
+        names(su[0], su[1]),
+        "major",
+        "danger",
+        "sulfonylurea × CYP2C9 inhibitor — prolonged, delayed-onset severe hypoglycemia",
+        "Sulfonylureas (glipizide, glyburide, glimepiride) stimulate glucose-independent pancreatic beta-cell insulin release via SUR1/KATP channel closure and rely heavily on hepatic CYP2C9 for metabolic inactivation. Co-administration of CYP2C9 inhibitors—TMP-SMX (sulfamethoxazole inhibits CYP2C9 while sulfonamide competition displaces protein-bound sulfonylurea from plasma albumin), fluconazole (increases glimepiride AUC >2-fold), or voriconazole—greatly prolongs sulfonylurea half-life and systemic exposure, with particularly hazardous persistence of active metabolites in renal impairment (notably glyburide). Population studies demonstrate 2.2- to 6.6-fold higher odds of emergency visits or hospitalization for severe hypoglycemia within 7–14 days. Prolonged hyperinsulinemia causes delayed-onset and recurrent neuroglycopenia (diaphoresis, confusion, focal deficits mimicking stroke, seizures, coma, and death), where isolated IV dextrose boluses alone can provoke rebound insulin release.",
+        "Sustained capillary and venous blood glucose surveillance during and for days after antimicrobial or azole completion (alert for glucose < 70 mg/dL and clinically significant < 54 mg/dL), mental status, and renal function (eGFR/creatinine). Acute severe sulfonylurea-induced hypoglycemia often requires prolonged continuous glucose monitoring and inpatient observation (with dextrose infusion and octreotide evaluation per toxicology protocol) because recurrent delayed drops are common. Evaluate non-CYP2C9-inhibiting antimicrobial options where appropriate. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Glucotrol (glipizide), Micronase / DiaBeta (glyburide), Amaryl (glimepiride), Bactrim (TMP-SMX), Diflucan (fluconazole), and Vfend (voriconazole) Prescribing Information. Niemi M et al. Clin Pharmacol Ther 2001 (PMID 11309547). Juurlink DN et al. JAMA 2003 (PMID 12672733). Schelleman H et al. Clin Pharmacol Ther 2010 (PMID 20592722). Parekh TM et al. JAMA Intern Med 2014 (PMID 25179404). Tan A et al. J Gerontol A Biol Sci Med Sci 2015 (PMID 24858839).",
+      ),
+    );
+  }
+
+  const dm = pair(ids, isDhpCcb3a4Substrate, isMacrolide3a4Inhibitor);
+  if (dm) {
+    out.push(
+      hit(
+        "dihydropyridine-ccb-macrolide-hypotension",
+        dm[0],
+        dm[1],
+        names(dm[0], dm[1]),
+        "major",
+        "danger",
+        "dihydropyridine CCB × clarithromycin / erythromycin — CYP3A4 blockade & vasodilatory shock",
+        "Dihydropyridine calcium channel blockers (amlodipine, nifedipine, felodipine, nicardipine, nisoldipine, isradipine, nimodipine) undergo extensive intestinal and hepatic CYP3A4 metabolism (unlike IV clevidipine, which is rapidly hydrolyzed by blood and tissue esterases). Clarithromycin and erythromycin are mechanism-based (time-dependent) CYP3A4 inhibitors that irreversibly form metabolite-intermediate complexes destroying gut-wall and hepatic CYP3A4—an interaction NOT shared by azithromycin. Co-administration markedly elevates DHP CCB plasma concentrations, driving excessive vascular L-type calcium channel blockade, profound peripheral arteriolar vasodilation, refractory vasodilatory hypotension, distributive shock, acute kidney injury (AKI) from renal hypoperfusion, and elevated mortality (Gandhi et al. JAMA 2013: 30-day AKI OR 1.98 overall and 5.33 with nifedipine, plus hypotension OR 1.60 and mortality OR 1.74 vs azithromycin; Wright et al. CMAJ 2011: hypotension/shock OR 3.7 with clarithromycin and 5.8 with erythromycin).",
+        "Frequent supine and standing blood pressure and heart rate measurements, perfusion assessment (dizziness, syncope, altered mentation, cool extremities or warm vasoplegia), urine output, and serum creatinine/BUN/electrolytes for prerenal or ischemic acute kidney injury (AKI); recognize that mechanism-based CYP3A4 inactivation persists for days after macrolide completion until de novo enzyme synthesis restores clearance. Prioritize azithromycin or non-CYP3A4-inhibiting antimicrobial alternatives when clinically appropriate. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Norvasc (amlodipine), Procardia XL (nifedipine), Plendil (felodipine), Biaxin (clarithromycin), and Erythrocin (erythromycin) Prescribing Information. Gandhi S et al. JAMA 2013 (PMID 24346990). Wright AJ et al. CMAJ 2011 (PMID 21242274). Shah SP, Self TH. Nurse Pract 2017 (PMID 28832423). Cook RMD et al. Am J Ther 2019 (PMID 30893067).",
+      ),
+    );
+  }
+
+  const no = pair(ids, isNaltrexoneAgent, isOpioid);
+  if (no) {
+    out.push(
+      hit(
+        "naltrexone-opioid-precipitated-overdose",
+        no[0],
+        no[1],
+        names(no[0], no[1]),
+        "contraindicated",
+        "danger",
+        "naltrexone × opioid agonist — acute precipitated withdrawal & blockade-override fatal overdose",
+        "Naltrexone (oral tablets, extended-release intramuscular Vivitrol persisting ~28+ days, and naltrexone-bupropion) is a high-affinity competitive mu-opioid receptor antagonist that completely blocks opioid analgesia and euphoria. Prescribing Information Section 4 Contraindications and Warnings highlight a dual life-threatening hazard: (1) Administering naltrexone to patients with physiologic opioid dependence or inadequate opioid-free washout (minimum 7–10 days for short-acting opioids and up to 10–14 days for methadone or buprenorphine) rapidly displaces receptor-bound agonists and precipitates abrupt, severe opioid withdrawal (intractable vomiting, diarrhea, agitation, delirium, tachycardia, autonomic instability, dehydration, and hemodynamic collapse severe enough to require hospital or ICU admission). (2) Attempting to overcome mu-receptor blockade with large or escalating doses of exogenous opioids—or resuming previously tolerated opioid amounts after missed naltrexone doses or treatment cessation when tolerance has faded—precipitates sudden fatal respiratory arrest and opioid overdose.",
+        "Verify complete opioid-free washout (including methadone, buprenorphine, tramadol, and illicit fentanyl) via clinical history, urine toxicology, and naloxone challenge where indicated prior to naltrexone; monitor closely for acute precipitated withdrawal (COWS score, severe vomiting/diarrhea, delirium, vital-sign instability) requiring aggressive supportive care if triggered. Counsel patients and caregivers on total loss of opioid tolerance, lethal risk of attempting to override mu-blockade with high-dose opioids, heightened post-discontinuation overdose vulnerability, and take-home naloxone nasal spray readiness. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Vivitrol (extended-release naltrexone), Revia (oral naltrexone), and Contrave (naltrexone-bupropion) Prescribing Information Contraindications & Warnings. ASAM National Practice Guideline for OUD (PMID 32511106). Lee JD et al. Lancet 2018 (PMID 29150198). Moore J, Foo K. J Addict Med 2024 (PMID 38967916). Gjersing L et al. Drug Alcohol Depend 2025 (PMID 40543362).",
       ),
     );
   }

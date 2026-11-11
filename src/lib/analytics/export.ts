@@ -15,7 +15,14 @@
  * 5. Strict adherence to RFC 4180 CSV specifications and HIPAA Safe Harbor de-identification principles.
  */
 
-import type { AnalyticsSummary, Device, SiteStats } from "./contract";
+import {
+  MAX_PATH_LENGTH,
+  STATS_RANGES,
+  type AnalyticsSummary,
+  type Device,
+  type SiteStats,
+  type StatsRange,
+} from "./contract";
 
 export interface AnalyticsExportReport {
   schema: "firstpass-analytics-aggregate-v1";
@@ -54,6 +61,35 @@ export interface AnalyticsExportReport {
 export const PRIVACY_STATEMENT =
   "Strictly cookieless, zero-PHI aggregate metrics. Zero IP addresses, user agents, cookies, or visitor identifiers.";
 
+function isControlCharCode(code: number): boolean {
+  return code <= 0x1f || (code >= 0x7f && code <= 0x9f);
+}
+
+function stripControlChars(value: string): string {
+  let out = "";
+  for (let i = 0; i < value.length; i++) {
+    if (!isControlCharCode(value.charCodeAt(i))) {
+      out += value[i]!;
+    }
+  }
+  return out;
+}
+
+function sanitizeExportDimension(raw: unknown): string {
+  if (raw === null || raw === undefined) return "";
+  return stripControlChars(String(raw)).trim();
+}
+
+export function normalizeExportDays(raw: unknown): StatsRange {
+  return typeof raw === "number" && (STATS_RANGES as readonly number[]).includes(raw)
+    ? (raw as StatsRange)
+    : 30;
+}
+
+export function normalizeDevice(raw: unknown): Device {
+  return raw === "phone" || raw === "tablet" || raw === "desktop" ? raw : "desktop";
+}
+
 /**
  * Defensively cleans and normalizes page paths for export.
  * Strips query strings, URL hashes, control characters, and enforces leading slash.
@@ -63,14 +99,18 @@ export function sanitizeExportPath(rawPath: unknown): string {
   // Strip fragment identifier (#) and query parameters (?)
   const withoutHash = rawPath.split("#")[0] ?? "/";
   const withoutQuery = withoutHash.split("?")[0] ?? "/";
-  const trimmed = withoutQuery.trim();
+  const trimmed = stripControlChars(withoutQuery).trim();
   if (!trimmed || trimmed === "/") return "/";
   const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   // Enforce max length constraint
-  return withSlash.slice(0, 200);
+  return withSlash.slice(0, MAX_PATH_LENGTH);
 }
 
 const FORMULA_TRIGGERS = new Set(["=", "+", "-", "@"]);
+
+function isIgnorablePrefixChar(c: string): boolean {
+  return isControlCharCode(c.charCodeAt(0)) || /\s/.test(c);
+}
 
 function neutralizeEmbeddedNewlineFormulas(str: string): string {
   let out = "";
@@ -88,8 +128,7 @@ function neutralizeEmbeddedNewlineFormulas(str: string): string {
       let probe = nlEnd;
       while (probe < str.length) {
         const c = str[probe]!;
-        const code = c.charCodeAt(0);
-        if (c === " " || c === "\t" || (code <= 0x1f && c !== "\r" && c !== "\n")) {
+        if (c !== "\r" && c !== "\n" && isIgnorablePrefixChar(c)) {
           probe++;
         } else {
           break;
@@ -110,8 +149,7 @@ function hasLeadingFormulaTrigger(str: string): boolean {
     if (c === "\t" || c === "\r" || c === "\n" || FORMULA_TRIGGERS.has(c)) {
       return true;
     }
-    const code = c.charCodeAt(0);
-    if (code <= 0x1f || /\s/.test(c)) {
+    if (isIgnorablePrefixChar(c)) {
       continue;
     }
     return false;
@@ -172,7 +210,7 @@ export function computeExportSummary(stats: SiteStats): AnalyticsSummary {
 
   for (const entry of daily) {
     const views = Math.max(0, Number(entry.views) || 0);
-    const day = String(entry.day);
+    const day = sanitizeExportDimension(entry.day);
     if (views > 0) {
       activeDays++;
       if (
@@ -208,10 +246,19 @@ export function formatIsoTimestamp(input?: Date | number | string): string {
 
 /**
  * Formats a Date / timestamp into UTC YYYY-MM-DD for standard filenames.
+ * Falls back to the current UTC date if `now` is missing or invalid.
  */
 export function formatUtcDateString(now?: Date | number): string {
-  const d = now instanceof Date ? now : typeof now === "number" ? new Date(now) : new Date();
-  const yyyy = d.getUTCFullYear();
+  let d: Date;
+  if (now instanceof Date) {
+    d = !Number.isNaN(now.getTime()) ? now : new Date();
+  } else if (typeof now === "number" && Number.isFinite(now)) {
+    const parsed = new Date(now);
+    d = !Number.isNaN(parsed.getTime()) ? parsed : new Date();
+  } else {
+    d = new Date();
+  }
+  const yyyy = String(d.getUTCFullYear()).padStart(4, "0");
   const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(d.getUTCDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
@@ -226,8 +273,10 @@ export function generateExportFilename(
   format: "json" | "csv",
   now?: Date | number,
 ): string {
+  const safeDays = normalizeExportDays(days);
+  const safeFormat = format === "csv" ? "csv" : "json";
   const dateStr = formatUtcDateString(now);
-  return `firstpass-analytics-${days}d-${dateStr}.${format}`;
+  return `firstpass-analytics-${safeDays}d-${dateStr}.${safeFormat}`;
 }
 
 /**
@@ -239,11 +288,12 @@ export function exportStatsToJson(
 ): string {
   const isoDate = formatIsoTimestamp(exportedAt);
   const summary = computeExportSummary(stats);
+  const timeframeDays = normalizeExportDays(stats.days);
 
   const report: AnalyticsExportReport = {
     schema: "firstpass-analytics-aggregate-v1",
     exportedAt: isoDate,
-    timeframeDays: stats.days,
+    timeframeDays,
     privacy: PRIVACY_STATEMENT,
     totals: {
       views: Math.max(0, Number(stats.totals?.views ?? 0) || 0),
@@ -251,7 +301,7 @@ export function exportStatsToJson(
     },
     summary,
     daily: (stats.daily ?? []).map((d) => ({
-      day: String(d.day),
+      day: sanitizeExportDimension(d.day),
       views: Math.max(0, Number(d.views) || 0),
       visitors: Math.max(0, Number(d.visitors) || 0),
     })),
@@ -261,15 +311,15 @@ export function exportStatsToJson(
       visitors: Math.max(0, Number(p.visitors) || 0),
     })),
     referrers: (stats.referrers ?? []).map((r) => ({
-      host: String(r.host),
+      host: sanitizeExportDimension(r.host),
       views: Math.max(0, Number(r.views) || 0),
     })),
     countries: (stats.countries ?? []).map((c) => ({
-      code: String(c.code),
+      code: sanitizeExportDimension(c.code),
       views: Math.max(0, Number(c.views) || 0),
     })),
     devices: (stats.devices ?? []).map((d) => ({
-      device: d.device,
+      device: normalizeDevice(d.device),
       views: Math.max(0, Number(d.views) || 0),
     })),
   };
@@ -286,12 +336,13 @@ export function exportStatsToCsv(
 ): string {
   const isoDate = formatIsoTimestamp(exportedAt);
   const summary = computeExportSummary(stats);
+  const timeframeDays = normalizeExportDays(stats.days);
   const lines: string[] = [];
 
   // Metadata headers (commented with # for standard parsers)
   lines.push("# FirstPass Analytics Aggregate Export");
   lines.push(`# Exported: ${isoDate}`);
-  lines.push(`# Timeframe: ${stats.days} days`);
+  lines.push(`# Timeframe: ${timeframeDays} days`);
   lines.push(`# Privacy: ${PRIVACY_STATEMENT}`);
   lines.push("");
 
@@ -302,7 +353,7 @@ export function exportStatsToCsv(
   lines.push("Metric,Value");
   lines.push(`Total Page Views,${escapeCsv(totalViews)}`);
   lines.push(`Unique Daily Visitors,${escapeCsv(totalVisitors)}`);
-  lines.push(`Timeframe Days,${escapeCsv(stats.days)}`);
+  lines.push(`Timeframe Days,${escapeCsv(timeframeDays)}`);
   lines.push("");
 
   // Section 2: Computed Summary Insights
@@ -319,7 +370,7 @@ export function exportStatsToCsv(
   lines.push("Date,Page Views,Unique Visitors");
   for (const d of stats.daily ?? []) {
     lines.push(
-      `${escapeCsv(d.day)},${escapeCsv(Math.max(0, Number(d.views) || 0))},${escapeCsv(Math.max(0, Number(d.visitors) || 0))}`,
+      `${escapeCsv(sanitizeExportDimension(d.day))},${escapeCsv(Math.max(0, Number(d.views) || 0))},${escapeCsv(Math.max(0, Number(d.visitors) || 0))}`,
     );
   }
   lines.push("");
@@ -338,7 +389,9 @@ export function exportStatsToCsv(
   lines.push("[TOP REFERRERS]");
   lines.push("Referring Host,Page Views");
   for (const r of stats.referrers ?? []) {
-    lines.push(`${escapeCsv(r.host)},${escapeCsv(Math.max(0, Number(r.views) || 0))}`);
+    lines.push(
+      `${escapeCsv(sanitizeExportDimension(r.host))},${escapeCsv(Math.max(0, Number(r.views) || 0))}`,
+    );
   }
   lines.push("");
 
@@ -346,7 +399,9 @@ export function exportStatsToCsv(
   lines.push("[GEOGRAPHIC REACH]");
   lines.push("Country Code,Page Views");
   for (const c of stats.countries ?? []) {
-    lines.push(`${escapeCsv(c.code)},${escapeCsv(Math.max(0, Number(c.views) || 0))}`);
+    lines.push(
+      `${escapeCsv(sanitizeExportDimension(c.code))},${escapeCsv(Math.max(0, Number(c.views) || 0))}`,
+    );
   }
   lines.push("");
 
@@ -363,7 +418,9 @@ export function exportStatsToCsv(
     const devViews = Math.max(0, Number(d.views) || 0);
     const pct =
       pctBase > 0 ? `${(Math.round((devViews / pctBase) * 1000) / 10).toFixed(1)}%` : "0.0%";
-    lines.push(`${escapeCsv(d.device)},${escapeCsv(devViews)},${escapeCsv(pct)}`);
+    lines.push(
+      `${escapeCsv(normalizeDevice(d.device))},${escapeCsv(devViews)},${escapeCsv(pct)}`,
+    );
   }
 
   return lines.join("\r\n");

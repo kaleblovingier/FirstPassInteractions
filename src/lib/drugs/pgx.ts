@@ -101,6 +101,28 @@ function tca2d6(drug: string): PgxCard {
   };
 }
 
+function tca2c19(drug: string): PgxCard {
+  return {
+    gene: "CYP2C19",
+    cpic: "A",
+    source: guide(TCA),
+    clinpgx: c(drug),
+    rows: [
+      {
+        pheno: "UM / RM",
+        action: "Avoid tertiary amine due to potential sub-optimal response; consider a non-2C19 antidepressant.",
+      },
+      { pheno: "NM / IM", action: "Initiate therapy with the usual labeled starting dose." },
+      {
+        pheno: "PM",
+        action: "Avoid tertiary amine due to side-effect risk; consider a non-2C19 agent or a 50% lower start with TDM.",
+      },
+    ],
+    pearl:
+      "CYP2C19 N-demethylates tertiary TCAs into active secondary amines (e.g., nortriptyline), which CYP2D6 then clears. Rapid/ultrarapid 2C19 shifts the parent-to-metabolite balance; poor 2C19 stacks parent.",
+  };
+}
+
 export const PGX: Record<string, PgxCard[]> = {
   citalopram: [ssri2c19("citalopram")],
   escitalopram: [ssri2c19("escitalopram")],
@@ -189,7 +211,7 @@ export const PGX: Record<string, PgxCard[]> = {
         "CPIC looked and did not recommend a 2D6 dose cut — the parent and S-norfluoxetine both block SERT, so the sum may not move enough. It remains a strong 2D6 inhibitor of everything else on the desk.",
     },
   ],
-  amitriptyline: [tca2d6("amitriptyline")],
+  amitriptyline: [tca2d6("amitriptyline"), tca2c19("amitriptyline")],
   nortriptyline: [tca2d6("nortriptyline")],
   imipramine: [tca2d6("imipramine")],
   desipramine: [tca2d6("desipramine")],
@@ -362,6 +384,35 @@ export const PGX: Record<string, PgxCard[]> = {
       pearl: "CPIC PPI table includes lansoprazole. Same 2C19 family as omeprazole.",
     },
   ],
+  pantoprazole: [
+    {
+      gene: "CYP2C19",
+      cpic: "A",
+      source: guide(PPI),
+      clinpgx: c("pantoprazole"),
+      rows: [
+        {
+          pheno: "UM",
+          action: "Consider increasing starting daily dose by 100% for H. pylori or erosive esophagitis; watch for symptom breakthrough.",
+        },
+        {
+          pheno: "RM",
+          action: "Initiate standard daily dose; consider 50–100% increase for H. pylori or erosive esophagitis.",
+        },
+        { pheno: "NM", action: "Initiate standard daily dose." },
+        {
+          pheno: "IM",
+          action: "Initiate standard daily dose; for chronic therapy beyond 12 weeks, consider a 50% reduction.",
+        },
+        {
+          pheno: "PM",
+          action: "Initiate standard daily dose; for chronic therapy beyond 12 weeks, consider a 50% reduction.",
+        },
+      ],
+      pearl:
+        "Pantoprazole is cleared via CYP2C19 (UMs risk underexposure; PMs accumulate parent), yet it inhibits 2C19 much less than omeprazole or esomeprazole alongside clopidogrel.",
+    },
+  ],
   voriconazole: [
     {
       gene: "CYP2C19",
@@ -426,6 +477,21 @@ export const PGX: Record<string, PgxCard[]> = {
         { pheno: "PM", action: "50% reduction; nonlinear kinetics still apply." },
       ],
       pearl: "HLA-B*15:02 is a separate SJS story: the genotype, not ancestry, decides it — a carrier avoids it like carbamazepine. Ancestry-based screening can miss carriers.",
+    },
+    {
+      gene: "HLA-B*15:02",
+      cpic: "A",
+      source: guide(g("guideline-for-phenytoin-and-cyp2c9-and-hla-b/")),
+      clinpgx: c("phenytoin"),
+      rows: [
+        { pheno: "negative", action: "Use phenytoin per CYP2C9 genotype with standard precautions." },
+        {
+          pheno: "positive",
+          action: "Do not use phenytoin or fosphenytoin in phenytoin-naive patients due to SJS/TEN risk; select a non-aromatic AED.",
+        },
+      ],
+      pearl:
+        "HLA-B*15:02 drives severe SJS/TEN hypersensitivity independently of CYP2C9 clearance. The genotype, not ancestry, decides the row — ancestry-based screening can miss carriers.",
     },
   ],
   celecoxib: [
@@ -507,6 +573,27 @@ export const PGX: Record<string, PgxCard[]> = {
         },
       ],
       pearl: "Not a 3A4 statin. Transporters and 2C9 are the quieter genes. Gemfibrozil is still a fibrate PD.",
+    },
+  ],
+  fluvastatin: [
+    {
+      gene: "CYP2C9 / SLCO1B1",
+      cpic: "A",
+      source: guide(STATIN),
+      clinpgx: c("fluvastatin"),
+      rows: [
+        { pheno: "NM (normal SLCO1B1)", action: "Prescribe desired starting intensity." },
+        {
+          pheno: "2C9 IM or decreased OATP1B1",
+          action: "Avoid high-intensity regimens; use low-to-moderate starting intensity or pick another statin.",
+        },
+        {
+          pheno: "2C9 PM or poor OATP1B1",
+          action: "Restrict to low-intensity fluvastatin or switch statins; combined 2C9 PM + poor SLCO1B1 further raises myopathy risk.",
+        },
+      ],
+      pearl:
+        "Fluvastatin skips CYP3A4 and relies on CYP2C9 and OATP1B1 (SLCO1B1) for clearance. A 2C9 poor metabolizer or fluconazole stacks exposure without touching 3A4.",
     },
   ],
   azathioprine: [

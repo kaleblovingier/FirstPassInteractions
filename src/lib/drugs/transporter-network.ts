@@ -18,6 +18,8 @@
  * Interaction Studies Guidance (2020), and peer-reviewed transporter literature.
  */
 
+import { DRUG_BY_ID } from "./catalog";
+
 export type TransporterFamily = "ABC Efflux" | "SLC Influx";
 
 export interface TransporterCollision {
@@ -150,16 +152,19 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "sirolimus",
       "fentanyl",
       "apixaban",
+      "rivaroxaban",
       "daraxonrasib",
     ],
     inhibitors: [
       "verapamil",
+      "diltiazem",
       "quinidine",
       "amiodarone",
       "clarithromycin",
       "itraconazole",
       "ritonavir",
       "paxlovid",
+      "cyclosporine",
       "vepdegestrant",
       "daraxonrasib",
     ],
@@ -167,6 +172,8 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "rifampin",
       "st-johns-wort",
       "carbamazepine",
+      "phenytoin",
+      "phenobarbital",
     ],
     probeOrInvestigationalInhibitors: [
       "Elacridar (GF120918 - third generation dual P-gp/BCRP investigational inhibitor)",
@@ -271,6 +278,62 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         literatureCitation:
           "Lemaitre F, et al. Therapeutic Drug Monitoring & SFPT Guidance on Nirmatrelvir/Ritonavir Immunosuppressant DDIs; FDA Prescribing Information for PAXLOVID.",
       },
+      {
+        id: "rivaroxaban-paxlovid",
+        title: "Rivaroxaban + Paxlovid Dual P-gp/BCRP & CYP3A4 Hemorrhage Surge",
+        drugPair: ["rivaroxaban", "paxlovid"],
+        description:
+          "Rivaroxaban clearance is split between CYP3A4/CYP2J2 hepatic metabolism (~50%) and ABCB1 (P-gp)/ABCG2 (BCRP) active renal and intestinal efflux. Ritonavir in Paxlovid simultaneously arrests CYP3A4 and P-gp/BCRP, amplifying rivaroxaban systemic AUC approximately 2.5-fold (ritonavir benchmark).",
+        hazard:
+          "Major spontaneous gastrointestinal, retroperitoneal, or intracranial hemorrhage from combined metabolic and transporter clearance collapse.",
+        severity: "critical",
+        mechanismDetail:
+          "Dual blockade of enterocyte/renal apical P-gp (ABCB1) and BCRP (ABCG2) efflux coupled with irreversible CYP3A4 inactivation removes both elimination arms simultaneously, exceeding single-pathway DDI magnitudes (PMID: 23305158, PMID: 11861813).",
+        literatureCitation:
+          "Mueck W, et al. Br J Clin Pharmacol. 2013;76(3):455-466 (PMID: 23305158); Cummins CL, et al. J Pharmacol Exp Ther. 2002 (PMID: 11861813).",
+      },
+      {
+        id: "apixaban-paxlovid",
+        title: "Apixaban + Paxlovid Combined P-gp/BCRP & CYP3A4 Exposure Escalation",
+        drugPair: ["apixaban", "paxlovid"],
+        description:
+          "Apixaban exhibits balanced dependence on intestinal/renal P-gp and BCRP efflux alongside CYP3A4 metabolism (~25%). Paxlovid disables both enterocyte/renal ABC efflux and CYP3A4 turnover concurrently, driving approximately 2-fold increases in apixaban AUC.",
+        hazard:
+          "Markedly elevated anti-Xa anticoagulation intensity and major bleeding hazard, amplified further by concurrent renal impairment.",
+        severity: "critical",
+        mechanismDetail:
+          "Presystemic enterocyte P-gp/CYP3A4 synergy blockade increases absorbed fraction (Fa * Fg) while renal/biliary ABC efflux inhibition slows systemic clearance (PMID: 31030414, PMID: 11861813).",
+        literatureCitation:
+          "Garonzik S, et al. Am J Cardiovasc Drugs. 2019;19(6):595-604 (PMID: 31030414); Cummins CL, et al. J Pharmacol Exp Ther. 2002 (PMID: 11861813).",
+      },
+      {
+        id: "dabigatran-rifampin",
+        title: "Dabigatran + Rifampin Intestinal P-gp (ABCB1) Induction Collapse",
+        drugPair: ["dabigatran", "rifampin"],
+        description:
+          "Dabigatran etexilate is a CYP-independent prodrug whose oral bioavailability (~3–7%) is tightly gated by enterocyte apical P-gp efflux. Rifampin activates PXR to strongly upregulate duodenal ABCB1 expression, slashing dabigatran systemic AUC by approximately 66–67%.",
+        hazard:
+          "Loss of thrombin inhibition, subtherapeutic anticoagulation, ischemic stroke, and systemic thromboembolism.",
+        severity: "critical",
+        mechanismDetail:
+          "PXR-RXR transcriptional upregulation of enterocyte brush-border ABCB1 extrudes dabigatran etexilate back into the gut lumen prior to esterase conversion, persisting for 1–2 weeks after rifampin discontinuation (PMID: 22348256, PMID: 10411543).",
+        literatureCitation:
+          "Hartter S, et al. Br J Clin Pharmacol. 2012;74(3):495-500 (PMID: 22348256); Greiner B, et al. J Clin Invest. 1999;104(2):147-153 (PMID: 10411543).",
+      },
+      {
+        id: "digoxin-rifampin",
+        title: "Digoxin + Rifampin Duodenal ABCB1 Induction Proof-of-Mechanism",
+        drugPair: ["digoxin", "rifampin"],
+        description:
+          "Rifampin increases human duodenal P-glycoprotein expression ~3.5-fold via PXR activation, dropping oral digoxin AUC by ~30% while leaving intravenous digoxin clearance minimally changed—proving intestinal P-gp is the dominant presystemic locus.",
+        hazard:
+          "Subtherapeutic digoxin serum concentrations, loss of ventricular rate control in atrial fibrillation, and heart failure decompensation.",
+        severity: "high",
+        mechanismDetail:
+          "Transcriptional induction of intestinal ABCB1 decreases oral fraction absorbed (Fa) without materially altering glomerular filtration, while protracted protein turnover delays recovery for ~2 weeks post-stop (PMID: 10411543).",
+        literatureCitation:
+          "Greiner B, et al. The role of intestinal P-glycoprotein in the interaction of digoxin and rifampin. J Clin Invest. 1999;104(2):147-153 (PMID: 10411543).",
+      },
     ],
     pharmacokineticImpact:
       "Modulates bioavailability (F), central nervous system penetration, biliary clearance, and renal tubular secretion. Inhibition increases systemic AUC and CNS distribution; induction decreases bioavailability.",
@@ -334,12 +397,18 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "methotrexate",
       "sulfasalazine",
       "topotecan",
+      "apixaban",
+      "rivaroxaban",
+      "atorvastatin",
     ],
     inhibitors: [
       "gefitinib",
       "lapatinib",
       "cyclosporine",
+      "eltrombopag",
       "regorafenib",
+      "ritonavir",
+      "paxlovid",
       "tavapadon",
     ],
     inducers: [],
@@ -397,14 +466,14 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Rosuvastatin + Cyclosporine Intestinal/Canalicular BCRP & Hepatic OATP1B1 Double-Hit",
         drugPair: ["rosuvastatin", "cyclosporine"],
         description:
-          "Rosuvastatin undergoes minimal CYP metabolism and relies critically on intestinal/canalicular BCRP (ABCG2) efflux and sinusoidal OATP1B1 (SLCO1B1) hepatic uptake. Cyclosporine blocks both transporters concurrently, spiking rosuvastatin AUC 7.1-fold and Cmax 10.6-fold.",
+          "Rosuvastatin undergoes minimal CYP metabolism (ECCS Class 3B hydrophilic acid) and relies critically on intestinal/canalicular BCRP (ABCG2) efflux and sinusoidal OATP1B1 (SLCO1B1) rate-limiting hepatic uptake. Cyclosporine blocks both transporters concurrently, spiking rosuvastatin AUC 7.1-fold and Cmax 10.6-fold.",
         hazard:
           "Severe statin-induced myopathy, fulminant rhabdomyolysis, myoglobinuric AKI, and hepatic transaminitis.",
         severity: "critical",
         mechanismDetail:
-          "Apical ABCG2 inhibition increases intestinal absorption fraction and halts biliary extrusion while sinusoidal SLCO1B1 inhibition traps statin in circulating systemic blood and skeletal muscle.",
+          "Apical ABCG2 inhibition increases intestinal absorption fraction (Fa) and blocks canalicular biliary extrusion (CLbile) while sinusoidal SLCO1B1 uptake arrest reduces Extended Clearance Concept rate-limiting hepatic influx (PSinf), trapping rosuvastatin in systemic blood and skeletal muscle (PMID: 15289793, PMID: 26155985).",
         literatureCitation:
-          "Simonson SG, et al. Rosuvastatin pharmacokinetics in healthy subjects coadministered cyclosporine. Clin Pharmacol Ther. 2004;76(2):167-177.",
+          "Simonson SG, et al. Clin Pharmacol Ther. 2004;76(2):167-177 (PMID: 15289793); Varma MV, et al. Pharm Res. 2015 (PMID: 26155985).",
       },
     ],
     pharmacokineticImpact:
@@ -445,6 +514,8 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "rosuvastatin",
       "simvastatin",
       "pravastatin",
+      "pitavastatin",
+      "repaglinide",
       "bosentan",
       "valsartan",
     ],
@@ -453,6 +524,9 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "gemfibrozil",
       "clarithromycin",
       "rifampin",
+      "eltrombopag",
+      "ritonavir",
+      "paxlovid",
     ],
     inducers: [],
     probeOrInvestigationalInhibitors: [],
@@ -462,14 +536,14 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Cyclosporine Shutoff of Hepatic Sinusoidal OATP1B1 Statin Uptake",
         drugPair: ["cyclosporine", "atorvastatin"],
         description:
-          "Cyclosporine potently inhibits hepatic sinusoidal OATP1B1/1B3 (SLCO1B1/3) influx alongside CYP3A4 and canalicular BCRP/P-gp efflux, collapsing hepatic first-pass extraction and producing an ~8.7-fold increase in atorvastatin AUC and 10.7-fold increase in Cmax.",
+          "Cyclosporine potently inhibits hepatic sinusoidal OATP1B1/1B3 (SLCO1B1/3) influx alongside CYP3A4 and canalicular BCRP/P-gp efflux, collapsing Extended Clearance Concept hepatic uptake (PSinf) and producing an ~8.7-fold increase in atorvastatin AUC and 10.7-fold increase in Cmax.",
         hazard:
           "Massive systemic statin exposure, fulminant rhabdomyolysis, myoglobinuria, and acute tubular necrosis.",
         severity: "critical",
         mechanismDetail:
-          "Potent inhibition of SLCO1B1/3 sinusoidal uptake carriers (sub-to-low micromolar Ki) blocks entry into the hepatic metabolic compartment while concurrent CYP3A4/BCRP blockade prevents clearance, spilling active atorvastatin acid into skeletal muscle.",
+          "Under the Extended Clearance Concept, sinusoidal OATP1B1/1B3 uptake (PSinf) is rate-limiting for hepatic clearance; potent SLCO1B1/3 blockade traps atorvastatin in systemic blood while concurrent CYP3A4/BCRP arrest prevents escape clearance (PMID: 12099384, PMID: 26155985, PMID: 16714062).",
         literatureCitation:
-          "Niemi M, et al. Organic anion transporting polypeptide 1B1: a genetically polymorphic transporter of major importance for hepatic drug disposition. Pharmacol Rev. 2011;63(1):157-181.",
+          "Asberg A, et al. Am J Transplant. 2001 (PMID: 12099384); Niemi M, et al. Pharmacol Rev. 2011;63(1):157-181; Varma MV, et al. Pharm Res. 2015 (PMID: 26155985).",
       },
       {
         id: "simvastatin-gemfibrozil",
@@ -495,9 +569,37 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
           "Severe statin-associated musculoskeletal toxicity, rhabdomyolysis, and hepatocellular injury.",
         severity: "critical",
         mechanismDetail:
-          "Blockade of OATP1B1 sinusoidal influx traps hydrophilic rosuvastatin in circulating plasma (bypassing liver uptake), compounded by intestinal and canalicular ABCG2 inhibition that surges oral absorption and halts biliary elimination.",
+          "Rosuvastatin is a prototypical ECCS Class 3B low-permeability hydrophilic acid where sinusoidal OATP1B1 uptake governs hepatic clearance (CLint,all ~ PSinf). Blockade of SLCO1B1 influx plus ABCG2 intestinal/biliary efflux traps statin in systemic blood and skeletal muscle (PMID: 15289793, PMID: 26155985, PMID: 16714062).",
         literatureCitation:
-          "Simonson SG, et al. Rosuvastatin pharmacokinetics in healthy subjects coadministered cyclosporine. Clin Pharmacol Ther. 2004;76(2):167-177.",
+          "Simonson SG, et al. Clin Pharmacol Ther. 2004;76(2):167-177 (PMID: 15289793); Varma MV, et al. Pharm Res. 2015 (PMID: 26155985).",
+      },
+      {
+        id: "pitavastatin-cyclosporine",
+        title: "Pitavastatin + Cyclosporine ECC Class 3B Uptake-Limited Statin Collision",
+        drugPair: ["pitavastatin", "cyclosporine"],
+        description:
+          "Pitavastatin undergoes negligible CYP450 oxidation and relies almost purely on sinusoidal OATP1B1 (SLCO1B1) hepatic uptake followed by biliary elimination. Cyclosporine blocks OATP1B1 uptake, elevating pitavastatin AUC ~4.6-fold despite minimal metabolic clearance dependence.",
+        hazard:
+          "Severe statin-associated myopathy and rhabdomyolysis in patients receiving calcineurin inhibitor immunosuppression.",
+        severity: "critical",
+        mechanismDetail:
+          "Canonical Extended Clearance Concept Class 3B demonstration: when (CLmet + CLbile) >> PSdiff, hepatic clearance simplifies to PSinf, rendering systemic statin AUC exquisitely sensitive to OATP1B1 inhibition even with zero CYP involvement (PMID: 26155985, PMID: 16714062).",
+        literatureCitation:
+          "Shitara Y, Sugiyama Y. Pharmacol Ther. 2006;112(1):71-105 (PMID: 16714062); Varma MV, et al. Pharm Res. 2015 (PMID: 26155985).",
+      },
+      {
+        id: "atorvastatin-rifampin-acute",
+        title: "Atorvastatin + Rifampin Biphasic ECC Paradox (Acute OATP1B1 Block vs Chronic PXR Induction)",
+        drugPair: ["atorvastatin", "rifampin"],
+        description:
+          "Acute single-exposure rifampin potently inhibits hepatic sinusoidal OATP1B1 uptake, spiking atorvastatin AUC ~6- to 7-fold, whereas chronic repeated rifampin activates PXR transcription of CYP3A4 and P-gp, collapsing atorvastatin AUC by ~80%.",
+        hazard:
+          "Acute myotoxicity upon initial co-administration followed by profound loss of LDL lowering during sustained therapy.",
+        severity: "high",
+        mechanismDetail:
+          "Demonstrates temporal kinetic divergence under the Extended Clearance Concept: immediate competitive inhibition of rate-limiting sinusoidal PSinf precedes the 3–7 day transcriptional lag required for PXR-driven CYP3A4 upregulation (PMID: 26155985, PMID: 12882588).",
+        literatureCitation:
+          "Varma MV, et al. Pharm Res. 2015 (PMID: 26155985); Niemi M, et al. Clin Pharmacokinet. 2003 (PMID: 12882588).",
       },
       {
         id: "bosentan-cyclosporine",
@@ -710,7 +812,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Ranolazine Inhibition of Renal OCT2 Metformin Transport",
         drugPair: ["ranolazine", "metformin"],
         description:
-          "Ranolazine inhibits OCT2 in proximal tubular cells, resulting in a dose-dependent increase in metformin exposure (up to 1.8-fold at 1000 mg BID).",
+          "Ranolazine inhibits OCT2 in proximal tubular cells, resulting in an exposure-dependent increase in metformin AUC (up to 1.8-fold at high therapeutic exposure).",
         hazard:
           "Elevated metformin serum levels and increased risk of metabolic acidosis.",
         severity: "high",
@@ -801,7 +903,7 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
     basolateralSideDescription: "Submucosal capillaries collecting absorbed compounds for portal venous delivery to the liver.",
     cellularCompartment: "Polarized Columnar Enterocyte with Apical Microvilli Brush Border",
     barrierDescription:
-      "Acts as the first biological checkpoint of oral bioavailability. Apical efflux pumps (P-gp, BCRP) actively eject absorbed molecules back into the gut lumen, working in tandem with enterocyte CYP3A4 to reduce net absorption fraction.",
+      "Acts as the first biological checkpoint of oral bioavailability. Apical efflux pumps (P-gp, BCRP) actively eject absorbed molecules back into the gut lumen, cycling substrates repeatedly past enterocyte CYP3A4 to multiply presystemic extraction (Fa * Fg).",
     transporterNodes: [
       {
         transporterId: "pgp-abcb1",
@@ -811,7 +913,7 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
         direction: "efflux",
         vectorLabel: "Enterocyte Cytoplasm -> Gut Lumen",
         arrowDirection: "up",
-        mechanismNote: "Extrudes dabigatran, colchicine, digoxin, tacrolimus, and sirolimus back into gut lumen, acting in tandem with enterocyte CYP3A4.",
+        mechanismNote: "Extrudes dabigatran, colchicine, digoxin, tacrolimus, apixaban, and rivaroxaban back into gut lumen, prolonging enterocyte CYP3A4 encounter probability (PMID: 11861813).",
       },
       {
         transporterId: "bcrp-abcg2",
@@ -821,13 +923,15 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
         direction: "efflux",
         vectorLabel: "Enterocyte Cytoplasm -> Gut Lumen",
         arrowDirection: "up",
-        mechanismNote: "Ejects rosuvastatin and sulfasalazine back into intestinal lumen, modulating systemic absorption.",
+        mechanismNote: "Ejects rosuvastatin, apixaban, and sulfasalazine back into intestinal lumen, modulating systemic absorption.",
       },
     ],
     clinicalTakeaway:
-      "Inhibition of intestinal P-gp or BCRP by drugs like verapamil, clarithromycin, or lapatinib increases oral bioavailability (AUC) up to several fold, triggering unexpected systemic overexposure.",
+      "Inhibition of intestinal P-gp + CYP3A4 (Paxlovid, clarithromycin, verapamil) produces super-additive oral bioavailability surges (tacrolimus, sirolimus, rivaroxaban), whereas PXR induction of duodenal P-gp (rifampin) cuts dabigatran and digoxin bioavailability (PMID: 10411543, PMID: 22348256).",
     citations: [
       "Fromm MF. Int J Clin Pharmacol Ther. 2000;38(2):69-74.",
+      "Cummins CL, et al. Unmasking the dynamic interplay between intestinal P-glycoprotein and CYP3A4. J Pharmacol Exp Ther. 2002 (PMID: 11861813).",
+      "Greiner B, et al. The role of intestinal P-glycoprotein in the interaction of digoxin and rifampin. J Clin Invest. 1999 (PMID: 10411543).",
       "International Transporter Consortium. Clin Pharmacol Ther. 2018;104(5):736-749.",
     ],
   },
@@ -843,7 +947,7 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
     basolateralSideDescription: "Fenestrated sinusoids delivering first-pass portal blood and oxygenated arterial blood.",
     cellularCompartment: "Hepatocyte Parenchyma (Metabolic & Secretory Hub)",
     barrierDescription:
-      "A coordinated two-step clearance machinery: basolateral OATP1B1 and OATP1B3 solute carriers mediate active sinusoidal uptake of drugs from portal blood into hepatocytes, while apical ABC pumps (P-gp, BCRP) actively secrete metabolites into bile canaliculi.",
+      "Governed by the Extended Clearance Concept (ECC): CLint,all = PSinf * (CLmet + CLbile) / (PSeff + CLmet + CLbile). Basolateral OATP1B1/1B3 carriers drive rate-limiting sinusoidal influx for ECCS Class 1B/3B acids, while intracellular CYPs/UGTs (CLmet) and canalicular ABC pumps (CLbile: P-gp, BCRP) complete vectorial clearance (PMID: 26155985, PMID: 16714062).",
     transporterNodes: [
       {
         transporterId: "oatp1b1-1b3-slco",
@@ -853,7 +957,7 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
         direction: "influx",
         vectorLabel: "Sinusoidal Blood -> Hepatocyte Cytoplasm",
         arrowDirection: "down",
-        mechanismNote: "Active sinusoidal uptake of statins (atorvastatin, rosuvastatin), bosentan, and valsartan.",
+        mechanismNote: "Rate-limiting sinusoidal uptake (PSinf) for ECCS Class 1B/3B statins (atorvastatin, rosuvastatin, pitavastatin), bosentan, and repaglinide.",
       },
       {
         transporterId: "pgp-abcb1",
@@ -863,7 +967,7 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
         direction: "efflux",
         vectorLabel: "Hepatocyte Cytoplasm -> Bile Canaliculus",
         arrowDirection: "up",
-        mechanismNote: "Active biliary secretion of digoxin, paclitaxel, colchicine into bile.",
+        mechanismNote: "Active biliary secretion (CLbile) of digoxin, paclitaxel, colchicine into bile.",
       },
       {
         transporterId: "bcrp-abcg2",
@@ -873,14 +977,15 @@ export const BARRIER_ARCHITECTURES: readonly BarrierArchitecture[] = [
         direction: "efflux",
         vectorLabel: "Hepatocyte Cytoplasm -> Bile Canaliculus",
         arrowDirection: "up",
-        mechanismNote: "Active biliary excretion of rosuvastatin, methotrexate, and sulfate conjugates.",
+        mechanismNote: "Active biliary excretion (CLbile) of rosuvastatin, methotrexate, and sulfate conjugates.",
       },
     ],
     clinicalTakeaway:
-      "Cyclosporine or gemfibrozil potently inhibits OATP1B1, blocking hepatic sinusoidal uptake of statins and causing a 5-to-10 fold spike in systemic circulating statin concentrations, triggering severe rhabdomyolysis and acute kidney injury.",
+      "For ECCS Class 3B uptake-rate-limited statins (rosuvastatin, pitavastatin, atorvastatin), cyclosporine or gemfibrozil blocks OATP1B1 sinusoidal influx (PSinf), spiking systemic plasma AUC 5- to 10-fold and driving skeletal muscle rhabdomyolysis while blunting intrahepatic access (PMID: 15289793, PMID: 26155985).",
     citations: [
+      "Varma MV, et al. Predicting Clearance Mechanism in Drug Discovery: Extended Clearance Classification System (ECCS). Pharm Res. 2015 (PMID: 26155985).",
+      "Shitara Y, Sugiyama Y. Pharmacol Ther. 2006;112(1):71-105 (PMID: 16714062).",
       "Niemi M, et al. Pharmacol Rev. 2011;63(1):157-181.",
-      "Shitara Y, et al. J Pharmacol Exp Ther. 2004;311(1):228-236.",
     ],
   },
   {
@@ -967,4 +1072,409 @@ export function getBarrierById(id: BarrierId): BarrierArchitecture | null {
 
 export function getAllBarriers(): readonly BarrierArchitecture[] {
   return BARRIER_ARCHITECTURES;
+}
+
+// ---------------------------------------------------------------------------
+// Extended Clearance Concept (ECC) & Transporter-Enzyme Interplay Engine
+// ---------------------------------------------------------------------------
+
+/** Extended Clearance Classification System (ECCS) classes (Varma et al. 2015, PMID: 26155985). */
+export type EccsClassId = "1A" | "1B" | "2" | "3A" | "3B" | "4";
+
+/** Reference biophysical profile for an ECCS clearance class. */
+export interface EccsClassProfile {
+  classId: EccsClassId;
+  title: string;
+  ionizationAndMw: string;
+  permeability: "High" | "Low";
+  primaryClearanceRoute: string;
+  rateLimitingStep: string;
+  keyTransportersAndEnzymes: string[];
+  exemplarDrugIds: string[];
+  ddiVulnerability: string;
+}
+
+/** Canonical ECCS Class 1A–4 profiles with all exemplarDrugIds grounded in `DRUG_BY_ID`. */
+export const ECCS_CLASS_PROFILES: readonly EccsClassProfile[] = [
+  {
+    classId: "1A",
+    title: "Class 1A — High-Permeability Metabolism-Limited Acids",
+    ionizationAndMw: "Acids/Zwitterions, MW <= 400 Da, high passive permeability",
+    permeability: "High",
+    primaryClearanceRoute: "Hepatic CYP/UGT intracellular metabolism (CLmet)",
+    rateLimitingStep: "Intracellular metabolic turnover (PSeff ~ PSdiff >> CLmet + CLbile)",
+    keyTransportersAndEnzymes: ["CYP2C9", "CYP3A4", "UGTs"],
+    exemplarDrugIds: ["warfarin", "ibuprofen", "indomethacin"],
+    ddiVulnerability: "Sensitive to metabolic enzyme inhibition/induction; minimal plasma AUC impact from OATP1B1 blockade.",
+  },
+  {
+    classId: "1B",
+    title: "Class 1B — High-Permeability Hepatic Uptake-Assisted Acids",
+    ionizationAndMw: "Acids/Zwitterions, MW > 400 Da, high passive permeability + active sinusoidal influx",
+    permeability: "High",
+    primaryClearanceRoute: "Hepatic OATP1B1/1B3 uptake coupled to CYP/UGT metabolism",
+    rateLimitingStep: "Combined sinusoidal uptake (PSinf) and intracellular metabolic clearance",
+    keyTransportersAndEnzymes: ["SLCO1B1", "SLCO1B3", "CYP3A4", "CYP2C8", "UGT1A3"],
+    exemplarDrugIds: ["atorvastatin", "repaglinide", "bosentan"],
+    ddiVulnerability: "Dual hit when OATP1B1 and CYP/UGT are inhibited simultaneously (e.g. cyclosporine + atorvastatin, gemfibrozil + repaglinide).",
+  },
+  {
+    classId: "2",
+    title: "Class 2 — High-Permeability Bases & Neutrals",
+    ionizationAndMw: "Bases/Neutrals, high passive permeability",
+    permeability: "High",
+    primaryClearanceRoute: "CYP/UGT hepatic & intestinal metabolism + apical P-gp interplay",
+    rateLimitingStep: "Metabolic clearance (plus gut P-gp recycling for large amphipathic neutrals)",
+    keyTransportersAndEnzymes: ["CYP3A4", "CYP2D6", "ABCB1 (P-gp)"],
+    exemplarDrugIds: ["midazolam", "simvastatin", "tacrolimus", "rivaroxaban"],
+    ddiVulnerability: "Vulnerable to gut/liver CYP3A4 MBI and concerted gut P-gp + CYP3A4 collapse (e.g. Paxlovid + tacrolimus/rivaroxaban).",
+  },
+  {
+    classId: "3A",
+    title: "Class 3A — Low-Permeability Renally Cleared Acids",
+    ionizationAndMw: "Acids/Zwitterions, MW <= 400 Da, low passive permeability",
+    permeability: "Low",
+    primaryClearanceRoute: "Renal glomerular filtration + basolateral OAT1/OAT3 tubular secretion",
+    rateLimitingStep: "Renal basolateral uptake / filtration",
+    keyTransportersAndEnzymes: ["SLC22A6 (OAT1)", "SLC22A8 (OAT3)"],
+    exemplarDrugIds: ["furosemide", "penicillin-g", "methotrexate"],
+    ddiVulnerability: "Sensitive to renal OAT1/3 blockade (probenecid, NSAIDs) delaying elimination and risking systemic cytotoxicity.",
+  },
+  {
+    classId: "3B",
+    title: "Class 3B — Low-Permeability Hepatic Uptake Rate-Limited Acids",
+    ionizationAndMw: "Acids/Zwitterions, MW > 400 Da, low passive permeability",
+    permeability: "Low",
+    primaryClearanceRoute: "Active OATP1B1/1B3 sinusoidal uptake followed by unchanged biliary/renal excretion",
+    rateLimitingStep: "Sinusoidal uptake clearance (PSinf) because (CLmet + CLbile) >> PSdiff (beta -> 1)",
+    keyTransportersAndEnzymes: ["SLCO1B1 (OATP1B1)", "SLCO1B3 (OATP1B3)", "ABCG2 (BCRP)", "ABCC2"],
+    exemplarDrugIds: ["rosuvastatin", "pravastatin", "pitavastatin", "valsartan"],
+    ddiVulnerability: "Exquisitely sensitive to OATP1B1 and BCRP inhibition (cyclosporine + rosuvastatin/pitavastatin); plasma AUC spikes even with minimal CYP involvement.",
+  },
+  {
+    classId: "4",
+    title: "Class 4 — Low-Permeability Bases & Neutrals (Renal / Efflux Gated)",
+    ionizationAndMw: "Bases/Neutrals, low passive permeability",
+    permeability: "Low",
+    primaryClearanceRoute: "Renal filtration + OCT2/MATE or P-gp active tubular/intestinal efflux",
+    rateLimitingStep: "Transporter-mediated secretion or intestinal P-gp absorption gating",
+    keyTransportersAndEnzymes: ["SLC22A2 (OCT2)", "SLC47A1/2 (MATE1/2-K)", "ABCB1 (P-gp)"],
+    exemplarDrugIds: ["metformin", "atenolol", "digoxin", "dabigatran"],
+    ddiVulnerability: "Susceptible to OCT2/MATE blockade (dolutegravir, cimetidine + metformin) or intestinal P-gp inhibition/induction (rifampin + dabigatran/digoxin).",
+  },
+];
+
+/** Input parameters for Extended Clearance Concept (ECC) hepatic clearance partitioning. */
+export interface ExtendedClearanceInput {
+  /** Active sinusoidal uptake clearance PSinf,active (e.g. OATP1B1/1B3, >= 0). */
+  psInfluxActive: number;
+  /** Passive sinusoidal membrane diffusion clearance PSdiff (>= 0). */
+  psPassiveDiff: number;
+  /** Active basolateral sinusoidal efflux clearance PSeff,active (e.g. MRP3/4, >= 0; default 0). */
+  psEffluxActive?: number;
+  /** Intracellular hepatic metabolic clearance CLmet (>= 0). */
+  clMetabolic: number;
+  /** Canalicular biliary efflux clearance CLbile (e.g. BCRP/P-gp/MRP2, >= 0). */
+  clBiliary: number;
+  /** Remaining fraction of active OATP uptake under perpetrator (>= 0; default 1.0). */
+  uptakeActivityFactor?: number;
+  /** Multiplier on CLmet (>= 0; < 1 for inhibition, > 1 for induction; default 1.0). */
+  metabolismActivityFactor?: number;
+  /** Multiplier on CLbile (>= 0; < 1 for BCRP/P-gp inhibition; default 1.0). */
+  biliaryActivityFactor?: number;
+  /** Optional unbound fraction in blood fub in (0, 1] for well-stirred organ clearance. */
+  fub?: number;
+  /** Optional hepatic blood flow Qh (> 0, same flow units as clearances) for well-stirred Eh/AUCR. */
+  hepaticBloodFlow?: number;
+}
+
+/** Quantitative output of Extended Clearance Concept (ECC) partitioning and systemic vs intrahepatic shifts. */
+export interface ExtendedClearanceResult {
+  valid: boolean;
+  reason?: string;
+  baselineClIntAll: number;
+  modulatedClIntAll: number;
+  baselineBeta: number;
+  modulatedBeta: number;
+  rateLimitingRegime: "uptake-rate-limited" | "mixed-uptake-elimination" | "metabolism-biliary-limited";
+  systemicExposureRatio: number;
+  intrahepaticKpuuRatio: number;
+  intrahepaticAucRatio: number;
+  baselineHepaticExtraction: number | null;
+  modulatedHepaticExtraction: number | null;
+  formulaNote: string;
+}
+
+function invalidEccResult(reason: string): ExtendedClearanceResult {
+  return {
+    valid: false,
+    reason,
+    baselineClIntAll: 0,
+    modulatedClIntAll: 0,
+    baselineBeta: 0,
+    modulatedBeta: 0,
+    rateLimitingRegime: "mixed-uptake-elimination",
+    systemicExposureRatio: 1,
+    intrahepaticKpuuRatio: 1,
+    intrahepaticAucRatio: 1,
+    baselineHepaticExtraction: null,
+    modulatedHepaticExtraction: null,
+    formulaNote: "Invalid Extended Clearance Concept input parameters.",
+  };
+}
+
+/**
+ * Computes hepatic intrinsic clearance and systemic vs intrahepatic exposure partitioning using
+ * the Extended Clearance Concept (Shitara & Sugiyama, PMID: 16714062; Varma et al., PMID: 26155985):
+ *   CLint,all = (PSinf,active + PSdiff) * (CLmet + CLbile) / (PSeff,active + PSdiff + CLmet + CLbile)
+ * Explains why inhibiting sinusoidal OATP1B1 uptake causes large systemic plasma AUC surges while
+ * dropping intrahepatic statin exposure, whereas blocking canalicular efflux or metabolism alone
+ * in an uptake-rate-limited drug spikes intrahepatic drug levels with minimal plasma AUC change.
+ */
+export function calculateExtendedHepaticClearance(
+  input: ExtendedClearanceInput,
+): ExtendedClearanceResult {
+  const {
+    psInfluxActive,
+    psPassiveDiff,
+    psEffluxActive = 0,
+    clMetabolic,
+    clBiliary,
+    uptakeActivityFactor = 1,
+    metabolismActivityFactor = 1,
+    biliaryActivityFactor = 1,
+    fub,
+    hepaticBloodFlow,
+  } = input;
+
+  const nonNegChecks: Array<[string, number]> = [
+    ["psInfluxActive", psInfluxActive],
+    ["psPassiveDiff", psPassiveDiff],
+    ["psEffluxActive", psEffluxActive],
+    ["clMetabolic", clMetabolic],
+    ["clBiliary", clBiliary],
+    ["uptakeActivityFactor", uptakeActivityFactor],
+    ["metabolismActivityFactor", metabolismActivityFactor],
+    ["biliaryActivityFactor", biliaryActivityFactor],
+  ];
+  for (const [label, val] of nonNegChecks) {
+    if (!Number.isFinite(val) || val < 0) {
+      return invalidEccResult(`${label} must be a finite number >= 0.`);
+    }
+  }
+  if (fub !== undefined && (!Number.isFinite(fub) || fub <= 0 || fub > 1)) {
+    return invalidEccResult("fub must be a finite number in (0, 1].");
+  }
+  if (hepaticBloodFlow !== undefined && (!Number.isFinite(hepaticBloodFlow) || hepaticBloodFlow <= 0)) {
+    return invalidEccResult("hepaticBloodFlow must be a finite number > 0.");
+  }
+
+  const psInf0 = psInfluxActive + psPassiveDiff;
+  const psEff = psEffluxActive + psPassiveDiff;
+  const clElim0 = clMetabolic + clBiliary;
+
+  if (psInf0 <= 0 || clElim0 <= 0) {
+    return invalidEccResult("Total sinusoidal influx and intracellular elimination must both be > 0.");
+  }
+
+  const denom0 = psEff + clElim0;
+  const baselineBeta = denom0 > 0 ? clElim0 / denom0 : 0;
+  const baselineClIntAll = psInf0 * baselineBeta;
+
+  const psInf1 = psInfluxActive * uptakeActivityFactor + psPassiveDiff;
+  const clElim1 = clMetabolic * metabolismActivityFactor + clBiliary * biliaryActivityFactor;
+  const denom1 = psEff + clElim1;
+  const modulatedBeta = denom1 > 0 ? clElim1 / denom1 : 0;
+  const modulatedClIntAll = psInf1 * modulatedBeta;
+
+  const rateLimitingRegime: ExtendedClearanceResult["rateLimitingRegime"] =
+    baselineBeta >= 0.7
+      ? "uptake-rate-limited"
+      : baselineBeta <= 0.3
+        ? "metabolism-biliary-limited"
+        : "mixed-uptake-elimination";
+
+  let baselineHepaticExtraction: number | null = null;
+  let modulatedHepaticExtraction: number | null = null;
+  let systemicExposureRatio: number;
+
+  if (fub !== undefined && hepaticBloodFlow !== undefined) {
+    const clH0 = (hepaticBloodFlow * fub * baselineClIntAll) / (hepaticBloodFlow + fub * baselineClIntAll);
+    const clH1 = (hepaticBloodFlow * fub * modulatedClIntAll) / (hepaticBloodFlow + fub * modulatedClIntAll);
+    baselineHepaticExtraction = clH0 / hepaticBloodFlow;
+    modulatedHepaticExtraction = clH1 / hepaticBloodFlow;
+    systemicExposureRatio = clH1 > 0 ? clH0 / clH1 : Number.POSITIVE_INFINITY;
+  } else {
+    systemicExposureRatio = modulatedClIntAll > 0 ? baselineClIntAll / modulatedClIntAll : Number.POSITIVE_INFINITY;
+  }
+
+  const kpuu0 = denom0 > 0 ? psInf0 / denom0 : 1;
+  const kpuu1 = denom1 > 0 ? psInf1 / denom1 : kpuu0;
+  const intrahepaticKpuuRatio = kpuu0 > 0 ? kpuu1 / kpuu0 : 1;
+  const intrahepaticAucRatio =
+    Number.isFinite(systemicExposureRatio) ? systemicExposureRatio * intrahepaticKpuuRatio : Number.POSITIVE_INFINITY;
+
+  return {
+    valid: true,
+    baselineClIntAll,
+    modulatedClIntAll,
+    baselineBeta,
+    modulatedBeta,
+    rateLimitingRegime,
+    systemicExposureRatio,
+    intrahepaticKpuuRatio,
+    intrahepaticAucRatio,
+    baselineHepaticExtraction,
+    modulatedHepaticExtraction,
+    formulaNote:
+      `Regime: ${rateLimitingRegime} (beta0 = ${baselineBeta.toFixed(2)}, beta1 = ${modulatedBeta.toFixed(2)}). ` +
+      `Systemic exposure ratio = ${Number.isFinite(systemicExposureRatio) ? `${systemicExposureRatio.toFixed(2)}x` : "unbounded"}; ` +
+      `intrahepatic Kp,uu ratio = ${intrahepaticKpuuRatio.toFixed(2)}x.`,
+  };
+}
+
+/** Input parameters for presystemic enterocyte P-gp (ABCB1) + CYP3A4 interplay. */
+export interface GutInterplayInput {
+  /** Baseline intestinal fraction absorbed Fa in (0, 1] under normal P-gp efflux. */
+  baselineFa: number;
+  /** Baseline gut-wall fraction escaping enterocyte CYP3A4 metabolism Fg in (0, 1]. */
+  baselineFg: number;
+  /** P-gp activity multiplier (>= 0; < 1 for inhibition e.g. Paxlovid/verapamil; > 1 for induction e.g. rifampin). */
+  pgpActivityFactor: number;
+  /** Enterocyte CYP3A4 activity multiplier (>= 0; < 1 for TDI/inhibition; > 1 for PXR induction). */
+  cyp3a4ActivityFactor: number;
+  /** Dimensionless P-gp recycling coupling coefficient amplifying CYP3A4 exposure (>= 0; default 0.5). */
+  recyclingCoupling?: number;
+}
+
+/** Quantitative result of presystemic gut P-gp + CYP3A4 efflux-metabolism interplay. */
+export interface GutInterplayResult {
+  valid: boolean;
+  reason?: string;
+  baselineFa: number;
+  baselineFg: number;
+  baselineFaFg: number;
+  modulatedFa: number;
+  modulatedFg: number;
+  modulatedFaFg: number;
+  presystemicBioavailabilityFold: number;
+  isolatedPgpFold: number;
+  isolatedCyp3a4Fold: number;
+  synergyRatio: number;
+  formulaNote: string;
+}
+
+function invalidGutResult(reason: string): GutInterplayResult {
+  return {
+    valid: false,
+    reason,
+    baselineFa: 1,
+    baselineFg: 1,
+    baselineFaFg: 1,
+    modulatedFa: 1,
+    modulatedFg: 1,
+    modulatedFaFg: 1,
+    presystemicBioavailabilityFold: 1,
+    isolatedPgpFold: 1,
+    isolatedCyp3a4Fold: 1,
+    synergyRatio: 1,
+    formulaNote: "Invalid enterocyte P-gp / CYP3A4 interplay inputs.",
+  };
+}
+
+/**
+ * Models presystemic enterocyte ABCB1 (P-gp) + CYP3A4 efflux-metabolism synergy (Cummins & Benet,
+ * PMID: 11861813). Apical P-gp recycling extends intracellular residence and repeated CYP3A4 access;
+ * dual blockade (e.g. Paxlovid + tacrolimus/rivaroxaban) drives multiplicative (super-additive)
+ * Fa * Fg bioavailability surges, whereas dual PXR induction (rifampin) collapses oral absorption.
+ */
+export function calculateGutPgpCyp3aSynergy(input: GutInterplayInput): GutInterplayResult {
+  const {
+    baselineFa,
+    baselineFg,
+    pgpActivityFactor,
+    cyp3a4ActivityFactor,
+    recyclingCoupling = 0.5,
+  } = input;
+
+  if (!Number.isFinite(baselineFa) || baselineFa <= 0 || baselineFa > 1) {
+    return invalidGutResult("baselineFa must be a finite number in (0, 1].");
+  }
+  if (!Number.isFinite(baselineFg) || baselineFg <= 0 || baselineFg > 1) {
+    return invalidGutResult("baselineFg must be a finite number in (0, 1].");
+  }
+  if (!Number.isFinite(pgpActivityFactor) || pgpActivityFactor < 0) {
+    return invalidGutResult("pgpActivityFactor must be a finite number >= 0.");
+  }
+  if (!Number.isFinite(cyp3a4ActivityFactor) || cyp3a4ActivityFactor < 0) {
+    return invalidGutResult("cyp3a4ActivityFactor must be a finite number >= 0.");
+  }
+  if (!Number.isFinite(recyclingCoupling) || recyclingCoupling < 0) {
+    return invalidGutResult("recyclingCoupling must be a finite number >= 0.");
+  }
+
+  const rEff0 = 1 / baselineFa - 1;
+  const mGut0 = 1 / baselineFg - 1;
+
+  const evalState = (fPgp: number, f3a4: number): { fa: number; fg: number; fafg: number } => {
+    const eff = rEff0 * fPgp;
+    const fa = 1 / (1 + eff);
+    const recycleNorm = (1 + recyclingCoupling * eff) / (1 + recyclingCoupling * rEff0);
+    const fg = 1 / (1 + mGut0 * f3a4 * recycleNorm);
+    return { fa, fg, fafg: fa * fg };
+  };
+
+  const baselineFaFg = baselineFa * baselineFg;
+  const combined = evalState(pgpActivityFactor, cyp3a4ActivityFactor);
+  const pgpOnly = evalState(pgpActivityFactor, 1);
+  const cypOnly = evalState(1, cyp3a4ActivityFactor);
+
+  const presystemicBioavailabilityFold = combined.fafg / baselineFaFg;
+  const isolatedPgpFold = pgpOnly.fafg / baselineFaFg;
+  const isolatedCyp3a4Fold = cypOnly.fafg / baselineFaFg;
+  const additiveExpected = 1 + (isolatedPgpFold - 1) + (isolatedCyp3a4Fold - 1);
+  const synergyRatio = additiveExpected > 0 ? presystemicBioavailabilityFold / additiveExpected : 1;
+
+  return {
+    valid: true,
+    baselineFa,
+    baselineFg,
+    baselineFaFg,
+    modulatedFa: combined.fa,
+    modulatedFg: combined.fg,
+    modulatedFaFg: combined.fafg,
+    presystemicBioavailabilityFold,
+    isolatedPgpFold,
+    isolatedCyp3a4Fold,
+    synergyRatio,
+    formulaNote:
+      `Fa*Fg shifts from ${baselineFaFg.toFixed(3)} to ${combined.fafg.toFixed(3)} ` +
+      `(${presystemicBioavailabilityFold.toFixed(2)}x fold; isolated P-gp ${isolatedPgpFold.toFixed(2)}x, ` +
+      `isolated CYP3A4 ${isolatedCyp3a4Fold.toFixed(2)}x).`,
+  };
+}
+
+/** Validates that every drug ID referenced in transporters, collisions, and ECCS profiles exists in `DRUG_BY_ID`. */
+export function validateTransporterCatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const allIds = Array.from(
+    new Set([
+      ...TRANSPORTERS.flatMap((t) => [
+        ...t.substrates,
+        ...t.inhibitors,
+        ...t.inducers,
+        ...t.clinicalCollisions.flatMap((c) => c.drugPair),
+      ]),
+      ...ECCS_CLASS_PROFILES.flatMap((e) => e.exemplarDrugIds),
+    ]),
+  );
+  const missingDrugIds = allIds.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: allIds.length,
+  };
 }

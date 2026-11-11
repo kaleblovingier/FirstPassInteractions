@@ -256,7 +256,17 @@ export const MOLECULAR_MODES: readonly MolecularMode[] = [
     onsetKinetics: "Rapid-to-progressive (12–48 hours) as catalytic cycles progressively consume active enzyme pool",
     offsetKinetics: "Protracted (3–7 days); strictly independent of drug clearance, governed entirely by de novo protein synthesis (kdeg)",
     clinicalAphorism: "Stopping the perpetrator does not restore the enzyme: recovery demands de novo protein synthesis.",
-    exemplarDrugIds: ["clarithromycin", "erythromycin", "diltiazem", "ritonavir", "grapefruit", "paroxetine"],
+    exemplarDrugIds: [
+      "clarithromycin",
+      "erythromycin",
+      "diltiazem",
+      "verapamil",
+      "ritonavir",
+      "paxlovid",
+      "grapefruit",
+      "mifepristone",
+      "paroxetine",
+    ],
     biochemicalHallmarks: [
       "Requires NADPH, catalytic turnover, and bioactivation (suicidal auto-inactivation)",
       "Produces spectral absorbance shift (e.g. 456 nm MIC peak for clarithromycin)",
@@ -277,7 +287,15 @@ export const MOLECULAR_MODES: readonly MolecularMode[] = [
     onsetKinetics: "Delayed lag phase (3–7 days) required for transcription, translation, and endoplasmic reticulum membrane insertion",
     offsetKinetics: "Protracted washout lag (2–3 weeks) while the massive pool of excess enzyme degrades through first-order kdeg",
     clinicalAphorism: "Inducers take a week to land and two weeks to leave.",
-    exemplarDrugIds: ["rifampin", "st-johns-wort", "carbamazepine", "phenobarbital", "phenytoin", "charred-meat"],
+    exemplarDrugIds: [
+      "rifampin",
+      "st-johns-wort",
+      "carbamazepine",
+      "phenobarbital",
+      "phenytoin",
+      "charred-meat",
+      "tobacco-smoking",
+    ],
     biochemicalHallmarks: [
       "Lag phase: no meaningful change in first 24–48 hours",
       "Increases maximal enzyme velocity Vmax 2- to 5-fold (lowering victim AUC by 80–95%)",
@@ -351,11 +369,71 @@ export const TDI_PERPETRATORS: readonly TdiPerpetrator[] = [
     inactivationRateKinactPerDay: 1.85,
     resynthesisHalfLifeHours: { intestinal: 28, hepatic: 60 },
     recoveryTimeDays: "4 to 7 days after discontinuation",
-    clinicalImpact: "The gold standard pharmaceutical 3A4 knockout. Used therapeutically for pharmacokinetic boosting (100 mg).",
-    highRiskVictimSubstrates: ["midazolam", "simvastatin", "tacrolimus"],
+    clinicalImpact: "The gold standard pharmaceutical CYP3A4 knockout, used clinically for low-exposure pharmacokinetic boosting.",
+    highRiskVictimSubstrates: ["midazolam", "simvastatin", "tacrolimus", "rivaroxaban", "apixaban"],
     clinicalPearl:
-      "Ritonavir is an exceptionally potent mechanism-based inactivator. Oxidation generates reactive intermediates that both alkylate the apoprotein and coordinate heme. Intestinal and hepatic CYP3A4 are virtually eliminated within 24–48 hours. After stopping ritonavir, normal 3A4 metabolic capacity takes 5–7 days to regenerate.",
-    citations: ["Kalgutkar AS, et al. Curr Med Chem 2007", "Ernest CS, et al. Drug Metab Dispos 2005"],
+      "Ritonavir is an exceptionally potent mechanism-based inactivator. Oxidation generates reactive intermediates that both alkylate the apoprotein and coordinate heme (PMID: 17584015, PMID: 18043468). Intestinal and hepatic CYP3A4 are virtually eliminated within 24–48 hours. After stopping ritonavir, normal 3A4 metabolic capacity takes 5–7 days to regenerate via de novo synthesis.",
+    citations: ["Kalgutkar AS, et al. Curr Med Chem 2007 (PMID: 17584015)", "Ernest CS, et al. Drug Metab Dispos 2005"],
+  },
+  {
+    drugId: "paxlovid",
+    name: "Paxlovid (nirmatrelvir/ritonavir)",
+    targetIsoforms: ["CYP3A4", "CYP2D6"],
+    subMechanism: "apoprotein-alkylation",
+    subMechanismLabel: "Irreversible Apoprotein & Heme Alkylation (Ritonavir Booster)",
+    reactiveIntermediate: "Ritonavir thiazole-derived electrophilic carbene and radical species",
+    inactivationRateKinactPerDay: 1.85,
+    resynthesisHalfLifeHours: { intestinal: 28, hepatic: 60 },
+    recoveryTimeDays: "3 to 7 days after completing short-course therapy",
+    clinicalImpact:
+      "Acute, profound mechanism-based CYP3A4 and intestinal P-gp knockout via its ritonavir pharmacokinetic booster; precipitates >10- to 50-fold tacrolimus AUC surges and dangerous DOAC/statin accumulation.",
+    highRiskVictimSubstrates: ["tacrolimus", "midazolam", "simvastatin", "rivaroxaban", "apixaban"],
+    clinicalPearl:
+      "Even a brief short-course regimen irreversibly destroys enterocyte and hepatic CYP3A4 via the ritonavir booster (PMID: 35599203, PMID: 37924724). Stopping Paxlovid does not restore CYP3A4 immediately: de novo enzyme resynthesis (intestinal t1/2 ~24–36h; hepatic t1/2 ~36–72h) sustains elevated victim vulnerability for days post-completion.",
+    citations: [
+      "Paxlovid Tacrolimus Transplant DDI Case Report. Transplant Proc 2022 (PMID: 35599203)",
+      "Model-Based PK Assessment of Tacrolimus and Nirmatrelvir/Ritonavir. Drug Metab Pharmacokinet 2023 (PMID: 37924724)",
+    ],
+  },
+  {
+    drugId: "verapamil",
+    name: "Verapamil",
+    targetIsoforms: ["CYP3A4"],
+    subMechanism: "mic-heme-coordination",
+    subMechanismLabel: "Metabolite-Intermediate Complex (MIC) via Norverapamil",
+    reactiveIntermediate: "N-demethylated norverapamil nitrosoalkane intermediate coordinating heme Fe2+",
+    inactivationRateKinactPerDay: 0.78,
+    resynthesisHalfLifeHours: { intestinal: 28, hepatic: 50 },
+    recoveryTimeDays: "3 to 5 days after discontinuation",
+    clinicalImpact:
+      "Moderate-to-strong time-dependent CYP3A4 inactivation compounded by potent P-gp efflux blockade; elevates simvastatin, midazolam, tacrolimus, and DOAC exposures.",
+    highRiskVictimSubstrates: ["simvastatin", "midazolam", "tacrolimus"],
+    clinicalPearl:
+      "Both verapamil enantiomers and its active N-demethylated metabolite norverapamil behave as mechanism-based CYP3A4 inactivators via MIC heme coordination (PMID: 14744949, PMID: 18043468). Steady-state in vivo inhibition substantially exceeds single-exposure reversible predictions and requires de novo kdeg turnover to resolve.",
+    citations: [
+      "Wang YH, et al. Drug Metab Dispos 2004 (PMID: 14744949)",
+      "Zhou SF, et al. Ther Drug Monit 2007 (PMID: 18043468)",
+    ],
+  },
+  {
+    drugId: "mifepristone",
+    name: "Mifepristone",
+    targetIsoforms: ["CYP3A4"],
+    subMechanism: "apoprotein-alkylation",
+    subMechanismLabel: "17alpha-Propynyl Heme & Apoprotein Covalent Inactivation",
+    reactiveIntermediate: "Bioactivated 17alpha-propynyl ketene/oxirene adduct alkylating CYP3A4 heme/apoprotein",
+    inactivationRateKinactPerDay: 1.25,
+    resynthesisHalfLifeHours: { intestinal: 30, hepatic: 60 },
+    recoveryTimeDays: "5 to 10+ days (prolonged parent half-life compounds de novo kdeg turnover)",
+    clinicalImpact:
+      "Potent mechanism-based CYP3A4 inactivator; prolonged parent elimination half-life plus irreversible enzyme destruction sustains CYP3A4 suppression well beyond discontinuation.",
+    highRiskVictimSubstrates: ["simvastatin", "midazolam", "tacrolimus"],
+    clinicalPearl:
+      "CYP3A4 bioactivates mifepristone's 17alpha-propynyl moiety into a reactive intermediate that covalently modifies the apoprotein and destroys heme (PMID: 9918590). Coupled with its prolonged systemic elimination half-life during chronic exposure, newly synthesized CYP3A4 undergoes continued inactivation for several days after stopping therapy.",
+    citations: [
+      "He K, et al. J Pharmacol Exp Ther 1999 (PMID: 9918590)",
+      "Kalgutkar AS, et al. Curr Drug Metab 2007 (PMID: 17584015)",
+    ],
   },
   {
     drugId: "grapefruit",
@@ -504,6 +582,24 @@ export const NUCLEAR_INDUCERS: readonly NuclearInducer[] = [
     highRiskVictimSubstrates: ["clozapine", "theophylline"],
     citations: ["Faber MS, et al. Clin Pharmacol Ther 2005", "Kappas A, et al. Clin Pharmacol Ther 1978"],
   },
+  {
+    drugId: "tobacco-smoking",
+    name: "Tobacco smoke (PAHs)",
+    receptor: "AhR",
+    receptorFullName: "Aryl Hydrocarbon Receptor",
+    heterodimerPartner: "ARNT (AhR Nuclear Translocator)",
+    dnaResponseElement: "XRE / DRE (Xenobiotic Response Element: 5'-TNGCGTG-3')",
+    targetGenes: ["CYP1A1", "CYP1A2", "CYP1B1", "UGT1A6"],
+    inducedIsoforms: ["CYP1A2"],
+    onsetLagDays: 3,
+    peakInductionDays: 7,
+    offsetWashoutWeeks: 1.5,
+    maxFoldInduction: 2.3,
+    clinicalPearl:
+      "Polycyclic aromatic hydrocarbons (PAHs) in tobacco smoke—NOT nicotine replacement—bind AhR, heterodimerize with ARNT, and drive CYP1A2 transcription (PMID: 12618594). Inpatient smoking cessation withdraws AhR activation, causing CYP1A2 clearance of clozapine, olanzapine, and theophylline to decay over 1–2 weeks via kdeg and provoking toxic plasma rebound.",
+    highRiskVictimSubstrates: ["clozapine", "theophylline", "tizanidine"],
+    citations: ["van der Weide J, et al. Pharmacogenetics 2003 (PMID: 12618594)", "Faber MS, et al. Clin Pharmacol Ther 2005"],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -617,7 +713,7 @@ export const NUCLEAR_RECEPTOR_PATHWAYS: readonly NuclearReceptorPathway[] = [
     dimerization: "Heterodimerizes with ARNT (AhR Nuclear Translocator / HIF-1β)",
     responseElements: "XRE / DRE (Xenobiotic Response Element: 5'-TNGCGTG-3')",
     regulatedEnzymes: ["CYP1A1", "CYP1A2", "CYP1B1", "UGT1A6"],
-    canonicalInducerIds: ["charred-meat"],
+    canonicalInducerIds: ["charred-meat", "tobacco-smoking"],
     biochemicalMechanism:
       "Unlike PXR and CAR (which are nuclear receptor superfamily members), AhR is a basic helix-loop-helix/Per-ARNT-Sim (bHLH-PAS) transcription factor. Maintained in cytoplasm by Hsp90, p23, and XAP2. Planar aromatic hydrocarbons (PAHs) bind AhR, prompting conformational change, nuclear import, and shedding of chaperones. In the nucleus, AhR heterodimerizes with ARNT and recruits p300/CBP histone acetyltransferases to XRE motifs in the CYP1A promoter.",
     clinicalPearls: [
@@ -638,6 +734,7 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Midazolam",
     primaryCyp: "CYP3A4",
     narrowTherapeuticIndex: false,
+    fractionMetabolizedPrimaryCyp: 0.93,
     toxicityWithTdi: "Profound prolonged sedation, respiratory depression (oral AUC increases 5- to 10-fold)",
     failureWithInducer: "Complete loss of sedative efficacy; AUC reduced by 85–95%",
   },
@@ -646,6 +743,7 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Simvastatin",
     primaryCyp: "CYP3A4",
     narrowTherapeuticIndex: false,
+    fractionMetabolizedPrimaryCyp: 0.90,
     toxicityWithTdi: "Severe myopathy and rhabdomyolysis due to massive active acid accumulation (>10-fold AUC)",
     failureWithInducer: "Failure of lipid lowering and cardiovascular risk reduction",
   },
@@ -654,6 +752,7 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Tacrolimus",
     primaryCyp: "CYP3A4",
     narrowTherapeuticIndex: true,
+    fractionMetabolizedPrimaryCyp: 0.85,
     toxicityWithTdi: "Acute nephrotoxicity, neurotoxicity, severe hyperkalemia",
     failureWithInducer: "Acute allograft rejection due to subtherapeutic trough concentrations",
   },
@@ -662,6 +761,7 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Warfarin",
     primaryCyp: "CYP2C9",
     narrowTherapeuticIndex: true,
+    fractionMetabolizedPrimaryCyp: 0.85,
     toxicityWithTdi: "Life-threatening hemorrhage and supratherapeutic INR",
     failureWithInducer: "Subtherapeutic INR, arterial/venous thromboembolism, stroke",
   },
@@ -697,6 +797,7 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Clozapine",
     primaryCyp: "CYP1A2",
     narrowTherapeuticIndex: true,
+    fractionMetabolizedPrimaryCyp: 0.70,
     toxicityWithTdi: "Lethal sedation, grand mal seizures, myocarditis, severe hypotension",
     failureWithInducer: "Psychotic decompensation, hospital readmission",
   },
@@ -705,6 +806,7 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Bupropion",
     primaryCyp: "CYP2B6",
     narrowTherapeuticIndex: false,
+    fractionMetabolizedPrimaryCyp: 0.70,
     toxicityWithTdi: "Seizure threshold reduction and agitation",
     failureWithInducer: "Loss of antidepressant response due to accelerated conversion to hydroxybupropion",
   },
@@ -713,43 +815,70 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
     name: "Metoprolol",
     primaryCyp: "CYP2D6",
     narrowTherapeuticIndex: false,
+    fractionMetabolizedPrimaryCyp: 0.80,
     toxicityWithTdi: "Profound bradycardia, heart block, severe hypotension (3- to 5-fold AUC increase)",
     failureWithInducer: "Loss of beta-blockade",
   },
+  {
+    drugId: "rivaroxaban",
+    name: "Rivaroxaban",
+    primaryCyp: "CYP3A4",
+    narrowTherapeuticIndex: true,
+    fractionMetabolizedPrimaryCyp: 0.40,
+    kmOrSaturationNote:
+      "Dual CYP3A4/CYP2J2 metabolic clearance and ABCB1/ABCG2 (P-gp/BCRP) renal/intestinal efflux (~2.5-fold AUC rise with combined CYP3A4 + P-gp inhibition; PMID: 23305158).",
+    toxicityWithTdi: "Major hemorrhage (GI, intracranial) from combined CYP3A4 + P-gp clearance arrest",
+    failureWithInducer: "Systemic thromboembolism and stroke from PXR-driven CYP3A4/P-gp induction",
+  },
+  {
+    drugId: "apixaban",
+    name: "Apixaban",
+    primaryCyp: "CYP3A4",
+    narrowTherapeuticIndex: true,
+    fractionMetabolizedPrimaryCyp: 0.25,
+    kmOrSaturationNote:
+      "Combined CYP3A4 (~25% metabolic pathway) and P-gp/BCRP efflux transport; dual strong inhibition elevates AUC ~2-fold (PMID: 31030414).",
+    toxicityWithTdi: "Major bleeding from simultaneous P-gp/BCRP efflux blockade and CYP3A4 inhibition",
+    failureWithInducer: "Subtherapeutic factor Xa anticoagulation and thromboembolic events under PXR induction",
+  },
 ];
 
-// All referenced drug IDs for catalog integrity tests
-export const ALL_REFERENCED_DRUG_IDS: readonly string[] = [
-  "clarithromycin",
-  "erythromycin",
-  "diltiazem",
-  "ritonavir",
-  "grapefruit",
-  "paroxetine",
-  "rifampin",
-  "st-johns-wort",
-  "carbamazepine",
-  "phenobarbital",
-  "phenytoin",
-  "charred-meat",
-  "fluconazole",
-  "fluvoxamine",
-  "ciprofloxacin",
-  "quinidine",
-  "midazolam",
-  "simvastatin",
-  "tacrolimus",
-  "warfarin",
-  "theophylline",
-  "tizanidine",
-  "clozapine",
-  "bupropion",
-  "metoprolol",
-];
+// All referenced drug IDs dynamically aggregated for catalog integrity verification
+export const ALL_REFERENCED_DRUG_IDS: readonly string[] = Array.from(
+  new Set([
+    ...MOLECULAR_MODES.flatMap((m) => m.exemplarDrugIds),
+    ...TDI_PERPETRATORS.flatMap((p) => [p.drugId, ...p.highRiskVictimSubstrates]),
+    ...NUCLEAR_INDUCERS.flatMap((i) => [i.drugId, ...i.highRiskVictimSubstrates]),
+    ...COMPETITIVE_INHIBITORS.flatMap((c) => [c.drugId, ...c.highRiskVictimSubstrates]),
+    ...NUCLEAR_RECEPTOR_PATHWAYS.flatMap((r) => r.canonicalInducerIds),
+    ...SENSITIVE_VICTIM_SUBSTRATES.map((v) => v.drugId),
+  ]),
+);
 
 // ---------------------------------------------------------------------------
-// Helper Accessor Functions
+// Catalog Integrity & Helper Accessor Functions
 // ---------------------------------------------------------------------------
+
+/** Resolves a canonical display name from `DRUG_BY_ID` for any CYP simulator drug ID. */
+export function resolveCypCatalogDrugName(drugId: string): string {
+  const norm = typeof drugId === "string" ? drugId.toLowerCase().trim() : "";
+  if (!norm) return "";
+  return DRUG_BY_ID[norm]?.name ?? drugId;
+}
+
+/** Validates that every referenced drug ID across CYP kinetics tables exists in `DRUG_BY_ID`. */
+export function validateCypCatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const missingDrugIds = ALL_REFERENCED_DRUG_IDS.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: ALL_REFERENCED_DRUG_IDS.length,
+  };
+}
 
 export function getAllTdiPerpetrators(): readonly TdiPerpetrator[] {
   return TDI_PERPETRATORS;
@@ -807,7 +936,16 @@ export function calculateEnzymeTrajectory(
   days: number = 30,
   stopDay: number = 10,
 ): EnzymeTrajectoryResult {
-  const normDrugIds = (drugIds || []).map((id) => id.toLowerCase().trim());
+  const safeDays = Number.isFinite(days) ? Math.min(365, Math.max(0, Math.round(days))) : 30;
+  const safeStopDay = Number.isFinite(stopDay) ? Math.min(safeDays, Math.max(0, Math.round(stopDay))) : Math.min(10, safeDays);
+  const normDrugIds = Array.from(
+    new Set(
+      (Array.isArray(drugIds) ? drugIds : [])
+        .filter((id): id is string => typeof id === "string")
+        .map((id) => id.toLowerCase().trim())
+        .filter(Boolean),
+    ),
+  );
   const activeTdi = TDI_PERPETRATORS.filter((p) => normDrugIds.includes(p.drugId));
   const activeInducers = NUCLEAR_INDUCERS.filter((i) => normDrugIds.includes(i.drugId));
   const activeCompetitive = COMPETITIVE_INHIBITORS.filter((c) => normDrugIds.includes(c.drugId));
@@ -852,7 +990,7 @@ export function calculateEnzymeTrajectory(
   // If no modulators active, produce a clean baseline trajectory
   if (activeModulators.length === 0) {
     const points: TrajectoryPoint[] = [];
-    for (let d = 0; d <= days; d++) {
+    for (let d = 0; d <= safeDays; d++) {
       points.push({
         day: d,
         activePoolPct: 100,
@@ -875,8 +1013,8 @@ export function calculateEnzymeTrajectory(
       activeModulators: [],
       clinicalSummary: "Baseline CYP enzyme synthesis and turnover in homeostatic equilibrium. No active modulators detected.",
       monitoringPearls: ["Standard baseline metabolic capacity. No pharmacokinetic enzyme collisions identified."],
-      days,
-      stopDay,
+      days: safeDays,
+      stopDay: safeStopDay,
     };
   }
 
@@ -912,18 +1050,18 @@ export function calculateEnzymeTrajectory(
     competitiveSuppressionPct: number;
   }> = [];
 
-  for (let d = 0; d <= days; d++) {
+  for (let d = 0; d <= safeDays; d++) {
     // Record integer day
     // Calculate current competitive suppression
     let compSuppression = 0;
     if (activeCompetitive.length > 0) {
-      if (d <= stopDay) {
+      if (d <= safeStopDay) {
         // Ramps to steady-state competitive inhibition within ~1 day
         const onFactor = 1 - Math.exp(-compKel * (d + 0.5));
         compSuppression = netCompInhibition * onFactor;
       } else {
         // Rapid exponential washout
-        const washoutTime = d - stopDay;
+        const washoutTime = d - safeStopDay;
         compSuppression = netCompInhibition * Math.exp(-compKel * washoutTime);
       }
     }
@@ -936,12 +1074,12 @@ export function calculateEnzymeTrajectory(
       competitiveSuppressionPct: Math.round(compSuppression * 100),
     });
 
-    if (d === days) break;
+    if (d === safeDays) break;
 
     // Advance ODE by 1 full day via fine sub-steps
     for (let step = 0; step < stepsPerDay; step++) {
       const t = d + step * dt;
-      const isDrugActive = t <= stopDay;
+      const isDrugActive = t <= safeStopDay;
 
       // Inactivation rate
       const kinact = isDrugActive ? netKinact : 0;
@@ -956,10 +1094,10 @@ export function calculateEnzymeTrajectory(
           kSyn = kSyn0 * (1 + maxInductionFold * hill);
         } else {
           // Exponential decay of elevated mRNA transcription rate back to basal
-          const postStopTime = t - stopDay;
+          const postStopTime = t - safeStopDay;
           const inducerWashout = Math.exp(-0.4 * postStopTime); // inducer clears over 2-3 days
-          const hillAtStop = Math.pow(Math.max(0, stopDay - (minOnsetLag - 1)), 2) /
-            (Math.pow(Math.max(0, stopDay - (minOnsetLag - 1)), 2) + Math.pow(4.0, 2));
+          const hillAtStop = Math.pow(Math.max(0, safeStopDay - (minOnsetLag - 1)), 2) /
+            (Math.pow(Math.max(0, safeStopDay - (minOnsetLag - 1)), 2) + Math.pow(4.0, 2));
           kSyn = kSyn0 * (1 + maxInductionFold * hillAtStop * inducerWashout);
         }
       }
@@ -990,7 +1128,7 @@ export function calculateEnzymeTrajectory(
   // Recovery day (day post-stop where active pool is within 90% of baseline)
   let recoveryDay90Pct: number | null = null;
   for (const pt of daySampledPoints) {
-    if (pt.day > stopDay) {
+    if (pt.day > safeStopDay) {
       if (dominantMechanism === "Nuclear Induction") {
         // Return down towards <= 115% baseline
         if (pt.activePoolPct <= 115) {
@@ -1017,7 +1155,7 @@ export function calculateEnzymeTrajectory(
       phase = "baseline";
       phaseLabel = "Exposure Start";
       narrative = "Day 0: Initial introduction of modulators. Enzyme pool starts at 100% homeostatic capacity.";
-    } else if (pt.day <= stopDay) {
+    } else if (pt.day <= safeStopDay) {
       if (pt.day <= 3) {
         phase = "onset";
         phaseLabel = "Onset / Induction Lag";
@@ -1043,7 +1181,7 @@ export function calculateEnzymeTrajectory(
       }
     } else {
       // Post-stop
-      const postDays = pt.day - stopDay;
+      const postDays = pt.day - safeStopDay;
       if (recoveryDay90Pct !== null && pt.day >= recoveryDay90Pct) {
         phase = "full-recovery";
         phaseLabel = "Normalized Equilibrium";
@@ -1093,21 +1231,21 @@ export function calculateEnzymeTrajectory(
   const monitoringPearls: string[] = [];
 
   if (dominantMechanism === "TDI / Mechanism-Based") {
-    clinicalSummary = `Mechanism-based suicidal inactivation drives active CYP capacity down to a nadir of ${nadirPct}% by Day ${dayAtNadir}. Discontinuing the perpetrator at Day ${stopDay} does not immediately restore clearance: functional recovery depends strictly on de novo enzyme synthesis with a ~48-hour half-life, reaching 90% recovery around Day ${recoveryDay90Pct ?? stopDay + 6}.`;
+    clinicalSummary = `Mechanism-based suicidal inactivation drives active CYP capacity down to a nadir of ${nadirPct}% by Day ${dayAtNadir}. Discontinuing the perpetrator at Day ${safeStopDay} does not immediately restore clearance: functional recovery depends strictly on de novo enzyme synthesis with a ~48-hour half-life, reaching 90% recovery around Day ${recoveryDay90Pct ?? safeStopDay + 6}.`;
     monitoringPearls.push(
       "Stopping the perpetrator does not restore the enzyme: oral victim substrates (e.g. midazolam, simvastatin) remain at high exposure for 3–5 days post-discontinuation.",
       "Intestinal CYP3A4 regenerates faster (~24–48h) than hepatic CYP3A4 (~48–96h) due to rapid enterocyte turnover.",
       "Monitor victim drug levels and therapeutic indices; consider non-interacting alternative agents.",
     );
   } else if (dominantMechanism === "Nuclear Induction") {
-    clinicalSummary = `Transcriptional nuclear induction exhibits a 3–5 day lag phase before driving enzyme capacity to a peak of ${peakPct}% around Day ${dayAtPeak}. Discontinuation at Day ${stopDay} leaves a protracted 2–3 week offset lag while the elevated enzyme pool degrades via normal turnover, returning near baseline around Day ${recoveryDay90Pct ?? stopDay + 14}.`;
+    clinicalSummary = `Transcriptional nuclear induction exhibits a 3–5 day lag phase before driving enzyme capacity to a peak of ${peakPct}% around Day ${dayAtPeak}. Discontinuation at Day ${safeStopDay} leaves a protracted 2–3 week offset lag while the elevated enzyme pool degrades via normal turnover, returning near baseline around Day ${recoveryDay90Pct ?? safeStopDay + 14}.`;
     monitoringPearls.push(
       "Inducers take a week to land and two weeks to leave: anticipate delayed onset of therapeutic failure and protracted offset.",
       "Cessation rebound risk: stopping an inducer (e.g. smoking cessation in hospital) removes transcriptional drive while victim doses remain elevated, precipitating toxicity 1–2 weeks later.",
       "Perform serial therapeutic drug monitoring for narrow therapeutic index victims (tacrolimus, warfarin, theophylline, clozapine).",
     );
   } else if (dominantMechanism === "Competitive Reversible") {
-    clinicalSummary = `Competitive reversible inhibition rapidly suppresses functional capacity to ${nadirPct}% without destroying the enzyme. Discontinuation at Day ${stopDay} produces rapid offset within 24–48 hours as the drug washes out of plasma.`;
+    clinicalSummary = `Competitive reversible inhibition rapidly suppresses functional capacity to ${nadirPct}% without destroying the enzyme. Discontinuation at Day ${safeStopDay} produces rapid offset within 24–48 hours as the drug washes out of plasma.`;
     monitoringPearls.push(
       "Offset strictly parallels perpetrator plasma clearance: once the drug clears systemic circulation, 100% catalytic capacity is immediately available.",
       "Higher substrate concentrations can partially overcome competitive inhibition by shifting the mass-action equilibrium.",
@@ -1132,8 +1270,8 @@ export function calculateEnzymeTrajectory(
     activeModulators,
     clinicalSummary,
     monitoringPearls,
-    days,
-    stopDay,
+    days: safeDays,
+    stopDay: safeStopDay,
   };
 }
 
@@ -1146,7 +1284,14 @@ export function calculateEnzymeTrajectory(
  * competitive inhibitors, and sensitive victim substrates, flagging clinical collisions.
  */
 export function detectTdiInductionOnTray(drugIds: string[]): TrayKineticsDetection {
-  const normIds = (drugIds || []).map((id) => id.toLowerCase().trim());
+  const normIds = Array.from(
+    new Set(
+      (Array.isArray(drugIds) ? drugIds : [])
+        .filter((id): id is string => typeof id === "string")
+        .map((id) => id.toLowerCase().trim())
+        .filter(Boolean),
+    ),
+  );
 
   const tdiDrugs = TDI_PERPETRATORS.filter((p) => normIds.includes(p.drugId));
   const inducerDrugs = NUCLEAR_INDUCERS.filter((i) => normIds.includes(i.drugId));
@@ -1250,7 +1395,8 @@ export function detectTdiInductionOnTray(drugIds: string[]): TrayKineticsDetecti
   }
 
   // Check for AhR PAH Cessation Alert
-  if (normIds.includes("charred-meat") && victimDrugs.some((v) => v.primaryCyp === "CYP1A2")) {
+  const activePahIds = (["charred-meat", "tobacco-smoking"] as const).filter((id) => normIds.includes(id));
+  if (activePahIds.length > 0 && victimDrugs.some((v) => v.primaryCyp === "CYP1A2")) {
     const clozapineTheoph = victimDrugs.filter((v) => v.primaryCyp === "CYP1A2");
     kineticAlerts.push({
       id: "pah-cessation-warning",
@@ -1258,7 +1404,7 @@ export function detectTdiInductionOnTray(drugIds: string[]): TrayKineticsDetecti
       title: "AhR Dietary/Combustion PAH Inducer Alert",
       mechanism: "Dietary and combustion polycyclic aromatic hydrocarbons (PAHs) maintain CYP1A2 induction. Sudden cessation causes CYP1A2 activity to drop to baseline over 1–2 weeks.",
       action: `If high PAH exposure ceases, monitor ${clozapineTheoph.map((v) => v.name).join(", ")} plasma levels closely to prevent delayed toxicity and seizures.`,
-      involvedDrugIds: ["charred-meat", ...clozapineTheoph.map((v) => v.drugId)],
+      involvedDrugIds: [...activePahIds, ...clozapineTheoph.map((v) => v.drugId)],
     });
   }
 
@@ -1293,5 +1439,537 @@ export function detectTdiInductionOnTray(drugIds: string[]): TrayKineticsDetecti
     summary,
     kineticAlerts,
     victimRisks,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Quantitative Mechanistic PK Models (fm AUCR, MBI Differential Kinetics, Phenoconversion)
+// ---------------------------------------------------------------------------
+
+/** Input parameters for fraction-metabolized (fm) AUCR amplification sensitivity analysis. */
+export interface FmAucrInput {
+  /** Fraction of systemic clearance mediated by the target CYP isoform, in [0, 1]. */
+  fm: number;
+  /** Unbound perpetrator concentration [I] at the enzyme active site (>= 0, same units as ki). */
+  inhibitorConc: number;
+  /** Reversible inhibition constant Ki (> 0, same units as inhibitorConc). */
+  ki: number;
+  /** Optional baseline intestinal gut-wall availability Fg in (0, 1] for oral CYP3A4 substrates. */
+  baselineFg?: number;
+  /** Optional intestinal [I]_gut / Ki ratio (>= 0) when modeling enterocyte first-pass escape. */
+  gutInhibitorRatio?: number;
+}
+
+/** Result of fraction-metabolized (fm) AUCR sensitivity model. */
+export interface FmAucrResult {
+  valid: boolean;
+  reason?: string;
+  fm: number;
+  ratioIKi: number;
+  inhibitedFractionRemaining: number;
+  hepaticAucr: number;
+  intestinalFgRatio: number;
+  totalAucr: number;
+  theoreticalMaxAucr: number;
+  fdaDdiCategory: "none" | "weak" | "moderate" | "strong";
+  formulaNote: string;
+}
+
+/** Point on an fm vs AUCR sensitivity curve at a fixed [I]/Ki ratio. */
+export interface FmAucrSensitivityPoint {
+  fm: number;
+  hepaticAucr: number;
+  theoreticalMaxAucr: number;
+  fdaDdiCategory: FmAucrResult["fdaDdiCategory"];
+}
+
+function classifyFdaAucr(aucr: number): FmAucrResult["fdaDdiCategory"] {
+  if (aucr >= 5) return "strong";
+  if (aucr >= 2) return "moderate";
+  if (aucr >= 1.25) return "weak";
+  return "none";
+}
+
+function invalidFmAucrResult(reason: string): FmAucrResult {
+  return {
+    valid: false,
+    reason,
+    fm: 0,
+    ratioIKi: 0,
+    inhibitedFractionRemaining: 1,
+    hepaticAucr: 1,
+    intestinalFgRatio: 1,
+    totalAucr: 1,
+    theoreticalMaxAucr: 1,
+    fdaDdiCategory: "none",
+    formulaNote: "Invalid input parameters; returning neutral baseline AUCR = 1.",
+  };
+}
+
+/**
+ * Computes mechanistic AUCR amplification as a function of fraction metabolized (fm) and [I]/Ki:
+ *   AUCR = 1 / (fm / (1 + [I]/Ki) + (1 - fm))
+ * Demonstrates why inhibiting a high-fm pathway (fm = 0.90) yields 5x–10x AUC surges, whereas
+ * inhibiting a minor pathway (fm = 0.20) caps strictly at <= 1.25x even under complete ablation.
+ */
+export function calculateFmAucrSensitivity(input: FmAucrInput): FmAucrResult {
+  const { fm, inhibitorConc, ki, baselineFg, gutInhibitorRatio } = input;
+  if (!Number.isFinite(fm) || fm < 0 || fm > 1) {
+    return invalidFmAucrResult("fm must be a finite number in [0, 1].");
+  }
+  if (!Number.isFinite(inhibitorConc) || inhibitorConc < 0) {
+    return invalidFmAucrResult("inhibitorConc must be a finite number >= 0.");
+  }
+  if (!Number.isFinite(ki) || ki <= 0) {
+    return invalidFmAucrResult("ki must be a finite number > 0.");
+  }
+  if (baselineFg !== undefined && (!Number.isFinite(baselineFg) || baselineFg <= 0 || baselineFg > 1)) {
+    return invalidFmAucrResult("baselineFg must be a finite number in (0, 1].");
+  }
+  if (gutInhibitorRatio !== undefined && (!Number.isFinite(gutInhibitorRatio) || gutInhibitorRatio < 0)) {
+    return invalidFmAucrResult("gutInhibitorRatio must be a finite number >= 0.");
+  }
+
+  const ratioIKi = inhibitorConc / ki;
+  const inhibitedFractionRemaining = 1 / (1 + ratioIKi);
+  const denominator = fm * inhibitedFractionRemaining + (1 - fm);
+  const hepaticAucr = denominator > 0 ? 1 / denominator : Number.POSITIVE_INFINITY;
+  const theoreticalMaxAucr = fm < 1 ? 1 / (1 - fm) : Number.POSITIVE_INFINITY;
+
+  let intestinalFgRatio = 1;
+  if (baselineFg !== undefined) {
+    const gutRatio = gutInhibitorRatio ?? ratioIKi;
+    const fgPrime = 1 / (baselineFg + (1 - baselineFg) / (1 + gutRatio));
+    intestinalFgRatio = fgPrime;
+  }
+
+  const totalAucr = hepaticAucr * intestinalFgRatio;
+  const fdaDdiCategory = classifyFdaAucr(totalAucr);
+
+  return {
+    valid: true,
+    fm,
+    ratioIKi,
+    inhibitedFractionRemaining,
+    hepaticAucr,
+    intestinalFgRatio,
+    totalAucr,
+    theoreticalMaxAucr,
+    fdaDdiCategory,
+    formulaNote:
+      `AUCR_sys = 1 / (${fm.toFixed(2)} / (1 + ${ratioIKi.toFixed(2)}) + ${(1 - fm).toFixed(2)}) = ${hepaticAucr.toFixed(2)}x` +
+      (baselineFg !== undefined
+        ? `; Fg'/Fg = ${intestinalFgRatio.toFixed(2)}x => total AUCR = ${totalAucr.toFixed(2)}x.`
+        : ` (theoretical max 1/(1 - fm) = ${Number.isFinite(theoreticalMaxAucr) ? `${theoreticalMaxAucr.toFixed(2)}x` : "unbounded"}).`),
+  };
+}
+
+/**
+ * Generates an fm sensitivity sweep across [0, 1] for a given unbound [I] and Ki.
+ */
+export function generateFmAucrSensitivityCurve(
+  inhibitorConc: number,
+  ki: number,
+  fmSteps: readonly number[] = [0.1, 0.2, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95],
+): FmAucrSensitivityPoint[] {
+  if (!Number.isFinite(inhibitorConc) || inhibitorConc < 0 || !Number.isFinite(ki) || ki <= 0) {
+    return [];
+  }
+  const curve: FmAucrSensitivityPoint[] = [];
+  for (const fm of fmSteps) {
+    if (!Number.isFinite(fm) || fm < 0 || fm > 1) continue;
+    const res = calculateFmAucrSensitivity({ fm, inhibitorConc, ki });
+    if (res.valid) {
+      curve.push({
+        fm: res.fm,
+        hepaticAucr: res.hepaticAucr,
+        theoreticalMaxAucr: res.theoreticalMaxAucr,
+        fdaDdiCategory: res.fdaDdiCategory,
+      });
+    }
+  }
+  return curve;
+}
+
+/** Input parameters for Mechanism-Based Inactivation (MBI / TDI) enzyme fraction kinetics. */
+export interface MbiKineticsInput {
+  /** Basal enzyme degradation rate constant kdeg (h^-1, > 0). */
+  kdegPerHour: number;
+  /** Maximal enzyme inactivation rate constant kinact (h^-1, >= 0). */
+  kinactPerHour: number;
+  /** Concentration supporting half-maximal rate of inactivation KI (µM, > 0). */
+  kiMicromolar: number;
+  /** Unbound perpetrator concentration [I] at the enzyme active site (µM, >= 0). */
+  inhibitorConcMicromolar: number;
+  /** Perpetrator exposure duration before cessation (hours, >= 0; default 120h). */
+  exposureHours?: number;
+  /** Post-cessation observation window for de novo synthesis recovery (hours, >= 0; default 168h). */
+  recoveryHours?: number;
+  /** Sampling interval in hours (> 0; default 6h). */
+  stepHours?: number;
+  /** Optional substrate fraction metabolized (fm in [0, 1]) to estimate steady-state MBI AUCR. */
+  fm?: number;
+}
+
+/** Single time point on the MBI enzyme fraction trajectory E(t)/E0. */
+export interface MbiTrajectoryPoint {
+  hour: number;
+  phase: "exposure" | "post-cessation";
+  enzymeFraction: number;
+  enzymePct: number;
+}
+
+/** Quantitative output of MBI steady-state suppression and exponential de novo synthesis recovery. */
+export interface MbiKineticsResult {
+  valid: boolean;
+  reason?: string;
+  kdegPerHour: number;
+  kobsPerHour: number;
+  enzymeTurnoverHalfLifeHours: number;
+  eSsRatio: number;
+  eAtStopRatio: number;
+  steadyStateAucr: number | null;
+  timeTo50PctRecoveryHours: number;
+  timeTo90PctRecoveryHours: number;
+  exposureHours: number;
+  recoveryHours: number;
+  points: MbiTrajectoryPoint[];
+  formulaNote: string;
+}
+
+function invalidMbiResult(reason: string): MbiKineticsResult {
+  return {
+    valid: false,
+    reason,
+    kdegPerHour: 0,
+    kobsPerHour: 0,
+    enzymeTurnoverHalfLifeHours: 0,
+    eSsRatio: 1,
+    eAtStopRatio: 1,
+    steadyStateAucr: null,
+    timeTo50PctRecoveryHours: 0,
+    timeTo90PctRecoveryHours: 0,
+    exposureHours: 0,
+    recoveryHours: 0,
+    points: [],
+    formulaNote: "Invalid MBI kinetic inputs.",
+  };
+}
+
+/**
+ * Computes differential Mechanism-Based Inactivation (MBI / TDI) steady-state enzyme suppression:
+ *   E_ss / E0 = kdeg / (kdeg + kinact * [I] / (KI + [I]))
+ * and exponential post-cessation de novo synthesis trajectory:
+ *   E(t_post) / E0 = 1 - (1 - E_stop / E0) * exp(-kdeg * t_post)
+ * illustrating why intestinal (t1/2 ~24–36h) vs hepatic (t1/2 ~36–72h) recovery lags
+ * independently of perpetrator plasma half-life.
+ */
+export function calculateMbiEnzymeTrajectory(input: MbiKineticsInput): MbiKineticsResult {
+  const {
+    kdegPerHour,
+    kinactPerHour,
+    kiMicromolar,
+    inhibitorConcMicromolar,
+    exposureHours = 120,
+    recoveryHours = 168,
+    stepHours = 6,
+    fm,
+  } = input;
+
+  if (!Number.isFinite(kdegPerHour) || kdegPerHour <= 0) {
+    return invalidMbiResult("kdegPerHour must be a finite number > 0.");
+  }
+  if (!Number.isFinite(kinactPerHour) || kinactPerHour < 0) {
+    return invalidMbiResult("kinactPerHour must be a finite number >= 0.");
+  }
+  if (!Number.isFinite(kiMicromolar) || kiMicromolar <= 0) {
+    return invalidMbiResult("kiMicromolar must be a finite number > 0.");
+  }
+  if (!Number.isFinite(inhibitorConcMicromolar) || inhibitorConcMicromolar < 0) {
+    return invalidMbiResult("inhibitorConcMicromolar must be a finite number >= 0.");
+  }
+  if (!Number.isFinite(exposureHours) || exposureHours < 0 || exposureHours > 2400) {
+    return invalidMbiResult("exposureHours must be a finite number in [0, 2400].");
+  }
+  if (!Number.isFinite(recoveryHours) || recoveryHours < 0 || recoveryHours > 2400) {
+    return invalidMbiResult("recoveryHours must be a finite number in [0, 2400].");
+  }
+  if (!Number.isFinite(stepHours) || stepHours <= 0) {
+    return invalidMbiResult("stepHours must be a finite number > 0.");
+  }
+  if (fm !== undefined && (!Number.isFinite(fm) || fm < 0 || fm > 1)) {
+    return invalidMbiResult("fm must be a finite number in [0, 1].");
+  }
+
+  const kobsPerHour = (kinactPerHour * inhibitorConcMicromolar) / (kiMicromolar + inhibitorConcMicromolar);
+  const eSsRatio = kdegPerHour / (kdegPerHour + kobsPerHour);
+  const enzymeTurnoverHalfLifeHours = Math.LN2 / kdegPerHour;
+
+  // Onset solution from E(0)/E0 = 1 toward E_ss/E0
+  const eAtStopRatio = eSsRatio + (1 - eSsRatio) * Math.exp(-(kdegPerHour + kobsPerHour) * exposureHours);
+
+  const steadyStateAucr =
+    fm !== undefined
+      ? 1 / (fm * eSsRatio + (1 - fm))
+      : null;
+
+  // Time post-cessation to recover 50% of lost enzyme pool = turnover t1/2
+  const timeTo50PctRecoveryHours = eAtStopRatio < 1 ? enzymeTurnoverHalfLifeHours : 0;
+  // Time post-cessation to reach E(t_post)/E0 = 0.90: 1 - (1 - eStop)*exp(-kdeg*t) = 0.90 => exp(-kdeg*t) = 0.10 / (1 - eStop)
+  const timeTo90PctRecoveryHours =
+    eAtStopRatio < 0.9
+      ? Math.log((1 - eAtStopRatio) / 0.1) / kdegPerHour
+      : 0;
+
+  const points: MbiTrajectoryPoint[] = [];
+  const totalHours = exposureHours + recoveryHours;
+  const maxSamples = 1000;
+  const effectiveStep = totalHours / stepHours > maxSamples ? totalHours / maxSamples : stepHours;
+
+  for (let h = 0; h <= totalHours + 1e-9; h += effectiveStep) {
+    const clampedH = Math.min(h, totalHours);
+    let ratio: number;
+    let phase: MbiTrajectoryPoint["phase"];
+    if (clampedH <= exposureHours) {
+      phase = "exposure";
+      ratio = eSsRatio + (1 - eSsRatio) * Math.exp(-(kdegPerHour + kobsPerHour) * clampedH);
+    } else {
+      phase = "post-cessation";
+      const tPost = clampedH - exposureHours;
+      ratio = 1 - (1 - eAtStopRatio) * Math.exp(-kdegPerHour * tPost);
+    }
+    points.push({
+      hour: Number(clampedH.toFixed(2)),
+      phase,
+      enzymeFraction: ratio,
+      enzymePct: Number((ratio * 100).toFixed(2)),
+    });
+    if (clampedH >= totalHours) break;
+  }
+
+  return {
+    valid: true,
+    kdegPerHour,
+    kobsPerHour,
+    enzymeTurnoverHalfLifeHours,
+    eSsRatio,
+    eAtStopRatio,
+    steadyStateAucr,
+    timeTo50PctRecoveryHours,
+    timeTo90PctRecoveryHours,
+    exposureHours,
+    recoveryHours,
+    points,
+    formulaNote:
+      `E_ss/E0 = ${kdegPerHour.toFixed(4)} / (${kdegPerHour.toFixed(4)} + ${kobsPerHour.toFixed(4)}) = ${(eSsRatio * 100).toFixed(1)}%; ` +
+      `turnover t1/2 = ${enzymeTurnoverHalfLifeHours.toFixed(1)}h; 90% recovery lag = ${timeTo90PctRecoveryHours.toFixed(1)}h post-stop.`,
+  };
+}
+
+/**
+ * Contrasts intestinal (faster enterocyte turnover, t1/2 ~24–36h) vs hepatic (t1/2 ~36–72h)
+ * MBI recovery kinetics under identical kinact, KI, and [I].
+ */
+export function compareIntestinalVsHepaticMbiWashout(
+  kinactPerHour: number,
+  kiMicromolar: number,
+  inhibitorConcMicromolar: number,
+  intestinalHalfLifeHours: number = 24,
+  hepaticHalfLifeHours: number = 48,
+): {
+  valid: boolean;
+  intestinal: MbiKineticsResult;
+  hepatic: MbiKineticsResult;
+  recoveryLagDifferenceHours: number;
+} {
+  if (
+    !Number.isFinite(intestinalHalfLifeHours) ||
+    intestinalHalfLifeHours <= 0 ||
+    !Number.isFinite(hepaticHalfLifeHours) ||
+    hepaticHalfLifeHours <= 0
+  ) {
+    const bad = invalidMbiResult("Turnover half-lives must be finite numbers > 0.");
+    return { valid: false, intestinal: bad, hepatic: bad, recoveryLagDifferenceHours: 0 };
+  }
+
+  const intestinal = calculateMbiEnzymeTrajectory({
+    kdegPerHour: Math.LN2 / intestinalHalfLifeHours,
+    kinactPerHour,
+    kiMicromolar,
+    inhibitorConcMicromolar,
+  });
+  const hepatic = calculateMbiEnzymeTrajectory({
+    kdegPerHour: Math.LN2 / hepaticHalfLifeHours,
+    kinactPerHour,
+    kiMicromolar,
+    inhibitorConcMicromolar,
+  });
+
+  return {
+    valid: intestinal.valid && hepatic.valid,
+    intestinal,
+    hepatic,
+    recoveryLagDifferenceHours: Math.max(0, hepatic.timeTo90PctRecoveryHours - intestinal.timeTo90PctRecoveryHours),
+  };
+}
+
+/** Supported metabolizer phenotypes for CYP phenoconversion modeling. */
+export type CypPhenotype = "PM" | "IM" | "NM" | "UM";
+
+/** Input parameters for quantitative CYP phenoconversion analysis. */
+export interface PhenoconversionInput {
+  isoform: "CYP2D6" | "CYP2C19" | "CYP2C9" | "CYP2B6" | "CYP3A4";
+  baselinePhenotype: CypPhenotype;
+  /** Optional catalog perpetrator drug ID (resolved against TDI, Competitive, Inducer, or DRUG_BY_ID). */
+  perpetratorDrugId?: string;
+  /** Explicit inhibitor strength override if not inferred from perpetratorDrugId. */
+  inhibitorStrength?: "none" | "weak" | "moderate" | "strong";
+  /** Explicit inducer strength override if not inferred from perpetratorDrugId. */
+  inducerStrength?: "none" | "moderate" | "strong";
+  /** True when the substrate requires bioactivation (e.g. codeine, tamoxifen, clopidogrel). */
+  isProdrug?: boolean;
+  /** Optional fraction metabolized/activated by the isoform, in [0, 1] (default 0.85). */
+  fm?: number;
+}
+
+/** Result of CYP genotype-to-phenotype conversion under DDI modulation. */
+export interface PhenoconversionResult {
+  valid: boolean;
+  reason?: string;
+  isoform: PhenoconversionInput["isoform"];
+  baselinePhenotype: CypPhenotype;
+  effectivePhenotype: CypPhenotype;
+  perpetratorName: string | null;
+  baselineActivityFactor: number;
+  effectiveActivityFactor: number;
+  nonInducibleNullAllele: boolean;
+  parentExposureFoldVsNm: number;
+  activeMetaboliteFoldVsNm: number | null;
+  mechanismSummary: string;
+}
+
+const BASELINE_PHENOTYPE_ACTIVITY: Record<CypPhenotype, number> = {
+  PM: 0.1,
+  IM: 0.5,
+  NM: 1.0,
+  UM: 2.0,
+};
+
+function mapActivityToPhenotype(activity: number): CypPhenotype {
+  if (activity <= 0.25) return "PM";
+  if (activity < 0.8) return "IM";
+  if (activity <= 1.4) return "NM";
+  return "UM";
+}
+
+/**
+ * Evaluates CYP450 phenoconversion when perpetrators (TDI, competitive inhibitors, or nuclear inducers)
+ * shift a patient's genetically predicted metabolizer status into a discordant functional phenotype
+ * (PMID: 24913012, PMID: 32906709, PMID: 34231197).
+ */
+export function evaluateCypPhenoconversion(input: PhenoconversionInput): PhenoconversionResult {
+  const {
+    isoform,
+    baselinePhenotype,
+    perpetratorDrugId,
+    inhibitorStrength: explicitInh,
+    inducerStrength: explicitInd,
+    isProdrug = false,
+    fm = 0.85,
+  } = input;
+
+  if (!Number.isFinite(fm) || fm < 0 || fm > 1) {
+    return {
+      valid: false,
+      reason: "fm must be a finite number in [0, 1].",
+      isoform,
+      baselinePhenotype,
+      effectivePhenotype: baselinePhenotype,
+      perpetratorName: null,
+      baselineActivityFactor: 1,
+      effectiveActivityFactor: 1,
+      nonInducibleNullAllele: baselinePhenotype === "PM",
+      parentExposureFoldVsNm: 1,
+      activeMetaboliteFoldVsNm: isProdrug ? 1 : null,
+      mechanismSummary: "Invalid fm value for phenoconversion calculation.",
+    };
+  }
+
+  let inhStrength: "none" | "weak" | "moderate" | "strong" = explicitInh ?? "none";
+  let indStrength: "none" | "moderate" | "strong" = explicitInd ?? "none";
+  let perpetratorName: string | null = null;
+
+  if (perpetratorDrugId) {
+    const norm = perpetratorDrugId.toLowerCase().trim();
+    const catalogDrug = DRUG_BY_ID[norm];
+    perpetratorName = catalogDrug?.name ?? perpetratorDrugId;
+
+    if (!explicitInh && !explicitInd) {
+      const tdiMatch = TDI_PERPETRATORS.find((p) => p.drugId === norm && p.targetIsoforms.includes(isoform));
+      const compMatch = COMPETITIVE_INHIBITORS.find((c) => c.drugId === norm && c.targetIsoforms.includes(isoform));
+      const indMatch = NUCLEAR_INDUCERS.find((n) => n.drugId === norm && n.inducedIsoforms.includes(isoform));
+
+      if (tdiMatch) {
+        inhStrength = tdiMatch.inactivationRateKinactPerDay >= 1.0 ? "strong" : "moderate";
+        perpetratorName = tdiMatch.name;
+      } else if (compMatch) {
+        inhStrength = compMatch.kiMicromolar < 1.0 ? "strong" : "moderate";
+        perpetratorName = compMatch.name;
+      } else if (indMatch) {
+        indStrength = indMatch.maxFoldInduction >= 2.6 ? "strong" : "moderate";
+        perpetratorName = indMatch.name;
+      } else if (catalogDrug) {
+        for (const role of catalogDrug.enzymes) {
+          if (role.enzyme !== isoform) continue;
+          if (role.kind === "inhibitor") inhStrength = role.strength;
+          if (role.kind === "inducer") indStrength = role.strength === "weak" ? "moderate" : role.strength;
+        }
+      }
+    }
+  }
+
+  const baselineActivityFactor = BASELINE_PHENOTYPE_ACTIVITY[baselinePhenotype];
+  let effectiveActivityFactor = baselineActivityFactor;
+  let nonInducibleNullAllele = false;
+
+  if (inhStrength !== "none") {
+    const inhMultiplier = inhStrength === "strong" ? 0.05 : inhStrength === "moderate" ? 0.5 : 0.75;
+    effectiveActivityFactor = baselineActivityFactor * inhMultiplier;
+  } else if (indStrength !== "none") {
+    if (baselinePhenotype === "PM") {
+      // Genetic null alleles (*4/*4, *2/*2, *3/*3) lack functional protein to transcribe/induce
+      nonInducibleNullAllele = true;
+      effectiveActivityFactor = baselineActivityFactor;
+    } else {
+      const indMultiplier = indStrength === "strong" ? 3.0 : 2.0;
+      effectiveActivityFactor = baselineActivityFactor * indMultiplier;
+    }
+  }
+
+  const effectivePhenotype = mapActivityToPhenotype(effectiveActivityFactor);
+  const effectiveClFraction = fm * effectiveActivityFactor + (1 - fm);
+  const parentExposureFoldVsNm = effectiveClFraction > 0 ? 1 / effectiveClFraction : Number.POSITIVE_INFINITY;
+  const activeMetaboliteFoldVsNm = isProdrug ? effectiveActivityFactor : null;
+
+  const mechanismSummary = nonInducibleNullAllele
+    ? `${isoform} genetic PM carries non-functional alleles; transcriptional induction cannot rescue enzyme activity.`
+    : `${isoform} ${baselinePhenotype} phenoconverts to functional ${effectivePhenotype}` +
+      (perpetratorName ? ` under ${perpetratorName}` : "") +
+      (isProdrug
+        ? ` (prodrug bioactivation ~${(effectiveActivityFactor * 100).toFixed(0)}% of NM).`
+        : ` (parent systemic exposure ~${parentExposureFoldVsNm.toFixed(2)}x relative to NM).`);
+
+  return {
+    valid: true,
+    isoform,
+    baselinePhenotype,
+    effectivePhenotype,
+    perpetratorName,
+    baselineActivityFactor,
+    effectiveActivityFactor,
+    nonInducibleNullAllele,
+    parentExposureFoldVsNm,
+    activeMetaboliteFoldVsNm,
+    mechanismSummary,
   };
 }

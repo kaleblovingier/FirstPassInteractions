@@ -1,19 +1,12 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  ArrowRight,
-  CheckCircle2,
-  Clock,
   Droplets,
   Flame,
   FlaskConical,
-  HelpCircle,
-  Info,
   Pill,
   ShieldAlert,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -22,19 +15,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
-  ACID_BASE_CDS_DISCLAIMER,
   ACID_BASE_CITATIONS,
-  calculateAnionGap,
-  evaluateWintersFormula,
-  calculateDeltaDelta,
-  evaluateHyponatremia,
-  calculateAdrogueMadias,
   INFUSATE_PROFILES,
   HYPERTONIC_SALINE_RESCUE_PROTOCOL,
   DDAVP_CLAMP_PROTOCOL,
   RELOWERING_PROTOCOL,
   WINTERS_INTERPRETATION_GUIDE,
-  DELTA_DELTA_INTERPRETATION_GUIDE,
   acidBaseReportOnDesk,
   type InfusateType,
   type PatientSex,
@@ -42,6 +28,8 @@ import {
 } from "@/lib/drugs/acid-base-kinetics";
 
 type StationTab = "diagnostic" | "hyponatremia" | "protocols" | "desk";
+
+const EMPTY_IDS: string[] = [];
 
 export function AcidBaseStation({ ids, host }: { ids: string[]; host: HostContext }) {
   return <AcidBasePanel ids={ids} host={host} />;
@@ -155,10 +143,17 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
     }
   };
 
+  // Stabilize ids array identity by contents so downstream calculation skips redundant work on unchanged trays
+  const idsKey = JSON.stringify(ids);
+  const stableIds = useMemo<string[]>(
+    () => (idsKey === "[]" ? EMPTY_IDS : (JSON.parse(idsKey) as string[])),
+    [idsKey],
+  );
+
   // Generate Report
   const report = useMemo(
     () =>
-      acidBaseReportOnDesk(ids, host, {
+      acidBaseReportOnDesk(stableIds, host, {
         chemistry: {
           sodiumMeqL: numNa,
           potassiumMeqL: numK,
@@ -189,7 +184,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
         },
       }),
     [
-      ids.join("|"),
+      stableIds,
       host,
       numNa,
       numK,
@@ -266,13 +261,13 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
           aria-pressed={activeTab === "diagnostic"}
           onClick={() => setActiveTab("diagnostic")}
           className={cn(
-            "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
+            "px-3 py-1.5 pointer-coarse:min-h-11 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
             activeTab === "diagnostic"
               ? "bg-accent text-accent-fg"
               : "bg-surface text-muted hover:text-fg hover:bg-surface-sunken",
           )}
         >
-          <Activity className="h-3.5 w-3.5" />
+          <Activity className="h-3.5 w-3.5" aria-hidden="true" />
           ABG &amp; Chemistry Diagnostics
         </button>
         <button
@@ -280,13 +275,13 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
           aria-pressed={activeTab === "hyponatremia"}
           onClick={() => setActiveTab("hyponatremia")}
           className={cn(
-            "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
+            "px-3 py-1.5 pointer-coarse:min-h-11 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
             activeTab === "hyponatremia"
               ? "bg-accent text-accent-fg"
               : "bg-surface text-muted hover:text-fg hover:bg-surface-sunken",
           )}
         >
-          <Droplets className="h-3.5 w-3.5" />
+          <Droplets className="h-3.5 w-3.5" aria-hidden="true" />
           Hyponatremia &amp; ODS Safeguards
         </button>
         <button
@@ -294,13 +289,13 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
           aria-pressed={activeTab === "protocols"}
           onClick={() => setActiveTab("protocols")}
           className={cn(
-            "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
+            "px-3 py-1.5 pointer-coarse:min-h-11 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
             activeTab === "protocols"
               ? "bg-accent text-accent-fg"
               : "bg-surface text-muted hover:text-fg hover:bg-surface-sunken",
           )}
         >
-          <Zap className="h-3.5 w-3.5" />
+          <Zap className="h-3.5 w-3.5" aria-hidden="true" />
           Rescue References (3% NaCl &amp; DDAVP)
         </button>
         <button
@@ -308,13 +303,13 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
           aria-pressed={activeTab === "desk"}
           onClick={() => setActiveTab("desk")}
           className={cn(
-            "px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
+            "px-3 py-1.5 pointer-coarse:min-h-11 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5",
             activeTab === "desk"
               ? "bg-accent text-accent-fg"
               : "bg-surface text-muted hover:text-fg hover:bg-surface-sunken",
           )}
         >
-          <Pill className="h-3.5 w-3.5" />
+          <Pill className="h-3.5 w-3.5" aria-hidden="true" />
           Tray Drug Collisions ({report.onDesk.matchedDrugIds.length})
         </button>
       </div>
@@ -728,7 +723,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
                     aria-pressed={sex === "male"}
                     onClick={() => setSex("male")}
                     className={cn(
-                      "flex-1 py-1 text-center font-semibold transition-colors",
+                      "flex-1 py-1 pointer-coarse:min-h-11 text-center font-semibold transition-colors",
                       sex === "male" ? "bg-accent text-accent-fg" : "bg-surface-sunken text-muted",
                     )}
                   >
@@ -739,7 +734,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
                     aria-pressed={sex === "female"}
                     onClick={() => setSex("female")}
                     className={cn(
-                      "flex-1 py-1 text-center font-semibold transition-colors",
+                      "flex-1 py-1 pointer-coarse:min-h-11 text-center font-semibold transition-colors",
                       sex === "female" ? "bg-accent text-accent-fg" : "bg-surface-sunken text-muted",
                     )}
                   >
@@ -800,6 +795,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <Button
                 variant={isGeriatric ? "default" : "secondary"}
                 size="sm"
+                aria-pressed={isGeriatric}
                 onClick={() => setIsGeriatric(!isGeriatric)}
               >
                 Geriatric (&ge; 65 yr)
@@ -807,6 +803,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <Button
                 variant={isChronicDuration ? "danger" : "secondary"}
                 size="sm"
+                aria-pressed={isChronicDuration}
                 onClick={() => setIsChronicDuration(!isChronicDuration)}
               >
                 Chronic (&gt; 48h / Unknown)
@@ -814,6 +811,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <Button
                 variant={isMalnourished ? "danger" : "secondary"}
                 size="sm"
+                aria-pressed={isMalnourished}
                 onClick={() => setIsMalnourished(!isMalnourished)}
               >
                 Malnutrition / Cachexia
@@ -821,6 +819,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <Button
                 variant={hasLiverDisease ? "danger" : "secondary"}
                 size="sm"
+                aria-pressed={hasLiverDisease}
                 onClick={() => setHasLiverDisease(!hasLiverDisease)}
               >
                 Advanced Cirrhosis
@@ -828,6 +827,7 @@ export function AcidBasePanel({ ids, host }: { ids: string[]; host: HostContext 
               <Button
                 variant={hasAlcoholism ? "danger" : "secondary"}
                 size="sm"
+                aria-pressed={hasAlcoholism}
                 onClick={() => setHasAlcoholism(!hasAlcoholism)}
               >
                 Chronic Alcoholism

@@ -18,7 +18,13 @@ import {
   setAnalyticsStore,
   MAX_SALT_CACHE_ENTRIES,
 } from "./store.server";
-import { handleGetSiteStats, handleStatsRequest, STATS_SECURITY_HEADERS } from "./stats.server";
+import {
+  handleGetSiteStats,
+  handleStatsRequest,
+  MAX_STATS_BODY_BYTES,
+  STATS_SECURITY_HEADERS,
+} from "./stats.server";
+import { MAX_PIN_LENGTH, hasControlChar, validateStatsInput } from "./stats";
 import { STATS_RANGES, type Device, type SiteStats } from "./contract";
 import { resetPinThrottle } from "../billing/license.server";
 import {
@@ -29,10 +35,23 @@ import {
   downloadAnalyticsExport,
   escapeCsv,
   formatIsoTimestamp,
+  formatUtcDateString,
+  normalizeDevice,
+  normalizeExportDays,
   computeExportSummary,
   type AnalyticsExportReport,
 } from "./export";
 import type { Sql } from "../db";
+
+function assertStatsSecurityHeaders(res: Response, context: string): void {
+  for (const [header, expected] of Object.entries(STATS_SECURITY_HEADERS)) {
+    assert.equal(
+      res.headers.get(header.toLowerCase()),
+      expected,
+      `${context}: expected ${header}: ${expected}`,
+    );
+  }
+}
 
 test("sanitizePath extracts pathname and strictly strips queries and hashes", () => {
   assert.equal(sanitizePath("/pairs?q=warfarin+aspirin"), "/pairs");
@@ -499,6 +518,9 @@ test("AnalyticsStore retention pruning and aggregate queries on live PGlite data
     assert.equal(stats.enabled, true);
     assert.equal(stats.totals.views, 3);
     assert.equal(stats.totals.visitors, 3);
+    const todayBucket = stats.daily.find((entry) => entry.day === day);
+    assert.equal(todayBucket?.views, 3);
+    assert.equal(todayBucket?.visitors, 3);
     assert.equal(stats.pages[0]?.path, "/pairs");
     assert.equal(stats.pages[0]?.views, 2);
     assert.equal(stats.pages[1]?.path, "/drug/metformin");
@@ -891,6 +913,7 @@ test("escapeCsv safely disarms spreadsheet formula injection triggers (=, +, -, 
       { host: "+partner.org", views: 20 },
       { host: "-evil.org", views: 10 },
       { host: "\tbadhost.com", views: 5 },
+      { host: "\t=DDE.evil.org", views: 4 },
     ],
     countries: [{ code: "@U", views: 100 }],
     devices: [{ device: "desktop", views: 100 }],
@@ -919,12 +942,14 @@ test("escapeCsv safely disarms spreadsheet formula injection triggers (=, +, -, 
     }
   }
 
-  // Specifically assert the presence of neutralized quotes
+  // Specifically assert the presence of neutralized quotes and stripped control chars
   assert.ok(csv.includes("'=HYPERLINK"));
   assert.ok(csv.includes("'@attacker.com"));
   assert.ok(csv.includes("'+partner.org"));
   assert.ok(csv.includes("'-evil.org"));
-  assert.ok(csv.includes("'\tbadhost.com"));
+  assert.doesNotMatch(csv, /\t/);
+  assert.ok(csv.includes("badhost.com,5"));
+  assert.ok(csv.includes("'=DDE.evil.org,4"));
   assert.ok(csv.includes("'@U"));
 });
 
@@ -1211,4 +1236,336 @@ test("AnalyticsStore recordView awaits sweep deterministically on PGlite, bounds
     await pg.close();
   }
 });
+
+test("handleStatsRequest enforces STATS_SECURITY_HEADERS across 200, 400, 401, 405, 413, and 429 responses", async () => {
+  resetPinThrottle();
+  const vercel = process.env.VERCEL;
+  process.env.VERCEL = "1";
+
+  try {
+    // 405 Method Not Allowed + Allow: POST
+    const res405 = await handleStatsRequest(new Request("http://localhost/api/stats", { method: "GET" }));
+    assert.equal(res405.status, 405);
+    assert.equal(res405.headers.get("allow"), "POST");
+    assertStatsSecurityHeaders(res405, "stats 405");
+
+    // 413 Payload Too Large (> MAX_STATS_BODY_BYTES)
+    const res413 = await handleStatsRequest(
+      new Request("http://localhost/api/stats", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ pin: "x".repeat(MAX_STATS_BODY_BYTES), days: 30 }),
+      }),
+    );
+    assert.equal(res413.status, 413);
+    assertStatsSecurityHeaders(res413, "stats 413");
+
+    // 400 Bad Request (malformed JSON + unexpected field)
+    const res400Json = await handleStatsRequest(
+      new Request("http://localhost/api/stats", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{bad",
+      }),
+    );
+    assert.equal(res400Json.status, 400);
+    assertStatsSecurityHeaders(res400Json, "stats 400 malformed json");
+
+    const res400Field = await handleStatsRequest(
+      new Request("http://localhost/api/stats", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ pin: "heme-450", days: 30, extra: true }),
+      }),
+    );
+    assert.equal(res400Field.status, 400);
+    assertStatsSecurityHeaders(res400Field, "stats 400 unexpected field");
+
+    // 401 Unauthorized (first 5 wrong PIN guesses) & 429 Too Many Requests (6th guess)
+    const ip = "198.51.100.123";
+    const postWrong = (pin: string) =>
+      handleStatsRequest(
+        new Request("http://localhost/api/stats", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-real-ip": ip },
+          body: JSON.stringify({ pin, days: 30 }),
+        }),
+      );
+
+    for (let i = 0; i < 5; i++) {
+      const res401 = await postWrong(`wrong-${i}`);
+      assert.equal(res401.status, 401);
+      assertStatsSecurityHeaders(res401, `stats 401 attempt ${i + 1}`);
+    }
+
+    const res429 = await postWrong("wrong-6");
+    assert.equal(res429.status, 429);
+    const retryAfter = Number(res429.headers.get("retry-after"));
+    assert.ok(Number.isInteger(retryAfter) && retryAfter >= 1);
+    assertStatsSecurityHeaders(res429, "stats 429");
+
+    // 200 OK (valid PIN from a distinct client IP)
+    const res200 = await handleStatsRequest(
+      new Request("http://localhost/api/stats", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-real-ip": "198.51.100.124" },
+        body: JSON.stringify({ pin: "heme-450", days: 30 }),
+      }),
+    );
+    assert.equal(res200.status, 200);
+    assertStatsSecurityHeaders(res200, "stats 200");
+  } finally {
+    if (vercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = vercel;
+    resetPinThrottle();
+  }
+});
+
+test("validateStatsInput enforces STATS_RANGES, PIN trimming/length/control-char rules, and prototype safety", () => {
+  // Supported STATS_RANGES and default days = 30
+  for (const range of STATS_RANGES) {
+    assert.deepEqual(validateStatsInput({ pin: "heme-450", days: range }), {
+      pin: "heme-450",
+      days: range,
+    });
+  }
+  assert.deepEqual(validateStatsInput({ pin: "  heme-450  " }), {
+    pin: "heme-450",
+    days: 30,
+  });
+  assert.deepEqual(validateStatsInput({ pin: "heme-450", days: undefined }), {
+    pin: "heme-450",
+    days: 30,
+  });
+
+  // Null-prototype plain dictionary works safely without throwing
+  const nullProtoValid = Object.assign(Object.create(null) as Record<string, unknown>, {
+    pin: "  heme-450 ",
+    days: 7,
+  });
+  assert.deepEqual(validateStatsInput(nullProtoValid), { pin: "heme-450", days: 7 });
+
+  // Non-objects, arrays, Date, and custom prototypes are rejected
+  class CustomInput {
+    pin = "heme-450";
+    days = 30;
+  }
+  const customProtoObj = Object.create({ pin: "heme-450" }) as Record<string, unknown>;
+  for (const invalidPayload of [
+    null,
+    undefined,
+    "heme-450",
+    42,
+    true,
+    [],
+    ["heme-450"],
+    new Date(),
+    new CustomInput(),
+    customProtoObj,
+  ]) {
+    assert.throws(() => validateStatsInput(invalidPayload), /Invalid stats request payload/);
+  }
+
+  // Unexpected keys including __proto__
+  assert.throws(
+    () => validateStatsInput({ pin: "heme-450", days: 30, extra: 1 }),
+    /Unexpected field/,
+  );
+  const protoPayload = JSON.parse('{"pin":"heme-450","days":30,"__proto__":{"polluted":true}}');
+  assert.throws(() => validateStatsInput(protoPayload), /Unexpected field/);
+  assert.equal(({} as { polluted?: boolean }).polluted, undefined);
+
+  // PIN string, emptiness, control characters (ASCII + C1 Unicode), and MAX_PIN_LENGTH enforcement
+  for (const nonStringPin of [undefined, null, 1234, false, {}, []]) {
+    assert.throws(() => validateStatsInput({ pin: nonStringPin, days: 30 }), /must be a string/);
+  }
+  for (const emptyPin of ["", "   "]) {
+    assert.throws(() => validateStatsInput({ pin: emptyPin, days: 30 }), /required/);
+  }
+  for (const ctrlPin of [
+    "heme\u0000450",
+    "heme\n450",
+    "heme\r450",
+    "heme\t450",
+    "heme\u001f450",
+    "heme\u007f450",
+    "heme\u0085450",
+    "heme\u009f450",
+  ]) {
+    assert.equal(hasControlChar(ctrlPin), true);
+    assert.throws(() => validateStatsInput({ pin: ctrlPin, days: 30 }), /invalid characters/);
+  }
+  assert.equal(hasControlChar("heme-450"), false);
+
+  assert.deepEqual(validateStatsInput({ pin: "a".repeat(MAX_PIN_LENGTH), days: 90 }), {
+    pin: "a".repeat(MAX_PIN_LENGTH),
+    days: 90,
+  });
+  assert.throws(
+    () => validateStatsInput({ pin: "a".repeat(MAX_PIN_LENGTH + 1), days: 30 }),
+    /maximum length/,
+  );
+  assert.throws(
+    () => validateStatsInput({ pin: `${" ".repeat(MAX_PIN_LENGTH)}a`, days: 30 }),
+    /maximum length/,
+  );
+
+  // Non-integer and unsupported days
+  for (const badDays of [
+    0,
+    1,
+    14,
+    365,
+    -7,
+    30.5,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
+    "30",
+    null,
+    {},
+  ]) {
+    assert.throws(() => validateStatsInput({ pin: "heme-450", days: badDays }), /Invalid stats range/);
+  }
+});
+
+test("export.ts strips control characters, normalizes invalid Dates/days/devices, and hardens Unicode/embedded CSV formulas", () => {
+  // 1. sanitizeExportPath strips ASCII & C1 control chars before trimming, enforces leading / & 200 cap
+  assert.equal(sanitizeExportPath("\u0000  /pairs\u0007?q=warfarin#top\u009f"), "/pairs");
+  assert.equal(sanitizeExportPath("\u000b\u000crelative/path\u007f\u0085"), "/relative/path");
+  assert.equal(sanitizeExportPath("\u0000\u001f\u007f\u009f   "), "/");
+  assert.equal(sanitizeExportPath(`/\u0000${"a".repeat(250)}`), `/${"a".repeat(199)}`);
+  assert.equal(sanitizeExportPath(`/\u0000${"a".repeat(250)}`).length, 200);
+
+  // 2. formatUtcDateString & generateExportFilename harden invalid Dates & invalid days
+  const validDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+  assert.match(formatUtcDateString(new Date(Number.NaN)), validDatePattern);
+  assert.match(formatUtcDateString(Number.NaN), validDatePattern);
+  assert.match(formatUtcDateString(Number.POSITIVE_INFINITY), validDatePattern);
+  assert.doesNotMatch(formatUtcDateString(new Date(Number.NaN)), /NaN/);
+
+  const fixedTs = Date.UTC(2026, 10, 8, 21, 0, 0);
+  assert.equal(
+    generateExportFilename(Number.NaN, "json", new Date(Number.NaN)).startsWith(
+      "firstpass-analytics-30d-",
+    ),
+    true,
+  );
+  assert.doesNotMatch(generateExportFilename(Number.NaN, "csv", new Date(Number.NaN)), /NaN/);
+  assert.equal(
+    generateExportFilename("30\n../evil" as unknown as number, "csv", fixedTs),
+    "firstpass-analytics-30d-2026-11-08.csv",
+  );
+  assert.equal(generateExportFilename(90, "json", fixedTs), "firstpass-analytics-90d-2026-11-08.json");
+  assert.equal(normalizeExportDays(14), 30);
+  assert.equal(normalizeExportDays(7), 7);
+
+  // 3. escapeCsv neutralizes Unicode whitespace (\u00a0, \ufeff) & control chars (\v, \f, \u007f-\u009f)
+  assert.equal(escapeCsv("\u00a0=1+1"), "'\u00a0=1+1");
+  assert.equal(escapeCsv("\ufeff+cmd"), "'\ufeff+cmd");
+  assert.equal(escapeCsv("\v=1+1"), "'\v=1+1");
+  assert.equal(escapeCsv("\f-2+3"), "'\f-2+3");
+  assert.equal(escapeCsv("\u007f@SUM(A1)"), "'\u007f@SUM(A1)");
+  assert.equal(escapeCsv("\u0085=CMD"), "'\u0085=CMD");
+  assert.equal(escapeCsv("\u009f+1"), "'\u009f+1");
+  assert.equal(escapeCsv("note\n\u00a0=CMD"), `"note\n'\u00a0=CMD"`);
+  assert.equal(escapeCsv("note\r\n\v+1"), `"note\r\n'\v+1"`);
+  assert.equal(escapeCsv("note\r\f-1"), `"note\r'\f-1"`);
+  assert.equal(escapeCsv("note\n\u007f@A1"), `"note\n'\u007f@A1"`);
+  assert.equal(escapeCsv("note\n\u0085=HYPERLINK()"), `"note\n'\u0085=HYPERLINK()"`);
+  assert.equal(escapeCsv("\u00a0hello"), "\u00a0hello");
+
+  // 4. Metadata & dimension control-char stripping + typed Device / zero-PHI invariants
+  const typedDevices: Array<{ device: Device; views: number }> = [
+    { device: "desktop", views: 40 },
+    { device: "phone", views: 20 },
+    { device: "tablet", views: 10 },
+  ];
+  assert.equal(normalizeDevice("phone"), "phone");
+  assert.equal(normalizeDevice("tablet"), "tablet");
+  assert.equal(normalizeDevice("desktop"), "desktop");
+  assert.equal(normalizeDevice("=CMD\n" as unknown as Device), "desktop");
+
+  const adversarialStats = {
+    enabled: true,
+    days: "30\n# injected-header\r\n=CMD()" as unknown as SiteStats["days"],
+    totals: { views: 70, visitors: 35 },
+    daily: [{ day: "2026-11-08\n# fake-comment\u0085", views: 70, visitors: 35 }],
+    pages: [{ path: "/pairs\u0000\u0085?q=warfarin", views: 70, visitors: 35 }],
+    referrers: [{ host: "pubmed.org\r\n# injected\u009f", views: 25 }],
+    countries: [{ code: "US\n\u0007\u0085", views: 70 }],
+    devices: [
+      ...typedDevices,
+      { device: "=CMD\n" as unknown as Device, views: 5 },
+    ],
+  } satisfies SiteStats;
+
+  const exportedJson = JSON.parse(exportStatsToJson(adversarialStats, fixedTs)) as AnalyticsExportReport;
+  assert.equal(exportedJson.timeframeDays, 30);
+  assert.equal(exportedJson.daily[0]?.day, "2026-11-08# fake-comment");
+  assert.equal(exportedJson.summary.peakDay?.day, "2026-11-08# fake-comment");
+  assert.equal(exportedJson.pages[0]?.path, "/pairs");
+  assert.equal(exportedJson.referrers[0]?.host, "pubmed.org# injected");
+  assert.equal(exportedJson.countries[0]?.code, "US");
+  assert.equal(exportedJson.devices[0]?.device, "desktop");
+  assert.equal(exportedJson.devices[1]?.device, "phone");
+  assert.equal(exportedJson.devices[2]?.device, "tablet");
+  assert.equal(exportedJson.devices[3]?.device, "desktop");
+
+  const exportedCsv = exportStatsToCsv(adversarialStats, fixedTs);
+  assert.ok(exportedCsv.includes("# Timeframe: 30 days"));
+  assert.ok(exportedCsv.includes("Timeframe Days,30"));
+  assert.equal(exportedCsv.includes("# injected-header"), false);
+  assert.equal(exportedCsv.includes("=CMD()"), false);
+  for (let i = 0; i < exportedCsv.length; i++) {
+    const code = exportedCsv.charCodeAt(i);
+    if (code === 0x0a || code === 0x0d) continue;
+    assert.equal(
+      code <= 0x1f || (code >= 0x7f && code <= 0x9f),
+      false,
+      `unexpected control char 0x${code.toString(16)} in CSV export`,
+    );
+  }
+});
+
+test("collect.server sanitizers reject control chars/backslashes and normalize punycode, case, and trailing dots", () => {
+  // sanitizePath rejects ASCII/C1 control chars and backslashes
+  for (const badPath of [
+    "/pairs\u0000",
+    "/pairs\n=CMD",
+    "\n/pairs",
+    "/pairs\r",
+    "/pairs\t",
+    "/pairs\u001f",
+    "/pairs\u007f",
+    "/pairs\u0085",
+    "/pairs\u009f",
+    "/pairs\\admin",
+    "\\pairs",
+  ]) {
+    assert.equal(sanitizePath(badPath), null, `expected null for malformed path ${JSON.stringify(badPath)}`);
+  }
+  assert.equal(sanitizePath("  /pairs?q=warfarin#top  "), "/pairs");
+
+  // sanitizeReferrer handles uppercase, trailing dots, punycode/IDN, IPv6 loopbacks, non-HTTP schemes, and control chars
+  assert.equal(sanitizeReferrer("https://GOOGLE.COM./search?q=warfarin"), "google.com");
+  assert.equal(sanitizeReferrer("https://WWW.MÜNCHEN.DE./path"), "xn--mnchen-3ya.de");
+  assert.equal(sanitizeReferrer("https://XN--MNCHEN-3YA.DE/path", "münchen.de:443"), "");
+  assert.equal(sanitizeReferrer("https://FIRSTPASS.ORG./pairs", "WWW.FirstPass.ORG:8443"), "");
+  assert.equal(sanitizeReferrer("http://localhost./desk", "firstpass.org"), "");
+  assert.equal(sanitizeReferrer("https://sub.localhost/desk", "firstpass.org"), "");
+  assert.equal(sanitizeReferrer("http://[::1]:8080/desk", "firstpass.org"), "");
+  assert.equal(sanitizeReferrer("http://127.0.0.1:8080/desk", "firstpass.org"), "");
+  assert.equal(sanitizeReferrer("javascript:alert(1)"), "");
+  assert.equal(sanitizeReferrer("ftp://example.com/file"), "");
+  assert.equal(sanitizeReferrer("https://google.com\n/search"), "");
+  assert.equal(sanitizeReferrer("https://google.com\u0085/search"), "");
+
+  // extractCountry falls back cleanly when x-vercel-ip-country is whitespace-only
+  const reqFallback = new Request("http://localhost/api/collect", {
+    headers: { "x-vercel-ip-country": "   ", "cf-ipcountry": "gb" },
+  });
+  assert.equal(extractCountry(reqFallback), "GB");
+});
+
 

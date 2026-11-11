@@ -8,10 +8,14 @@ export interface StatsInput {
   days: StatsRange;
 }
 
-function hasControlChar(value: string): boolean {
+/**
+ * Returns true if `value` contains any ASCII or C1 Unicode control character
+ * (`\u0000-\u001f`, `\u007f-\u009f`).
+ */
+export function hasControlChar(value: string): boolean {
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i);
-    if (code < 0x20 || code === 0x7f) return true;
+    if (code < 0x20 || (code >= 0x7f && code <= 0x9f)) return true;
   }
   return false;
 }

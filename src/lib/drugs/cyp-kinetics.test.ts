@@ -18,8 +18,15 @@ import {
   getTdiPerpetratorById,
   getNuclearInducerById,
   getCompetitiveInhibitorById,
+  resolveCypCatalogDrugName,
+  validateCypCatalogIntegrity,
   calculateEnzymeTrajectory,
   detectTdiInductionOnTray,
+  calculateFmAucrSensitivity,
+  generateFmAucrSensitivityCurve,
+  calculateMbiEnzymeTrajectory,
+  compareIntestinalVsHepaticMbiWashout,
+  evaluateCypPhenoconversion,
 } from "./cyp-kinetics";
 
 describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
@@ -462,6 +469,229 @@ describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
       assert.ok(!/administer \d+\s*mg/i.test(allText));
       assert.ok(!/prescribe \d+\s*mg/i.test(allText));
       assert.ok(!/take \d+\s*tablets/i.test(allText));
+    });
+  });
+
+  describe("Extended Catalog Integrity, Exemplars & Quantitative PK Models", () => {
+    it("validateCypCatalogIntegrity confirms every referenced ID across modes, TDI, inducers, inhibitors, pathways, and victims exists in DRUG_BY_ID", () => {
+      const integrity = validateCypCatalogIntegrity();
+      assert.equal(integrity.valid, true);
+      assert.deepEqual(integrity.missingDrugIds, []);
+      assert.ok(integrity.totalUniqueDrugIds >= 30);
+
+      for (const mode of MOLECULAR_MODES) {
+        for (const id of mode.exemplarDrugIds) {
+          assert.ok(DRUG_BY_ID[id], `Mode exemplar '${id}' must exist in DRUG_BY_ID`);
+          assert.ok(ALL_REFERENCED_DRUG_IDS.includes(id), `Mode exemplar '${id}' must be tracked in ALL_REFERENCED_DRUG_IDS`);
+        }
+      }
+      for (const pathway of NUCLEAR_RECEPTOR_PATHWAYS) {
+        for (const id of pathway.canonicalInducerIds) {
+          assert.ok(DRUG_BY_ID[id], `Canonical inducer '${id}' must exist in DRUG_BY_ID`);
+        }
+      }
+      assert.equal(resolveCypCatalogDrugName("paxlovid"), DRUG_BY_ID["paxlovid"].name);
+      assert.equal(resolveCypCatalogDrugName("  RITONAVIR "), DRUG_BY_ID["ritonavir"].name);
+      assert.equal(resolveCypCatalogDrugName("   "), "");
+    });
+
+    it("supports expanded TDI perpetrators (paxlovid, verapamil, mifepristone), AhR tobacco-smoking, and DOAC victims", () => {
+      for (const tdiId of ["paxlovid", "verapamil", "mifepristone", "paroxetine", "ritonavir", "clarithromycin", "erythromycin", "diltiazem", "grapefruit"]) {
+        assert.ok(getTdiPerpetratorById(tdiId), `TDI perpetrator '${tdiId}' must be cataloged`);
+        assert.ok(DRUG_BY_ID[tdiId], `TDI perpetrator '${tdiId}' must exist in DRUG_BY_ID`);
+      }
+      assert.ok(getNuclearInducerById("tobacco-smoking"), "tobacco-smoking AhR inducer must be cataloged");
+      assert.ok(DRUG_BY_ID["tobacco-smoking"]);
+
+      const paxRiva = detectTdiInductionOnTray(["paxlovid", "rivaroxaban"]);
+      assert.equal(paxRiva.hasCollision, true);
+      assert.equal(paxRiva.collisionType, "tdi-knockout");
+      assert.ok(paxRiva.kineticAlerts.some((a) => a.id === "tdi-victim-paxlovid-rivaroxaban"));
+
+      const smokeCloz = detectTdiInductionOnTray(["tobacco-smoking", "clozapine"]);
+      assert.equal(smokeCloz.hasCollision, true);
+      assert.ok(smokeCloz.kineticAlerts.some((a) => a.id === "pah-cessation-warning"));
+
+      // Duplicate IDs should not create duplicate alerts
+      const dupes = detectTdiInductionOnTray(["ritonavir", "ritonavir", "midazolam", "midazolam"]);
+      assert.equal(dupes.kineticAlerts.length, 1);
+    });
+
+    it("models fraction-metabolized (fm) AUCR amplification sensitivity (fm=0.90 vs fm=0.20 cap)", () => {
+      // High fm = 0.90: [I]/Ki = 9 yields 1/(0.9/10 + 0.1) = 5.26x; [I]/Ki = 99 yields 9.17x; max = 10x
+      const highFmMod = calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: 9, ki: 1 });
+      assert.equal(highFmMod.valid, true);
+      assert.ok(Math.abs(highFmMod.hepaticAucr - 1 / 0.19) < 1e-9);
+      assert.equal(highFmMod.fdaDdiCategory, "strong");
+      assert.ok(Math.abs(highFmMod.theoreticalMaxAucr - 10) < 1e-9);
+
+      const highFmExtreme = calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: 99, ki: 1 });
+      assert.ok(highFmExtreme.hepaticAucr > 9.1 && highFmExtreme.hepaticAucr < 9.2);
+
+      // Low fm = 0.20: even under 1,000,000x Ki inhibition, AUCR cannot exceed 1.25x
+      const lowFmExtreme = calculateFmAucrSensitivity({ fm: 0.2, inhibitorConc: 1_000_000, ki: 1 });
+      assert.equal(lowFmExtreme.valid, true);
+      assert.ok(lowFmExtreme.hepaticAucr <= 1.25);
+      assert.ok(Math.abs(lowFmExtreme.theoreticalMaxAucr - 1.25) < 1e-9);
+
+      // Zero inhibition -> AUCR = 1
+      const noInh = calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: 0, ki: 1 });
+      assert.equal(noInh.hepaticAucr, 1);
+      assert.equal(noInh.fdaDdiCategory, "none");
+
+      // Intestinal Fg escape multiplies systemic AUCR
+      const oralGut = calculateFmAucrSensitivity({
+        fm: 0.9,
+        inhibitorConc: 9,
+        ki: 1,
+        baselineFg: 0.5,
+        gutInhibitorRatio: 19,
+      });
+      assert.ok(oralGut.intestinalFgRatio > 1.8);
+      assert.ok(oralGut.totalAucr > oralGut.hepaticAucr);
+
+      // Sensitivity curve increases monotonically with fm
+      const curve = generateFmAucrSensitivityCurve(10, 1);
+      assert.ok(curve.length >= 6);
+      for (let i = 1; i < curve.length; i++) {
+        assert.ok(curve[i].hepaticAucr > curve[i - 1].hepaticAucr);
+      }
+
+      // Edge-case guards
+      assert.equal(calculateFmAucrSensitivity({ fm: Number.NaN, inhibitorConc: 5, ki: 1 }).valid, false);
+      assert.equal(calculateFmAucrSensitivity({ fm: 1.2, inhibitorConc: 5, ki: 1 }).valid, false);
+      assert.equal(calculateFmAucrSensitivity({ fm: -0.1, inhibitorConc: 5, ki: 1 }).valid, false);
+      assert.equal(calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: -1, ki: 1 }).valid, false);
+      assert.equal(calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: 5, ki: 0 }).valid, false);
+      assert.equal(calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: Number.POSITIVE_INFINITY, ki: 1 }).valid, false);
+      assert.equal(calculateFmAucrSensitivity({ fm: 0.9, inhibitorConc: 5, ki: 1, baselineFg: 0 }).valid, false);
+      assert.deepEqual(generateFmAucrSensitivityCurve(-5, 1), []);
+      assert.deepEqual(generateFmAucrSensitivityCurve(5, Number.NaN), []);
+    });
+
+    it("models MBI / TDI differential steady-state suppression E_ss/E0 and post-cessation de novo synthesis kinetics", () => {
+      const kdegHepatic = Math.LN2 / 48; // ~0.01444 h^-1
+      const kinact = 0.08; // h^-1
+      const ki = 0.5; // uM
+      const conc = 1.5; // uM
+
+      const mbi = calculateMbiEnzymeTrajectory({
+        kdegPerHour: kdegHepatic,
+        kinactPerHour: kinact,
+        kiMicromolar: ki,
+        inhibitorConcMicromolar: conc,
+        exposureHours: 240,
+        recoveryHours: 240,
+        stepHours: 12,
+        fm: 0.9,
+      });
+
+      assert.equal(mbi.valid, true);
+      const expectedKobs = (kinact * conc) / (ki + conc);
+      const expectedEss = kdegHepatic / (kdegHepatic + expectedKobs);
+      assert.ok(Math.abs(mbi.kobsPerHour - expectedKobs) < 1e-12);
+      assert.ok(Math.abs(mbi.eSsRatio - expectedEss) < 1e-12);
+      assert.ok(Math.abs(mbi.enzymeTurnoverHalfLifeHours - 48) < 1e-9);
+      assert.ok(mbi.steadyStateAucr !== null && mbi.steadyStateAucr > 3);
+
+      // Post-cessation check: 1 - (1 - E_stop/E0) * exp(-kdeg * tPost)
+      const tPost = 48; // 1 half-life post-stop
+      const postPoint = mbi.points.find((p) => p.hour === 240 + tPost)!;
+      assert.ok(postPoint);
+      const expectedPost = 1 - (1 - mbi.eAtStopRatio) * Math.exp(-kdegHepatic * tPost);
+      assert.ok(Math.abs(postPoint.enzymeFraction - expectedPost) < 1e-9);
+
+      // Intestinal (t1/2 = 24h) vs Hepatic (t1/2 = 48h) washout lag comparison
+      const comp = compareIntestinalVsHepaticMbiWashout(kinact, ki, conc, 24, 48);
+      assert.equal(comp.valid, true);
+      assert.ok(comp.intestinal.timeTo90PctRecoveryHours < comp.hepatic.timeTo90PctRecoveryHours);
+      assert.ok(comp.recoveryLagDifferenceHours > 20);
+
+      // Edge-case guards
+      assert.equal(
+        calculateMbiEnzymeTrajectory({
+          kdegPerHour: 0,
+          kinactPerHour: kinact,
+          kiMicromolar: ki,
+          inhibitorConcMicromolar: conc,
+        }).valid,
+        false,
+      );
+      assert.equal(
+        calculateMbiEnzymeTrajectory({
+          kdegPerHour: kdegHepatic,
+          kinactPerHour: -0.1,
+          kiMicromolar: ki,
+          inhibitorConcMicromolar: conc,
+        }).valid,
+        false,
+      );
+      assert.equal(
+        calculateMbiEnzymeTrajectory({
+          kdegPerHour: kdegHepatic,
+          kinactPerHour: kinact,
+          kiMicromolar: Number.NaN,
+          inhibitorConcMicromolar: conc,
+        }).valid,
+        false,
+      );
+      assert.equal(
+        calculateMbiEnzymeTrajectory({
+          kdegPerHour: kdegHepatic,
+          kinactPerHour: kinact,
+          kiMicromolar: ki,
+          inhibitorConcMicromolar: conc,
+          fm: 1.5,
+        }).valid,
+        false,
+      );
+      assert.equal(compareIntestinalVsHepaticMbiWashout(kinact, ki, conc, 0, 48).valid, false);
+    });
+
+    it("evaluates CYP450 phenoconversion and non-inducibility of genetic PM null alleles", () => {
+      // Paroxetine converts CYP2D6 NM to phenotypic PM, collapsing codeine bioactivation
+      const prodrugConv = evaluateCypPhenoconversion({
+        isoform: "CYP2D6",
+        baselinePhenotype: "NM",
+        perpetratorDrugId: "paroxetine",
+        isProdrug: true,
+      });
+      assert.equal(prodrugConv.valid, true);
+      assert.equal(prodrugConv.effectivePhenotype, "PM");
+      assert.ok((prodrugConv.activeMetaboliteFoldVsNm ?? 1) < 0.2);
+
+      // Genetic CYP2C19 PM cannot be induced by rifampin
+      const pmInducer = evaluateCypPhenoconversion({
+        isoform: "CYP2C19",
+        baselinePhenotype: "PM",
+        perpetratorDrugId: "rifampin",
+      });
+      assert.equal(pmInducer.valid, true);
+      assert.equal(pmInducer.nonInducibleNullAllele, true);
+      assert.equal(pmInducer.effectivePhenotype, "PM");
+
+      // Edge-case guard
+      assert.equal(
+        evaluateCypPhenoconversion({
+          isoform: "CYP2D6",
+          baselinePhenotype: "NM",
+          fm: Number.NaN,
+        }).valid,
+        false,
+      );
+    });
+
+    it("guards calculateEnzymeTrajectory against NaN, Infinity, and negative days/stopDay", () => {
+      const nanTraj = calculateEnzymeTrajectory(["ritonavir"], Number.NaN, Number.POSITIVE_INFINITY);
+      assert.equal(nanTraj.days, 30);
+      assert.equal(nanTraj.stopDay, 10);
+      assert.equal(nanTraj.points.length, 31);
+
+      const negTraj = calculateEnzymeTrajectory(["rifampin"], -10, -5);
+      assert.equal(negTraj.days, 0);
+      assert.equal(negTraj.stopDay, 0);
+      assert.equal(negTraj.points.length, 1);
+      assert.equal(negTraj.points[0].activePoolPct, 100);
     });
   });
 });

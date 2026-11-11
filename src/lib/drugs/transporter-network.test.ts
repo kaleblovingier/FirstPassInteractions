@@ -4,12 +4,16 @@ import { DRUG_BY_ID } from "./catalog";
 import {
   TRANSPORTERS,
   BARRIER_ARCHITECTURES,
+  ECCS_CLASS_PROFILES,
   TRANSPORTER_REGULATORY_DISCLAIMER,
   getTransporterById,
   findTransportersForDrug,
   getAllTransporters,
   getBarrierById,
   getAllBarriers,
+  calculateExtendedHepaticClearance,
+  calculateGutPgpCyp3aSynergy,
+  validateTransporterCatalogIntegrity,
 } from "./transporter-network";
 
 describe("Transmembrane Transporter & Barrier Network Database", () => {
@@ -318,5 +322,216 @@ describe("Non-prescriptive Regulatory Posture (FD&C Act § 520(o)(1)(E))", () =>
       assert.ok(transporter.fdaClassification.length > 0);
       assert.ok(transporter.iupharClassification.length > 0);
     }
+  });
+});
+
+describe("Extended Clearance Concept (ECC) & Transporter-Enzyme Interplay", () => {
+  it("validates transporter and ECCS catalog integrity against DRUG_BY_ID", () => {
+    const integrity = validateTransporterCatalogIntegrity();
+    assert.equal(integrity.valid, true);
+    assert.deepEqual(integrity.missingDrugIds, []);
+    assert.ok(integrity.totalUniqueDrugIds >= 35);
+
+    assert.equal(ECCS_CLASS_PROFILES.length, 6);
+    for (const profile of ECCS_CLASS_PROFILES) {
+      assert.ok(profile.exemplarDrugIds.length > 0);
+      for (const drugId of profile.exemplarDrugIds) {
+        assert.ok(DRUG_BY_ID[drugId], `ECCS Class ${profile.classId} exemplar '${drugId}' must exist in DRUG_BY_ID`);
+      }
+    }
+  });
+
+  it("includes Paxlovid DOAC collisions, rifampin P-gp induction, and ECC Class 3B statin collisions", () => {
+    const pgp = getTransporterById("pgp-abcb1")!;
+    assert.ok(pgp.substrates.includes("rivaroxaban"));
+    assert.ok(pgp.clinicalCollisions.some((c) => c.id === "rivaroxaban-paxlovid" && c.drugPair.includes("rivaroxaban") && c.drugPair.includes("paxlovid")));
+    assert.ok(pgp.clinicalCollisions.some((c) => c.id === "apixaban-paxlovid" && c.drugPair.includes("apixaban") && c.drugPair.includes("paxlovid")));
+    assert.ok(pgp.clinicalCollisions.some((c) => c.id === "dabigatran-rifampin" && c.drugPair.includes("dabigatran") && c.drugPair.includes("rifampin")));
+    assert.ok(pgp.clinicalCollisions.some((c) => c.id === "digoxin-rifampin" && c.drugPair.includes("digoxin") && c.drugPair.includes("rifampin")));
+
+    const oatp = getTransporterById("oatp1b1-1b3-slco")!;
+    assert.ok(oatp.substrates.includes("pitavastatin"));
+    assert.ok(oatp.clinicalCollisions.some((c) => c.id === "pitavastatin-cyclosporine"));
+    assert.ok(oatp.clinicalCollisions.some((c) => c.id === "atorvastatin-rifampin-acute"));
+  });
+
+  it("models Extended Clearance Concept (ECC) Class 3B uptake-rate-limiting statin partitioning", () => {
+    // Rosuvastatin / Pitavastatin Class 3B profile: PSinf,active >> PSdiff and CLbile + CLmet >> PSdiff
+    const oatpBlocked = calculateExtendedHepaticClearance({
+      psInfluxActive: 95,
+      psPassiveDiff: 5,
+      psEffluxActive: 0,
+      clMetabolic: 10,
+      clBiliary: 90,
+      uptakeActivityFactor: 0.15,
+      fub: 0.12,
+      hepaticBloodFlow: 90,
+    });
+    assert.equal(oatpBlocked.valid, true);
+    assert.equal(oatpBlocked.rateLimitingRegime, "uptake-rate-limited");
+    assert.ok(oatpBlocked.baselineBeta > 0.9);
+    assert.ok(oatpBlocked.systemicExposureRatio > 4.0, "OATP1B1 arrest must markedly elevate systemic statin AUC");
+    assert.ok(oatpBlocked.intrahepaticKpuuRatio < 0.25, "Sinusoidal uptake block reduces liver-to-blood Kp,uu");
+    assert.ok(oatpBlocked.baselineHepaticExtraction !== null && oatpBlocked.baselineHepaticExtraction > 0 && oatpBlocked.baselineHepaticExtraction < 1);
+    assert.ok(oatpBlocked.modulatedHepaticExtraction !== null && oatpBlocked.modulatedHepaticExtraction < oatpBlocked.baselineHepaticExtraction!);
+
+    // Isolated canalicular biliary efflux inhibition on an uptake-rate-limited drug spikes intrahepatic exposure
+    const biliaryBlockedOnly = calculateExtendedHepaticClearance({
+      psInfluxActive: 95,
+      psPassiveDiff: 5,
+      clMetabolic: 10,
+      clBiliary: 90,
+      uptakeActivityFactor: 1,
+      biliaryActivityFactor: 0.1,
+    });
+    assert.equal(biliaryBlockedOnly.valid, true);
+    assert.ok(biliaryBlockedOnly.intrahepaticKpuuRatio > 3.0);
+    assert.ok(biliaryBlockedOnly.intrahepaticAucRatio > biliaryBlockedOnly.systemicExposureRatio);
+
+    // Class 1A / Class 2 metabolism-limited profile: PSdiff >> CLmet + CLbile
+    const metLimited = calculateExtendedHepaticClearance({
+      psInfluxActive: 0,
+      psPassiveDiff: 500,
+      clMetabolic: 40,
+      clBiliary: 5,
+      metabolismActivityFactor: 0.1,
+    });
+    assert.equal(metLimited.valid, true);
+    assert.equal(metLimited.rateLimitingRegime, "metabolism-biliary-limited");
+    assert.ok(metLimited.baselineBeta < 0.15);
+
+    // Edge-case guards
+    assert.equal(
+      calculateExtendedHepaticClearance({
+        psInfluxActive: Number.NaN,
+        psPassiveDiff: 5,
+        clMetabolic: 10,
+        clBiliary: 90,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateExtendedHepaticClearance({
+        psInfluxActive: 95,
+        psPassiveDiff: -1,
+        clMetabolic: 10,
+        clBiliary: 90,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateExtendedHepaticClearance({
+        psInfluxActive: 0,
+        psPassiveDiff: 0,
+        clMetabolic: 10,
+        clBiliary: 90,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateExtendedHepaticClearance({
+        psInfluxActive: 95,
+        psPassiveDiff: 5,
+        clMetabolic: 10,
+        clBiliary: 90,
+        fub: 0,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateExtendedHepaticClearance({
+        psInfluxActive: 95,
+        psPassiveDiff: 5,
+        clMetabolic: 10,
+        clBiliary: 90,
+        hepaticBloodFlow: Number.POSITIVE_INFINITY,
+      }).valid,
+      false,
+    );
+  });
+
+  it("models presystemic gut P-gp + CYP3A4 efflux-metabolism synergy and induction collapse", () => {
+    // Baseline neutral state returns exact fold 1.0
+    const base = calculateGutPgpCyp3aSynergy({
+      baselineFa: 0.45,
+      baselineFg: 0.4,
+      pgpActivityFactor: 1,
+      cyp3a4ActivityFactor: 1,
+    });
+    assert.equal(base.valid, true);
+    assert.ok(Math.abs(base.presystemicBioavailabilityFold - 1) < 1e-12);
+
+    // Tacrolimus + Paxlovid dual P-gp + CYP3A4 blockade: super-additive bioavailability jump
+    const paxTac = calculateGutPgpCyp3aSynergy({
+      baselineFa: 0.45,
+      baselineFg: 0.4,
+      pgpActivityFactor: 0.1,
+      cyp3a4ActivityFactor: 0.05,
+    });
+    assert.equal(paxTac.valid, true);
+    assert.ok(paxTac.modulatedFaFg > 0.84);
+    assert.ok(paxTac.presystemicBioavailabilityFold > 4.5);
+    assert.ok(paxTac.presystemicBioavailabilityFold > paxTac.isolatedPgpFold);
+    assert.ok(paxTac.presystemicBioavailabilityFold > paxTac.isolatedCyp3a4Fold);
+    assert.ok(paxTac.synergyRatio > 1.0);
+
+    // Rifampin dual P-gp + CYP3A4 PXR induction collapses Fa * Fg
+    const rifTac = calculateGutPgpCyp3aSynergy({
+      baselineFa: 0.45,
+      baselineFg: 0.4,
+      pgpActivityFactor: 3.5,
+      cyp3a4ActivityFactor: 4.0,
+    });
+    assert.equal(rifTac.valid, true);
+    assert.ok(rifTac.modulatedFaFg < rifTac.baselineFaFg * 0.35);
+
+    // Pure P-gp substrate (dabigatran, baselineFg = 1.0): invariant to CYP3A4 modulation
+    const dabi = calculateGutPgpCyp3aSynergy({
+      baselineFa: 0.1,
+      baselineFg: 1.0,
+      pgpActivityFactor: 3.0,
+      cyp3a4ActivityFactor: 0.1,
+    });
+    assert.equal(dabi.valid, true);
+    assert.equal(dabi.modulatedFg, 1);
+    assert.ok(dabi.modulatedFa < dabi.baselineFa);
+
+    // Edge-case guards
+    assert.equal(
+      calculateGutPgpCyp3aSynergy({
+        baselineFa: 0,
+        baselineFg: 0.5,
+        pgpActivityFactor: 1,
+        cyp3a4ActivityFactor: 1,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateGutPgpCyp3aSynergy({
+        baselineFa: 0.5,
+        baselineFg: 1.2,
+        pgpActivityFactor: 1,
+        cyp3a4ActivityFactor: 1,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateGutPgpCyp3aSynergy({
+        baselineFa: 0.5,
+        baselineFg: 0.5,
+        pgpActivityFactor: -1,
+        cyp3a4ActivityFactor: 1,
+      }).valid,
+      false,
+    );
+    assert.equal(
+      calculateGutPgpCyp3aSynergy({
+        baselineFa: 0.5,
+        baselineFg: 0.5,
+        pgpActivityFactor: 1,
+        cyp3a4ActivityFactor: Number.NaN,
+      }).valid,
+      false,
+    );
   });
 });
