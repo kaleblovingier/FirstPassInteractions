@@ -2924,6 +2924,8 @@ interface SearchEntry {
   brands: string[];
   aliases: string[];
   searchable: string[];
+  /** Search-only street names (street-names.ts). Matched exactly, ranked under official names. */
+  street: string[];
   cls: string;
   /** Compact normalized enzyme name per role, in drug.enzymes order. */
   enzymeKeys: string[];
@@ -2945,6 +2947,9 @@ function searchIndex(): SearchEntry[] {
         brands,
         aliases,
         searchable: [name, id, ...brands, ...aliases],
+        street: (Object.hasOwn(STREET_NAMES, drug.id) ? STREET_NAMES[drug.id]! : []).map(
+          normalizeSearchText,
+        ),
         cls: drug.cls.toLowerCase(),
         enzymeKeys: drug.enzymes.map((e) => normalizeSearchText(e.enzyme).replace(/\s/g, "")),
       };
@@ -3477,7 +3482,7 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
   });
 
   const scored: { drug: Drug; score: number }[] = [];
-  for (const { drug, name, id, brands, aliases, searchable, cls, enzymeKeys } of searchIndex()) {
+  for (const { drug, name, id, brands, aliases, searchable, street, cls, enzymeKeys } of searchIndex()) {
     if (excluded.has(drug.id)) continue;
     let score = 0;
     for (const { mq, tokens, compactQuery, enzymeKey, enzymeDigits, teach, saltBonus } of matchQueries) {
@@ -3485,6 +3490,8 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       // A row's own id or name outranks another row's identical brand or alias, as in the API.
       if (name === mq || id === mq) s = 100;
       else if (searchable.some((value) => value === mq)) s = 99;
+      // A street name only on an exact match, under every official name and above every prefix.
+      else if (street.includes(mq)) s = 90;
       else if (name.startsWith(mq) || id.startsWith(mq)) s = 80;
       else if (brands.some((b) => b.startsWith(mq)) || aliases.some((a) => a.startsWith(mq))) s = 70;
       else if (name.includes(mq) || id.includes(mq)) s = 60;
