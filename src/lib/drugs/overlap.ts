@@ -43,12 +43,26 @@ export function timeline(ids: readonly string[], times: IngestionTimes, report: 
       return row;
     });
   const left = new Map(rows.map((row) => [row.id, row.remaining]));
+  // Clocks that outlast half-life math: label washouts, lingering rows, enzyme inactivation.
+  const holdsFor = ([x, y]: [string, string]): string | undefined => {
+    const heads = report.findings
+      .filter(
+        (f) =>
+          f.drugIds.includes(x) &&
+          f.drugIds.includes(y) &&
+          f.tags.some((t) => t === "washout" || t === "linger" || t === "tdi"),
+      )
+      .map((f) => f.headline);
+    return heads.length ? [...new Set(heads)].join("; ") : undefined;
+  };
   const pairs: OverlapRow[] = summarizePairs(
     rows.map((row) => row.id),
     report.findings,
   ).map(({ pair, highestSeverity }) => {
     const a = left.get(pair[0]);
     const b = left.get(pair[1]);
+    const holds = holdsFor(pair);
+    if (holds) return { pair, severity: highestSeverity, holds };
     return {
       pair,
       severity: highestSeverity,

@@ -24,4 +24,22 @@ describe("overlap - timeline", () => {
     assert.equal(sketch.pairs.length, 3);
     assert.ok(sketch.pairs.every((p) => p.severity === "major" && p.activeOverlapPercent === undefined));
   });
+
+  it("holds a pair whose washout or enzyme clock outlasts half-life math", () => {
+    const maoi = ["phenelzine", "fluoxetine"];
+    const a = timeline(maoi, { phenelzine: 400, fluoxetine: 400 }, analyze(maoi)).pairs[0]!;
+    assert.match(a.holds ?? "", /washout/);
+    assert.equal(a.activeOverlapPercent, undefined);
+    const cyp = ["paroxetine", "codeine"];
+    const b = timeline(cyp, { paroxetine: 48, codeine: 4 }, analyze(cyp)).pairs[0]!;
+    assert.match(b.holds ?? "", /clock/);
+    assert.equal(b.activeOverlapPercent, undefined);
+  });
+
+  it("still gives a percent when no outlasting clock exists", () => {
+    const ids = ["mdma", "alprazolam"];
+    const p = timeline(ids, { mdma: 8, alprazolam: 12 }, analyze(ids)).pairs[0]!;
+    assert.equal(p.holds, undefined);
+    assert.equal(p.activeOverlapPercent, 50);
+  });
 });
