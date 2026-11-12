@@ -14,6 +14,7 @@ import { hasCite } from "./pubmed";
 import { hasStahl } from "./stahl";
 import { hasTdm } from "./tdm";
 import { MME_FACTOR } from "./mme";
+import { STREET_NAMES } from "./street-names";
 
 function sub(
   enzyme: Enzyme,
@@ -3518,6 +3519,24 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
     if (named !== normalizedQuery) return searchDrugs(named, excludeIds);
   }
   return scored.slice(0, 24).map((s) => s.drug);
+}
+
+/** The street name on this row that `query` matches exactly, or null. See street-names.ts. */
+export function matchedStreetName(id: string, query: string): string | null {
+  const q = normalizeSearchText(query);
+  const names = Object.hasOwn(STREET_NAMES, id) ? STREET_NAMES[id] : [];
+  return (q && names.find((name) => normalizeSearchText(name) === q)) || null;
+}
+
+/** Catalog ids whose street-name list holds `query` exactly, in catalog order. See street-names.ts. */
+export function streetNameIds(query: string): string[] {
+  const q = normalizeSearchText(query);
+  if (!q) return [];
+  return DRUGS.filter(
+    (drug) =>
+      Object.hasOwn(STREET_NAMES, drug.id) &&
+      STREET_NAMES[drug.id]!.some((name) => normalizeSearchText(name) === q),
+  ).map((drug) => drug.id);
 }
 
 /** A shelf keyword that is also a brand (Zosyn, Entresto, Opvee) still lists that brand's row first. */

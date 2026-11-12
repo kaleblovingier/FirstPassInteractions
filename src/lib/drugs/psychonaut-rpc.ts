@@ -6,7 +6,7 @@ export const lookupPsychonaut = createServerFn({ method: "POST" })
   .validator((input: unknown) => checkInput("lookupPsychonaut", IdsInput, input))
   .handler(async ({ data }): Promise<PsychonautPack> => {
     const ids = data.ok ? data.value.ids.slice(0, 2) : [];
-    if (ids.length === 0) return { ok: false, pages: [], combo: null };
+    if (ids.length === 0) return { ok: false, pages: [], combos: [] };
     const { lookupPsychonaut: pull } = await import("./psychonaut.server");
     return pull(ids);
   });

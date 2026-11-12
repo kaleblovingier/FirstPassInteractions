@@ -153,10 +153,11 @@ async function fetchCombo(a: string, b: string): Promise<LiveCombo | null> {
   try {
     const answer = await comboCache.getOrFetch(`${na}|${nb}`, () => tripsitAnswer(na, nb));
     return answer.ok
-      ? { a: na, b: nb, status: answer.status, note: answer.note, source: "TripSit combo API", ok: true }
-      : { a: na, b: nb, status: "", note: "", source: "TripSit", ok: false, reason: answer.reason };
+      ? { ids: [a, b], a: na, b: nb, status: answer.status, note: answer.note, source: "TripSit combo API", ok: true }
+      : { ids: [a, b], a: na, b: nb, status: "", note: "", source: "TripSit", ok: false, reason: answer.reason };
   } catch (error) {
     return {
+      ids: [a, b],
       a: na,
       b: nb,
       status: "",
@@ -170,7 +171,7 @@ async function fetchCombo(a: string, b: string): Promise<LiveCombo | null> {
 
 export async function lookupPsychonaut(ids: string[]): Promise<PsychonautPack> {
   const unique = [...new Set(ids.filter((id) => Object.hasOwn(DRUG_BY_ID, id)))].slice(0, 2);
-  if (!unique.length) return { ok: false, pages: [], combo: null };
+  if (!unique.length) return { ok: false, pages: [], combos: [] };
   const started = Date.now();
   // The combo does not depend on the wiki pages, so both go out at once.
   const [pages, combo] = await Promise.all([
@@ -185,5 +186,5 @@ export async function lookupPsychonaut(ids: string[]): Promise<PsychonautPack> {
     combo: combo ? combo.ok : undefined,
     ok,
   });
-  return { ok, pages, combo };
+  return { ok, pages, combos: combo ? [combo] : [] };
 }

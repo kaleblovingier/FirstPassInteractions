@@ -1,11 +1,13 @@
 /** NCBI E-utilities. Server-only — dynamic-import from the RPC wrapper. */
 
-import type { LiveCite, LiveResult } from "./pubmed";
+import { DRUG_BY_ID } from "./catalog";
+import { fanoutPairs } from "./fanout";
+import type { LiveCite, LiveResult, PairEvidence, PairEvidencePack } from "./pubmed";
 import { BoundedLRUCache } from "../server/cache";
 import { failurePhrase, fetchJson } from "../server/http";
 import { logEvent } from "../server/log";
 
-export type { LiveCite, LiveResult };
+export type { LiveCite, LiveResult, PairEvidence, PairEvidencePack };
 
 const TOOL = "firstpass";
 const EMAIL = "FirstPassInteractions@gmail.com";
@@ -104,4 +106,20 @@ export async function searchLive(raw: string): Promise<LiveResult> {
       query,
     };
   }
+}
+
+/**
+ * Live PubMed evidence for every pair on the tray, in pairSlots order. One failed pair never fails
+ * another, and the whole call stays inside NCBI's 3 requests per second.
+ */
+export async function searchPairEvidence(ids: readonly string[]): Promise<PairEvidencePack> {
+  const unique = [...new Set(ids)].filter((id) => Object.hasOwn(DRUG_BY_ID, id));
+  const pairs: PairEvidence[] = fanoutPairs(unique).map((pair) => ({
+    pair,
+    query: "",
+    ok: false,
+    hits: [],
+    reason: "Pair search is not wired yet.",
+  }));
+  return { ok: false, pairs };
 }

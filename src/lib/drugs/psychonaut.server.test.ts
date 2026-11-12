@@ -57,11 +57,11 @@ afterEach(() => {
 describe("psychonaut.server - lookupPsychonaut", () => {
   it("returns an empty pack without calling upstream for unknown or inherited ids", async () => {
     const calls = stubFetch(healthy);
-    assert.deepEqual(await lookupPsychonaut([]), { ok: false, pages: [], combo: null });
+    assert.deepEqual(await lookupPsychonaut([]), { ok: false, pages: [], combos: [] });
     assert.deepEqual(await lookupPsychonaut(["constructor", "toString", "not-a-drug"]), {
       ok: false,
       pages: [],
-      combo: null,
+      combos: [],
     });
     assert.equal(calls.length, 0);
   });
@@ -75,14 +75,15 @@ describe("psychonaut.server - lookupPsychonaut", () => {
       pack.pages.map((p) => p.extract),
       ["MDMA is an entactogen of the amphetamine class.", "Ketamine is a dissociative anesthetic."],
     );
-    assert.deepEqual(pack.combo, {
+    assert.deepEqual(pack.combos, [{
+      ids: ["mdma", "ketamine"],
       a: "MDMA",
       b: "Ketamine",
       status: "Caution",
       note: "Both raise heart rate.",
       source: "TripSit combo API",
       ok: true,
-    });
+    }]);
     assert.equal(calls.length, 3);
     const tripsit = calls.find((c) => c.url.includes("tripsit"))!;
     const firstWikiDone = Math.min(...calls.filter((c) => c.url.includes("psychonautwiki")).map((c) => c.end));
@@ -93,8 +94,8 @@ describe("psychonaut.server - lookupPsychonaut", () => {
     const calls = stubFetch((url) => (url.includes("tripsit") ? json({}, 500) : healthy(url)), 2);
     const pack = await lookupPsychonaut(["mdma", "ketamine"]);
     assert.equal(pack.ok, true, "the wiki pages still answered");
-    assert.equal(pack.combo?.ok, false);
-    assert.equal(pack.combo?.reason, "TripSit did not answer. Local chart still stands.");
+    assert.equal(pack.combos[0]?.ok, false);
+    assert.equal(pack.combos[0]?.reason, "TripSit did not answer. Local chart still stands.");
 
     await lookupPsychonaut(["mdma", "ketamine"]);
     assert.equal(calls.filter((c) => c.url.includes("tripsit")).length, 2);
@@ -107,8 +108,8 @@ describe("psychonaut.server - lookupPsychonaut", () => {
       2,
     );
     const pack = await lookupPsychonaut(["mdma", "ketamine"]);
-    assert.equal(pack.combo?.ok, false);
-    assert.equal(pack.combo?.reason, "No interaction data.");
+    assert.equal(pack.combos[0]?.ok, false);
+    assert.equal(pack.combos[0]?.reason, "No interaction data.");
     await lookupPsychonaut(["mdma", "ketamine"]);
     assert.equal(calls.filter((c) => c.url.includes("tripsit")).length, 1);
   });

@@ -823,6 +823,8 @@ export interface WikiPage {
 }
 
 export interface LiveCombo {
+  /** Catalog ids of the pair this row answers, in tray order. */
+  ids: [string, string];
   a: string;
   b: string;
   status: string;
@@ -835,5 +837,6 @@ export interface LiveCombo {
 export interface PsychonautPack {
   ok: boolean;
   pages: WikiPage[];
-  combo: LiveCombo | null;
+  /** One row per tray pair TripSit has names for. */
+  combos: LiveCombo[];
 }

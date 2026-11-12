@@ -1412,7 +1412,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
       .then((pack) => {
         if (!live) return;
         setPages(pack.pages);
-        setLiveCombo(pack.combo);
+        setLiveCombo(pack.combos[0] ?? null);
       })
       .catch(() => {
         if (live) setWikiErr("PsychonautWiki did not answer. Local teaching still stands.");

@@ -591,6 +591,11 @@ export function pkIdsOn(ids: string[]) {
   return ids.filter((id) => ROWS[id]);
 }
 
+/** Typical adult elimination half-life on the PK shelf, in hours. */
+export function pkHalfLifeH(id: string): number | undefined {
+  return Object.hasOwn(ROWS, id) ? ROWS[id].tHalfH : undefined;
+}
+
 function specFor(id: string, host: HostContext): PkSpec | null {
   const row = ROWS[id];
   if (!row) return null;

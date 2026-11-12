@@ -39,6 +39,23 @@ export interface LiveResult {
   query: string;
 }
 
+/** Live PubMed search for one tray pair. A quiet search is not a green light. */
+export interface PairEvidence {
+  /** Catalog ids, in tray order. */
+  pair: [string, string];
+  query: string;
+  ok: boolean;
+  hits: LiveCite[];
+  /** Why this pair has no hits to show (PubMed did not answer, nothing found). */
+  reason?: string;
+}
+
+/** One PairEvidence per tray pair, in pairSlots order. `ok` is true when any pair answered. */
+export interface PairEvidencePack {
+  ok: boolean;
+  pairs: PairEvidence[];
+}
+
 function c(
   pmid: string,
   year: number,

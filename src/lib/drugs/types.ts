@@ -247,6 +247,39 @@ export interface StackBar {
   items: string[];
 }
 
+/** Hours since each tray item was last taken, keyed by catalog id. A missing key means not stated. */
+export type IngestionTimes = Record<string, number>;
+
+/** One tray item on the timing sketch: first-order decay from a typical adult half-life. Not a level. */
+export interface DecayRow {
+  id: string;
+  name: string;
+  /** Typical adult elimination half-life in hours. Undefined when this shelf has none. */
+  halfLifeH?: number;
+  /** Where the half-life came from: the PK shelf, a label sentence, or a PMID. */
+  source?: string;
+  /** Why no half-life is sketched (ethanol clears at a fixed rate, no shelf row). */
+  note?: string;
+  hoursAgo?: number;
+  /** 0–1 share left by 0.5^(hoursAgo / halfLifeH). Undefined unless both inputs are known. */
+  remaining?: number;
+}
+
+/** One pair on the timing sketch. It annotates the engine's own severity and never changes it. */
+export interface OverlapRow {
+  pair: [string, string];
+  severity: Severity | "none";
+  /** 0–100: the smaller remaining share of the two. Undefined without a time and a half-life on both sides, or when `holds` is set. */
+  activeOverlapPercent?: number;
+  /** A clock on this pair that outlasts half-life math (label washout, enzyme resynthesis). When set, no percent is given. */
+  holds?: string;
+}
+
+export interface Timeline {
+  rows: DecayRow[];
+  pairs: OverlapRow[];
+}
+
 export const SEVERITY_RANK: Record<Severity | "none", number> = {
   contraindicated: 4,
   major: 3,
