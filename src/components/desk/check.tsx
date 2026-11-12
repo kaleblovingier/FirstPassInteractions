@@ -291,7 +291,7 @@ export function CheckBoard({
   const [scope, setScope] = useState(pairKey);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
-  const [tier, setTier] = useState<Severity | "all">("all");
+  const [tier, setTier] = useState<Severity | "all" | "none">("all");
   const [showFood, setShowFood] = useState(false);
   if (scope !== pairKey) {
     setScope(pairKey);
@@ -300,7 +300,7 @@ export function CheckBoard({
     setTier("all");
     setOpenId(null);
   }
-  const filtered = tier === "all" ? rows : rows.filter((f) => f.severity === tier);
+  const filtered = tier === "all" ? rows : tier === "none" ? [] : rows.filter((f) => f.severity === tier);
   const split = regimenGroups(filtered);
   const grouped = ids.length >= 3 && split.pairs.length > 1;
   const visibleGroups = showAll ? split.pairs : split.pairs.slice(0, 4);
@@ -507,7 +507,28 @@ export function CheckBoard({
                   : `${SEVERITY_LABEL[t]} ${counts[t]}`}
               </button>
             ))}
+            {quietPairs.length > 0 ? (
+              <button
+                type="button"
+                aria-pressed={tier === "none"}
+                onClick={() => {
+                  setTier("none");
+                  setShowAll(false);
+                }}
+                className={cn(
+                  "h-10 pointer-coarse:h-11 rounded-full px-3 text-xs font-medium",
+                  tier === "none" ? "bg-ink text-bg" : "bg-bg-sunken text-muted hover:text-fg",
+                )}
+              >
+                {`Unmapped ${quietPairs.length}`}
+              </button>
+            ) : null}
           </div>
+          {tier !== "all" && rows.length - filtered.length > 0 ? (
+            <p role="status" className="mt-2 text-xs leading-relaxed text-fg">
+              {`${rows.length - filtered.length} of ${rows.length} mapped ${rows.length - filtered.length === 1 ? "row is" : "rows are"} hidden by this filter. Hidden is not clear.`}
+            </p>
+          ) : null}
           <p className="mt-2 text-xs leading-relaxed text-muted">
             These bins are unreviewed engineering defaults, not a signed clinical tier and not a personal prediction.
           </p>
@@ -581,6 +602,15 @@ export function CheckBoard({
 
       {rows.length === 0 && quietEnzymes ? (
         <p className="text-xs leading-relaxed text-muted">{quietEnzymes}</p>
+      ) : tier === "none" ? (
+        <ul className="space-y-1 rounded-md border border-border bg-bg-sunken px-3 py-3 text-sm text-fg">
+          {quietPairs.map((pair) => (
+            <li key={pair.key}>
+              <span className="font-medium">{pair.title}.</span> {pair.reason}
+            </li>
+          ))}
+          <li className="text-xs text-muted">A blank pair is not a clearance.</li>
+        </ul>
       ) : filtered.length === 0 && rows.length > 0 ? (
         <div className="rounded-md border border-border bg-bg-sunken px-3 py-3">
           <p className="text-sm font-medium text-fg">Nothing in this severity slice</p>
