@@ -1,5 +1,12 @@
 [
  {
+  "pmid": "284708",
+  "year": 1979,
+  "journal": "Acta Med Scand Suppl",
+  "title": "The effect of different sulfonamides on phenytoin metabolism in man.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "428735",
   "year": 1979,
   "journal": "Gerontology",
@@ -54,6 +61,13 @@
   "journal": "Clin Pharmacol Ther",
   "title": "Interference of dairy products with the absorption of ciprofloxacin.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "2015731",
+  "year": 1991,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Effect of fluconazole on the disposition of phenytoin.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "2035713",
@@ -159,6 +173,13 @@
   "journal": "Clin Pharmacokinet",
   "title": "First-pass elimination. Basic concepts and clinical consequences.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "6486598",
+  "year": 1984,
+  "journal": "Ann Intern Med",
+  "title": "Possible interaction between amiodarone and phenytoin.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "6803191",
@@ -336,6 +357,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "9918590",
+  "year": 1999,
+  "journal": "J Pharmacol Exp Ther",
+  "title": "Mechanism-based inactivation of cytochrome P-450-3A4 by mifepristone (RU486).",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "9989685",
   "year": 1999,
   "journal": "Am J Clin Nutr",
@@ -362,6 +390,13 @@
   "journal": "Am J Clin Nutr",
   "title": "Dietary supplement or drug? The case for cholestin.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "10411543",
+  "year": 1999,
+  "journal": "J Clin Invest",
+  "title": "The role of intestinal P-glycoprotein in the interaction of digoxin and rifampin.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "10485779",
@@ -406,6 +441,20 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "11206048",
+  "year": 2001,
+  "journal": "Ther Drug Monit",
+  "title": "Phenytoin intoxication induced by fluvoxamine.",
+  "checked": "2026-11-12"
+ },
+ {
+  "pmid": "11309547",
+  "year": 2001,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Effects of fluconazole and fluvoxamine on the pharmacokinetics and pharmacodynamics of glimepiride.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "11476118",
   "year": 2001,
   "journal": "J Clin Psychopharmacol",
@@ -441,11 +490,25 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "11861813",
+  "year": 2002,
+  "journal": "J Pharmacol Exp Ther",
+  "title": "Unmasking the dynamic interplay between intestinal P-glycoprotein and CYP3A4.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "12065445",
   "year": 2002,
   "journal": "Drug Metab Dispos",
   "title": "Contribution of CYP3A4, CYP2B6, and CYP2C9 isoforms to N-demethylation of ketamine in human liver microsomes.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "12099384",
+  "year": 2001,
+  "journal": "Am J Transplant",
+  "title": "Bilateral pharmacokinetic interaction between cyclosporine A and atorvastatin in renal transplant recipients.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "12162761",
@@ -474,6 +537,13 @@
   "journal": "Pharmacogenetics",
   "title": "The effect of smoking and cytochrome P450 CYP1A2 genetic polymorphism on clozapine clearance and dose requirement.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "12672733",
+  "year": 2003,
+  "journal": "JAMA",
+  "title": "Drug-drug interactions among elderly patients hospitalized for drug toxicity.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "12882588",
@@ -511,6 +581,20 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "14616412",
+  "year": 2003,
+  "journal": "Br J Clin Pharmacol",
+  "title": "Coadministration of voriconazole and phenytoin: pharmacokinetic interaction, safety, and toleration.",
+  "checked": "2026-11-12"
+ },
+ {
+  "pmid": "14744949",
+  "year": 2004,
+  "journal": "Drug Metab Dispos",
+  "title": "Prediction of cytochrome P450 3A inhibition by verapamil enantiomers and their metabolites.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "14999113",
   "year": 2004,
   "journal": "N Engl J Med",
@@ -537,6 +621,13 @@
   "journal": "Toxicol Rev",
   "title": "Does urine alkalinization increase salicylate elimination? If so, why?",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "15289793",
+  "year": 2004,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Rosuvastatin pharmacokinetics in heart transplant recipients administered an antirejection regimen including cyclosporine.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "15319342",
@@ -672,6 +763,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "16714062",
+  "year": 2006,
+  "journal": "Pharmacol Ther",
+  "title": "Pharmacokinetic and pharmacodynamic alterations of 3-hydroxy-3-methylglutaryl coenzyme A (HMG-CoA) reductase inhibitors: drug-drug interactions and interindividual differences in transporter and metabolic enzyme functions.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "16819548",
   "year": 2007,
   "journal": "Pharmacogenomics J",
@@ -754,6 +852,13 @@
   "journal": "J Am Coll Cardiol",
   "title": "Influence of omeprazole on the antiplatelet action of clopidogrel associated with aspirin: the randomized, double-blind OCLA (Omeprazole CLopidogrel Aspirin) study.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "18217787",
+  "year": 2008,
+  "journal": "Drug Saf",
+  "title": "I f inhibition with ivabradine : electrophysiological effects and safety.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "18272864",
@@ -868,6 +973,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "20405111",
+  "year": 2010,
+  "journal": "Eur J Clin Pharmacol",
+  "title": "Fluconazole-induced intoxication with phenytoin in a patient with ultra-high activity of CYP2C9.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "20551238",
   "year": 2010,
   "journal": "Drug Metab Dispos",
@@ -882,11 +994,25 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "20592722",
+  "year": 2010,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Anti-infectives and the risk of severe hypoglycemia in users of glipizide or glyburide.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "21142534",
   "year": 2010,
   "journal": "N Engl J Med",
   "title": "Neonatal abstinence syndrome after methadone or buprenorphine exposure.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "21242274",
+  "year": 2011,
+  "journal": "CMAJ",
+  "title": "The risk of hypotension following co-prescription of macrolide antibiotics and calcium-channel blockers.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "21270794",
@@ -952,6 +1078,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "22348256",
+  "year": 2012,
+  "journal": "Br J Clin Pharmacol",
+  "title": "Decrease in the oral bioavailability of dabigatran etexilate after co-medication with rifampicin.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "22398967",
   "year": 2012,
   "journal": "Clin Pharmacol Ther",
@@ -994,6 +1127,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "23305158",
+  "year": 2013,
+  "journal": "Br J Clin Pharmacol",
+  "title": "Co-administration of rivaroxaban with drugs that share its elimination pathways: pharmacokinetic effects in healthy subjects.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "23333322",
   "year": 2013,
   "journal": "Pharmacol Ther",
@@ -1020,6 +1160,13 @@
   "journal": "Clin Pharmacol Ther",
   "title": "Clinical Pharmacogenetics Implementation Consortium guidelines for CYP2C19 genotype and clopidogrel therapy: 2013 update.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "24346990",
+  "year": 2013,
+  "journal": "JAMA",
+  "title": "Calcium-channel blocker-clarithromycin drug interactions and acute kidney injury.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "24419562",
@@ -1050,6 +1197,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "24858839",
+  "year": 2015,
+  "journal": "J Gerontol A Biol Sci Med Sci",
+  "title": "Coadministration of co-trimoxazole with sulfonylureas: hypoglycemia events and pattern of use.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "24913012",
   "year": 2015,
   "journal": "Br J Clin Pharmacol",
@@ -1078,6 +1232,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "25179404",
+  "year": 2014,
+  "journal": "JAMA Intern Med",
+  "title": "Hypoglycemia after antimicrobial drug prescription for older patients using sulfonylureas.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "25249585",
   "year": 2014,
   "journal": "Circulation",
@@ -1097,6 +1258,13 @@
   "journal": "BMJ",
   "title": "Co-trimoxazole and sudden death in patients receiving inhibitors of renin-angiotensin system: population based study.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "25438492",
+  "year": 2014,
+  "journal": "J Assoc Physicians India",
+  "title": "Slow junctional rhythm, QTc prolongation and transient torsades de-pointes following combined use of Ivabradine, Diltiazem and Ranolazine.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "25669762",
@@ -1134,6 +1302,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "26155985",
+  "year": 2015,
+  "journal": "Pharm Res",
+  "title": "Predicting Clearance Mechanism in Drug Discovery: Extended Clearance Classification System (ECCS).",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "26253303",
   "year": 2015,
   "journal": "Gastroenterology",
@@ -1167,6 +1342,13 @@
   "journal": "J Acquir Immune Defic Syndr",
   "title": "The Effect of Dolutegravir on the Pharmacokinetics of Metformin in Healthy Subjects.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "27012681",
+  "year": 2016,
+  "journal": "Rev Esp Cardiol (Engl Ed)",
+  "title": "Symptomatic Bradycardia and Heart Failure Triggered by Ivabradine in a Patient Receiving Antiretroviral Therapy.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "27129971",
@@ -1232,6 +1414,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "28832423",
+  "year": 2017,
+  "journal": "Nurse Pract",
+  "title": "Clarithromycin-nifedipine-induced acute kidney injury.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "28910830",
   "year": 2018,
   "journal": "Pharmacopsychiatry",
@@ -1244,6 +1433,13 @@
   "journal": "Crit Care Med",
   "title": "Vancomycin Plus Piperacillin-Tazobactam and Acute Kidney Injury in Adults: A Systematic Review and Meta-Analysis.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "29150198",
+  "year": 2018,
+  "journal": "Lancet",
+  "title": "Comparative effectiveness of extended-release naltrexone versus buprenorphine-naloxone for opioid relapse prevention (X:BOT): a multicentre, open-label, randomised controlled trial.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "29385237",
@@ -1281,6 +1477,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "30893067",
+  "year": 2019,
+  "journal": "Am J Ther",
+  "title": "Concomitant Use of Nifedipine and Clarithromycin Leading to Pulseless, Bradycardic Arrest.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "30912119",
   "year": 2019,
   "journal": "Clin Pharmacol Ther",
@@ -1293,6 +1496,20 @@
   "journal": "Clin Pharmacol Ther",
   "title": "Clinical Pharmacogenetics Implementation Consortium (CPIC) Guideline for CYP2B6 and Efavirenz-Containing Antiretroviral Therapy.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "31030414",
+  "year": 2019,
+  "journal": "Am J Cardiovasc Drugs",
+  "title": "The Effects of Clarithromycin on the Pharmacokinetics of Apixaban in Healthy Volunteers: A Single-Sequence Crossover Study.",
+  "checked": "2026-11-12"
+ },
+ {
+  "pmid": "31486198",
+  "year": 2019,
+  "journal": "Pharmacoepidemiol Drug Saf",
+  "title": "Ivabradine drug utilization study in five European countries: A multinational, retrospective, observational study to assess effectiveness of risk-minimization measures.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "31647186",
@@ -1356,6 +1573,13 @@
   "journal": "J Clin Med",
   "title": "Phenoconversion of Cytochrome P450 Metabolism: A Systematic Review.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "33033962",
+  "year": 2020,
+  "journal": "AAPS J",
+  "title": "Simultaneous Ivabradine Parent-Metabolite PBPK/PD Modelling Using a Bayesian Estimation Method.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "33170732",
@@ -1505,6 +1729,13 @@
   "checked": "2026-11-10"
  },
  {
+  "pmid": "38967916",
+  "year": 2024,
+  "journal": "J Addict Med",
+  "title": "Diagnosis and Treatment of Presumed Naltrexone-XR-precipitated Opioid Withdrawal in a Patient Chronically Treated With Buprenorphine-XR: A Case Report.",
+  "checked": "2026-11-12"
+ },
+ {
   "pmid": "39989027",
   "year": 2025,
   "journal": "Pharmacotherapy",
@@ -1531,6 +1762,13 @@
   "journal": "Drug Des Devel Ther",
   "title": "A Comprehensive Review on the Pharmacokinetics and Drug-Drug Interactions of Approved GLP-1 Receptor Agonists and a Dual GLP-1/GIP Receptor Agonist.",
   "checked": "2026-11-10"
+ },
+ {
+  "pmid": "40543362",
+  "year": 2025,
+  "journal": "Drug Alcohol Depend",
+  "title": "Mortality during and following treatment with extended-release naltrexone based on data from two clinical trials.",
+  "checked": "2026-11-12"
  },
  {
   "pmid": "41668237",

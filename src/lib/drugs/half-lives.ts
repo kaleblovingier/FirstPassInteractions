@@ -9,7 +9,7 @@
 export interface HalfLifeRow {
   /** Typical adult elimination half-life, in hours. */
   hours: number;
-  /** Where the number came from ("Zoloft PI, section 12.3", "PMID 12345678"). */
+  /** Where the number came from: a label section ("Zoloft PI, section 12.3") or a PubMed id. */
   source: string;
 }
 
