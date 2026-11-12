@@ -1395,14 +1395,14 @@ function HarmPanel({ ids }: { ids: string[] }) {
   const resources = useMemo(() => hrResourcesFor(ids), [ids.join("|")]);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [pages, setPages] = useState<WikiPage[]>([]);
-  const [liveCombo, setLiveCombo] = useState<LiveCombo | null>(null);
+  const [liveCombos, setLiveCombos] = useState<LiveCombo[]>([]);
   const [busy, setBusy] = useState(false);
   const [wikiErr, setWikiErr] = useState("");
 
   useEffect(() => {
     if (!ids.length) {
       setPages([]);
-      setLiveCombo(null);
+      setLiveCombos([]);
       return;
     }
     let live = true;
@@ -1412,7 +1412,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
       .then((pack) => {
         if (!live) return;
         setPages(pack.pages);
-        setLiveCombo(pack.combos[0] ?? null);
+        setLiveCombos(pack.combos);
       })
       .catch(() => {
         if (live) setWikiErr("PsychonautWiki did not answer. Local teaching still stands.");
@@ -1444,13 +1444,6 @@ function HarmPanel({ ids }: { ids: string[] }) {
           <p className="mt-2 text-sm leading-relaxed text-fg">{row.body}</p>
           <p className="mt-2 text-sm leading-relaxed text-muted">{row.watch}</p>
           <p className="mt-2 text-[11px] leading-relaxed text-subtle">{row.source}</p>
-          {liveCombo?.ok && (liveCombo.status || liveCombo.note) ? (
-            <p className="mt-2 text-sm leading-relaxed text-fg">
-              <span className="font-medium">TripSit live. </span>
-              {liveCombo.status ? `${liveCombo.status}. ` : ""}
-              {liveCombo.note}
-            </p>
-          ) : null}
         </article>
       ))}
 
@@ -1542,10 +1535,21 @@ function HarmPanel({ ids }: { ids: string[] }) {
             </li>
           ))}
         </ul>
-        {liveCombo && !combos.length && (liveCombo.ok || liveCombo.reason) ? (
-          <p className="mt-3 text-sm leading-relaxed text-muted">
-            TripSit live: {liveCombo.ok ? `${liveCombo.status}. ${liveCombo.note}` : liveCombo.reason}
-          </p>
+        {liveCombos.length > 0 ? (
+          <div className="mt-3">
+            <h4 className="text-sm font-medium text-fg">TripSit live, every pair</h4>
+            <ul className="mt-1 space-y-1">
+              {liveCombos.map((c) => (
+                <li key={c.ids.join("|")} className="text-sm leading-relaxed text-muted">
+                  <span className="font-medium text-fg">
+                    {c.a} + {c.b}.{" "}
+                  </span>
+                  {c.ok ? `${c.status ? `${c.status}. ` : ""}${c.note}` : (c.reason ?? "No answer for this pair.")}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-1 text-[11px] text-subtle">A pair with no row is not a clearance.</p>
+          </div>
         ) : null}
         <p className="mt-3 text-[11px] leading-relaxed text-subtle">{PSYCHONAUTWIKI_CREDIT}</p>
       </article>
