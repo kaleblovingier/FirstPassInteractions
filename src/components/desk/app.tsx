@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { TimingPanel } from "./timing-panel";
 import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { recheckLicense } from "@/lib/billing/license";
@@ -672,6 +673,7 @@ export function DeskApp() {
                   host={host}
                 />
               ) : null}
+              {selected.length > 0 ? <TimingPanel ids={selected} report={report} /> : null}
               {selected.length > 0 ? (
                 <MedicationReview
                   key={`${selected.join("|")}:${JSON.stringify(host)}:${JSON.stringify(doses)}`}
