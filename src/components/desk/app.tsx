@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { TimingPanel } from "./timing-panel";
+import { SynergyBanner } from "./synergy-banner";
 import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { recheckLicense } from "@/lib/billing/license";
@@ -665,6 +666,7 @@ export function DeskApp() {
                 />
               ) : null}
 
+              {selected.length > 0 ? <SynergyBanner ids={selected} report={report} /> : null}
               {selected.length > 0 ? (
                 <CheckBoard
                   ids={selected}
