@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { oneOf } from "./narrow";
 import {
   Activity,
   AlertCircle,
@@ -920,7 +921,10 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
                 <span className="text-xs text-muted">Phenotype:</span>
                 <select aria-label="Phenotype"
                   value={patientPhenotype}
-                  onChange={(e) => setPatientPhenotype(e.target.value as any)}
+                  onChange={(e) => {
+                    const v = oneOf(["frail_renal", "standard", "obese_resistant"] as const, e.target.value);
+                    if (v) setPatientPhenotype(v);
+                  }}
                   className="rounded-md border border-border bg-surface-sunken px-2.5 py-1 text-xs font-medium text-fg"
                 >
                   <option value="frail_renal">Frail / Geriatric / CKD / Dialysis (0.2–0.3 u/kg)</option>

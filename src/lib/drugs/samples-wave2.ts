@@ -62,4 +62,18 @@ export const SAMPLE_REGIMENS_WAVE2: SampleRegimen[] = [
     drugIds: ["tapentadol", "buprenorphine"],
     lane: "mat",
   },
+  {
+    id: "ssri-entactogen-stack",
+    title: "SSRI + entactogen (teaching stack)",
+    blurb: "Two serotonergic agents plus an MDMA-class entactogen. A teaching example of stacked serotonin risk, not a suggestion to take anything.",
+    drugIds: ["sertraline", "mdma", "dextromethorphan"],
+    lane: "entactogen",
+  },
+  {
+    id: "cns-depressant-stack",
+    title: "CNS depressants (teaching stack)",
+    blurb: "An opioid, a benzodiazepine and a gabapentinoid. A teaching example of stacked sedation and breathing risk, not a suggestion to take anything.",
+    drugIds: ["oxycodone", "alprazolam", "gabapentin"],
+    lane: "gaba",
+  },
 ];

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { oneOf } from "./narrow";
 import {
   Activity,
   AlertCircle,
@@ -885,7 +886,10 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
               </div>
               <select aria-label="BChE variant"
                 value={bcheVariant}
-                onChange={(e) => setBcheVariant(e.target.value as any)}
+                onChange={(e) => {
+                  const v = oneOf(["normal", "heterozygous-atypical", "homozygous-atypical", "silent"] as const, e.target.value);
+                  if (v) setBcheVariant(v);
+                }}
                 className="h-8 rounded-md border border-border bg-surface px-2.5 text-xs text-fg"
               >
                 <option value="normal">EuEu: Normal (Dibucaine 70-85)</option>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { oneOf } from "./narrow";
 import {
   Activity,
   AlertCircle,
@@ -353,7 +354,10 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
             />
             <select aria-label="Age unit"
               value={ageUnit}
-              onChange={(e) => setAgeUnit(e.target.value as any)}
+              onChange={(e) => {
+                const v = oneOf(["days", "months", "years"] as const, e.target.value);
+                if (v) setAgeUnit(v);
+              }}
               className="h-9 rounded-md border border-border bg-surface-2 px-2 text-xs text-fg"
             >
               <option value="days">Days</option>

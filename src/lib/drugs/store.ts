@@ -4,6 +4,7 @@ import { DESK_STORAGE_KEY, deskJsonStorage, partializeDesk, readDeskStorageState
 import { isCatalogId } from "./catalog";
 import { scheduleStudyMark, type StudyGrade, type StudyMark } from "./study-marks";
 import { rememberTray, swapIds } from "./tray-history";
+import type { IngestionTimes } from "./types";
 import type { StationId } from "./station-groups";
 import { maxDrugs, type Interval, type PlanId } from "@/lib/billing/plans";
 import { foundingGateCopy } from "@/lib/billing/founding-gate";
@@ -65,6 +66,8 @@ interface DeskState {
   kidney: KidneyBand;
   preg: PregBand;
   doses: Record<string, string>;
+  /** When each tray item was last taken, in epoch ms. Session only: never persisted, shared or sent. */
+  takenAt: Record<string, number>;
   studyMarks: Record<string, StudyMark>;
   plan: PlanId;
   license: string | null;
@@ -89,6 +92,8 @@ interface DeskState {
   remove: (id: string) => void;
   /** Replace one tray item in place, keeping host factors and the other doses. Undo restores the old tray. */
   swap: (outId: string, inId: string) => boolean;
+  /** State that an item was last taken `hours` ago (0 to 720), or pass undefined to clear it. */
+  setTakenHoursAgo: (id: string, hours: number | undefined, now?: number) => void;
   clear: () => void;
   load: (ids: string[], extras?: LoadExtras) => boolean;
   setView: (view: View) => void;
@@ -222,6 +227,23 @@ function freeDeskFallback(s: ProgramState, note: string): Partial<DeskState> {
 }
 
 /** Set by the persist merge when a saved program license had already ended. */
+/** Hours-ago a person states, kept as the moment it refers to. Outside 0 to 720 or not finite means not stated. */
+export function hoursToTakenAt(hours: number | undefined, now: number): number | undefined {
+  if (hours === undefined || !Number.isFinite(hours) || hours < 0 || hours > 720) return undefined;
+  return now - hours * 3_600_000;
+}
+
+/** Hours-ago for the tray ids, derived from the clock so a stated time never goes stale. */
+export function ingestionTimes(takenAt: Record<string, number>, ids: readonly string[], now: number): IngestionTimes {
+  const out: IngestionTimes = {};
+  for (const id of ids) {
+    if (!Object.hasOwn(takenAt, id)) continue;
+    const h = (now - takenAt[id]!) / 3_600_000;
+    if (Number.isFinite(h)) out[id] = Math.max(0, h);
+  }
+  return out;
+}
+
 let endedOnLoad = false;
 /** Set when the blob was corrupt or a field was repaired, so the bad JSON is replaced. */
 let rewriteOnLoad = false;
@@ -241,6 +263,7 @@ export const useDesk = create<DeskState>()(
       kidney: "ok",
       preg: "off",
       doses: {},
+      takenAt: {},
       studyMarks: {},
       plan: "free",
       license: null,
@@ -277,7 +300,9 @@ export const useDesk = create<DeskState>()(
       remove: (id) => {
         const next = { ...get().doses };
         delete next[id];
-        set({ selected: get().selected.filter((x) => x !== id), doses: next });
+        const takenAt = { ...get().takenAt };
+        delete takenAt[id];
+        set({ selected: get().selected.filter((x) => x !== id), doses: next, takenAt });
       },
       swap: (outId, inId) => {
         const s = get();
@@ -286,8 +311,18 @@ export const useDesk = create<DeskState>()(
         rememberTray(s.selected, { ketamineRoute: s.ketamineRoute });
         const doses = { ...s.doses };
         delete doses[outId];
-        set({ selected: next, doses, view: "desk" });
+        const takenAt = { ...s.takenAt };
+        delete takenAt[outId];
+        set({ selected: next, doses, takenAt, view: "desk" });
         return true;
+      },
+      setTakenHoursAgo: (id, hours, now = Date.now()) => {
+        if (!get().selected.includes(id)) return;
+        const takenAt = { ...get().takenAt };
+        const ms = hoursToTakenAt(hours, now);
+        if (ms === undefined) delete takenAt[id];
+        else takenAt[id] = ms;
+        set({ takenAt });
       },
       clear: () => {
         const s = get();
@@ -305,6 +340,7 @@ export const useDesk = create<DeskState>()(
           kidney: "ok",
           preg: "off",
           doses: {},
+          takenAt: {},
         });
       },
       load: (ids, extras) => {
@@ -341,6 +377,7 @@ export const useDesk = create<DeskState>()(
             kidney: "ok",
             preg: "off",
             doses: extras?.doses ?? {},
+            takenAt: {},
           });
           return false;
         }
@@ -356,6 +393,7 @@ export const useDesk = create<DeskState>()(
           kidney: "ok",
           preg: "off",
           doses: extras?.doses ?? {},
+          takenAt: {},
           checkout: { ...get().checkout, open: false },
         });
         return true;

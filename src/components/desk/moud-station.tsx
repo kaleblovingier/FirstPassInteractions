@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { oneOf } from "./narrow";
 import {
   Activity,
   AlertCircle,
@@ -195,7 +196,10 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                 <label className="text-muted-foreground">Last Full-Agonist Opioid</label>
                 <select aria-label="Last full-agonist opioid"
                   value={lastAgonist}
-                  onChange={(e) => setLastAgonist(e.target.value as any)}
+                  onChange={(e) => {
+                    const v = oneOf(["fentanyl", "methadone", "short-acting (oxycodone/heroin/morphine)"] as const, e.target.value);
+                    if (v) setLastAgonist(v);
+                  }}
                   className="mt-1 w-full rounded-md border border-border bg-background p-2 text-xs"
                 >
                   <option value="fentanyl">Fentanyl (Illicit / lipophilic adipose retention)</option>
@@ -239,7 +243,10 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                 <label className="text-muted-foreground">Induction Strategy</label>
                 <select aria-label="Induction strategy"
                   value={inductionMethod}
-                  onChange={(e) => setInductionMethod(e.target.value as any)}
+                  onChange={(e) => {
+                    const v = oneOf(["traditional", "bernese-micro-induction", "high-dose-macro-induction"] as const, e.target.value);
+                    if (v) setInductionMethod(v);
+                  }}
                   className="mt-1 w-full rounded-md border border-border bg-background p-2 text-xs"
                 >
                   <option value="traditional">Traditional Induction (Requires COWS &gt;= 12)</option>
@@ -461,7 +468,10 @@ export function MoudStation({ ids, host }: MoudStationProps) {
                 <label className="text-muted-foreground">Suspected Opioid Exposure</label>
                 <select aria-label="Suspected opioid exposure"
                   value={lastAgonist}
-                  onChange={(e) => setLastAgonist(e.target.value as any)}
+                  onChange={(e) => {
+                    const v = oneOf(["fentanyl", "methadone", "short-acting (oxycodone/heroin/morphine)"] as const, e.target.value);
+                    if (v) setLastAgonist(v);
+                  }}
                   className="mt-1 w-full rounded-md border border-border bg-background p-2 text-xs"
                 >
                   <option value="fentanyl">Fentanyl (Lipophilic depot retention)</option>
