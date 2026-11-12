@@ -113,6 +113,10 @@ export const INDICATIONS = [
   "Linking CPIC / ClinPGx tables, PubMed PMIDs, DrugBank accessions, NIH RxClass, LactMed paraphrases, and ClinicalTrials.gov records for independent review.",
   "On an open row, naming the FDA label section of each saved label line in FDA's own heading words (Boxed Warning, 4 Contraindications, 5 Warnings and Precautions, 7 Drug Interactions, 8.1 Pregnancy) and the day that line was retrieved. A source with no saved section or date says so. A row whose only basis is the desk's own map says so. A line restates how the desk's rule reached the tier from the rule family, the stored perpetrator strength, and the stored FDA fold already on that row. None of this is a new finding, a milligram, or a clearance.",
   "Reading a metabolizer status the healthcare professional already knows and picks by hand. Metabolizer rows are teaching paraphrases of CPIC guidance, not a genetic test result and not an interpretation of one. The desk takes no raw genotype or genetic test data as input.",
+  "Sketching, from typical adult half-lives, how much of each tray item may be left and how much two items may still overlap, from a last-taken time the healthcare professional types in. The time stays on the screen, is not saved or shared, and the sketch is not a drug level and not a clearance to combine.",
+  "Gathering the rows the check already found under a shared mechanism (serotonin, sedation and breathing, sympathomimetic, QTc, enzyme bottleneck, toxic metabolite) in a banner above them. The banner adds no finding, never grades sharper than the rows it gathers, and a quiet banner is not a clearance.",
+  "Showing, on a search row, the street name a typed word matched, so a healthcare professional sees which item a name resolved to. A street-name match is a lookup aid, not an identification of what a person took.",
+  "Listing, for each pair on the desk, curated PubMed papers from the desk's own shelf and live PubMed hits as links, fetched only when asked. Live hits are not summarized or graded, and a quiet search is not a green light.",
 ] as const;
 
 export const NOT_FOR = [
