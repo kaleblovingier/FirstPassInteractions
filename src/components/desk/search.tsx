@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
-import { DRUG_BY_ID, searchDrugs } from "@/lib/drugs/catalog";
+import { DRUG_BY_ID, matchedStreetName, searchDrugs } from "@/lib/drugs/catalog";
 import { combinationParts, findCombination, planCombination, type CombinationHit } from "@/lib/drugs/combos";
 import { availableQuickChips } from "@/lib/drugs/quick-chips";
 import { ITEM_KIND_LABEL, type EnzymeRole } from "@/lib/drugs/types";
@@ -51,6 +51,8 @@ export function DrugSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const results = useMemo(() => searchDrugs(q), [q]);
+  // A street-name match is always shown on the row: "K" may not be the item the reader meant.
+  const street = (id: string) => matchedStreetName(id, q);
   // A combination name (Percocet) leads the list as one option that adds every ingredient.
   const combo = useMemo(() => findCombination(q), [q]);
   const lead = combo ? 1 : 0;
@@ -295,7 +297,14 @@ export function DrugSearch() {
                   className="mt-0.5 size-10 shrink-0 rounded-sm object-cover"
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-medium text-fg">{drug.name}</span>
+                  <span className="block text-sm font-medium text-fg">
+                    {drug.name}
+                    {street(drug.id) ? (
+                      <span className="ml-2 font-mono text-[10px] font-normal uppercase tracking-wide text-muted">
+                        {`street name: ${street(drug.id)}`}
+                      </span>
+                    ) : null}
+                  </span>
                   <span className="block truncate text-xs text-muted">
                     {drug.kind !== "drug" ? `${ITEM_KIND_LABEL[drug.kind]} · ` : ""}
                     {drug.cls}
