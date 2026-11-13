@@ -14,10 +14,7 @@ theirs; the rules below name the file to open at each point it matters.
 
 Skills are auto-listed with trigger words; open the matching `SKILL.md` (plus
 its `references/`) **before** you build or polish. Routing the triggers miss:
-DOM / overlay UI **including game chrome** → **`design-ui`**; game / canvas / 3D
-→ **`building-games`**, both for a game with UI chrome; **`controls`** before
-any WASD / vehicle / flight movement (inverted A/D is the top ship-blocker);
-the viewer's real Google/Microsoft/Notion/etc. data (calendar, mail, files,
+DOM / overlay UI → **`design-ui`**; the viewer's real Google/Microsoft/Notion/etc. data (calendar, mail, files,
 docs) → **`app-data`** — mandatory before writing **or refusing** such
 integration, and when you think "can't access user data", "needs OAuth",
 "Grok Dashboard instead": it serves viewer connector data via the gate;
@@ -27,12 +24,6 @@ integration, and when you think "can't access user data", "needs OAuth",
 never invent tool calls. Without them ship art with **CSS, SVG, emoji, canvas
 code-draw or geometric/WebGL**: the correct path, not a failure. Gen-assuming
 skills still apply as design guidance.
-
-Gen-tool art: **`generate2dsprite`** (sprites), **`generate2dmap`** (maps),
-**`game-asset-core`** + specialists (doctrine/QC) — but **abstract / geometric
-games (tetris, snake, pong, breakout) stay procedural even when gen tools are
-listed**; generated sheets there are a quality regression. Pipelines:
-`.grok/references/generated-art.md`.
 
 ---
 
@@ -157,9 +148,7 @@ missing. Postgres and Better Auth are pre-wired in `src/lib`, **opt-in per app**
   (platform chrome; `?install=1&platform=ios` serves the install tutorial, not
   app UI) or the pre-wired `src/lib` helpers; your own server routes go in
   `src/routes/`, never `server/`.
-- **`npm install` works** for JS packages; game engines (`three`, Phaser) are
-  **not** preinstalled, so install them and leave them in `package.json` for
-  deploy. **`apt` / `yum` do not work here** — search the docs rather than
+- **`npm install` works** for JS packages. **`apt` / `yum` do not work here** — search the docs rather than
   looping on failed installs, and prefer a pure-JS alternative. Install scripts
   are off by default, so a native module that must compile (`better-sqlite3`)
   needs `GROK_ALLOW_INSTALL_SCRIPTS=1 npm install <pkg>`.
@@ -242,14 +231,9 @@ changes. Revive, reboot-wipe and the `startup.sh` worked example:
    (possibly one-line) ask into one concrete app. If it's trivial/no-signal or
    not a build request, do §0.5 (greet + ask, or just answer) instead of
    scaffolding.
-2. **Consult the skill(s).** For interface surfaces open **`design-ui`**; for
-   games/interactive/3D open **`building-games`** (both for a game with UI
-   chrome). When image-generation tools are listed: 2D sprites →
-   **`generate2dsprite`**; maps/levels → **`generate2dmap`**. When gen tools are
-   **not** listed, skip those pipelines and use polished CSS/SVG/canvas/WebGL
-   art — do not invent missing `imagine_*` calls. For **any** WASD / vehicle /
-   flight: open **`.grok/skills/controls/SKILL.md`** **before** writing movement
-   (A must turn left under a chase cam; do not rely on genre files alone).
+2. **Consult the skill(s).** For interface surfaces open **`design-ui`**. When gen tools are
+   **not** listed, use polished CSS/SVG/canvas/WebGL
+   art — do not invent missing `imagine_*` calls.
    Custom-card app? Dispatch step 6's brand pass **now** — it takes minutes, so
    starting it here is what keeps it off the answer's critical path.
 3. Scaffold TanStack Start + implement for real — working UI + state, not
@@ -290,9 +274,6 @@ changes. Revive, reboot-wipe and the `startup.sh` worked example:
    **Anything interactive** (click, type, keys, state) — use the preinstalled
    **`agent-browser`** CLI, not a hand-written Playwright script; read
    `.grok/references/browser-qa.md` first.
-   **Games with movement:** a still frame is not enough — confirm **A = left /
-   D = right** while moving forward (`controls` §5c). Flip one steer/roll sign
-   if inverted; retest.
 8. **Verify the PRODUCTION build, not just dev.** Dev (Vite) can render while
    the deployed Vercel build is blank. Once `npm run build` (step 5) succeeds,
    serve the built output with `npm run preview:restart` (loopback
