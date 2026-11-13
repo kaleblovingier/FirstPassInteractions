@@ -121,4 +121,69 @@ describe("psychonaut.server - lookupPsychonaut", () => {
     assert.equal(pack.pages[0]?.url, "https://psychonautwiki.org/wiki/MDMA");
     assert.equal(pack.pages[1]?.extract, "Ketamine is a dissociative anesthetic.");
   });
+
+  it("fans out to every pair of a 3- and a 5-item tray, in pair-slot order", async () => {
+    const generic = (url: string) =>
+      url.includes("psychonautwiki")
+        ? wiki("Page", "An intro.")
+        : json({ err: null, data: [{ status: "Caution", note: "n" }] });
+    const three = stubFetch(generic, 1);
+    const p3 = await lookupPsychonaut(["mdma", "ketamine", "lsd"]);
+    assert.deepEqual(p3.combos.map((c) => c.ids), [["mdma", "ketamine"], ["mdma", "lsd"], ["ketamine", "lsd"]]);
+    assert.equal(p3.pages.length, 3);
+    assert.equal(three.length, 6);
+
+    wikiCache.clear();
+    comboCache.clear();
+    const five = stubFetch(generic, 1);
+    const p5 = await lookupPsychonaut(["mdma", "ketamine", "lsd", "dmt", "mescaline"]);
+    assert.equal(p5.combos.length, 10);
+    assert.equal(p5.pages.length, 5);
+    assert.equal(five.length, 15);
+  });
+
+  it("makes one upstream call for pairs that share TripSit names, but keeps both rows", async () => {
+    const calls = stubFetch(
+      (url) => (url.includes("psychonautwiki") ? wiki("P", "x") : json({ err: null, data: [{ status: "Low", note: "n" }] })),
+      1,
+    );
+    const pack = await lookupPsychonaut(["mdma", "sodium-oxybate", "gbl"]);
+    // sodium-oxybate and gbl are both "GHB": no combo for that pair, and mdma|GHB is asked once.
+    assert.deepEqual(pack.combos.map((c) => c.ids), [["mdma", "sodium-oxybate"], ["mdma", "gbl"]]);
+    assert.equal(calls.filter((c) => c.url.includes("tripsit")).length, 1);
+  });
+
+  it("lets one failed pair fail alone, and never runs more than four calls at once", async () => {
+    let live = 0;
+    let peak = 0;
+    globalThis.fetch = (async (input: string | URL | Request) => {
+      const url = String(input);
+      live++;
+      peak = Math.max(peak, live);
+      await new Promise((r) => setTimeout(r, 5));
+      live--;
+      if (url.includes("psychonautwiki")) return wiki("P", "x");
+      return url.includes("/LSD") || url.includes("/LSD/") ? json({}, 500) : json({ err: null, data: [{ status: "Low", note: "n" }] });
+    }) as typeof fetch;
+    const pack = await lookupPsychonaut(["mdma", "ketamine", "lsd", "dmt"]);
+    assert.ok(peak <= 4, `peak ${peak}`);
+    const byIds = (a: string, b: string) => pack.combos.find((c) => c.ids[0] === a && c.ids[1] === b)!;
+    assert.equal(byIds("mdma", "ketamine").ok, true);
+    assert.equal(byIds("mdma", "lsd").ok, false);
+    assert.equal(byIds("lsd", "dmt").ok, false);
+    assert.equal(byIds("ketamine", "dmt").ok, true);
+  });
+
+  it("stops asking once the whole-lookup budget is spent and says so", async () => {
+    const calls = stubFetch(
+      (url) => (url.includes("psychonautwiki") ? wiki("P", "x") : json({ err: null, data: [{ status: "Low", note: "n" }] })),
+      30,
+    );
+    const pack = await lookupPsychonaut(["mdma", "ketamine", "lsd", "dmt", "mescaline"], { budgetMs: 40 });
+    assert.equal(pack.combos.length, 10, "every pair keeps a row");
+    const skipped = pack.combos.filter((c) => !c.ok);
+    assert.ok(skipped.length > 0);
+    assert.ok(skipped.every((c) => c.reason?.includes("not asked in time")));
+    assert.ok(calls.length < 15);
+  });
 });

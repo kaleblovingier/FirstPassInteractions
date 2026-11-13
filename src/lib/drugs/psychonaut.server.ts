@@ -12,7 +12,9 @@ import {
   type WikiPage,
 } from "./psychonaut";
 import { BoundedLRUCache } from "../server/cache";
-import { UpstreamError, fetchJson } from "../server/http";
+import { UpstreamError, fetchJson, mapSettled } from "../server/http";
+import { DESK_MAX_IDS } from "../server/rpc-input";
+import { fanoutPairs } from "./fanout";
 import { logEvent } from "../server/log";
 
 export type { LiveCombo, PsychonautPack, WikiPage };
@@ -146,10 +148,7 @@ async function tripsitAnswer(na: string, nb: string): Promise<TripsitAnswer> {
   return { status, note, ok: true };
 }
 
-async function fetchCombo(a: string, b: string): Promise<LiveCombo | null> {
-  const na = tripsitName(a);
-  const nb = tripsitName(b);
-  if (!na || !nb || na === nb) return null;
+async function fetchCombo(a: string, b: string, na: string, nb: string): Promise<LiveCombo> {
   try {
     const answer = await comboCache.getOrFetch(`${na}|${nb}`, () => tripsitAnswer(na, nb));
     return answer.ok
@@ -169,22 +168,53 @@ async function fetchCombo(a: string, b: string): Promise<LiveCombo | null> {
   }
 }
 
-export async function lookupPsychonaut(ids: string[]): Promise<PsychonautPack> {
-  const unique = [...new Set(ids.filter((id) => Object.hasOwn(DRUG_BY_ID, id)))].slice(0, 2);
+/** Upstream calls in flight at once, and the whole-lookup budget (28 pairs must not hang). */
+const LOOKUP_CONCURRENCY = 4;
+export const LOOKUP_BUDGET_MS = 15_000;
+
+export async function lookupPsychonaut(
+  ids: string[],
+  options: { budgetMs?: number } = {},
+): Promise<PsychonautPack> {
+  const unique = [...new Set(ids.filter((id) => Object.hasOwn(DRUG_BY_ID, id)))].slice(0, DESK_MAX_IDS);
   if (!unique.length) return { ok: false, pages: [], combos: [] };
   const started = Date.now();
-  // The combo does not depend on the wiki pages, so both go out at once.
-  const [pages, combo] = await Promise.all([
-    Promise.all(unique.map(fetchWiki)),
-    unique.length === 2 ? fetchCombo(unique[0]!, unique[1]!) : Promise.resolve(null),
-  ]);
-  const ok = pages.some((p) => Boolean(p.extract)) || Boolean(combo?.ok);
+  const deadline = started + (options.budgetMs ?? LOOKUP_BUDGET_MS);
+  const spent = () => Date.now() >= deadline;
+
+  const pairs: Array<{ a: string; b: string; na: string; nb: string }> = [];
+  for (const [a, b] of fanoutPairs(unique)) {
+    const na = tripsitName(a);
+    const nb = tripsitName(b);
+    if (na && nb && na !== nb) pairs.push({ a, b, na, nb });
+  }
+
+  // Combos queue first so they start with the wiki pages; one pool bounds both.
+  const jobs: Array<() => Promise<LiveCombo | WikiPage>> = [
+    ...pairs.map(({ a, b, na, nb }) => async (): Promise<LiveCombo> =>
+      spent()
+        ? { ids: [a, b], a: na, b: nb, status: "", note: "", source: "TripSit", ok: false,
+            reason: "TripSit was not asked in time. Local chart still stands." }
+        : fetchCombo(a, b, na, nb)),
+    ...unique.map((id) => async (): Promise<WikiPage> =>
+      spent()
+        ? { id, name: DRUG_BY_ID[id]?.name ?? id, wikiTitle: "", url: "", extract: "", stripped: false,
+            reason: "PsychonautWiki was not asked in time." }
+        : fetchWiki(id)),
+  ];
+  const settled = await mapSettled(jobs, LOOKUP_CONCURRENCY, (job) => job());
+  // fetchCombo and fetchWiki catch their own errors, so a rejection here is a bug; drop that row.
+  const values = settled.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
+  const combos = values.slice(0, pairs.length) as LiveCombo[];
+  const pages = values.slice(pairs.length) as WikiPage[];
+  const ok = pages.some((p) => Boolean(p.extract)) || combos.some((c) => c.ok);
   logEvent(ok ? "info" : "warn", "psychonaut.lookup", {
     durationMs: Date.now() - started,
     pages: pages.length,
     extracts: pages.filter((p) => p.extract).length,
-    combo: combo ? combo.ok : undefined,
+    combos: combos.length,
+    combosOk: combos.filter((c) => c.ok).length,
     ok,
   });
-  return { ok, pages, combos: combo ? [combo] : [] };
+  return { ok, pages, combos };
 }
