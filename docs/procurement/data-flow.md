@@ -154,8 +154,6 @@ API (no caller in `src/components/`).
   (`src/lib/drugs/feedback.ts`, `src/components/desk/app.tsx`).
 - **Share links.** `?case=`, `?pack=`, `?lab=`, `?brief=` carry catalog ids in the URL
   (`src/lib/drugs/permalinks.ts`). They reach Vercel's request logs like any URL.
-- **Unused code.** `src/lib/multiplayer/` (WebRTC) is not imported anywhere and has no
-  `/api/rtc` route.
 
 ## 4. Third parties loaded by the browser
 

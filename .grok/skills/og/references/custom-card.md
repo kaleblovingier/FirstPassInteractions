@@ -1,7 +1,7 @@
 # Custom card: generate `public/og.jpg`
 
 For prompt-craft, composition, and blind read-back verification, follow the
-`imagine` and `game-asset-core` skills — this file owns the **card-specific**
+`imagine` skill — this file owns the **card-specific**
 contract only (size, lockup, wiring).
 
 1. **Set the canvas with `aspect_ratio: "16:9"`.** The call looks like
@@ -49,7 +49,7 @@ contract only (size, lockup, wiring).
      the canvas comes back off-ratio — an edit that pinned to its input's
      ratio, or a model miss — so **check the raw canvas dimensions before
      cropping**, and re-ratio first if it isn't ~16:9 or 2:1.
-3. **Verify glyphs *and* layout on read-back** (see `imagine` / `game-asset-core`
+3. **Verify glyphs *and* layout on read-back** (see `imagine`
    for the blind-describe loop). On a garble or layout miss, **regenerate with a
    corrected prompt** — never try to move a logo with `imagine_image_to_image` (frame
    translation / seams). After two failed attempts, ship the card **artwork-only**

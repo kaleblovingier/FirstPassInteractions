@@ -190,9 +190,6 @@ Describe, roughly in this order: **subject -> action/pose -> setting -> style ->
 - Call `render_file` with the sandbox `file_path` so the user sees the image/video in chat.
 - For your own QC and scripts, `read_file` / shell on that path.
 
-Game sprites and maps have their own pipelines — follow `generate2dsprite`,
-`video2dsprite`, and `generate2dmap` for those.
-
 ## Failure modes to avoid
 
 - Calling consolidated names `imagine_image` or `imagine_video` (they are not available).

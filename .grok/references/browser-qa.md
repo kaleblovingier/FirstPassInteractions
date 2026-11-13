@@ -167,7 +167,4 @@ Playwright script (still installed) and say so in one line of your summary.
 ## How deep to go
 
 Depth **beyond the mandatory smoke pass + screenshot read** is your judgment: a
-landing page usually needs nothing more than that pass. For a game with WASD /
-vehicles / flight, still verify control signs (A left / D right from a chase
-cam) per `.grok/skills/controls/SKILL.md` — you don't have to play end-to-end,
-but inverted A/D must not ship.
+landing page usually needs nothing more than that pass.

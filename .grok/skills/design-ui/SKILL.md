@@ -17,8 +17,7 @@ user-invocable: false
 
 Make interfaces that look intentional and premium, not template-generic. This is
 the single biggest quality lever in the app builder. Apply it to **DOM / overlay
-UI** — pages, chrome, HUD, menus, forms. (For a 3D game's gameplay canvas, see
-the `building-games` skill; this skill governs the DOM UI layered over it.)
+UI** — pages, chrome, HUD, menus, forms.
 
 **Read `references/` for depth** (loaded on demand — don't inline it all):
 - `references/refined-ui.md` — the full product-chrome/overlay design system.
@@ -102,13 +101,6 @@ Define the system once, then compose from it. **Never** sprinkle ad-hoc values.
 - Short, eased transitions (150–250ms) on hover/press/enter; respect
   `prefers-reduced-motion`. Details in `references/animations.md`.
 - Never animate layout in a way that causes jank; prefer transform/opacity.
-
-## 6. Game overlays (when this pairs with `building-games`)
-
-The gameplay canvas is owned by `building-games`. This skill styles the **DOM
-overlay**: start/"click to play" screen, HUD, score, menus, pause, mobile
-controls. Keep overlay readable over the canvas (backdrop, contrast), and keep it
-out of the pointer-lock/gameplay input path.
 
 ---
 
