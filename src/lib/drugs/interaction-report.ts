@@ -11,7 +11,6 @@ import type {
   InteractionReport,
   LiteratureEvidence,
   PairwiseInteraction,
-  SeverityTier,
   SubstanceEntry,
 } from "../../types/interaction";
 import { DRUG_BY_ID } from "./catalog";
@@ -21,20 +20,11 @@ import { timeline } from "./overlap";
 import { citesFor, pubmedUrl } from "./pubmed";
 import { STREET_NAMES } from "./street-names";
 import { synergyAlerts } from "./synergy";
-import type { Drug, Enzyme, Finding, HostContext, IngestionTimes, Severity } from "./types";
+import { toSeverityTier } from "./types";
+import type { Drug, Enzyme, Finding, HostContext, IngestionTimes } from "./types";
 
-const TIER: Record<Severity | "none", SeverityTier> = {
-  contraindicated: "Contraindicated",
-  major: "Severe",
-  moderate: "Moderate",
-  minor: "Low",
-  none: "Unknown",
-};
-
-/** The engine's severity under its wire name. The only place a tier is made. */
-export function toSeverityTier(severity: Severity | "none"): SeverityTier {
-  return TIER[severity];
-}
+// Lives in types.ts so synergy.ts can use it without importing this module back.
+export { toSeverityTier };
 
 /** The row a pair gets when the engine mapped nothing for it. */
 export const NO_MAPPED_PAIR = "No mapped collision for this pair. A blank pair is not a clearance.";

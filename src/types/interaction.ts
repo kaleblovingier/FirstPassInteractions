@@ -5,7 +5,7 @@
  * Everything here is a projection. The engine in src/lib/drugs grades findings in its own terms
  * (Severity, Finding, Report in src/lib/drugs/types.ts), and nothing in this file grades anything.
  * A SeverityTier is the engine's severity under another name (toSeverityTier in
- * src/lib/drugs/interaction-report.ts). No code may raise or lower a tier on the way through, and
+ * src/lib/drugs/types.ts). No code may raise or lower a tier on the way through, and
  * a row from an outside source is quoted, never regraded: it carries "Unknown".
  */
 

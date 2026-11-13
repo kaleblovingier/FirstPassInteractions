@@ -1,3 +1,5 @@
+import type { SeverityTier } from "../../types/interaction";
+
 export const ENZYMES = [
   "CYP1A2",
   "CYP2B6",
@@ -278,6 +280,19 @@ export interface OverlapRow {
 export interface Timeline {
   rows: DecayRow[];
   pairs: OverlapRow[];
+}
+
+const TIER: Record<Severity | "none", SeverityTier> = {
+  contraindicated: "Contraindicated",
+  major: "Severe",
+  moderate: "Moderate",
+  minor: "Low",
+  none: "Unknown",
+};
+
+/** The engine's severity under its wire name (src/types/interaction.ts). The only place a tier is made. */
+export function toSeverityTier(severity: Severity | "none"): SeverityTier {
+  return TIER[severity];
 }
 
 export const SEVERITY_RANK: Record<Severity | "none", number> = {
