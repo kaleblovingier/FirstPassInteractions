@@ -38,7 +38,8 @@ export interface LiveInteractionReport {
 const DEFAULT_BUDGET_MS = 15_000;
 
 const REAL_SOURCES: LiveSources = {
-  psychonaut: lookupPsychonaut,
+  // Ends inside the 15-second race, so a slow TripSit returns its answered pairs instead of losing them all.
+  psychonaut: (ids) => lookupPsychonaut(ids, { budgetMs: 13_000 }),
   labels: lookupInteractions,
   pubmed: searchPairEvidence,
 };
