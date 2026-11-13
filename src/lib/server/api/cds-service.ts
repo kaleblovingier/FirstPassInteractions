@@ -12,8 +12,10 @@ import {
   DRUG_BY_ID,
   DRUGS,
   normalizeSearchText,
+  matchedStreetName,
   searchDrugs,
   saltFormKeys,
+  streetNameIds,
 } from "../../drugs/catalog";
 import { COMBINATION_BY_KEY } from "../../drugs/combos";
 import { analyze } from "../../drugs/engine";
@@ -42,6 +44,8 @@ import {
   type HostContextInput,
   type KidneyCategory,
   type KineticsModuleName,
+  AnalyzeRequestSchema,
+  AutocompleteRequestSchema,
   DrugLookupRequestSchema,
   InteractionCheckRequestSchema,
   KineticsEvaluationRequestSchema,
@@ -91,6 +95,8 @@ import { aminoglycosideReportOnDesk } from "../../drugs/aminoglycosides";
 import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
 import { EXPORT_EMPTY } from "../../drugs/brief";
+import { buildInteractionReport, type TriageEntry } from "../../drugs/interaction-report";
+import type { InteractionReport } from "../../../types/interaction";
 
 /** Lives in regulatory.ts so the /developers page can show it without loading the drug catalog. */
 export { STATUTORY_CDS_DISCLAIMER };
@@ -112,7 +118,8 @@ export interface ApiDrugRef {
   hostFactor?: true;
 }
 
-export type DrugMatch = "id" | "name" | "brand-or-alias" | "combination";
+/** "street-name" is a search-only nickname ("Molly"); an official id, name, brand or alias always wins. */
+export type DrugMatch = "id" | "name" | "brand-or-alias" | "combination" | "street-name";
 
 /** How one requested string was read. Only an exact id, name, brand, alias, or combination name resolves. */
 export type DrugResolution =
@@ -129,6 +136,8 @@ export type DrugResolution =
 
 export type ApiWarningCode =
   | "drugs-unresolved"
+  | "street-name-resolved"
+  | "live-source-failed"
   | "host-field-not-modeled"
   | "pediatric-age-not-modeled"
   | "lactation-not-applied"
@@ -227,6 +236,30 @@ export interface KineticsEvaluationResult {
   modules: Readonly<Partial<Record<KineticsModuleName, unknown>>>;
 }
 
+export type SuggestionMatch = DrugMatch | "search";
+
+export interface AutocompleteSuggestion {
+  id: string;
+  canonicalName: string;
+  /** How the typed text reached this row. "search" is a prefix or fuzzy hit, not an exact label. */
+  matchedBy: SuggestionMatch;
+  /** The brand, alias or street name that matched ("Molly"). Absent for an id, name or search hit. */
+  resolvedFrom?: string;
+}
+
+export interface AutocompleteResult {
+  meta: ApiResponseMeta;
+  data: AutocompleteSuggestion[];
+}
+
+/** `data` is the InteractionReport for the tray; its rawInput values are this caller's. */
+export interface AnalyzeResult {
+  meta: ApiResponseMeta;
+  query: ResolvedQuery;
+  warnings: ApiWarning[];
+  data: InteractionReport;
+}
+
 export type ServiceResult<T> =
   { success: true; data: T } | { success: false; problem: ProblemDetails };
 
@@ -289,7 +322,12 @@ const interactionCache = new BoundedLRUCache<InteractionPayload>(500, 10 * 60 * 
 // A payload with every station runs to several hundred KB, so this cache holds fewer entries.
 const kineticsCache = new BoundedLRUCache<KineticsPayload>(100, 10 * 60 * 1000);
 
+const analyzeCache = new BoundedLRUCache<InteractionReport>(300, 10 * 60 * 1000);
+const autocompleteCache = new BoundedLRUCache<AutocompleteSuggestion[]>(500, 10 * 60 * 1000);
+
 function clearAllCaches(): void {
+  analyzeCache.clear();
+  autocompleteCache.clear();
   interactionCache.clear();
   kineticsCache.clear();
 }
@@ -361,7 +399,7 @@ function drugRef(id: string): ApiDrugRef {
   return { id, name: catalogDrug(id)?.name ?? id };
 }
 
-type ExactIndex = Record<Exclude<DrugMatch, "combination">, Map<string, string[]>>;
+type ExactIndex = Record<Exclude<DrugMatch, "combination" | "street-name">, Map<string, string[]>>;
 
 let exactIndex: ExactIndex | undefined;
 
@@ -427,7 +465,41 @@ export function resolveDrugQuery(query: string): DrugResolution {
       return { query, status: "ambiguous", candidates };
     }
   }
+  // Last resort: a street name is not an official label, so it never outranks one.
+  const street = streetNameIds(query);
+  if (street.length === 1) {
+    return { query, status: "resolved", drugId: street[0]!, matchedBy: "street-name" };
+  }
+  if (street.length > 1) {
+    return { query, status: "ambiguous", candidates: street.map(drugRef) };
+  }
   return { query, status: "not-found", candidates: normalized ? searchCandidates(query) : [] };
+}
+
+/** Up to 24 rows for the typed text: exact labels first, then street names, then loose hits. */
+function suggestFor(q: string): AutocompleteSuggestion[] {
+  const key = normalizeSearchText(q);
+  const found = searchDrugs(q);
+  const seen = new Set(found.map((d) => d.id));
+  const nicknames = streetNameIds(q).filter((id) => !seen.has(id) && catalogDrug(id));
+  const rows = [...found, ...nicknames.map((id) => DRUG_BY_ID[id]!)].map(
+    (drug): AutocompleteSuggestion => {
+      const base = { id: drug.id, canonicalName: drug.name };
+      if (normalizeSearchText(drug.id) === key) return { ...base, matchedBy: "id" };
+      if (normalizeSearchText(drug.name) === key) return { ...base, matchedBy: "name" };
+      const label = [...drug.brands, ...drug.aliases].find((l) => normalizeSearchText(l) === key);
+      if (label) return { ...base, matchedBy: "brand-or-alias", resolvedFrom: label };
+      const street = matchedStreetName(drug.id, q);
+      if (street) return { ...base, matchedBy: "street-name", resolvedFrom: street };
+      return { ...base, matchedBy: "search" };
+    },
+  );
+  const rank = (m: SuggestionMatch) => (m === "search" ? 2 : m === "street-name" ? 1 : 0);
+  return rows
+    .map((row, i) => ({ row, i }))
+    .sort((x, y) => rank(x.row.matchedBy) - rank(y.row.matchedBy) || x.i - y.i)
+    .map((x) => x.row)
+    .slice(0, 24);
 }
 
 export function resolveDrug(query: string): Drug | undefined {
@@ -485,6 +557,21 @@ function unresolvedWarnings(query: Omit<ResolvedQuery, "host">): ApiWarning[] {
       detail: `${missing} of ${total} requested item${total === 1 ? "" : "s"} did not match exactly one catalog entry and ${missing === 1 ? "was" : "were"} not analyzed. A missing row is not a clearance.`,
     },
   ];
+}
+
+/** A nickname can mean more than one thing ("K"), so a street-name read is always said out loud. */
+function streetNameWarnings(resolution: readonly DrugResolution[]): ApiWarning[] {
+  return resolution.flatMap((r) =>
+    r.status === "resolved" && r.matchedBy === "street-name"
+      ? [
+          {
+            code: "street-name-resolved" as const,
+            field: "drugs",
+            detail: `"${r.query}" was read as the street name for ${catalogDrug(r.drugId)?.name ?? r.drugId} (${r.drugId}). Street names are slang and can mean more than one thing; send the catalog id to be exact.`,
+          },
+        ]
+      : [],
+  );
 }
 
 function unresolvedReason(resolution: DrugResolution): string {
@@ -754,6 +841,117 @@ export class ClinicalDecisionService {
   }
 
   /**
+   * Typeahead for API clients: catalog rows that match, each with how it matched. The desk
+   * searches locally; this is for outside consumers.
+   */
+  static autocomplete(rawRequest: unknown): ServiceResult<AutocompleteResult> {
+    const startedAt = performance.now();
+    try {
+      const val = validateSchema(AutocompleteRequestSchema, rawRequest);
+      if (!val.success) {
+        return {
+          success: false,
+          problem: problemUnprocessable("Invalid autocomplete parameters", val.errors),
+        };
+      }
+      const { q, limit } = val.data;
+      const key = `ac|${normalizeSearchText(q)}`;
+      const hit = autocompleteCache.get(key);
+      const all = hit ?? suggestFor(q);
+      if (!hit) autocompleteCache.set(key, all);
+      return {
+        success: true,
+        data: {
+          meta: responseMeta(INTERACTIONS_ENGINE, startedAt, hit !== undefined),
+          data: all.slice(0, limit),
+        },
+      };
+    } catch (error) {
+      return { success: false, problem: toProblem(error, "autocomplete") };
+    }
+  }
+
+  /**
+   * One tray in, one InteractionReport out: every pair, the synergy alerts, and with `live` the
+   * outside sources. Names resolve exactly as in /check; a street name resolves with a warning.
+   */
+  static async analyze(rawRequest: unknown): Promise<ServiceResult<AnalyzeResult>> {
+    const startedAt = performance.now();
+    try {
+      const val = validateSchema(AnalyzeRequestSchema, rawRequest);
+      if (!val.success) {
+        return {
+          success: false,
+          problem: problemUnprocessable("Validation failed for analyze request", val.errors),
+        };
+      }
+      const { host, warnings } = resolveHostContext(val.data.host);
+      const requested = val.data.substances.map((s) => (typeof s === "string" ? { name: s } : s));
+      const drugs = resolveRequestedDrugs(requested.map((s) => s.name));
+      if (!drugs.ids.length) {
+        return { success: false, problem: noneResolvedProblem(drugs.query.resolution) };
+      }
+
+      // Tray order is request order; a combination product expands in place.
+      const entries: TriageEntry[] = [];
+      drugs.query.resolution.forEach((r, i) => {
+        if (r.status !== "resolved") return;
+        const hoursAgo = (requested[i] as { ingestionTimeHoursAgo?: number }).ingestionTimeHoursAgo;
+        for (const id of r.drugIds ?? [r.drugId]) {
+          if (entries.some((e) => e.id === id)) continue;
+          entries.push({ rawInput: r.query, id, ...(hoursAgo === undefined ? {} : { hoursAgo }) });
+        }
+      });
+
+      const extra: ApiWarning[] = [];
+      let report: InteractionReport;
+      let cached = false;
+      if (val.data.live) {
+        // Outside data moves, so a live report is never cached.
+        const { buildLiveInteractionReport } = await import("../../drugs/interaction-report.server");
+        const live = await buildLiveInteractionReport(entries, { host });
+        report = live.report;
+        extra.push(
+          ...live.warnings.map((detail) => ({ code: "live-source-failed" as const, field: "live", detail })),
+        );
+      } else {
+        const key = `an|${entries.map((e) => `${e.id}@${e.hoursAgo ?? ""}`).join(",")}|${canonicalJson(host)}`;
+        const hit = analyzeCache.get(key);
+        report = hit ?? buildInteractionReport(entries, { host: copyHost(host) });
+        if (!hit) analyzeCache.set(key, report);
+        cached = hit !== undefined;
+      }
+      // A cached report may hold another caller's wording; this caller's input comes back as sent.
+      const rawById = new Map(entries.map((e) => [e.id, e.rawInput]));
+      const data: InteractionReport = {
+        ...report,
+        substances: report.substances.map((s) => ({ ...s, rawInput: rawById.get(s.id) ?? s.rawInput })),
+        metadata: {
+          timestamp: new Date().toISOString(),
+          cached,
+          executionTimeMs: Math.round(performance.now() - startedAt),
+        },
+      };
+      return {
+        success: true,
+        data: {
+          meta: responseMeta(INTERACTIONS_ENGINE, startedAt, cached),
+          query: { ...drugs.query, host },
+          warnings: [
+            ...unresolvedWarnings(drugs.query),
+            ...streetNameWarnings(drugs.query.resolution),
+            ...warnings,
+            ...extra,
+          ],
+          data,
+        },
+      };
+    } catch (error) {
+      return { success: false, problem: toProblem(error, "analyze") };
+    }
+  }
+
+  /**
    * Check interactions across a multi-drug regimen with host context.
    */
   static async checkInteractions(
@@ -801,6 +999,7 @@ export class ClinicalDecisionService {
           query: { ...drugs.query, host },
           warnings: [
             ...unresolvedWarnings(drugs.query),
+            ...streetNameWarnings(drugs.query.resolution),
             ...warnings,
             // An empty list must not read as a clearance (highestSeverity "None").
             ...(payload.findings.length ? [] : [{ code: "no-mapped-findings" as const, detail: EXPORT_EMPTY }]),
@@ -857,7 +1056,12 @@ export class ClinicalDecisionService {
         data: {
           meta: responseMeta(KINETICS_ENGINE, startedAt, hit !== undefined),
           query: { ...drugs.query, drugIds: [...drugs.ids], modules: moduleNames, host },
-          warnings: [...unresolvedWarnings(drugs.query), ...warnings, ...moduleWarnings],
+          warnings: [
+            ...unresolvedWarnings(drugs.query),
+            ...streetNameWarnings(drugs.query.resolution),
+            ...warnings,
+            ...moduleWarnings,
+          ],
           modules,
         },
       };

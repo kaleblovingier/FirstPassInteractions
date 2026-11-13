@@ -66,6 +66,20 @@ export const DEVELOPERS_ENDPOINTS: readonly DevelopersEndpoint[] = [
     keyed: true,
   },
   {
+    method: "GET",
+    path: "/api/cds/autocomplete",
+    summary: "Typeahead for your own search box. Each suggestion carries its id, canonical name and how it matched (id, name, brand-or-alias, street-name or search); resolvedFrom names the brand, alias or street name that matched. The desk itself searches offline.",
+    request: "?q=molly&limit=8 (limit 1 to 24, default 8)",
+    keyed: true,
+  },
+  {
+    method: "POST",
+    path: "/api/cds/analyze",
+    summary: "One teaching report for a tray: every pair, the synergy alerts by mechanism, and curated literature, as an InteractionReport. Set live to true to add quoted TripSit, OpenFDA label and PubMed rows; a source that fails is named in warnings. A street name resolves last (matchedBy street-name) and always comes with a warning, because slang can mean more than one thing. /check and /search keep their shapes; matchedBy there can now also read street-name.",
+    request: '{ "substances": ["Molly", { "name": "alprazolam", "ingestionTimeHoursAgo": 12 }], "host": { ... }, "live": false } (1 to 20 substances; hours 0 to 720; host and live are optional)',
+    keyed: true,
+  },
+  {
     method: "POST",
     path: "/api/cds/check",
     summary: "Interaction findings for a list of drugs, each with its mechanism, grade and sources.",

@@ -5,6 +5,8 @@
  * - POST /api/cds/check: multi-drug interaction checking with host context
  * - POST /api/cds/kinetics: specialty pharmacokinetic module evaluations
  * - GET /api/cds/search: drug catalog search with pagination
+ * - GET /api/cds/autocomplete: typeahead with how each row matched
+ * - POST /api/cds/analyze: one InteractionReport for a tray (optionally with live outside sources)
  * - GET /api/cds/health: service health check and regulatory metadata
  *
  * Conforms to 21 U.S.C. § 360j(o)(1)(E) and RFC 7807 problem details error format.
@@ -330,6 +332,27 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
         return toProblemResponse(result.problem);
       }
       return Response.json(result.data, { status: 200 });
+    }
+
+    // GET /api/cds/autocomplete
+    if (pathname === "/api/cds/autocomplete") {
+      if (method !== "GET") {
+        return methodNotAllowedResponse(method, pathname, "GET");
+      }
+      const q = url.searchParams.has("q") ? (url.searchParams.get("q") ?? undefined) : undefined;
+      const limit = url.searchParams.get("limit") ?? undefined;
+      const result = ClinicalDecisionService.autocomplete({ q, limit });
+      if (!result.success) {
+        return toProblemResponse(result.problem);
+      }
+      return Response.json(result.data, { status: 200 });
+    }
+
+    // POST /api/cds/analyze
+    if (pathname === "/api/cds/analyze") {
+      return await handlePostJsonRoute(request, method, pathname, "analyze", (body) =>
+        ClinicalDecisionService.analyze(body),
+      );
     }
 
     // POST /api/cds/check

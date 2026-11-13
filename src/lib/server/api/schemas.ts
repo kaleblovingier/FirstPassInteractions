@@ -130,6 +130,29 @@ export const InteractionCheckRequestSchema = z.strictObject({
   host: HostContextSchema.optional(),
 });
 
+export const AutocompleteRequestSchema = z.strictObject({
+  q: DrugLookupRequestSchema.shape.q,
+  limit: z.coerce.number().int().min(1).max(24).default(8),
+});
+
+/** A substance as a bare name, or a name with the hours since its last dose. */
+export const AnalyzeSubstanceSchema = z.union([
+  DrugIdentifierSchema,
+  z.strictObject({
+    name: DrugIdentifierSchema,
+    ingestionTimeHoursAgo: z.number().finite().min(0).max(720).optional(),
+  }),
+]);
+
+export const AnalyzeRequestSchema = z.strictObject({
+  substances: z
+    .array(AnalyzeSubstanceSchema)
+    .min(1, "At least 1 substance must be provided")
+    .max(20, "Maximum 20 substances can be analyzed simultaneously"),
+  host: HostContextSchema.optional(),
+  live: z.boolean().default(false),
+});
+
 export type InteractionCheckRequest = z.infer<typeof InteractionCheckRequestSchema>;
 
 export const KineticsModuleEnum = z.enum([

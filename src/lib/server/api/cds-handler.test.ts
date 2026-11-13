@@ -653,3 +653,123 @@ test("handleCdsRequest: attaches CDS_SECURITY_HEADERS on 401 Unauthorized and 42
     resetApiMeters();
   }
 });
+
+// ---- round 7: /api/cds/analyze and /api/cds/autocomplete
+
+async function analyzeCall(body: unknown) {
+  resetApiMeters();
+  return handleCdsRequest(jsonRequest("http://localhost/api/cds/analyze", "POST", body));
+}
+
+type AnalyzeBody = {
+  meta: { cached: boolean };
+  warnings: Array<{ code: string; detail: string }>;
+  data: {
+    substances: Array<{ rawInput: string; canonicalName: string; ingestionTimeHoursAgo?: number }>;
+    pairwiseInteractions: Array<{ pairIds: [string, string] }>;
+    metadata: { cached: boolean };
+  };
+};
+
+const distinctPairs = (body: AnalyzeBody) =>
+  new Set(body.data.pairwiseInteractions.map((r) => r.pairIds.join("|"))).size;
+
+test("POST /api/cds/analyze: street name, brand and name resolve, and the street name is warned", async () => {
+  ClinicalDecisionService.clearCaches();
+  const res = await analyzeCall({ substances: ["Molly", "Zoloft", "Alcohol"] });
+  assert.equal(res.status, 200);
+  const body = (await res.json()) as AnalyzeBody;
+  assert.deepEqual(
+    body.data.substances.map((s) => s.canonicalName),
+    ["MDMA", "Sertraline", "Ethanol"],
+  );
+  assert.deepEqual(
+    body.data.substances.map((s) => s.rawInput),
+    ["Molly", "Zoloft", "Alcohol"],
+  );
+  const warning = body.warnings.find((w) => w.code === "street-name-resolved");
+  assert.ok(warning && /Molly/.test(warning.detail));
+});
+
+test("POST /api/cds/analyze: 3, 4 and 5 substances give 3, 6 and 10 distinct pairs", async () => {
+  const trays = [
+    ["warfarin", "aspirin", "sertraline"],
+    ["warfarin", "aspirin", "sertraline", "fluoxetine"],
+    ["warfarin", "aspirin", "sertraline", "fluoxetine", "tramadol"],
+  ];
+  const counts: number[] = [];
+  for (const substances of trays) {
+    const res = await analyzeCall({ substances });
+    assert.equal(res.status, 200);
+    counts.push(distinctPairs((await res.json()) as AnalyzeBody));
+  }
+  assert.deepEqual(counts, [3, 6, 10]);
+});
+
+test("POST /api/cds/analyze: hours are carried, and bad input is refused", async () => {
+  const ok = await analyzeCall({
+    substances: [{ name: "mdma", ingestionTimeHoursAgo: 8 }, "alprazolam"],
+  });
+  assert.equal(ok.status, 200);
+  assert.equal(((await ok.json()) as AnalyzeBody).data.substances[0]!.ingestionTimeHoursAgo, 8);
+
+  for (const hours of [-1, 721]) {
+    const res = await analyzeCall({ substances: [{ name: "mdma", ingestionTimeHoursAgo: hours }, "ethanol"] });
+    assert.equal(res.status, 422, String(hours));
+  }
+  const many = await analyzeCall({ substances: Array.from({ length: 21 }, () => "ethanol") });
+  assert.equal(many.status, 422);
+  const none = await analyzeCall({ substances: ["not-a-real-drug-xyz"] });
+  assert.equal(none.status, 404);
+  const wrong = await handleCdsRequest(new Request("http://localhost/api/cds/analyze"));
+  assert.equal(wrong.status, 405);
+  assert.equal(wrong.headers.get("allow"), "POST");
+});
+
+test("POST /api/cds/analyze: reports cached truthfully and names unresolved items", async () => {
+  ClinicalDecisionService.clearCaches();
+  const first = (await (await analyzeCall({ substances: ["mdma", "ethanol", "zzz-unknown"] })).json()) as AnalyzeBody;
+  assert.equal(first.meta.cached, false);
+  assert.equal(first.data.metadata.cached, false);
+  assert.ok(first.warnings.some((w) => w.code === "drugs-unresolved"));
+  const second = (await (await analyzeCall({ substances: ["mdma", "ethanol", "zzz-unknown"] })).json()) as AnalyzeBody;
+  assert.equal(second.meta.cached, true);
+  assert.equal(second.data.metadata.cached, true);
+});
+
+test("GET /api/cds/autocomplete: answers, caps the limit, and serves repeats from cache", async () => {
+  ClinicalDecisionService.clearCaches();
+  const get = (qs: string) => {
+    resetApiMeters();
+    return handleCdsRequest(new Request(`http://localhost/api/cds/autocomplete${qs}`));
+  };
+  type Auto = {
+    meta: { cached: boolean };
+    data: Array<{ id: string; canonicalName: string; matchedBy: string; resolvedFrom?: string }>;
+  };
+  const first = (await (await get("?q=zoloft")).json()) as Auto;
+  assert.equal(first.meta.cached, false);
+  const zoloft = first.data.find((s) => s.id === "sertraline");
+  assert.ok(zoloft);
+  assert.equal(zoloft.matchedBy, "brand-or-alias");
+  assert.match(zoloft.resolvedFrom ?? "", /zoloft/i);
+  const again = (await (await get("?q=zoloft")).json()) as Auto;
+  assert.equal(again.meta.cached, true);
+
+  const capped = (await (await get("?q=a&limit=24")).json()) as Auto;
+  assert.ok(capped.data.length <= 24);
+  assert.equal((await get("?q=a&limit=25")).status, 422);
+  assert.equal((await get("")).status, 422);
+  const post = await handleCdsRequest(jsonRequest("http://localhost/api/cds/autocomplete", "POST", {}));
+  assert.equal(post.status, 405);
+});
+
+test("GET /api/cds/autocomplete: a street name carries resolvedFrom", async () => {
+  resetApiMeters();
+  const res = await handleCdsRequest(new Request("http://localhost/api/cds/autocomplete?q=molly"));
+  const body = (await res.json()) as { data: Array<{ id: string; matchedBy: string; resolvedFrom?: string }> };
+  const mdma = body.data.find((s) => s.id === "mdma");
+  assert.ok(mdma, "Molly should suggest MDMA (needs STREET_NAMES)");
+  assert.equal(mdma.matchedBy, "street-name");
+  assert.equal(mdma.resolvedFrom?.toLowerCase(), "molly");
+});

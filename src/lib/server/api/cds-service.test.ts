@@ -677,3 +677,14 @@ test("ClinicalDecisionService: an empty check says the list is not a green light
   assert.ok(found.success && found.data.findings.length > 0);
   assert.ok(!found.data.warnings.some((w) => w.code === "no-mapped-findings"));
 });
+
+test("resolveDrugQuery: a street name resolves last, as street-name, and an official label wins", () => {
+  const molly = resolveDrugQuery("Molly");
+  assert.equal(molly.status, "resolved");
+  if (molly.status === "resolved") {
+    assert.equal(molly.drugId, "mdma");
+    assert.equal(molly.matchedBy, "street-name");
+  }
+  const official = resolveDrugQuery("Zoloft");
+  assert.ok(official.status === "resolved" && official.matchedBy === "brand-or-alias");
+});
