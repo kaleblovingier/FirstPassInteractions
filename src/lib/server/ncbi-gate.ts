@@ -1,7 +1,10 @@
 /**
- * FIFO gate for NCBI E-utilities: at most `perSecond` requests start in any one second (NCBI's
- * limit without an API key). Per server instance, like rate-limit.ts: several instances can
- * together exceed it, and NCBI answers 429, which callers already report as a failed lookup.
+ * FIFO gate for NCBI E-utilities: requests start evenly spaced, so at most `perSecond` start in any
+ * one second (NCBI's limit without an API key). On 2026-11-13 NCBI answered 429 ("count 4, limit
+ * 3") to a fourth request started 1,042 ms after the first, so its window is longer than a second;
+ * starts are spaced 1.5 s / perSecond apart to keep clear of it. Per server instance, like rate-limit.ts:
+ * several instances can together exceed it, and NCBI answers 429, which callers report as a
+ * failed lookup.
  */
 
 import { UpstreamError } from "./http";
@@ -25,21 +28,16 @@ export function createNcbiGate(options: NcbiGateOptions = {}): NcbiGate {
   const maxWaitMs = options.maxWaitMs ?? 8_000;
   const now = options.now ?? Date.now;
   const sleep = options.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
-  const starts: number[] = [];
+  const spacingMs = Math.ceil(1500 / perSecond);
+  let lastStart = -Infinity;
   let tail: Promise<unknown> = Promise.resolve();
 
   async function turn(source: string, deadline: number): Promise<void> {
-    for (;;) {
-      const t = now();
-      while (starts.length && starts[0]! <= t - 1000) starts.shift();
-      if (starts.length < perSecond) {
-        starts.push(t);
-        return;
-      }
-      const wait = starts[0]! + 1000 - t;
-      if (t + wait > deadline) throw new UpstreamError(source, "timeout");
-      await sleep(wait);
-    }
+    const t = now();
+    const at = Math.max(t, lastStart + spacingMs);
+    if (at > deadline) throw new UpstreamError(source, "timeout");
+    if (at > t) await sleep(at - t);
+    lastStart = at;
   }
 
   return {

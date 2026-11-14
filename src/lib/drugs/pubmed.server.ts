@@ -127,6 +127,8 @@ export async function searchLive(raw: string): Promise<LiveResult> {
 
 const PAIR_MAX = 5;
 const PAIR_BUDGET_MS = 14_000;
+/** Searches stop this long before the budget ends, so the one summary call for every pair still runs. */
+const SUMMARY_RESERVE_MS = 2_500;
 const QUIET = "A quiet search is not a green light.";
 export const pairCache = new BoundedLRUCache<{ hits: LiveCite[] }>(300, TTL);
 
@@ -166,7 +168,7 @@ export async function searchPairEvidence(ids: readonly string[]): Promise<PairEv
   const found = new Map<number, string[]>();
   const searched = await mapSettled(slots, 3, async (pair, i) => {
     if (pairCache.get(key(pair[0], pair[1]))) return;
-    if (gate.now() >= deadline) throw new UpstreamError("ncbi.esearch", "timeout");
+    if (gate.now() >= deadline - SUMMARY_RESERVE_MS) throw new UpstreamError("ncbi.esearch", "timeout");
     const search = (await ncbi(
       `esearch.fcgi?db=pubmed&retmode=json&retmax=${PAIR_MAX}&term=${encodeURIComponent(pairQuery(pair[0], pair[1]))}`,
       "ncbi.esearch",

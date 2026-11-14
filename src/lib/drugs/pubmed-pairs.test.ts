@@ -93,6 +93,16 @@ describe("pubmed.server - searchPairEvidence", () => {
     assert.equal(pack.ok, true);
   });
 
+  it("stops searching in time to fetch paper details for the pairs it reached", async () => {
+    stub(healthy);
+    const eight = ["mdma", "ketamine", "lsd", "dmt", "mescaline", "sertraline", "ethanol", "alprazolam"];
+    const pack = await searchPairEvidence(eight);
+    assert.equal(pack.pairs.length, 28);
+    assert.ok(pack.pairs.some((p) => p.ok && p.hits.length > 0), "reached pairs keep their papers");
+    assert.ok(pack.pairs.some((p) => !p.ok), "pairs past the cutoff say so");
+    assert.equal(calls.filter((c) => c.url.includes("esummary")).length, 1);
+  });
+
   it("marks pairs not reached in time as not ok, and never caches a failure", async () => {
     stub(healthy);
     setNcbiGate(
