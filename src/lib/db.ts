@@ -138,14 +138,12 @@ async function createPgliteSql(): Promise<Sql> {
   // passes serialized on a global chain so concurrent callers never
   // double-apply.
   const migrate = async (): Promise<void> => {
-    const globFn = (
-      import.meta as unknown as {
-        glob?: (pattern: string, opts?: unknown) => Record<string, string>;
-      }
-    ).glob;
-    const migrations =
-      typeof globFn === "function"
-        ? globFn("/migrations/*.sql", {
+    // Vite inlines only a literal import.meta.glob(...) call; an aliased one throws in Vite 8's dev
+    // runner. Plain Node has none at runtime (the tsx tests, a built server), so only the dev server
+    // migrates PGLite here; deploys migrate their database in `npm run db:migrate`.
+    const migrations: Record<string, string> =
+      typeof import.meta.glob === "function"
+        ? import.meta.glob("/migrations/*.sql", {
             query: "?raw",
             import: "default",
             eager: true,
