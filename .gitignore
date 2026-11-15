@@ -15,3 +15,8 @@ dist-lms/
 
 # Local Playwright MCP session logs and page snapshots
 .playwright-mcp/
+
+# Local QA screenshots and editor-tool state
+screenshots/
+.snapshots/
+.node_modules.lock
