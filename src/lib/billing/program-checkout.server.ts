@@ -22,7 +22,7 @@ import {
   programOnboardingNote,
 } from "@/lib/billing/program-license";
 import { PROGRAM_TIER_BY_ID, programKeyEndsAt } from "@/lib/billing/programs";
-import { publicOrigin, stripeClient, stripeMode } from "@/lib/billing/stripe.server";
+import { publicOrigin, stripeClient, stripeMode, type StripeSessionFields } from "@/lib/billing/stripe.server";
 import { env } from "@/lib/env.server";
 import { SITE_URL } from "@/lib/seo/pair-copy";
 
@@ -184,8 +184,9 @@ export type ValidProgramSession =
   | { ok: false; reason: string };
 
 /** Paid, USD, our product, a card tier, the exact list amount and sane metadata. Takes any shape; every field is checked. */
-export function validateProgramSession(session: any): ValidProgramSession {
-  if (!session || typeof session !== "object") return { ok: false, reason: "Session is missing or invalid." };
+export function validateProgramSession(input: unknown): ValidProgramSession {
+  if (!input || typeof input !== "object") return { ok: false, reason: "Session is missing or invalid." };
+  const session = input as StripeSessionFields;
   const meta = session.metadata ?? {};
   if (meta.product !== PROGRAM_PRODUCT) return { ok: false, reason: "That session is not a FirstPass program license." };
   if (session.payment_status !== "paid") {

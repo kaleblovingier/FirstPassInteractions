@@ -66,9 +66,20 @@ async function accessToken(mode: PaypalMode, f: FetchLike): Promise<string | nul
 
 export type PaypalOrderCheck = { ok: true } | { ok: false; reason: string };
 
+/** The PayPal order fields this desk reads. Each is checked before use, so all are optional and unknown. */
+type PaypalOrder = {
+  status?: unknown;
+  purchase_units?: Array<{
+    custom_id?: unknown;
+    payments?: { captures?: Array<{ status?: unknown; amount?: { currency_code?: unknown; value?: unknown } }> };
+  }>;
+  payer?: { email_address?: unknown; name?: { given_name?: unknown } };
+};
+
 /** A completed order is only honored for the exact Founding price, in USD, that this desk created. */
-export function checkPaypalOrder(order: any): PaypalOrderCheck {
-  if (!order || typeof order !== "object") return { ok: false, reason: "Order is missing or invalid." };
+export function checkPaypalOrder(input: unknown): PaypalOrderCheck {
+  if (!input || typeof input !== "object") return { ok: false, reason: "Order is missing or invalid." };
+  const order = input as PaypalOrder;
   if (order.status !== "COMPLETED") {
     return { ok: false, reason: "PayPal payment has not completed yet. Refresh in a moment, or write if it stalls." };
   }
@@ -158,14 +169,14 @@ export async function claimPaypalOrder(orderIdRaw: string, f: FetchLike = fetch)
       res = await f(`${base(mode)}/v2/checkout/orders/${orderId}`, { method: "GET", headers: auth });
       if (!res.ok) return { ok: false as const, reason: "Could not read that PayPal order." };
     }
-    const order = (await res.json()) as any;
+    const order = (await res.json()) as PaypalOrder | null;
     const check = checkPaypalOrder(order);
     if (!check.ok) return { ok: false as const, reason: check.reason };
     const key = mintKeyFromPaid("life", `paypal:${orderId}`);
     const verified = verifyKey(key);
     if (!verified.ok) return { ok: false as const, reason: "Paid, but the desk could not sign a key." };
-    const email = String(order.payer?.email_address ?? "").trim();
-    const first = String(order.payer?.name?.given_name ?? "").trim();
+    const email = String(order?.payer?.email_address ?? "").trim();
+    const first = String(order?.payer?.name?.given_name ?? "").trim();
     const mailed = email
       ? await sendLicenseMail({ to: email, key, soldTo: first || email, idempotencyKey: `fp-license-paypal-${orderId}` })
       : false;

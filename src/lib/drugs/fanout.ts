@@ -61,7 +61,7 @@ export interface PairwiseSummary {
 /** Summarize findings attributed to each pair slot. */
 export function summarizePairs(
   drugIds: readonly string[],
-  findings: readonly Finding[],
+  findings: readonly Pick<Finding, "drugIds" | "severity">[],
 ): PairwiseSummary[] {
   const pairs = fanoutPairs(drugIds);
   return pairs.map(([a, b]) => {

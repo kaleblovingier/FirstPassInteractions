@@ -963,7 +963,7 @@ export function oncologyReportOnDesk(drugIds: string[], host?: HostContext): Onc
   const hasMtx = normalized.includes("methotrexate");
   const mtxCollisions = hasMtx ? detectMtxCollisions(normalized) : [];
 
-  const thiopurineReport = evaluateThiopurineXoCollision(normalized, host as any);
+  const thiopurineReport = evaluateThiopurineXoCollision(normalized, host);
   const cniReport = evaluateCniTriazoleCollision(normalized);
 
   const activeAlerts: string[] = [];

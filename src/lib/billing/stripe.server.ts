@@ -84,13 +84,24 @@ export type ValidatedPaidSessionResult =
       reason: string;
     };
 
+/** The Checkout Session fields the license checks read. Each is checked before use, so all are optional and unknown. */
+export type StripeSessionFields = {
+  metadata?: Record<string, unknown> | null;
+  payment_status?: unknown;
+  currency?: unknown;
+  amount_total?: unknown;
+  amount_subtotal?: unknown;
+  created?: unknown;
+};
+
 export function validatePaidSession(
-  session: any,
+  input: unknown,
   expectedPriceCents?: number,
 ): ValidatedPaidSessionResult {
-  if (!session || typeof session !== "object") {
+  if (!input || typeof input !== "object") {
     return { ok: false, reason: "Session is missing or invalid." };
   }
+  const session = input as StripeSessionFields;
   if (session.metadata?.product !== "firstpass") {
     return { ok: false, reason: "That session is not a FirstPass license." };
   }
@@ -128,14 +139,15 @@ export function validatePaidSession(
  * the pre-discount subtotal so a promo code Kaleb made still works, but a session
  * that was created for a different price never mints a Founding key.
  */
-export function checkListPrice(session: any): { ok: true } | { ok: false; reason: string } {
+export function checkListPrice(input: unknown): { ok: true } | { ok: false; reason: string } {
+  const session = input as StripeSessionFields | null | undefined;
   const plan = session?.metadata?.plan;
   const interval = session?.metadata?.interval;
   if ((plan !== "pro" && plan !== "lab") || (interval !== "month" && interval !== "year" && interval !== "life")) {
     return { ok: false, reason: "Invalid plan in session metadata." };
   }
   const expected = priceFor(plan, interval) * 100;
-  const paid = typeof session.amount_subtotal === "number" ? session.amount_subtotal : session.amount_total;
+  const paid = typeof session?.amount_subtotal === "number" ? session.amount_subtotal : session?.amount_total;
   if (paid !== expected) {
     return { ok: false, reason: `Amount mismatch: expected ${expected} cents, got ${paid}.` };
   }

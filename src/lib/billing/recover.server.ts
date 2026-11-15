@@ -133,7 +133,7 @@ export async function handleRecoverRequest(
   deps: { stripe?: Stripe | null } = {},
 ): Promise<Response> {
   if (!recoveryConfigured()) return json(503, RECOVERY_UNCONFIGURED);
-  let body: any = null;
+  let body: unknown = null;
   try {
     body = await request.json();
   } catch {

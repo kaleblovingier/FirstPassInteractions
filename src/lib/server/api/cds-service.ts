@@ -992,7 +992,7 @@ export class ClinicalDecisionService {
               rule: FANOUT_RULE,
               pairwise: summarizePairs(
                 drugs.ids,
-                payload.findings.map((f) => ({ ...f, drugIds: f.drugs.map((d) => d.id) } as any)),
+                payload.findings.map((f) => ({ drugIds: f.drugs.map((d) => d.id), severity: f.severity })),
               ),
             },
           },
