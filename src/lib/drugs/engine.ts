@@ -192,6 +192,17 @@ function arrowFor(
   return "↑ active metabolite";
 }
 
+// Hint openers that are names, so they keep their capital mid-sentence (read from the catalog, 2026-11-14).
+// shortcut: a fixed list; a new hint that opens with a name or brand needs adding here.
+const HINT_NAMES = new Set(["Aptivus", "Beers", "Fanconi", "Orthopoxvirus", "Parkinson", "Wernicke"]);
+
+/** A stored hint as it reads after "Watch for": a plain first word lowercased (acronyms such as QT or TdP and names keep their capitals), its closing period dropped. */
+export function watchForPhrase(hint: string): string {
+  const text = hint.replace(/\.$/, "");
+  const word = /^[A-Z][a-z]+(?![A-Za-z])/.exec(text)?.[0];
+  return word && !HINT_NAMES.has(word) ? word.toLowerCase() + text.slice(word.length) : text;
+}
+
 function pkClinical(victim: Drug, kind: "inhibitor" | "inducer", pathway: "clearance" | "activation") {
   if (kind === "inhibitor" && pathway === "activation") {
     return `Expect blunted conversion of ${victim.name} to its active metabolite and reduced clinical effect (${victim.toxicityHint}).`;
@@ -200,9 +211,9 @@ function pkClinical(victim: Drug, kind: "inhibitor" | "inducer", pathway: "clear
     return `Expect falling ${victim.name} levels and loss of efficacy. Monitor for treatment failure (${victim.toxicityHint}).`;
   }
   if (kind === "inducer" && pathway === "activation") {
-    return `Faster activation of ${victim.name} may raise active-metabolite exposure. Watch for ${victim.toxicityHint}.`;
+    return `Faster activation of ${victim.name} may raise active-metabolite exposure. Watch for ${watchForPhrase(victim.toxicityHint)}.`;
   }
-  return `Expect higher ${victim.name} exposure. Watch for ${victim.toxicityHint}.`;
+  return `Expect higher ${victim.name} exposure. Watch for ${watchForPhrase(victim.toxicityHint)}.`;
 }
 
 function pkFindings(a: Drug, b: Drug): Finding[] {
@@ -2205,7 +2216,7 @@ function phenotypeFindings(drugs: Drug[], phenotypes: PhenotypeMap): Finding[] {
         } else {
           effect = "↑ exposure";
           mechanism = `${enzyme} ${label.toLowerCase()} metabolizer · reduced clearance`;
-          clinical = `A ${label.toLowerCase()} ${enzyme} metabolizer clears ${drug.name} slowly${ntiOrSensitive ? " — this is a sensitive or narrow-index substrate" : ""}. Watch for ${drug.toxicityHint}.`;
+          clinical = `A ${label.toLowerCase()} ${enzyme} metabolizer clears ${drug.name} slowly${ntiOrSensitive ? " — this is a sensitive or narrow-index substrate" : ""}. Watch for ${watchForPhrase(drug.toxicityHint)}.`;
         }
         if (severity === "contraindicated") severity = "major";
       } else {
