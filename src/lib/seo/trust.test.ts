@@ -11,6 +11,7 @@ import {
   PRIVACY,
   PROCUREMENT_MAILTO,
   REPO_URL,
+  SECURITY,
   TRUST_DESCRIPTION,
   TRUST_REVIEWED,
   TRUST_SECTIONS,
@@ -200,6 +201,45 @@ describe("/trust page", () => {
       "src/lib/server/ncbi-gate.ts",
     ]) {
       assert.ok(PRIVACY.sources.includes(source), `missing PRIVACY.sources entry: ${source}`);
+    }
+  });
+
+  it("documents LTI 1.3 rate limits, HTTP hardening, CSP frame-ancestors isolation, and embed card framing", () => {
+    const decodedHtml = decode(html);
+    for (const needle of [
+      "LTI_ENABLED=1",
+      "/api/lti/login",
+      "/api/lti/launch",
+      "30 requests per minute per client IP",
+      "/api/lti/*",
+      "64 KiB form-post body cap",
+      "RS256 JWK signature verification",
+      "single-use nonce replay cache",
+      "C0 and C1 control-character rejection",
+      "Cache-Control: no-store",
+      "Referrer-Policy: no-referrer",
+      "Allow headers on 405",
+      "Content Security Policy frame-ancestors isolation",
+      "'self'",
+      "grok.com",
+      "*.grok.com",
+      "*.grok.me",
+      "/embed/*",
+      "/embed/pair/*",
+      "frame-ancestors *",
+      "iframe course embeds",
+    ]) {
+      assert.ok(body.includes(needle), `missing trust text: ${needle}`);
+      assert.ok(decodedHtml.includes(needle), `missing rendered trust html: ${needle}`);
+    }
+
+    for (const source of [
+      "src/lib/lti/lti.ts",
+      "src/lib/lti/lti.server.ts",
+      "src/lib/seo/pair-embed.ts",
+    ]) {
+      assert.ok(SECURITY.sources.includes(source), `missing SECURITY.sources entry: ${source}`);
+      assert.ok(html.includes(`href="${repoFile(source)}"`), `missing GitHub source link: ${source}`);
     }
   });
 });

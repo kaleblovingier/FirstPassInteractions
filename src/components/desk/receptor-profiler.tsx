@@ -13,21 +13,15 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
-  ExternalLink,
 } from "lucide-react";
 import {
   DRUG_RECEPTOR_PROFILES,
   RECEPTOR_TARGETS,
   RECEPTOR_PROFILES_REGULATORY_DISCLAIMER,
-  getProfileForDrug,
   getAllDrugProfiles,
   filterProfilesByClass,
-  searchProfiles,
   compareReceptorProfiles,
-  type DrugReceptorProfile,
-  type ReceptorBinding,
   type AffinityTier,
-  type ReceptorFamily,
 } from "@/lib/drugs/receptor-profiles";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";

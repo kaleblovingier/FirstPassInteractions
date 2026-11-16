@@ -9,11 +9,14 @@ import {
   type JWK,
 } from "jose";
 import { setLogSink } from "@/lib/server/log";
+import { Route as LtiRoute } from "@/routes/api/lti/$";
 import {
   CLAIM,
   DEFAULT_TARGET_PATHS,
   canvasConfig,
   decodeStateCookie,
+  encodeStateCookie,
+  hasLtiControlChar,
   isSafeAllowPath,
   parsePlatforms,
   resolveTarget,
@@ -22,7 +25,13 @@ import {
   toolJwks,
   type LtiPlatform,
 } from "./lti";
-import { handleLtiRequest, resetLtiState, type LtiDeps } from "./lti.server";
+import {
+  handleLaunch,
+  handleLogin,
+  handleLtiRequest,
+  resetLtiState,
+  type LtiDeps,
+} from "./lti.server";
 
 const ORIGIN = "https://firstpass.test";
 const PLATFORM: LtiPlatform = {
@@ -177,6 +186,71 @@ describe("LTI off by default", () => {
     assert.equal(res.status, 405);
     assert.equal(res.headers.get("allow"), "POST");
   });
+
+  it("route handlers dispatch PUT/DELETE/PATCH/OPTIONS cleanly when off and on", async () => {
+    const handlers = LtiRoute.options.server?.handlers as
+      | Partial<
+          Record<
+            "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS",
+            (ctx: { request: Request }) => Promise<Response>
+          >
+        >
+      | undefined;
+    assert.ok(handlers);
+    for (const method of ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"] as const) {
+      assert.equal(typeof handlers[method], "function", `${method} handler registered`);
+    }
+
+    const prevEnabled = process.env.LTI_ENABLED;
+    try {
+      delete process.env.LTI_ENABLED;
+      for (const flag of [undefined, "0"] as const) {
+        if (flag === undefined) delete process.env.LTI_ENABLED;
+        else process.env.LTI_ENABLED = flag;
+        for (const method of ["PUT", "DELETE", "PATCH", "OPTIONS"] as const) {
+          for (const path of [
+            "/api/lti/login",
+            "/api/lti/launch",
+            "/api/lti/jwks",
+            "/api/lti/config",
+            "/api/lti/nope",
+          ]) {
+            const res = await handlers[method]!({
+              request: new Request(`${ORIGIN}${path}`, { method }),
+            });
+            assert.equal(res.status, 404, `off(${flag}) ${method} ${path}`);
+            assert.equal(res.headers.get("cache-control"), "no-store");
+          }
+        }
+      }
+
+      process.env.LTI_ENABLED = "1";
+      const expectedAllow: Record<string, string> = {
+        "/api/lti/login": "GET, POST",
+        "/api/lti/launch": "POST",
+        "/api/lti/jwks": "GET",
+        "/api/lti/config": "GET",
+      };
+      for (const method of ["PUT", "DELETE", "PATCH", "OPTIONS"] as const) {
+        for (const [path, allow] of Object.entries(expectedAllow)) {
+          const res = await handlers[method]!({
+            request: new Request(`${ORIGIN}${path}`, { method }),
+          });
+          assert.equal(res.status, 405, `on ${method} ${path}`);
+          assert.equal(res.headers.get("allow"), allow, `allow ${method} ${path}`);
+          assert.equal(res.headers.get("cache-control"), "no-store");
+        }
+        const unknown = await handlers[method]!({
+          request: new Request(`${ORIGIN}/api/lti/unknown`, { method }),
+        });
+        assert.equal(unknown.status, 404, `on ${method} unknown`);
+        assert.equal(unknown.headers.get("cache-control"), "no-store");
+      }
+    } finally {
+      if (prevEnabled === undefined) delete process.env.LTI_ENABLED;
+      else process.env.LTI_ENABLED = prevEnabled;
+    }
+  });
 });
 
 describe("platform config", () => {
@@ -273,6 +347,37 @@ describe("login initiation", () => {
     for (let i = 0; i < 31; i++) last = (await login(LOGIN_PARAMS, limited)).status;
     assert.equal(last, 429);
     for (let i = 0; i < 40; i++) assert.equal((await login(LOGIN_PARAMS)).status, 302);
+  });
+
+  it("rejects C0 and C1 control characters in login parameters", async () => {
+    const fields = ["login_hint", "lti_message_hint", "iss", "client_id", "target_link_uri"] as const;
+    for (const field of fields) {
+      for (const ctrl of ["\r", "\n", "\u0085", "\u0000", "\x7f", "\u009f"]) {
+        const variants = [`${LOGIN_PARAMS[field]}${ctrl}`, `a${ctrl}b`];
+        for (const bad of variants) {
+          const params = new URLSearchParams({ ...LOGIN_PARAMS, [field]: bad });
+          const getRes = await handleLogin(
+            new Request(`${ORIGIN}/api/lti/login?${params}`),
+            deps(),
+          );
+          assert.equal(getRes.status, 400, `GET ${field} ctrl=${JSON.stringify(ctrl)}`);
+          assert.equal(getRes.headers.get("location"), null);
+          assert.equal(getRes.headers.get("cache-control"), "no-store");
+
+          const postRes = await handleLogin(
+            new Request(`${ORIGIN}/api/lti/login`, {
+              method: "POST",
+              headers: { "content-type": "application/x-www-form-urlencoded" },
+              body: params.toString(),
+            }),
+            deps(),
+          );
+          assert.equal(postRes.status, 400, `POST ${field} ctrl=${JSON.stringify(ctrl)}`);
+          assert.equal(postRes.headers.get("location"), null);
+          assert.equal(postRes.headers.get("cache-control"), "no-store");
+        }
+      }
+    }
   });
 });
 
@@ -580,5 +685,109 @@ describe("jwks and config", () => {
       deps({ LTI_ENABLED: "1" }),
     );
     assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    assert.equal(res.headers.get("pragma"), "no-cache");
+    assert.equal(res.headers.get("x-content-type-options"), "nosniff");
+  });
+});
+
+describe("control characters and state cookie hardening", () => {
+  it("hasLtiControlChar detects C0, DEL, and C1 control characters", () => {
+    for (const ctrl of ["\u0000", "\t", "\n", "\r", "\u001f", "\x7f", "\u0080", "\u0085", "\u009f"]) {
+      assert.equal(hasLtiControlChar(ctrl), true, JSON.stringify(ctrl));
+      assert.equal(hasLtiControlChar(`ok${ctrl}ok`), true, JSON.stringify(ctrl));
+    }
+    for (const safe of ["", " ", "~", "opaque-hint", "/practice?x=1", "\u00a0", "café"]) {
+      assert.equal(hasLtiControlChar(safe), false, JSON.stringify(safe));
+    }
+  });
+
+  it("resolveTarget rejects C0 and C1 control characters", () => {
+    const allow = [...DEFAULT_TARGET_PATHS];
+    for (const bad of [
+      "/practice\u0000",
+      "/prac\ntice",
+      "/practice\r",
+      "\n/practice",
+      "/practice\x7f",
+      "/practice\u0080",
+      "/practice\u0085",
+      "/practice\u009f",
+      `${ORIGIN}/practice\u0085`,
+      `${ORIGIN}/practice\r`,
+    ]) {
+      assert.equal(resolveTarget(bad, ORIGIN, allow), null, JSON.stringify(bad));
+    }
+    assert.equal(resolveTarget(" /practice ", ORIGIN, allow), "/practice");
+  });
+
+  it("decodeStateCookie rejects arrays, primitives, oversized/empty fields, and control chars", () => {
+    const validNonce = "a".repeat(43);
+    const b64Json = (v: unknown) => Buffer.from(JSON.stringify(v), "utf8").toString("base64url");
+
+    for (const badPayload of [
+      [],
+      [validNonce, PLATFORM.issuer, PLATFORM.client_id],
+      "str",
+      123,
+      null,
+      true,
+      { n: validNonce, i: "", c: PLATFORM.client_id },
+      { n: validNonce, i: PLATFORM.issuer, c: "" },
+      { n: validNonce, i: `https://x.test/${"a".repeat(2040)}`, c: PLATFORM.client_id },
+      { n: validNonce, i: PLATFORM.issuer, c: "c".repeat(513) },
+      { n: validNonce, i: `${PLATFORM.issuer}\r`, c: PLATFORM.client_id },
+      { n: validNonce, i: `${PLATFORM.issuer}\u0085`, c: PLATFORM.client_id },
+      { n: validNonce, i: `${PLATFORM.issuer}\u0000`, c: PLATFORM.client_id },
+      { n: validNonce, i: PLATFORM.issuer, c: "client\nid" },
+      { n: validNonce, i: PLATFORM.issuer, c: "client\x7fid" },
+      { n: validNonce, i: PLATFORM.issuer, c: "client\u0080id" },
+      { n: validNonce, i: PLATFORM.issuer, c: "client\u009fid" },
+      { n: "too-short", i: PLATFORM.issuer, c: PLATFORM.client_id },
+    ]) {
+      assert.equal(decodeStateCookie(b64Json(badPayload)), null, JSON.stringify(badPayload));
+    }
+
+    const maxIssuer = `https://x.test/${"a".repeat(2048 - "https://x.test/".length)}`;
+    const maxClient = "c".repeat(512);
+    const encoded = encodeStateCookie({
+      nonce: validNonce,
+      issuer: maxIssuer,
+      clientId: maxClient,
+    });
+    assert.deepEqual(decodeStateCookie(encoded), {
+      nonce: validNonce,
+      issuer: maxIssuer,
+      clientId: maxClient,
+    });
+  });
+
+  it("handleLaunch rejects id_token and target_link_uri claims containing control characters", async () => {
+    const s = await startLogin();
+    const tokenWithCtrl = `${await sign(claims(s.nonce))}\r`;
+    const body = new URLSearchParams({ state: s.state, id_token: tokenWithCtrl }).toString();
+    const badIdRes = await handleLaunch(
+      new Request(`${ORIGIN}/api/lti/launch`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          cookie: s.cookie,
+        },
+        body,
+      }),
+      deps(),
+    );
+    assert.equal(badIdRes.status, 400);
+    assert.equal(badIdRes.headers.get("cache-control"), "no-store");
+
+    const badTargetRes = await launch(
+      {
+        state: s.state,
+        id_token: await sign(claims(s.nonce, { [CLAIM.targetLinkUri]: `${ORIGIN}/api/lti/launch\n` })),
+      },
+      s.cookie,
+    );
+    assert.equal(badTargetRes.status, 400);
+    assert.equal(badTargetRes.headers.get("location"), null);
   });
 });

@@ -12,9 +12,6 @@ import {
   Search,
   Layers,
   Sparkles,
-  Heart,
-  Droplets,
-  Eye,
   Pill,
 } from "lucide-react";
 import {
@@ -25,9 +22,6 @@ import {
   findGProteinForReceptor,
   type GProteinPathway,
   type CascadeStep,
-  type TissueResponse,
-  type ClinicalDrugTarget,
-  type PharmacologyPearl,
 } from "@/lib/drugs/g-protein-signaling";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";

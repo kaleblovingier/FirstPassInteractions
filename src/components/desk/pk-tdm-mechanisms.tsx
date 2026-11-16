@@ -4,12 +4,10 @@ import {
   AlertTriangle,
   BookOpen,
   Check,
-  ChevronRight,
   Filter,
   Hourglass,
   Info,
   Layers,
-  Pill,
   RotateCcw,
   ShieldAlert,
   Sparkles,
@@ -17,9 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import {
   PK_CONCEPTS,
   REGULATORY_NOTICE,
@@ -114,7 +110,7 @@ export function PkTdmMechanisms() {
 
   // —— Tab 4: Protein Binding Displacement State ——
   const [totalLevel, setTotalLevel] = useState<number>(12);
-  const [baselineFu, setBaselineFu] = useState<number>(10);
+  const [baselineFu] = useState<number>(10);
   const [displacedFu, setDisplacedFu] = useState<number>(22);
   const [albuminLevel, setAlbuminLevel] = useState<number>(4.4);
 

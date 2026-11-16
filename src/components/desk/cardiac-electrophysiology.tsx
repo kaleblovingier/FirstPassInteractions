@@ -4,18 +4,12 @@ import {
   Zap,
   ShieldAlert,
   AlertTriangle,
-  ArrowRight,
   Check,
   Plus,
   BookOpen,
   Info,
   Heart,
-  TrendingDown,
-  TrendingUp,
-  Layers,
   Sparkles,
-  RefreshCw,
-  Clock,
   Gauge,
   Sliders,
   Flame,
@@ -24,17 +18,14 @@ import {
   ELECTROPHYSIOLOGY_REGULATORY_DISCLAIMER,
   ELECTROPHYSIOLOGY_CITATIONS,
   getActionPotentialPhases,
-  getIonChannelById,
   getAllIonChannels,
   getVaughanWilliamsClasses,
-  getTissueModel,
   getArrhythmiaMechanisms,
   getCardiacElectrophysiologyProfile,
   detectArrhythmiaCollisions,
   type ActionPotentialPhase,
   type ActionPotentialPhaseNumber,
   type VaughanWilliamsClassInfo,
-  type ArrhythmiaMechanism,
   type ArrhythmiaCollision,
 } from "@/lib/drugs/cardiac-electrophysiology";
 import { useDesk } from "@/lib/drugs/store";
@@ -46,7 +37,6 @@ export function CardiacElectrophysiology() {
   const [activeTab, setActiveTab] = useState<"phases" | "classes" | "mechanisms" | "channels" | "tray">("phases");
   const [selectedClassId, setSelectedClassId] = useState<string>("IA");
   const [simulateAfterdepolarization, setSimulateAfterdepolarization] = useState<"none" | "ead" | "dad">("none");
-  const [copiedFeedback, setCopiedFeedback] = useState<boolean>(false);
 
   // Subscribe to desk tray
   const selectedOnDesk = useDesk((s) => s.selected);
@@ -56,8 +46,6 @@ export function CardiacElectrophysiology() {
   const allChannels = useMemo(() => getAllIonChannels(), []);
   const vwClasses = useMemo(() => getVaughanWilliamsClasses(), []);
   const mechanisms = useMemo(() => getArrhythmiaMechanisms(), []);
-  const ventricularModel = useMemo(() => getTissueModel("ventricular"), []);
-  const nodalModel = useMemo(() => getTissueModel("nodal"), []);
 
   // Selected phase detail
   const currentPhase = useMemo<ActionPotentialPhase>(() => {
@@ -74,18 +62,9 @@ export function CardiacElectrophysiology() {
     return detectArrhythmiaCollisions(selectedOnDesk);
   }, [selectedOnDesk]);
 
-  // Tray drugs with cardiac electrophysiology profiles
-  const trayProfiles = useMemo(() => {
-    return selectedOnDesk
-      .map((id) => getCardiacElectrophysiologyProfile(id))
-      .filter((p): p is NonNullable<typeof p> => p !== null);
-  }, [selectedOnDesk]);
-
   // Quick preset loaders
   const loadPreset = (drugIds: string[]) => {
     useDesk.getState().load(drugIds);
-    setCopiedFeedback(true);
-    setTimeout(() => setCopiedFeedback(false), 2000);
   };
 
   const handleAddDrug = (drugId: string) => {

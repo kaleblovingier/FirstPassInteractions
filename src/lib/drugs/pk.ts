@@ -163,7 +163,7 @@ const ROWS: Record<string, PkRow> = {
     F: 0.04,
     fm: { CYP3A4: 0.95 },
     gut3A4: 0.8,
-    note: "Tiny F. Grapefruit and azoles turn a 5 mg anxiolytic into a much larger exposure.",
+    note: "Tiny F. Grapefruit and azoles turn a standard oral anxiolytic into a much larger exposure.",
   },
   alprazolam: {
     tHalfH: 12,

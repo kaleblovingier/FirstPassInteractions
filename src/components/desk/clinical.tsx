@@ -30,17 +30,15 @@ import {
   evaluateRumackMatthew,
   NAC_REGIMENS,
 } from "@/lib/drugs/apap";
-import { acbOnDesk, acbWanted, type AcbReport } from "@/lib/drugs/acb";
-import { dialysisOnDesk, dialysisWanted, type DialysisReport } from "@/lib/drugs/dialysis";
+import { acbOnDesk, type AcbReport } from "@/lib/drugs/acb";
+import { dialysisOnDesk, type DialysisReport } from "@/lib/drugs/dialysis";
 import {
   convertSteroid,
   hpaSuppressionRisk,
   steroidReportOnDesk,
-  steroidsOnDesk,
   STEROID_AGENTS,
   STEROID_BY_ID,
   type DosingTiming,
-  type SteroidAgent,
   type SteroidReport,
 } from "@/lib/drugs/steroids";
 import {
@@ -48,8 +46,6 @@ import {
   calculateGanzoni,
   ironOnDesk,
   ironReportOnDesk,
-  type IronFormulation,
-  type GanzoniResult,
 } from "@/lib/drugs/iron";
 import {
   evaluateDigoxinLevel,
@@ -57,12 +53,9 @@ import {
   digoxinOnDesk,
   digoxinReportOnDesk,
   DIGOXIN_PGP_INTERACTORS,
-  type DigifabCalcResult,
-  type DigoxinLevelEvaluation,
 } from "@/lib/drugs/digoxin";
 import {
   calculateVancoSawchukZaske,
-  type VancoSawchukZaskeResult,
 } from "@/lib/drugs/vancomycin";
 import {
   calculatePhenobarbitalLoading,
@@ -78,7 +71,6 @@ import {
   aminoglycosideReportOnDesk,
   TRADITIONAL_AG_TARGETS,
   type AminoglycosideAgentId,
-  type HartfordInterval,
 } from "@/lib/drugs/aminoglycosides";
 import {
   classifyLithiumLevel,
@@ -87,7 +79,6 @@ import {
   lithiumReportOnDesk,
   LITHIUM_TARGET_RANGES,
   type LithiumTargetBand,
-  type LithiumToxicitySeverity,
 } from "@/lib/drugs/lithium";
 import { LIVERTOX_CAT_TONE, livertoxOnDesk, livertoxUrl } from "@/lib/drugs/livertox";
 import { fentanylPatchMme, methadoneFactor, mmeOnDesk } from "@/lib/drugs/mme";
@@ -109,32 +100,24 @@ import {
 } from "@/lib/drugs/doac";
 import {
   valproateOnDesk,
-  valproateReportOnDesk,
   evaluateValproateLevel,
   evaluateVhe,
   calculateCarnitineDosing,
   findValproateCollisions,
   CARBAPENEM_IDS,
-  type ValproateCollision,
 } from "@/lib/drugs/valproate";
 import {
   potassiumOnDesk,
-  potassiumReportOnDesk,
   evaluatePotassium,
   type EcgFinding,
   type UrineOutputStatus,
-  type PotassiumSeverityTier,
-  type PotassiumEvaluation,
 } from "@/lib/drugs/potassium";
 import {
   sglt2OnDesk,
-  sglt2ReportOnDesk,
   evaluateEuDka,
   calculatePreopHold,
   evaluateSglt2RenalRails,
   findSglt2Collisions,
-  SGLT2_PROFILES,
-  type Sglt2Report,
 } from "@/lib/drugs/sglt2";
 import { wardWanted, wardsOnDesk } from "@/lib/drugs/wards";
 import { safetyOnDesk, safetyWanted } from "@/lib/drugs/safety";
@@ -285,58 +268,58 @@ function StationFallback() {
 type Tab = ClinicalTabId;
 
 export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext }) {
-  const qt = useMemo(() => qtReport(ids, host), [ids.join("|"), host.age, host.kidney]);
-  const levels = useMemo(() => tdmOnDesk(ids), [ids.join("|")]);
-  const liver = useMemo(() => livertoxOnDesk(ids), [ids.join("|")]);
-  const pheno = useMemo(() => phenoConvertOnDesk(ids, host), [ids.join("|"), host]);
-  const reversal = useMemo(() => reversalOnDesk(ids), [ids.join("|")]);
-  const mme = useMemo(() => mmeOnDesk(ids), [ids.join("|")]);
-  const hunterOn = useMemo(() => serotonergicOnDesk(ids).length + nmsRiskOnDesk(ids).length > 0, [ids.join("|")]);
-  const uds = useMemo(() => udsOnDesk(ids), [ids.join("|")]);
-  const alerts = useMemo(() => alertsOnDesk(ids), [ids.join("|")]);
+  const qt = useMemo(() => qtReport(ids, host), [ids, host]);
+  const levels = useMemo(() => tdmOnDesk(ids), [ids]);
+  const liver = useMemo(() => livertoxOnDesk(ids), [ids]);
+  const pheno = useMemo(() => phenoConvertOnDesk(ids, host), [ids, host]);
+  const reversal = useMemo(() => reversalOnDesk(ids), [ids]);
+  const mme = useMemo(() => mmeOnDesk(ids), [ids]);
+  const hunterOn = useMemo(() => serotonergicOnDesk(ids).length + nmsRiskOnDesk(ids).length > 0, [ids]);
+  const uds = useMemo(() => udsOnDesk(ids), [ids]);
+  const alerts = useMemo(() => alertsOnDesk(ids), [ids]);
   const otp = otpWanted(ids);
   const hrOn = harmWanted(ids);
   const cypOn = cypWanted(ids);
   const ancOn = ancWanted(ids);
   const wardsOn = wardWanted(ids) || safetyWanted(ids);
   const doseOn = dosingWanted(ids);
-  const inr = useMemo(() => inrOnDesk(ids), [ids.join("|")]);
-  const doacOn = useMemo(() => doacOnDesk(ids), [ids.join("|")]);
-  const valproateOn = useMemo(() => valproateOnDesk(ids), [ids.join("|")]);
-  const potassiumOn = useMemo(() => potassiumOnDesk(ids), [ids.join("|")]);
-  const sglt2On = useMemo(() => sglt2OnDesk(ids), [ids.join("|")]);
-  const acb = useMemo(() => acbOnDesk(ids), [ids.join("|")]);
-  const dialysis = useMemo(() => dialysisOnDesk(ids), [ids.join("|")]);
-  const steroids = useMemo(() => steroidReportOnDesk(ids), [ids.join("|")]);
-  const apapOn = useMemo(() => apapOnDesk(ids), [ids.join("|")]);
-  const ironOn = useMemo(() => ironOnDesk(ids).hasIron, [ids.join("|")]);
-  const digOn = useMemo(() => digoxinOnDesk(ids).hasDigoxin, [ids.join("|")]);
-  const phenoBarbiturateOn = useMemo(() => phenobarbitalOnDesk(ids), [ids.join("|")]);
-  const agOn = useMemo(() => aminoglycosidesOnDesk(ids), [ids.join("|")]);
-  const lithiumOn = useMemo(() => lithiumReportOnDesk(ids).hasLithium, [ids.join("|")]);
-  const oncologyOn = useMemo(() => oncologyOnDesk(ids), [ids.join("|")]);
-  const antimicrobialOn = useMemo(() => antimicrobialOnDesk(ids), [ids.join("|")]);
-  const phenytoinOn = useMemo(() => phenytoinOnDesk(ids), [ids.join("|")]);
-  const pregnancyOn = useMemo(() => pregnancyOnDesk(ids), [ids.join("|")]);
-  const vasoactiveOn = useMemo(() => vasoactiveOnDesk(ids), [ids.join("|")]);
-  const transplantOn = useMemo(() => transplantOnDesk(ids), [ids.join("|")]);
-  const neuropsychOn = useMemo(() => neuropsychOnDesk(ids), [ids.join("|")]);
-  const anticoagOn = useMemo(() => anticoagulationOnDesk(ids), [ids.join("|")]);
-  const toxOn = useMemo(() => toxicologyOnDesk(ids), [ids.join("|")]);
-  const antiarrhythmicOn = useMemo(() => antiarrhythmicOnDesk(ids), [ids.join("|")]);
-  const acidBaseOn = useMemo(() => acidBaseOnDesk(ids), [ids.join("|")]);
-  const anesthesiaOn = useMemo(() => anesthesiaOnDesk(ids), [ids.join("|")]);
-  const epilepsyOn = useMemo(() => statusEpilepticusOnDesk(ids), [ids.join("|")]);
-  const obstetricOn = useMemo(() => obstetricOnDesk(ids), [ids.join("|")]);
-  const moudOn = useMemo(() => moudOnDesk(ids), [ids.join("|")]);
-  const glycemicOn = useMemo(() => glycemicOnDesk(ids), [ids.join("|")]);
-  const pediatricOn = useMemo(() => pediatricOnDesk(ids), [ids.join("|")]);
-  const separationOn = useMemo(() => separationOnDesk(ids), [ids.join("|")]);
-  const rotationOn = useMemo(() => rotationOnDesk(ids), [ids.join("|")]);
-  const hepaticOn = useMemo(() => hepaticOnDesk(ids), [ids.join("|")]);
-  const allergyOn = useMemo(() => allergyOnDesk(ids), [ids.join("|")]);
-  const afOn = useMemo(() => afOnDesk(ids), [ids.join("|")]);
-  const diliOn = useMemo(() => diliOnDesk(ids), [ids.join("|")]);
+  const inr = useMemo(() => inrOnDesk(ids), [ids]);
+  const doacOn = useMemo(() => doacOnDesk(ids), [ids]);
+  const valproateOn = useMemo(() => valproateOnDesk(ids), [ids]);
+  const potassiumOn = useMemo(() => potassiumOnDesk(ids), [ids]);
+  const sglt2On = useMemo(() => sglt2OnDesk(ids), [ids]);
+  const acb = useMemo(() => acbOnDesk(ids), [ids]);
+  const dialysis = useMemo(() => dialysisOnDesk(ids), [ids]);
+  const steroids = useMemo(() => steroidReportOnDesk(ids), [ids]);
+  const apapOn = useMemo(() => apapOnDesk(ids), [ids]);
+  const ironOn = useMemo(() => ironOnDesk(ids).hasIron, [ids]);
+  const digOn = useMemo(() => digoxinOnDesk(ids).hasDigoxin, [ids]);
+  const phenoBarbiturateOn = useMemo(() => phenobarbitalOnDesk(ids), [ids]);
+  const agOn = useMemo(() => aminoglycosidesOnDesk(ids), [ids]);
+  const lithiumOn = useMemo(() => lithiumReportOnDesk(ids).hasLithium, [ids]);
+  const oncologyOn = useMemo(() => oncologyOnDesk(ids), [ids]);
+  const antimicrobialOn = useMemo(() => antimicrobialOnDesk(ids), [ids]);
+  const phenytoinOn = useMemo(() => phenytoinOnDesk(ids), [ids]);
+  const pregnancyOn = useMemo(() => pregnancyOnDesk(ids), [ids]);
+  const vasoactiveOn = useMemo(() => vasoactiveOnDesk(ids), [ids]);
+  const transplantOn = useMemo(() => transplantOnDesk(ids), [ids]);
+  const neuropsychOn = useMemo(() => neuropsychOnDesk(ids), [ids]);
+  const anticoagOn = useMemo(() => anticoagulationOnDesk(ids), [ids]);
+  const toxOn = useMemo(() => toxicologyOnDesk(ids), [ids]);
+  const antiarrhythmicOn = useMemo(() => antiarrhythmicOnDesk(ids), [ids]);
+  const acidBaseOn = useMemo(() => acidBaseOnDesk(ids), [ids]);
+  const anesthesiaOn = useMemo(() => anesthesiaOnDesk(ids), [ids]);
+  const epilepsyOn = useMemo(() => statusEpilepticusOnDesk(ids), [ids]);
+  const obstetricOn = useMemo(() => obstetricOnDesk(ids), [ids]);
+  const moudOn = useMemo(() => moudOnDesk(ids), [ids]);
+  const glycemicOn = useMemo(() => glycemicOnDesk(ids), [ids]);
+  const pediatricOn = useMemo(() => pediatricOnDesk(ids), [ids]);
+  const separationOn = useMemo(() => separationOnDesk(ids), [ids]);
+  const rotationOn = useMemo(() => rotationOnDesk(ids), [ids]);
+  const hepaticOn = useMemo(() => hepaticOnDesk(ids), [ids]);
+  const allergyOn = useMemo(() => allergyOnDesk(ids), [ids]);
+  const afOn = useMemo(() => afOnDesk(ids), [ids]);
+  const diliOn = useMemo(() => diliOnDesk(ids), [ids]);
   const tabs = useMemo(() => {
     // Every station in STATION_LABELS needs an open flag here, so the picker and the Ctrl+K palette list the same stations.
     const on: Record<StationId, boolean> = {
@@ -492,7 +475,7 @@ export function ClinicalBoard({ ids, host }: { ids: string[]; host: HostContext 
 }
 
 function CypPanel({ ids }: { ids: string[] }) {
-  const cards = useMemo(() => protocolsOnDesk(ids), [ids.join("|")]);
+  const cards = useMemo(() => protocolsOnDesk(ids), [ids]);
   const add = useDesk((s) => s.add);
   const selected = useDesk((s) => s.selected);
   const [phase, setPhase] = useState<"start" | "stop">("start");
@@ -721,7 +704,7 @@ function CypPanel({ ids }: { ids: string[] }) {
 function QtPanel({
   ids,
   host,
-  report,
+  report: _report,
 }: {
   ids: string[];
   host: HostContext;
@@ -941,7 +924,7 @@ function HunterPanel({ ids }: { ids: string[] }) {
   useEffect(() => {
     const sero = serotonergicOnDesk(ids).length > 0;
     setOn((prev) => (prev.serotonergic === sero ? prev : { ...prev, serotonergic: sero }));
-  }, [ids.join("|")]);
+  }, [ids]);
   const positive = hunterPositive(on);
   function toggle(key: HunterKey) {
     setOn((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -1386,13 +1369,13 @@ function ScaleBlock({
 }
 
 function HarmPanel({ ids }: { ids: string[] }) {
-  const cards = useMemo(() => harmOnDesk(ids), [ids.join("|")]);
-  const strips = useMemo(() => stripsFor(ids), [ids.join("|")]);
-  const kit = useMemo(() => kitFor(ids), [ids.join("|")]);
-  const steps = useMemo(() => responseSteps(ids), [ids.join("|")]);
-  const wiki = useMemo(() => wikiOnDesk(ids), [ids.join("|")]);
-  const combos = useMemo(() => comboOnDesk(ids), [ids.join("|")]);
-  const resources = useMemo(() => hrResourcesFor(ids), [ids.join("|")]);
+  const cards = useMemo(() => harmOnDesk(ids), [ids]);
+  const strips = useMemo(() => stripsFor(ids), [ids]);
+  const kit = useMemo(() => kitFor(ids), [ids]);
+  const steps = useMemo(() => responseSteps(ids), [ids]);
+  const wiki = useMemo(() => wikiOnDesk(ids), [ids]);
+  const combos = useMemo(() => comboOnDesk(ids), [ids]);
+  const resources = useMemo(() => hrResourcesFor(ids), [ids]);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [pages, setPages] = useState<WikiPage[]>([]);
   const [liveCombos, setLiveCombos] = useState<LiveCombo[]>([]);
@@ -1423,7 +1406,7 @@ function HarmPanel({ ids }: { ids: string[] }) {
     return () => {
       live = false;
     };
-  }, [ids.join("|")]);
+  }, [ids]);
 
   return (
     <div className="space-y-5">
@@ -1660,7 +1643,7 @@ function DosePanel({ ids, host }: { ids: string[]; host: HostContext }) {
   const setDose = useDesk((s) => s.setDose);
   const rows = useMemo(
     () => dosingOnDesk(ids, parseDoses(doses), host),
-    [ids.join("|"), JSON.stringify(doses), host.age, host.kidney],
+    [ids, doses, host],
   );
   return (
     <div className="space-y-3">
@@ -1724,7 +1707,7 @@ function DoseCard({
 function WardsPanel({ ids }: { ids: string[] }) {
   const rows = useMemo(
     () => [...wardsOnDesk(ids), ...safetyOnDesk(ids)],
-    [ids.join("|")],
+    [ids],
   );
   return (
     <div className="space-y-3">
@@ -5348,7 +5331,7 @@ function LithiumPanel({ ids }: { ids: string[]; host: HostContext }) {
         setTakingLoopDiuretic(true);
       }
     }
-  }, [ids.join("|")]);
+  }, [ids, report.interactingDrugs.length]);
 
   const numLevel = Number(level);
   const numCrcl = Number(crcl);
@@ -6501,7 +6484,7 @@ function ValproatePanel({ ids, host }: { ids: string[]; host: HostContext }) {
 }
 
 function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
-  const potOn = useMemo(() => potassiumOnDesk(ids), [ids.join("|")]);
+  const potOn = useMemo(() => potassiumOnDesk(ids), [ids]);
 
   // Initial defaults
   const initialK = potOn.perpetratorCount >= 3 ? "6.6" : potOn.perpetratorCount >= 2 ? "6.1" : potOn.hasPerpetrator ? "5.4" : "6.2";
@@ -6532,7 +6515,7 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
       res.intracellularShifting.sodiumBicarbonateGuidance.indicated = true;
     }
     return res;
-  }, [numK, numEgfr, ecgFinding, urineOutput, numGlucose, ids.join("|"), acidosisPresent]);
+  }, [numK, numEgfr, ecgFinding, urineOutput, numGlucose, ids, acidosisPresent]);
 
   const presets = [
     {
@@ -7061,7 +7044,7 @@ function PotassiumPanel({ ids, host }: { ids: string[]; host: HostContext }) {
 }
 
 function Sglt2Panel({ ids, host }: { ids: string[]; host: HostContext }) {
-  const onDesk = useMemo(() => sglt2OnDesk(ids), [ids.join("|")]);
+  const onDesk = useMemo(() => sglt2OnDesk(ids), [ids]);
 
   // Initial inputs
   const [glucoseInput, setGlucoseInput] = useState("175");
@@ -7088,9 +7071,9 @@ function Sglt2Panel({ ids, host }: { ids: string[]; host: HostContext }) {
     });
   }, [numGlucose, numBicarb, numPh, numBetaOhb, numAnionGap]);
 
-  const preopSchedule = useMemo(() => calculatePreopHold(onDesk.sglt2Ids), [onDesk.sglt2Ids.join("|")]);
-  const renalRails = useMemo(() => evaluateSglt2RenalRails(onDesk.sglt2Ids, numEgfr), [onDesk.sglt2Ids.join("|"), numEgfr]);
-  const collisions = useMemo(() => findSglt2Collisions(ids), [ids.join("|")]);
+  const preopSchedule = useMemo(() => calculatePreopHold(onDesk.sglt2Ids), [onDesk.sglt2Ids]);
+  const renalRails = useMemo(() => evaluateSglt2RenalRails(onDesk.sglt2Ids, numEgfr), [onDesk.sglt2Ids, numEgfr]);
+  const collisions = useMemo(() => findSglt2Collisions(ids), [ids]);
 
   const presets = [
     {

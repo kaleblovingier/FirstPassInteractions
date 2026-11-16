@@ -9,6 +9,8 @@ import { PAIR_DISCLAIMER } from "@/lib/seo/pair-copy";
 import { sitemapXml } from "@/lib/seo/pair-pages";
 import { SITE_URL } from "@/lib/seo/pair-copy";
 
+const decode = (h: string) =>
+  h.replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 const text = (d: (typeof LEGAL_DOCS)[number]) => d.sections.flatMap((s) => [s.title, ...s.paras]).join("\n");
 const html = (d: (typeof LEGAL_DOCS)[number]) => renderToStaticMarkup(createElement(LegalView, { doc: d }));
 
@@ -87,6 +89,48 @@ describe("legal pages", () => {
     ]) {
       assert.ok(p.includes(needle), `missing privacy text: ${needle}`);
       assert.ok(rendered.includes(needle), `missing rendered privacy html: ${needle}`);
+    }
+  });
+
+  it("privacy and terms cover /embed/pair/* iframe cards, CSP frame-ancestors, and LTI 1.3 rate limits/hardening", () => {
+    const p = text(PRIVACY_DOC);
+    const renderedPrivacy = decode(html(PRIVACY_DOC));
+    for (const needle of [
+      "/embed/pair/*",
+      "read-only interaction cards",
+      "iframe course embeds",
+      "frame-ancestors *",
+      "Content-Security-Policy",
+      "'self'",
+      "grok.com",
+      "*.grok.com",
+      "*.grok.me",
+      "noindex",
+      "no learner or desk data",
+      "Google Fonts",
+      "grok.com badge script",
+      "LTI_ENABLED=1",
+      "/api/lti/login",
+      "/api/lti/launch",
+      "30 requests per minute per IP",
+      "64 KiB form-post body cap",
+      "RS256 JWK signature verification",
+      "single-use nonce replay cache",
+      "C0 and C1 control-character rejection",
+      "Cache-Control: no-store",
+      "Referrer-Policy: no-referrer",
+      "Allow headers on 405",
+      "up to 11 minutes",
+    ]) {
+      assert.ok(p.includes(needle), `missing privacy text: ${needle}`);
+      assert.ok(renderedPrivacy.includes(needle), `missing rendered privacy html: ${needle}`);
+    }
+
+    const t = text(TERMS_DOC);
+    const renderedTerms = decode(html(TERMS_DOC));
+    for (const needle of ["/embed/pair/*", "iframe course cards", "LTI 1.3", "noindex", "granting no license"]) {
+      assert.ok(t.includes(needle), `missing terms text: ${needle}`);
+      assert.ok(renderedTerms.includes(needle), `missing rendered terms html: ${needle}`);
     }
   });
 });

@@ -3,12 +3,9 @@ import {
   CNS_PROFILES,
   CNS_CLASS_DIVERGENCES,
   CNS_PENETRATION_REGULATORY_DISCLAIMER,
-  getAllCnsPenetrationProfiles,
   getCnsProfileById,
-  getAllCnsClassDivergences,
   calculateBbpScore,
   detectCnsRisksOnTray,
-  type CnsProfile,
   type CnsDrugCategory,
   type CnsPermeabilityLevel,
   type CnsClassDivergence,
@@ -20,7 +17,6 @@ import { cn } from "@/lib/utils";
 import {
   Brain,
   Shield,
-  ShieldAlert,
   ShieldCheck,
   Activity,
   AlertTriangle,
@@ -29,17 +25,10 @@ import {
   Check,
   Plus,
   Search,
-  Filter,
-  ArrowRight,
   Flame,
-  RotateCcw,
   Sparkles,
-  BookOpen,
-  Zap,
   Layers,
-  HeartPulse,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function CnsPenetrationMatrix() {
   const selected = useDesk((s) => s.selected);

@@ -140,6 +140,7 @@ function hasPhone(line: (typeof LINES)[number]): line is (typeof LINES)[number] 
   return typeof line.phone === "string" && Boolean(line.phoneLabel);
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const CHIP: Record<string, string> = {
   "SAMHSA National Helpline": "SAMHSA 1-800-662-HELP",
   "SAMHSA Helpline": "SAMHSA 1-800-662-HELP",
@@ -158,6 +159,7 @@ export const CHIP: Record<string, string> = {
   "FindSupport.gov": "FindSupport.gov",
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function linesText(note: string, zip: string, stateRes?: StateResource | null) {
   const loc =
     zip.length === 5

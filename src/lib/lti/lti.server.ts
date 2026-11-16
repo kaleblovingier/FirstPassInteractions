@@ -29,6 +29,7 @@ import {
   clearStateCookie,
   decodeStateCookie,
   findPlatform,
+  hasLtiControlChar,
   isValidState,
   ltiEnabled,
   parsePlatforms,
@@ -137,7 +138,10 @@ function randomToken(): string {
 
 async function readForm(request: Request): Promise<URLSearchParams | null> {
   const type = (request.headers.get("content-type") ?? "").split(";")[0]!.trim().toLowerCase();
-  if (type !== "application/x-www-form-urlencoded") return null;
+  if (type !== "application/x-www-form-urlencoded") {
+    void request.body?.cancel().catch(() => {});
+    return null;
+  }
   const body = await readBounded(request, LTI_MAX_BODY_BYTES);
   return body === null ? null : new URLSearchParams(body);
 }
@@ -178,10 +182,14 @@ function platformsFrom(readEnv: EnvReader): LtiPlatform[] | null {
 }
 
 function stringParam(params: URLSearchParams, name: string, max = 2048): string | undefined {
-  const v = params.get(name);
-  if (v === null) return undefined;
-  const t = v.trim();
+  const values = params.getAll(name);
+  if (values.length === 0 || values.some(hasLtiControlChar)) return undefined;
+  const t = values[0]!.trim();
   return t && t.length <= max ? t : undefined;
+}
+
+function hasInvalidOptionalParam(params: URLSearchParams, name: string, max: number): boolean {
+  return params.getAll(name).some((v) => hasLtiControlChar(v) || v.trim().length > max);
 }
 
 /* ---------------- login (OIDC third-party initiation) ---------------- */
@@ -206,6 +214,11 @@ export async function handleLogin(request: Request, deps: LtiDeps = {}): Promise
   const messageHint = stringParam(params, "lti_message_hint", 4096);
   if (!iss || !loginHint || !targetLinkUri)
     return reject("login", "missing_param", 400, "Missing login parameters.");
+  if (
+    hasInvalidOptionalParam(params, "client_id", 512) ||
+    hasInvalidOptionalParam(params, "lti_message_hint", 4096)
+  )
+    return reject("login", "bad_param", 400, "Invalid login parameters.");
 
   const platform = findPlatform(platforms, iss, clientId);
   if (!platform)
@@ -399,7 +412,7 @@ export async function handleLaunch(request: Request, deps: LtiDeps = {}): Promis
   if (raw === undefined || raw === "") {
     raw = payload[CLAIM.targetLinkUri];
     // Canvas sends the launch URL itself as the target by default: that means the desk.
-    if (typeof raw === "string") {
+    if (typeof raw === "string" && !hasLtiControlChar(raw)) {
       try {
         const u = new URL(raw);
         if (u.origin === origin && u.pathname.replace(/\/+$/, "") === LTI_LAUNCH_PATH) raw = "/";

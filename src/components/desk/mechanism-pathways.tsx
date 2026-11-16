@@ -3,9 +3,7 @@ import {
   MECHANISM_PATHWAYS,
   REGULATORY_NOTICE,
   type MechanismPathway,
-  type PathwayNode,
   type PathwayNodeType,
-  type PathwayDrugTarget,
 } from "@/lib/drugs/mechanism-pathways";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { useDesk } from "@/lib/drugs/store";
@@ -22,9 +20,7 @@ import {
   Zap,
   Info,
   Search,
-  ExternalLink,
   ArrowRight,
-  Filter,
 } from "lucide-react";
 
 export interface MechanismPathwaysProps {

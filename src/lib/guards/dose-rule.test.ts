@@ -14,6 +14,17 @@ const CLEAN = [
   "src/lib/drugs/qt-resus.ts",
   "src/lib/drugs/potassium.ts",
   "src/lib/drugs/antimicrobial-stewardship.ts",
+  "src/lib/drugs/cyp-kinetics.ts",
+  "src/lib/drugs/help-resources.ts",
+  "src/lib/drugs/transporter-network.ts",
+  "src/lib/drugs/pk.ts",
+  "src/lib/drugs/toxidromes.ts",
+  "src/lib/drugs/renal-mechanisms.ts",
+  "src/lib/drugs/aminoglycosides.ts",
+  "src/lib/drugs/sglt2.ts",
+  "src/lib/drugs/clinic.ts",
+  "src/lib/drugs/contraception.ts",
+  "src/lib/drugs/qt.ts",
 ];
 
 const walk = (d: string): string[] =>
@@ -48,6 +59,11 @@ test("dose rule: catches administered amounts, skips lab values", () => {
 test("dose rule: swept files carry no administered dose", () => {
   const found = scan();
   for (const f of CLEAN) assert.deepEqual(found[f] ?? [], [], f);
+});
+
+test("dose rule: swept files are removed from dose-baseline.json", () => {
+  const b = baseline as Record<string, number>;
+  for (const f of CLEAN) assert.equal(Object.hasOwn(b, f), false, f);
 });
 
 test("dose rule: no file gains doses beyond the recorded baseline (ratchet)", () => {

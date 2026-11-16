@@ -5,7 +5,6 @@ import {
   INTERSECT_REGULATORY_NOTICE,
   type BurdenLevel,
   type IntersectCategory,
-  type IntersectLoad,
   type PresetScenario,
 } from "@/lib/drugs/mechanism-intersect";
 import { useDesk } from "@/lib/drugs/store";
@@ -18,13 +17,9 @@ import {
   Info,
   Layers,
   Moon,
-  Plus,
-  RotateCcw,
-  ShieldAlert,
   Sparkles,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const CATEGORY_ICONS: Record<IntersectCategory, React.ReactNode> = {
   anticholinergic: <Flame className="size-4 text-warn" />,
@@ -65,7 +60,6 @@ const LEVEL_BADGES: Record<BurdenLevel, { label: string; badgeClass: string; bar
 export function MechanismIntersect() {
   const selected = useDesk((s) => s.selected);
   const load = useDesk((s) => s.load);
-  const add = useDesk((s) => s.add);
 
   const [activeCategory, setActiveCategory] = useState<IntersectCategory | "all">("all");
   const [activePreset, setActivePreset] = useState<string | null>(null);

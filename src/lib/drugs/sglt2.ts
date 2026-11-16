@@ -305,7 +305,7 @@ export function evaluateEuDka({
     diagnosticTrapAlert,
     resuscitationGuidance: {
       dextroseInsulinCoadministration:
-        "CRITICAL RESUSCITATION PROTOCOL: Initiate IV Dextrose (D5W or D10W at 75–125 mL/hr) simultaneously with continuous IV regular insulin infusion (0.05–0.1 units/kg/hr). Dextrose is REQUIRED to avoid hypoglycemia while delivering sufficient insulin to halt lipolysis, hepatic free fatty acid oxidation, and ketoacid generation.",
+        "CRITICAL RESUSCITATION PROTOCOL: Initiate IV Dextrose (D5W or D10W at 75–125 mL/hr) simultaneously with continuous IV regular insulin infusion (per institutional DKA insulin protocol). Dextrose is REQUIRED to avoid hypoglycemia while delivering sufficient insulin to halt lipolysis, hepatic free fatty acid oxidation, and ketoacid generation.",
       fluidResuscitation:
         "Vigorous isotonic fluid replacement (Normal Saline or balanced crystalloid e.g., Plasmalyte) to replace severe osmotic diuresis deficits (typically 2–4 L total deficit).",
       sglt2Discontinuation:
@@ -417,7 +417,7 @@ export function findSglt2Collisions(ids: string[]): Sglt2Collision[] {
       severity: "moderate",
       headline: "Additive Osmotic & Natriuretic Volume Depletion",
       mechanism:
-        "SGLT2 inhibitor osmotic diuresis (~500–1000 mL/day fluid loss) combined with loop diuretic natriuresis markedly increases risk of orthostatic hypotension, syncope, and prerenal azotemia, particularly in elderly or frail patients.",
+        "SGLT2 inhibitor osmotic diuresis (substantial daily osmotic fluid loss) combined with loop diuretic natriuresis markedly increases risk of orthostatic hypotension, syncope, and prerenal azotemia, particularly in elderly or frail patients.",
       clinicalAction:
         "Anticipate loop diuretic dose reduction (often 25–50%) upon SGLT2 inhibitor initiation if patient is euvolemic. Instruct patient on postural hypotension precautions.",
     });

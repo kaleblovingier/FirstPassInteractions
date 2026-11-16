@@ -967,7 +967,7 @@ export const DIURETIC_CLASS_PROFILES: readonly DiureticClassProfile[] = [
     urinePhEffect: "Alkaline to neutral (blunts aldosterone stimulation of alpha-intercalated H+-ATPase)",
     clinicalIndications: [
       "Heart failure with reduced ejection fraction (HFrEF: RALES & EPHESUS trials demonstrate mortality benefit)",
-      "Hepatic cirrhosis with ascites (reverses secondary hyperaldosteronism; typical 100 mg spironolactone to 40 mg furosemide ratio)",
+      "Hepatic cirrhosis with ascites (reverses secondary hyperaldosteronism; classical 5:2 spironolactone-to-furosemide natriuretic potassium-balancing ratio)",
       "Primary hyperaldosteronism (Conn syndrome / bilateral adrenal hyperplasia)",
       "Resistant hypertension (PATHWAY-2 trial confirmed superiority as 4th-line agent)",
     ],

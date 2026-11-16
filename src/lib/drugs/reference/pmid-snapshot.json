@@ -413,10 +413,24 @@
   "checked": "2026-11-16"
  },
  {
+  "pmid": "10606839",
+  "year": 2000,
+  "journal": "Br J Clin Pharmacol",
+  "title": "Effect of cimetidine and ranitidine on pharmacokinetics and pharmacodynamics of a single dose of dofetilide.",
+  "checked": "2026-11-16"
+ },
+ {
   "pmid": "10683007",
   "year": 2000,
   "journal": "Lancet",
   "title": "Indinavir concentrations and St John's wort.",
+  "checked": "2026-11-16"
+ },
+ {
+  "pmid": "10831018",
+  "year": 2000,
+  "journal": "J Clin Psychopharmacol",
+  "title": "Studies on the mechanism of a fatal clarithromycin-pimozide interaction in a patient with Tourette syndrome.",
   "checked": "2026-11-16"
  },
  {
@@ -686,6 +700,13 @@
   "checked": "2026-11-16"
  },
  {
+  "pmid": "15778423",
+  "year": 2005,
+  "journal": "J Clin Pharmacol",
+  "title": "Studies to investigate the pharmacokinetic interactions between ranolazine and ketoconazole, diltiazem, or simvastatin during combined administration in healthy subjects.",
+  "checked": "2026-11-16"
+ },
+ {
   "pmid": "15781124",
   "year": 2005,
   "journal": "Pharmacol Ther",
@@ -767,6 +788,13 @@
   "year": 2006,
   "journal": "Br J Clin Pharmacol",
   "title": "The pharmacokinetic and pharmacodynamic consequences of the co-administration of lamotrigine and a combined oral contraceptive in healthy female subjects.",
+  "checked": "2026-11-16"
+ },
+ {
+  "pmid": "16640453",
+  "year": 2006,
+  "journal": "Clin Pharmacokinet",
+  "title": "Clinical pharmacokinetics of ranolazine.",
   "checked": "2026-11-16"
  },
  {
@@ -914,6 +942,13 @@
   "year": 2008,
   "journal": "Drug Saf",
   "title": "Safety of green tea extracts : a systematic review by the US Pharmacopeia.",
+  "checked": "2026-11-16"
+ },
+ {
+  "pmid": "18565860",
+  "year": 2008,
+  "journal": "N Engl J Med",
+  "title": "Increased mortality after dronedarone therapy for severe heart failure.",
   "checked": "2026-11-16"
  },
  {
@@ -1082,6 +1117,13 @@
   "year": 2011,
   "journal": "Int Rev Neurobiol",
   "title": "Selective inhibitors of monoamine oxidase type B and the \"cheese effect\".",
+  "checked": "2026-11-16"
+ },
+ {
+  "pmid": "22082198",
+  "year": 2011,
+  "journal": "N Engl J Med",
+  "title": "Dronedarone in high-risk permanent atrial fibrillation.",
   "checked": "2026-11-16"
  },
  {
@@ -1631,6 +1673,13 @@
   "checked": "2026-11-16"
  },
  {
+  "pmid": "34729703",
+  "year": 2021,
+  "journal": "Pharm Res",
+  "title": "Analyzing Potential Intestinal Transporter Drug-Drug Interactions: Reevaluating Ticagrelor Interaction Studies.",
+  "checked": "2026-11-16"
+ },
+ {
   "pmid": "35034351",
   "year": 2022,
   "journal": "Clin Pharmacol Ther",
@@ -1677,6 +1726,13 @@
   "year": 2023,
   "journal": "J Pharm Pract",
   "title": "Case Report: Possible Serotonin Syndrome in a Patient Taking Kratom and Multiple Serotonergic Agents.",
+  "checked": "2026-11-16"
+ },
+ {
+  "pmid": "35955741",
+  "year": 2022,
+  "journal": "Int J Mol Sci",
+  "title": "MATE1 Deficiency Exacerbates Dofetilide-Induced Proarrhythmia.",
   "checked": "2026-11-16"
  },
  {

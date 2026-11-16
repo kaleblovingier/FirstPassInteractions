@@ -5,13 +5,9 @@ import {
   PHARMACOGENOMICS_REGULATORY_DISCLAIMER,
   getGeneById,
   getAllPgxInteractions,
-  getInteractionsForGene,
   getTherapeuticAreas,
   detectPgxRisksOnTray,
   type Pharmacogene,
-  type PgxInteraction,
-  type TherapeuticArea,
-  type CpicLevel,
 } from "@/lib/drugs/pharmacogenomics";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { useDesk } from "@/lib/drugs/store";
@@ -21,23 +17,19 @@ import {
   AlertOctagon,
   AlertTriangle,
   ArrowRight,
-  BookOpen,
   Check,
   ChevronRight,
   Dna,
   ExternalLink,
-  Flame,
   Info,
   Layers,
   Pill,
   Plus,
   RotateCcw,
   Search,
-  Shield,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -60,11 +52,6 @@ export function Pharmacogenomics() {
   const activeGene: Pharmacogene = useMemo(() => {
     return getGeneById(selectedGeneId) ?? PHARMACOGENES[0];
   }, [selectedGeneId]);
-
-  // Selected gene's interactions
-  const geneInteractions = useMemo(() => {
-    return getInteractionsForGene(activeGene.id);
-  }, [activeGene]);
 
   // Current active phenotype details for active gene
   const activePheno = useMemo(() => {

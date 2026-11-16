@@ -62,24 +62,6 @@ const PILE_PLAIN: Record<StudyPile, string> = {
   miss: "Due",
 };
 
-const HOW_STEPS = [
-  {
-    n: "1",
-    title: "Pick a lane",
-    body: "Teaching rounds, classic pairs, the enzyme map, or whatever is on this desk.",
-  },
-  {
-    n: "2",
-    title: "Say it first",
-    body: "Name the mechanism out loud, then reveal or pick an answer.",
-  },
-  {
-    n: "3",
-    title: "Mark and drill",
-    body: "A Review mark is due now. Got it comes back after 1 day, then 3, a week, and 3 weeks. The Due pile is whatever is due now, including a card you already got whose wait ended. That wait is a study rhythm, not a dosing schedule. Not an exam key, not a prescription.",
-  },
-] as const;
-
 const ROW_WORDS = [
   { word: "Strong, moderate, weak", line: "The perpetrator grade already on that row. An FDA fold-change, not a milligram." },
   { word: "Slows clearance", line: "An inhibitor. Parent can rise when the enzyme was clearing it." },

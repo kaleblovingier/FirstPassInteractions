@@ -718,3 +718,176 @@ test("buildClinicalPacket: renders Round 8 ward collisions and capecitabine-warf
   assert.equal(BANNED_REGULATORY_RE.test(mbMaoiPacket.ehrNoteText), false);
   assert.equal(BANNED_REGULATORY_RE.test(mbMaoiPacket.patientHandoutText), false);
 });
+
+test("buildClinicalPacket: renders Round 9 safety collisions into labeledCollisions, ehrNoteText, counselingPoints, patientHandoutText, and dialog HTML with zero dose leaks or banned claims", () => {
+  const cases: {
+    ids: string[];
+    expectedId: string;
+    counselingPattern: RegExp;
+  }[] = [
+    {
+      ids: ["dofetilide", "cimetidine"],
+      expectedId: "dofetilide-cation-verapamil",
+      counselingPattern: /dofetilide.*kidney clearance or spike its peak blood level.*heart specialist or pharmacist.*fainting/i,
+    },
+    {
+      ids: ["dofetilide", "hctz"],
+      expectedId: "dofetilide-cation-verapamil",
+      counselingPattern: /dofetilide.*hydrochlorothiazide.*dangerous heart-rhythm range.*never stop or change dofetilide/i,
+    },
+    {
+      ids: ["ticagrelor", "ketoconazole"],
+      expectedId: "ticagrelor-strong-cyp3a4",
+      counselingPattern: /Strong enzyme blockers.*ticagrelor.*bleeding risk.*strong enzyme inducers.*stent clotting/i,
+    },
+    {
+      ids: ["ticagrelor", "rifampin"],
+      expectedId: "ticagrelor-strong-cyp3a4",
+      counselingPattern: /ticagrelor.*rifampin.*heart stents or arteries unprotected.*never stop ticagrelor/i,
+    },
+    {
+      ids: ["dronedarone", "ketoconazole"],
+      expectedId: "dronedarone-cyp3a4-qt",
+      counselingPattern: /dronedarone.*QT-prolonging medicines.*heart-rhythm disturbances or slow heartbeats.*ECG and heart-failure checks/i,
+    },
+    {
+      ids: ["dronedarone", "amiodarone"],
+      expectedId: "dronedarone-cyp3a4-qt",
+      counselingPattern: /dronedarone.*never change prescribed rhythm medicines on your own.*leg or ankle swelling/i,
+    },
+    {
+      ids: ["pimozide", "paroxetine"],
+      expectedId: "pimozide-thioridazine-cyp2d6-3a4",
+      counselingPattern: /pimozide or thioridazine.*block their breakdown.*never stop psychiatric therapy abruptly/i,
+    },
+    {
+      ids: ["thioridazine", "clarithromycin"],
+      expectedId: "pimozide-thioridazine-cyp2d6-3a4",
+      counselingPattern: /pimozide or thioridazine.*dangerous heart-rhythm problems.*fainting, palpitations/i,
+    },
+    {
+      ids: ["ranolazine", "ketoconazole"],
+      expectedId: "ranolazine-strong-cyp3a4-inducer",
+      counselingPattern: /ranolazine blood levels.*strong enzyme inducers.*stop preventing chest pain.*never stop antianginal or seizure therapy/i,
+    },
+    {
+      ids: ["ranolazine", "rifampin"],
+      expectedId: "ranolazine-strong-cyp3a4-inducer",
+      counselingPattern: /ranolazine.*rifampin.*numbness or tingling/i,
+    },
+  ];
+
+  for (const { ids, expectedId, counselingPattern } of cases) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId} for ${ids.join("+")}`);
+    assert.equal(alert.kind, "safety", expectedId);
+    assert.equal(alert.severity, "contraindicated", expectedId);
+    assert.equal(alert.tone, "danger", expectedId);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), expectedId);
+    assert.ok(packet.ehrNoteText.includes(withoutDose(alert.title)), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Official PI Source: ${withoutDose(alert.source)}`), expectedId);
+
+    assert.ok(
+      !packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")),
+      `${expectedId} fell back to generic counseling instead of dedicated entry`,
+    );
+    assert.equal(
+      packet.counselingPoints.filter((cp) => counselingPattern.test(cp)).length,
+      1,
+      `${expectedId} should emit exactly one dedicated counseling point`,
+    );
+    assert.match(packet.patientHandoutText, counselingPattern, `${expectedId} missing counseling in patientHandoutText`);
+
+    for (const cp of packet.counselingPoints) {
+      assert.deepEqual(findDoses(cp), [], `${expectedId} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${expectedId} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], `${expectedId} ehrNoteText leaked dose`);
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], `${expectedId} patientHandoutText leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${expectedId} ehrNoteText leaked claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
+
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+    );
+    assert.ok(html.includes("High-Alert Labeled &amp; Institutional Safety Collisions"), expectedId);
+    assert.ok(html.includes("Labeled Safety Collision"), expectedId);
+    assert.ok(html.includes("Mechanism:"), expectedId);
+    assert.ok(html.includes("Bedside Watch:"), expectedId);
+    assert.ok(html.includes("Official PI Source:"), expectedId);
+    assert.deepEqual(findDoses(html.replace(/<[^>]+>/g, "\n")), [], `${expectedId} dialog leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(html), false, `${expectedId} dialog leaked claim`);
+  }
+
+  // dofetilide + HCTZ supersedes generic qt-hypokalemic-diuretic with zero duplicates or fallback strings
+  const dofetilideHctzIds = ["dofetilide", "hctz"];
+  const dofetilideHctzPacket = buildClinicalPacket(
+    dofetilideHctzIds,
+    DEFAULT_HOST,
+    analyze(dofetilideHctzIds, DEFAULT_HOST).findings,
+    {},
+  );
+  assert.deepEqual(
+    (dofetilideHctzPacket.labeledCollisions ?? []).map((c) => c.id),
+    ["dofetilide-cation-verapamil"],
+  );
+  assert.equal(new Set(dofetilideHctzPacket.counselingPoints).size, dofetilideHctzPacket.counselingPoints.length);
+  assert.ok(!dofetilideHctzPacket.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")));
+
+  // Multi-agent regimen: dofetilide + HCTZ + furosemide surfaces both dofetilide-cation-verapamil and qt-hypokalemic-diuretic cleanly
+  const multiQtIds = ["dofetilide", "hctz", "furosemide"];
+  const multiQtPacket = buildClinicalPacket(
+    multiQtIds,
+    DEFAULT_HOST,
+    analyze(multiQtIds, DEFAULT_HOST).findings,
+    {},
+  );
+  assert.deepEqual(
+    (multiQtPacket.labeledCollisions ?? []).map((c) => c.id).sort(),
+    ["dofetilide-cation-verapamil", "qt-hypokalemic-diuretic"],
+  );
+  assert.equal(new Set(multiQtPacket.counselingPoints).size, multiQtPacket.counselingPoints.length);
+  assert.ok(!multiQtPacket.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")));
+  assert.equal(
+    multiQtPacket.counselingPoints.filter((cp) => /dofetilide with medicines that block its kidney clearance/i.test(cp)).length,
+    1,
+  );
+  assert.equal(
+    multiQtPacket.counselingPoints.filter((cp) => /Water pills can lower potassium and magnesium/i.test(cp)).length,
+    1,
+  );
+  assert.deepEqual(findDoses(multiQtPacket.ehrNoteText), []);
+  assert.deepEqual(findDoses(multiQtPacket.patientHandoutText), []);
+  assert.equal(BANNED_REGULATORY_RE.test(multiQtPacket.ehrNoteText), false);
+  assert.equal(BANNED_REGULATORY_RE.test(multiQtPacket.patientHandoutText), false);
+
+  // Multi-perpetrator deduplication across all 5 Round 9 collisions
+  const dedupCases: { ids: string[]; expectedId: string }[] = [
+    { ids: ["dofetilide", "cimetidine", "verapamil"], expectedId: "dofetilide-cation-verapamil" },
+    { ids: ["ticagrelor", "ritonavir", "rifampin"], expectedId: "ticagrelor-strong-cyp3a4" },
+    { ids: ["dronedarone", "ketoconazole", "sotalol"], expectedId: "dronedarone-cyp3a4-qt" },
+    { ids: ["pimozide", "thioridazine", "fluoxetine", "itraconazole"], expectedId: "pimozide-thioridazine-cyp2d6-3a4" },
+    { ids: ["ranolazine", "ketoconazole", "rifampin"], expectedId: "ranolazine-strong-cyp3a4-inducer" },
+  ];
+
+  for (const { ids, expectedId } of dedupCases) {
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, analyze(ids, DEFAULT_HOST).findings, {});
+    assert.deepEqual(
+      (packet.labeledCollisions ?? []).map((c) => c.id),
+      [expectedId],
+      `Expected single deduplicated collision ${expectedId} for ${ids.join("+")}`,
+    );
+    assert.equal(new Set(packet.counselingPoints).size, packet.counselingPoints.length, ids.join("+"));
+    assert.ok(!packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")), ids.join("+"));
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], ids.join("+"));
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], ids.join("+"));
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, ids.join("+"));
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, ids.join("+"));
+  }
+});

@@ -127,6 +127,7 @@ function countWords(d: number) {
 }
 
 /** Plain list of everything that differs from the typical adult. Empty means nothing moved. */
+// eslint-disable-next-line react-refresh/only-export-components
 export function hostFlips(host: HostContext): string[] {
   const out: string[] = [];
   for (const e of Object.keys(DEFAULT_HOST.phenotypes) as (keyof typeof host.phenotypes)[]) {

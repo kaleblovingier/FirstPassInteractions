@@ -24,7 +24,7 @@ export interface QtReport {
 
 const NOTE: Record<string, string> = {
   methadone: "Dose-related; citalopram / erythromycin / hypokalemia stack it.",
-  citalopram: "Labeled 40 mg cap (20 mg older / 2C19 PM). Escitalopram is quieter, not silent.",
+  citalopram: "Labeled daily ceiling (halved in older adults and CYP2C19 poor metabolizers). Escitalopram is quieter, not silent.",
   escitalopram: "Quieter than racemic citalopram. Still a known-risk SSRI.",
   sotalol: "The indication is the QT. Bradycardia plus low K is torsades weather.",
   amiodarone: "Prolongs QT, relatively low TdP for the milliseconds — still not a free stack.",

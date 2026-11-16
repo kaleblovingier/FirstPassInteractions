@@ -1,12 +1,9 @@
-import { useMemo, useState, type MouseEvent } from "react";
-import { Copy, Check } from "lucide-react";
+import { useMemo, useState } from "react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { ROUND_SETTINGS, ROUNDS, roundNeedsPro, type Round, type RoundSetting } from "@/lib/drugs/rounds";
 import { ROUNDS_HOST_LINE } from "@/lib/drugs/host-plain";
-import { SAMPLE_REGIMENS } from "@/lib/drugs/samples";
 import { LANE_PLATE, plateForSample } from "@/lib/drugs/visuals";
 import { useDesk, usePlan } from "@/lib/drugs/store";
-import { PACKS, buildPackUrl, type PackId } from "@/lib/drugs/permalinks";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plate } from "./plate";
@@ -21,36 +18,13 @@ const SETTING_PLAIN: Record<RoundSetting | "all", string> = {
   kitchen: "Food & drink",
 };
 
-/** Suggested setting chips when a filter returns nothing (UI-only). */
-const EMPTY_SETTING_HINTS: RoundSetting[] = ["clinic", "mat", "kitchen"];
-
-const HOW_STEPS = [
-  {
-    n: "1",
-    title: "Pick a setting",
-    body: "Clinic, ward, addiction care, street, or food — or browse all cases.",
-  },
-  {
-    n: "2",
-    title: "Read the stem",
-    body: "Say the enzyme or receptor story out loud before you peek at the teach.",
-  },
-  {
-    n: "3",
-    title: "Put it on the desk",
-    body: "Load the case drugs, then reveal the teach and compare what the desk shows.",
-  },
-] as const;
-
 export function RoundsPage() {
   const load = useDesk((s) => s.load);
-  const selected = useDesk((s) => s.selected);
   const setView = useDesk((s) => s.setView);
   const plan = usePlan();
   const [setting, setSetting] = useState<RoundSetting | "all">("all");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<string | null>(null);
-  const [started, setStarted] = useState(false);
   const normalized = query.trim().toLowerCase();
   const rows = useMemo(() => {
     return ROUNDS.filter((r) => {
@@ -61,11 +35,7 @@ export function RoundsPage() {
     });
   }, [setting, normalized]);
 
-  const hasFilter = setting !== "all";
-  const firstRun = !started && rows.length > 0;
-
   function reveal(id: string) {
-    setStarted(true);
     setOpen((cur) => (cur === id ? null : id));
   }
 
@@ -168,12 +138,10 @@ export function RoundsPage() {
               revealed={open === r.id}
               onReveal={() => reveal(r.id)}
               onLoad={() => {
-                setStarted(true);
                 load(r.drugIds, extrasOf(r));
                 setView("desk");
               }}
               onStudy={() => {
-                setStarted(true);
                 load(r.drugIds, extrasOf(r));
                 setView("study");
               }}
@@ -182,69 +150,6 @@ export function RoundsPage() {
           ))}
         </ul>
       )}
-    </div>
-  );
-}
-
-function RoundsEmptyCoach({
-  setting,
-  onClear,
-  onSetting,
-  onView,
-}: {
-  setting: RoundSetting | "all";
-  onClear: () => void;
-  onSetting: (id: RoundSetting | "all") => void;
-  onView: (view: "desk" | "library" | "study") => void;
-}) {
-  return (
-    <div role="status" className="rounded-xl bg-surface px-5 py-8 shadow-[var(--shadow-border)] sm:px-6">
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Rounds coach</p>
-      <p className="mt-2 text-sm font-medium text-fg">No cases in this setting</p>
-      <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted">
-        Try another setting chip, browse all cases, or jump to the desk, library, or study. Empty here only means
-        the filter is tight — the case list is unchanged.
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={onClear}
-          className="h-9 rounded-full bg-ink px-3 text-xs font-medium text-bg"
-        >
-          Browse all
-        </button>
-        {EMPTY_SETTING_HINTS.filter((id) => id !== setting).map((id) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => onSetting(id)}
-            className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
-          >
-            Try {SETTING_PLAIN[id]}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() => onView("desk")}
-          className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
-        >
-          Open desk
-        </button>
-        <button
-          type="button"
-          onClick={() => onView("library")}
-          className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
-        >
-          Browse library
-        </button>
-        <button
-          type="button"
-          onClick={() => onView("study")}
-          className="h-9 rounded-full bg-bg-sunken px-3 text-xs font-medium text-muted hover:text-fg"
-        >
-          Open study
-        </button>
-      </div>
     </div>
   );
 }
@@ -328,58 +233,5 @@ function RoundCard({
         </div>
       </div>
     </li>
-  );
-}
-
-function PackLink({ packId }: { packId: PackId }) {
-  const pack = PACKS[packId];
-  const load = useDesk((s) => s.load);
-  const setView = useDesk((s) => s.setView);
-  const [copied, setCopied] = useState(false);
-
-  function open() {
-    const row = SAMPLE_REGIMENS.find((s) => s.id === pack.caseIds[0]);
-    if (!row) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set("pack", packId);
-    url.searchParams.set("case", row.id);
-    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-    load(row.drugIds, {
-      phenotypes: row.phenotypes,
-      smoking: row.smoking,
-      ketamineRoute: row.ketamineRoute,
-      cannabisRoute: row.cannabisRoute,
-      alcohol: row.alcohol,
-      doses: row.doses,
-    });
-    setView("desk");
-  }
-
-  async function copy(e: MouseEvent) {
-    e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(buildPackUrl(packId));
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      /* clipboard may be blocked */
-    }
-  }
-
-  return (
-    <div className="flex items-center gap-1">
-      <Button size="sm" variant="secondary" onClick={open}>
-        {pack.title}
-      </Button>
-      <button
-        type="button"
-        onClick={(e) => void copy(e)}
-        className="inline-flex h-8 items-center gap-1 rounded-full bg-accent-soft px-2.5 font-mono text-[10px] uppercase tracking-wide text-accent"
-        title="Copy pack link"
-      >
-        {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-        {copied ? "Copied" : "Copy link"}
-      </button>
-    </div>
   );
 }

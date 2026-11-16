@@ -411,6 +411,26 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
     topic: "naltrexone-opioid",
     text: "Naltrexone blocks opioid effects: starting it while opioids are still in your body can trigger sudden, severe precipitated withdrawal (intense vomiting, diarrhea, agitation, or confusion), while taking large amounts of opioids to try to override that blockade—or taking prior amounts after stopping or missing naltrexone when tolerance has dropped—can cause sudden, fatal breathing arrest and overdose. Talk with your prescriber before taking these together, never try to break through naltrexone with extra opioids, and call 911 immediately for severe withdrawal, slow breathing, or trouble waking up.",
   },
+  "dofetilide-cation-verapamil": {
+    topic: "dofetilide-cation-verapamil",
+    text: "Combining dofetilide with medicines that block its kidney clearance or spike its peak blood level (such as cimetidine, trimethoprim/Bactrim, ketoconazole, prochlorperazine, dolutegravir, verapamil, or hydrochlorothiazide) can raise dofetilide levels into a dangerous heart-rhythm range. Check with your heart specialist or pharmacist before taking them together, never stop or change dofetilide on your own without heart-team direction, and call 911 or seek emergency care immediately for fainting, severe dizziness, a racing or pounding heartbeat, or shortness of breath.",
+  },
+  "ticagrelor-strong-cyp3a4": {
+    topic: "ticagrelor-strong-cyp3a4",
+    text: "Strong enzyme blockers (such as ketoconazole, itraconazole, clarithromycin, ritonavir, or Paxlovid) can make ticagrelor build up and raise bleeding risk, while strong enzyme inducers (such as rifampin, carbamazepine, phenytoin, phenobarbital, or St. John's wort) can clear ticagrelor too fast and leave heart stents or arteries unprotected. Contact your heart specialist or pharmacist immediately before starting or stopping any antibiotic, antifungal, antiviral, seizure medicine, or herbal supplement—never stop ticagrelor on your own because stopping antiplatelet therapy can trigger life-threatening stent clotting—and seek emergency care for severe chest pain or pressure, uncontrollable bleeding, black tarry stools, pink or red urine, or coughing or vomiting blood.",
+  },
+  "dronedarone-cyp3a4-qt": {
+    topic: "dronedarone-cyp3a4-qt",
+    text: "Combining dronedarone with strong enzyme blockers or other heart-rhythm or QT-prolonging medicines can cause dangerous heart-rhythm disturbances or slow heartbeats. Confirm with your heart specialist or pharmacist before taking them together, never change prescribed rhythm medicines on your own, keep scheduled ECG and heart-failure checks, and call 911 or seek emergency care for fainting, racing or irregular heartbeats, severe dizziness, shortness of breath, or sudden leg or ankle swelling.",
+  },
+  "pimozide-thioridazine-cyp2d6-3a4": {
+    topic: "pimozide-thioridazine-cyp2d6-3a4",
+    text: "Combining pimozide or thioridazine with certain antidepressants, heart-rhythm medicines, antifungals, antibiotics, or protease inhibitors can block their breakdown and raise the risk of dangerous heart-rhythm problems. Check with your prescriber or pharmacist before adding or stopping any medicine—never stop psychiatric therapy abruptly without medical guidance—and seek emergency care right away for fainting, palpitations, severe dizziness, or shortness of breath.",
+  },
+  "ranolazine-strong-cyp3a4-inducer": {
+    topic: "ranolazine-strong-cyp3a4-inducer",
+    text: "Strong enzyme blockers can raise ranolazine blood levels and trigger heart-rhythm changes, dizziness, or nervous-system symptoms, whereas strong enzyme inducers (such as rifampin, carbamazepine, phenytoin, phenobarbital, or St. John's wort) can make ranolazine wear off and stop preventing chest pain. Check with your prescriber or pharmacist before combining these—never stop antianginal or seizure therapy on your own—and seek urgent medical care for fainting, chest pain, severe dizziness, confusion, or numbness or tingling.",
+  },
 };
 
 function labeledCollisionCounseling(

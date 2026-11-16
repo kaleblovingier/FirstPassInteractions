@@ -43,7 +43,7 @@ export const CLINIC: Record<string, ClinicCard> = {
   rivaroxaban: card({
     pregnancy: "caution",
     renal: "caution",
-    renalNote: "Avoid in severe CKD. Take with food at the 15–20 mg doses.",
+    renalNote: "Avoid in severe CKD. Take with food at higher NVAF maintenance strengths.",
     boxed: "Premature discontinuation raises thrombotic risk.",
     monitor: ["Cr", "bleed"],
   }),
@@ -158,7 +158,7 @@ export const CLINIC: Record<string, ClinicCard> = {
     pregNote: "Anti-androgen. Avoid when the fetus could be male.",
     renal: "caution",
     renalNote: "HyperK climbs as GFR falls. ACEI plus K plus this is the triad.",
-    beers: "Avoid >25 mg/d if CrCl <30 — hyperK.",
+    beers: "Avoid higher daily maintenance strengths if CrCl <30 — hyperK.",
     monitor: ["K", "Cr"],
   }),
   eplerenone: card({

@@ -331,7 +331,7 @@ const INDUCERS: Record<string, InducerEntry> = {
   primidone: mec("anticonvulsants", "Converted to phenobarbital, so it induces the same way."),
   topiramate: mec(
     "anticonvulsants",
-    "Dose matters on the label: no significant change in ethinyl estradiol at 50–200 mg/day, lower exposure at 200–800 mg/day. FSRH treats it as a potential inducer at any dose because it is a teratogen.",
+    "Dose matters on the label: no significant change in ethinyl estradiol in lower daily exposure ranges, lower ethinyl estradiol exposure in higher daily ranges. FSRH treats it as a potential inducer at any dose because it is a teratogen.",
     { doseDependent: true },
   ),
   rifampin: mec("rifamycins", "The prototype strong inducer."),

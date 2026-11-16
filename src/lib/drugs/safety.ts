@@ -152,7 +152,12 @@ export type SafetyKind =
   | "phenytoin-cyp2c9-inhibition"
   | "sulfonylurea-cyp2c9-hypoglycemia"
   | "dihydropyridine-ccb-macrolide-hypotension"
-  | "naltrexone-opioid-precipitated-overdose";
+  | "naltrexone-opioid-precipitated-overdose"
+  | "dofetilide-cation-verapamil"
+  | "ticagrelor-strong-cyp3a4"
+  | "dronedarone-cyp3a4-qt"
+  | "pimozide-thioridazine-cyp2d6-3a4"
+  | "ranolazine-strong-cyp3a4-inducer";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -189,12 +194,17 @@ function clsOf(id: string) {
   return DRUG_BY_ID[id]?.cls ?? "";
 }
 
-function pair(ids: string[], left: (id: string) => boolean, right: (id: string) => boolean): [string, string] | null {
+function pair(
+  ids: string[],
+  left: (id: string) => boolean,
+  right: (id: string) => boolean,
+  exclude?: (a: string, b: string) => boolean,
+): [string, string] | null {
   for (const a of ids) {
     if (!left(a)) continue;
     for (const b of ids) {
       if (a === b) continue;
-      if (right(b)) return [a, b];
+      if (right(b) && !exclude?.(a, b)) return [a, b];
     }
   }
   return null;
@@ -1005,6 +1015,140 @@ export function isNaltrexoneOpioidPrecipitatedOverdose(a: string, b: string) {
   return matchesSymmetricPair(a, b, isNaltrexoneAgent, isOpioid);
 }
 
+const CORE_STRONG_CYP3A4_INHIBITORS = [
+  "ketoconazole",
+  "itraconazole",
+  "posaconazole",
+  "voriconazole",
+  "clarithromycin",
+  "ritonavir",
+  "cobicistat",
+  "paxlovid",
+  "nefazodone",
+] as const;
+
+const hasSystemic =
+  (set: ReadonlySet<string>) =>
+  (id: string): boolean =>
+    !isNonSystemicRoute(id) && set.has(id);
+
+export const DOFETILIDE_CONTRAINDICATED_PERPETRATORS = new Set([
+  "cimetidine",
+  "trimethoprim",
+  "tmp-smx",
+  "ketoconazole",
+  "prochlorperazine",
+  "megestrol",
+  "dolutegravir",
+  "verapamil",
+  "hydrochlorothiazide",
+  "hctz",
+  "losartan-hctz",
+  "valsartan-hctz",
+  "hydrochlorothiazide-triamterene",
+]);
+
+export function isDofetilideCationVerapamil(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => id === "dofetilide",
+    hasSystemic(DOFETILIDE_CONTRAINDICATED_PERPETRATORS),
+  );
+}
+
+export const TICAGRELOR_STRONG_3A4_PERPETRATORS = new Set([
+  ...CORE_STRONG_CYP3A4_INHIBITORS,
+  "ceritinib",
+  ...DOAC_INDUCERS,
+]);
+
+export function isTicagrelorStrongCyp3a4(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => id === "ticagrelor",
+    hasSystemic(TICAGRELOR_STRONG_3A4_PERPETRATORS),
+  );
+}
+
+export const DRONEDARONE_CONTRAINDICATED_PERPETRATORS = new Set([
+  ...CORE_STRONG_CYP3A4_INHIBITORS,
+  "cyclosporine",
+  "amiodarone",
+  "sotalol",
+  "dofetilide",
+  "quinidine",
+  "quinidine-gluconate",
+  "procainamide",
+  "disopyramide",
+  "flecainide",
+  "propafenone",
+  "ibutilide",
+  "pimozide",
+  "thioridazine",
+  "ziprasidone",
+  "haloperidol",
+  "methadone",
+  "citalopram",
+  "escitalopram",
+  "moxifloxacin",
+  "erythromycin",
+]);
+
+export function isDronedaroneCyp3a4Qt(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => id === "dronedarone",
+    hasSystemic(DRONEDARONE_CONTRAINDICATED_PERPETRATORS),
+  );
+}
+
+export const PIMOZIDE_THIORIDAZINE_VICTIMS = new Set(["pimozide", "thioridazine"]);
+
+export const PIMOZIDE_THIORIDAZINE_PERPETRATORS = new Set([
+  "paroxetine",
+  "fluoxetine",
+  "bupropion",
+  "quinidine",
+  "quinidine-gluconate",
+  "terbinafine",
+  "duloxetine",
+  "sertraline",
+  "citalopram",
+  "escitalopram",
+  "fluvoxamine",
+  "amiodarone",
+  "cimetidine",
+  "mirabegron",
+  ...CORE_STRONG_CYP3A4_INHIBITORS,
+  "erythromycin",
+]);
+
+export function isPimozideThioridazineCyp2d63a4(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => PIMOZIDE_THIORIDAZINE_VICTIMS.has(id),
+    hasSystemic(PIMOZIDE_THIORIDAZINE_PERPETRATORS),
+  );
+}
+
+export const RANOLAZINE_CONTRAINDICATED_PERPETRATORS = new Set([
+  ...CORE_STRONG_CYP3A4_INHIBITORS,
+  ...DOAC_INDUCERS,
+]);
+
+export function isRanolazineStrongCyp3a4Inducer(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => id === "ranolazine",
+    hasSystemic(RANOLAZINE_CONTRAINDICATED_PERPETRATORS),
+  );
+}
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -1484,7 +1628,8 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
     );
   }
 
-  const qd = pair(ids, isHighRiskQt, isKwastingDiuretic);
+  // Let the stronger Section 4 contraindication on dofetilide + HCTZ supersede the generic diuretic hit for that pair.
+  const qd = pair(ids, isHighRiskQt, isKwastingDiuretic, isDofetilideCationVerapamil);
   if (qd) {
     out.push(
       hit(
@@ -1732,6 +1877,100 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Naltrexone (oral tablets, extended-release intramuscular Vivitrol persisting ~28+ days, and naltrexone-bupropion) is a high-affinity competitive mu-opioid receptor antagonist that completely blocks opioid analgesia and euphoria. Prescribing Information Section 4 Contraindications and Warnings highlight a dual life-threatening hazard: (1) Administering naltrexone to patients with physiologic opioid dependence or inadequate opioid-free washout (minimum 7–10 days for short-acting opioids and up to 10–14 days for methadone or buprenorphine) rapidly displaces receptor-bound agonists and precipitates abrupt, severe opioid withdrawal (intractable vomiting, diarrhea, agitation, delirium, tachycardia, autonomic instability, dehydration, and hemodynamic collapse severe enough to require hospital or ICU admission). (2) Attempting to overcome mu-receptor blockade with large or escalating doses of exogenous opioids—or resuming previously tolerated opioid amounts after missed naltrexone doses or treatment cessation when tolerance has faded—precipitates sudden fatal respiratory arrest and opioid overdose.",
         "Verify complete opioid-free washout (including methadone, buprenorphine, tramadol, and illicit fentanyl) via clinical history, urine toxicology, and naloxone challenge where indicated prior to naltrexone; monitor closely for acute precipitated withdrawal (COWS score, severe vomiting/diarrhea, delirium, vital-sign instability) requiring aggressive supportive care if triggered. Counsel patients and caregivers on total loss of opioid tolerance, lethal risk of attempting to override mu-blockade with high-dose opioids, heightened post-discontinuation overdose vulnerability, and take-home naloxone nasal spray readiness. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
         "Vivitrol (extended-release naltrexone), Revia (oral naltrexone), and Contrave (naltrexone-bupropion) Prescribing Information Contraindications & Warnings. ASAM National Practice Guideline for OUD (PMID 32511106). Lee JD et al. Lancet 2018 (PMID 29150198). Moore J, Foo K. J Addict Med 2024 (PMID 38967916). Gjersing L et al. Drug Alcohol Depend 2025 (PMID 40543362).",
+      ),
+    );
+  }
+
+  const dc = pair(ids, (id) => id === "dofetilide", hasSystemic(DOFETILIDE_CONTRAINDICATED_PERPETRATORS));
+  if (dc) {
+    out.push(
+      hit(
+        "dofetilide-cation-verapamil",
+        dc[0],
+        dc[1],
+        names(dc[0], dc[1]),
+        "contraindicated",
+        "danger",
+        "dofetilide × cation transport inhibitor / verapamil / HCTZ — renal accumulation & Torsades de Pointes",
+        "FDA Boxed Warning & Section 4 Contraindications: Dofetilide is a narrow-therapeutic-index pure IKr (hERG) potassium channel blocker dependent primarily on renal elimination with active tubular secretion via basolateral OCT2 (SLC22A2) and apical MATE1 (SLC47A1), alongside minor hepatic CYP3A4 clearance. Cation transport inhibitors (cimetidine, trimethoprim alone or as TMP-SMX, dolutegravir, prochlorperazine, megestrol, and ketoconazole—which blocks both renal cation transport and CYP3A4) markedly impede dofetilide tubular secretion and raise systemic exposure. Verapamil elevates peak plasma dofetilide concentrations (~42% Cmax increase) and heightens proarrhythmic risk, while hydrochlorothiazide (HCTZ alone or in combinations such as triamterene-HCTZ, losartan-HCTZ, or valsartan-HCTZ) raises dofetilide AUC (~27%) and induces hypokalemia and hypomagnesemia that intensify reverse use-dependent IKr blockade. Marked dofetilide accumulation precipitates severe QTc prolongation, early afterdepolarizations, Torsades de Pointes (TdP), ventricular fibrillation, and sudden arrhythmic death. Concomitant administration is an absolute labeled contraindication.",
+        "Continuous ECG telemetry and serial 12-lead ECGs for QTc prolongation (>500 ms or >15% rise from baseline), serum creatinine/estimated CrCl, serum potassium (maintain >= 4.0 mEq/L) and magnesium (maintain >= 2.0 mg/dL), and syncope or palpitations; review REMS inpatient initiation and washout requirements. Discontinue contraindicated perpetrators immediately; manage acute TdP with IV magnesium sulfate, potassium repletion, and overdrive pacing/isoproterenol per resuscitation protocol. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Tikosyn (dofetilide) Prescribing Information Boxed Warning & Section 4 Contraindications. Abel S et al. Br J Clin Pharmacol 2000 (PMID 10606839). Uddin ME et al. Int J Mol Sci 2022 (PMID 35955741). Drew BJ et al. Circulation 2010 (PMID 20142454).",
+      ),
+    );
+  }
+
+  const ts = pair(ids, (id) => id === "ticagrelor", hasSystemic(TICAGRELOR_STRONG_3A4_PERPETRATORS));
+  if (ts) {
+    out.push(
+      hit(
+        "ticagrelor-strong-cyp3a4",
+        ts[0],
+        ts[1],
+        names(ts[0], ts[1]),
+        "contraindicated",
+        "danger",
+        "ticagrelor × strong CYP3A4 inhibitor / inducer — major hemorrhage or stent thrombosis",
+        "Brilinta Section 4 Contraindications & Section 7: Unlike thienopyridine prodrugs, ticagrelor is a direct-acting, reversibly binding P2Y12 platelet antagonist whose parent drug and equipotent active metabolite depend heavily on hepatic and intestinal CYP3A4 for metabolic clearance. Strong CYP3A4 inhibitors (itraconazole, ketoconazole, posaconazole, voriconazole, clarithromycin, ritonavir, cobicistat, Paxlovid, nefazodone, ceritinib) block metabolic elimination—producing up to a ~7.3-fold increase in ticagrelor exposure (AUC)—and drive excessive P2Y12 inhibition with high risk of major gastrointestinal, procedural, and fatal intracranial hemorrhage. Conversely, strong CYP3A4 inducers (rifampin, carbamazepine, phenytoin, fosphenytoin, phenobarbital, primidone, St. John's wort) dramatically accelerate clearance—causing up to an ~86% reduction in ticagrelor exposure and rapid offset of antiplatelet activity—precipitating loss of P2Y12 blockade, acute coronary stent thrombosis, myocardial infarction, and ischemic stroke.",
+        "Monitor for overt or occult bleeding (epistaxis, hematuria, melena, hematemesis, intracranial hemorrhage, hemoglobin/hematocrit drop) with strong CYP3A4 inhibitors, or recurrent angina, acute coronary syndrome, and coronary stent thrombosis with strong CYP3A4 inducers; note ticagrelor dyspnea and antiplatelet recovery timing. Avoid concomitant strong CYP3A4 inhibitors or inducers; coordinate alternative antiplatelet or non-interacting antimicrobial/anticonvulsant therapy with cardiology. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Brilinta (ticagrelor) Prescribing Information Section 4 Contraindications & Section 7. Liu S et al. Pharm Res 2021 (PMID 34729703).",
+      ),
+    );
+  }
+
+  const dq = pair(ids, (id) => id === "dronedarone", hasSystemic(DRONEDARONE_CONTRAINDICATED_PERPETRATORS));
+  if (dq) {
+    out.push(
+      hit(
+        "dronedarone-cyp3a4-qt",
+        dq[0],
+        dq[1],
+        names(dq[0], dq[1]),
+        "contraindicated",
+        "danger",
+        "dronedarone × strong CYP3A4 inhibitor / Class I–III or QT agent — ~17-fold surge & Torsades de Pointes",
+        "Multaq Boxed Warning & Section 4 Contraindications: Dronedarone is a multichannel antiarrhythmic cleared primarily via CYP3A4 that directly blocks cardiac IKr channels and slows sinoatrial/AV nodal conduction. Strong CYP3A4 inhibitors (itraconazole, ketoconazole, posaconazole, voriconazole, clarithromycin, ritonavir, cobicistat, Paxlovid, nefazodone, cyclosporine) abolish first-pass and hepatic clearance—causing up to a ~17-fold exposure elevation in dronedarone—precipitating profound QTc prolongation, severe bradycardia, heart block, hepatotoxicity, and malignant ventricular arrhythmias. Co-administration with Class I or Class III antiarrhythmics (amiodarone, sotalol, dofetilide, quinidine, procainamide, disopyramide, flecainide, propafenone, ibutilide) or QT-prolonging drugs (pimozide, thioridazine, ziprasidone, haloperidol, methadone, citalopram, escitalopram, moxifloxacin, erythromycin) produces additive repolarization delay and conduction depression, risking Torsades de Pointes (TdP), ventricular fibrillation, and increased cardiovascular mortality (PALLAS and ANDROMEDA trials). Concomitant use is an absolute labeled contraindication.",
+        "Serial 12-lead ECGs and telemetry for QTc prolongation (>500 ms or delta QTc >60 ms), sinus bradycardia, PR/QRS widening, and polymorphic ventricular tachycardia (TdP); monitor serum potassium (>= 4.0 mEq/L), magnesium (>= 2.0 mg/dL), hepatic transaminases, and decompensated heart failure or permanent atrial fibrillation status. Discontinue contraindicated interacting agents under urgent cardiology review. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Multaq (dronedarone) Prescribing Information Boxed Warning & Section 4 Contraindications. Køber L et al. N Engl J Med 2008 (PMID 18565860). Connolly SJ et al. N Engl J Med 2011 (PMID 22082198). Drew BJ et al. Circulation 2010 (PMID 20142454).",
+      ),
+    );
+  }
+
+  const pt = pair(
+    ids,
+    (id) => PIMOZIDE_THIORIDAZINE_VICTIMS.has(id),
+    hasSystemic(PIMOZIDE_THIORIDAZINE_PERPETRATORS),
+  );
+  if (pt) {
+    out.push(
+      hit(
+        "pimozide-thioridazine-cyp2d6-3a4",
+        pt[0],
+        pt[1],
+        names(pt[0], pt[1]),
+        "contraindicated",
+        "danger",
+        "pimozide / thioridazine × CYP2D6 or strong CYP3A4 inhibitor — QT prolongation & Torsades de Pointes",
+        "FDA Boxed Warning & Section 4 Contraindications: Pimozide (cleared primarily via CYP3A4 and CYP2D6) and thioridazine (cleared critically via CYP2D6; carrying an FDA Boxed Warning for QTc prolongation, Torsades de Pointes, and sudden death) are narrow-therapeutic-index hERG/IKr potassium channel blockers. Co-administration of CYP2D6 inhibitors (paroxetine, fluoxetine, bupropion, quinidine, terbinafine, duloxetine, sertraline, citalopram, escitalopram, fluvoxamine, amiodarone, cimetidine, mirabegron—several of which also independently prolong QTc) or strong CYP3A4 inhibitors (clarithromycin, erythromycin, itraconazole, ketoconazole, posaconazole, voriconazole, ritonavir, cobicistat, Paxlovid, nefazodone) markedly impairs metabolic clearance and elevates parent antipsychotic concentrations. Supratherapeutic exposure precipitates extreme QTc prolongation, polymorphic ventricular tachycardia (Torsades de Pointes [TdP]), ventricular fibrillation, sudden cardiac death, and severe extrapyramidal toxicity. Concomitant use is an absolute labeled contraindication, and prolonged washout windows apply after stopping long-half-life inhibitors such as fluoxetine.",
+        "Baseline and serial 12-lead ECGs (assess QTc >500 ms or delta QTc >60 ms), continuous telemetry if supratherapeutic exposure is suspected, serum potassium (>= 4.0 mEq/L) and magnesium (>= 2.0 mg/dL), syncope/palpitations, and extrapyramidal symptoms (akathisia, dystonia, parkinsonism). Do not co-administer; respect required post-inhibitor washout periods (especially fluoxetine) and coordinate psychiatric or antimicrobial substitutions. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Orap (pimozide) & Mellaril (thioridazine) Prescribing Information Boxed Warning & Section 4 Contraindications. Flockhart DA et al. J Clin Psychopharmacol 2000 (PMID 10831018). Drew BJ et al. Circulation 2010 (PMID 20142454).",
+      ),
+    );
+  }
+
+  const rz = pair(ids, (id) => id === "ranolazine", hasSystemic(RANOLAZINE_CONTRAINDICATED_PERPETRATORS));
+  if (rz) {
+    out.push(
+      hit(
+        "ranolazine-strong-cyp3a4-inducer",
+        rz[0],
+        rz[1],
+        names(rz[0], rz[1]),
+        "contraindicated",
+        "danger",
+        "ranolazine × strong CYP3A4 inhibitor / CYP3A4 inducer — QTc surge or antianginal loss",
+        "Ranexa Section 4 Contraindications: Ranolazine undergoes extensive intestinal and hepatic metabolism via CYP3A4 (with secondary CYP2D6 clearance) and exhibits concentration-dependent IKr (hERG) potassium channel blockade. Strong CYP3A4 inhibitors (ketoconazole, itraconazole, posaconazole, voriconazole, clarithromycin, ritonavir, cobicistat, Paxlovid, nefazodone) block CYP3A4 elimination and produce a 3.2- to 3.9-fold exposure increase in steady-state ranolazine levels, driving dose-dependent QTc interval prolongation, Torsades de Pointes (TdP), dizziness, nausea, syncope, and acute renal function decline risk in severe renal impairment. Conversely, CYP3A4 inducers (rifampin, carbamazepine, phenytoin, fosphenytoin, phenobarbital, primidone, St. John's wort) profoundly accelerate metabolic clearance—causing up to an ~95% reduction in ranolazine plasma concentrations—and abolish therapeutic antianginal efficacy, risking breakthrough refractory angina and myocardial ischemia. Concomitant use with either strong CYP3A4 inhibitors or CYP3A4 inducers is an absolute labeled contraindication.",
+        "Monitor 12-lead ECG (QTc >500 ms or delta QTc >60 ms), syncope, presyncope, dizziness, and serum creatinine/eGFR when strong CYP3A4 inhibitors are implicated; monitor for recurrent anginal chest pain and ischemic ECG changes when CYP3A4 inducers are present. Discontinue contraindicated interacting combinations and coordinate alternative antianginal, antimicrobial, or anticonvulsant therapy. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Ranexa (ranolazine) Prescribing Information Section 4 Contraindications. Jerling M et al. J Clin Pharmacol 2005 (PMID 15778423). Jerling M. Clin Pharmacokinet 2006 (PMID 16640453).",
       ),
     );
   }

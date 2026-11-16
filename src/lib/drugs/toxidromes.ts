@@ -1663,7 +1663,7 @@ export const ANTIDOTE_PATHWAYS: readonly AntidotePathway[] = [
       "Profound hypokalemia from intracellular shifting; replace judiciously only when K+ drops below 2.5–2.8 mEq/L.",
     ],
     clinicalPearls: [
-      "Insulin acts as a potent inotrope in this setting, not merely a glucose regulator; dosing is orders of magnitude higher than DKA (1–10 units/kg/hr).",
+      "Insulin acts as a potent inotrope in this setting, not merely a glucose regulator; dosing is orders of magnitude higher than DKA (per high-dose euglycemic insulin toxicology protocol).",
       "Because onset requires 30–60 minutes, start HIET early rather than as a last-resort rescue.",
     ],
     citations: [

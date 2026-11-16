@@ -32,6 +32,11 @@ import {
   isSulfonylureaCyp2c9Hypoglycemia,
   isDhpCcbMacrolideHypotension,
   isNaltrexoneOpioidPrecipitatedOverdose,
+  isDofetilideCationVerapamil,
+  isTicagrelorStrongCyp3a4,
+  isDronedaroneCyp3a4Qt,
+  isPimozideThioridazineCyp2d63a4,
+  isRanolazineStrongCyp3a4Inducer,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -698,6 +703,293 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.match(hits[0].clinical, /mu-opioid receptor antagonist.*precipitates abrupt, severe opioid withdrawal.*override|overcome/i);
     assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
     assert.match(hits[0].source, /Vivitrol.*Revia.*32511106.*29150198.*38967916.*40543362/i);
+  });
+
+  it("detects Dofetilide × Cation Transport Inhibitors / Verapamil / HCTZ as contraindicated Section 4 risk", () => {
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "cimetidine"), true);
+    assert.equal(isDofetilideCationVerapamil("trimethoprim", "dofetilide"), true);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "tmp-smx"), true);
+    assert.equal(isDofetilideCationVerapamil("ketoconazole", "dofetilide"), true);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "prochlorperazine"), true);
+    assert.equal(isDofetilideCationVerapamil("megestrol", "dofetilide"), true);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "dolutegravir"), true);
+    assert.equal(isDofetilideCationVerapamil("verapamil", "dofetilide"), true);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "hctz"), true);
+    assert.equal(isDofetilideCationVerapamil("hydrochlorothiazide", "dofetilide"), true);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "losartan-hctz"), true);
+    assert.equal(isDofetilideCationVerapamil("valsartan-hctz", "dofetilide"), true);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "hydrochlorothiazide-triamterene"), true);
+
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "azithromycin"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "pravastatin"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "diltiazem"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "famotidine"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "chlorthalidone"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "furosemide"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "ketoconazole-topical"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "trimethoprim-polymyxin-eye"), false);
+    assert.equal(isDofetilideCationVerapamil("dofetilide", "dofetilide"), false);
+
+    const cimHits = safetyOnDesk(["dofetilide", "cimetidine"]);
+    assert.equal(cimHits.length, 1);
+    assert.equal(cimHits[0].id, "dofetilide-cation-verapamil");
+    assert.deepEqual(cimHits[0].drugIds, ["dofetilide", "cimetidine"]);
+    assert.equal(cimHits[0].severity, "contraindicated");
+    assert.equal(cimHits[0].tone, "danger");
+    assert.match(cimHits[0].mechanism, /cation transport inhibitor \/ verapamil \/ HCTZ.*Torsades de Pointes/i);
+    assert.match(cimHits[0].clinical, /OCT2 \(SLC22A2\).*MATE1 \(SLC47A1\).*Torsades de Pointes/i);
+    assert.match(cimHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(cimHits[0].source, /Tikosyn.*10606839.*35955741.*20142454/i);
+
+    const revHits = safetyOnDesk(["verapamil", "dofetilide"]);
+    assert.equal(revHits.length, 1);
+    assert.equal(revHits[0].id, "dofetilide-cation-verapamil");
+    assert.deepEqual(revHits[0].drugIds, ["dofetilide", "verapamil"]);
+
+    // Deduplicates multiple perpetrators on the same desk and supersedes generic qt-hypokalemic-diuretic for dofetilide + HCTZ
+    const dedupHits = safetyOnDesk(["dofetilide", "cimetidine", "verapamil"]);
+    assert.equal(dedupHits.length, 1);
+    assert.equal(dedupHits[0].id, "dofetilide-cation-verapamil");
+
+    const hctzHits = safetyOnDesk(["dofetilide", "hctz"]);
+    assert.equal(hctzHits.length, 1);
+    assert.equal(hctzHits[0].id, "dofetilide-cation-verapamil");
+    assert.equal(hctzHits[0].severity, "contraindicated");
+
+    const chlorthalidoneHits = safetyOnDesk(["dofetilide", "chlorthalidone"]);
+    assert.equal(chlorthalidoneHits.length, 1);
+    assert.equal(chlorthalidoneHits[0].id, "qt-hypokalemic-diuretic");
+
+    const splitLoopHits = safetyOnDesk(["dofetilide", "hctz", "furosemide"]);
+    assert.equal(splitLoopHits.length, 2);
+    assert.deepEqual(
+      splitLoopHits.map((h) => h.id).sort(),
+      ["dofetilide-cation-verapamil", "qt-hypokalemic-diuretic"],
+    );
+  });
+
+  it("detects Ticagrelor × Strong CYP3A4 Inhibitors / Inducers as contraindicated Section 4 risk", () => {
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "itraconazole"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ketoconazole", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "posaconazole"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("voriconazole", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "clarithromycin"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ritonavir", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "cobicistat"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("paxlovid", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "nefazodone"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ceritinib", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "rifampin"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("carbamazepine", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "carbamazepine-xr"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("carbamazepine-equetro", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "phenytoin"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("fosphenytoin", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "phenytoin-fosphenytoin"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("phenobarbital", "ticagrelor"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "primidone"), true);
+    assert.equal(isTicagrelorStrongCyp3a4("st-johns-wort", "ticagrelor"), true);
+
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "azithromycin"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "pravastatin"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "diltiazem"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "fluconazole"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "ketoconazole-topical"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "voriconazole-eye"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("clopidogrel", "rifampin"), false);
+    assert.equal(isTicagrelorStrongCyp3a4("ticagrelor", "ticagrelor"), false);
+
+    assert.equal(safetyOnDesk(["ticagrelor", "azithromycin"]).length, 0);
+
+    const inhHits = safetyOnDesk(["ticagrelor", "ketoconazole"]);
+    assert.equal(inhHits.length, 1);
+    assert.equal(inhHits[0].id, "ticagrelor-strong-cyp3a4");
+    assert.deepEqual(inhHits[0].drugIds, ["ticagrelor", "ketoconazole"]);
+    assert.equal(inhHits[0].severity, "contraindicated");
+    assert.equal(inhHits[0].tone, "danger");
+    assert.match(inhHits[0].mechanism, /major hemorrhage or stent thrombosis/i);
+    assert.match(inhHits[0].clinical, /~7\.3-fold increase.*~86% reduction/i);
+    assert.match(inhHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(inhHits[0].source, /Brilinta.*34729703/i);
+
+    const indHits = safetyOnDesk(["rifampin", "ticagrelor"]);
+    assert.equal(indHits.length, 1);
+    assert.equal(indHits[0].id, "ticagrelor-strong-cyp3a4");
+    assert.deepEqual(indHits[0].drugIds, ["ticagrelor", "rifampin"]);
+
+    assert.equal(safetyOnDesk(["ticagrelor", "ritonavir", "rifampin"]).length, 1);
+  });
+
+  it("detects Dronedarone × Strong CYP3A4 Inhibitors / Class I–III & QT Agents as contraindicated risk", () => {
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "itraconazole"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("ketoconazole", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "posaconazole"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("voriconazole", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "clarithromycin"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("ritonavir", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "cobicistat"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("paxlovid", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "nefazodone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("cyclosporine", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "amiodarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("sotalol", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "dofetilide"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("quinidine", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "quinidine-gluconate"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("procainamide", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "disopyramide"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("flecainide", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "propafenone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("ibutilide", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "pimozide"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("thioridazine", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "ziprasidone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("haloperidol", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "methadone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("citalopram", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "escitalopram"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("moxifloxacin", "dronedarone"), true);
+    assert.equal(isDronedaroneCyp3a4Qt("erythromycin", "dronedarone"), true);
+
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "azithromycin"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "pravastatin"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "diltiazem"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "metoprolol"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "ketoconazole-topical"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "voriconazole-eye"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "moxifloxacin-ophthalmic"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "cyclosporine-ophthalmic"), false);
+    assert.equal(isDronedaroneCyp3a4Qt("dronedarone", "dronedarone"), false);
+
+    assert.equal(safetyOnDesk(["dronedarone", "azithromycin"]).length, 0);
+
+    const hits = safetyOnDesk(["dronedarone", "ketoconazole"]);
+    assert.equal(hits.length, 1);
+    assert.equal(hits[0].id, "dronedarone-cyp3a4-qt");
+    assert.deepEqual(hits[0].drugIds, ["dronedarone", "ketoconazole"]);
+    assert.equal(hits[0].severity, "contraindicated");
+    assert.equal(hits[0].tone, "danger");
+    assert.match(hits[0].mechanism, /~17-fold surge & Torsades de Pointes/i);
+    assert.match(hits[0].clinical, /~17-fold exposure elevation.*PALLAS.*ANDROMEDA/i);
+    assert.match(hits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(hits[0].source, /Multaq.*18565860.*22082198.*20142454/i);
+
+    const revQtHits = safetyOnDesk(["amiodarone", "dronedarone"]);
+    assert.equal(revQtHits.length, 1);
+    assert.equal(revQtHits[0].id, "dronedarone-cyp3a4-qt");
+    assert.deepEqual(revQtHits[0].drugIds, ["dronedarone", "amiodarone"]);
+
+    assert.equal(safetyOnDesk(["dronedarone", "ketoconazole", "sotalol"]).length, 1);
+  });
+
+  it("detects Pimozide / Thioridazine × CYP2D6 or Strong CYP3A4 Inhibitors as contraindicated QT/TdP risk", () => {
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "paroxetine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("fluoxetine", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "bupropion"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("quinidine", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "quinidine-gluconate"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("terbinafine", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "duloxetine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("sertraline", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "citalopram"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("escitalopram", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "fluvoxamine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("amiodarone", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "cimetidine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("mirabegron", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "clarithromycin"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("erythromycin", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "itraconazole"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("ketoconazole", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "posaconazole"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("voriconazole", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "ritonavir"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("cobicistat", "thioridazine"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "paxlovid"), true);
+    assert.equal(isPimozideThioridazineCyp2d63a4("nefazodone", "thioridazine"), true);
+
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "azithromycin"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("thioridazine", "azithromycin"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "pravastatin"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("thioridazine", "venlafaxine"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "ketoconazole-topical"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("thioridazine", "terbinafine-topical"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "voriconazole-eye"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "thioridazine"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("haloperidol", "paroxetine"), false);
+    assert.equal(isPimozideThioridazineCyp2d63a4("pimozide", "pimozide"), false);
+
+    assert.equal(safetyOnDesk(["pimozide", "azithromycin"]).length, 0);
+
+    const pimHits = safetyOnDesk(["pimozide", "paroxetine"]);
+    assert.equal(pimHits.length, 1);
+    assert.equal(pimHits[0].id, "pimozide-thioridazine-cyp2d6-3a4");
+    assert.deepEqual(pimHits[0].drugIds, ["pimozide", "paroxetine"]);
+    assert.equal(pimHits[0].severity, "contraindicated");
+    assert.equal(pimHits[0].tone, "danger");
+    assert.match(pimHits[0].mechanism, /CYP2D6 or strong CYP3A4 inhibitor.*Torsades de Pointes/i);
+    assert.match(pimHits[0].clinical, /hERG\/IKr.*Torsades de Pointes.*fluoxetine/i);
+    assert.match(pimHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(pimHits[0].source, /Orap.*Mellaril.*10831018.*20142454/i);
+
+    const thiorHits = safetyOnDesk(["clarithromycin", "thioridazine"]);
+    assert.equal(thiorHits.length, 1);
+    assert.equal(thiorHits[0].id, "pimozide-thioridazine-cyp2d6-3a4");
+    assert.deepEqual(thiorHits[0].drugIds, ["thioridazine", "clarithromycin"]);
+
+    assert.equal(safetyOnDesk(["pimozide", "thioridazine", "fluoxetine", "itraconazole"]).length, 1);
+  });
+
+  it("detects Ranolazine × Strong CYP3A4 Inhibitors / CYP3A4 Inducers as contraindicated risk", () => {
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "ketoconazole"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("itraconazole", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "posaconazole"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("voriconazole", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "clarithromycin"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ritonavir", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "cobicistat"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("paxlovid", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "nefazodone"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "rifampin"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("carbamazepine", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "carbamazepine-xr"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("carbamazepine-equetro", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "phenytoin"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("fosphenytoin", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "phenytoin-fosphenytoin"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("phenobarbital", "ranolazine"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "primidone"), true);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("st-johns-wort", "ranolazine"), true);
+
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "azithromycin"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "pravastatin"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "diltiazem"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "verapamil"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "metoprolol"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "ketoconazole-topical"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "voriconazole-eye"), false);
+    assert.equal(isRanolazineStrongCyp3a4Inducer("ranolazine", "ranolazine"), false);
+
+    assert.equal(safetyOnDesk(["ranolazine", "diltiazem"]).length, 0);
+    assert.equal(safetyOnDesk(["ranolazine", "azithromycin"]).length, 0);
+
+    const inhHits = safetyOnDesk(["ranolazine", "ketoconazole"]);
+    assert.equal(inhHits.length, 1);
+    assert.equal(inhHits[0].id, "ranolazine-strong-cyp3a4-inducer");
+    assert.deepEqual(inhHits[0].drugIds, ["ranolazine", "ketoconazole"]);
+    assert.equal(inhHits[0].severity, "contraindicated");
+    assert.equal(inhHits[0].tone, "danger");
+    assert.match(inhHits[0].mechanism, /QTc surge or antianginal loss/i);
+    assert.match(inhHits[0].clinical, /3\.2- to 3\.9-fold exposure increase.*~95% reduction/i);
+    assert.match(inhHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\./);
+    assert.match(inhHits[0].source, /Ranexa.*15778423.*16640453/i);
+
+    const indHits = safetyOnDesk(["rifampin", "ranolazine"]);
+    assert.equal(indHits.length, 1);
+    assert.equal(indHits[0].id, "ranolazine-strong-cyp3a4-inducer");
+    assert.deepEqual(indHits[0].drugIds, ["ranolazine", "rifampin"]);
+
+    assert.equal(safetyOnDesk(["ranolazine", "ketoconazole", "rifampin"]).length, 1);
   });
 
   it("continues to detect existing high-risk safety collisions", () => {

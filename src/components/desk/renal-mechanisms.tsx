@@ -6,39 +6,26 @@ import {
   RENAL_COLLISIONS,
   RENAL_MECHANISMS_REGULATORY_DISCLAIMER,
   RENAL_MECHANISMS_CITATIONS,
-  getAllNephronSegments,
   getNephronSegmentById,
-  getAllNephronTransporters,
   getTransportersBySegment,
-  getDiureticClassProfiles,
   detectRenalCollisions,
   type NephronSegmentId,
   type NephronSegment,
   type NephronTransporter,
-  type DiureticClassProfile,
-  type RenalCollision,
 } from "@/lib/drugs/renal-mechanisms";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 import {
   Activity,
-  AlertOctagon,
-  AlertTriangle,
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
   Check,
   ChevronRight,
   Droplets,
-  ExternalLink,
   Flame,
   Info,
   Layers,
   Network,
   Plus,
-  RotateCcw,
-  Shield,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
@@ -184,7 +171,7 @@ export function RenalMechanisms() {
         {/* Collisions Detected Banner if any */}
         {activeCollisions.length > 0 ? (
           <div className="space-y-3 pt-1">
-            {activeCollisions.map(({ collision, matchedDrugIds, triggeredBy }) => {
+            {activeCollisions.map(({ collision, matchedDrugIds }) => {
               const isCritical = collision.severity === "critical";
               const isSynergistic = collision.severity === "synergistic-clinical";
 

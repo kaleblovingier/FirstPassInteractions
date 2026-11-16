@@ -127,7 +127,7 @@ export function evaluateHartfordNomogram({
 
   // Exclusion criteria educational notice
   const exclusionCriteriaNote =
-    "Hartford Nomogram Exclusions: (1) CrCl <20–30 mL/min; (2) Ascites, severe cirrhosis, or significant volume overload (altered Vd); (3) Burns >20% BSA; (4) Pregnancy; (5) Enterococcal endocarditis synergy (requires conventional low-dose 1 mg/kg q8h).";
+    "Hartford Nomogram Exclusions: (1) CrCl <20–30 mL/min; (2) Ascites, severe cirrhosis, or significant volume overload (altered Vd); (3) Burns >20% BSA; (4) Pregnancy; (5) Enterococcal endocarditis synergy (requires low-dose conventional divided-interval dosing).";
 
   // Check timing validity (validated window is 6 to 14 hours post-infusion start)
   if (hoursPostStart < 6.0) {
@@ -251,7 +251,7 @@ export const TRADITIONAL_AG_TARGETS: Record<
       indication: "synergy-endocarditis",
       peakTargetUgMl: "3–4 µg/mL",
       troughTargetUgMl: "<1.0 µg/mL",
-      rationale: "Low-dose synergy (1 mg/kg q8h) with cell-wall active agents (ampicillin/vancomycin) for Enterococcus / Strep endocarditis.",
+      rationale: "Low-dose synergy (conventional divided-interval dosing) with cell-wall active agents (ampicillin/vancomycin) for Enterococcus / Strep endocarditis.",
     },
   },
   tobramycin: {

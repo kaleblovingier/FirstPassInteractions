@@ -275,4 +275,5 @@ function FindingCard({ finding }: { finding: Finding }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { severityTone };

@@ -113,6 +113,20 @@ export function findPlatform(
   return byIssuer.length === 1 ? byIssuer[0]! : null;
 }
 
+/* ---------------- control char guard ---------------- */
+
+/**
+ * Returns true if `value` contains any ASCII C0/DEL (`\u0000-\u001f`, `\u007f`)
+ * or Unicode C1 (`\u0080-\u009f`) control character.
+ */
+export function hasLtiControlChar(value: string): boolean {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code < 0x20 || (code >= 0x7f && code <= 0x9f)) return true;
+  }
+  return false;
+}
+
 /* ---------------- redirect allowlist ---------------- */
 
 /** Pages a launch may open. "/" matches the desk only; other entries also match their sub-paths. */
@@ -157,10 +171,10 @@ export function resolveTarget(
   allow: readonly string[],
 ): string | null {
   if (typeof raw !== "string") return null;
+  if (hasLtiControlChar(raw)) return null;
   const value = raw.trim();
   if (!value || value.length > 2048) return null;
-  // eslint-disable-next-line no-control-regex
-  if (/[\u0000-\u001f\u007f\\]/.test(value)) return null;
+  if (value.includes("\\")) return null;
   if (/%2f|%5c|%2e/i.test(value)) return null;
   if (value.startsWith("//")) return null;
   let url: URL;
@@ -196,9 +210,13 @@ export function encodeStateCookie(v: StateCookie): string {
 export function decodeStateCookie(raw: string | undefined): StateCookie | null {
   if (!raw || raw.length > 4096 || !/^[A-Za-z0-9_-]+$/.test(raw)) return null;
   try {
-    const v = JSON.parse(Buffer.from(raw, "base64url").toString("utf8")) as Record<string, unknown>;
+    const parsed: unknown = JSON.parse(Buffer.from(raw, "base64url").toString("utf8"));
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    const v = parsed as Record<string, unknown>;
     if (typeof v.n !== "string" || typeof v.i !== "string" || typeof v.c !== "string") return null;
     if (!STATE_RE.test(v.n)) return null;
+    if (v.i.length < 1 || v.i.length > 2048 || hasLtiControlChar(v.i)) return null;
+    if (v.c.length < 1 || v.c.length > 512 || hasLtiControlChar(v.c)) return null;
     return { nonce: v.n, issuer: v.i, clientId: v.c };
   } catch {
     return null;

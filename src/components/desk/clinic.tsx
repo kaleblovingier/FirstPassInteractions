@@ -182,6 +182,7 @@ export function ClinicPanel({ ids, host }: { ids: string[]; host: HostContext })
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function clinicPreview(card: ClinicCard): string {
   const bits = [
     card.pregnancy ? `pregnancy ${FLAG_PLAIN[card.pregnancy]}` : "",

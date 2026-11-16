@@ -4,33 +4,22 @@ import {
   ANTIDOTE_PATHWAYS,
   TOXIDROME_DISCRIMINATOR_MATRIX,
   TOXIDROME_REGULATORY_DISCLAIMER,
-  getAllToxidromes,
   getToxidromeById,
-  getAllAntidotes,
   getAntidoteById,
   matchToxidromeSigns,
   detectToxidromesOnTray,
   type ClassicalToxidromeId,
-  type ClassicalToxidrome,
-  type AntidotePathway,
   type ToxidromeObservedSigns,
-  type DiscriminatorRow,
 } from "@/lib/drugs/toxidromes";
-import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 import {
   Activity,
-  AlertOctagon,
-  AlertTriangle,
   ArrowRight,
   BookOpen,
   Check,
-  ChevronDown,
-  ChevronRight,
   Clock,
   Droplets,
-  ExternalLink,
   Eye,
   Flame,
   HeartPulse,
@@ -40,15 +29,12 @@ import {
   Pill,
   Plus,
   RotateCcw,
-  Search,
-  Shield,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
   Stethoscope,
   Thermometer,
   Wind,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
