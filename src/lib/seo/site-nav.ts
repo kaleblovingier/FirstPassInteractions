@@ -8,7 +8,7 @@ export const SITE_LINKS = [
   { href: "/help", label: "Find help" },
 ] as const;
 
-/** The desk at "/" draws its own header, skip link and navigation. */
+/** The desk at "/" draws its own header, skip link and navigation. Framed /embed/ cards have none. */
 export function showsSiteHeader(pathname: string): boolean {
-  return pathname !== "/" && !pathname.startsWith("/api/");
+  return pathname !== "/" && !pathname.startsWith("/api/") && !pathname.startsWith("/embed/");
 }

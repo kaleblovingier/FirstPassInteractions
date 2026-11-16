@@ -32,11 +32,14 @@ import { Route as ClassSlugRouteImport } from './routes/class.$slug'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as ForProgramsAudienceRouteImport } from './routes/for-programs_.$audience'
+import { Route as ForProgramsCourseKitRouteImport } from './routes/for-programs_.course-kit'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
+import { Route as ApiLtiSplatRouteImport } from './routes/api/lti/$'
 import { Route as ApiProgramsInquiryRouteImport } from './routes/api/programs/inquiry'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
+import { Route as EmbedPairSlugRouteImport } from './routes/embed.pair.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -153,6 +156,11 @@ const ForProgramsAudienceRoute = ForProgramsAudienceRouteImport.update({
   path: '/for-programs/$audience',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForProgramsCourseKitRoute = ForProgramsCourseKitRouteImport.update({
+  id: '/for-programs_/course-kit',
+  path: '/for-programs/course-kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PairSlugRoute = PairSlugRouteImport.update({
   id: '/pair/$slug',
   path: '/pair/$slug',
@@ -168,6 +176,11 @@ const ApiLicenseRecoverRoute = ApiLicenseRecoverRouteImport.update({
   path: '/api/license/recover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLtiSplatRoute = ApiLtiSplatRouteImport.update({
+  id: '/api/lti/$',
+  path: '/api/lti/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiProgramsInquiryRoute = ApiProgramsInquiryRouteImport.update({
   id: '/api/programs/inquiry',
   path: '/api/programs/inquiry',
@@ -176,6 +189,11 @@ const ApiProgramsInquiryRoute = ApiProgramsInquiryRouteImport.update({
 const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   id: '/api/stripe/webhook',
   path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedPairSlugRoute = EmbedPairSlugRouteImport.update({
+  id: '/embed/pair/$slug',
+  path: '/embed/pair/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -203,11 +221,14 @@ export interface FileRoutesByFullPath {
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
+  '/for-programs/course-kit': typeof ForProgramsCourseKitRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
+  '/api/lti/$': typeof ApiLtiSplatRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/embed/pair/$slug': typeof EmbedPairSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -233,11 +254,14 @@ export interface FileRoutesByTo {
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
+  '/for-programs/course-kit': typeof ForProgramsCourseKitRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
+  '/api/lti/$': typeof ApiLtiSplatRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/embed/pair/$slug': typeof EmbedPairSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -264,11 +288,14 @@ export interface FileRoutesById {
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs_/$audience': typeof ForProgramsAudienceRoute
+  '/for-programs_/course-kit': typeof ForProgramsCourseKitRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
+  '/api/lti/$': typeof ApiLtiSplatRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/embed/pair/$slug': typeof EmbedPairSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -296,11 +323,14 @@ export interface FileRouteTypes {
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
+    | '/for-programs/course-kit'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
+    | '/api/lti/$'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
+    | '/embed/pair/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -326,11 +356,14 @@ export interface FileRouteTypes {
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
+    | '/for-programs/course-kit'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
+    | '/api/lti/$'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
+    | '/embed/pair/$slug'
   id:
     | '__root__'
     | '/'
@@ -356,11 +389,14 @@ export interface FileRouteTypes {
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs_/$audience'
+    | '/for-programs_/course-kit'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
+    | '/api/lti/$'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
+    | '/embed/pair/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -387,11 +423,14 @@ export interface RootRouteChildren {
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
   ForProgramsAudienceRoute: typeof ForProgramsAudienceRoute
+  ForProgramsCourseKitRoute: typeof ForProgramsCourseKitRoute
   PairSlugRoute: typeof PairSlugRoute
   ApiCdsSplatRoute: typeof ApiCdsSplatRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
+  ApiLtiSplatRoute: typeof ApiLtiSplatRoute
   ApiProgramsInquiryRoute: typeof ApiProgramsInquiryRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
+  EmbedPairSlugRoute: typeof EmbedPairSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -557,6 +596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForProgramsAudienceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/for-programs_/course-kit': {
+      id: '/for-programs_/course-kit'
+      path: '/for-programs/course-kit'
+      fullPath: '/for-programs/course-kit'
+      preLoaderRoute: typeof ForProgramsCourseKitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pair/$slug': {
       id: '/pair/$slug'
       path: '/pair/$slug'
@@ -578,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLicenseRecoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/lti/$': {
+      id: '/api/lti/$'
+      path: '/api/lti/$'
+      fullPath: '/api/lti/$'
+      preLoaderRoute: typeof ApiLtiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/programs/inquiry': {
       id: '/api/programs/inquiry'
       path: '/api/programs/inquiry'
@@ -590,6 +643,13 @@ declare module '@tanstack/react-router' {
       path: '/api/stripe/webhook'
       fullPath: '/api/stripe/webhook'
       preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed/pair/$slug': {
+      id: '/embed/pair/$slug'
+      path: '/embed/pair/$slug'
+      fullPath: '/embed/pair/$slug'
+      preLoaderRoute: typeof EmbedPairSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -619,11 +679,14 @@ const rootRouteChildren: RootRouteChildren = {
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
   ForProgramsAudienceRoute: ForProgramsAudienceRoute,
+  ForProgramsCourseKitRoute: ForProgramsCourseKitRoute,
   PairSlugRoute: PairSlugRoute,
   ApiCdsSplatRoute: ApiCdsSplatRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
+  ApiLtiSplatRoute: ApiLtiSplatRoute,
   ApiProgramsInquiryRoute: ApiProgramsInquiryRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
+  EmbedPairSlugRoute: EmbedPairSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

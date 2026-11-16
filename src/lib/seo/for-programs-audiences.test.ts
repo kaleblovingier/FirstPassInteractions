@@ -35,6 +35,7 @@ import {
   type AudienceLink,
 } from "./for-programs-audiences";
 import { audiencePageData, pairPageForIds } from "./for-programs-audience-pages";
+import { COURSE_KIT_PATH, COURSE_KIT_SLUG } from "./course-kit";
 
 const text = (h: string) =>
   h
@@ -245,7 +246,8 @@ describe("/for-programs/<audience> pages", () => {
     for (const a of PROGRAM_AUDIENCES) assert.ok(html.includes(`href="/for-programs/${a.slug}"`), a.slug);
     for (const a of FOR_PROGRAMS_AUDIENCES) if (a.page) assert.ok(audienceBySlug(a.page), a.page);
     for (const { html: page } of pages) {
-      for (const m of page.matchAll(/href="\/for-programs\/([^"#]+)"/g)) assert.ok(audienceBySlug(m[1]!), m[1]);
+      for (const m of page.matchAll(/href="\/for-programs\/([^"#]+)"/g)) assert.ok(audienceBySlug(m[1]!) || m[1] === COURSE_KIT_SLUG, m[1]);
+      assert.ok(page.includes(`href="${COURSE_KIT_PATH}"`), "audience page links the course kit");
     }
     assert.ok(PROGRAM_TYPES.includes("Nursing and NP programs" as (typeof PROGRAM_TYPES)[number]));
     assert.ok(PROGRAM_TYPES.includes("PA programs" as (typeof PROGRAM_TYPES)[number]));

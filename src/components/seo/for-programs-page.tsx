@@ -42,6 +42,7 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { COURSE_KIT_PATH } from "@/lib/seo/course-kit";
 import { PairDisclaimer } from "./pair-page";
 import { ProgramCheckoutSection } from "./program-checkout";
 import { isCardTier, programCheckoutStatus, type CardTier } from "@/lib/billing/program-checkout";
@@ -221,6 +222,11 @@ export function ForProgramsView() {
             </li>
           ))}
         </ul>
+        <p className="mt-4 text-sm" data-testid="course-kit-link">
+          Planning a course?{" "}
+          <a href={COURSE_KIT_PATH} className={LINK}>The course kit</a>{" "}
+          <span className="text-muted">lays out eight weeks of study goals and activities that already exist on FirstPass.</span>
+        </p>
       </section>
 
       <section className="mt-12 max-w-2xl" aria-labelledby="who-h">

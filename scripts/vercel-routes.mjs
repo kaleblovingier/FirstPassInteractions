@@ -16,8 +16,17 @@
  * prerendered pages, static files and the server function alike.
  * GitHub Pages cannot send response headers, so none of this applies there.
  *
- * Only plain paths and the catch-all "/(.*)" are supported as `source`; anything
+ * Supported `source` shapes: plain paths, the catch-all "/(.*)", a prefix
+ * catch-all such as "/embed/(.*)" and its complement "/((?!embed/).*)". Anything
  * else throws at build time rather than being translated wrong.
+ *
+ * Framing: the site CSP's frame-ancestors lists only 'self' and the grok hosts.
+ * /embed/* (the iframe-able pair cards, src/routes/embed.pair.$slug.tsx) gets the
+ * same headers with `frame-ancestors *`, so any course page can frame it. The two
+ * rules are written as complements ("/((?!embed/).*)" and "/embed/(.*)") so each
+ * path gets exactly one Content-Security-Policy, whatever order or merge Vercel
+ * applies; scripts/vercel-routes-check.mjs probes the built config for that.
+ * Nothing sends X-Frame-Options (CSP frame-ancestors supersedes it).
  *
  * CSP notes (vercel.json cannot hold comments):
  * - script-src keeps 'unsafe-inline'. TanStack Start writes each page's router
@@ -50,12 +59,21 @@ export function readVercelJson() {
  */
 export function sourceToSrc(source) {
   if (source === "/(.*)") return "^/(.*)$";
+  const prefix = /^\/([A-Za-z0-9._~-]+)\/\(\.\*\)$/.exec(source);
+  if (prefix) return `^/${escapeRe(prefix[1])}/(.*)$`;
+  const except = /^\/\(\(\?!([A-Za-z0-9._~-]+)\/\)\.\*\)$/.exec(source);
+  if (except) return `^/((?!${escapeRe(except[1])}/).*)$`;
   if (!/^\/[A-Za-z0-9._~\-/]*$/.test(source) || source.includes("//")) {
     throw new Error(`[vercel-routes] unsupported source pattern: ${source}`);
   }
   // A plain path, with or without a trailing slash, as vercel.json matches it.
   const path = source.length > 1 ? source.replace(/\/$/, "") : source;
-  return `^${path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}${path === "/" ? "" : "/?"}$`;
+  return `^${escapeRe(path)}${path === "/" ? "" : "/?"}$`;
+}
+
+/** @param {string} s */
+function escapeRe(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -81,11 +99,50 @@ export function vercelRoutes(config = readVercelJson()) {
   return [...headers, ...redirects];
 }
 
+/** Paths under this prefix may be framed by any site. */
+export const EMBED_PREFIX = "/embed/";
+
 /**
- * The Content-Security-Policy value vercel.json sends on every path.
- * @param {VercelJson} [config]
+ * The headers the given routes send for one request path: every header route that
+ * matches, in order, up to the filesystem or the server route, later values winning
+ * per key (compared case-insensitively, as HTTP header names are). Also counts the
+ * matched routes that set a Content-Security-Policy, so a check can insist on one.
+ * @param {any[]} routes
+ * @param {string} path
+ * @returns {{ headers: Record<string, string>, cspRoutes: number }}
  */
-export function contentSecurityPolicy(config = readVercelJson()) {
-  const all = (config.headers ?? []).find((r) => r.source === "/(.*)");
-  return all?.headers.find((h) => h.key === "Content-Security-Policy")?.value ?? "";
+export function headersForPath(routes, path) {
+  /** @type {Record<string, string>} */
+  const headers = {};
+  let cspRoutes = 0;
+  for (const r of routes) {
+    if (!r || r.handle === "filesystem" || (typeof r.dest === "string" && r.dest.startsWith("/__"))) break;
+    if (typeof r.src !== "string" || !r.headers || r.status) continue;
+    if (!new RegExp(r.src).test(path)) continue;
+    for (const [k, v] of Object.entries(r.headers)) {
+      const key = k.toLowerCase();
+      if (key === "content-security-policy") cspRoutes += 1;
+      headers[key] = String(v);
+    }
+  }
+  return { headers, cspRoutes };
+}
+
+/**
+ * The Content-Security-Policy vercel.json sends on a path: the site-wide one by
+ * default, the /embed/* one for an embed path.
+ * @param {VercelJson} [config]
+ * @param {string} [path]
+ */
+export function contentSecurityPolicy(config = readVercelJson(), path = "/") {
+  return headersForPath(vercelRoutes(config), path).headers["content-security-policy"] ?? "";
+}
+
+/**
+ * The site CSP with frame-ancestors opened to every site: what /embed/* must send.
+ * @param {string} csp
+ */
+export function embedCsp(csp) {
+  const re = /(^|;\s*)frame-ancestors [^;]*/;
+  return re.test(csp) ? csp.replace(re, "$1frame-ancestors *") : `${csp}; frame-ancestors *`;
 }

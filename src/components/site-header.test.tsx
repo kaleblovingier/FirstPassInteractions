@@ -34,5 +34,6 @@ describe("SiteHeader", () => {
     assert.equal(showsSiteHeader("/api/cds/hooks"), false);
     assert.equal(showsSiteHeader("/pairs"), true);
     assert.equal(showsSiteHeader("/drug/warfarin"), true);
+    assert.equal(showsSiteHeader("/embed/pair/warfarin-fluconazole"), false);
   });
 });

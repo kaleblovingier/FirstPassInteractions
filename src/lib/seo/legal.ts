@@ -156,6 +156,7 @@ export const COOKIES_DOC: LegalDoc = {
       title: "Cookies",
       paras: [
         "FirstPass uses no analytics, advertising or tracking cookies, so there is no cookie banner. Sign-in is switched off, so FirstPass's own code does not set cookies in normal use. If sign-in is switched on in the future, it would set strictly necessary session cookies, and this page would be updated first.",
+        "The Canvas course launch (LTI 1.3) is built but switched off. If a school's Canvas course launches FirstPass once it is switched on, FirstPass sets one strictly necessary cookie for that launch only. It holds a random one-time value and the Canvas address the launch came from, so FirstPass can check the launch came back to the same browser. It lasts at most 10 minutes, is deleted when the launch completes, and holds no name, email or other personal information.",
         "Desk pages load a \"Created with Grok\" badge script from grok.com, the platform FirstPass was built with. FirstPass does not control that script, and grok.com may set its own cookies. Pages also load fonts from Google Fonts, which sees your IP address and browser.",
       ],
     },
