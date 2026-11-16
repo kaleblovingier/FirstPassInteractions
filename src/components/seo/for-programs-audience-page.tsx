@@ -10,6 +10,7 @@ import {
 import { audienceLinkHref, audiencePath, PROGRAM_AUDIENCES } from "@/lib/seo/for-programs-audiences";
 import type { AudiencePageData } from "@/lib/seo/for-programs-audience-pages";
 import { TierCard } from "./for-programs-page";
+import { COURSE_KIT_PATH } from "@/lib/seo/course-kit";
 import { PairDisclaimer } from "./pair-page";
 
 const KICKER = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted";
@@ -60,6 +61,10 @@ export function ForProgramsAudienceView({ data }: { data: AudiencePageData }) {
             </li>
           ))}
         </ul>
+        <p className="mt-4 text-sm" data-testid="course-kit-link">
+          <a href={COURSE_KIT_PATH} className={LINK}>Course kit</a>
+          <span className="text-muted">: an eight-week plan built from these activities.</span>
+        </p>
       </section>
 
       <section id="pairs" className="mt-12 max-w-2xl scroll-mt-6" aria-labelledby="pairs-h">
