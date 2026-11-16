@@ -52,9 +52,9 @@ import {
 const text = (h: string) =>
   h
     .replace(/<[^>]+>/g, " ")
-    .replace(/&amp;/g, "&")
     .replace(/&#x27;|&#39;/g, "'")
     .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
     .replace(/\s+/g, " ");
 
 /* The same wording rules as /for-programs and the audience pages (for-programs-audiences.test.ts). */
