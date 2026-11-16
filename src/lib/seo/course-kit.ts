@@ -44,7 +44,7 @@ export const COURSE_KIT_HOW: string[] = [
 export const COURSE_KIT_LMS =
   "Programs that teach in an LMS can host the SCORM 1.2 package of label-quoted pair cards next to this plan. It reports a page as viewed and sends no score.";
 export const COURSE_KIT_HOST_NOTE =
-  "The desk's host panel (age, kidney function, pregnancy and lactation, metabolizer status) comes with a program key. Without one, the activities above still open.";
+  "The desk's host panel (age, kidney function, pregnancy and lactation, metabolizer status) comes with a license key: a Founding key or a program key. Without one, the activities above still open.";
 
 /** Practice deck filters, as /practice reads them from the URL (practice-meta.ts). */
 export type KitGrade = "contraindicated" | "major" | "moderate" | "minor";
