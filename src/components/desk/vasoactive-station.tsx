@@ -1,21 +1,14 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
-  Droplets,
   Flame,
-  Heart,
   HeartPulse,
-  Info,
   Layers,
   Scale,
   ShieldAlert,
   Syringe,
-  Timer,
-  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,13 +18,11 @@ import type { HostContext } from "@/lib/drugs/types";
 import {
   VASOACTIVE_AGENTS,
   NOT_CLEARED,
-  PI_FOOTER,
   evaluateScaiShockStage,
   evaluateEpinephrineLactate,
   compareInotropeRenalClearance,
   getPhentolamineExtravasationProtocol,
   vasoactiveOnDesk,
-  vasoactiveReportOnDesk,
   type VasoactiveAgentDef,
   type ShockParameters,
 } from "@/lib/drugs/vasoactive-kinetics";
@@ -55,7 +46,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
   const [patientCrCl, setPatientCrCl] = useState<number>(host.egfr ?? 25);
   const [activeTab, setActiveTab] = useState<"scai" | "receptors" | "lactate" | "renal" | "extravasation">("scai");
 
-  const detection = useMemo(() => vasoactiveOnDesk(ids), [ids.join("|")]);
+  const detection = useMemo(() => vasoactiveOnDesk(ids), [ids]);
 
   const shockParams: ShockParameters = useMemo(
     () => ({

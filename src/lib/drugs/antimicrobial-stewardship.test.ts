@@ -341,3 +341,16 @@ test("Profiles integrity: ANTIMICROBIAL_PROFILES contains verified clinical meta
     assert.ok(profile.keyToxicities.length > 0);
   }
 });
+
+test("Monitoring plan and stewardship pearls generators respond cleanly to desk agents", () => {
+  const host: HostContext = { ...DEFAULT_HOST, kidney: "ckd" };
+  const plan = generateStewardshipMonitoringPlan(["cefepime", "daptomycin", "linezolid"], host);
+  assert.ok(plan.some((item) => item.parameter.includes("Renal Function")));
+  assert.ok(plan.some((item) => item.parameter.includes("Creatine Phosphokinase")));
+  assert.ok(plan.some((item) => item.parameter.includes("Complete Blood Count")));
+
+  const pearls = generateStewardshipPearls(["cefepime", "daptomycin", "linezolid"], host);
+  assert.ok(pearls.some((p) => p.includes("Cefepime Hemodialysis Timing")));
+  assert.ok(pearls.some((p) => p.includes("Daptomycin Pulmonary Trap")));
+  assert.ok(pearls.some((p) => p.includes("Linezolid MAO Inhibition Rule")));
+});

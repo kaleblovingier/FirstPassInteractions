@@ -303,7 +303,6 @@ export function evaluateRumackMatthewNomogram(input: RumackNomogramInput): Rumac
 
   // Late Presentation Phase (> 24 hours)
   if (hoursPostIngestion > 24) {
-    const isDetectable = serumApapMcgMl > 5;
     return {
       hoursPostIngestion,
       serumApapMcgMl,

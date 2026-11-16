@@ -1,21 +1,16 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
   AlertOctagon,
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
   Clock,
   Droplets,
-  FileText,
   FlaskConical,
   HeartPulse,
-  Info,
   Layers,
   Scale,
   ShieldAlert,
-  Sparkles,
   Stethoscope,
   XCircle,
   Zap,
@@ -39,14 +34,10 @@ import {
   calculateHit4TsScore,
   calculateProtamineDosing,
   evaluateArgatrobanWarfarinCrossover,
-  evaluateThrombocytopeniaScore,
-  get4FPccOffLabelDoacGuidance,
-  getIdarucizumabProtocol,
   type AnticoagulantProfile,
   type HitOtherCausesCategory,
   type HitThrombosisCategory,
   type HitTimingCategory,
-  type LabTrapItem,
 } from "@/lib/drugs/anticoagulation-reversal";
 
 export interface AnticoagulationStationProps {
@@ -173,10 +164,6 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
     [andexTarget, andexDoseMg, andexHoursElapsed],
   );
 
-  // Dynamic calculations: Idarucizumab & 4F-PCC DOAC Guidance
-  const idarucizumabProto = useMemo(() => getIdarucizumabProtocol(), []);
-  const pccDoacGuidance = useMemo(() => get4FPccOffLabelDoacGuidance(), []);
-
   // Desk Report
   const deskReport = useMemo(
     () =>
@@ -195,7 +182,7 @@ export function AnticoagulationStation({ ids, host }: AnticoagulationStationProp
         daysOnCombinedTherapy,
       }),
     [
-      ids.join("|"),
+      ids,
       host,
       pccWeightKg,
       pccInr,

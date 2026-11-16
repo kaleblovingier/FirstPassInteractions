@@ -928,7 +928,7 @@ export function evaluateDaptomycinMyopathy(
  */
 export function evaluateOxazolidinoneToxicities(
   drugIds: string[],
-  host: HostContext
+  _host: HostContext
 ): OxazolidinoneReport | null {
   const onDesk = antimicrobialOnDesk(drugIds);
   if (!onDesk.hasOxazolidinone) return null;
@@ -1033,7 +1033,7 @@ export function evaluateOxazolidinoneToxicities(
  */
 export function evaluatePolymyxinToxicities(
   drugIds: string[],
-  host: HostContext
+  _host: HostContext
 ): PolymyxinReport | null {
   const onDesk = antimicrobialOnDesk(drugIds);
   if (!onDesk.hasPolymyxin) return null;
@@ -1549,7 +1549,7 @@ export function generateStewardshipMonitoringPlan(
 
 export function generateStewardshipPearls(
   drugIds: string[],
-  host: HostContext
+  _host: HostContext
 ): string[] {
   const onDesk = antimicrobialOnDesk(drugIds);
   const pearls: string[] = [];

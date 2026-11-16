@@ -1,21 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Activity,
   AlertOctagon,
-  AlertTriangle,
-  ArrowRight,
-  BookOpen,
   Check,
   ChevronDown,
   ChevronRight,
   Clock,
-  ExternalLink,
-  Flame,
   Info,
   Layers,
-  Pill,
   Plus,
-  RotateCcw,
   Shield,
   ShieldAlert,
   Sparkles,
@@ -33,17 +26,8 @@ import {
   MOLECULAR_MODES,
   TDI_PERPETRATORS,
   NUCLEAR_INDUCERS,
-  COMPETITIVE_INHIBITORS,
   NUCLEAR_RECEPTOR_PATHWAYS,
   SENSITIVE_VICTIM_SUBSTRATES,
-  getAllTdiPerpetrators,
-  getAllNuclearInducers,
-  getAllCompetitiveInhibitors,
-  getNuclearReceptorPathways,
-  getMolecularModes,
-  getTdiPerpetratorById,
-  getNuclearInducerById,
-  getCompetitiveInhibitorById,
   calculateEnzymeTrajectory,
   detectTdiInductionOnTray,
   type MolecularModeId,
@@ -133,6 +117,12 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
   },
 ];
 
+const svgWidth = 800;
+const svgHeight = 320;
+const padding = { top: 28, right: 36, bottom: 44, left: 56 };
+const graphWidth = svgWidth - padding.left - padding.right;
+const graphHeight = svgHeight - padding.top - padding.bottom;
+
 export function CypKineticsSimulator() {
   const selectedOnDesk = useDesk((s) => s.selected);
   const loadDesk = useDesk((s) => s.load);
@@ -205,13 +195,6 @@ export function CypKineticsSimulator() {
     setUseDeskDrugs(true);
   }
 
-  // SVG dimensions & coordinate scales
-  const svgWidth = 800;
-  const svgHeight = 320;
-  const padding = { top: 28, right: 36, bottom: 44, left: 56 };
-  const graphWidth = svgWidth - padding.left - padding.right;
-  const graphHeight = svgHeight - padding.top - padding.bottom;
-
   // Max Y scale dynamically based on peak
   const maxY = useMemo(() => {
     if (trajectory.peakPct > 360) return 450;
@@ -220,8 +203,11 @@ export function CypKineticsSimulator() {
     return 160;
   }, [trajectory.peakPct]);
 
-  const scaleX = (d: number) => padding.left + (d / totalDays) * graphWidth;
-  const scaleY = (pct: number) => padding.top + graphHeight - (Math.min(pct, maxY) / maxY) * graphHeight;
+  const scaleX = useCallback((d: number) => padding.left + (d / totalDays) * graphWidth, [totalDays]);
+  const scaleY = useCallback(
+    (pct: number) => padding.top + graphHeight - (Math.min(pct, maxY) / maxY) * graphHeight,
+    [maxY],
+  );
 
   // Build SVG path strings
   const trajectoryPathD = useMemo(() => {
@@ -231,7 +217,7 @@ export function CypKineticsSimulator() {
       const y = scaleY(pt.activePoolPct);
       return idx === 0 ? `M ${x} ${y}` : `${acc} L ${x} ${y}`;
     }, "");
-  }, [trajectory.points, totalDays, maxY]);
+  }, [trajectory.points, scaleX, scaleY]);
 
   const areaPathD = useMemo(() => {
     if (trajectory.points.length === 0) return "";
@@ -244,7 +230,7 @@ export function CypKineticsSimulator() {
       return idx === 0 ? `M ${x} ${y}` : `${acc} L ${x} ${y}`;
     }, "");
     return `${mainPath} L ${lastX} ${baselineY} L ${firstX} ${baselineY} Z`;
-  }, [trajectory.points, totalDays, maxY]);
+  }, [trajectory.points, totalDays, scaleX, scaleY]);
 
   return (
     <div className="w-full space-y-6 overflow-x-hidden text-fg">

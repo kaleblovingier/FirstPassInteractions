@@ -1568,4 +1568,140 @@ test("collect.server sanitizers reject control chars/backslashes and normalize p
   assert.equal(extractCountry(reqFallback), "GB");
 });
 
+test("handleStatsRequest rejects C1 control characters in PIN and enforces 415 Content-Type checks", async () => {
+  resetPinThrottle();
+  const vercel = process.env.VERCEL;
+  process.env.VERCEL = "1";
+
+  try {
+    // C1 Unicode control characters (\u0085, \u009f) in PIN return 400 with STATS_SECURITY_HEADERS
+    for (const ctrlPin of ["heme\u0085450", "heme\u009f450"]) {
+      const res = await handleStatsRequest(
+        new Request("http://localhost/api/stats", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-real-ip": "198.51.100.201",
+          },
+          body: JSON.stringify({ pin: ctrlPin, days: 30 }),
+        }),
+      );
+      assert.equal(res.status, 400);
+      assertStatsSecurityHeaders(res, `stats 400 C1 control char ${JSON.stringify(ctrlPin)}`);
+      const body = (await res.json()) as { ok: boolean; reason: string };
+      assert.equal(body.ok, false);
+      assert.equal(body.reason, "Invalid operator PIN.");
+    }
+
+    // Non-JSON Content-Type headers return 415 with STATS_SECURITY_HEADERS without buffering body
+    for (const badType of [
+      "text/plain",
+      "text/plain; charset=utf-8",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data; boundary=----firstpass",
+      "application/xml",
+    ]) {
+      let canceled = false;
+      const bodyStream = new ReadableStream<Uint8Array>({
+        pull() {},
+        cancel() {
+          canceled = true;
+        },
+      });
+      const res = await handleStatsRequest({
+        url: "http://localhost/api/stats",
+        method: "POST",
+        headers: new Headers({ "content-type": badType }),
+        body: bodyStream,
+      } as unknown as Request);
+      assert.equal(res.status, 415, `${badType} should return 415`);
+      assert.equal(canceled, true, `${badType} should cancel body stream`);
+      assertStatsSecurityHeaders(res, `stats 415 ${badType}`);
+      const body = (await res.json()) as { ok: boolean; reason: string };
+      assert.equal(body.ok, false);
+      assert.match(body.reason, /Unsupported Media Type/);
+    }
+
+    // application/json with charset and structured +json media types succeed
+    for (const allowedType of [
+      "application/json; charset=utf-8",
+      "Application/LD+JSON; charset=utf-8",
+    ]) {
+      const res = await handleStatsRequest(
+        new Request("http://localhost/api/stats", {
+          method: "POST",
+          headers: {
+            "content-type": allowedType,
+            "x-real-ip": "198.51.100.202",
+          },
+          body: JSON.stringify({ pin: "heme-450", days: 30 }),
+        }),
+      );
+      assert.equal(res.status, 200, `${allowedType} should succeed`);
+      assertStatsSecurityHeaders(res, `stats 200 ${allowedType}`);
+    }
+
+    // Omitted Content-Type (curl-style binary/stream POST) is allowed
+    const rawBody = new TextEncoder().encode(JSON.stringify({ pin: "heme-450", days: 30 }));
+    const omittedReq = new Request("http://localhost/api/stats", {
+      method: "POST",
+      headers: { "x-real-ip": "198.51.100.203" },
+      body: rawBody,
+    });
+    assert.equal(omittedReq.headers.get("content-type"), null);
+    const omittedRes = await handleStatsRequest(omittedReq);
+    assert.equal(omittedRes.status, 200);
+    assertStatsSecurityHeaders(omittedRes, "stats 200 omitted Content-Type");
+
+    // Non-plain JSON payloads and __proto__ keys are rejected cleanly with 400
+    for (const badJson of [
+      "[]",
+      "null",
+      '"heme-450"',
+      "42",
+      '{"pin":"heme-450","days":30,"__proto__":{"polluted":true}}',
+    ]) {
+      const res = await handleStatsRequest(
+        new Request("http://localhost/api/stats", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: badJson,
+        }),
+      );
+      assert.equal(res.status, 400);
+      assertStatsSecurityHeaders(res, `stats 400 non-plain ${badJson}`);
+    }
+    assert.equal(({} as { polluted?: boolean }).polluted, undefined);
+  } finally {
+    if (vercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = vercel;
+    resetPinThrottle();
+  }
+});
+
+test("utcDayString falls back safely to a valid UTC YYYY-MM-DD date on non-finite and out-of-range inputs", () => {
+  assert.equal(utcDayString(Date.UTC(2026, 10, 8, 21, 0, 0)), "2026-11-08");
+
+  const validDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+  for (const badTimestamp of [
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
+    1e20,
+    -1e20,
+    8.64e15 + 1,
+    -8.64e15 - 1,
+  ]) {
+    const before = new Date().toISOString().slice(0, 10);
+    let result = "";
+    assert.doesNotThrow(() => {
+      result = utcDayString(badTimestamp);
+    });
+    const after = new Date().toISOString().slice(0, 10);
+    assert.match(result, validDatePattern);
+    assert.doesNotMatch(result, /NaN/);
+    assert.ok(result === before || result === after, `expected today UTC date, got ${result}`);
+  }
+});
+
 

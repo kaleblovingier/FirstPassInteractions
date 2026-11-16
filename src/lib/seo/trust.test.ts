@@ -8,6 +8,7 @@ import { TrustView } from "@/components/seo/trust-page";
 import { INTENDED_USERS, NOT_CLEARED, NOT_FOR, SOFTWARE, WARNINGS } from "@/lib/regulatory";
 import { PAIR_DISCLAIMER, SITE_URL } from "./pair-copy";
 import {
+  PRIVACY,
   PROCUREMENT_MAILTO,
   REPO_URL,
   TRUST_DESCRIPTION,
@@ -132,9 +133,9 @@ describe("/trust page", () => {
     for (const s of TRUST_SECTIONS) assert.ok(s.sources.length > 0, s.id);
   });
 
-  it("reflects Round 6/7 review date, HTTP security hardenings, and aligned report counts", () => {
-    assert.equal(TRUST_REVIEWED, "2026-11-10");
-    assert.ok(body.includes(`Checked against FirstPass ${SOFTWARE.version} on 2026-11-10.`));
+  it("reflects Round 8 review date, HTTP security hardenings, and aligned report counts", () => {
+    assert.equal(TRUST_REVIEWED, "2026-11-15");
+    assert.ok(body.includes(`Checked against FirstPass ${SOFTWARE.version} on 2026-11-15.`));
 
     for (const needle of [
       "Cache-Control: no-store, no-cache, must-revalidate",
@@ -148,6 +149,8 @@ describe("/trust page", () => {
       "4,096-byte",
       "1,024-byte",
       "control characters and backslashes",
+      "C0 and C1 control characters",
+      "application/json Content-Type checks with 415 otherwise",
       "neutralize leading and embedded-newline formula triggers",
       "zero protected health information (PHI)",
     ]) {
@@ -170,6 +173,33 @@ describe("/trust page", () => {
       "2026-11-05",
     ]) {
       assert.ok(body.includes(stat), `missing aligned report statistic: ${stat}`);
+    }
+  });
+
+  it("documents analyze live lookups, half-life overlap sketch, autocomplete typeahead, and backs them with privacy sources", () => {
+    for (const needle of [
+      "analyze endpoint",
+      "ingestionTimeHoursAgo",
+      "half-life overlap sketch",
+      "live set to true",
+      "OpenFDA label",
+      "NCBI PubMed",
+      "rate gate",
+      "TripSit",
+      "autocomplete endpoint",
+      "catalog and street-name typeahead suggestions",
+    ]) {
+      assert.ok(body.includes(needle), `missing interaction API disclosure: ${needle}`);
+    }
+
+    for (const source of [
+      "src/lib/drugs/interaction-report.ts",
+      "src/lib/drugs/interaction-report.server.ts",
+      "src/lib/drugs/synergy.ts",
+      "src/lib/drugs/overlap.ts",
+      "src/lib/server/ncbi-gate.ts",
+    ]) {
+      assert.ok(PRIVACY.sources.includes(source), `missing PRIVACY.sources entry: ${source}`);
     }
   });
 });

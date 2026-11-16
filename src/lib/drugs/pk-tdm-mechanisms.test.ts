@@ -11,7 +11,6 @@ import {
   evaluateDialyzability,
   calculateProteinDisplacement,
   calculateSteadyStateAccumulation,
-  type PkConcept,
 } from "./pk-tdm-mechanisms";
 
 describe("Pharmacokinetics & Nonlinear Clearance Mechanism Engine", () => {

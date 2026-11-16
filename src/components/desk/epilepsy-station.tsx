@@ -1,21 +1,15 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  ArrowRight,
   Brain,
   CheckCircle2,
-  Clock,
   Droplets,
-  HeartPulse,
   Info,
   Layers,
-  Pill,
   Scale,
   ShieldAlert,
   Sparkles,
-  Timer,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,14 +20,7 @@ import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
   STATUS_EPILEPTICUS_CDS_DISCLAIMER,
-  statusEpilepticusOnDesk,
   statusEpilepticusReportOnDesk,
-  calculatePhase1Dosing,
-  calculatePhase2Dosing,
-  calculatePhase3Dosing,
-  calculateGabaInternalization,
-  calculateOsmotherapy,
-  evaluateStatusEpilepticusCollisions,
 } from "@/lib/drugs/status-epilepticus";
 
 export interface EpilepsyStationProps {
@@ -65,7 +52,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
         currentSerumNa: serumSodium,
         currentSerumOsm: serumOsmolality,
       }),
-    [ids.join("|"), host, patientWeightKg, seizureDurationMinutes, serumSodium, serumOsmolality],
+    [ids, host, patientWeightKg, seizureDurationMinutes, serumSodium, serumOsmolality],
   );
 
   const { onDesk, phase1, phase2, phase3, receptorKinetics, osmotherapy, activeCollisions } =

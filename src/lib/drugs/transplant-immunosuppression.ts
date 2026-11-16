@@ -975,7 +975,7 @@ export interface TransplantCollisionAlert {
 
 export function detectTransplantCollisions(
   drugIds: string[],
-  host?: HostContext,
+  _host?: HostContext,
 ): TransplantCollisionAlert[] {
   const normalized = drugIds.map(normalizeDrugToken);
   const alerts: TransplantCollisionAlert[] = [];

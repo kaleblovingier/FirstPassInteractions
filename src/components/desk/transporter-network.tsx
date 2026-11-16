@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
   TRANSPORTERS,
-  BARRIER_ARCHITECTURES,
   TRANSPORTER_REGULATORY_DISCLAIMER,
   getTransporterById,
   getBarrierById,
@@ -14,15 +13,11 @@ import { useDesk } from "@/lib/drugs/store";
 import { cn } from "@/lib/utils";
 import {
   Activity,
-  AlertOctagon,
-  AlertTriangle,
   ArrowDown,
   ArrowUp,
-  ArrowRight,
   BookOpen,
   Check,
   ChevronRight,
-  ExternalLink,
   Flame,
   Info,
   Layers,
@@ -33,7 +28,6 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sparkles,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -41,7 +35,6 @@ type ActiveTab = BarrierId | "all";
 
 export function TransporterNetwork() {
   const selected = useDesk((s) => s.selected);
-  const load = useDesk((s) => s.load);
   const add = useDesk((s) => s.add);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>("bbb");

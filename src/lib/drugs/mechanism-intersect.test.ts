@@ -4,7 +4,6 @@ import {
   evaluateMechanismIntersect,
   PRESET_SCENARIOS,
   INTERSECT_REGULATORY_NOTICE,
-  type IntersectCategory,
 } from "./mechanism-intersect";
 import { DRUG_BY_ID } from "./catalog";
 

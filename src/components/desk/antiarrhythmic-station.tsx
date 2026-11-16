@@ -3,41 +3,28 @@ import {
   Activity,
   AlertCircle,
   AlertTriangle,
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
   CheckCircle2,
   Clock,
   Droplets,
   Flame,
-  Heart,
   HeartPulse,
-  HelpCircle,
   Info,
   Pill,
   ShieldAlert,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
-  ANTIARRHYTHMIC_CDS_DISCLAIMER,
   ANTIARRHYTHMIC_CITATIONS,
   ANTIARRHYTHMIC_PROFILES,
   POTENT_PGP_INHIBITOR_MAP,
-  antiarrhythmicOnDesk,
   antiarrhythmicReportOnDesk,
-  calculateDigiFabVials,
-  evaluateDigoxinTdm,
-  evaluateElectrolyteAmplifiers,
   type DigiFabDosingScenario,
   type DigoxinIndication,
   type DigoxinLevelBand,
-  type VaughanWilliamsClass,
 } from "@/lib/drugs/antiarrhythmic-kinetics";
 
 type AntiarrhythmicTab = "digoxin-tdm" | "digifab-calc" | "vaughan-williams" | "cast-rems" | "tray-alerts";
@@ -55,18 +42,18 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
   const [hoursPostDoseInput, setHoursPostDoseInput] = useState<string>("12");
   const [weightKgInput, setWeightKgInput] = useState<string>("70");
   const [potassiumInput, setPotassiumInput] = useState<string>("3.8");
-  const [magnesiumInput, setMagnesiumInput] = useState<string>("2.0");
-  const [calciumInput, setCalciumInput] = useState<string>("9.6");
+  const [magnesiumInput] = useState<string>("2.0");
+  const [calciumInput] = useState<string>("9.6");
 
   // 2. DigiFab Calculator State
   const [fabScenario, setFabScenario] = useState<DigiFabDosingScenario>("steady-state-serum-concentration");
   const [ingestedMgInput, setIngestedMgInput] = useState<string>("10");
-  const [isCardiacArrest, setIsCardiacArrest] = useState<boolean>(false);
+  const [isCardiacArrest] = useState<boolean>(false);
 
   // 3. Dofetilide REMS Simulator State
   const [dofetilideCrClInput, setDofetilideCrClInput] = useState<string>(host.kidney === "ckd" ? "35" : "75");
   const [dofetilideQtcInput, setDofetilideQtcInput] = useState<string>("415");
-  const [hasStructuralHeartDisease, setHasStructuralHeartDisease] = useState<boolean>(false);
+  const [hasStructuralHeartDisease] = useState<boolean>(false);
 
   // Numerical conversions with safe clamping
   const numSdc = Math.max(0, Math.min(20, Number(sdcInput) || 0));
@@ -104,7 +91,7 @@ export function AntiarrhythmicPanel({ ids, host }: { ids: string[]; host: HostCo
         measuredCrClMlMin: numCrCl,
       }),
     [
-      ids.join("|"),
+      ids,
       host,
       numSdc,
       indication,

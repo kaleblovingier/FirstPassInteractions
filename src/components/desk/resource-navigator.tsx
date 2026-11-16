@@ -12,7 +12,6 @@ import {
   FileText,
   Heart,
   HeartPulse,
-  Info,
   LifeBuoy,
   MapPin,
   MessageSquare,
@@ -47,7 +46,6 @@ import {
   type HealthcareResource,
   type ResourceRecommendation,
   type ManufacturerPAPProgram,
-  type StatePAPInfo,
 } from "@/lib/drugs/healthcare-resources";
 import { NOT_CLEARED, PI_FOOTER } from "@/lib/regulatory";
 import { REFERENCE_RESOURCES, REFERENCE_RESOURCE_KIND_LABEL } from "@/lib/drugs/reference-resources";
@@ -74,7 +72,7 @@ export function ResourceNavigator({ ids, host, onOpenHelp }: ResourceNavigatorPr
   return <ResourcePanel ids={ids} host={host} onOpenHelp={onOpenHelp} />;
 }
 
-export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: ResourceNavigatorProps) {
+export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp: _onOpenHelp }: ResourceNavigatorProps) {
   // Store integration fallback
   const storeSelected = useDesk((s) => s.selected);
   // useShallow: a fresh object each read is an endless update loop in zustand 5.
@@ -108,7 +106,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
   // Recommender report based on active tray and host context
   const report = useMemo(
     () => healthcareResourcesFor(activeIds, activeHost),
-    [activeIds.join("|"), activeHost.preg, activeHost.kidney, activeHost.alcohol, activeHost.age],
+    [activeIds, activeHost],
   );
 
   // Filtered resources for directory grid
@@ -138,7 +136,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp }: Reso
         zip: zipInput.trim() || undefined,
         clinicHeader: clinicHeaderInput.trim() || undefined,
       }),
-    [activeIds.join("|"), activeHost, zipInput, clinicHeaderInput],
+    [activeIds, activeHost, zipInput, clinicHeaderInput],
   );
 
   const handleCopyHandout = async () => {

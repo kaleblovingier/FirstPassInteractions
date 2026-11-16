@@ -1,41 +1,26 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
-  AlertTriangle,
   ArrowRight,
   Brain,
-  CheckCircle2,
-  Cigarette,
   Clock,
-  Droplets,
-  Eye,
-  Flame,
   Info,
   Pill,
-  Scale,
   ShieldAlert,
-  Sparkles,
-  Stethoscope,
   Thermometer,
-  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
-  ANTIDEPRESSANT_KINETICS_REGISTRY,
   calculateAntidepressantCrossTaper,
-  detectClozapine1a2Collisions,
   evaluateAnticholinergicToxidrome,
   evaluateCighRisk,
   evaluateClozapineAnc,
   evaluateFinishSyndromeRisk,
   evaluateHunterSerotoninCriteria,
-  evaluateMalignantHyperthermia,
   evaluateNmsCriteria,
-  isMaoi,
   modelClozapineTobaccoKinetics,
   NEURO_EMERGENCY_COMPARISON_MATRIX,
   NEUROPSYCH_CITATIONS,
@@ -44,7 +29,7 @@ import {
 } from "@/lib/drugs/neuropsych-kinetics";
 
 export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContext }) {
-  const report = useMemo(() => neuropsychReportOnDesk(ids, host), [ids.join("|"), host.smoking, host.age]);
+  const report = useMemo(() => neuropsychReportOnDesk(ids, host), [ids, host]);
 
   // Main station tabs
   const [activeTab, setActiveTab] = useState<"emergencies" | "clozapine" | "crosstaper">("emergencies");
@@ -66,8 +51,8 @@ export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContex
   // NMS signs
   const [dopamineAntagonistExposed, setDopamineAntagonistExposed] = useState<boolean>(false);
   const [leadPipeRigidity, setLeadPipeRigidity] = useState<boolean>(false);
-  const [cpkLevel, setCpkLevel] = useState<string>("350");
-  const [leukocytosis, setLeukocytosis] = useState<boolean>(false);
+  const [cpkLevel] = useState<string>("350");
+  const [leukocytosis] = useState<boolean>(false);
   const [hyporeflexia, setHyporeflexia] = useState<boolean>(false);
 
   // Anticholinergic signs
@@ -210,7 +195,7 @@ export function NeuropsychPanel({ ids, host }: { ids: string[]; host: HostContex
         constipationReported: true,
         bowelMovementAbsenceDays: 2,
       }),
-    [ids.join("|"), host.age],
+    [ids, host.age],
   );
 
   /* ======================================================================== */

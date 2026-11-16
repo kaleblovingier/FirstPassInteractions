@@ -111,8 +111,7 @@ export function splMeta(xml: string): SplMeta {
 export function splSections(xml: string): SplSection[] {
   const out: SplSection[] = [];
   const open = /<section\b[^>]*>/g;
-  let m: RegExpExecArray | null;
-  while ((m = open.exec(xml))) {
+  while (open.exec(xml)) {
     const tag = /<(\/?)section\b[^>]*>/g;
     tag.lastIndex = open.lastIndex;
     let depth = 1;

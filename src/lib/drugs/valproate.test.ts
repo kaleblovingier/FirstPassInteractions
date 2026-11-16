@@ -140,3 +140,16 @@ test("valproateReportOnDesk integrates patient context, pregnancy warnings, and 
   assert.ok(report.collisions.length > 0);
   assert.match(report.disclaimer, /Not FDA-cleared/);
 });
+
+test("valproateOnDesk identifies valproate and co-administered interactors", () => {
+  const active = valproateOnDesk(["valproate", "meropenem", "lamotrigine", "topiramate", "levocarnitine"]);
+  assert.equal(active.hasValproate, true);
+  assert.equal(active.hasCarbapenem, true);
+  assert.equal(active.hasLamotrigine, true);
+  assert.equal(active.hasTopiramate, true);
+  assert.equal(active.hasCarnitine, true);
+
+  const empty = valproateOnDesk(["metformin", "atorvastatin"]);
+  assert.equal(empty.hasValproate, false);
+  assert.equal(empty.hasCarbapenem, false);
+});

@@ -490,3 +490,29 @@ export function sglt2ReportOnDesk(ids: string[], host?: HostContext): Sglt2Repor
   };
 }
 
+/**
+ * Validates that every catalog-mapped SGLT2 inhibitor, loop diuretic,
+ * secretagogue, and insulin ID exists in `DRUG_BY_ID`.
+ */
+export function validateSglt2CatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const allIds = Array.from(
+    new Set([
+      ...Object.keys(SGLT2_PROFILES),
+      ...SGLT2_IDS,
+      ...LOOP_DIURETIC_IDS,
+      ...SECRETAGOGUE_IDS,
+      ...INSULIN_IDS,
+    ]),
+  );
+  const missingDrugIds = allIds.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: allIds.length,
+  };
+}
+

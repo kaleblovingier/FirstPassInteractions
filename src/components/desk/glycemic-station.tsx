@@ -2,17 +2,13 @@ import { useMemo, useState } from "react";
 import { oneOf } from "./narrow";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  ArrowRight,
   BookOpen,
   CheckCircle2,
   Clock,
   Droplets,
   Flame,
-  HeartPulse,
   Info,
-  Layers,
   Pill,
   Scale,
   ShieldAlert,
@@ -29,15 +25,7 @@ import type { HostContext } from "@/lib/drugs/types";
 import {
   GLYCEMIC_CDS_DISCLAIMER,
   GLYCEMIC_CITATIONS,
-  evaluatePotassiumSafetyGate,
-  calculateCorrectedSodium,
-  calculateEffectiveSerumOsmolality,
   calculateAnionGap,
-  evaluateTwoBagFluidTitration,
-  evaluateIvInsulinProtocol,
-  evaluateSulfonylureaToxicity,
-  calculateInpatientInsulinRegimen,
-  glycemicOnDesk,
   glycemicReportOnDesk,
 } from "@/lib/drugs/glycemic-kinetics";
 
@@ -93,7 +81,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
         isSulfonylureaOverdose,
       }),
     [
-      ids.join("|"),
+      ids,
       host,
       patientWeightKg,
       serumPotassium,

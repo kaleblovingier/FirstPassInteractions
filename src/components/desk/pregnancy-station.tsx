@@ -28,7 +28,7 @@ export function PregnancyPanel({ ids, host }: { ids: string[]; host: HostContext
         gestationalAgeWeeks: numGa,
         totalDailyMaternalDoseMg: numMatDose,
       }),
-    [ids.join("|"), host, numGa, numMatDose],
+    [ids, host, numGa, numMatDose],
   );
 
   const activeWindows = useMemo(() => getTrimesterVulnerability(numGa), [numGa]);

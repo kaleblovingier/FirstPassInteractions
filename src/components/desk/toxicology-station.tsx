@@ -3,17 +3,14 @@ import {
   Activity,
   AlertCircle,
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
   Clock,
   Droplets,
   FlaskConical,
   Flame,
-  HelpCircle,
   Info,
   Pill,
   ShieldAlert,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -21,17 +18,9 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
-  calculateRumackTreatmentLine,
-  calculateRumackHighRiskLine,
-  evaluateRumackMatthewNomogram,
-  calculateOsmolalGap,
-  calculateSalicylateIonization,
-  calculateNaloxoneInfusionRate,
   toxicologyReportOnDesk,
-  TOXICOLOGY_CDS_DISCLAIMER,
   APAP_CLINICAL_PHASES,
   NAC_IV_REGIMENS,
-  NAC_ANAPHYLACTOID_MANAGEMENT,
   NAC_STOPPING_CRITERIA,
   TOXIC_ALCOHOL_PROFILES,
   FOMEPIZOLE_PROTOCOL,
@@ -109,7 +98,7 @@ export function ToxicologyPanel({ ids, host }: { ids: string[]; host: HostContex
         initialNaloxoneBolusMg: numNaloxoneBolus,
       }),
     [
-      ids.join("|"),
+      ids,
       host,
       numApapHours,
       numApapLevel,

@@ -1,15 +1,11 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  CheckCircle2,
   Clock,
   Flame,
   Gauge,
   Info,
-  Layers,
-  Pill,
   ShieldAlert,
   Sparkles,
   Stethoscope,
@@ -36,8 +32,8 @@ import {
 
 export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostContext }) {
   // Master detection and report
-  const report = useMemo(() => antimicrobialReportOnDesk(ids, host), [ids.join("|"), host.kidney, host.age]);
-  const detection = useMemo(() => antimicrobialOnDesk(ids), [ids.join("|")]);
+  const report = useMemo(() => antimicrobialReportOnDesk(ids, host), [ids, host]);
+  const detection = useMemo(() => antimicrobialOnDesk(ids), [ids]);
 
   // Main station tab state: "pkpd" | "arc" | "safety" | "pearls"
   const [stationTab, setStationTab] = useState<"pkpd" | "arc" | "safety" | "pearls">("pkpd");
@@ -171,13 +167,13 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
         durationDays: linezolidDays,
         coAdministeredAgents: ids,
       }),
-    [linezolidDays, ids.join("|")]
+    [linezolidDays, ids]
   );
 
-  const [daptoPneumonia, setDaptoPneumonia] = useState<boolean>(false);
+  const [daptoPneumonia] = useState<boolean>(false);
   const daptoSafety = useMemo(
     () => evaluateDaptomycinSafety(daptoPneumonia, ids),
-    [daptoPneumonia, ids.join("|")]
+    [daptoPneumonia, ids]
   );
 
   const hasCriticalSafetyAlert = report.organSafetyAlerts.some((a) => a.severity === "critical");

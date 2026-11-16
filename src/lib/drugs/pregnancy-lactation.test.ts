@@ -451,4 +451,8 @@ test("pregnancyReportOnDesk: reports compatible status when only benign agents o
   assert.equal(report.detectedCollisions.length, 0);
   assert.ok(report.placentalPermeationAnalyses.length > 0);
   assert.ok(report.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
+
+  assert.equal(PLACENTAL_DRUG_DATABASE.heparin?.mwDa, 15000);
+  assert.equal(PLACENTAL_DRUG_DATABASE.heparin?.crossingCategory, "negligible");
+  assert.equal(PLACENTAL_DRUG_DATABASE.enoxaparin?.crossingCategory, "negligible");
 });

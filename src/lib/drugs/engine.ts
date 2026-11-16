@@ -64,7 +64,6 @@ import {
   type EnzymeRole,
   type Finding,
   type HostContext,
-  type Metabolizer,
   type PhenotypeMap,
   type Report,
   type Severity,

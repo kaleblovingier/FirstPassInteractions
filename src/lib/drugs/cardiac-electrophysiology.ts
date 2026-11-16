@@ -2025,3 +2025,28 @@ export function detectArrhythmiaCollisions(drugIds: string[]): ArrhythmiaCollisi
 
   return collisions;
 }
+
+/**
+ * Validates that every drug ID referenced across cardiac electrophysiology
+ * profiles, Vaughan-Williams prototype drugs, and ion channel blockers exists
+ * in `DRUG_BY_ID`.
+ */
+export function validateElectrophysiologyCatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const allIds = Array.from(
+    new Set([
+      ...Object.keys(CARDIAC_ELECTROPHYSIOLOGY_DRUG_DATABASE),
+      ...VAUGHAN_WILLIAMS_CLASSES.flatMap((cls) => cls.prototypeDrugs.map((d) => d.drugId)),
+      ...ION_CHANNEL_FAMILIES.flatMap((ch) => ch.pharmacologicBlockers.map((b) => b.drugId)),
+    ]),
+  );
+  const missingDrugIds = allIds.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: allIds.length,
+  };
+}

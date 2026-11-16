@@ -18,6 +18,7 @@ import {
   getArrhythmiaMechanisms,
   getCardiacElectrophysiologyProfile,
   detectArrhythmiaCollisions,
+  validateElectrophysiologyCatalogIntegrity,
 } from "./cardiac-electrophysiology";
 
 describe("Cardiac Electrophysiology & Ion Channel Database", () => {
@@ -92,6 +93,8 @@ describe("Cardiac Electrophysiology & Ion Channel Database", () => {
   it("accurately models Ventricular vs Nodal tissue biophysics", () => {
     const vent = getTissueModel("ventricular");
     const nodal = getTissueModel("nodal");
+    assert.strictEqual(vent, TISSUE_MODELS.ventricular);
+    assert.strictEqual(nodal, TISSUE_MODELS.nodal);
 
     // Ventricular fast response
     assert.equal(vent.restingPotentialMv, -90);
@@ -278,6 +281,11 @@ describe("Cardiac Electrophysiology & Ion Channel Database", () => {
   });
 
   it("validates that EVERY referenced drugId exists in catalog DRUG_BY_ID", () => {
+    const integrity = validateElectrophysiologyCatalogIntegrity();
+    assert.equal(integrity.valid, true);
+    assert.deepEqual(integrity.missingDrugIds, []);
+    assert.ok(integrity.totalUniqueDrugIds >= 20);
+
     let checkedCount = 0;
 
     // 1. Check CARDIAC_ELECTROPHYSIOLOGY_DRUG_DATABASE

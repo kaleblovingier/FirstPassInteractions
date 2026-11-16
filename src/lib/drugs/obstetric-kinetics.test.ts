@@ -472,5 +472,11 @@ describe("Obstetric Kinetics, Maternal Resuscitation & Perinatal Pharmacotherapy
       assert.strictEqual(report.acuteHypertension.isSevereHypertension, false);
       assert.strictEqual(report.teratogenEvaluation.findings.length, 0);
     });
+
+    it("maps gestational ages across canonical EMBRYOLOGICAL_PHASES", () => {
+      assert.strictEqual(getEmbryologicalPhase(3), EMBRYOLOGICAL_PHASES.pre_implantation);
+      assert.strictEqual(getEmbryologicalPhase(7), EMBRYOLOGICAL_PHASES.organogenesis);
+      assert.strictEqual(getEmbryologicalPhase(24), EMBRYOLOGICAL_PHASES.fetal_period);
+    });
   });
 });

@@ -8,6 +8,7 @@ import {
   sglt2OnDesk,
   sglt2ReportOnDesk,
   SGLT2_PROFILES,
+  validateSglt2CatalogIntegrity,
 } from "./sglt2";
 import { DEFAULT_HOST } from "./types";
 
@@ -110,5 +111,16 @@ test("sglt2OnDesk & sglt2ReportOnDesk: detects multi-agent formulary combination
   assert.ok(report.renalRails.length > 0);
   assert.ok(report.fourniersWarning.includes("Fournier's Gangrene"));
   assert.ok(report.clinicalPearls.length >= 5);
+});
+
+test("SGLT2_PROFILES & validateSglt2CatalogIntegrity: verifies perioperative hold profiles and DRUG_BY_ID mapping", () => {
+  assert.equal(SGLT2_PROFILES.empagliflozin?.preopHoldDays, 3);
+  assert.equal(SGLT2_PROFILES.ertugliflozin?.preopHoldDays, 4);
+  assert.ok(Object.keys(SGLT2_PROFILES).length >= 5);
+
+  const integrity = validateSglt2CatalogIntegrity();
+  assert.equal(integrity.valid, true);
+  assert.deepEqual(integrity.missingDrugIds, []);
+  assert.ok(integrity.totalUniqueDrugIds >= 15);
 });
 

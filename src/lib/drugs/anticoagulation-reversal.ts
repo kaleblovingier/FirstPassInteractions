@@ -1042,7 +1042,7 @@ export interface BivalirudinKineticsResult {
 }
 
 export function calculateBivalirudinKinetics(params: BivalirudinKineticsParams): BivalirudinKineticsResult {
-  const { weightKg, renalStatus = "normal", indication = "hit_treatment", baselineApttSeconds = 30 } = params;
+  const { weightKg, renalStatus = "normal", indication = "hit_treatment" } = params;
 
   let initialRateMgKgHr = 0.15;
   let halfLifeDesc = "25 minutes (normal renal function)";
@@ -1975,4 +1975,32 @@ export function getAnticoagulantProfile(drugId: string): AnticoagulantProfile | 
 
 export function getAllAnticoagulantProfiles(): AnticoagulantProfile[] {
   return Object.values(ANTICOAGULANT_PROFILES);
+}
+
+/**
+ * Validates that every catalog-mapped anticoagulant ID across profiles and
+ * therapeutic class sets exists in `DRUG_BY_ID`.
+ */
+export function validateAnticoagulationCatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const allIds = Array.from(
+    new Set([
+      ...Object.keys(ANTICOAGULANT_PROFILES),
+      ...ALL_ANTICOAGULANT_IDS,
+      ...DIRECT_FXA_IDS,
+      ...DIRECT_THROMBIN_IDS,
+      ...DTI_IDS,
+      ...VKA_IDS,
+      ...HEPARINOID_IDS,
+    ]),
+  );
+  const missingDrugIds = allIds.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: allIds.length,
+  };
 }

@@ -19,7 +19,7 @@ export const TRUST_DESCRIPTION = `How FirstPass handles data, security, content 
 export const TRUST_H1 = "Trust, privacy and validation";
 
 /** The day these points were last checked against the code. Update it when you re-check. */
-export const TRUST_REVIEWED = "2026-11-10";
+export const TRUST_REVIEWED = "2026-11-15";
 
 export const REPO_URL = "https://github.com/kaleblovingier/FirstPassInteractions";
 
@@ -78,7 +78,7 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "The interaction API takes context from the software that calls it.",
-      text: "Software that calls FirstPass's interaction API sends drug names and, if it chooses, context such as age, sex, weight, kidney function or eGFR, urine pH, pregnancy, breastfeeding or smoking status. The server keeps that context and the computed answer in memory for up to 10 minutes, never writes them to disk or a database, and does not log the request body. Callers should not send names, record numbers, dates or other identifiers. The desk itself does not use this API.",
+      text: "Software that calls FirstPass's interaction API sends drug names and, if it chooses, context such as age, sex, weight, kidney function or eGFR, urine pH, pregnancy, breastfeeding or smoking status. On the interaction API's analyze endpoint, callers can also pass optional hours since the last ingestion (ingestionTimeHoursAgo) for a half-life overlap sketch and, when live lookups are enabled (live set to true), ask the server to fetch live OpenFDA label, NCBI PubMed (paced by the server's rate gate), and TripSit rows by drug name (host context and ingestion hours are not sent to outside sources). The autocomplete endpoint returns catalog and street-name typeahead suggestions. The server keeps submitted context and offline computed answers (along with autocomplete suggestions) in memory for up to 10 minutes (combined live analyze reports are not cached), never writes them to disk or a database, and does not log the request body. Callers should not send names, record numbers, dates or other identifiers. The desk itself does not use this API.",
     },
     {
       lead: "The three readers use an AI service.",
@@ -122,6 +122,10 @@ export const PRIVACY: TrustSection = {
     "src/lib/drugs/live.server.ts",
     "src/lib/drugs/psychonaut.server.ts",
     "src/lib/drugs/readers.server.ts",
+    "src/lib/drugs/interaction-report.ts",
+    "src/lib/drugs/interaction-report.server.ts",
+    "src/lib/drugs/synergy.ts",
+    "src/lib/drugs/overlap.ts",
     "src/lib/billing/stripe.server.ts",
     "src/lib/billing/paypal.server.ts",
     "src/lib/billing/license-mail.server.ts",
@@ -134,6 +138,7 @@ export const PRIVACY: TrustSection = {
     "src/lib/analytics/stats.server.ts",
     "src/lib/analytics/export.ts",
     "src/lib/server/throttle-store.ts",
+    "src/lib/server/ncbi-gate.ts",
     "migrations/0002_throttle.sql",
     "migrations/0003_analytics.sql",
     "src/lib/regulatory.ts",
@@ -166,7 +171,7 @@ export const SECURITY: TrustSection = {
     },
     {
       lead: "HTTP hardening and body caps.",
-      text: "FirstPass's interaction API and the /api/collect and /api/stats endpoints send Cache-Control: no-store, no-cache, must-revalidate, Pragma: no-cache, and X-Content-Type-Options: nosniff on every response, and return Allow headers on 405 wrong-method errors. The interaction API enforces a 10 MiB JSON POST body cap (canceling oversized streams and returning 413 RFC 7807 problem details), a 1,000-node item budget, and application/json Content-Type checks on POST requests (returning 415 otherwise). The analytics endpoints enforce a 4,096-byte cap on /api/collect beacons (rejecting control characters and backslashes on collected paths) and a 1,024-byte cap on /api/stats queries, and CSV analytics exports neutralize leading and embedded-newline formula triggers.",
+      text: "FirstPass's interaction API and the /api/collect and /api/stats endpoints send Cache-Control: no-store, no-cache, must-revalidate, Pragma: no-cache, and X-Content-Type-Options: nosniff on every response, and return Allow headers on 405 wrong-method errors. The interaction API enforces a 10 MiB JSON POST body cap (canceling oversized streams and returning 413 RFC 7807 problem details), a 1,000-node item budget, and application/json Content-Type checks on POST requests (returning 415 otherwise). The analytics endpoints enforce a 4,096-byte cap on /api/collect beacons (rejecting control characters and backslashes on collected paths) and a 1,024-byte cap on /api/stats queries (canceling oversized streams, enforcing application/json Content-Type checks with 415 otherwise, rejecting non-plain JSON objects, and rejecting C0 and C1 control characters in PIN inputs), and CSV analytics exports neutralize leading and embedded-newline formula triggers.",
     },
     {
       lead: "HTTPS.",

@@ -25,6 +25,7 @@ import {
   calculateProtamineDosing,
   anticoagulationOnDesk,
   anticoagulationReportOnDesk,
+  validateAnticoagulationCatalogIntegrity,
 } from "./anticoagulation-reversal";
 import { DEFAULT_HOST } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -816,6 +817,28 @@ describe("Anticoagulation Reversal, DOAC Coagulopathy & Hemostatic Kinetics Engi
       assert.equal(report.onDesk.hasDoac, false);
       assert.equal(report.onDesk.anticoagulants.length, 0);
       assert.ok(report.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
+    });
+
+    it("verifies anticoagulant taxonomic ID sets, profile map, and DRUG_BY_ID catalog integrity", () => {
+      const union = new Set([
+        ...DIRECT_FXA_IDS,
+        ...DIRECT_THROMBIN_IDS,
+        ...VKA_IDS,
+        ...HEPARINOID_IDS,
+      ]);
+      assert.deepEqual([...union].sort(), [...ALL_ANTICOAGULANT_IDS].sort());
+      for (const id of DTI_IDS) {
+        assert.ok(DIRECT_THROMBIN_IDS.has(id), `DTI ${id} must belong to DIRECT_THROMBIN_IDS`);
+      }
+      assert.deepEqual(
+        Object.keys(ANTICOAGULANT_PROFILES).sort(),
+        [...ALL_ANTICOAGULANT_IDS].sort(),
+      );
+
+      const integrity = validateAnticoagulationCatalogIntegrity();
+      assert.equal(integrity.valid, true);
+      assert.deepEqual(integrity.missingDrugIds, []);
+      assert.equal(integrity.totalUniqueDrugIds, ALL_ANTICOAGULANT_IDS.size);
     });
   });
 });

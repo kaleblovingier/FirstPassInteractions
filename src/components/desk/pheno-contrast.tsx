@@ -111,7 +111,7 @@ export function PhenoContrastBoard({
   host: HostContext;
   emptyHint?: string;
 }) {
-  const contrasts = useMemo(() => phenoContrastsOnDesk(ids, host), [ids.join("|"), host]);
+  const contrasts = useMemo(() => phenoContrastsOnDesk(ids, host), [ids, host]);
 
   if (!contrasts.length) {
     return (

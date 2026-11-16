@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ClinicalPacketDialog } from "@/components/desk/clinical-packet-dialog";
 import { buildClinicalPacket, DOSE_PER_PI, withoutDose } from "./clinical-packet";
-import { DOSE_PATTERN } from "../guards/dose-rule";
+import { DOSE_PATTERN, findDoses } from "../guards/dose-rule";
 import { analyze } from "./engine";
 import { DEFAULT_HOST } from "./types";
 import { EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "./brief";
@@ -584,4 +584,137 @@ test("buildClinicalPacket: renders Round 6 & Round 7 high-alert pairs into label
   );
   assert.ok(multiWarfarinPacket.counselingPoints.some((cp) => /within days/i.test(cp)));
   assert.ok(multiWarfarinPacket.counselingPoints.some((cp) => /months even after amiodarone is stopped/i.test(cp)));
+});
+
+test("buildClinicalPacket: renders Round 8 ward collisions and capecitabine-warfarin into labeledCollisions, ehrNoteText, counselingPoints, and patientHandoutText with zero dose leaks or banned claims", () => {
+  const cases: {
+    ids: string[];
+    expectedId: string;
+    expectedSeverity: "contraindicated" | "major";
+    counselingPattern: RegExp;
+  }[] = [
+    {
+      ids: ["methylene-blue", "sertraline"],
+      expectedId: "methylene-blue-sero",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /methylene blue.*serotonergic antidepressants.*serotonin toxicity/i,
+    },
+    {
+      ids: ["ceftriaxone", "calcium-gluconate"],
+      expectedId: "ceftriaxone-calcium",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /crystals in the lungs or kidneys.*separate IV lines.*shortness of breath, chest pain, or changes in urination/i,
+    },
+    {
+      ids: ["ketorolac", "apixaban"],
+      expectedId: "ketorolac-anticoagulant",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /ketorolac.*blood thinners.*spinal bleeding.*black tarry stools.*severe back pain.*leg numbness or weakness/i,
+    },
+    {
+      ids: ["daptomycin", "atorvastatin"],
+      expectedId: "daptomycin-statin",
+      expectedSeverity: "major",
+      counselingPattern: /daptomycin.*statin.*muscle injury.*temporarily paused.*cola-colored urine/i,
+    },
+    {
+      ids: ["gentamicin", "furosemide"],
+      expectedId: "aminoglycoside-loop",
+      expectedSeverity: "major",
+      counselingPattern: /aminoglycoside.*loop water pill.*inner-ear damage and kidney injury.*ringing or roaring in your ears.*decreased urination/i,
+    },
+    {
+      ids: ["capecitabine", "warfarin"],
+      expectedId: "capecitabine-warfarin",
+      expectedSeverity: "major",
+      counselingPattern: /capecitabine or fluorouracil.*chemotherapy cycles.*INR blood checks.*never change or stop your warfarin on your own.*pink or red urine/i,
+    },
+  ];
+
+  for (const { ids, expectedId, expectedSeverity, counselingPattern } of cases) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId} for ${ids.join("+")}`);
+    assert.equal(alert.kind, "ward", expectedId);
+    assert.equal(alert.severity, expectedSeverity, expectedId);
+    assert.equal(alert.tone, "danger", expectedId);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), expectedId);
+    assert.ok(packet.ehrNoteText.includes(withoutDose(alert.title)), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Official PI Source: ${withoutDose(alert.source)}`), expectedId);
+
+    assert.ok(
+      !packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")),
+      `${expectedId} fell back to generic counseling instead of dedicated entry`,
+    );
+    assert.ok(
+      packet.counselingPoints.some((cp) => counselingPattern.test(cp)),
+      `${expectedId} missing expected dedicated counseling point`,
+    );
+    assert.match(packet.patientHandoutText, counselingPattern, `${expectedId} missing counseling in patientHandoutText`);
+
+    for (const cp of packet.counselingPoints) {
+      assert.deepEqual(findDoses(cp), [], `${expectedId} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${expectedId} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], `${expectedId} ehrNoteText leaked dose`);
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], `${expectedId} patientHandoutText leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${expectedId} ehrNoteText leaked claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
+
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+    );
+    assert.ok(html.includes("High-Alert Labeled &amp; Institutional Safety Collisions"), expectedId);
+    assert.deepEqual(findDoses(html.replace(/<[^>]+>/g, "\n")), [], `${expectedId} dialog leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(html), false, `${expectedId} dialog leaked claim`);
+  }
+
+  // Deduplication: methylene-blue + linezolid + sertraline surfaces all 3 labeled collisions in EHR note
+  // while emitting a single MAOI/serotonergic counseling bullet via shared topic "maoi-serotonergic"
+  const multiMbIds = ["methylene-blue", "linezolid", "sertraline"];
+  const multiMbPacket = buildClinicalPacket(
+    multiMbIds,
+    DEFAULT_HOST,
+    analyze(multiMbIds, DEFAULT_HOST).findings,
+    {},
+  );
+  const multiMbIdsFound = new Set((multiMbPacket.labeledCollisions ?? []).map((c) => c.id));
+  assert.ok(multiMbIdsFound.has("maoi-serotonergic"));
+  assert.ok(multiMbIdsFound.has("linezolid-sero"));
+  assert.ok(multiMbIdsFound.has("methylene-blue-sero"));
+  assert.ok(!multiMbPacket.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")));
+  assert.equal(
+    multiMbPacket.counselingPoints.filter((cp) => /serotonin buildup|serotonin toxicity/i.test(cp)).length,
+    1,
+  );
+  assert.deepEqual(findDoses(multiMbPacket.ehrNoteText), []);
+  assert.deepEqual(findDoses(multiMbPacket.patientHandoutText), []);
+  assert.equal(BANNED_REGULATORY_RE.test(multiMbPacket.ehrNoteText), false);
+  assert.equal(BANNED_REGULATORY_RE.test(multiMbPacket.patientHandoutText), false);
+
+  // Direct methylene-blue-sero entry without safety maoi-serotonergic (MAOI + MAOI pairing)
+  const mbMaoiIds = ["methylene-blue", "phenelzine"];
+  const mbMaoiPacket = buildClinicalPacket(
+    mbMaoiIds,
+    DEFAULT_HOST,
+    analyze(mbMaoiIds, DEFAULT_HOST).findings,
+    {},
+  );
+  assert.deepEqual(
+    (mbMaoiPacket.labeledCollisions ?? []).map((c) => c.id),
+    ["methylene-blue-sero"],
+  );
+  assert.ok(!mbMaoiPacket.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")));
+  assert.ok(
+    mbMaoiPacket.counselingPoints.some((cp) => /Methylene blue acts as a strong reversible MAOI.*serotonin toxicity/i.test(cp)),
+  );
+  assert.deepEqual(findDoses(mbMaoiPacket.ehrNoteText), []);
+  assert.deepEqual(findDoses(mbMaoiPacket.patientHandoutText), []);
+  assert.equal(BANNED_REGULATORY_RE.test(mbMaoiPacket.ehrNoteText), false);
+  assert.equal(BANNED_REGULATORY_RE.test(mbMaoiPacket.patientHandoutText), false);
 });

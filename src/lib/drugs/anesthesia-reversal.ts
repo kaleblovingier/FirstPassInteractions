@@ -1620,3 +1620,29 @@ export function getSedativeProfile(id: string): SedativeProfile | undefined {
 export function getAllSedativeProfiles(): SedativeProfile[] {
   return Object.values(SEDATIVE_PROFILES);
 }
+
+/**
+ * Validates that every catalog-mapped drug ID across NMBA, reversal, sedative,
+ * and NMBA potentiator registries exists in `DRUG_BY_ID`.
+ */
+export function validateAnesthesiaCatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const allIds = Array.from(
+    new Set([
+      ...Object.keys(NMBA_PROFILES),
+      ...ALL_NMBA_IDS,
+      ...Object.keys(REVERSAL_PROFILES),
+      ...Object.keys(SEDATIVE_PROFILES),
+      ...NMBA_POTENTIATOR_IDS,
+    ]),
+  );
+  const missingDrugIds = allIds.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: allIds.length,
+  };
+}

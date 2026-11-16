@@ -241,7 +241,7 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
   },
   "capecitabine-warfarin": {
     topic: "capecitabine-warfarin",
-    text: "Taking capecitabine or fluorouracil with warfarin can sharply increase blood-thinner activity and bleeding risk. Keep all scheduled INR blood checks, and seek medical care right away for unusual bruising, nosebleeds, or red or black stools.",
+    text: "Taking capecitabine or fluorouracil with warfarin can sharply raise warfarin blood-thinning activity and bleeding risk both during and after chemotherapy cycles. Keep all scheduled INR blood checks, never change or stop your warfarin on your own, and report unusual bruising, nosebleeds, dark or red stools, or pink or red urine immediately.",
   },
   "warfarin-cyp2c9": {
     topic: "warfarin-cyp2c9",
@@ -256,12 +256,32 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
     text: "Combining transplant medicines (such as tacrolimus, cyclosporine, or sirolimus) with strong enzyme-blocking antifungals, antibiotics, or antivirals can cause medicine levels to surge quickly. Do not start or stop either medicine without your transplant team's direction, keep all blood-level lab appointments, and report new tremors, severe headaches, vision changes, or decreased urination immediately.",
   },
   "linezolid-sero": {
-    topic: "serotonin-toxicity",
-    text: "Combining an MAOI medicine (including linezolid) with serotonergic antidepressants or pain medicines can trigger dangerous serotonin buildup. Never start or stop these together without specialist guidance and required waiting periods, and seek emergency care for high fever, confusion, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
+    topic: "maoi-serotonergic",
+    text: "Combining an MAOI medicine (including hospital antibiotics like linezolid or surgical/rescue dyes like methylene blue) with serotonergic antidepressants or pain medicines can trigger dangerous serotonin buildup (serotonin toxicity). Tell your hospital care team about all antidepressants and mood or pain medicines before starting therapy or procedures, never combine or stop these without specialist guidance and required waiting periods, and seek emergency care for agitation, high fever, confusion, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
   },
   "maoi-serotonergic": {
-    topic: "serotonin-toxicity",
-    text: "Combining an MAOI medicine (including linezolid) with serotonergic antidepressants or pain medicines can trigger dangerous serotonin buildup. Never start or stop these together without specialist guidance and required waiting periods, and seek emergency care for high fever, confusion, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
+    topic: "maoi-serotonergic",
+    text: "Combining an MAOI medicine (including hospital antibiotics like linezolid or surgical/rescue dyes like methylene blue) with serotonergic antidepressants or pain medicines can trigger dangerous serotonin buildup (serotonin toxicity). Tell your hospital care team about all antidepressants and mood or pain medicines before starting therapy or procedures, never combine or stop these without specialist guidance and required waiting periods, and seek emergency care for agitation, high fever, confusion, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
+  },
+  "methylene-blue-sero": {
+    topic: "maoi-serotonergic",
+    text: "Methylene blue acts as a strong reversible MAOI medicine; receiving it in the hospital alongside serotonergic antidepressants, certain pain medicines, or another MAOI can trigger life-threatening serotonin toxicity. Tell your hospital or surgical team about all antidepressants and mood or pain medicines before any procedure or infusion, never combine these without specialist guidance, and seek emergency care right away for agitation, confusion, high fever, heavy sweating, fast heartbeat, or muscle twitching or stiffness.",
+  },
+  "ceftriaxone-calcium": {
+    topic: "ceftriaxone-calcium",
+    text: "Intravenous (IV) ceftriaxone and IV calcium solutions can combine in the bloodstream to form dangerous crystals in the lungs or kidneys. Your inpatient care team must manage these carefully using separate IV lines or thoroughly flushed tubing between infusions, and never give them together in newborns. Tell your nurse or doctor immediately if you notice sudden shortness of breath, chest pain, or changes in urination.",
+  },
+  "ketorolac-anticoagulant": {
+    topic: "ketorolac-anticoagulant",
+    text: "Combining ketorolac with blood thinners sharply increases the risk of serious stomach, surgical-site, or spinal bleeding. Do not take ketorolac or over-the-counter (OTC) NSAID pain relievers (such as ibuprofen or naproxen) alongside a blood thinner without prescriber review, and seek emergency care immediately for black tarry stools, vomiting blood, severe back pain, or new leg numbness or weakness.",
+  },
+  "daptomycin-statin": {
+    topic: "daptomycin-statin",
+    text: "Combining the antibiotic daptomycin with a statin cholesterol medicine increases the risk of muscle injury and serious muscle breakdown. Ask your prescriber whether your statin should be temporarily paused during daptomycin treatment, keep any scheduled muscle-enzyme (CPK) blood checks, and report unexplained muscle pain, tenderness, weakness, or dark cola-colored urine promptly.",
+  },
+  "aminoglycoside-loop": {
+    topic: "aminoglycoside-loop",
+    text: "Combining an aminoglycoside antibiotic (such as gentamicin, tobramycin, or amikacin) with a loop water pill (such as furosemide or bumetanide) increases the risk of inner-ear damage and kidney injury. Keep scheduled kidney and drug-level checks, and report ringing or roaring in your ears, muffled hearing, dizziness or balance trouble, or decreased urination right away.",
   },
   "sofosbuvir-amio": {
     topic: "sofosbuvir-amio",

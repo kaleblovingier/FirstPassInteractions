@@ -171,5 +171,9 @@ test("evaluateQtDesk: end-to-end integration", () => {
   assert.ok(result.activeQtRows.some((r) => r.id === "sotalol"));
   assert.ok(result.loopDiureticsOnDesk.includes("furosemide"));
   assert.ok(result.pathophysiologySummary.includes("hERG / KCNH2"));
+  assert.ok(LOOP_DIURETIC_IDS.has("furosemide"));
+  assert.ok(LOOP_DIURETIC_IDS.has("torsemide"));
+  assert.ok(LOOP_DIURETIC_IDS.has("bumetanide"));
+  assert.ok(LOOP_DIURETIC_IDS.has("ethacrynic-acid"));
 });
 

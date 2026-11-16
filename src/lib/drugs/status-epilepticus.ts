@@ -477,7 +477,7 @@ export interface Phase2Evaluation {
 
 export function calculatePhase2Dosing(
   weightKg: number,
-  crclMlMin: number = 90,
+  _crclMlMin: number = 90,
 ): Phase2Evaluation {
   const safeWeight = Math.max(10, Math.min(200, weightKg || 70));
 

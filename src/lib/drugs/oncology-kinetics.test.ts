@@ -453,5 +453,16 @@ describe("Oncology Antimetabolite, Immunosuppressant & Rescue Pharmacology Engin
       assert.equal(comboRep.thiopurineReport.hasCollision, true);
       assert.equal(comboRep.cniReport.hasCollision, true);
     });
+
+    it("MTX_NOMOGRAM_CURVE defines monotonically decreasing concentration thresholds from 24h to 96h", () => {
+      assert.equal(MTX_NOMOGRAM_CURVE[0]?.hoursPostStart, 24);
+      assert.equal(MTX_NOMOGRAM_CURVE[MTX_NOMOGRAM_CURVE.length - 1]?.hoursPostStart, 96);
+      for (let i = 1; i < MTX_NOMOGRAM_CURVE.length; i++) {
+        assert.ok(MTX_NOMOGRAM_CURVE[i].hoursPostStart > MTX_NOMOGRAM_CURVE[i - 1].hoursPostStart);
+        assert.ok(MTX_NOMOGRAM_CURVE[i].targetMaxUmolL < MTX_NOMOGRAM_CURVE[i - 1].targetMaxUmolL);
+        assert.ok(MTX_NOMOGRAM_CURVE[i].delayedThresholdUmolL < MTX_NOMOGRAM_CURVE[i - 1].delayedThresholdUmolL);
+        assert.ok(MTX_NOMOGRAM_CURVE[i].criticalThresholdUmolL < MTX_NOMOGRAM_CURVE[i - 1].criticalThresholdUmolL);
+      }
+    });
   });
 });

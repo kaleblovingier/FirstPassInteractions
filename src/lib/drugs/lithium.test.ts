@@ -31,6 +31,13 @@ describe("lithium pharmacokinetics & EXTRIP guidance", () => {
     const geriOk = classifyLithiumLevel(0.5, "geriatric");
     assert.equal(geriOk.severity, "therapeutic");
     assert.equal(geriOk.inTargetRange, true);
+
+    assert.equal(LITHIUM_TARGET_RANGES["acute-mania"].min, 0.8);
+    assert.equal(LITHIUM_TARGET_RANGES["acute-mania"].max, 1.2);
+    assert.equal(LITHIUM_TARGET_RANGES.maintenance.min, 0.6);
+    assert.equal(LITHIUM_TARGET_RANGES.maintenance.max, 0.8);
+    assert.equal(LITHIUM_TARGET_RANGES.geriatric.min, 0.4);
+    assert.equal(LITHIUM_TARGET_RANGES.geriatric.max, 0.6);
   });
 
   it("classifies mild, moderate, and severe life-threatening toxicities", () => {

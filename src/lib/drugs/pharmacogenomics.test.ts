@@ -13,6 +13,7 @@ import {
   getTherapeuticAreas,
   getInteractionsByTherapeuticArea,
   detectPgxRisksOnTray,
+  validatePharmacogenomicsCatalogIntegrity,
 } from "./pharmacogenomics";
 
 describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
@@ -222,6 +223,17 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
   });
 
   describe("Catalog Validation", () => {
+    it("validatePharmacogenomicsCatalogIntegrity confirms every PGX drug ID exists in DRUG_BY_ID", () => {
+      const integrity = validatePharmacogenomicsCatalogIntegrity();
+      assert.equal(integrity.valid, true);
+      assert.deepEqual(integrity.missingDrugIds, []);
+      assert.ok(integrity.totalUniqueDrugIds >= 15);
+
+      const cyp2d6Ixs = getInteractionsForGene("CYP2D6");
+      assert.ok(cyp2d6Ixs.some((ix) => ix.drugId === "codeine"));
+      assert.ok(cyp2d6Ixs.some((ix) => ix.drugId === "tamoxifen"));
+    });
+
     it("ensures EVERY drug ID referenced in all PGX interactions exists in DRUG_BY_ID", () => {
       const allInteractions = getAllPgxInteractions();
       assert.ok(allInteractions.length >= 15, "Must contain all major interactions");

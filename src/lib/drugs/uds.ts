@@ -409,7 +409,6 @@ function finding(
   mechanism: string,
   clinical: string,
 ): Finding {
-  const drug = DRUG_BY_ID[id];
   return {
     id: `${id}__clinic-${suffix}`,
     severity,

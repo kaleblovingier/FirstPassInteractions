@@ -246,7 +246,7 @@ describe("Vasoactive Hemodynamics & Shock Classification Engine", () => {
     });
 
     it("generates clean baseline report for non-vasoactive drugs", () => {
-      const report = vasoactiveReportOnDesk(["metformin", "atorvastatin"]);
+      const report = vasoactiveReportOnDesk(["metformin", "atorvastatin"], DEFAULT_HOST);
       assert.equal(report.detection.hasVasoactive, false);
       assert.equal(report.activeAgents.length, 0);
       assert.equal(report.safetyAlerts.length, 0);

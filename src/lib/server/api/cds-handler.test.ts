@@ -451,7 +451,7 @@ test("CDS security headers: present on 200, 400, 404, 405, 413, 415, 422, and 50
 });
 
 test("handleCdsRequest: 405 Method Not Allowed emits exact route Allow headers", async () => {
-  const getOnlyRoutes = ["/api/cds/health", "/api/cds/search"];
+  const getOnlyRoutes = ["/api/cds/health", "/api/cds/search", "/api/cds/autocomplete"];
   for (const path of getOnlyRoutes) {
     for (const method of ["POST", "PUT", "DELETE", "OPTIONS"]) {
       const res = await handleCdsRequest(new Request(`http://localhost${path}`, { method }));
@@ -464,7 +464,7 @@ test("handleCdsRequest: 405 Method Not Allowed emits exact route Allow headers",
     }
   }
 
-  const postOnlyRoutes = ["/api/cds/check", "/api/cds/kinetics"];
+  const postOnlyRoutes = ["/api/cds/check", "/api/cds/kinetics", "/api/cds/analyze"];
   for (const path of postOnlyRoutes) {
     for (const method of ["GET", "PUT", "DELETE", "OPTIONS"]) {
       const res = await handleCdsRequest(new Request(`http://localhost${path}`, { method }));
@@ -486,7 +486,7 @@ test("handleCdsRequest: enforces 415 Unsupported Media Type while permitting JSO
     "application/xml",
   ];
   for (const contentType of rejectedTypes) {
-    for (const path of ["/api/cds/check", "/api/cds/kinetics"]) {
+    for (const path of ["/api/cds/check", "/api/cds/kinetics", "/api/cds/analyze"]) {
       const res = await handleCdsRequest(
         new Request(`http://localhost${path}`, {
           method: "POST",
@@ -772,4 +772,94 @@ test("GET /api/cds/autocomplete: a street name carries resolvedFrom", async () =
   assert.ok(mdma, "Molly should suggest MDMA (needs STREET_NAMES)");
   assert.equal(mdma.matchedBy, "street-name");
   assert.equal(mdma.resolvedFrom?.toLowerCase(), "molly");
+});
+
+test("handleCdsRequest: /api/cds/autocomplete and /api/cds/analyze enforce 200, 400 TOO_MANY_ITEMS, 405, 413, 415, and CDS_SECURITY_HEADERS", async () => {
+  ClinicalDecisionService.clearCaches();
+  resetApiMeters();
+
+  // Happy-path 200 OK checks with CDS_SECURITY_HEADERS
+  const okAutocomplete = await handleCdsRequest(
+    new Request("http://localhost/api/cds/autocomplete?q=warfarin&limit=5"),
+  );
+  assert.equal(okAutocomplete.status, 200);
+  assert.ok(okAutocomplete.headers.get("content-type")?.includes("application/json"));
+  assertSecurityHeaders(okAutocomplete, "200 /api/cds/autocomplete");
+  const autoJson = (await okAutocomplete.json()) as { data: Array<{ id: string }> };
+  assert.ok(autoJson.data.some((row) => row.id === "warfarin"));
+
+  const okAnalyze = await analyzeCall({ substances: ["warfarin", "fluconazole"] });
+  assert.equal(okAnalyze.status, 200);
+  assert.ok(okAnalyze.headers.get("content-type")?.includes("application/json"));
+  assertSecurityHeaders(okAnalyze, "200 /api/cds/analyze");
+  const analyzeJson = (await okAnalyze.json()) as AnalyzeBody;
+  assert.equal(analyzeJson.data.substances.length, 2);
+
+  // 405 Method Not Allowed with exact Allow headers + CDS_SECURITY_HEADERS
+  const postAutocomplete = await handleCdsRequest(
+    jsonRequest("http://localhost/api/cds/autocomplete", "POST", { q: "warfarin" }),
+  );
+  assert.equal(postAutocomplete.status, 405);
+  assert.equal(postAutocomplete.headers.get("allow"), "GET");
+  assertSecurityHeaders(postAutocomplete, "405 POST /api/cds/autocomplete");
+
+  const getAnalyze = await handleCdsRequest(new Request("http://localhost/api/cds/analyze"));
+  assert.equal(getAnalyze.status, 405);
+  assert.equal(getAnalyze.headers.get("allow"), "POST");
+  assertSecurityHeaders(getAnalyze, "405 GET /api/cds/analyze");
+
+  // 415 Unsupported Media Type on POST /api/cds/analyze with text/plain
+  const unsupportedAnalyze = await handleCdsRequest(
+    new Request("http://localhost/api/cds/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ substances: ["warfarin", "fluconazole"] }),
+    }),
+  );
+  assert.equal(unsupportedAnalyze.status, 415);
+  assert.ok(unsupportedAnalyze.headers.get("content-type")?.includes("application/problem+json"));
+  assertSecurityHeaders(unsupportedAnalyze, "415 POST /api/cds/analyze");
+
+  // 413 Payload Too Large on POST /api/cds/analyze with declared Content-Length > MAX_CDS_BODY_BYTES
+  let analyzeStreamCanceled = false;
+  const oversizedAnalyzeStream = new ReadableStream<Uint8Array>({
+    pull() {},
+    cancel() {
+      analyzeStreamCanceled = true;
+    },
+  });
+  const tooLargeAnalyze = await handleCdsRequest(
+    syntheticPostRequest(
+      "http://localhost/api/cds/analyze",
+      {
+        "Content-Type": "application/json",
+        "Content-Length": String(MAX_CDS_BODY_BYTES + 1),
+      },
+      oversizedAnalyzeStream,
+    ),
+  );
+  assert.equal(tooLargeAnalyze.status, 413);
+  assert.equal(analyzeStreamCanceled, true);
+  assertSecurityHeaders(tooLargeAnalyze, "413 POST /api/cds/analyze");
+  const problem413 = (await tooLargeAnalyze.json()) as ProblemDetails;
+  assert.equal(problem413.status, 413);
+  assert.equal(problem413.type, "https://firstpass.app/errors/payload-too-large");
+  assert.equal(problem413.instance, "/api/cds/analyze");
+
+  // 400 Bad Request (TOO_MANY_ITEMS) on POST /api/cds/analyze exceeding the 1,000-node budget
+  const started = Date.now();
+  const tooManyAnalyze = await handleCdsRequest(
+    jsonRequest(
+      "http://localhost/api/cds/analyze",
+      "POST",
+      `{"substances":[${"1,".repeat(1_999_999)}1]}`,
+    ),
+  );
+  assert.equal(tooManyAnalyze.status, 400);
+  assertSecurityHeaders(tooManyAnalyze, "400 TOO_MANY_ITEMS /api/cds/analyze");
+  const problem400 = (await tooManyAnalyze.json()) as ProblemDetails;
+  assert.equal(problem400.status, 400);
+  assert.equal(problem400.detail, TOO_MANY_ITEMS);
+  assert.equal(problem400.instance, "/api/cds/analyze");
+  assert.ok(Date.now() - started < 3_000, "/api/cds/analyze answered without walking every element");
 });

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertCircle, AlertTriangle, CheckCircle2, ShieldAlert, Sparkles, Stethoscope } from "lucide-react";
+import { ShieldAlert, Sparkles, Stethoscope } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -10,10 +10,7 @@ import {
   calculatePhenytoinClearance,
   calculatePredictedCss,
   calculateSheinerTozer,
-  estimateVmaxKmFromTwoPoints,
   evaluatePhenytoinLevel,
-  evaluatePhenytoinPgx,
-  findPhenytoinCollisions,
   phenytoinReportOnDesk,
   PHENYTOIN_CDS_DISCLAIMER,
   POPULATION_KM_MEAN_MG_L,
@@ -105,7 +102,7 @@ export function PhenytoinPanel({ ids, host }: { ids: string[]; host: HostContext
         weightKg: numWeight,
         dailyDoseMg: numCurrentDose,
       }),
-    [ids.join("|"), host, numTotal, numFree, numAlbumin, isEsrd, numWeight, numCurrentDose],
+    [ids, host, numTotal, numFree, numAlbumin, isEsrd, numWeight, numCurrentDose],
   );
 
   const fosphenytoinInfo = useMemo(() => calculateFosphenytoinEquivalent(numCurrentDose), [numCurrentDose]);

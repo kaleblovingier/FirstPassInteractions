@@ -317,3 +317,12 @@ test("phenytoinReportOnDesk synthesizes kinetics, host context, pregnancy, and F
   assert.match(report.disclaimer, /Non-Device Clinical Decision Support/);
   assert.match(report.disclaimer, /Prescribing Information/);
 });
+
+test("phenytoin-kinetics exports statutory regulatory disclaimer and population PK constants", () => {
+  assert.ok(PHENYTOIN_CDS_DISCLAIMER.includes("FD&C Act § 520(o)(1)(E)"));
+  assert.ok(PHENYTOIN_CDS_DISCLAIMER.includes("Non-Device Clinical Decision Support"));
+  assert.equal(POPULATION_KM_MEAN_MG_L, 4.0);
+  assert.equal(POPULATION_VMAX_MEAN_MG_KG_DAY, 7.0);
+  assert.deepEqual(THERAPEUTIC_FREE_RANGE_MG_L, { min: 1.0, max: 2.0 });
+  assert.deepEqual(THERAPEUTIC_TOTAL_RANGE_MG_L, { min: 10.0, max: 20.0 });
+});

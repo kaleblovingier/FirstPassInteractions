@@ -534,7 +534,6 @@ export interface UrineAlkalinizationEvaluation {
 export function evaluateUrineAlkalinization({
   urinePh,
   hydrationRateLPerM2Day,
-  urineOutputMlPerHr,
 }: UrineAlkalinizationInput): UrineAlkalinizationEvaluation | null {
   if (!Number.isFinite(urinePh) || urinePh < 3.0 || urinePh > 9.0) {
     return null;

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, Info, ShieldAlert, Sparkles, Stethoscope } from "lucide-react";
+import { ShieldAlert, Sparkles, Stethoscope } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -12,16 +12,14 @@ import {
   evaluateMtxElimination,
   evaluateThiopurineXoCollision,
   evaluateUrineAlkalinization,
-  HDMTX_MILESTONES,
   mtxMgLToUmol,
   mtxUmolToMgL,
   oncologyReportOnDesk,
-  ONCOLOGY_CITATIONS,
   ONCOLOGY_KINETICS_REGULATORY_DISCLAIMER,
 } from "@/lib/drugs/oncology-kinetics";
 
 export function OncologyPanel({ ids, host }: { ids: string[]; host: HostContext }) {
-  const report = useMemo(() => oncologyReportOnDesk(ids, host), [ids.join("|"), host.kidney, host.age]);
+  const report = useMemo(() => oncologyReportOnDesk(ids, host), [ids, host]);
 
   // HDMTX Interactive State
   const [postInfusionHours, setPostInfusionHours] = useState<number>(48);
@@ -72,9 +70,9 @@ export function OncologyPanel({ ids, host }: { ids: string[]; host: HostContext 
     [numUrinePh, numHydration],
   );
 
-  const mtxCollisions = useMemo(() => detectMtxCollisions(ids), [ids.join("|")]);
-  const thiopurineEval = useMemo(() => evaluateThiopurineXoCollision(ids, host), [ids.join("|"), host.phenotypes]);
-  const cniEval = useMemo(() => evaluateCniTriazoleCollision(ids), [ids.join("|")]);
+  const mtxCollisions = useMemo(() => detectMtxCollisions(ids), [ids]);
+  const thiopurineEval = useMemo(() => evaluateThiopurineXoCollision(ids, host), [ids, host]);
+  const cniEval = useMemo(() => evaluateCniTriazoleCollision(ids), [ids]);
 
   return (
     <div className="space-y-6 text-xs text-fg">

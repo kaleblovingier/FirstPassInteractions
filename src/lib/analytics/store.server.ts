@@ -57,9 +57,16 @@ function isDbConfigured(): boolean {
   return Boolean(url && url.trim());
 }
 
-/** Formats a timestamp as UTC YYYY-MM-DD. */
+/** Formats a timestamp as UTC YYYY-MM-DD, falling back to today on non-finite or out-of-range inputs. */
 export function utcDayString(epochMs: number): string {
-  return new Date(epochMs).toISOString().slice(0, 10);
+  if (typeof epochMs !== "number" || !Number.isFinite(epochMs)) {
+    return new Date().toISOString().slice(0, 10);
+  }
+  const date = new Date(epochMs);
+  if (Number.isNaN(date.getTime())) {
+    return new Date().toISOString().slice(0, 10);
+  }
+  return date.toISOString().slice(0, 10);
 }
 
 /** Computes visitor code for a given day salt, IP and user agent. */

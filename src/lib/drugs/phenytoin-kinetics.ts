@@ -873,7 +873,6 @@ export function phenytoinReportOnDesk(drugIds: string[], host: HostContext, para
   const albuminGDl = params?.albuminGDl ?? (isEsrdOrDialysis ? 3.0 : host.age === "geriatric" ? 3.5 : 4.0);
   const weightKg = params?.weightKg ?? 70.0;
   const dailyDoseMg = params?.dailyDoseMg ?? 300.0;
-  const targetCssMgL = params?.targetCssMgL ?? 15.0;
 
   // Pharmacogenomic baseline adjustments
   const pgx = evaluatePhenytoinPgx(host.phenotypes);

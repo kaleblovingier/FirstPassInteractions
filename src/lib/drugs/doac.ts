@@ -1125,7 +1125,6 @@ export function findAnticoagulantCollisions(ids: string[]): AnticoagulantCollisi
   const hasRivaroxaban = ids.includes("rivaroxaban");
   const hasDabigatran = ids.includes("dabigatran");
   const hasEdoxaban = ids.includes("edoxaban");
-  const hasWarfarin = ids.includes("warfarin");
   const hasAnyAnticoagulant = ids.some((id) => ALL_ANTICOAGULANT_IDS.has(id));
 
   if (!hasAnyAnticoagulant) return collisions;

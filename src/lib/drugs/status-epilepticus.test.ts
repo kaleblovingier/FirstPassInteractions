@@ -517,5 +517,20 @@ describe("Status Epilepticus (SE) Stepped Treatment, Receptor Kinetics & Osmothe
       assert.ok(report.phase2);
       assert.ok(report.phase3);
     });
+
+    it("exports phase-specific SE drug registries combined into ALL_SE_DRUG_IDS", () => {
+      assert.ok(PHASE_1_BENZO_IDS.includes("lorazepam"));
+      assert.ok(PHASE_2_ASM_IDS.includes("levetiracetam"));
+      assert.ok(PHASE_3_ANESTHETIC_IDS.includes("propofol"));
+      assert.ok(OSMOTHERAPY_IDS.includes("mannitol"));
+
+      const expectedUnion = new Set([
+        ...PHASE_1_BENZO_IDS,
+        ...PHASE_2_ASM_IDS,
+        ...PHASE_3_ANESTHETIC_IDS,
+        ...OSMOTHERAPY_IDS,
+      ]);
+      assert.deepEqual([...ALL_SE_DRUG_IDS].sort(), [...expectedUnion].sort());
+    });
   });
 });

@@ -2,26 +2,16 @@ import { useMemo, useState } from "react";
 import { oneOf } from "./narrow";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
   ArrowRight,
   Baby,
   Calculator,
   CheckCircle2,
   Clock,
-  Dna,
-  Droplets,
-  HeartPulse,
-  Info,
   Layers,
-  Pill,
   Scale,
   ShieldAlert,
   Sparkles,
-  Stethoscope,
-  Syringe,
-  Timer,
-  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,17 +21,9 @@ import type { HostContext } from "@/lib/drugs/types";
 import {
   NOT_CLEARED,
   PI_FOOTER,
-  PEDIATRIC_CDS_DISCLAIMER,
   RENAL_GFR_MATURATION_CURVE,
   COMMON_PEDIATRIC_DOSING_TEMPLATES,
   type PediatricContext,
-  computePediatricAgeSummary,
-  evaluateRenalOntogeny,
-  evaluateHepaticOntogeny,
-  evaluateKernicterusAndDisplacement,
-  evaluateHighAlertPediatricToxicities,
-  calculatePediatricBsa,
-  calculateBedsideSchwartzEgfr,
   calculatePediatricDoseClamp,
   pediatricOnDesk,
   pediatricReportOnDesk,
@@ -111,17 +93,17 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
     isPostTonsillectomy,
   ]);
 
-  const detection = useMemo(() => pediatricOnDesk(ids), [ids.join("|")]);
+  const detection = useMemo(() => pediatricOnDesk(ids), [ids]);
 
   // If no target drug in tray, evaluate full suite against prototypical neonatal/pediatric drugs
   const activeIds = useMemo(() => {
     if (detection.hasPediatricTargetDrug) return ids;
     return ["ceftriaxone", "bactrim", "codeine", "ciprofloxacin", "doxycycline", "lorazepam"];
-  }, [detection.hasPediatricTargetDrug, ids.join("|")]);
+  }, [detection.hasPediatricTargetDrug, ids]);
 
   const report = useMemo(
     () => pediatricReportOnDesk(activeIds, host, childContext),
-    [activeIds.join("|"), host, childContext],
+    [activeIds, host, childContext],
   );
 
   // Preset Handlers

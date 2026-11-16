@@ -23,6 +23,7 @@ import {
   evaluatePrisRisk,
   anesthesiaOnDesk,
   anesthesiaReportOnDesk,
+  validateAnesthesiaCatalogIntegrity,
 } from "./anesthesia-reversal";
 import { DEFAULT_HOST } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
@@ -429,6 +430,30 @@ describe("Comprehensive Anesthesia Reversal, NMBA Kinetics & ICU Sedation Engine
       assert.equal(report.onDesk.hasReversal, false);
       assert.equal(report.onDesk.hasSedative, false);
       assert.ok(report.disclaimer.includes(ANESTHESIA_CDS_DISCLAIMER));
+    });
+
+    it("verifies NMBA/reversal/sedative registries, accessors, and catalog integrity", () => {
+      assert.equal(ALL_NMBA_IDS.length, 6);
+      assert.deepEqual(
+        [...DEPOLARIZING_NMBA_IDS, ...AMINOSTEROID_NMBA_IDS, ...BENZYLISOQUINOLINIUM_NMBA_IDS].sort(),
+        [...ALL_NMBA_IDS].sort(),
+      );
+      assert.equal(getAllNmbaProfiles().length, ALL_NMBA_IDS.length);
+      for (const id of ALL_NMBA_IDS) {
+        assert.ok(NMBA_PROFILES[id], `Missing NMBA profile for ${id}`);
+      }
+
+      assert.equal(getAllReversalProfiles().length, Object.keys(REVERSAL_PROFILES).length);
+      assert.equal(getReversalProfile("sugammadex")?.id, "sugammadex");
+      assert.equal(getReversalProfile("neostigmine")?.id, "neostigmine");
+
+      assert.equal(getAllSedativeProfiles().length, Object.keys(SEDATIVE_PROFILES).length);
+      assert.ok(SEDATIVE_PROFILES.propofol);
+
+      const integrity = validateAnesthesiaCatalogIntegrity();
+      assert.equal(integrity.valid, true);
+      assert.deepEqual(integrity.missingDrugIds, []);
+      assert.ok(integrity.totalUniqueDrugIds >= 20);
     });
   });
 });

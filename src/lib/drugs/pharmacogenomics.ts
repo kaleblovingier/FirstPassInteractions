@@ -2164,3 +2164,26 @@ export function detectPgxRisksOnTray(drugIds: string[]): DetectedPgxRisk[] {
 
   return detected.sort((a, b) => severityRank[a.severity] - severityRank[b.severity]);
 }
+
+/**
+ * Validates that every drug ID referenced across `PGX_INTERACTIONS` and
+ * `PHARMACOGENES[*].primaryDrugs` exists in `DRUG_BY_ID`.
+ */
+export function validatePharmacogenomicsCatalogIntegrity(): {
+  valid: boolean;
+  missingDrugIds: string[];
+  totalUniqueDrugIds: number;
+} {
+  const allIds = Array.from(
+    new Set([
+      ...PGX_INTERACTIONS.map((ix) => ix.drugId),
+      ...PHARMACOGENES.flatMap((gene) => gene.primaryDrugs),
+    ]),
+  );
+  const missingDrugIds = allIds.filter((id) => !DRUG_BY_ID[id]);
+  return {
+    valid: missingDrugIds.length === 0,
+    missingDrugIds,
+    totalUniqueDrugIds: allIds.length,
+  };
+}

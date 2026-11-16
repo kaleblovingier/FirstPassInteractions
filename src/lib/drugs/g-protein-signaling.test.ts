@@ -8,7 +8,6 @@ import {
   getGProteinPathwayById,
   findGProteinForReceptor,
   getAllGProteinPathways,
-  type GProteinPathway,
 } from "./g-protein-signaling";
 
 describe("G-Protein Signaling Switchboard Database", () => {

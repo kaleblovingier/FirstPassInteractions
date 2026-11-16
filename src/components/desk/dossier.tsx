@@ -53,7 +53,7 @@ type LivePack = {
 };
 
 export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
-  const present = ids.filter((id) => DRUG_BY_ID[id]);
+  const present = useMemo(() => ids.filter((id) => DRUG_BY_ID[id]), [ids]);
   const [drugId, setDrugId] = useState(present[0] ?? "");
   const id = present.includes(drugId) ? drugId : (present[0] ?? "");
   const drug = DRUG_BY_ID[id];
@@ -62,7 +62,7 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
   const stahl = id ? stahlFor(id) : null;
   const liver = id ? livertoxFor(id) : undefined;
   const lact = id ? lactFor(id) : undefined;
-  const curated = useMemo(() => citesFor(present), [present.join("|")]);
+  const curated = useMemo(() => citesFor(present), [present]);
   const [tab, setTab] = useState<Tab>("stahl");
 
   const tabs = useMemo(() => {

@@ -66,6 +66,61 @@ export const AZOLES = new Set([
   "ketoconazole",
 ]);
 
+export const IV_CALCIUM = new Set([
+  "calcium-gluconate",
+  "calcium-gluconate-iv",
+  "calcium-chloride",
+]);
+
+export const STATINS = new Set([
+  "simvastatin",
+  "atorvastatin",
+  "rosuvastatin",
+  "lovastatin",
+  "pravastatin",
+  "fluvastatin",
+  "pitavastatin",
+  "atorvastatin-amlodipine",
+  "simvastatin-ezetimibe",
+  "rosuvastatin-ezetimibe",
+]);
+
+export const WARD_ANTICOAGULANTS = new Set(
+  [
+    "heparin",
+    "enoxaparin",
+    "dalteparin",
+    "tinzaparin",
+    "fondaparinux",
+    "warfarin",
+    "apixaban",
+    "rivaroxaban",
+    "dabigatran",
+    "edoxaban",
+    "argatroban",
+    "bivalirudin",
+  ].filter((id) => Boolean(DRUG_BY_ID[id])),
+);
+
+export const AMINOGLYCOSIDES = new Set([
+  "gentamicin",
+  "tobramycin",
+  "amikacin",
+  "plazomicin",
+  "streptomycin",
+]);
+
+export const LOOP_DIURETICS = new Set([
+  "furosemide",
+  "bumetanide",
+  "torsemide",
+  "ethacrynic-acid",
+]);
+
+const CEFTRIAXONE = new Set(["ceftriaxone"]);
+const KETOROLAC = new Set(["ketorolac"]);
+const DAPTOMYCIN = new Set(["daptomycin"]);
+
 export type WardKind =
   | "carbapenem-vpa"
   | "vanco-zosyn"
@@ -75,7 +130,12 @@ export type WardKind =
   | "letermovir-tacro"
   | "cni-azole"
   | "linezolid-sero"
-  | "glp-insulin";
+  | "glp-insulin"
+  | "methylene-blue-sero"
+  | "ceftriaxone-calcium"
+  | "ketorolac-anticoagulant"
+  | "daptomycin-statin"
+  | "aminoglycoside-loop";
 
 export interface WardHit {
   id: WardKind;
@@ -152,6 +212,39 @@ export function isCniAzole(a: string, b: string) {
 
 export function isInsulinId(id: string) {
   return id === "insulin-glargine" || id.startsWith("insulin-");
+}
+
+function hasSerotonergicOrMaoiPd(id: string) {
+  const d = DRUG_BY_ID[id];
+  return Boolean(
+    d && (d.pd.includes("serotonergic") || d.pd.includes("ssri-snri") || d.pd.includes("maoi")),
+  );
+}
+
+function isSymmetricPair(a: string, b: string, left: Set<string>, right: Set<string>) {
+  return (left.has(a) && right.has(b)) || (left.has(b) && right.has(a));
+}
+
+export function isMethyleneBlueSero(a: string, b: string) {
+  if (a === "methylene-blue" && b !== "methylene-blue") return hasSerotonergicOrMaoiPd(b);
+  if (b === "methylene-blue" && a !== "methylene-blue") return hasSerotonergicOrMaoiPd(a);
+  return false;
+}
+
+export function isCeftriaxoneCalcium(a: string, b: string) {
+  return isSymmetricPair(a, b, CEFTRIAXONE, IV_CALCIUM);
+}
+
+export function isKetorolacAnticoagulant(a: string, b: string) {
+  return isSymmetricPair(a, b, KETOROLAC, WARD_ANTICOAGULANTS);
+}
+
+export function isDaptomycinStatin(a: string, b: string) {
+  return isSymmetricPair(a, b, DAPTOMYCIN, STATINS);
+}
+
+export function isAminoglycosideLoop(a: string, b: string) {
+  return isSymmetricPair(a, b, AMINOGLYCOSIDES, LOOP_DIURETICS);
 }
 
 export function wardsOnDesk(ids: string[]): WardHit[] {
@@ -277,10 +370,7 @@ export function wardsOnDesk(ids: string[]): WardHit[] {
   }
   const set = new Set(ids);
   const linezolidOn = set.has("linezolid");
-  const sero = ids.filter((id) => {
-    const d = DRUG_BY_ID[id];
-    return d && (d.pd.includes("serotonergic") || d.pd.includes("ssri-snri") || d.pd.includes("maoi")) && id !== "linezolid";
-  });
+  const sero = ids.filter((id) => hasSerotonergicOrMaoiPd(id) && id !== "linezolid");
   if (linezolidOn && sero.length) {
     out.push(
       hit(
@@ -312,6 +402,92 @@ export function wardsOnDesk(ids: string[]): WardHit[] {
         "GLP-1 agonists rarely cause hypoglycemia alone. Next to insulin they do. Recheck home glucose. Metformin on this desk should stay quieter. Not a CYP row.",
         "Glucose. This desk does not cut the insulin.",
         "Semaglutide / tirzepatide / insulin labels.",
+      ),
+    );
+  }
+  const mbOn = set.has("methylene-blue");
+  const mbSero = ids.filter((id) => isMethyleneBlueSero("methylene-blue", id));
+  if (mbOn && mbSero.length) {
+    out.push(
+      hit(
+        "methylene-blue-sero",
+        "methylene-blue",
+        mbSero[0],
+        names("methylene-blue", mbSero[0]),
+        "contraindicated",
+        "danger",
+        "methylene blue MAO-A inhibition × serotonergic",
+        "Methylene blue is a potent reversible inhibitor of monoamine oxidase A (MAO-A). Co-administration with SSRIs, SNRIs, TCAs, or other serotonergic agents — including in perioperative dye or vasoplegia settings — can precipitate life-threatening serotonin toxicity. Avoid methylene blue in patients taking serotonergic medications unless urgent rescue outweighs risk and alternative options are unavailable.",
+        "Hunter serotonin toxicity screen (clonus, agitation, diaphoresis, tremor, hyperreflexia, hyperthermia). This desk does not time antidepressant washout or select vasoplegia alternatives.",
+        "Provayblue (methylene blue) Prescribing Information Boxed Warning; FDA Drug Safety Communication (2011). Ramsay 2007 (PMID 17721552).",
+      ),
+    );
+  }
+  const cc = pair(ids, CEFTRIAXONE, IV_CALCIUM);
+  if (cc) {
+    out.push(
+      hit(
+        "ceftriaxone-calcium",
+        cc[0],
+        cc[1],
+        names(cc[0], cc[1]),
+        "contraindicated",
+        "danger",
+        "ceftriaxone × IV calcium — insoluble salt precipitation",
+        "Ceftriaxone forms insoluble ceftriaxone-calcium crystalline precipitates in pulmonary and renal microvasculature. In neonates (28 days or younger), concomitant or sequential IV calcium-containing solutions carry fatal cardiopulmonary precipitation risk and are strictly contraindicated. Beyond the neonatal period, never mix or infuse ceftriaxone simultaneously with calcium-containing IV solutions via Y-site or shared line; flush lines thoroughly between infusions.",
+        "Verify patient age (neonatal contraindication), separate IV lines and flush schedules, respiratory distress, hypoxia, and renal output. Oral calcium chelates fluoroquinolones and tetracyclines in the gut — a different row. This desk does not schedule IV line flushes.",
+        "Rocephin (ceftriaxone) Prescribing Information Contraindications & Warnings and Precautions; FDA Drug Safety Information (2009). Bradley 2009 (PMID 19289450).",
+      ),
+    );
+  }
+  const ka = pair(ids, KETOROLAC, WARD_ANTICOAGULANTS);
+  if (ka) {
+    out.push(
+      hit(
+        "ketorolac-anticoagulant",
+        ka[0],
+        ka[1],
+        names(ka[0], ka[1]),
+        "contraindicated",
+        "danger",
+        "ketorolac × anticoagulant — synergistic platelet COX-1 blockade & hemorrhage",
+        "Ketorolac is a potent parenteral/oral NSAID with a labeled contraindication alongside prophylactic or therapeutic anticoagulants (including heparin, LMWH, warfarin, DOACs, and direct thrombin inhibitors). Synergistic platelet COX-1 inhibition combined with humoral anticoagulation markedly elevates severe gastrointestinal bleeding, surgical-site hemorrhage, and neuraxial/epidural hematoma risk.",
+        "Hemoglobin/hematocrit, overt or occult GI or operative-site bleeding, neuraxial/epidural hematoma signs (back pain, motor weakness, sensory loss), and renal function. This desk does not pick an alternative analgesic.",
+        "Toradol (ketorolac) Prescribing Information Boxed Warning & Section 4 Contraindications.",
+      ),
+    );
+  }
+  const ds = pair(ids, DAPTOMYCIN, STATINS);
+  if (ds) {
+    out.push(
+      hit(
+        "daptomycin-statin",
+        ds[0],
+        ds[1],
+        names(ds[0], ds[1]),
+        "major",
+        "danger",
+        "daptomycin × statin — additive skeletal muscle depolarization & myopathy",
+        "Daptomycin causes calcium-dependent skeletal muscle membrane depolarization, and stacking it with an HMG-CoA reductase inhibitor compounds myocyte injury, CPK elevation, and rhabdomyolysis risk. Prescribing information notes considering temporary suspension of HMG-CoA reductase inhibitors while receiving daptomycin.",
+        "Baseline and weekly CPK (more frequently in renal impairment or if statin continues), unexplained proximal muscle pain or weakness, dark urine, and serum creatinine. This desk does not hold the statin or pick a daptomycin regimen.",
+        "Cubicin (daptomycin) Prescribing Information Section 5.2 / 7.1. Dare 2019 (PMID 30596967).",
+      ),
+    );
+  }
+  const al = pair(ids, AMINOGLYCOSIDES, LOOP_DIURETICS);
+  if (al) {
+    out.push(
+      hit(
+        "aminoglycoside-loop",
+        al[0],
+        al[1],
+        names(al[0], al[1]),
+        "major",
+        "danger",
+        "aminoglycoside × loop diuretic — stria vascularis NKCC blockade / ototoxicity & AKI",
+        "Loop diuretics inhibit NKCC1/NKCC2 cotransporters in the stria vascularis, disrupting the endolymphatic potential and facilitating aminoglycoside entry into cochlear and vestibular hair cells while compounding renal tubular toxicity and volume depletion. Concomitant administration increases the risk of irreversible sensorineural hearing loss, vestibular dysfunction, and acute kidney injury.",
+        "Tinnitus, high-frequency hearing loss, vertigo or oscillopsia, aminoglycoside trough concentrations, serum creatinine, and volume status. Open the PI — this desk does not pick a diuretic or antimicrobial alternative.",
+        "Gentamicin / Tobramycin / Amikacin & Furosemide / Ethacrynic Acid Prescribing Information Warnings. Bates 2002 (PMID 11895059).",
       ),
     );
   }

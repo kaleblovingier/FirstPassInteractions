@@ -1,5 +1,5 @@
 import { STATS_RANGES, type StatsRange, type StatsResult } from "./contract";
-import { readBoundedBody } from "./collect.server";
+import { checkContentLength, readBoundedBody } from "./collect.server";
 import { getSiteStatsFromStore } from "./store.server";
 import { pinRefusal } from "../billing/license.server";
 import { clientKey } from "../server/rate-limit";
@@ -16,9 +16,31 @@ export const MAX_PIN_LENGTH = 128;
 function hasControlChar(value: string): boolean {
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i);
-    if (code < 0x20 || code === 0x7f) return true;
+    if (code < 0x20 || (code >= 0x7f && code <= 0x9f)) return true;
   }
   return false;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function isAllowedStatsContentType(header: string | null): boolean {
+  if (header === null || header.trim() === "") return true;
+  const mime = header.split(";")[0]?.trim().toLowerCase() ?? "";
+  if (mime === "application/json") return true;
+  return /^application\/[a-z0-9!#$&^_.+-]+\+json$/.test(mime);
+}
+
+function statsBodyErrorResponse(
+  reason: "too-large" | "invalid-content-length" | "read-error",
+): Response {
+  if (reason === "too-large") {
+    return statsJson({ ok: false, reason: "Request payload too large." }, 413);
+  }
+  return statsJson({ ok: false, reason: "Invalid request payload." }, 400);
 }
 
 function validatePinShape(raw: unknown): { ok: true; pin: string } | { ok: false; reason: string } {
@@ -67,7 +89,7 @@ export async function handleGetSiteStats(
   data: { pin: string; days: StatsRange },
   key = clientKey(),
 ): Promise<StatsResult> {
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
+  if (!isPlainObject(data)) {
     return { ok: false, reason: "Invalid request payload." };
   }
 
@@ -97,12 +119,25 @@ export async function handleStatsRequest(request: Request): Promise<Response> {
     });
   }
 
+  const lengthCheck = checkContentLength(request, MAX_STATS_BODY_BYTES);
+  if (lengthCheck !== "ok") {
+    void request.body?.cancel().catch(() => {});
+    return statsBodyErrorResponse(
+      lengthCheck === "too-large" ? "too-large" : "invalid-content-length",
+    );
+  }
+
+  if (!isAllowedStatsContentType(request.headers.get("content-type"))) {
+    void request.body?.cancel().catch(() => {});
+    return statsJson(
+      { ok: false, reason: "Unsupported Media Type. Expected application/json or application/*+json." },
+      415,
+    );
+  }
+
   const bodyResult = await readBoundedBody(request, MAX_STATS_BODY_BYTES);
   if (!bodyResult.ok) {
-    const status = bodyResult.reason === "too-large" ? 413 : 400;
-    const reason =
-      bodyResult.reason === "too-large" ? "Request payload too large." : "Invalid request payload.";
-    return statsJson({ ok: false, reason }, status);
+    return statsBodyErrorResponse(bodyResult.reason);
   }
 
   let body: unknown = null;
@@ -112,7 +147,7 @@ export async function handleStatsRequest(request: Request): Promise<Response> {
     return statsJson({ ok: false, reason: "Invalid JSON request payload." }, 400);
   }
 
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
+  if (!isPlainObject(body)) {
     return statsJson({ ok: false, reason: "Invalid request payload." }, 400);
   }
 

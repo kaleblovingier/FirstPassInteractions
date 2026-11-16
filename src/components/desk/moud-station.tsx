@@ -2,23 +2,13 @@ import { useMemo, useState } from "react";
 import { oneOf } from "./narrow";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
-  Clock,
-  Droplets,
-  Heart,
-  HeartPulse,
-  Info,
   Layers,
   Pill,
-  Scale,
   ShieldAlert,
-  Sparkles,
   Syringe,
   Timer,
-  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,13 +18,11 @@ import type { HostContext } from "@/lib/drugs/types";
 import {
   OPIOID_RECEPTOR_AFFINITIES,
   NOT_CLEARED,
-  PI_FOOTER,
   evaluatePrecipitatedWithdrawalRisk,
   BERNESE_PROTOCOL_SCHEDULE,
   calculateNaloxoneInfusion,
   getXylazineProtocol,
   moudOnDesk,
-  moudReportOnDesk,
 } from "@/lib/drugs/moud-kinetics";
 
 export interface MoudStationProps {
@@ -42,7 +30,7 @@ export interface MoudStationProps {
   host: HostContext;
 }
 
-export function MoudStation({ ids, host }: MoudStationProps) {
+export function MoudStation({ ids, host: _host }: MoudStationProps) {
   const [lastAgonist, setLastAgonist] = useState<"fentanyl" | "methadone" | "short-acting (oxycodone/heroin/morphine)">("fentanyl");
   const [hoursSinceLastUse, setHoursSinceLastUse] = useState<number>(12);
   const [cowsScore, setCowsScore] = useState<number>(8);
@@ -51,7 +39,7 @@ export function MoudStation({ ids, host }: MoudStationProps) {
   const [wakingNaloxoneBolus, setWakingNaloxoneBolus] = useState<number>(0.8);
   const [activeTab, setActiveTab] = useState<"withdrawal" | "bernese" | "affinity" | "naloxone" | "xylazine">("withdrawal");
 
-  const detection = useMemo(() => moudOnDesk(ids), [ids.join("|")]);
+  const detection = useMemo(() => moudOnDesk(ids), [ids]);
 
   const withdrawalResult = useMemo(
     () =>

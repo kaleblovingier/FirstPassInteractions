@@ -1497,7 +1497,6 @@ export function pregnancyReportOnDesk(
   host: HostContext,
   options?: PregnancyEvaluationOptions,
 ): PregnancyLactationReport {
-  const onDesk = pregnancyOnDesk(drugIds);
   const gaWeeks = options?.gestationalAgeWeeks;
   const isPregnant = host.preg === "pregnant";
   const isLactating = host.preg === "lactating";

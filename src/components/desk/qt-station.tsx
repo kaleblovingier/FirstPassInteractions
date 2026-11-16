@@ -7,8 +7,6 @@ import {
   ShieldAlert,
   Flame,
   CheckCircle2,
-  HelpCircle,
-  Stethoscope,
   Info,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +30,7 @@ interface QtStationProps {
 
 export function QtStation({ ids, host }: QtStationProps) {
   // Evaluation from active desk
-  const deskEval = useMemo(() => evaluateQtDesk(ids, host), [ids.join("|"), host.age, host.kidney]);
+  const deskEval = useMemo(() => evaluateQtDesk(ids, host), [ids, host]);
 
   // Calculator inputs
   const [qtInput, setQtInput] = useState("440");
@@ -41,7 +39,7 @@ export function QtStation({ ids, host }: QtStationProps) {
   const [baselineQtInput, setBaselineQtInput] = useState("");
 
   // Tisdale interactive state (initialized from auto-detected desk defaults)
-  const autoTisdale = useMemo(() => deriveTisdaleDefaults(ids, host), [ids.join("|"), host.age]);
+  const autoTisdale = useMemo(() => deriveTisdaleDefaults(ids, host), [ids, host]);
   const [tisdaleState, setTisdaleState] = useState<TisdaleInput>(autoTisdale);
 
   // Update tisdale state if desk changes

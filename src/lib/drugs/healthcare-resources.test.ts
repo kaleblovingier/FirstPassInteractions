@@ -561,8 +561,16 @@ describe("Healthcare Resources Directory & Patient Navigation Engine", () => {
     });
 
     it("filters resources correctly by new filter pills", () => {
+      assert.equal(RESOURCE_DOMAINS.length, 6);
+      assert.ok(FILTER_PILLS.length >= 10);
+      assert.equal(FILTER_PILLS[0]?.id, "all");
+      for (const domain of RESOURCE_DOMAINS) {
+        assert.ok(domain.label.length > 0);
+        assert.ok(domain.shortLabel.length > 0);
+      }
+
       // Oncology pill
-      const oncolRes = filterResources("", "oncology");
+      const oncolRes: HealthcareResource[] = filterResources("", "oncology");
       assert.ok(oncolRes.length > 0);
       assert.ok(oncolRes.some((r) => r.id === "lls-copay"));
       assert.ok(oncolRes.some((r) => r.id === "pan-foundation"));

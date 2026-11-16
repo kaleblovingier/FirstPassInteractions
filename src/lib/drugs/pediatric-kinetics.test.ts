@@ -410,5 +410,16 @@ describe("Pediatric & Neonatal Developmental Pharmacokinetics Engine", () => {
       assert.ok(report.allometricScaling.bsa.mostellerBsaM2 !== undefined);
       assert.ok(report.disclaimer.includes("FD&C Act § 520(o)(1)(E)"));
     });
+
+    it("RENAL_GFR_MATURATION_CURVE spans ascending gestational and postnatal GFR brackets", () => {
+      assert.equal(RENAL_GFR_MATURATION_CURVE.length, 7);
+      for (let i = 0; i < RENAL_GFR_MATURATION_CURVE.length; i++) {
+        const bracket = RENAL_GFR_MATURATION_CURVE[i];
+        assert.ok(bracket.minGfr < bracket.maxGfr);
+        if (i > 0) {
+          assert.ok(bracket.meanGfr > RENAL_GFR_MATURATION_CURVE[i - 1].meanGfr);
+        }
+      }
+    });
   });
 });

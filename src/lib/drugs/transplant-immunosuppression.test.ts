@@ -429,3 +429,10 @@ test("TRANSPLANT_DRUG_PROFILES: validates biochemical entries for all core quad-
     assert.ok(profile.clinicalPearls.length > 0);
   }
 });
+
+test("TRANSPLANT_CDS_REGULATORY_NOTICE & TRANSPLANT_LITERATURE_CITATIONS: enforce non-device CDS posture", () => {
+  assert.ok(TRANSPLANT_CDS_REGULATORY_NOTICE.includes("FD&C Act § 520(o)(1)(E)"));
+  assert.ok(TRANSPLANT_CDS_REGULATORY_NOTICE.includes("non-prescriptive"));
+  assert.ok(TRANSPLANT_LITERATURE_CITATIONS.length >= 8);
+  assert.ok(TRANSPLANT_LITERATURE_CITATIONS.some((c) => c.includes("KDIGO")));
+});

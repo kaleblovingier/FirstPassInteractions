@@ -1,38 +1,22 @@
 import { useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
-  Clock,
   Droplets,
-  Heart,
-  HeartPulse,
-  Info,
-  Layers,
-  Pill,
-  Scale,
   ShieldAlert,
-  Sparkles,
-  Syringe,
   Timer,
-  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import type { HostContext } from "@/lib/drugs/types";
 import {
   CNI_TARGET_GUIDELINES,
   NOT_CLEARED,
-  PI_FOOTER,
   evaluateMycophenolateEhc,
   evaluateSteroidTaperCniImpact,
   evaluateAzathioprineXanthineOxidase,
   transplantOnDesk,
-  transplantReportOnDesk,
 } from "@/lib/drugs/transplant-kinetics";
 
 export interface TransplantStationProps {
@@ -40,14 +24,14 @@ export interface TransplantStationProps {
   host: HostContext;
 }
 
-export function TransplantStation({ ids, host }: TransplantStationProps) {
+export function TransplantStation({ ids, host: _host }: TransplantStationProps) {
   const [activeTab, setActiveTab] = useState<"cni" | "ehc" | "steroids" | "thiopurine" | "mtor">("cni");
   const [selectedCni, setSelectedCni] = useState<"tacrolimus" | "cyclosporine">("tacrolimus");
   const [postTransplantEra, setPostTransplantEra] = useState<"early" | "maintenance">("early");
   const [broadSpectrumAntibiotics, setBroadSpectrumAntibiotics] = useState<boolean>(true);
   const [steroidTaperActive, setSteroidTaperActive] = useState<boolean>(true);
 
-  const detection = useMemo(() => transplantOnDesk(ids), [ids.join("|")]);
+  const detection = useMemo(() => transplantOnDesk(ids), [ids]);
 
   const ehcResult = useMemo(
     () =>
@@ -69,7 +53,7 @@ export function TransplantStation({ ids, host }: TransplantStationProps) {
 
   const thiopurineResult = useMemo(
     () => evaluateAzathioprineXanthineOxidase(detection.hasAzathioprine ? ids : ["azathioprine", "allopurinol"]),
-    [detection.hasAzathioprine, ids.join("|")],
+    [detection.hasAzathioprine, ids],
   );
 
   const currentCniGuide = CNI_TARGET_GUIDELINES[selectedCni];

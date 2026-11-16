@@ -8,10 +8,9 @@ import { Badge } from "@/components/ui/badge";
 type Row = { id: string; name: string; label: FdaLabel | null; reason?: string };
 
 export function PrescribingStrip({ ids }: { ids: string[] }) {
-  const key = ids.join("|");
   const drugs = useMemo(
     () => ids.map((id) => DRUG_BY_ID[id]).filter((d) => d && d.kind === "drug").slice(0, 3),
-    [key],
+    [ids],
   );
   const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
@@ -42,7 +41,7 @@ export function PrescribingStrip({ ids }: { ids: string[] }) {
     return () => {
       live = false;
     };
-  }, [key]);
+  }, [drugs]);
 
   if (drugs.length === 0) return null;
 

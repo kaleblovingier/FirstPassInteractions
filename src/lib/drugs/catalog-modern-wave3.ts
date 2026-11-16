@@ -11,7 +11,7 @@
  * Educational desk only. Not a dose. Not FDA-cleared. PI / FDA / DEA govern.
  */
 
-import type { Drug, Enzyme, EnzymeRole, ItemKind, PdFlag, Strength, SubstrateSensitivity } from "./types";
+import type { Drug, Enzyme, EnzymeRole, ItemKind, PdFlag, SubstrateSensitivity } from "./types";
 
 function sub(
   enzyme: Enzyme,
@@ -20,10 +20,6 @@ function sub(
   nti = false,
 ): EnzymeRole {
   return { enzyme, kind: "substrate", sensitivity, pathway, nti };
-}
-
-function inh(enzyme: Enzyme, strength: Strength): EnzymeRole {
-  return { enzyme, kind: "inhibitor", strength };
 }
 
 function d(

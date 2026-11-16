@@ -12,7 +12,6 @@ import {
   clinicalCards,
   deskCards,
   type StudyLane,
-  type ClinicalTopic,
 } from "./study";
 
 describe("study learning tools", () => {

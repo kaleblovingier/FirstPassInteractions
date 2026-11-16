@@ -454,3 +454,14 @@ test("antimicrobialReportOnDesk: compiles full PK/PD, ARC, and organ safety mast
   assert.ok(report.regulatoryNotice.includes("FD&C Act § 520(o)(1)(E)"));
   assert.ok(report.citations.length >= 5);
 });
+
+test("BETA_LACTAM_PROFILES: contains valid PK/PD thresholds and clinical pearls", () => {
+  const profiles = Object.values(BETA_LACTAM_PROFILES);
+  assert.ok(profiles.length >= 2);
+  assert.equal(BETA_LACTAM_PROFILES["meropenem"]?.freeFraction, 0.98);
+  assert.equal(BETA_LACTAM_PROFILES["piperacillin-tazobactam"]?.subclass, "penicillin");
+  for (const profile of profiles) {
+    assert.ok(profile.standardThresholdPct > 0);
+    assert.ok(profile.clinicalPearls.length > 0);
+  }
+});

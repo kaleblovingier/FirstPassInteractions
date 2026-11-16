@@ -16,7 +16,6 @@
  */
 
 import { notEntered } from "./assumed-inputs";
-import { DRUG_BY_ID } from "./catalog";
 import { type HostContext, DEFAULT_HOST } from "./types";
 import { NOT_CLEARED, PI_FOOTER } from "../regulatory";
 
@@ -1054,7 +1053,7 @@ export function antiarrhythmicOnDesk(drugIds: string[]): AntiarrhythmicDeskDetec
  */
 export function antiarrhythmicReportOnDesk(
   drugIds: string[],
-  host: HostContext = DEFAULT_HOST,
+  _host: HostContext = DEFAULT_HOST,
   options?: AntiarrhythmicReportOptions,
 ): AntiarrhythmicReport {
   const onDesk = antiarrhythmicOnDesk(drugIds);
@@ -1172,10 +1171,6 @@ export function antiarrhythmicReportOnDesk(
 
   // 3. CAST Trial Landmark Contraindications
   const castTrialAdvisories: AntiarrhythmicReport["castTrialAdvisories"] = [];
-  const hasStructuralDisease =
-    options?.hasStructuralOrIschemicHeartDisease ||
-    host.kidney === "ckd" || // common comorbidity marker in complex regimes
-    false;
 
   for (const id of onDesk.detectedCastContraindicatedIds) {
     const prof = ANTIARRHYTHMIC_PROFILES[id];

@@ -5,24 +5,16 @@ import {
   AlertOctagon,
   AlertTriangle,
   Baby,
-  CheckCircle2,
   ChevronRight,
-  Clock,
   Droplets,
-  Heart,
   HeartPulse,
   Info,
-  Layers,
   Pill,
   Scale,
   ShieldAlert,
   Sparkles,
-  Stethoscope,
-  Timer,
-  Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDraftNumber } from "@/lib/forms/draft-number";
 import { cn } from "@/lib/utils";
@@ -30,24 +22,14 @@ import type { HostContext } from "@/lib/drugs/types";
 import {
   OBSTETRIC_CDS_DISCLAIMER,
   CANONICAL_TERATOGENS,
-  CANONICAL_OBSTETRIC_CITATIONS,
   EMBRYOLOGICAL_PHASES,
   ZUSPAN_REGIMEN,
   PRITCHARD_REGIMEN,
-  calculateMaternalPkAdaptations,
   calculatePregnancyProteinBindingCorrection,
-  evaluateMagnesiumSulfate,
-  evaluateAcuteSevereHypertension,
-  evaluatePphUterotonicCascade,
-  evaluateTeratogenRisk,
-  getEmbryologicalPhase,
   mgDlToMeqL,
   mgDlToMmolL,
-  obstetricOnDesk,
   obstetricReportOnDesk,
   type AcuteAntihypertensiveAgentId,
-  type PphUterotonicStep,
-  type TeratogenCompoundId,
 } from "@/lib/drugs/obstetric-kinetics";
 
 export interface ObstetricStationProps {
@@ -70,7 +52,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
   const [serumCreatinineMgDl, setSerumCreatinineMgDl] = useState<number>(host.kidney === "ckd" ? 1.4 : 0.6);
   const [systolicBp, setSystolicBp] = useState<number>(165);
   const [diastolicBp, setDiastolicBp] = useState<number>(112);
-  const [maternalHeartRate, setMaternalHeartRate] = useState<number>(84);
+  const [maternalHeartRate] = useState<number>(84);
   const [hasMaternalAsthma, setHasMaternalAsthma] = useState<boolean>(false);
   const [hasMaternalHypertension, setHasMaternalHypertension] = useState<boolean>(true);
   const [activePph, setActivePph] = useState<boolean>(false);
@@ -102,7 +84,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
         hasActivePph: activePph,
       }),
     [
-      ids.join("|"),
+      ids,
       host,
       gestationalAgeWeeks,
       serumMagnesiumMgDl,

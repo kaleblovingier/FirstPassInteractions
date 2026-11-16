@@ -3,17 +3,10 @@ import { oneOf } from "./narrow";
 import {
   Activity,
   AlertCircle,
-  AlertTriangle,
-  ArrowRight,
   CheckCircle2,
-  Clock,
-  ExternalLink,
   Flame,
   HeartPulse,
-  Info,
   Layers,
-  Pill,
-  Scale,
   ShieldAlert,
   Sparkles,
   Zap,
@@ -27,8 +20,6 @@ import {
   ANESTHESIA_CDS_DISCLAIMER,
   NMBA_PROFILES,
   ALL_NMBA_IDS,
-  REVERSAL_PROFILES,
-  SEDATIVE_PROFILES,
   anesthesiaReportOnDesk,
   calculateSugammadexDose,
   calculateNeostigmineGlycopyrrolateDose,
@@ -37,7 +28,6 @@ import {
   evaluateSuccinylcholineHyperkalemiaRisk,
   evaluatePseudocholinesteraseDeficiency,
   type NMBAId,
-  type SedativeAgentId,
 } from "@/lib/drugs/anesthesia-reversal";
 
 export interface AnesthesiaStationProps {
@@ -62,7 +52,6 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
   // ICU Sedation / PRIS State
   const [propofolRateMcg, setPropofolRateMcg] = useState<number>(45);
   const [propofolHours, setPropofolHours] = useState<number>(36);
-  const [selectedSedative, setSelectedSedative] = useState<SedativeAgentId>("propofol");
 
   // Succinylcholine / Hyperkalemia State
   const [hasBurn, setHasBurn] = useState<boolean>(false);
@@ -93,7 +82,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
         bcheVariant: bcheVariant !== "normal" ? bcheVariant : undefined,
       }),
     [
-      ids.join("|"),
+      ids,
       host,
       patientWeightKg,
       selectedNmba,

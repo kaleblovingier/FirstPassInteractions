@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { LegalView } from "@/components/seo/legal-page";
-import { COOKIES_DOC, LEGAL_DOCS, PRIVACY_DOC, TERMS_DOC } from "@/lib/seo/legal";
+import { COOKIES_DOC, LEGAL_DOCS, LEGAL_EFFECTIVE, PRIVACY_DOC, TERMS_DOC } from "@/lib/seo/legal";
 import { PAIR_DISCLAIMER } from "@/lib/seo/pair-copy";
 import { sitemapXml } from "@/lib/seo/pair-pages";
 import { SITE_URL } from "@/lib/seo/pair-copy";
@@ -25,13 +25,14 @@ describe("legal pages", () => {
   });
 
   it("each page renders one h1, the disclaimer and the legal links", () => {
+    assert.equal(LEGAL_EFFECTIVE, "November 15, 2026");
     for (const d of LEGAL_DOCS) {
       const h = html(d);
       assert.equal(h.match(/<h1/g)?.length, 1);
       assert.ok(h.includes('data-testid="pair-disclaimer"'));
       assert.ok(h.includes(PAIR_DISCLAIMER.slice(0, 40).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;")) || h.includes("pair-disclaimer"));
       for (const href of ["/privacy", "/terms", "/cookies"]) assert.ok(h.includes(`href="${href}"`));
-      assert.ok(h.includes("Effective"));
+      assert.ok(h.includes(`Effective ${LEGAL_EFFECTIVE}`));
     }
   });
 
@@ -61,6 +62,31 @@ describe("legal pages", () => {
       assert.ok(!/decision support|\bCDS\b/i.test(t), `${d.path}: CDS`);
       assert.ok(!/\bdos(e|es|ing|age)\b|\b\d+\s?mg\b/i.test(t), `${d.path}: dose`);
       assert.ok(t.includes("Founding") || d === COOKIES_DOC);
+    }
+  });
+
+  it("privacy policy covers analyze live lookups, half-life overlap sketch, autocomplete typeahead, and HTTP caps", () => {
+    const p = text(PRIVACY_DOC);
+    const rendered = html(PRIVACY_DOC);
+    for (const needle of [
+      "analyze endpoint",
+      "ingestionTimeHoursAgo",
+      "half-life overlap sketch",
+      "live to true",
+      "OpenFDA label",
+      "NCBI PubMed",
+      "rate gate",
+      "TripSit",
+      "autocomplete endpoint",
+      "catalog and street-name typeahead suggestions",
+      "Cache-Control: no-store",
+      "X-Content-Type-Options: nosniff",
+      "10 MiB",
+      "1,000-node item budget",
+      "application/json Content-Type",
+    ]) {
+      assert.ok(p.includes(needle), `missing privacy text: ${needle}`);
+      assert.ok(rendered.includes(needle), `missing rendered privacy html: ${needle}`);
     }
   });
 });
