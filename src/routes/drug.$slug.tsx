@@ -3,6 +3,7 @@ import { ogMeta, ogImageUrl, hubOgJob, ogAlt } from "@/lib/seo/og";
 import { DrugHubView } from "@/components/seo/pair-page";
 import { breadcrumbMeta, HOME_CRUMB } from "@/lib/seo/breadcrumbs";
 import { drugHubBySlug, legacyDrugHubRedirect } from "@/lib/seo/drug-hubs";
+import { classLinkForDrug } from "@/lib/seo/class-hubs";
 import { SITE_URL } from "@/lib/seo/pair-copy";
 import { NotFoundView } from "@/components/not-found";
 
@@ -12,7 +13,8 @@ export const Route = createFileRoute("/drug/$slug")({
     if (moved) throw redirect({ to: "/drug/$slug", params: { slug: moved }, statusCode: 301 });
     const hub = drugHubBySlug(params.slug);
     if (!hub) throw notFound();
-    return hub;
+    const classLink = classLinkForDrug(hub.drugId);
+    return classLink ? { ...hub, classLink } : hub;
   },
   head: ({ loaderData }) =>
     loaderData
@@ -35,5 +37,6 @@ export const Route = createFileRoute("/drug/$slug")({
 });
 
 function DrugHubRoute() {
-  return <DrugHubView hub={Route.useLoaderData()} />;
+  const hub = Route.useLoaderData();
+  return <DrugHubView hub={hub} classLink={"classLink" in hub ? hub.classLink : undefined} />;
 }
