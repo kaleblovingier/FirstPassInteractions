@@ -67,9 +67,19 @@ export function audienceOgJob(a: ProgramAudience): OgImageJob {
   };
 }
 
+/** Share image for /for-programs/course-kit. */
+export const COURSE_KIT_OG_JOB: OgImageJob = {
+  path: ogImagePath("page", "for-programs-course-kit"),
+  kicker: "For programs",
+  heading: "Course kit",
+  sub: "An eight-week plan for teaching drug interactions",
+  severity: null,
+  gradeLabel: null,
+};
+
 /** Every share image the build must produce. Derived from data, so slug renames follow automatically. */
 export function ogImageJobs(): OgImageJob[] {
-  return [...pairPages().map(pairOgJob), ...drugHubs().map(hubOgJob), ...STATIC_OG_JOBS, ...PROGRAM_AUDIENCES.map(audienceOgJob)];
+  return [...pairPages().map(pairOgJob), ...drugHubs().map(hubOgJob), ...STATIC_OG_JOBS, ...PROGRAM_AUDIENCES.map(audienceOgJob), COURSE_KIT_OG_JOB];
 }
 
 /** Alt text for a share image: what the image says, in words. */
