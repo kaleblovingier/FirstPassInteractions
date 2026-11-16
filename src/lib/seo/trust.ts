@@ -102,7 +102,11 @@ export const PRIVACY: TrustSection = {
     },
     {
       lead: "Outside resources on every page.",
-      text: "Pages load fonts from Google Fonts and a \"Created with Grok\" badge script from grok.com, the platform FirstPass was built with. Those requests show your IP address and browser to Google and to grok.com. FirstPass does not control the grok.com script, and grok.com can set its own cookies. FirstPass's own code sets no cookies.",
+      text: "Pages load fonts from Google Fonts and a \"Created with Grok\" badge script from grok.com, the platform FirstPass was built with. Those requests show your IP address and browser to Google and to grok.com. FirstPass does not control the grok.com script, and grok.com can set its own cookies. FirstPass's own code sets no cookies, apart from the course-link cookie below, which is off by default.",
+    },
+    {
+      lead: "Course links (LTI 1.3): available, off by default.",
+      text: "A school can add FirstPass to Canvas courses with LTI 1.3 (core launch only, no grades or rosters). It is switched off unless the operator turns it on. When on, Canvas is asked for anonymous launches, the server checks the course site's signed launch token and opens a FirstPass page in a new tab. It does not read or log names, emails or user ids and writes nothing from a launch to disk or a database. During the launch it sets one strictly necessary cookie for at most 10 minutes. A launch grants no license; program keys still apply.",
     },
     {
       lead: "Do not enter patient information.",
@@ -146,6 +150,8 @@ export const PRIVACY: TrustSection = {
     "src/routes/__root.tsx",
     "scripts/grok-pwa-shared.mjs",
     "src/lib/server/log.ts",
+    "src/lib/lti/lti.server.ts",
+    "docs/ops/lti-canvas-setup.md",
   ],
 };
 
