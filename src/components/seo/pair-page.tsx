@@ -6,6 +6,7 @@ import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
 import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { LabelFreshnessLine } from "@/components/label-freshness";
+import { EmbedSnippetDisclosure } from "@/components/seo/pair-embed";
 
 /** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
 export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?: string }) {
@@ -103,6 +104,7 @@ export function PairPageView({ page }: { page: PairPage }) {
           ))}
         </p>
       ) : null}
+      <EmbedSnippetDisclosure page={page} />
       <PairDisclaimer />
     </main>
   );
