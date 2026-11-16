@@ -30,6 +30,7 @@ import { Route as ApiStatsRouteImport } from './routes/api/stats'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as ForProgramsAudienceRouteImport } from './routes/for-programs_.$audience'
+import { Route as ForProgramsCourseKitRouteImport } from './routes/for-programs_.course-kit'
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
@@ -141,6 +142,11 @@ const ForProgramsAudienceRoute = ForProgramsAudienceRouteImport.update({
   path: '/for-programs/$audience',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForProgramsCourseKitRoute = ForProgramsCourseKitRouteImport.update({
+  id: '/for-programs_/course-kit',
+  path: '/for-programs/course-kit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PairSlugRoute = PairSlugRouteImport.update({
   id: '/pair/$slug',
   path: '/pair/$slug',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
+  '/for-programs/course-kit': typeof ForProgramsCourseKitRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
+  '/for-programs/course-kit': typeof ForProgramsCourseKitRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs_/$audience': typeof ForProgramsAudienceRoute
+  '/for-programs_/course-kit': typeof ForProgramsCourseKitRoute
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
+    | '/for-programs/course-kit'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -304,6 +314,7 @@ export interface FileRouteTypes {
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
+    | '/for-programs/course-kit'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -332,6 +343,7 @@ export interface FileRouteTypes {
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs_/$audience'
+    | '/for-programs_/course-kit'
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
@@ -361,6 +373,7 @@ export interface RootRouteChildren {
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
   ForProgramsAudienceRoute: typeof ForProgramsAudienceRoute
+  ForProgramsCourseKitRoute: typeof ForProgramsCourseKitRoute
   PairSlugRoute: typeof PairSlugRoute
   ApiCdsSplatRoute: typeof ApiCdsSplatRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
@@ -517,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForProgramsAudienceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/for-programs_/course-kit': {
+      id: '/for-programs_/course-kit'
+      path: '/for-programs/course-kit'
+      fullPath: '/for-programs/course-kit'
+      preLoaderRoute: typeof ForProgramsCourseKitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pair/$slug': {
       id: '/pair/$slug'
       path: '/pair/$slug'
@@ -577,6 +597,7 @@ const rootRouteChildren: RootRouteChildren = {
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
   ForProgramsAudienceRoute: ForProgramsAudienceRoute,
+  ForProgramsCourseKitRoute: ForProgramsCourseKitRoute,
   PairSlugRoute: PairSlugRoute,
   ApiCdsSplatRoute: ApiCdsSplatRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
