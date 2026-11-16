@@ -26,7 +26,7 @@ import { pairPageBySlug, pairPages, sitemapXml } from "./pair-pages";
 const hubs = classHubs();
 const html = (h: (typeof hubs)[number]) => renderToStaticMarkup(createElement(ClassPageView, { hub: h }));
 const text = (h: string) =>
-  h.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ");
+  h.replace(/<[^>]+>/g, " ").replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/\s+/g, " ");
 const rendered = new Map(hubs.map((h) => [h.slug, html(h)]));
 const indexHtml = renderToStaticMarkup(createElement(ClassesIndexView, { classes: classIndex() }));
 
