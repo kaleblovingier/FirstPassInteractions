@@ -1,7 +1,8 @@
-import { useEffect, useId, useMemo, useRef, useState, type RefObject } from "react";
+import { useEffect, useId, useMemo, useReducer, useRef, useState, type MouseEvent, type RefObject } from "react";
 import {
-  FIRST_SESSION_SEED, GRADE_CHOICES, glossaryLinks, PRACTICE_INTRO, ROLE_CHOICES, deckFacets, enzymeChoices, loadMarks, loadScore,
-  markAnswer, practiceDeck, saveMarks, saveScore, scoreAnswer, sessionCards, sessionSummary,
+  EMPTY_TALLY, FIRST_SESSION_SEED, GRADE_CHOICES, PRACTICE_ENZYMES, PRACTICE_INTRO, ROLE_CHOICES, SET_MAX, deckFacets, deckSearch,
+  enzymeChoices, filtersOnly, glossaryLinks, loadMarks, loadScore, markAnswer, practiceDeck, practiceHref, saveMarks, saveScore, scoreAnswer,
+  sessionCards, sessionOptions, sessionSummary, setLink, visitTally,
   type CardResult, type PracticeQuestion, type PracticeScore, type PracticeSearch,
 } from "@/lib/learn/practice";
 import { duePhrase, isDue, type StudyMark } from "@/lib/drugs/study-marks";
@@ -36,6 +37,62 @@ function Choices({ legend, labelledBy, name, options, value, onChange, disabled 
         ))}
       </div>
     </fieldset>
+  );
+}
+
+type CopyState = { status: "idle" } | { status: "copied"; url: string; count: number } | { status: "failed"; url: string; count: number };
+
+/** Copies a ?set= link to the given cards (first SET_MAX). If the clipboard is blocked, shows the link in a field to copy by hand. */
+function CopySetLink({ cards }: { cards: PracticeQuestion[] }) {
+  const id = useId();
+  const [state, setState] = useState<CopyState>({ status: "idle" });
+  const fieldRef = useRef<HTMLInputElement>(null);
+  const count = Math.min(cards.length, SET_MAX);
+  useEffect(() => {
+    if (state.status === "failed") fieldRef.current?.select();
+  }, [state]);
+
+  const copy = async () => {
+    const url = setLink(window.location.origin, cards);
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("no clipboard");
+      await navigator.clipboard.writeText(url);
+      setState({ status: "copied", url, count });
+    } catch {
+      setState({ status: "failed", url, count });
+    }
+  };
+  const plural = (n: number) => `${n} ${n === 1 ? "card" : "cards"}`;
+
+  return (
+    <div className="mt-3" data-testid="practice-copy-set">
+      <Button type="button" variant="secondary" disabled={!count} aria-describedby={`${id}-hint`} onClick={() => void copy()}>
+        Copy set link
+      </Button>
+      <p id={`${id}-hint`} className="mt-1 text-xs text-muted">
+        {cards.length > SET_MAX
+          ? `Copies a link to the first ${SET_MAX} cards in this deck, in this order.`
+          : `Copies a link to ${count === cards.length && count ? "all " : ""}${plural(count)} in this deck, in this order.`}
+      </p>
+      <p className="mt-1 text-sm" aria-live="polite" data-testid="practice-copy-status">
+        {state.status === "copied" ? `Link copied: a practice set of ${plural(state.count)}.` : null}
+        {state.status === "failed" ? "Couldn't copy automatically. The link is selected below: copy it with your keyboard or menu." : null}
+      </p>
+      {state.status === "failed" ? (
+        <div className="mt-2">
+          <label htmlFor={`${id}-url`} className="text-sm font-medium">Practice set link</label>
+          <input
+            id={`${id}-url`}
+            ref={fieldRef}
+            type="text"
+            readOnly
+            value={state.url}
+            onFocus={(e) => e.currentTarget.select()}
+            className="mt-1 block h-11 w-full rounded-md bg-surface-2 px-3 font-mono text-xs text-fg shadow-[var(--shadow-border)]"
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -84,9 +141,12 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
   const pool = useMemo(() => questions.flatMap((q) => q.enzymes), [questions]);
   const facets = useMemo(() => deckFacets(questions), [questions]);
   const deck = useMemo(() => practiceDeck(questions, search), [questions, search]);
-  const deckKey = `${deck.enzyme ?? ""}|${deck.grade ?? ""}`;
-  const firstCards = useMemo(() => sessionCards(deck.cards, FIRST_SESSION_SEED), [deck.cards]);
+  const deckKey = deck.set ? `set:${deck.set.join(",")}` : `${deck.enzyme ?? ""}|${deck.grade ?? ""}|${deck.cls ?? ""}`;
+  const order = sessionOptions(deck);
+  const firstCards = useMemo(() => sessionCards(deck.cards, FIRST_SESSION_SEED, {}, undefined, sessionOptions(deck)), [deck]);
 
+  // This visit's tally lives only in React state: no storage, nothing sent.
+  const [visit, dispatchVisit] = useReducer(visitTally, EMPTY_TALLY);
   const [score, setScore] = useState<PracticeScore>({ answered: 0, correct: 0 });
   const [marks, setMarks] = useState<Record<string, StudyMark>>({});
   useEffect(() => {
@@ -137,6 +197,7 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
     const nextMarks = markAnswer(marks, q.slug, r.all);
     setMarks(nextMarks);
     saveMarks(storage, nextMarks);
+    dispatchVisit({ type: "answer", all: r.all });
     focusNext.current = "result";
     setRun({ ...run, revealed: true, results: [...run.results, { q, all: r.all }] });
   };
@@ -148,6 +209,17 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
     const z = { answered: 0, correct: 0 };
     setScore(z);
     saveScore(deviceStorage(), z);
+  };
+  /** Clears this visit's tally and restarts the deck's first session from card 1. Review marks are kept. */
+  const startOver = () => {
+    dispatchVisit({ type: "reset" });
+    start(firstCards);
+  };
+  const filter = (patch: PracticeSearch) => onSearch?.({ ...deckSearch(deck), ...patch });
+  const clearSet = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!onSearch) return;
+    e.preventDefault();
+    onSearch(filtersOnly(search));
   };
   const mark = (ok: boolean | null) =>
     ok === null ? null : <span className={ok ? "text-ok" : "text-danger"}>{ok ? " ✓ correct" : " ✗ not quite"}</span>;
@@ -161,49 +233,80 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
         Score on this device: {score.correct} of {score.answered}{" "}
         <Button type="button" variant="ghost" size="sm" className="min-h-[44px] underline" onClick={resetScore}>Reset score</Button>
       </p>
-      <p className="mt-1 text-xs text-muted">Your score and review marks are kept only in this browser. We don't send or store them.</p>
+      <p className="mt-1 text-sm" aria-live="polite" data-testid="practice-visit">
+        This visit: {visit.correct} of {visit.answered} fully right{" "}
+        <Button type="button" variant="ghost" size="sm" className="min-h-[44px] underline" onClick={startOver}>Start over</Button>
+      </p>
+      <p className="mt-1 text-xs text-muted">
+        Your device score and review marks are kept only in this browser. We don't send or store them. This visit's tally is not saved anywhere and clears when you leave the page.
+      </p>
 
       <section aria-labelledby="practice-deck" className={CARD} data-testid="practice-deck">
         <h2 id="practice-deck" className={KICKER}>Deck</h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <div>
-            <label htmlFor={`${id}-enzyme`} className="text-sm font-medium">Enzyme</label>
-            <select
-              id={`${id}-enzyme`}
-              className={SELECT}
-              value={deck.enzyme ?? ""}
-              onChange={(e) => onSearch?.({ enzyme: facets.enzymes.find((x) => x === e.target.value), grade: deck.grade })}
-            >
-              <option value="">All enzymes</option>
-              {facets.enzymes.map((e) => <option key={e} value={e}>{e}</option>)}
-            </select>
+        {deck.set ? (
+          <div className="mt-3 rounded-lg bg-accent-soft p-3 shadow-[var(--shadow-border)]" data-testid="practice-set-banner">
+            <p className="text-sm font-medium">Practice set: {deck.set.length} {deck.set.length === 1 ? "question" : "questions"}</p>
+            <p className="mt-1 text-xs text-muted">A fixed list from a shared link, in its own order. The deck filters are off while a set is open.</p>
+            <a href={practiceHref(filtersOnly(search))} onClick={clearSet} className="inline-flex min-h-11 items-center text-sm underline" data-testid="practice-clear-set">
+              Clear set and show the full deck
+            </a>
           </div>
-          <div>
-            <label htmlFor={`${id}-grade`} className="text-sm font-medium">Grade</label>
-            <select
-              id={`${id}-grade`}
-              className={SELECT}
-              value={deck.grade ?? ""}
-              onChange={(e) => onSearch?.({ enzyme: deck.enzyme, grade: facets.grades.find((x) => x === e.target.value) })}
-            >
-              <option value="">All grades</option>
-              {facets.grades.map((g) => <option key={g} value={g}>{SEVERITY_LABEL[g]}</option>)}
-            </select>
+        ) : (
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div>
+              <label htmlFor={`${id}-enzyme`} className="text-sm font-medium">Enzyme</label>
+              <select
+                id={`${id}-enzyme`}
+                className={SELECT}
+                value={deck.enzyme ?? ""}
+                onChange={(e) => filter({ enzyme: PRACTICE_ENZYMES.find((x) => x === e.target.value && facets.enzymes.includes(x)) })}
+              >
+                <option value="">All enzymes</option>
+                {facets.enzymes.map((e) => <option key={e} value={e}>{e}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor={`${id}-grade`} className="text-sm font-medium">Grade</label>
+              <select
+                id={`${id}-grade`}
+                className={SELECT}
+                value={deck.grade ?? ""}
+                onChange={(e) => filter({ grade: facets.grades.find((x) => x === e.target.value) })}
+              >
+                <option value="">All grades</option>
+                {facets.grades.map((g) => <option key={g} value={g}>{SEVERITY_LABEL[g]}</option>)}
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor={`${id}-class`} className="text-sm font-medium">Drug class (either drug in the pair)</label>
+              <select
+                id={`${id}-class`}
+                className={SELECT}
+                value={deck.cls ?? ""}
+                onChange={(e) => filter({ class: facets.classes.find((c) => c.key === e.target.value)?.key })}
+              >
+                <option value="">All drug classes</option>
+                {facets.classes.map((c) => <option key={c.key} value={c.key}>{c.label} ({c.count})</option>)}
+              </select>
+            </div>
           </div>
-        </div>
+        )}
         <p className="mt-3 text-sm" aria-live="polite" data-testid="practice-deck-size">
           {deck.cards.length} {deck.cards.length === 1 ? "card" : "cards"} in this deck · {due} due for review
         </p>
         {due > 0 ? (
-          <Button type="button" className="mt-3" onClick={() => start(sessionCards(deck.cards, newSeed(), marks))}>
+          <Button type="button" className="mt-3" onClick={() => start(sessionCards(deck.cards, newSeed(), marks, undefined, order))}>
             Study the due cards first
           </Button>
         ) : null}
-        <p className="mt-3 text-xs text-muted">The page link keeps these filters, so you can share this deck with a class, a preceptor or a study group.</p>
+        <CopySetLink cards={deck.cards} />
+        <p className="mt-3 text-xs text-muted">
+          The page link keeps these filters, and a set link keeps an exact list of cards, so you can share a deck with a class, a preceptor or a study group.
+        </p>
       </section>
 
       {!deck.cards.length ? (
-        <p className={`${CARD} text-sm`} data-testid="practice-empty">No cards match this deck. Choose another enzyme or grade.</p>
+        <p className={`${CARD} text-sm`} data-testid="practice-empty">No cards match this deck. Choose another enzyme, grade or drug class.</p>
       ) : q ? (
         <section aria-labelledby="practice-pair" className={CARD}>
           <p id="practice-progress" className={KICKER} data-testid="practice-progress">Card {run.pos + 1} of {run.cards.length}</p>
@@ -261,7 +364,7 @@ export function PracticeView({ questions, search = NO_SEARCH, onSearch }: {
           results={run.results}
           headingRef={summaryRef}
           onRetry={start}
-          onNew={() => start(sessionCards(deck.cards, newSeed()))}
+          onNew={() => start(sessionCards(deck.cards, newSeed(), {}, undefined, order))}
         />
       )}
       <PairDisclaimer />
