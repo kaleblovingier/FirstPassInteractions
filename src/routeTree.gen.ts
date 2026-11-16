@@ -35,6 +35,7 @@ import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
 import { Route as ApiProgramsInquiryRouteImport } from './routes/api/programs/inquiry'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
+import { Route as EmbedPairSlugRouteImport } from './routes/embed.pair.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -166,6 +167,11 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   path: '/api/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmbedPairSlugRoute = EmbedPairSlugRouteImport.update({
+  id: '/embed/pair/$slug',
+  path: '/embed/pair/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/embed/pair/$slug': typeof EmbedPairSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/embed/pair/$slug': typeof EmbedPairSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/api/license/recover': typeof ApiLicenseRecoverRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/embed/pair/$slug': typeof EmbedPairSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/api/license/recover'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
+    | '/embed/pair/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/api/license/recover'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
+    | '/embed/pair/$slug'
   id:
     | '__root__'
     | '/'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/api/license/recover'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
+    | '/embed/pair/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -366,6 +378,7 @@ export interface RootRouteChildren {
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
   ApiProgramsInquiryRoute: typeof ApiProgramsInquiryRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
+  EmbedPairSlugRoute: typeof EmbedPairSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -552,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/embed/pair/$slug': {
+      id: '/embed/pair/$slug'
+      path: '/embed/pair/$slug'
+      fullPath: '/embed/pair/$slug'
+      preLoaderRoute: typeof EmbedPairSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -582,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
   ApiProgramsInquiryRoute: ApiProgramsInquiryRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
+  EmbedPairSlugRoute: EmbedPairSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
