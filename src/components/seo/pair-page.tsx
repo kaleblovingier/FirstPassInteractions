@@ -160,13 +160,18 @@ export function PairsIndexView({ pages }: { pages: readonly PairIndexEntry[] }) 
 
 export const CITED_ONLY_HUB_INTRO = "Interaction notes for this supplement, quoted from FDA-approved labeling.";
 
-export function DrugHubView({ hub }: { hub: DrugHub }) {
+export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { name: string; path: string } }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
       <p className="text-xs text-muted">
         <a href="/pairs" className="underline">All pairs</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
+      {classLink ? (
+        <p data-testid="drug-hub-class" className="mt-1 text-xs text-muted">
+          Class: <a href={classLink.path} className="underline">{classLink.name}</a>
+        </p>
+      ) : null}
       {hub.marketStatus ? (
         <p data-testid="drug-hub-market-status" className="mt-3 rounded-lg border border-border px-3 py-2 text-sm">
           {hub.marketStatus}

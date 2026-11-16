@@ -160,3 +160,57 @@ export function fillEnzymeTemplate(
     .replaceAll("{items}", v.items ?? "")
     .replaceAll("{role}", v.role ?? "");
 }
+
+/* —— Drug class hub pages (/class/<slug>, /classes) ———————————————————————
+ * Same rules as above; src/lib/seo/class-hubs.test.ts enforces them: no
+ * severity tier words in titles or meta, no dose instructions, no "Pro", no
+ * pricing, no new clinical claim. Counts and lists from the catalog only.
+ * Placeholders: {cls} the catalog's class label (SSRI, Azole antifungal),
+ * {count} drugs filed under it, {hubs} of those with a drug page, {pairs}
+ * the phrase "N label-sourced pair page(s)" that include one of them.
+ */
+export const CLASS_HUB_TITLE_TEMPLATE = "{cls} drugs: enzymes and label-sourced pairs | FirstPass";
+
+export const CLASS_HUB_DESCRIPTION_TEMPLATE =
+  "The drugs FirstPass files under {cls}, the enzyme roles the desk stores for them, and their label-sourced pair pages. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
+
+export const CLASS_HUB_H1_TEMPLATE = "{cls} drugs on the desk";
+
+export const CLASS_HUB_INTRO_TEMPLATE =
+  "{count} drugs in FirstPass are filed under {cls}. {hubs} of them have a drug page, and they appear in {pairs}. This is the desk's filing, not a complete list of the class.";
+
+export const CLASS_HUB_MEMBERS_HEADING = "Drugs with a drug page";
+
+export const CLASS_HUB_OTHERS_HEADING = "Also filed under this class on the desk";
+
+export const CLASS_HUB_ENZYMES_HEADING = "Enzyme roles the desk stores for these drugs";
+
+export const CLASS_HUB_ENZYMES_INTRO =
+  "How many of these drugs carry each stored role, read from the catalog. A drug can hold more than one role.";
+
+export const CLASS_HUB_ENZYMES_NONE = "The catalog stores no CYP or P-gp role for these drugs.";
+
+export const CLASS_HUB_PAIRS_HEADING = "Pair pages with a drug from this class";
+
+export const CLASS_HUB_PAIRS_INTRO =
+  "Label-sourced pair pages that include at least one of these drugs, grouped by the desk's grade for the pair.";
+
+export const CLASS_HUB_CTA = "Open some of these in the desk";
+
+export const CLASSES_INDEX_TITLE = "Drug classes on the FirstPass desk | FirstPass";
+
+export const CLASSES_INDEX_DESCRIPTION =
+  "Drug classes as the FirstPass desk files them, each with its drug pages, stored enzyme roles and label-sourced pair pages. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
+
+export const CLASSES_INDEX_H1 = "Drug classes on the desk";
+
+export const CLASSES_INDEX_INTRO =
+  "Each page lists the drugs the desk files under one class, with links to their drug pages, the enzyme roles the catalog stores for them and the label-sourced pair pages they appear in. A class is listed when at least two of its drugs have a drug page. A drug that isn't listed hasn't been cleared as safe; it just isn't on this list.";
+
+export function fillClassTemplate(tpl: string, v: { cls: string; count?: number; hubs?: number; pairs?: string }): string {
+  return tpl
+    .replaceAll("{cls}", v.cls)
+    .replaceAll("{count}", String(v.count ?? ""))
+    .replaceAll("{hubs}", String(v.hubs ?? ""))
+    .replaceAll("{pairs}", v.pairs ?? "");
+}

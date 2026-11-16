@@ -2,6 +2,7 @@
 export const SITE_LINKS = [
   { href: "/pairs", label: "Pairs" },
   { href: "/enzymes", label: "Enzymes" },
+  { href: "/classes", label: "Classes" },
   { href: "/practice", label: "Practice" },
   { href: "/glossary", label: "Glossary" },
   { href: "/help", label: "Find help" },

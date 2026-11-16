@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ClassesRouteImport } from './routes/classes'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as EnzymesRouteImport } from './routes/enzymes'
@@ -27,6 +28,7 @@ import { Route as TrustRouteImport } from './routes/trust'
 import { Route as WorkupRouteImport } from './routes/workup'
 import { Route as ApiCollectRouteImport } from './routes/api/collect'
 import { Route as ApiStatsRouteImport } from './routes/api/stats'
+import { Route as ClassSlugRouteImport } from './routes/class.$slug'
 import { Route as DrugSlugRouteImport } from './routes/drug.$slug'
 import { Route as EnzymeSlugRouteImport } from './routes/enzyme.$slug'
 import { Route as ForProgramsAudienceRouteImport } from './routes/for-programs_.$audience'
@@ -42,6 +44,11 @@ import { Route as EmbedPairSlugRouteImport } from './routes/embed.pair.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClassesRoute = ClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiesRoute = CookiesRouteImport.update({
@@ -129,6 +136,11 @@ const ApiStatsRoute = ApiStatsRouteImport.update({
   path: '/api/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClassSlugRoute = ClassSlugRouteImport.update({
+  id: '/class/$slug',
+  path: '/class/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DrugSlugRoute = DrugSlugRouteImport.update({
   id: '/drug/$slug',
   path: '/drug/$slug',
@@ -187,6 +199,7 @@ const EmbedPairSlugRoute = EmbedPairSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/classes': typeof ClassesRoute
   '/cookies': typeof CookiesRoute
   '/developers': typeof DevelopersRoute
   '/enzymes': typeof EnzymesRoute
@@ -204,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/workup': typeof WorkupRoute
   '/api/collect': typeof ApiCollectRoute
   '/api/stats': typeof ApiStatsRoute
+  '/class/$slug': typeof ClassSlugRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
@@ -218,6 +232,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/classes': typeof ClassesRoute
   '/cookies': typeof CookiesRoute
   '/developers': typeof DevelopersRoute
   '/enzymes': typeof EnzymesRoute
@@ -235,6 +250,7 @@ export interface FileRoutesByTo {
   '/workup': typeof WorkupRoute
   '/api/collect': typeof ApiCollectRoute
   '/api/stats': typeof ApiStatsRoute
+  '/class/$slug': typeof ClassSlugRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs/$audience': typeof ForProgramsAudienceRoute
@@ -250,6 +266,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/classes': typeof ClassesRoute
   '/cookies': typeof CookiesRoute
   '/developers': typeof DevelopersRoute
   '/enzymes': typeof EnzymesRoute
@@ -267,6 +284,7 @@ export interface FileRoutesById {
   '/workup': typeof WorkupRoute
   '/api/collect': typeof ApiCollectRoute
   '/api/stats': typeof ApiStatsRoute
+  '/class/$slug': typeof ClassSlugRoute
   '/drug/$slug': typeof DrugSlugRoute
   '/enzyme/$slug': typeof EnzymeSlugRoute
   '/for-programs_/$audience': typeof ForProgramsAudienceRoute
@@ -283,6 +301,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/classes'
     | '/cookies'
     | '/developers'
     | '/enzymes'
@@ -300,6 +319,7 @@ export interface FileRouteTypes {
     | '/workup'
     | '/api/collect'
     | '/api/stats'
+    | '/class/$slug'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
@@ -314,6 +334,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/classes'
     | '/cookies'
     | '/developers'
     | '/enzymes'
@@ -331,6 +352,7 @@ export interface FileRouteTypes {
     | '/workup'
     | '/api/collect'
     | '/api/stats'
+    | '/class/$slug'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs/$audience'
@@ -345,6 +367,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/classes'
     | '/cookies'
     | '/developers'
     | '/enzymes'
@@ -362,6 +385,7 @@ export interface FileRouteTypes {
     | '/workup'
     | '/api/collect'
     | '/api/stats'
+    | '/class/$slug'
     | '/drug/$slug'
     | '/enzyme/$slug'
     | '/for-programs_/$audience'
@@ -377,6 +401,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ClassesRoute: typeof ClassesRoute
   CookiesRoute: typeof CookiesRoute
   DevelopersRoute: typeof DevelopersRoute
   EnzymesRoute: typeof EnzymesRoute
@@ -394,6 +419,7 @@ export interface RootRouteChildren {
   WorkupRoute: typeof WorkupRoute
   ApiCollectRoute: typeof ApiCollectRoute
   ApiStatsRoute: typeof ApiStatsRoute
+  ClassSlugRoute: typeof ClassSlugRoute
   DrugSlugRoute: typeof DrugSlugRoute
   EnzymeSlugRoute: typeof EnzymeSlugRoute
   ForProgramsAudienceRoute: typeof ForProgramsAudienceRoute
@@ -414,6 +440,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/classes': {
+      id: '/classes'
+      path: '/classes'
+      fullPath: '/classes'
+      preLoaderRoute: typeof ClassesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -535,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/class/$slug': {
+      id: '/class/$slug'
+      path: '/class/$slug'
+      fullPath: '/class/$slug'
+      preLoaderRoute: typeof ClassSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drug/$slug': {
       id: '/drug/$slug'
       path: '/drug/$slug'
@@ -617,6 +657,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ClassesRoute: ClassesRoute,
   CookiesRoute: CookiesRoute,
   DevelopersRoute: DevelopersRoute,
   EnzymesRoute: EnzymesRoute,
@@ -634,6 +675,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkupRoute: WorkupRoute,
   ApiCollectRoute: ApiCollectRoute,
   ApiStatsRoute: ApiStatsRoute,
+  ClassSlugRoute: ClassSlugRoute,
   DrugSlugRoute: DrugSlugRoute,
   EnzymeSlugRoute: EnzymeSlugRoute,
   ForProgramsAudienceRoute: ForProgramsAudienceRoute,

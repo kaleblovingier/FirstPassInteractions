@@ -7,6 +7,7 @@ import { buildBriefUrl } from "@/lib/drugs/brief";
 import { gradeBases, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { drugHubs } from "./drug-hubs";
 import { enzymeHubUrls } from "./enzyme-hubs";
+import { classHubUrls } from "./class-hubs";
 import { audienceUrls } from "./for-programs-audiences";
 import { COURSE_KIT_URL } from "./course-kit";
 import {
@@ -160,6 +161,7 @@ export function sitemapXml(): string {
     `${SITE_URL}/`,
     `${SITE_URL}/pairs`,
     `${SITE_URL}/enzymes`,
+    `${SITE_URL}/classes`,
     `${SITE_URL}/for-programs`,
     `${SITE_URL}/developers`,
     ...audienceUrls(),
@@ -176,6 +178,7 @@ export function sitemapXml(): string {
     ...pairPages().map((p) => p.canonical),
     ...hubUrls(),
     ...enzymeHubUrls(),
+    ...classHubUrls(),
   ];
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
