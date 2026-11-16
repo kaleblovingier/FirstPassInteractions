@@ -33,6 +33,7 @@ import { Route as ForProgramsAudienceRouteImport } from './routes/for-programs_.
 import { Route as PairSlugRouteImport } from './routes/pair.$slug'
 import { Route as ApiCdsSplatRouteImport } from './routes/api/cds/$'
 import { Route as ApiLicenseRecoverRouteImport } from './routes/api/license/recover'
+import { Route as ApiLtiSplatRouteImport } from './routes/api/lti/$'
 import { Route as ApiProgramsInquiryRouteImport } from './routes/api/programs/inquiry'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 import { Route as EmbedPairSlugRouteImport } from './routes/embed.pair.$slug'
@@ -157,6 +158,11 @@ const ApiLicenseRecoverRoute = ApiLicenseRecoverRouteImport.update({
   path: '/api/license/recover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLtiSplatRoute = ApiLtiSplatRouteImport.update({
+  id: '/api/lti/$',
+  path: '/api/lti/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiProgramsInquiryRoute = ApiProgramsInquiryRouteImport.update({
   id: '/api/programs/inquiry',
   path: '/api/programs/inquiry',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
+  '/api/lti/$': typeof ApiLtiSplatRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/embed/pair/$slug': typeof EmbedPairSlugRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByTo {
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
+  '/api/lti/$': typeof ApiLtiSplatRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/embed/pair/$slug': typeof EmbedPairSlugRoute
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/pair/$slug': typeof PairSlugRoute
   '/api/cds/$': typeof ApiCdsSplatRoute
   '/api/license/recover': typeof ApiLicenseRecoverRoute
+  '/api/lti/$': typeof ApiLtiSplatRoute
   '/api/programs/inquiry': typeof ApiProgramsInquiryRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/embed/pair/$slug': typeof EmbedPairSlugRoute
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
+    | '/api/lti/$'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
     | '/embed/pair/$slug'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
+    | '/api/lti/$'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
     | '/embed/pair/$slug'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/pair/$slug'
     | '/api/cds/$'
     | '/api/license/recover'
+    | '/api/lti/$'
     | '/api/programs/inquiry'
     | '/api/stripe/webhook'
     | '/embed/pair/$slug'
@@ -376,6 +388,7 @@ export interface RootRouteChildren {
   PairSlugRoute: typeof PairSlugRoute
   ApiCdsSplatRoute: typeof ApiCdsSplatRoute
   ApiLicenseRecoverRoute: typeof ApiLicenseRecoverRoute
+  ApiLtiSplatRoute: typeof ApiLtiSplatRoute
   ApiProgramsInquiryRoute: typeof ApiProgramsInquiryRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   EmbedPairSlugRoute: typeof EmbedPairSlugRoute
@@ -551,6 +564,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLicenseRecoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/lti/$': {
+      id: '/api/lti/$'
+      path: '/api/lti/$'
+      fullPath: '/api/lti/$'
+      preLoaderRoute: typeof ApiLtiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/programs/inquiry': {
       id: '/api/programs/inquiry'
       path: '/api/programs/inquiry'
@@ -600,6 +620,7 @@ const rootRouteChildren: RootRouteChildren = {
   PairSlugRoute: PairSlugRoute,
   ApiCdsSplatRoute: ApiCdsSplatRoute,
   ApiLicenseRecoverRoute: ApiLicenseRecoverRoute,
+  ApiLtiSplatRoute: ApiLtiSplatRoute,
   ApiProgramsInquiryRoute: ApiProgramsInquiryRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   EmbedPairSlugRoute: EmbedPairSlugRoute,
