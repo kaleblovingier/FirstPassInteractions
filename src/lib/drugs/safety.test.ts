@@ -41,6 +41,10 @@ import {
   isVoriconazoleStrongInducer,
   isValproateTopiramateHyperammonemia,
   isMtxPpiDelayedClearance,
+  isBenzo,
+  isOpioid,
+  isOrphineNitazeneSedativeStack,
+  isEmergingOpioidAlpha2Adulterant,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -1186,6 +1190,82 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.deepEqual(pantoHits[0].drugIds, ["methotrexate", "pantoprazole"]);
 
     assert.equal(safetyOnDesk(["methotrexate", "omeprazole", "pantoprazole"]).length, 1);
+  });
+
+  it("detects Emerging Orphine / Nitazene Synthetic Opioids × Benzodiazepines (orphine-nitazene-sedative-stack)", () => {
+    for (const op of ["cychlorphine", "brorphine", "spirochlorphine", "sr-17018", "protonitazepyne", "metonitazepyne", "etonitazepipne", "norisotonitazene"]) {
+      assert.equal(isOpioid(op), true, `${op} should be recognized as opioid`);
+    }
+    for (const bz of ["phenazolam", "ethylbromazolam", "ethylflualprazolam", "desalkylgidazepam", "bromazolam", "alprazolam"]) {
+      assert.equal(isBenzo(bz), true, `${bz} should be recognized as benzo`);
+    }
+
+    assert.equal(isOrphineNitazeneSedativeStack("cychlorphine", "phenazolam"), true);
+    assert.equal(isOrphineNitazeneSedativeStack("protonitazepyne", "ethylbromazolam"), true);
+    assert.equal(isOrphineNitazeneSedativeStack("sr-17018", "desalkylgidazepam"), true);
+    assert.equal(isOrphineNitazeneSedativeStack("oxycodone", "alprazolam"), false);
+    assert.equal(isOrphineNitazeneSedativeStack("cychlorphine", "medetomidine"), false);
+
+    for (const [op, bz] of [
+      ["cychlorphine", "phenazolam"],
+      ["protonitazepyne", "ethylbromazolam"],
+      ["sr-17018", "desalkylgidazepam"],
+    ] as const) {
+      const hits = safetyOnDesk([op, bz]);
+      const hit = hits.find((h) => h.id === "orphine-nitazene-sedative-stack");
+      assert.ok(hit, `Expected orphine-nitazene-sedative-stack for ${op} + ${bz}`);
+      assert.equal(hit.severity, "contraindicated");
+      assert.equal(hit.regulatoryTier, "contraindicated");
+      assert.equal(hit.tone, "danger");
+      assert.match(
+        hit.title,
+        /Emerging orphine\/nitazene synthetic opioid \+ benzodiazepine respiratory arrest & counterfeit-pill toxicity/,
+      );
+      assert.match(hit.clinical, /fentanyl test strips.*CYP3A4.*designer-benzodiazepine coma unreversed/i);
+      assert.match(hit.watch, /bag-valve-mask ventilation.*norisotonitazene.*avoid flumazenil/i);
+      assert.match(hit.source, /42979587/);
+      assert.match(hit.source, /42931793/);
+      assert.match(hit.source, /42392847/);
+      assert.deepEqual(
+        hit.citations?.map((c) => c.pmid),
+        ["42979587", "42931793", "42392847"],
+      );
+    }
+  });
+
+  it("detects Street / Emerging Synthetic Opioids × Alpha-2 Adrenergic Adulterants (emerging-opioid-alpha2-adulterant)", () => {
+    assert.equal(isEmergingOpioidAlpha2Adulterant("cychlorphine", "medetomidine"), true);
+    assert.equal(isEmergingOpioidAlpha2Adulterant("protonitazepyne", "xylazine"), true);
+    assert.equal(isEmergingOpioidAlpha2Adulterant("fentanyl", "medetomidine"), true);
+    assert.equal(isEmergingOpioidAlpha2Adulterant("seven-oh", "medetomidine"), true);
+    assert.equal(isEmergingOpioidAlpha2Adulterant("dirty-30", "xylazine"), true);
+    assert.equal(isEmergingOpioidAlpha2Adulterant("cychlorphine", "phenazolam"), false);
+    assert.equal(isEmergingOpioidAlpha2Adulterant("medetomidine", "xylazine"), false);
+
+    for (const [op, a2] of [
+      ["cychlorphine", "medetomidine"],
+      ["protonitazepyne", "xylazine"],
+      ["fentanyl", "medetomidine"],
+    ] as const) {
+      const hits = safetyOnDesk([op, a2]);
+      const hit = hits.find((h) => h.id === "emerging-opioid-alpha2-adulterant");
+      assert.ok(hit, `Expected emerging-opioid-alpha2-adulterant for ${op} + ${a2}`);
+      assert.equal(hit.severity, "contraindicated");
+      assert.equal(hit.regulatoryTier, "contraindicated");
+      assert.equal(hit.tone, "danger");
+      assert.match(
+        hit.title,
+        /Synthetic opioid \+ α2-adrenergic adulterant \(medetomidine \/ xylazine\) naloxone-refractory coma & severe bradycardia/,
+      );
+      assert.match(hit.clinical, /100 to 200 times more potent than xylazine.*locus coeruleus.*autonomic rebound withdrawal/i);
+      assert.match(hit.watch, /restore spontaneous ventilation.*bradycardia\/hypotension.*rebound hypertension/i);
+      assert.match(hit.source, /42996303/);
+      assert.match(hit.source, /42276321/);
+      assert.deepEqual(
+        hit.citations?.map((c) => c.pmid),
+        ["42996303", "42276321"],
+      );
+    }
   });
 
   it("continues to detect existing high-risk safety collisions", () => {

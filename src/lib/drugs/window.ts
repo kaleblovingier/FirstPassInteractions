@@ -1,6 +1,11 @@
 import { DRUG_BY_ID } from "./catalog";
 import { clinicFor } from "./clinic";
 import { protocolTray } from "./cyp-protocol";
+import {
+  NPS_DESIGNER_BENZO_IDS,
+  NPS_NITAZENE_IDS,
+  NPS_ORPHINE_IDS,
+} from "./nps-watch";
 import { SEVERITY_LABEL, type Finding, type HostContext, type Report, type Severity } from "./types";
 import { PI_FOOTER } from "@/lib/regulatory";
 
@@ -26,6 +31,9 @@ const MAT_IDS = new Set([
   "etonitazene",
   "clonidine",
   "loperamide",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+  ...NPS_DESIGNER_BENZO_IDS,
 ]);
 
 const STREET_FOLD = new Set([
@@ -37,6 +45,9 @@ const STREET_FOLD = new Set([
   "protonitazene",
   "metonitazene",
   "etonitazene",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+  ...NPS_DESIGNER_BENZO_IDS,
 ]);
 
 const BOOSTER = new Set(["paxlovid", "ritonavir", "cobicistat"]);
@@ -92,7 +103,33 @@ export const WINDOW_EXTRAS: { group: string; hint: string; items: { id: string; 
       { id: "dirty-30", label: "Dirty 30" },
       { id: "seven-oh", label: "7-OH" },
       { id: "bromazolam", label: "Bromazolam" },
+      { id: "cychlorphine", label: "Cychlorphine" },
+      { id: "protonitazepyne", label: "Protonitazepyne" },
+      { id: "phenazolam", label: "Clobromazolam" },
       { id: "naloxone", label: "Narcan" },
+    ],
+  },
+  {
+    group: "NPS Watch",
+    hint: "2025–2026 forensic early-warning wave",
+    items: [
+      { id: "cychlorphine", label: "Cychlorphine" },
+      { id: "spirochlorphine", label: "Spirochlorphine" },
+      { id: "sr-17018", label: "SR-17018" },
+      { id: "dichloro-brorphine", label: "5,6-Dichloro-brorphine" },
+      { id: "chlorphine", label: "Chlorphine" },
+      { id: "n-phenethyl-chloro-nor-orphine", label: "Chloro nor-orphine" },
+      { id: "protonitazepyne", label: "Protonitazepyne" },
+      { id: "metonitazepyne", label: "Metonitazepyne" },
+      { id: "etonitazepipne", label: "Etonitazepipne" },
+      { id: "norisotonitazene", label: "Norisotonitazene" },
+      { id: "n-pyrrolidino-ethylene-isotonitazene", label: "Ethylene isotonitazepyne" },
+      { id: "ethylbromazolam", label: "Ethylbromazolam" },
+      { id: "ethylflualprazolam", label: "Ethylflualprazolam" },
+      { id: "hhc", label: "HHC" },
+      { id: "hhc-p", label: "HHC-P" },
+      { id: "hhc-o", label: "HHC-O" },
+      { id: "ten-oh-hhc", label: "10-OH-HHC" },
     ],
   },
   {
@@ -117,6 +154,8 @@ export const WINDOW_EXTRAS: { group: string; hint: string; items: { id: string; 
     ],
   },
 ];
+
+export const GROUPS = WINDOW_EXTRAS;
 
 export interface WindowBrief {
   mode: "mat" | "clinic";

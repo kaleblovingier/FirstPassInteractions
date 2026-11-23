@@ -9,6 +9,7 @@ export interface MmeFactor {
   unit: string;
   hint: string;
   note?: string;
+  unconvertible?: boolean;
 }
 
 /** Oral MME factor unless noted. Methadone is dose-banded — use methadoneFactor(). */
@@ -148,6 +149,114 @@ export const MME_FACTOR: Record<string, MmeFactor> = {
     unit: "mg (P-gp knockout)",
     hint: "Imodium is peripheral until P-gp is knocked out. Then it is a central opioid with QT. Not CDC MME.",
   },
+  brorphine: {
+    id: "brorphine",
+    factor: null,
+    unit: "unknown",
+    hint: "Orphine synthetic opioid. Non-fentanyl μ-agonist with hERG QTc liability. Not MME-able.",
+    note: "Illicit benzimidazolone-piperidine potency cannot be converted to oral morphine equivalents.",
+  },
+  cychlorphine: {
+    id: "cychlorphine",
+    factor: null,
+    unit: "unknown",
+    hint: "Orphine synthetic opioid (N-propionitrile chlorphine). High-affinity μ-agonist in counterfeit tablets. Not MME-able.",
+    note: "No clinical equianalgesic conversion exists; manage as unknown high-potency synthetic opioid load.",
+  },
+  spirochlorphine: {
+    id: "spirochlorphine",
+    factor: null,
+    unit: "unknown",
+    hint: "Orphine synthetic opioid (R-6890). Archival spiro-piperidine μ-agonist with hERG signal. Not MME-able.",
+    note: "Uncharacterized human oral equianalgesic ratio; not convertible on CDC MME tables.",
+  },
+  "sr-17018": {
+    id: "sr-17018",
+    factor: null,
+    unit: "unknown",
+    hint: "Orphine research compound (SR-17018). Preclinical G-protein bias does not provide an MME factor or prevent human apnea.",
+    note: "Unpredictable cross-tolerance with fentanyl and buprenorphine; not MME-convertible.",
+  },
+  "dichloro-brorphine": {
+    id: "dichloro-brorphine",
+    factor: null,
+    unit: "unknown",
+    hint: "Halogenated orphine synthetic opioid. High-potency μ-agonist with hERG liability. Not MME-able.",
+    note: "Illicit synthetic opioid; linear MME conversion does not apply.",
+  },
+  chlorphine: {
+    id: "chlorphine",
+    factor: null,
+    unit: "unknown",
+    hint: "Chloro-substituted brorphine analogue. Potent μ-agonist in illicit powders and pressed tablets. Not MME-able.",
+    note: "Illicit benzimidazolone-piperidine; not convertible to oral morphine equivalents.",
+  },
+  "n-phenethyl-chloro-nor-orphine": {
+    id: "n-phenethyl-chloro-nor-orphine",
+    factor: null,
+    unit: "unknown",
+    hint: "Positional chloro-isomer nor-orphine derivative. High-potency μ-agonist. Not MME-able.",
+    note: "Forensic NPS synthetic opioid without an established human equianalgesic factor.",
+  },
+  protonitazepyne: {
+    id: "protonitazepyne",
+    factor: null,
+    unit: "unknown",
+    hint: "N-pyrrolidino protonitazene. Ultra-potent benzimidazole μ-agonist. Not MME-able.",
+    note: "Street nitazepyne potency far exceeds standard oral conversion tables.",
+  },
+  metonitazepyne: {
+    id: "metonitazepyne",
+    factor: null,
+    unit: "unknown",
+    hint: "N-pyrrolidino metonitazene. High-potency benzimidazole μ-agonist. Not MME-able.",
+    note: "No clinical oral morphine conversion factor; high re-narcotization liability.",
+  },
+  etonitazepipne: {
+    id: "etonitazepipne",
+    factor: null,
+    unit: "unknown",
+    hint: "N-piperidinyl etonitazene. Ultra-potent ring-modified benzimidazole opioid. Not MME-able.",
+    note: "Illicit nitazepipne cannot be converted on CDC oral MME tables.",
+  },
+  norisotonitazene: {
+    id: "norisotonitazene",
+    factor: null,
+    unit: "unknown",
+    hint: "Active N-deethylated isotonitazene metabolite and primary street nitazene. Not MME-able.",
+    note: "Retains high μ-opioid potency; not convertible to oral morphine equivalents.",
+  },
+  "n-pyrrolidino-ethylene-isotonitazene": {
+    id: "n-pyrrolidino-ethylene-isotonitazene",
+    factor: null,
+    unit: "unknown",
+    hint: "Linker-modified pyrrolidino-isotonitazene analogue. Ultra-potent benzimidazole opioid. Not MME-able.",
+    note: "Forensic benzimidazole NPS; linear MME conversion is not valid.",
+  },
+  "n-pyrrolidino-etonitazene": {
+    id: "n-pyrrolidino-etonitazene",
+    factor: null,
+    unit: "unknown",
+    hint: "N-pyrrolidino etonitazene (etonitazepyne). Ultra-potent benzimidazole μ-agonist. Not MME-able.",
+  },
+  etodesnitazene: {
+    id: "etodesnitazene",
+    factor: null,
+    unit: "unknown",
+    hint: "Desnitro-etonitazene analogue. Illicit benzimidazole opioid. Not MME-able.",
+  },
+  butonitazene: {
+    id: "butonitazene",
+    factor: null,
+    unit: "unknown",
+    hint: "Butoxy-benzimidazole nitazene analogue. Not MME-able.",
+  },
+  flunitazene: {
+    id: "flunitazene",
+    factor: null,
+    unit: "unknown",
+    hint: "Fluoro-substituted benzimidazole nitazene analogue. Not MME-able.",
+  },
 };
 
 export function methadoneFactor(mgPerDay: number): number {
@@ -170,10 +279,12 @@ export function mmeOnDesk(ids: string[]): MmeFactor[] {
     const card = MME_FACTOR[id];
     if (!card || seen.has(id)) continue;
     seen.add(id);
-    out.push(card);
+    out.push(card.factor === null ? { ...card, unconvertible: true } : card);
   }
   return out;
 }
+
+export const mmeForDesk = mmeOnDesk;
 
 export function hasMme(ids: string[]) {
   return mmeOnDesk(ids).length > 0;

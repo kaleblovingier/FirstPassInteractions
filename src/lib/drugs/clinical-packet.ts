@@ -12,6 +12,12 @@ import { DRUG_BY_ID } from "./catalog";
 import { alertsOnDesk, type AlertFlag } from "./alerts";
 import { acbOnDesk, type AcbReport } from "./acb";
 import { mmeOnDesk, type MmeFactor } from "./mme";
+import {
+  NPS_DESIGNER_BENZO_IDS,
+  NPS_HHC_IDS,
+  NPS_NITAZENE_IDS,
+  NPS_ORPHINE_IDS,
+} from "./nps-watch";
 import { qtReport, type QtReport } from "./qt";
 import { deriveTisdaleDefaults, evaluateTisdaleScore, type TisdaleResult } from "./qt-resus";
 import { doacReportOnDesk, type DoacReport, type ReversalEvaluation } from "./doac";
@@ -164,7 +170,7 @@ export interface ClinicalPacketData {
   patientHandoutText: string;
 }
 
-const STREET_DRUG_IDS = new Set([
+export const STREET_DRUG_IDS = new Set([
   "fentanyl",
   "dirty-30",
   "heroin",
@@ -176,6 +182,12 @@ const STREET_DRUG_IDS = new Set([
   "protonitazene",
   "metonitazene",
   "etonitazene",
+  "dck",
+  "two-fdck",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+  ...NPS_DESIGNER_BENZO_IDS,
+  ...NPS_HHC_IDS,
 ]);
 
 function toLabeledCollisionAlert(
@@ -446,6 +458,14 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
   "mtx-ppi-delayed-clearance": {
     topic: "mtx-ppi-delayed-clearance",
     text: "Acid-reducing proton pump inhibitors (PPIs such as omeprazole, esomeprazole, pantoprazole, lansoprazole, or rabeprazole—including over-the-counter heartburn pills) can slow how your kidneys clear methotrexate, allowing methotrexate to build up to harmful levels. Check with your oncology or rheumatology prescriber and pharmacist before taking any prescription or over-the-counter heartburn medicine with methotrexate (they may recommend pausing the PPI or switching to a different acid reducer), never change your methotrexate schedule on your own, keep all blood-count and kidney lab checks, and seek urgent care right away for painful mouth sores, fever or chills, severe diarrhea, unusual bruising or bleeding, or markedly decreased urination.",
+  },
+  "orphine-nitazene-sedative-stack": {
+    topic: "orphine-nitazene-sedative-stack",
+    text: "Combining emerging synthetic opioids (orphines such as cychlorphine, brorphine, spirochlorphine, or SR-17018, and nitazenes such as protonitazepyne, metonitazepyne, etonitazepipne, or norisotonitazene) with prescription or designer benzodiazepines (such as bromazolam, clobromazolam/phenazolam, ethylbromazolam, ethylflualprazolam, or desalkylgidazepam)—often hidden together inside counterfeit pressed pills—can trigger sudden, fatal breathing arrest. Standard fentanyl test strips and routine hospital urine screens miss these compounds, and naloxone reverses only the opioid component while leaving designer-benzodiazepine coma unreversed; give naloxone, start immediate rescue breathing, and call 911 right away.",
+  },
+  "emerging-opioid-alpha2-adulterant": {
+    topic: "emerging-opioid-alpha2-adulterant",
+    text: "Street or emerging synthetic opioids (fentanyl, nitazenes, orphines, or concentrated 7-OH) adulterated with veterinary alpha-2 sedatives (medetomidine or xylazine) cause deep coma, dangerously slow heart rate, and low blood pressure that persist even after naloxone restores breathing, and repeated exposure can trigger a severe rebound blood-pressure and agitation crisis during withdrawal. Administer naloxone to restore breathing, provide immediate rescue breaths and airway support rather than waiting for the person to wake up, and call 911 immediately.",
   },
 };
 
@@ -721,6 +741,11 @@ export function buildClinicalPacket(
   if (hasBenzo) {
     counselingPoints.push(
       "Do not stop sedative or anti-anxiety medications abruptly without medical guidance, as sudden discontinuation can trigger rebound anxiety or withdrawal seizures.",
+    );
+  }
+  if (hasStreet) {
+    counselingPoints.push(
+      "Unregulated street, smoke-shop, or research-chemical supplies (including counterfeit pressed pills, orphines, nitazenes, designer benzodiazepines, HHC cannabinoids, arylcyclohexylamine dissociatives, and xylazine or medetomidine adulterants) frequently evade standard drug test strips and hospital urine screens; never use alone, prioritize rescue breathing if someone is unresponsive, and call 911 immediately.",
     );
   }
   if (acbReport && acbReport.totalScore >= 3) {

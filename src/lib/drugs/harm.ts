@@ -5,6 +5,12 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
+import {
+  NPS_DESIGNER_BENZO_IDS,
+  NPS_HHC_IDS,
+  NPS_NITAZENE_IDS,
+  NPS_ORPHINE_IDS,
+} from "./nps-watch";
 import type { Drug } from "./types";
 import {
   PW_PRINCIPLES,
@@ -43,6 +49,14 @@ export interface ResponseStep {
   body: string;
 }
 
+const DESIGNER_BENZO = new Set([
+  ...NPS_DESIGNER_BENZO_IDS,
+  "flualprazolam",
+  "clonazolam",
+  "etizolam",
+  "diclazepam",
+]);
+
 const STREET = new Set([
   "fentanyl",
   "dirty-30",
@@ -58,9 +72,22 @@ const STREET = new Set([
   "bromazolam",
   "pressed-30",
   "kratom",
+  "dck",
+  "two-fdck",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+  ...DESIGNER_BENZO,
+  ...NPS_HHC_IDS,
 ]);
 
-const NITAZENE = new Set(["isotonitazene", "protonitazene", "metonitazene", "etonitazene", "carfentanil"]);
+const NITAZENE = new Set([
+  "isotonitazene",
+  "protonitazene",
+  "metonitazene",
+  "etonitazene",
+  "carfentanil",
+  ...NPS_NITAZENE_IDS,
+]);
 const ALPHA2 = new Set(["xylazine", "medetomidine", "clonidine", "lofexidine", "dexmedetomidine"]);
 const OPIOIDISH = new Set([
   "fentanyl",
@@ -80,6 +107,7 @@ const OPIOIDISH = new Set([
   "seven-oh",
   "buprenorphine",
   "kratom",
+  ...NPS_ORPHINE_IDS,
   ...NITAZENE,
 ]);
 
@@ -119,7 +147,7 @@ function anyStim(ids: string[]) {
 }
 
 function anyBenzo(ids: string[]) {
-  return ids.some((id) => DRUG_BY_ID[id]?.pd.includes("benzo-zdrug") || id === "bromazolam");
+  return ids.some((id) => DRUG_BY_ID[id]?.pd.includes("benzo-zdrug") || DESIGNER_BENZO.has(id));
 }
 
 function anyAlcohol(ids: string[]) {
@@ -292,15 +320,39 @@ export function harmOnDesk(ids: string[]): HrCard[] {
     });
   }
 
-  if (anyBenzo(ids) && ids.includes("bromazolam")) {
+  if (ids.some((id) => NPS_ORPHINE_IDS.has(id))) {
+    out.push({
+      id: "orphine-opioids",
+      title: "Orphine synthetic opioids — non-fentanyl MOR apnea, hERG QTc signal & FTS blind spot",
+      tone: "danger",
+      kicker: "Benzimidazolone-piperidine ('orphine') opioids",
+      body: "• Assay blind spot: completely invisible on fentanyl test strips (FTS), nitazene test strips (NTS), and routine hospital opiate immunoassays (definitive detection requires LC-MS/MS or LC-QTOF).\n• Naloxone & airway: competitive μ-opioid reversal applies, but high receptor affinity and lipophilicity require frequent repeat naloxone titration, immediate bag-valve-mask ventilation, and a prolonged re-narcotization watch.\n• Cardiac repolarization: class-level hERG potassium-channel blockade and QTc prolongation risk across the brorphine/chlorphine scaffold.\n• SR-17018 warning: preclinical G-protein-biased signaling claims for SR-17018 do NOT protect humans from fatal apnea, cross-tolerance miscalculation, precipitated withdrawal swings, or sedative stacking.",
+      watch: "Counterfeit oxycodone and pressed alprazolam or bromazolam tablets increasingly carry cychlorphine, spirochlorphine, or chlorphine analogues. Support ventilation first, titrate naloxone, and check an ECG.",
+      source: "CFSRE NPS Discovery monographs. UNODC Early Warning Advisory. EUDA / DEA Emerging Threat Reports.",
+    });
+  }
+
+  if (anyBenzo(ids) && ids.some((id) => DESIGNER_BENZO.has(id))) {
     out.push({
       id: "street-benzo",
-      title: "Street benzo — potency is not the pill stamp",
+      title: "Illicit designer benzodiazepines — naloxone-resistant coma, prolonged half-life & severe withdrawal",
       tone: "danger",
       kicker: "Designer benzodiazepine",
-      body: "Bromazolam in a pressed bar is not pharmaceutical alprazolam. Dose and duration wander. Flumazenil is not a street-overdose antidote — seizures in dependent people. Airway first.",
-      watch: "Benzo withdrawal is a medical emergency (seizure). Do not 'detox' a dependent person without a plan you own. This desk is not that plan.",
-      source: "PsychonautWiki benzodiazepines. Flumazenil labels (Reversal tab).",
+      body: "Bromazolam, ethylbromazolam, desalkylgidazepam, phenazolam (clobromazolam), ethylflualprazolam, and related designer benzodiazepines in pressed bars or 'benzo-dope' opioid powders are not pharmaceutical alprazolam. Potency and elimination half-life vary wildly (multi-day accumulation with desalkylgidazepam; ultra-potent blackout amnesia with phenazolam and flubromazolam). Naloxone reverses co-ingested opioids but will NOT reverse GABA-A coma. Avoid routine flumazenil in chronic or mixed exposures due to refractory seizure precipitation.",
+      watch: "Abrupt cessation after repeated exposure carries life-threatening withdrawal delirium and status epilepticus risk. Support airway and oxygenation first.",
+      source: "CFSRE NPS Discovery / UNODC / EUDA designer benzodiazepine alerts. Flumazenil labels (Reversal tab).",
+    });
+  }
+
+  if (ids.some((id) => NPS_HHC_IDS.has(id))) {
+    out.push({
+      id: "hhc-cannabinoids",
+      title: "Semi-synthetic HHC cannabinoids — (9R)/(9S) epimer potency, CYP2C9/3A4 bottleneck & HHC-O ketene hazard",
+      tone: "warn",
+      kicker: "Hydrogenated semi-synthetic cannabinoids",
+      body: "• Epimer & homologue potency: commercial HHC varies in active (9R)-HHC vs less active (9S)-HHC ratio, while heptyl-chain HHC-P drives prolonged CB1 receptor occupancy, multi-day encephalopathy, panic/psychosis, and hyperemesis.\n• Delayed prodrug onset: oral or inhaled HHC-O requires esterase hydrolysis, delaying peak CB1 onset and prompting premature re-dosing.\n• Pyrolysis hazard: thermal heating of inhaled HHC-O (acetate ester) during vaping or dabbing can generate toxic ketene gas and acute lung injury.\n• Metabolic bottleneck: cleared via CYP2C9 and CYP3A4; inhibitors amplify intoxication and orthostatic/tachycardic load.",
+      watch: "11-nor-9-carboxy-HHC and 10-OH-HHC metabolites cross-react on standard THC-COOH urine immunoassays while failing delta-9-THC confirmation. Naloxone does not reverse CB1 intoxication.",
+      source: "EUDA semi-synthetic cannabinoid technical reports. CFSRE NPS Discovery. UNODC Early Warning Advisory.",
     });
   }
 
@@ -309,7 +361,7 @@ export function harmOnDesk(ids: string[]): HrCard[] {
     title: "Test the supply — a negative is not proof of safety",
     tone: "warn",
     kicker: "Reagents / immunoassay strips",
-    body: "Fentanyl strips catch many illicit fentanyls and miss nitazenes, xylazine, and most benzos. Xylazine strips exist and still miss medetomidine. Reagents (Marquis, Ehrlich) name a chemical class, not a milligram and not a hidden fentanyl. PsychonautWiki: chemically test; do not eyeball.",
+    body: "Fentanyl strips catch many illicit fentanyls and miss nitazenes, orphines, xylazine, and most benzos. Xylazine strips exist and still miss medetomidine. Reagents (Marquis, Ehrlich) name a chemical class, not a milligram and not a hidden fentanyl. PsychonautWiki: chemically test; do not eyeball.",
     watch: "This desk does not pick the milligram and does not read a strip.",
     source: "PsychonautWiki Reagent testing kits / Responsible drug use. CDC fentanyl test-strip guidance.",
   });
@@ -317,14 +369,40 @@ export function harmOnDesk(ids: string[]): HrCard[] {
   return out;
 }
 
-export function stripsFor(ids: string[]): StripCard[] {
+export function stripsFor(idsInput: string | readonly string[]): StripCard[] {
+  const ids = typeof idsInput === "string" ? [idsInput] : [...idsInput];
+  const hasOrphine = ids.some((id) => NPS_ORPHINE_IDS.has(id));
+  const hasNitazene = ids.some((id) => NITAZENE.has(id));
+  const hasDesignerBenzo = ids.some((id) => DESIGNER_BENZO.has(id));
+
   const out: StripCard[] = [
     {
       id: "fts",
-      name: "Fentanyl immunoassay strip",
-      catches: "Many illicit fentanyls in a dilute sample.",
-      misses: "Nitazenes, carfentanil often, xylazine, benzos, stimulants. A negative is not 'clean.'",
+      name: "Fentanyl immunoassay strip (FTS)",
+      catches: "Many illicit fentanyls in a dilute sample; essential for co-testing counterfeit tablets and powders.",
+      misses: "Orphine benzimidazolone-piperidines, nitazenes, carfentanil often, xylazine, medetomidine, designer benzos, stimulants. A negative is not 'clean.'",
     },
+  ];
+
+  if (hasOrphine) {
+    out.push({
+      id: "orphine-strip",
+      name: "Orphine blind spot (FTS / NTS negative — co-test with FTS & BTS)",
+      catches: "Co-testing with fentanyl (FTS) and benzodiazepine (BTS) strips catches co-adulterated fentanyl or designer benzos frequently mixed with orphines in street tablets.",
+      misses: "Fentanyl test strips (FTS) and nitazene test strips (NTS) do NOT detect orphine benzimidazolone-piperidines (cychlorphine, brorphine, spirochlorphine, SR-17018, chlorphine analogues). Requires forensic LC-MS/MS or LC-QTOF.",
+    });
+  }
+
+  if (hasNitazene) {
+    out.push({
+      id: "nts",
+      name: "Nitazene immunoassay strip (NTS) + FTS blind-spot check",
+      catches: "Many 2-benzylbenzimidazole (nitazene) opioids when paired with a fentanyl strip (FTS) for mixed-supply blind-spot coverage.",
+      misses: "Fentanyl strips (FTS) miss nitazenes completely, and N-pyrrolidino (-pyne) or N-piperidinyl (-pipne) analogues (protonitazepyne, metonitazepyne, etonitazepipne) can show lower lateral-flow sensitivity on older nitazene strips.",
+    });
+  }
+
+  out.push(
     {
       id: "xyl-strip",
       name: "Xylazine strip",
@@ -332,10 +410,10 @@ export function stripsFor(ids: string[]): StripCard[] {
       misses: "Medetomidine and other α2s. Still give naloxone — the opioid is usually there.",
     },
     {
-      id: "benzo-strip",
-      name: "Benzodiazepine strip",
-      catches: "Some 1,4-benzodiazepines.",
-      misses: "Designer benzos (bromazolam and friends) are kit-dependent. Flumazenil is still not the field move.",
+      id: "bts",
+      name: "Benzodiazepine strip (BTS) + FTS co-testing",
+      catches: "Some 1,4-benzodiazepines and selected triazolobenzodiazepines; always co-test with FTS because pressed bars and 'benzo-dope' powders frequently mix designer benzos with fentanyl, nitazenes, or orphines.",
+      misses: "Designer benzos (bromazolam, ethylbromazolam, desalkylgidazepam, phenazolam, ethylflualprazolam) show variable lateral-flow sensitivity at low tablet loadings. Flumazenil is still not the field move.",
     },
     {
       id: "reagent",
@@ -343,7 +421,7 @@ export function stripsFor(ids: string[]): StripCard[] {
       catches: "Class clues — Marquis often lights on MDMA and stays quiet on PMA; Mandelin is the PMA tell; Ehrlich lights on LSD / tryptamines and stays quiet on many NBOMes; Liebermann helps MDMA vs meth vs MDA.",
       misses: "Does not measure purity or dose. Dark colors override weaker ones in the same pill. A positive is not 'safe.' Does not rule out fentanyl. Color charts lie in bad light. Use more than one reagent on a new scrap.",
     },
-  ];
+  );
   if (
     !anyOpioid(ids) &&
     !ids.some((id) => STREET.has(id)) &&
@@ -355,8 +433,10 @@ export function stripsFor(ids: string[]): StripCard[] {
     return out.slice(0, 1);
   }
   if (anyNbome(ids) || ids.includes("lsd")) return out;
-  if (anyMdma(ids)) return out.filter((s) => s.id !== "benzo-strip");
-  if (anyAlpha2(ids) || anyOpioid(ids)) return out.filter((s) => s.id !== "reagent" || anyMdma(ids));
+  if (anyMdma(ids)) return out.filter((s) => s.id !== "bts");
+  if (hasDesignerBenzo || anyAlpha2(ids) || anyOpioid(ids)) {
+    return out.filter((s) => s.id !== "reagent" || anyMdma(ids));
+  }
   return out;
 }
 

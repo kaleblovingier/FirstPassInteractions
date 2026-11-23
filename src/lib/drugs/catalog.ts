@@ -8,6 +8,7 @@ import { LABEL_NAMED_SHELF } from "./catalog-label-names";
 import { MODERN_WAVE3_FORMULARY } from "./catalog-modern-wave3";
 import { MODERN_WAVE4_FORMULARY } from "./catalog-modern-wave4";
 import { MODERN_WAVE5_FORMULARY } from "./catalog-modern-wave5";
+import { MODERN_WAVE6_FORMULARY } from "./catalog-modern-wave6";
 import { hasDrugbank } from "./drugbank";
 import { hasPgx } from "./pgx";
 import { hasCite } from "./pubmed";
@@ -1017,7 +1018,7 @@ const raw: Drug[] = [
     ["dissociative", "cns-depressant"],
     "NMDA airway stack; oral first-pass 3A4/2B6 like ketamine",
     {
-      aliases: ["2-fdck", "2fdck", "2fdck"],
+      aliases: ["2-fdck", "2fdck", "2-fluoro-deschloroketamine"],
       note: "Ketamine analogue. Oral first-pass is the 3A4 trap; IV mostly skips it.",
     }),
   d("mxe", "Methoxetamine", [], "Arylcyclohexylamine dissociative",
@@ -2862,6 +2863,7 @@ const afterFda = new Set([...afterWave2, ...FDA_TABLE_SHELF.map((d) => d.id)]);
 const afterLabel = new Set([...afterFda, ...LABEL_NAMED_SHELF.map((d) => d.id)]);
 const afterWave3 = new Set([...afterLabel, ...MODERN_WAVE3_FORMULARY.map((d) => d.id)]);
 const afterWave4 = new Set([...afterWave3, ...MODERN_WAVE4_FORMULARY.map((d) => d.id)]);
+const afterWave5 = new Set([...afterWave4, ...MODERN_WAVE5_FORMULARY.map((d) => d.id)]);
 export const DRUGS: Drug[] = [
   ...raw,
   ...clinicExtra,
@@ -2872,6 +2874,7 @@ export const DRUGS: Drug[] = [
   ...MODERN_WAVE3_FORMULARY.filter((d) => !afterLabel.has(d.id)),
   ...MODERN_WAVE4_FORMULARY.filter((d) => !afterWave3.has(d.id)),
   ...MODERN_WAVE5_FORMULARY.filter((d) => !afterWave4.has(d.id)),
+  ...MODERN_WAVE6_FORMULARY.filter((d) => !afterWave5.has(d.id)),
 ];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 
@@ -3513,7 +3516,8 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
         } else if (enzymeRoles.length > 0) s = 25;
         else if (eKindQuery(drug, q)) s = 20;
       }
-      if (saltBonus && s >= 60) s += 5;
+      if (!saltBonus && s >= 99) s += 10;
+      else if (saltBonus && s >= 60) s += 5;
       if (s > score) score = s;
     }
     if (score > 0) scored.push({ drug, score });

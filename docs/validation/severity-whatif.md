@@ -15,7 +15,7 @@ The question was whether a CYP or P-gp finding should read contraindicated ("Avo
 
 | Measure | Count |
 |---|---|
-| Catalog entries / unordered pairs scanned | 1,918 / 1,838,403 |
+| Catalog entries / unordered pairs scanned | 1,935 / 1,871,145 |
 | Contraindicated CYP/P-gp findings (pkSeverity branch) | 317 (317 CYP, 0 P-gp) on 317 pairs (317 by display name, as #66 counts) |
 | … of which carry a label citation (kept at contraindicated) | 317 |
 | **Findings that move contraindicated → major** | **0** on **0** pairs |
@@ -76,7 +76,7 @@ None. No finding involving these drugs is a CYP/P-gp contraindicated finding on 
 
 ## Informational: sodium oxybate × non-hypnotic CNS depressants (not part of this what-if)
 
-Rule `pd-ghb-cns` marks sodium oxybate with any CNS depressant as contraindicated: 738 pairs on main. Using #66's heuristic split, 120 have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner (the label's contraindication) and **618** have some other CNS depressant partner (#66 reported about 597). That is a separate question; this preview does not simulate it.
+Rule `pd-ghb-cns` marks sodium oxybate with any CNS depressant as contraindicated: 789 pairs on main. Using #66's heuristic split, 126 have an alcohol / benzodiazepine / Z-drug / hypnotic / barbiturate partner (the label's contraindication) and **663** have some other CNS depressant partner (#66 reported about 597). That is a separate question; this preview does not simulate it.
 
 ## Method and limits
 

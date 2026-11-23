@@ -116,16 +116,34 @@ const ENTERAL_VICTIM = new Set(["phenytoin", "warfarin", "levothyroxine", "carba
  * antiretroviral 3A4 inhibitor is in methadone-antiretroviral.ts.
  */
 const RITONAVIR_BOOST = new Set(["ritonavir", "paxlovid"]);
-/** Illicit / street full agonists that stack with a methadone take-home. */
+/** Illicit / street full agonists that stack with a methadone take-home or precipitate withdrawal with buprenorphine. */
 const STREET_FULL_AGONIST = new Set([
   "fentanyl",
   "dirty-30",
   "heroin",
   "carfentanil",
+  "cychlorphine",
+  "brorphine",
+  "spirochlorphine",
+  "sr-17018",
+  "dichloro-brorphine",
+  "chlorphine",
+  "n-phenethyl-chloro-nor-orphine",
+  "etonitazene",
   "isotonitazene",
   "protonitazene",
   "metonitazene",
-  "etonitazene",
+  "clonitazene",
+  "N-desethyl-isotonitazene",
+  "n-pyrrolidino-etonitazene",
+  "butonitazene",
+  "protonitazepyne",
+  "metonitazepyne",
+  "etonitazepipne",
+  "norisotonitazene",
+  "n-pyrrolidino-ethylene-isotonitazene",
+  "etodesnitazene",
+  "flunitazene",
 ]);
 
 function pkSeverity(
@@ -873,8 +891,8 @@ function pdFindings(a: Drug, b: Drug): Finding[] {
     );
   }
 
-  const aOp = has(a, "opioid");
-  const bOp = has(b, "opioid");
+  const aOp = has(a, "opioid") || STREET_FULL_AGONIST.has(a.id);
+  const bOp = has(b, "opioid") || STREET_FULL_AGONIST.has(b.id);
   const aBz = has(a, "benzo-zdrug");
   const bBz = has(b, "benzo-zdrug");
   const aCns = has(a, "cns-depressant");

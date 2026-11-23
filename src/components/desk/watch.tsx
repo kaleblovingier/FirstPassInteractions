@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { RefreshCw, Trash2, Plus, ExternalLink } from "lucide-react";
+import { RefreshCw, Trash2, Plus, ExternalLink, Search, Check } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { lookupLiveSources } from "@/lib/drugs/live-rpc";
 import type { LiveSources } from "@/lib/drugs/live";
+import {
+  NPS_WATCH,
+  NPS_FAMILIES,
+  npsByFamily,
+  type NpsFamily,
+  type NpsWatchEntry,
+} from "@/lib/drugs/nps-watch";
 import { formatFetchedAt, watchRecallCopy, watchShortageCopy } from "@/components/desk/watch-copy";
 import {
   readWatchlist,
@@ -23,6 +30,19 @@ type RowStatus = {
   pack: LiveSources | null;
 };
 
+function matchesNpsQuery(entry: NpsWatchEntry, rawQuery: string): boolean {
+  const q = rawQuery.trim().toLowerCase();
+  if (!q) return true;
+  return (
+    entry.shortLabel.toLowerCase().includes(q) ||
+    entry.id.toLowerCase().includes(q) ||
+    entry.watchNote.toLowerCase().includes(q) ||
+    entry.assayBlindSpot.toLowerCase().includes(q) ||
+    entry.naloxoneNote.toLowerCase().includes(q) ||
+    entry.agencies.some((agency) => agency.toLowerCase().includes(q))
+  );
+}
+
 function watchEnzymeLine(enzymes: EnzymeRole[]): string | null {
   const perp = enzymes.find(
     (role): role is Extract<EnzymeRole, { kind: "inhibitor" | "inducer" }> =>
@@ -40,6 +60,7 @@ function watchEnzymeLine(enzymes: EnzymeRole[]): string | null {
 export function WatchPage() {
   const plan = usePlan();
   const selected = useDesk((s) => s.selected);
+  const add = useDesk((s) => s.add);
   const load = useDesk((s) => s.load);
   const setView = useDesk((s) => s.setView);
   const openCheckout = useDesk((s) => s.openCheckout);
@@ -51,7 +72,11 @@ export function WatchPage() {
   const [rows, setRows] = useState<Record<string, RowStatus>>({});
   const [epoch, setEpoch] = useState(0);
   const [note, setNote] = useState<string | null>(null);
+  const [npsFamily, setNpsFamily] = useState<NpsFamily | "all">("all");
+  const [npsQuery, setNpsQuery] = useState("");
   const pullGen = useRef<Record<string, number>>({});
+
+  const filteredNps = npsByFamily(npsFamily).filter((entry) => matchesNpsQuery(entry, npsQuery));
 
   const refreshOne = useCallback(async (id: string, refresh = false) => {
     const gen = (pullGen.current[id] ?? 0) + 1;
@@ -91,8 +116,8 @@ export function WatchPage() {
     }
   }, [book.ids.join("|"), epoch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function addTray() {
-    if (selected.length === 0) return;
+  function pinIds(idsToPin: string[]) {
+    if (idsToPin.length === 0) return;
     setNote(null);
     const room = cap - book.ids.length;
     if (room <= 0) {
@@ -107,7 +132,7 @@ export function WatchPage() {
       }
       return;
     }
-    const { state, rejected } = saveAdd(selected, cap);
+    const { state, rejected } = saveAdd(idsToPin, cap);
     setBook(state);
     setEpoch((e) => e + 1);
     if (rejected.length > 0) {
@@ -123,6 +148,15 @@ export function WatchPage() {
         );
       }
     }
+  }
+
+  function addTray() {
+    pinIds(selected);
+  }
+
+  function trackCompound(id: string) {
+    if (book.ids.includes(id)) return;
+    pinIds([id]);
   }
 
   function remove(id: string) {
@@ -328,6 +362,151 @@ export function WatchPage() {
           </>
         ) : null}
       </p>
+
+      <section
+        aria-label="Emerging Supply Surveillance (2025–2026)"
+        className="rounded-xl bg-surface px-5 py-5 shadow-[var(--shadow-border)] sm:px-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-danger">
+            Forensic Early Warning · CFSRE · UNODC · EUDA · DEA
+          </p>
+          <Badge tone="danger">{NPS_WATCH.length} monitored compounds</Badge>
+        </div>
+        <h2 className="mt-2 font-serif text-2xl tracking-tight text-fg">
+          Emerging Supply Surveillance (2025–2026)
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+          These {NPS_WATCH.length} compounds reflect 2025–2026 early-warning forensic toxicology
+          alerts from <strong className="font-semibold text-fg">CFSRE</strong>,{" "}
+          <strong className="font-semibold text-fg">UNODC</strong>,{" "}
+          <strong className="font-semibold text-fg">EUDA</strong>, and{" "}
+          <strong className="font-semibold text-fg">DEA</strong> across orphines, nitazenes,
+          designer benzodiazepines, semi-synthetic HHC cannabinoids, veterinary α2-agonists,
+          concentrated 7-OH kratom alkaloids, and arylcyclohexylamine dissociatives. Review point-of-care
+          immunoassay and test-strip blind spots alongside reversal and airway priorities.
+        </p>
+
+        <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="Filter by compound family">
+          <button
+            type="button"
+            aria-pressed={npsFamily === "all"}
+            onClick={() => setNpsFamily("all")}
+            className={cn(
+              "rounded-full border px-3 py-1 font-mono text-xs transition-colors",
+              npsFamily === "all"
+                ? "border-accent bg-accent-soft font-semibold text-accent"
+                : "border-border bg-bg-sunken text-fg hover:border-accent/40",
+            )}
+          >
+            All ({NPS_WATCH.length})
+          </button>
+          {NPS_FAMILIES.map((fam) => {
+            const active = npsFamily === fam.id;
+            return (
+              <button
+                key={fam.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setNpsFamily(fam.id)}
+                className={cn(
+                  "rounded-full border px-3 py-1 font-mono text-xs transition-colors",
+                  active
+                    ? "border-accent bg-accent-soft font-semibold text-accent"
+                    : "border-border bg-bg-sunken text-fg hover:border-accent/40",
+                )}
+              >
+                {fam.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative mt-3 max-w-xl">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+          <input
+            type="search"
+            value={npsQuery}
+            onChange={(e) => setNpsQuery(e.target.value)}
+            aria-label="Filter emerging forensic compounds"
+            placeholder="Filter 27 monitored compounds by name, agency, or blind spot…"
+            className="h-9 w-full rounded-lg border border-border bg-bg-sunken pl-9 pr-3 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none"
+          />
+        </div>
+
+        {filteredNps.length === 0 ? (
+          <p className="mt-4 rounded-lg bg-bg-sunken px-4 py-6 text-sm text-muted">
+            No monitored compounds match that filter.
+          </p>
+        ) : (
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {filteredNps.map((entry) => {
+              const onTray = selected.includes(entry.id);
+              const tracked = book.ids.includes(entry.id);
+              return (
+                <li
+                  key={entry.id}
+                  className="flex flex-col justify-between rounded-xl border border-border bg-bg-sunken/60 p-4"
+                >
+                  <div>
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <h3 className="font-serif text-base font-medium tracking-tight text-fg">
+                        {entry.shortLabel}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-1">
+                        {onTray ? <Badge tone="ok">On tray</Badge> : null}
+                        {entry.agencies.map((agency) => (
+                          <Badge key={agency} tone="danger" className="font-mono text-[10px]">
+                            {agency}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="mt-2 text-xs leading-relaxed text-fg/90">{entry.watchNote}</p>
+
+                    <div className="mt-2.5 space-y-1.5 rounded-lg border border-border bg-surface p-2.5 text-xs">
+                      <p className="leading-relaxed text-fg/90">
+                        <strong className="font-semibold text-fg">
+                          Assay &amp; test-strip blind spot:
+                        </strong>{" "}
+                        {entry.assayBlindSpot}
+                      </p>
+                      <p className="leading-relaxed text-fg/90">
+                        <strong className="font-semibold text-fg">Reversal &amp; airway:</strong>{" "}
+                        {entry.naloxoneNote}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2 pt-1">
+                    <Button
+                      size="sm"
+                      variant={onTray ? "secondary" : "default"}
+                      onClick={() => {
+                        add(entry.id);
+                        setView("desk");
+                      }}
+                    >
+                      {onTray ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
+                      {onTray ? "On tray" : "Add to tray"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={tracked}
+                      onClick={() => trackCompound(entry.id)}
+                    >
+                      {tracked ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
+                      {tracked ? "Tracked" : "Track on watchlist"}
+                    </Button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

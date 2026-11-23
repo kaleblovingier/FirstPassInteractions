@@ -1,6 +1,11 @@
 /** OTP / office-based MAT teaching tools. Not a protocol, not a milligram, not 42 CFR compliance software. */
 
 import { DRUG_BY_ID } from "./catalog";
+import {
+  NPS_DESIGNER_BENZO_IDS,
+  NPS_NITAZENE_IDS,
+  NPS_ORPHINE_IDS,
+} from "./nps-watch";
 
 export type LastAgonist = "fentanyl" | "short" | "methadone" | "bup" | "unknown";
 export type Tone = "ok" | "warn" | "danger";
@@ -12,6 +17,35 @@ export interface OtpCall {
   consider: string;
 }
 
+const HIGH_AFFINITY_SYNTHETIC_OPIOIDS = new Set([
+  "fentanyl",
+  "dirty-30",
+  "pressed-30",
+  "carfentanil",
+  "cychlorphine",
+  "brorphine",
+  "spirochlorphine",
+  "sr-17018",
+  "dichloro-brorphine",
+  "chlorphine",
+  "n-phenethyl-chloro-nor-orphine",
+  "etonitazene",
+  "isotonitazene",
+  "protonitazene",
+  "metonitazene",
+  "clonitazene",
+  "N-desethyl-isotonitazene",
+  "n-pyrrolidino-etonitazene",
+  "butonitazene",
+  "protonitazepyne",
+  "metonitazepyne",
+  "etonitazepipne",
+  "norisotonitazene",
+  "n-pyrrolidino-ethylene-isotonitazene",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+]);
+
 export const LAST_AGONISTS: { id: LastAgonist; label: string; hint: string }[] = [
   { id: "fentanyl", label: "Fentanyl / nitazene / pressed 30", hint: "Lipophilic depot. Occupancy can outlast the COWS." },
   { id: "short", label: "Heroin / oxycodone / hydro", hint: "Shorter μ occupancy than fentanyl or methadone." },
@@ -22,7 +56,7 @@ export const LAST_AGONISTS: { id: LastAgonist; label: string; hint: string }[] =
 
 export function guessLastAgonist(ids: string[]): LastAgonist {
   if (ids.includes("methadone") && !ids.includes("buprenorphine")) return "methadone";
-  if (ids.some((id) => ["fentanyl", "dirty-30", "pressed-30", "carfentanil", "isotonitazene", "protonitazene", "metonitazene", "etonitazene"].includes(id))) {
+  if (ids.some((id) => HIGH_AFFINITY_SYNTHETIC_OPIOIDS.has(id))) {
     return "fentanyl";
   }
   if (ids.some((id) => ["heroin", "oxycodone", "hydrocodone", "morphine", "hydromorphone"].includes(id))) {
@@ -199,22 +233,25 @@ export function methadoneMonitor(ids: string[], qtPartner: boolean): OtpCall | n
 }
 
 export function otpWanted(ids: string[]) {
-  return ids.some((id) =>
-    [
-      "methadone",
-      "buprenorphine",
-      "naltrexone",
-      "naloxone",
-      "nalmefene",
-      "lofexidine",
-      "fentanyl",
-      "dirty-30",
-      "heroin",
-      "xylazine",
-      "pressed-30",
-      "medetomidine",
-      "seven-oh",
-      "bromazolam",
-    ].includes(id),
+  return ids.some(
+    (id) =>
+      HIGH_AFFINITY_SYNTHETIC_OPIOIDS.has(id) ||
+      NPS_DESIGNER_BENZO_IDS.has(id) ||
+      [
+        "methadone",
+        "buprenorphine",
+        "naltrexone",
+        "naloxone",
+        "nalmefene",
+        "lofexidine",
+        "fentanyl",
+        "dirty-30",
+        "heroin",
+        "xylazine",
+        "pressed-30",
+        "medetomidine",
+        "seven-oh",
+        "bromazolam",
+      ].includes(id),
   );
 }

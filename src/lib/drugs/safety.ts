@@ -4,6 +4,7 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
+import { NPS_DESIGNER_BENZO_IDS, NPS_NITAZENE_IDS, NPS_ORPHINE_IDS } from "./nps-watch";
 import { ACEI, ARNI, CARBAPENEMS, VALPROATES, isArniAcei } from "./wards";
 import type { Severity } from "./types";
 
@@ -161,7 +162,15 @@ export type SafetyKind =
   | "venetoclax-strong-cyp3a4-tls"
   | "voriconazole-strong-inducer"
   | "valproate-topiramate-hyperammonemia"
-  | "mtx-ppi-delayed-clearance";
+  | "mtx-ppi-delayed-clearance"
+  | "orphine-nitazene-sedative-stack"
+  | "emerging-opioid-alpha2-adulterant";
+
+export interface SafetyCitation {
+  label: string;
+  url: string;
+  pmid: string;
+}
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -173,6 +182,10 @@ export interface SafetyHit {
   clinical: string;
   watch: string;
   source: string;
+  regulatoryTier?: Severity;
+  detail?: string;
+  action?: string;
+  citations?: readonly SafetyCitation[];
 }
 
 function hit(
@@ -232,8 +245,10 @@ export function isSofosbuvirAmio(a: string, b: string) {
   return amio && (isSofosbuvir(a) || isSofosbuvir(b));
 }
 
-export function isBenzo(id: string) {
-  return /Benzodiazepine/i.test(clsOf(id));
+export function isBenzo(idOrDrug: string | { id: string; cls?: string }) {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  const cls = (typeof idOrDrug === "string" ? clsOf(id) : (idOrDrug.cls ?? clsOf(id))).toLowerCase();
+  return NPS_DESIGNER_BENZO_IDS.has(id) || cls.includes("benzodiazepine");
 }
 
 export function isClozapineBenzo(a: string, b: string) {
@@ -639,8 +654,10 @@ export function isTheophyllineCyp1a2(a: string, b: string) {
   );
 }
 
-export function isOpioid(id: string) {
+export function isOpioid(idOrDrug: string | { id: string; cls?: string; pd?: readonly string[] }) {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
   if (id === "loperamide") return false;
+  if (NPS_ORPHINE_IDS.has(id) || NPS_NITAZENE_IDS.has(id)) return true;
   const d = DRUG_BY_ID[id];
   if (!d) return false;
   if (d.pd.includes("opioid-antagonist") || /antagonist/i.test(d.cls)) return false;
@@ -1198,6 +1215,77 @@ export function isMtxPpiDelayedClearance(a: string, b: string): boolean {
     hasSystemic(PPI),
   );
 }
+
+export function isEmergingOrphineOrNitazene(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return NPS_ORPHINE_IDS.has(id) || NPS_NITAZENE_IDS.has(id);
+}
+
+export function isOrphineNitazeneSedativeStack(a: string, b: string): boolean {
+  return matchesSymmetricPair(a, b, isEmergingOrphineOrNitazene, isBenzo);
+}
+
+export const STREET_OR_EMERGING_OPIOID_IDS: ReadonlySet<string> = new Set([
+  "fentanyl",
+  "dirty-30",
+  "pressed-30",
+  "heroin",
+  "carfentanil",
+  "seven-oh",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+]);
+
+export const ALPHA2_ADULTERANT_IDS: ReadonlySet<string> = new Set([
+  "xylazine",
+  "medetomidine",
+  "dexmedetomidine",
+]);
+
+export function isStreetOrEmergingOpioid(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return STREET_OR_EMERGING_OPIOID_IDS.has(id);
+}
+
+export function isAlpha2Adulterant(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return ALPHA2_ADULTERANT_IDS.has(id);
+}
+
+export function isEmergingOpioidAlpha2Adulterant(a: string, b: string): boolean {
+  return matchesSymmetricPair(a, b, isStreetOrEmergingOpioid, isAlpha2Adulterant);
+}
+
+export const ORPHINE_NITAZENE_SEDATIVE_CITATIONS: readonly SafetyCitation[] = [
+  {
+    label: "Zschiesche A et al. Front Toxicol 2026 (severe cychlorphine intoxication from mislabeled online designer-benzo pill)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/42979587/",
+    pmid: "42979587",
+  },
+  {
+    label: "Bal M et al. Am J Addict 2026 (cychlorphine exposure & clinical toxicology in opioid use disorder)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/42931793/",
+    pmid: "42931793",
+  },
+  {
+    label: "Blanksby I et al. Emerg Med J 2026 (naloxone titration & respiratory rescue in confirmed nitazene overdoses)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/42392847/",
+    pmid: "42392847",
+  },
+];
+
+export const EMERGING_OPIOID_ALPHA2_CITATIONS: readonly SafetyCitation[] = [
+  {
+    label: "Koncsol AJ et al. medRxiv 2026 (emergence of medetomidine in illicit fentanyl markets)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/42996303/",
+    pmid: "42996303",
+  },
+  {
+    label: "Kelly PJA et al. J Subst Use Addict Treat 2026 (clinical management of alpha-2 agonist adulterant harms)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/42276321/",
+    pmid: "42276321",
+  },
+];
 
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
@@ -2111,6 +2199,69 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Methotrexate Prescribing Information Warnings & Section 7. Jafari F et al. Expert Opin Drug Metab Toxicol 2023 (PMID 36946211). Chakrabarti A et al. Toxicol Rep 2026 (PMID 42255661).",
       ),
     );
+  }
+
+  const uniqueIds = [...new Set(ids)];
+  const emergingOpioids = uniqueIds
+    .filter((id) => isEmergingOrphineOrNitazene(id))
+    .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+  const benzos = uniqueIds
+    .filter((id) => isBenzo(id))
+    .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+
+  if (emergingOpioids.length > 0 && benzos.length > 0) {
+    const detail =
+      'Benzimidazolone-piperidine ("orphine") opioids (cychlorphine, brorphine, spirochlorphine, SR-17018, chlorphine) and 2-benzylbenzimidazole ("nitazene") opioids (protonitazepyne, metonitazepyne, etonitazepipne, isotonitazene, norisotonitazene, etonitazene, metonitazene) are ultra-high-affinity μ-opioid receptor agonists that evade fentanyl test strips and standard hospital opiate immunoassays while sharing CYP3A4 clearance with prescription and designer benzodiazepines (bromazolam, clobromazolam / phenazolam, ethylbromazolam, ethylflualprazolam, desalkylgidazepam). Co-ingestion—frequently via counterfeit pressed alprazolam or oxycodone tablets containing both classes—produces synergistic central respiratory arrest where naloxone reverses only the μ-opioid component while leaving designer-benzodiazepine coma unreversed.';
+    const action =
+      "Prioritize immediate bag-valve-mask ventilation and oxygen support alongside titrated naloxone for respiratory depression; expect delayed re-narcotization from lipophilic depot kinetics or active metabolites (norisotonitazene) and avoid flumazenil in chronic or unknown benzodiazepine exposure due to seizure risk.";
+    out.push({
+      id: "orphine-nitazene-sedative-stack",
+      drugIds: [emergingOpioids[0]!.id, benzos[0]!.id],
+      title: `${emergingOpioids.map((d) => d.name).join(" / ")} + ${benzos.map((d) => d.name).join(" / ")}: Emerging orphine/nitazene synthetic opioid + benzodiazepine respiratory arrest & counterfeit-pill toxicity`,
+      severity: "contraindicated",
+      regulatoryTier: "contraindicated",
+      tone: "danger",
+      mechanism:
+        "emerging orphine / nitazene synthetic opioid × benzodiazepine — synergistic central respiratory arrest & counterfeit-pill toxicity",
+      clinical: detail,
+      detail,
+      watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
+      action,
+      source:
+        ORPHINE_NITAZENE_SEDATIVE_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
+      citations: ORPHINE_NITAZENE_SEDATIVE_CITATIONS,
+    });
+  }
+
+  const opioidTargets = uniqueIds
+    .filter((id) => isStreetOrEmergingOpioid(id))
+    .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+  const alpha2Targets = uniqueIds
+    .filter((id) => isAlpha2Adulterant(id))
+    .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+
+  if (opioidTargets.length > 0 && alpha2Targets.length > 0) {
+    const detail =
+      "Medetomidine (a racemic veterinary α2-adrenergic agonist roughly 100 to 200 times more potent than xylazine) and xylazine suppress central locus coeruleus norepinephrine outflow independently of μ-opioid receptors. When co-adulterated into fentanyl, nitazene, or orphine supplies, they cause profound coma that persists after μ-opioid reversal with naloxone, accompanied by marked bradycardia, hypotension, and—after chronic exposure—a severe autonomic rebound withdrawal syndrome (hypertensive crisis, tachycardia, tremor, agitation) not relieved by opioid agonist therapy alone.";
+    const action =
+      "Administer naloxone to restore spontaneous ventilation (targeting respiratory rate and oxygenation rather than full awakening), provide immediate airway and hemodynamic support for α2-mediated bradycardia/hypotension, and monitor for severe α2-adrenergic rebound hypertension and agitation during withdrawal.";
+    out.push({
+      id: "emerging-opioid-alpha2-adulterant",
+      drugIds: [opioidTargets[0]!.id, alpha2Targets[0]!.id],
+      title: `${opioidTargets.map((d) => d.name).join(" / ")} + ${alpha2Targets.map((d) => d.name).join(" / ")}: Synthetic opioid + α2-adrenergic adulterant (medetomidine / xylazine) naloxone-refractory coma & severe bradycardia`,
+      severity: "contraindicated",
+      regulatoryTier: "contraindicated",
+      tone: "danger",
+      mechanism:
+        "synthetic opioid × α2-adrenergic adulterant (medetomidine / xylazine) — naloxone-refractory coma & severe bradycardia",
+      clinical: detail,
+      detail,
+      watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
+      action,
+      source:
+        EMERGING_OPIOID_ALPHA2_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
+      citations: EMERGING_OPIOID_ALPHA2_CITATIONS,
+    });
   }
 
   return out;

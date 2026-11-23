@@ -1899,5 +1899,55 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     drugIds: ["sildenafil", "nitroglycerin"],
     lane: "clinic",
   },
+  {
+    id: "cychlorphine-medetomidine",
+    title: "Cychlorphine + Medetomidine (2026 Street Supply)",
+    blurb:
+      "Orphine synthetic opioid × veterinary α2 adulterant — both evade FTS/XTS strips; naloxone reverses only the μ-opioid while α2 coma and bradycardia persist",
+    drugIds: ["cychlorphine", "medetomidine"],
+    lane: "street",
+  },
+  {
+    id: "protonitazepyne-phenazolam",
+    title: "Protonitazepyne + Clobromazolam (Counterfeit Bar)",
+    blurb:
+      "N-pyrrolidino nitazene × designer triazolobenzodiazepine in counterfeit pressed bars — CYP3A4 overlap and central respiratory arrest where naloxone leaves the benzo coma untouched",
+    drugIds: ["protonitazepyne", "phenazolam"],
+    lane: "street",
+  },
+  {
+    id: "sr17018-ethylbromazolam",
+    title: "SR-17018 + Ethylbromazolam (Biased-Agonist Myth)",
+    blurb:
+      "Preclinical G-protein bias does not prevent human respiratory arrest when stacked with a post-scheduling designer benzodiazepine",
+    drugIds: ["sr-17018", "ethylbromazolam"],
+    lane: "street",
+  },
+  {
+    id: "norisotonitazene-methadone",
+    title: "Norisotonitazene + Methadone (OTP Window)",
+    blurb:
+      "Active N-desethyl nitazene metabolite and standalone street opioid on a methadone take-home — stacked μ-opioid respiratory load and CYP3A4 overlap",
+    drugIds: ["norisotonitazene", "methadone"],
+    lane: "mat",
+  },
+  {
+    id: "hhcp-alprazolam-fluconazole",
+    title: "HHC-P + Alprazolam + Fluconazole (CYP3A4 Stack)",
+    blurb:
+      "Heptyl-tail hydrogenated cannabinoid + triazolobenzodiazepine with moderate CYP3A4/2C9 inhibition — prolonged CB1/GABA-A sedation",
+    drugIds: ["hhc-p", "alprazolam", "fluconazole"],
+    lane: "street",
+  },
+  {
+    id: "twofdck-desalkylgidazepam",
+    title: "2-FDCK + Desalkylgidazepam (Dissociative + Long-Acting Benzo)",
+    blurb:
+      "Fluorinated arylcyclohexylamine dissociative × ultra-long-half-life designer benzodiazepine — multi-day sedation, airway compromise, and CYP3A4 substrate overlap",
+    drugIds: ["two-fdck", "desalkylgidazepam"],
+    lane: "street",
+  },
   ...SAMPLE_REGIMENS_WAVE2,
 ];
+
+export const SAMPLES = SAMPLE_REGIMENS;

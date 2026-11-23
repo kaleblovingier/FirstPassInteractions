@@ -41,6 +41,7 @@ import { hasCite } from "@/lib/drugs/pubmed";
 import { hasPgx } from "@/lib/drugs/pgx";
 import { hasStahl } from "@/lib/drugs/stahl";
 import { plateForDrug } from "@/lib/drugs/visuals";
+import { NPS_WATCH, NPS_WATCH_BY_ID } from "@/lib/drugs/nps-watch";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { maxDrugs } from "@/lib/billing/plans";
 import {
@@ -382,12 +383,14 @@ function CompoundsShelf() {
   const [q, setQ] = useState("");
   const [enzyme, setEnzyme] = useState<Enzyme | "">("");
   const [enzymeRole, setEnzymeRole] = useState<ShelfRole>("any");
+  const [npsOnly, setNpsOnly] = useState(false);
   const libraryShelf = useDesk((s) => s.libraryShelf);
   useEffect(() => {
     if (!libraryShelf) return;
     setFamily("all");
     setQ("");
     setShelf(libraryShelf);
+    setNpsOnly(false);
     useDesk.setState({ libraryShelf: "" });
   }, [libraryShelf]);
 
@@ -453,6 +456,7 @@ function CompoundsShelf() {
     const needle = q.trim().toLowerCase();
     return inFamily
       .filter((d) => {
+        if (npsOnly && !Object.hasOwn(NPS_WATCH_BY_ID, d.id)) return false;
         if (shelf && d.cls !== shelf) return false;
         if (enzyme && !d.enzymes.some((e) => e.enzyme === enzyme && (enzymeRole === "any" || e.kind === enzymeRole))) {
           return false;
@@ -467,7 +471,7 @@ function CompoundsShelf() {
         );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [inFamily, shelf, q, enzyme, enzymeRole]);
+  }, [inFamily, npsOnly, shelf, q, enzyme, enzymeRole]);
 
   const counts = useMemo(() => {
     const map: Record<string, number> = { all: DRUGS.length };
@@ -478,7 +482,7 @@ function CompoundsShelf() {
     return map;
   }, []);
 
-  const hasFilter = family !== "all" || shelf.length > 0 || q.trim().length > 0 || enzyme !== "";
+  const hasFilter = family !== "all" || shelf.length > 0 || q.trim().length > 0 || enzyme !== "" || npsOnly;
   const freeCapNote =
     plan === "free"
       ? `Up to ${cap} stay free on the desk.`
@@ -490,6 +494,7 @@ function CompoundsShelf() {
     setFamily("all");
     setEnzyme("");
     setEnzymeRole("any");
+    setNpsOnly(false);
   }
 
   function browseAll() {
@@ -498,6 +503,7 @@ function CompoundsShelf() {
     setFamily("all");
     setEnzyme("");
     setEnzymeRole("any");
+    setNpsOnly(false);
   }
 
   return (
@@ -550,6 +556,26 @@ function CompoundsShelf() {
             <span className="ml-1.5 font-mono tabular-nums">{counts[f.id] ?? 0}</span>
           </button>
         ))}
+        <button
+          type="button"
+          aria-pressed={npsOnly}
+          onClick={() => {
+            setNpsOnly((v) => {
+              const next = !v;
+              if (next) setShelf("");
+              return next;
+            });
+          }}
+          className={cn(
+            "min-h-[44px] rounded-full border px-3 text-xs font-medium transition-colors",
+            npsOnly
+              ? "border-danger bg-danger-soft text-danger"
+              : "border-danger/35 bg-danger-soft/30 text-danger hover:bg-danger-soft/60",
+          )}
+        >
+          Emerging supply 2025–2026
+          <span className="ml-1.5 font-mono tabular-nums">({NPS_WATCH.length})</span>
+        </button>
       </div>
 
       {shelves.length > 0 ? (
@@ -767,8 +793,13 @@ function CompoundsShelf() {
                     className="h-full w-16 shrink-0 object-cover sm:w-20"
                   />
                   <span className="flex min-w-0 flex-1 flex-col justify-center px-3 py-3">
-                    <span className="flex items-center gap-2">
+                    <span className="flex flex-wrap items-center gap-2">
                       <span className="truncate text-sm font-medium text-fg">{d.name}</span>
+                      {Object.hasOwn(NPS_WATCH_BY_ID, d.id) ? (
+                        <span className="inline-flex shrink-0 items-center rounded border border-danger/35 bg-danger-soft/40 px-1.5 py-0.5 font-mono text-[10px] font-medium text-danger">
+                          {`2025–2026 NPS · ${NPS_WATCH_BY_ID[d.id]!.agencies.join("/")}`}
+                        </span>
+                      ) : null}
                       {on ? (
                         <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent">
                           <Check className="size-3" aria-hidden />

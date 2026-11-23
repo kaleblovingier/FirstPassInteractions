@@ -1646,6 +1646,42 @@ export const ROUNDS: Round[] = [
     lane: "clinic",
     blurb: "Ritonavir blocks 3A4 and P-gp. The cap stays on the label. Not a milligram.",
   },
+  {
+    id: "r-street-cychlorphine-phenazolam-counterfeit",
+    title: "The counterfeit pressed bar that hid an orphine opioid",
+    setting: "street",
+    stem: "A patient is brought to the emergency department apneic and cyanotic with pinpoint pupils after taking a pressed tablet purchased online as a designer benzodiazepine. Bystander fentanyl test strips on a remaining tablet fragment are negative, and the hospital point-of-care urine opiate and benzodiazepine immunoassays are both negative. Titrated naloxone restores spontaneous respiratory rate, yet the patient remains deeply comatose with QTc prolongation on telemetry. Subsequent forensic LC-QTOF analysis identifies cychlorphine co-pressed with phenazolam (clobromazolam).",
+    ask: "Why did point-of-care strips and routine immunoassays miss both compounds, why did naloxone restore breathing without waking the patient, and what cardiac liability does the orphine scaffold add?",
+    teach:
+      "Cychlorphine is a benzimidazolone-piperidine ('orphine') synthetic μ-opioid receptor agonist structurally unrelated to fentanyl or morphinan opiates, so it does not cross-react with fentanyl test strips or standard hospital opiate immunoassays. Phenazolam (clobromazolam) is a potent triazolobenzodiazepine that frequently evades legacy benzodiazepine urine cups. Naloxone competitively antagonizes cychlorphine at μ-opioid receptors—restoring central respiratory drive—but has zero activity at GABA-A receptors, leaving the phenazolam-induced coma unreversed. Both compounds share hepatic CYP3A4 clearance, and the brorphine/cychlorphine scaffold carries class-level hERG potassium-channel blockade requiring continuous ECG/QTc surveillance and extended monitoring for delayed re-narcotization.",
+    drugIds: ["cychlorphine", "phenazolam"],
+    lane: "street",
+    blurb: "Orphine + clobromazolam counterfeit bar · FTS/UDS blind spot · naloxone-responsive apnea vs benzo coma · hERG QTc risk",
+  },
+  {
+    id: "r-mat-protonitazepyne-medetomidine-buprenorphine",
+    title: "The N-pyrrolidino nitazene fold, the medetomidine coma, and the buprenorphine trap",
+    setting: "mat",
+    stem: "An emergency department resuscitates a patient from an illicit opioid overdose where fentanyl and xylazine test strips were both negative; naloxone restored ventilation, but profound coma and marked sinus bradycardia persisted for hours. Later, when spontaneous awakening and early opioid withdrawal signs emerge, standard buprenorphine initiation triggers fulminant precipitated withdrawal accompanied by a severe hypertensive, tachycardic autonomic storm. Forensic testing confirms protonitazepyne adulterated with medetomidine.",
+    ask: "How do protonitazepyne and medetomidine explain the dual test-strip blind spot, the naloxone-refractory bradycardic coma, and the twin hazards of precipitated opioid withdrawal plus α2-adrenergic rebound crisis?",
+    teach:
+      "Protonitazepyne (N-pyrrolidino protonitazene) is an ultra-high-affinity 2-benzylbenzimidazole μ-opioid full agonist with lipophilic tissue persistence that evades fentanyl test strips, while medetomidine is a racemic veterinary α2-adrenergic agonist (far more potent than xylazine) that evades xylazine test strips. During acute overdose, naloxone reverses protonitazepyne-mediated respiratory arrest but cannot reverse medetomidine's central locus coeruleus α2-mediated coma, bradycardia, or hypotension. During transition to buprenorphine, two distinct collisions converge: buprenorphine's high receptor affinity and partial intrinsic efficacy abruptly displace residual high-efficacy protonitazepyne from μ-opioid receptors (precipitating severe opioid withdrawal), while abrupt cessation of chronic medetomidine exposure unleashes an unopposed central sympathetic rebound syndrome (hypertensive crisis, agitation, tremor, and tachycardia) that opioid agonists alone cannot suppress.",
+    drugIds: ["protonitazepyne", "medetomidine", "buprenorphine"],
+    lane: "mat",
+    blurb: "Protonitazepyne + medetomidine + buprenorphine · high-affinity nitazene precipitated withdrawal · α2 naloxone-refractory coma & rebound storm",
+  },
+  {
+    id: "r-street-hhco-ethylbromazolam-ketene-cyp3a4",
+    title: "The delayed acetate edible, the vaped ketene lung injury, and the designer benzo stack",
+    setting: "street",
+    stem: "A young adult ingests multiple HHC acetate (HHC-O) gummies after feeling nothing during the first hour, vapes from an HHC-O cartridge, and later takes a pressed ethylbromazolam bar to calm sudden panic and racing heartbeats. Several hours later they present with hypoxemic respiratory distress, diffuse bilateral pulmonary infiltrates, and profound central nervous system obtundation refractory to naloxone.",
+    ask: "What dual pharmacokinetic and thermal hazards distinguish HHC acetate (HHC-O) from non-esterified cannabinoids, and how does ethylbromazolam compound the clinical toxicity?",
+    teach:
+      "HHC acetate (HHC-O) is an O-acetylated semi-synthetic cannabinoid ester prodrug that requires in-vivo enzymatic deacetylation by carboxylesterases before liberating active hexahydrocannabinol at CB1 receptors. This metabolic lag delays oral onset and frequently tricks users into premature re-ingestion and severe delayed CB1 intoxication. When heated in a vape cartridge or dab rig, aryl acetate cannabinoid esters undergo thermal pyrolysis to generate ketene gas—a highly reactive pulmonary toxicant that causes acute chemical pneumonitis and diffuse alveolar injury. Co-ingesting ethylbromazolam (a post-scheduling triazolobenzodiazepine and CYP3A4 substrate) adds deep GABA-A sedation and central airway compromise on top of cannabinoid encephalopathy and hypoxic lung injury, none of which responds to naloxone.",
+    drugIds: ["hhc-o", "ethylbromazolam"],
+    lane: "street",
+    blurb: "HHC acetate (HHC-O) + ethylbromazolam · delayed esterase prodrug redosing · inhaled ketene thermal pyrolysis lung injury · CYP3A4 sedative stack",
+  },
   ...ROUNDS_WAVE2,
 ];
 

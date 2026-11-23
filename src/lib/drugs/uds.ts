@@ -31,10 +31,14 @@ export interface UdsHit {
   note: string;
 }
 
+export type UdsTrigger = "yes" | "often" | "rare" | "no";
+
 export interface UdsCard {
   id: string;
   pearl: string;
   hits: UdsHit[];
+  panel?: string;
+  triggers?: UdsTrigger;
 }
 
 export const ASSAYS: Assay[] = [
@@ -223,36 +227,182 @@ const CARDS: Record<string, Omit<UdsCard, "id">> = {
     hits: [hit("opiates", "miss", "Not on the morphine antibody.")],
   },
   isotonitazene: {
-    pearl: "Nitazenes miss morphine and often miss fentanyl strips. A negative cup is not a negative patient.",
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Nitazenes miss morphine and fentanyl immunoassays. Hepatic N-deethylation also forms active norisotonitazene. A negative cup is not a negative patient.",
     hits: [
-      hit("opiates", "miss", "Benzimidazole opioid, not morphine."),
-      hit("fentanyl", "miss", "Most fentanyl EIAs do not see isotonitazene."),
+      hit("opiates", "miss", "2-Benzylbenzimidazole opioid, not morphine."),
+      hit("fentanyl", "miss", "Standard fentanyl EIAs do not cross-react with isotonitazene."),
     ],
   },
   protonitazene: {
-    pearl: "Same nitazene miss. Do not treat a negative fentanyl strip as a clean bag.",
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Same nitazene miss. Do not treat a negative fentanyl strip or opiate cup as a clean bag.",
     hits: [
       hit("opiates", "miss", "Not morphine."),
       hit("fentanyl", "miss", "Fentanyl strip is not a nitazene strip."),
     ],
   },
   metonitazene: {
-    pearl: "Nitazene. Immunoassay is not the surveillance system you think it is.",
-    hits: [hit("opiates", "miss", "Not morphine."), hit("fentanyl", "miss", "Often a miss on fentanyl EIA.")],
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Nitazene. 2-Benzylbenzimidazoles do not cross-react with standard opiate or fentanyl cups; requires dedicated nitazene strips or forensic LC-MS/MS.",
+    hits: [hit("opiates", "miss", "Not morphine."), hit("fentanyl", "miss", "Miss on standard fentanyl EIA.")],
   },
   etonitazene: {
-    pearl: "Nitazene. Cups were built for a different decade.",
-    hits: [hit("opiates", "miss", "Not morphine."), hit("fentanyl", "miss", "Often a miss.")],
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Nitazene. 2-Benzylbenzimidazoles do not cross-react with standard opiate or fentanyl immunoassays; requires LC-MS/MS or nitazene lateral-flow strips.",
+    hits: [hit("opiates", "miss", "Not morphine."), hit("fentanyl", "miss", "Miss on standard fentanyl EIA.")],
+  },
+  protonitazepyne: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "N-pyrrolidino nitazene (2-benzylbenzimidazole) does not cross-react with standard opiate or fentanyl cups; requires updated synthetic-opioid LC-MS/MS.",
+    hits: [
+      hit("opiates", "miss", "2-Benzylbenzimidazole scaffold does not bind morphine antibodies."),
+      hit("fentanyl", "miss", "Invisible on standard fentanyl immunoassays."),
+    ],
+  },
+  metonitazepyne: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "N-pyrrolidino metonitazene (2-benzylbenzimidazole) does not cross-react with standard opiate or fentanyl cups; requires targeted forensic LC-MS/MS.",
+    hits: [
+      hit("opiates", "miss", "2-Benzylbenzimidazole scaffold does not cross-react with opiate EIA."),
+      hit("fentanyl", "miss", "Invisible on routine fentanyl immunoassays."),
+    ],
+  },
+  etonitazepipne: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "N-piperidinyl etonitazene (2-benzylbenzimidazole) does not cross-react with standard opiate or fentanyl cups; requires targeted LC-MS/MS confirmation.",
+    hits: [
+      hit("opiates", "miss", "2-Benzylbenzimidazole scaffold misses morphine-class cups."),
+      hit("fentanyl", "miss", "Misses routine fentanyl immunoassays."),
+    ],
+  },
+  norisotonitazene: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "2-Benzylbenzimidazole that does not cross-react with standard opiate or fentanyl cups; appears in forensic specimens both as a primary street contaminant and as the active N-deethylated metabolite of isotonitazene.",
+    hits: [
+      hit("opiates", "miss", "Not detected on morphine-class opiate immunoassays."),
+      hit("fentanyl", "miss", "Not detected on standard fentanyl immunoassays."),
+    ],
+  },
+  "n-pyrrolidino-ethylene-isotonitazene": {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Linker-modified N-pyrrolidino 2-benzylbenzimidazole does not cross-react with standard opiate or fentanyl cups and evades older targeted MRM panels.",
+    hits: [
+      hit("opiates", "miss", "2-Benzylbenzimidazole scaffold does not trigger opiate cups."),
+      hit("fentanyl", "miss", "Misses fentanyl point-of-care and hospital immunoassays."),
+    ],
+  },
+  "n-pyrrolidino-etonitazene": {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "N-pyrrolidino etonitazene (etonitazepyne) is a 2-benzylbenzimidazole that does not cross-react with standard opiate or fentanyl cups; requires forensic LC-MS/MS.",
+    hits: [
+      hit("opiates", "miss", "2-Benzylbenzimidazole scaffold misses opiate cups."),
+      hit("fentanyl", "miss", "Misses standard fentanyl immunoassays."),
+    ],
+  },
+  brorphine: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Benzimidazolone-piperidine ('orphine') scaffold does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "Orphine scaffold does not bind morphine-class antibodies."),
+      hit("oxycodone", "miss", "No cross-reactivity on oxycodone immunoassays."),
+      hit("fentanyl", "miss", "Negative on fentanyl immunoassays and fentanyl test strips."),
+    ],
+  },
+  cychlorphine: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Benzimidazolone-piperidine ('orphine') scaffold does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "Orphine scaffold does not cross-react with morphine immunoassays."),
+      hit("oxycodone", "miss", "Counterfeit oxycodone tablets containing cychlorphine miss the oxycodone cup."),
+      hit("fentanyl", "miss", "Invisible on fentanyl immunoassays and fentanyl test strips."),
+    ],
+  },
+  spirochlorphine: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Spiro-decane benzimidazolone-piperidine ('orphine', R-6890) scaffold does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "No cross-reactivity on morphine-class opiate cups."),
+      hit("oxycodone", "miss", "No cross-reactivity on oxycodone cups."),
+      hit("fentanyl", "miss", "Negative on fentanyl immunoassays and lateral-flow strips."),
+    ],
+  },
+  "sr-17018": {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Dichloro-benzimidazolone-piperidine ('orphine') scaffold (SR-17018) does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "Completely absent from routine opiate immunoassays."),
+      hit("oxycodone", "miss", "Does not trigger oxycodone cups."),
+      hit("fentanyl", "miss", "Does not trigger fentanyl immunoassays or test strips."),
+    ],
+  },
+  "dichloro-brorphine": {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Halogenated benzimidazolone-piperidine ('orphine') scaffold does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "Negative on routine opiate immunoassays."),
+      hit("oxycodone", "miss", "Negative on oxycodone immunoassays."),
+      hit("fentanyl", "miss", "Negative on fentanyl immunoassays and test strips."),
+    ],
+  },
+  chlorphine: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Chloro-benzimidazolone-piperidine ('orphine') scaffold does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "Does not cross-react with morphine immunoassays."),
+      hit("oxycodone", "miss", "Does not cross-react with oxycodone immunoassays."),
+      hit("fentanyl", "miss", "Invisible on fentanyl immunoassays and test strips."),
+    ],
+  },
+  "n-phenethyl-chloro-nor-orphine": {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Positional chloro-isomer benzimidazolone-piperidine ('orphine') scaffold does not cross-react with morphine, oxycodone, or fentanyl immunoassays; requires updated synthetic-opioid LC-MS/MS or LC-QTOF.",
+    hits: [
+      hit("opiates", "miss", "Does not cross-react with morphine immunoassays."),
+      hit("oxycodone", "miss", "Does not cross-react with oxycodone immunoassays."),
+      hit("fentanyl", "miss", "Negative on fentanyl immunoassays and test strips."),
+    ],
+  },
+  medetomidine: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
+    pearl: "Veterinary α2-adrenergic agonist adulterant does not cross-react with opiate, fentanyl, or xylazine immunoassays; requires targeted LC-MS/MS confirmation (shares identical mass with clinical dexmedetomidine).",
+    hits: [
+      hit("opiates", "miss", "α2-Adrenergic agonist, not an opioid; invisible on opiate cups."),
+      hit("fentanyl", "miss", "Misses fentanyl and xylazine strips; co-present fentanyl lights its own strip."),
+    ],
   },
   carfentanil: {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
     pearl: "Carfentanil often misses even a fentanyl strip. Naloxone still belongs on the tray.",
     hits: [hit("opiates", "miss", "Not morphine."), hit("fentanyl", "miss", "Potency is not epitope.")],
   },
   "seven-oh": {
+    panel: "Opiates & Fentanyl",
+    triggers: "no",
     pearl: "7-OH-mitragynine is not morphine and not buprenorphine on most cups. Kratom panels exist; the cheap board does not.",
     hits: [
       hit("opiates", "miss", "Atypical opioid. Morphine EIA usually stays negative."),
       hit("buprenorphine", "miss", "Not a film. Do not read a negative bup cup as 'they skipped kratom.'"),
+      hit("fentanyl", "miss", "Negative on routine fentanyl immunoassays; requires mitragynine / 7-OH LC-MS/MS."),
     ],
   },
   kratom: {
@@ -303,8 +453,122 @@ const CARDS: Record<string, Omit<UdsCard, "id">> = {
     hits: [hit("benzos", "expected", "The cup was built for this family.")],
   },
   bromazolam: {
-    pearl: "Designer benzo. Immunoassay is a coin flip. A negative cup next to a seized bromazolam tablet is not a clean patient.",
-    hits: [hit("benzos", "miss", "Many nordiazepam kits miss bromazolam. LC-MS/MS or a designer-benzo panel.")],
+    panel: "Benzodiazepines",
+    triggers: "often",
+    pearl: "Designer benzo. Cross-reacts on many benzodiazepine immunoassays, though routine confirmation panels limited to prescription benzos miss it unless designer benzos are included.",
+    hits: [hit("benzos", "miss", "Kit-dependent on nordiazepam cups; standard prescription-only LC-MS/MS panels miss bromazolam.")],
+  },
+  desalkylgidazepam: {
+    panel: "Benzodiazepines",
+    triggers: "often",
+    pearl: "Cross-reacts on many oxazepam/nordiazepam-calibrated benzodiazepine immunoassays (and is also the active metabolite of gidazepam), though traditional GC-MS/LC-MS confirmation panels limited to prescription benzos return false-negative confirmations unless designer benzos are included.",
+    hits: [
+      hit(
+        "benzos",
+        "expected",
+        "Often cross-reacts on oxazepam/nordiazepam-calibrated benzodiazepine immunoassays, but fails prescription-only confirmation panels.",
+      ),
+    ],
+  },
+  phenazolam: {
+    panel: "Benzodiazepines",
+    triggers: "often",
+    pearl: "Phenazolam (clobromazolam) cross-reacts on many oxazepam/nordiazepam-calibrated benzodiazepine immunoassays, though traditional GC-MS/LC-MS confirmation panels limited to prescription benzos return false-negative confirmations unless designer benzos are included.",
+    hits: [
+      hit(
+        "benzos",
+        "expected",
+        "Cross-reacts on many benzodiazepine immunoassays at sufficient urine levels, but misses prescription-only LC-MS/MS confirmation.",
+      ),
+    ],
+  },
+  ethylbromazolam: {
+    panel: "Benzodiazepines",
+    triggers: "often",
+    pearl: "Cross-reacts on many oxazepam/nordiazepam-calibrated benzodiazepine immunoassays, though traditional GC-MS/LC-MS confirmation panels limited to prescription benzos return false-negative confirmations unless designer benzos are included.",
+    hits: [
+      hit(
+        "benzos",
+        "expected",
+        "Often triggers presumptive benzodiazepine immunoassays while failing standard prescription-only LC-MS/MS confirmation.",
+      ),
+    ],
+  },
+  ethylflualprazolam: {
+    panel: "Benzodiazepines",
+    triggers: "often",
+    pearl: "Cross-reacts on many oxazepam/nordiazepam-calibrated benzodiazepine immunoassays, though traditional GC-MS/LC-MS confirmation panels limited to prescription benzos return false-negative confirmations unless designer benzos are included.",
+    hits: [
+      hit(
+        "benzos",
+        "expected",
+        "Often cross-reacts on hospital benzodiazepine immunoassays, but fails confirmation unless designer triazolobenzodiazepines are targeted.",
+      ),
+    ],
+  },
+  hhc: {
+    panel: "Cannabinoids (THC-COOH)",
+    triggers: "often",
+    pearl: "11-nor-9-carboxy-HHC and hydroxylated HHC metabolites strongly cross-react with standard urine THC-COOH immunoassays, producing presumptive-positive cannabinoid screens that fail Δ9-THC-COOH confirmation unless semi-synthetic HHC standards are run.",
+    hits: [
+      hit(
+        "thc",
+        "false-pos",
+        "11-nor-9-carboxy-HHC cross-reacts on THC-COOH immunoassays but fails Δ9-THC-COOH GC-MS/LC-MS confirmation.",
+      ),
+    ],
+  },
+  "hhc-p": {
+    panel: "Cannabinoids (THC-COOH)",
+    triggers: "often",
+    pearl: "Carboxylated and hydroxylated HHC-P metabolites cross-react with standard urine THC-COOH immunoassays, producing presumptive-positive cannabinoid screens that fail Δ9-THC-COOH confirmation unless semi-synthetic HHC-P standards are run.",
+    hits: [
+      hit(
+        "thc",
+        "false-pos",
+        "Cross-reacts on standard THC-COOH urine immunoassays while failing Δ9-THC-COOH confirmation.",
+      ),
+    ],
+  },
+  "hhc-o": {
+    panel: "Cannabinoids (THC-COOH)",
+    triggers: "often",
+    pearl: "Deacetylates in vivo to HHC; 11-nor-9-carboxy-HHC and hydroxylated HHC metabolites strongly cross-react with standard urine THC-COOH immunoassays, producing presumptive-positive cannabinoid screens that fail Δ9-THC-COOH confirmation unless semi-synthetic HHC standards are run.",
+    hits: [
+      hit(
+        "thc",
+        "false-pos",
+        "Hydrolyzes to HHC metabolites that trigger THC-COOH immunoassays but fail Δ9-THC-COOH confirmation.",
+      ),
+    ],
+  },
+  "ten-oh-hhc": {
+    panel: "Cannabinoids (THC-COOH)",
+    triggers: "often",
+    pearl: "10-OH-HHC and downstream carboxy-HHC metabolites strongly cross-react with standard urine THC-COOH immunoassays, producing presumptive-positive cannabinoid screens that fail Δ9-THC-COOH confirmation unless semi-synthetic HHC standards are run.",
+    hits: [
+      hit(
+        "thc",
+        "false-pos",
+        "Hydroxylated/carboxylated HHC metabolites trigger THC-COOH immunoassays but fail Δ9-THC-COOH confirmation.",
+      ),
+    ],
+  },
+  dck: {
+    panel: "PCP / Ketamine",
+    triggers: "rare",
+    pearl: "Arylcyclohexylamine ketamine analogue (deschloroketamine) does not reliably trigger standard PCP immunoassays; requires targeted forensic LC-MS/MS.",
+    hits: [
+      hit("pcp", "miss", "Arylcyclohexylamine ketamine analogue rarely triggers standard phencyclidine (PCP) cups."),
+    ],
+  },
+  "two-fdck": {
+    panel: "PCP / Ketamine",
+    triggers: "rare",
+    pearl: "Arylcyclohexylamine ketamine analogue (2-fluorodeschloroketamine) does not reliably trigger standard PCP immunoassays; requires targeted forensic LC-MS/MS.",
+    hits: [
+      hit("pcp", "miss", "Fluorinated arylcyclohexylamine analogue rarely cross-reacts on standard PCP immunoassays."),
+    ],
   },
   bupropion: {
     pearl: "Wellbutrin is the most famous amphetamine-cup false-positive in clinic. Confirm before you chart meth.",
@@ -382,6 +646,8 @@ export function udsOnDesk(ids: string[]): UdsCard[] {
   }
   return out;
 }
+
+export const udsForDesk = udsOnDesk;
 
 export function udsHeadline(ids: string[]): string | null {
   if (ids.includes("methadone")) {

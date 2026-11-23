@@ -7,6 +7,7 @@ import { ITEM_KIND_LABEL, type EnzymeRole } from "@/lib/drugs/types";
 import { suggestSpellings } from "@/lib/drugs/spelling";
 import { isMatDesk } from "@/lib/drugs/window";
 import { plateForDrug } from "@/lib/drugs/visuals";
+import { NPS_WATCH_BY_ID } from "@/lib/drugs/nps-watch";
 import { useDesk, usePlan } from "@/lib/drugs/store";
 import { maxDrugs } from "@/lib/billing/plans";
 import { cn } from "@/lib/utils";
@@ -297,10 +298,18 @@ export function DrugSearch() {
                   className="mt-0.5 size-10 shrink-0 rounded-sm object-cover"
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-medium text-fg">
-                    {drug.name}
+                  <span className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-fg">
+                    <span>{drug.name}</span>
+                    {Object.hasOwn(NPS_WATCH_BY_ID, drug.id) ? (
+                      <span
+                        className="rounded border border-danger/35 bg-danger-soft/40 px-1.5 py-0.5 font-mono text-[10px] font-medium text-danger"
+                        title={`Forensic early-warning surveillance (${NPS_WATCH_BY_ID[drug.id]!.agencies.join(", ")})`}
+                      >
+                        2025–2026 NPS
+                      </span>
+                    ) : null}
                     {street(drug.id) ? (
-                      <span className="ml-2 font-mono text-[10px] font-normal uppercase tracking-wide text-muted">
+                      <span className="font-mono text-[10px] font-normal uppercase tracking-wide text-muted">
                         {`street name: ${street(drug.id)}`}
                       </span>
                     ) : null}

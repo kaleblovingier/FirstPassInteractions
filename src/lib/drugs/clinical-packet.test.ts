@@ -3,7 +3,7 @@ import test from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ClinicalPacketDialog } from "@/components/desk/clinical-packet-dialog";
-import { buildClinicalPacket, DOSE_PER_PI, withoutDose } from "./clinical-packet";
+import { buildClinicalPacket, DOSE_PER_PI, STREET_DRUG_IDS, withoutDose } from "./clinical-packet";
 import { DOSE_PATTERN, findDoses } from "../guards/dose-rule";
 import { analyze } from "./engine";
 import { DEFAULT_HOST } from "./types";
@@ -1047,5 +1047,110 @@ test("buildClinicalPacket: renders Round 10 high-alert safety collisions into la
       [],
       `Unexpected Round 10 collision for ${negIds.join("+")}`,
     );
+  }
+});
+
+test("buildClinicalPacket: renders Round 11 forensic safety collisions and STREET_DRUG_IDS counseling for 2025-2026 NPS compounds with zero dose leaks or banned claims", () => {
+  for (const id of [
+    "cychlorphine",
+    "brorphine",
+    "spirochlorphine",
+    "sr-17018",
+    "dichloro-brorphine",
+    "chlorphine",
+    "n-phenethyl-chloro-nor-orphine",
+    "protonitazepyne",
+    "metonitazepyne",
+    "etonitazepipne",
+    "norisotonitazene",
+    "n-pyrrolidino-ethylene-isotonitazene",
+    "desalkylgidazepam",
+    "ethylbromazolam",
+    "ethylflualprazolam",
+    "phenazolam",
+    "hhc",
+    "hhc-p",
+    "hhc-o",
+    "ten-oh-hhc",
+    "dck",
+    "two-fdck",
+    "medetomidine",
+  ]) {
+    assert.equal(STREET_DRUG_IDS.has(id), true, `Expected ${id} in STREET_DRUG_IDS`);
+    const singlePacket = buildClinicalPacket([id], DEFAULT_HOST, analyze([id], DEFAULT_HOST).findings, {});
+    assert.equal(singlePacket.riskIndexes.harmReduction.hasStreetOrOpioid, true, `${id} hasStreetOrOpioid`);
+    assert.equal(
+      singlePacket.riskIndexes.harmReduction.headline,
+      "Street Drug / Adulterant Supply Advisory",
+      `${id} harmReduction headline`,
+    );
+    assert.ok(
+      singlePacket.counselingPoints.some((cp) => /evade standard drug test strips and hospital urine screens/i.test(cp)),
+      `${id} missing street-drug counseling point`,
+    );
+  }
+
+  const cases: {
+    ids: string[];
+    expectedId: string;
+    counselingPattern: RegExp;
+  }[] = [
+    {
+      ids: ["cychlorphine", "phenazolam"],
+      expectedId: "orphine-nitazene-sedative-stack",
+      counselingPattern: /emerging synthetic opioids.*counterfeit pressed pills.*designer-benzodiazepine coma unreversed/i,
+    },
+    {
+      ids: ["protonitazepyne", "ethylbromazolam"],
+      expectedId: "orphine-nitazene-sedative-stack",
+      counselingPattern: /protonitazepyne.*ethylbromazolam.*fentanyl test strips/i,
+    },
+    {
+      ids: ["cychlorphine", "medetomidine"],
+      expectedId: "emerging-opioid-alpha2-adulterant",
+      counselingPattern: /veterinary alpha-2 sedatives \(medetomidine or xylazine\).*rebound blood-pressure/i,
+    },
+    {
+      ids: ["protonitazepyne", "xylazine"],
+      expectedId: "emerging-opioid-alpha2-adulterant",
+      counselingPattern: /medetomidine or xylazine.*immediate rescue breaths and airway support/i,
+    },
+  ];
+
+  for (const { ids, expectedId, counselingPattern } of cases) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId} for ${ids.join("+")}`);
+    assert.equal(alert.kind, "safety", expectedId);
+    assert.equal(alert.severity, "contraindicated", expectedId);
+    assert.equal(alert.tone, "danger", expectedId);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), expectedId);
+    assert.ok(packet.ehrNoteText.includes(withoutDose(alert.title)), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Official PI Source: ${withoutDose(alert.source)}`), expectedId);
+
+    assert.ok(
+      !packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")),
+      `${expectedId} fell back to generic counseling instead of dedicated entry`,
+    );
+    assert.equal(
+      packet.counselingPoints.filter((cp) => counselingPattern.test(cp)).length,
+      1,
+      `${expectedId} should emit exactly one dedicated counseling point`,
+    );
+    assert.match(packet.patientHandoutText, counselingPattern, `${expectedId} missing counseling in patientHandoutText`);
+
+    for (const cp of packet.counselingPoints) {
+      assert.deepEqual(findDoses(cp), [], `${expectedId} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${expectedId} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], `${expectedId} ehrNoteText leaked dose`);
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], `${expectedId} patientHandoutText leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${expectedId} ehrNoteText leaked claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
   }
 });

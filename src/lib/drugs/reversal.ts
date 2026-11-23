@@ -18,12 +18,52 @@ interface Rule {
 
 const RULES: Rule[] = [
   {
-    ids: ["fentanyl", "dirty-30", "heroin", "oxycodone", "hydrocodone", "morphine", "hydromorphone", "oxymorphone", "methadone", "codeine", "tramadol", "tapentadol", "meperidine", "loperamide", "carfentanil", "isotonitazene", "protonitazene", "metonitazene", "etonitazene", "seven-oh", "pressed-30"],
+    ids: [
+      "fentanyl",
+      "dirty-30",
+      "heroin",
+      "oxycodone",
+      "hydrocodone",
+      "morphine",
+      "hydromorphone",
+      "oxymorphone",
+      "methadone",
+      "codeine",
+      "tramadol",
+      "tapentadol",
+      "meperidine",
+      "loperamide",
+      "carfentanil",
+      "cychlorphine",
+      "brorphine",
+      "spirochlorphine",
+      "sr-17018",
+      "dichloro-brorphine",
+      "chlorphine",
+      "n-phenethyl-chloro-nor-orphine",
+      "etonitazene",
+      "isotonitazene",
+      "protonitazene",
+      "metonitazene",
+      "clonitazene",
+      "N-desethyl-isotonitazene",
+      "n-pyrrolidino-etonitazene",
+      "butonitazene",
+      "protonitazepyne",
+      "metonitazepyne",
+      "etonitazepipne",
+      "norisotonitazene",
+      "n-pyrrolidino-ethylene-isotonitazene",
+      "etodesnitazene",
+      "flunitazene",
+      "seven-oh",
+      "pressed-30",
+    ],
     card: {
       agent: "Naloxone",
       for: "μ-agonist apnea",
       kind: "antidote",
-      pearl: "Reverses the opioid. Does not reverse xylazine, medetomidine, or a benzo. Pressed 30s still get naloxone first — then the α2 residual.",
+      pearl: "Reverses the opioid (including high-affinity orphines, nitazenes, and 7-OH, which often require repeat titration and prolonged re-narcotization watch). Does not reverse xylazine, medetomidine, or a benzo. Pressed 30s still get naloxone first — then the α2 residual.",
     },
   },
   {
@@ -37,22 +77,38 @@ const RULES: Rule[] = [
     },
   },
   {
-    ids: ["xylazine", "medetomidine", "clonidine", "lofexidine", "dexmedetomidine", "guanfacine"],
+    ids: ["xylazine", "medetomidine", "clonidine", "lofexidine", "dexmedetomidine", "guanfacine", "ketamine", "dck", "two-fdck"],
     card: {
-      agent: "Naloxone will not reverse this",
-      for: "α2 agonist",
+      agent: "Naloxone will not reverse this (no specific reversal)",
+      for: "α2 agonist / NMDA dissociative",
       kind: "will-not",
-      pearl: "Airway, fluids, and time. Naloxone still belongs on the tray for the opioid it is usually cut with.",
+      pearl: "No specific reversal agent for α2 agonists (xylazine, medetomidine) or NMDA dissociatives (ketamine, DCK, 2-FDCK). Airway, fluids, and time. Naloxone still belongs on the tray for the opioid street supplies are usually cut with.",
     },
   },
   {
+    ids: [
+      "desalkylgidazepam",
+      "phenazolam",
+      "ethylbromazolam",
+      "ethylflualprazolam",
+      "bromazolam",
+      "flualprazolam",
+      "clonazolam",
+      "etizolam",
+      "flubromazolam",
+      "diclazepam",
+      "pyrazolam",
+      "flubromazepam",
+      "deschloroetizolam",
+      "meclonazepam",
+    ],
     pd: ["benzo-zdrug"],
     card: {
       agent: "Flumazenil (rarely)",
       for: "iatrogenic benzo",
       kind: "support",
-      pearl: "Not a street-benzo antidote. Seizures in dependent patients. Support the airway first.",
-      caution: "Contraindicated after a mixed TCA / unknown overdose.",
+      pearl: "Not a street-benzo antidote. Seizures in dependent patients and illicit designer benzodiazepine exposures. Support the airway first.",
+      caution: "Contraindicated after a mixed TCA / unknown overdose or chronic/designer benzodiazepine dependence.",
     },
   },
   {
@@ -217,15 +273,14 @@ export function reversalOnDesk(ids: string[]): Array<{ id: string; name: string;
   const seen = new Set<string>();
   for (const id of ids) {
     const drug = DRUG_BY_ID[id];
-    if (!drug) continue;
     for (const rule of RULES) {
       const hitId = rule.ids?.includes(id);
-      const hitPd = rule.pd?.some((p) => drug.pd.includes(p));
+      const hitPd = drug ? rule.pd?.some((p) => drug.pd.includes(p)) : false;
       if (!hitId && !hitPd) continue;
       const key = `${id}|${rule.card.agent}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push({ id, name: drug.name, card: rule.card });
+      out.push({ id, name: drug?.name ?? id, card: rule.card });
     }
   }
   if (present.has("naloxone") && out.some((r) => r.card.agent.startsWith("Naloxone") && r.id !== "naloxone")) {

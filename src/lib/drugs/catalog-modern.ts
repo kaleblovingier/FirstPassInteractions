@@ -346,7 +346,7 @@ export const MODERN_FORMULARY: Drug[] = [
     ["opioid", "cns-depressant"],
     "Extremely high-potency μ-agonist; respiratory arrest; 3A4 victim",
     {
-      aliases: ["npe", "protonitazepyne", "pyrrolidino-etonitazene", "nitazene"],
+      aliases: ["npe", "etonitazepyne", "pyrrolidino-etonitazene", "nitazene"],
       note: "Among the more potent nitazene analogues reported in toxicology. Teaching card only — potency estimates vary; PI/forensic sources govern.",
     }),
   d("butonitazene", "Butonitazene", [], "Benzimidazole opioid (nitazene)",

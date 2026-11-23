@@ -90,6 +90,36 @@ describe("street-names - search", () => {
     assert.notEqual(firstId("mol"), "mdma");
     assert.notEqual(firstId("speed dial"), "amphetamine");
   });
+
+  it("resolves 2025-2026 emerging forensic and street shorthand terms", () => {
+    const expectedLookups: [string, string][] = [
+      ["cyano-orphine", "cychlorphine"],
+      ["cyanobrorphine", "cychlorphine"],
+      ["spiro-orphine", "spirochlorphine"],
+      ["scripps 17018", "sr-17018"],
+      ["pyro-protonitazene", "protonitazepyne"],
+      ["pyro-metonitazene", "metonitazepyne"],
+      ["pip-etonitazene", "etonitazepipne"],
+      ["nd-iso", "norisotonitazene"],
+      ["ebrom", "ethylbromazolam"],
+      ["eflualp", "ethylflualprazolam"],
+      ["c-bromazolam", "phenazolam"],
+      ["cb-lam", "phenazolam"],
+      ["dag-benzo", "desalkylgidazepam"],
+      ["hydro-thc", "hhc"],
+      ["hydro-thcp", "hhc-p"],
+      ["acetyl-hhc", "hhc-o"],
+      ["hydroxy-hhc", "ten-oh-hhc"],
+      ["dxe", "dck"],
+      ["fluoroketamine", "two-fdck"],
+      ["rhino tranq", "medetomidine"],
+    ];
+    for (const [term, expectedId] of expectedLookups) {
+      assert.equal(firstId(term), expectedId, `Expected searchDrugs('${term}')[0] to be ${expectedId}`);
+      assert.deepEqual(streetNameIds(term), [expectedId], `Expected streetNameIds('${term}') to be [${expectedId}]`);
+      assert.equal(matchedStreetName(expectedId, term), term);
+    }
+  });
 });
 
 describe("street-names - readers", () => {

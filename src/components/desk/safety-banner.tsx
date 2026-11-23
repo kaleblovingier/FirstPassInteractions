@@ -1,6 +1,13 @@
 import { ShieldAlert, AlertTriangle, ExternalLink, HeartPulse } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { hasMme } from "@/lib/drugs/mme";
+import {
+  npsWatchOnDesk,
+  NPS_ORPHINE_IDS,
+  NPS_NITAZENE_IDS,
+  NPS_DESIGNER_BENZO_IDS,
+  NPS_HHC_IDS,
+} from "@/lib/drugs/nps-watch";
 import type { HostContext } from "@/lib/drugs/types";
 import { Button } from "@/components/ui/button";
 
@@ -12,10 +19,12 @@ const STREET_DRUGS = new Set([
   "medetomidine",
   "seven-oh",
   "carfentanil",
-  "isotonitazene",
-  "protonitazene",
-  "metonitazene",
-  "etonitazene",
+  "dck",
+  "two-fdck",
+  ...NPS_ORPHINE_IDS,
+  ...NPS_NITAZENE_IDS,
+  ...NPS_DESIGNER_BENZO_IDS,
+  ...NPS_HHC_IDS,
 ]);
 
 interface AddictionSafetyBannerProps {
@@ -27,7 +36,8 @@ interface AddictionSafetyBannerProps {
 export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionSafetyBannerProps) {
   if (selected.length === 0) return null;
 
-  const hasStreet = selected.some((id) => STREET_DRUGS.has(id));
+  const npsWatch = npsWatchOnDesk(selected);
+  const hasStreet = npsWatch.length > 0 || selected.some((id) => STREET_DRUGS.has(id));
   const hasOpioid = selected.some((id) => {
     const d = DRUG_BY_ID[id];
     return d?.pd.includes("opioid") || hasMme([id]);
@@ -75,6 +85,42 @@ export function AddictionSafetyBanner({ selected, host, onOpenHelp }: AddictionS
             </Button>
           </div>
         </div>
+
+        {npsWatch.length > 0 ? (
+          <div className="mt-3 rounded-lg border border-danger/25 bg-surface/90 p-3 text-fg">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-danger">
+                Emerging Forensic Supply (2025–2026)
+              </span>
+              <span className="font-mono text-[10px] text-muted">
+                CFSRE · UNODC · EUDA · DEA Early Warning
+              </span>
+            </div>
+            <ul className="mt-2 space-y-2">
+              {npsWatch.map((entry) => (
+                <li
+                  key={entry.id}
+                  className="rounded-md border border-border bg-bg-sunken/70 px-3 py-2 text-xs"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-1.5">
+                    <span className="font-semibold text-fg">{entry.shortLabel}</span>
+                    <span className="rounded bg-danger/15 px-1.5 py-0.5 font-mono text-[10px] font-medium text-danger">
+                      {entry.agencies.join(" · ")}
+                    </span>
+                  </div>
+                  <p className="mt-1 leading-relaxed text-fg/90">
+                    <strong className="font-semibold text-fg">Assay &amp; test-strip blind spot:</strong>{" "}
+                    {entry.assayBlindSpot}
+                  </p>
+                  <p className="mt-1 leading-relaxed text-fg/90">
+                    <strong className="font-semibold text-fg">Reversal &amp; airway:</strong>{" "}
+                    {entry.naloxoneNote}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </aside>
     );
   }

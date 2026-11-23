@@ -48,6 +48,20 @@ export const FIRST_PASS_NMDA = [
   "three-meo-pcp",
 ] as const;
 
+export const FIRST_PASS_CANNABINOIDS = [
+  "dronabinol",
+  "hhc",
+  "hhc-p",
+  "hhc-o",
+  "ten-oh-hhc",
+] as const;
+
+export const FIRST_PASS_CANNABINOID_SET: Set<string> = new Set<string>(
+  FIRST_PASS_CANNABINOIDS,
+);
+
+export type ThcRoute = CannabisRoute | "inhaled";
+
 function retargetKetamine(drug: Drug, route: KetamineRoute): Drug {
   if (!(FIRST_PASS_NMDA as readonly string[]).includes(drug.id)) return drug;
   const enzymes: EnzymeRole[] = drug.enzymes.filter((e) => e.enzyme !== "CYP3A4" && e.enzyme !== "CYP2B6");
@@ -76,30 +90,51 @@ function retargetKetamine(drug: Drug, route: KetamineRoute): Drug {
   return { ...drug, enzymes, note: routeNote };
 }
 
-function retargetThc(drug: Drug, route: CannabisRoute): Drug {
-  if (drug.id !== "dronabinol") return drug;
-  const enzymes: EnzymeRole[] =
-    route === "oral"
-      ? [
-          { enzyme: "CYP2C9", kind: "substrate", sensitivity: "sensitive", pathway: "clearance" },
-          { enzyme: "CYP3A4", kind: "substrate", sensitivity: "major", pathway: "clearance" },
-        ]
-      : [
-          { enzyme: "CYP2C9", kind: "substrate", sensitivity: "minor", pathway: "clearance" },
-          { enzyme: "CYP3A4", kind: "substrate", sensitivity: "minor", pathway: "clearance" },
-        ];
+export function retargetThc(drug: Drug, route: ThcRoute): Drug {
+  if (!FIRST_PASS_CANNABINOID_SET.has(drug.id)) return drug;
+  if (drug.id === "dronabinol") {
+    const enzymes: EnzymeRole[] =
+      route === "oral"
+        ? [
+            { enzyme: "CYP2C9", kind: "substrate", sensitivity: "sensitive", pathway: "clearance" },
+            { enzyme: "CYP3A4", kind: "substrate", sensitivity: "major", pathway: "clearance" },
+          ]
+        : [
+            { enzyme: "CYP2C9", kind: "substrate", sensitivity: "minor", pathway: "clearance" },
+            { enzyme: "CYP3A4", kind: "substrate", sensitivity: "minor", pathway: "clearance" },
+          ];
+    return {
+      ...drug,
+      enzymes,
+      note:
+        route === "oral"
+          ? "Edible first-pass makes 11-OH-THC, which is more psychoactive than parent. CYP2C9/3A4 inhibitors stretch it."
+          : "Smoked THC mostly skips 11-OH-THC first-pass. Hepatic 2C9/3A4 still clear parent, but the edible trap is quieter.",
+    };
+  }
+  if (route === "oral") return drug;
+  const enzymes: EnzymeRole[] = drug.enzymes.map((e) =>
+    e.kind === "substrate" && (e.enzyme === "CYP2C9" || e.enzyme === "CYP3A4") && e.sensitivity === "major"
+      ? { ...e, sensitivity: "minor" }
+      : e,
+  );
+  const routeNote =
+    drug.id === "hhc-o"
+      ? "Inhaled / vaped route selected: bypasses presystemic hepatic first-pass extraction AND carries critical thermal pyrolysis hazard — heating O-acetylated cannabinoids (HHC acetate / HHC-O) generates toxic ketene gas linked to acute inhalational lung injury."
+      : "Inhaled / vaped route selected: bypasses presystemic portal hepatic first-pass extraction, producing rapid peak brain CB1 delivery and reducing first-pass CYP2C9/CYP3A4 interaction amplitude compared with oral edibles.";
   return {
     ...drug,
     enzymes,
-    note:
-      route === "oral"
-        ? "Edible first-pass makes 11-OH-THC, which is more psychoactive than parent. CYP2C9/3A4 inhibitors stretch it."
-        : "Smoked THC mostly skips 11-OH-THC first-pass. Hepatic 2C9/3A4 still clear parent, but the edible trap is quieter.",
+    note: drug.note ? `${drug.note} ${routeNote}` : routeNote,
   };
 }
 
-export function applyHost(drugs: Drug[], host: HostContext): Drug[] {
-  const mapped = drugs.map((d) => retargetThc(retargetKetamine(d, host.ketamineRoute), host.cannabisRoute));
+export function applyHost(
+  drugs: Drug[],
+  host: HostContext & { thcRoute?: ThcRoute },
+): Drug[] {
+  const thcRoute: ThcRoute = host.thcRoute ?? host.cannabisRoute;
+  const mapped = drugs.map((d) => retargetThc(retargetKetamine(d, host.ketamineRoute), thcRoute));
   const extra: Drug[] = [];
   if (host.smoking) extra.push(SMOKE);
   if (host.alcohol === "chronic") extra.push(CHRONIC_ETOH);
