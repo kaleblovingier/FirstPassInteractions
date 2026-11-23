@@ -51,6 +51,19 @@ export const DRUG_HUB_CTA_TEMPLATE = "Open {drug} in the desk";
 export const DRUG_HUB_INTRO_TEMPLATE =
   "These are pairs with {drug} where an FDA label names an interaction, grouped by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with {drug}; it just isn't on this list. Open any pair in the desk to see it alongside other drugs.";
 
+/** Intro on a cited-only supplement hub (no pair pages, no grade). */
+export const CITED_ONLY_HUB_INTRO = "Interaction notes for this supplement, quoted from FDA-approved labeling.";
+
+/**
+ * Framed drug and class cards (/embed/drug/<slug>, /embed/class/<slug>): short
+ * forms of the hub intros above, same rules. The cards show only the first rows
+ * of a hub, so they keep the "not listed is not cleared" line.
+ */
+export const DRUG_EMBED_INTRO_TEMPLATE =
+  "Pairs with {drug} where an FDA label names an interaction, by the desk's grade. A drug that isn't listed here hasn't been cleared as safe with {drug}.";
+
+export const CLASS_EMBED_INTRO = "This is the desk's filing, not a complete list of the class.";
+
 export function fillDrugTemplate(tpl: string, drug: string): string {
   return tpl.replaceAll("{drug}", drug);
 }
