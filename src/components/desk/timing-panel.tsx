@@ -9,9 +9,21 @@ import { severitySurface } from "./severity";
 export const TIMING_CAVEAT =
   "A teaching sketch from typical adult half-lives. It is not a level, and a low number is not a clearance to combine.";
 
-const QUICK_HOURS = [1, 4, 12, 24] as const;
+const QUICK_HOURS = [0, 1, 4, 12, 24, 48] as const;
 const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
-const BTN = `inline-flex min-h-8 min-w-8 items-center justify-center rounded-md border border-border bg-surface px-2.5 text-xs text-fg hover:bg-surface-sunken ${FOCUS}`;
+const BTN_BASE = `inline-flex min-h-8 min-w-8 items-center justify-center rounded-md border px-2.5 text-xs ${FOCUS}`;
+const BTN = `${BTN_BASE} border-border bg-surface text-fg hover:bg-surface-sunken`;
+const BTN_ACTIVE = `${BTN_BASE} border-ink bg-ink text-bg hover:bg-ink/90`;
+
+/** Format ~5 half-lives (~97% first-order elimination) for display beside typical half-life. */
+// eslint-disable-next-line react-refresh/only-export-components
+export function formatFiveHalfLives(hours: number): string {
+  const total = 5 * hours;
+  if (total >= 48) {
+    return `~5 half-lives (~${Math.round(total)} h / ${(total / 24).toFixed(1).replace(/\.0$/, "")} d)`;
+  }
+  return `~5 half-lives (~${Math.round(total * 10) / 10} h)`;
+}
 
 function Bar({ percent }: { percent: number }) {
   const width = Math.max(0, Math.min(100, percent));
@@ -39,17 +51,44 @@ export function TimingSketch({
   onSet: (id: string, hours: number | undefined) => void;
 }) {
   const name = (id: string) => DRUG_BY_ID[id]?.name ?? id;
+  const hasHalfLives = data.rows.some((r) => r.halfLifeH !== undefined);
+  const hasAnyTime = data.rows.some((r) => r.hoursAgo !== undefined);
   return (
     <section
       aria-labelledby="timing-sketch-h"
       className="space-y-3 rounded-xl bg-surface px-4 py-4 shadow-[var(--shadow-border)] sm:px-5 sm:py-5"
     >
-      <div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Timing sketch</p>
-        <h2 id="timing-sketch-h" className="mt-1 font-serif text-xl tracking-tight text-fg">
-          How much of each item may be left
-        </h2>
-        <p className="mt-1 text-xs text-muted">{TIMING_CAVEAT} Times stay on this screen only.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Timing sketch</p>
+          <h2 id="timing-sketch-h" className="mt-1 font-serif text-xl tracking-tight text-fg">
+            How much of each item may be left
+          </h2>
+          <p className="mt-1 text-xs text-muted">{TIMING_CAVEAT} Times stay on this screen only.</p>
+        </div>
+        {hasHalfLives && data.rows.length >= 2 ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className={BTN}
+              onClick={() => {
+                data.rows.filter((r) => r.halfLifeH !== undefined).forEach((r) => onSet(r.id, 0));
+              }}
+            >
+              Set all to 0 h
+            </button>
+            <button
+              type="button"
+              className={`${BTN} disabled:pointer-events-none disabled:opacity-45`}
+              disabled={!hasAnyTime}
+              onClick={() => {
+                data.rows.forEach((r) => onSet(r.id, undefined));
+              }}
+            >
+              Clear all times
+            </button>
+          </div>
+        ) : null}
       </div>
       <ul className="space-y-3">
         {data.rows.map((row) => {
@@ -62,7 +101,8 @@ export function TimingSketch({
                 <p className="text-sm font-medium text-fg">{row.name}</p>
                 {row.halfLifeH !== undefined ? (
                   <p className="text-xs text-muted">
-                    Typical half-life about {row.halfLifeH} h. Source: {row.source}.
+                    Typical half-life about {row.halfLifeH} h. Source: {row.source}.{" "}
+                    <span className="text-subtle">· {formatFiveHalfLives(row.halfLifeH)} to ~97% elimination</span>
                   </p>
                 ) : null}
               </div>
@@ -97,17 +137,21 @@ export function TimingSketch({
                   onChange={(e) => onSet(row.id, Number(e.target.value))}
                   className={`h-6 w-32 ${FOCUS}`}
                 />
-                {QUICK_HOURS.map((h) => (
-                  <button
-                    key={h}
-                    type="button"
-                    className={BTN}
-                    aria-label={`${row.name}: ${h} hours ago`}
-                    onClick={() => onSet(row.id, h)}
-                  >
-                    {h} h
-                  </button>
-                ))}
+                {QUICK_HOURS.map((h) => {
+                  const pressed = stated !== undefined && Math.abs(stated - h) < 0.05;
+                  return (
+                    <button
+                      key={h}
+                      type="button"
+                      className={pressed ? BTN_ACTIVE : BTN}
+                      aria-pressed={pressed}
+                      aria-label={`${row.name}: ${h} hours ago`}
+                      onClick={() => onSet(row.id, h)}
+                    >
+                      {h} h
+                    </button>
+                  );
+                })}
                 <button
                   type="button"
                   className={BTN}

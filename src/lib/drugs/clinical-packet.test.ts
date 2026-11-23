@@ -891,3 +891,161 @@ test("buildClinicalPacket: renders Round 9 safety collisions into labeledCollisi
     assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, ids.join("+"));
   }
 });
+
+test("buildClinicalPacket: renders Round 10 high-alert safety collisions into labeledCollisions, ehrNoteText, counselingPoints, patientHandoutText, and dialog HTML with zero dose leaks or banned claims", () => {
+  const cases: {
+    ids: string[];
+    expectedId: string;
+    expectedSeverity: "contraindicated" | "major";
+    counselingPattern: RegExp;
+  }[] = [
+    {
+      ids: ["venetoclax", "ketoconazole"],
+      expectedId: "venetoclax-strong-cyp3a4-tls",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /venetoclax.*Tumor Lysis Syndrome.*never adjust venetoclax on your own/i,
+    },
+    {
+      ids: ["venetoclax", "paxlovid"],
+      expectedId: "venetoclax-strong-cyp3a4-tls",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /Paxlovid.*venetoclax.*dark or decreased urine/i,
+    },
+    {
+      ids: ["voriconazole", "rifampin"],
+      expectedId: "voriconazole-strong-inducer",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /rifampin.*voriconazole.*fight serious fungal infections.*never start St\. John's wort/i,
+    },
+    {
+      ids: ["voriconazole", "ritonavir"],
+      expectedId: "voriconazole-strong-inducer",
+      expectedSeverity: "contraindicated",
+      counselingPattern: /ritonavir.*voriconazole.*stopping seizure medicines suddenly can trigger seizures/i,
+    },
+    {
+      ids: ["valproate", "topiramate"],
+      expectedId: "valproate-topiramate-hyperammonemia",
+      expectedSeverity: "major",
+      counselingPattern: /valproate or divalproex.*topiramate.*hyperammonemic encephalopathy.*hypothermia.*never stop either/i,
+    },
+    {
+      ids: ["divalproex", "topiramate"],
+      expectedId: "valproate-topiramate-hyperammonemia",
+      expectedSeverity: "major",
+      counselingPattern: /valproate or divalproex.*topiramate.*routine liver blood tests look normal/i,
+    },
+    {
+      ids: ["methotrexate", "omeprazole"],
+      expectedId: "mtx-ppi-delayed-clearance",
+      expectedSeverity: "major",
+      counselingPattern: /proton pump inhibitors.*clear methotrexate.*painful mouth sores/i,
+    },
+    {
+      ids: ["methotrexate", "pantoprazole"],
+      expectedId: "mtx-ppi-delayed-clearance",
+      expectedSeverity: "major",
+      counselingPattern: /pantoprazole.*methotrexate.*never change your methotrexate schedule on your own/i,
+    },
+  ];
+
+  for (const { ids, expectedId, expectedSeverity, counselingPattern } of cases) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId} for ${ids.join("+")}`);
+    assert.equal(alert.kind, "safety", expectedId);
+    assert.equal(alert.severity, expectedSeverity, expectedId);
+    assert.equal(alert.tone, "danger", expectedId);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), expectedId);
+    assert.ok(packet.ehrNoteText.includes(withoutDose(alert.title)), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Official PI Source: ${withoutDose(alert.source)}`), expectedId);
+
+    assert.ok(
+      !packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")),
+      `${expectedId} fell back to generic counseling instead of dedicated entry`,
+    );
+    assert.equal(
+      packet.counselingPoints.filter((cp) => counselingPattern.test(cp)).length,
+      1,
+      `${expectedId} should emit exactly one dedicated counseling point`,
+    );
+    assert.equal(new Set(packet.counselingPoints).size, packet.counselingPoints.length, expectedId);
+    assert.match(packet.patientHandoutText, counselingPattern, `${expectedId} missing counseling in patientHandoutText`);
+
+    for (const cp of packet.counselingPoints) {
+      assert.deepEqual(findDoses(cp), [], `${expectedId} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${expectedId} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], `${expectedId} ehrNoteText leaked dose`);
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], `${expectedId} patientHandoutText leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${expectedId} ehrNoteText leaked claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
+
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+    );
+    assert.ok(html.includes("High-Alert Labeled &amp; Institutional Safety Collisions"), expectedId);
+    assert.ok(html.includes("Labeled Safety Collision"), expectedId);
+    assert.ok(html.includes("Mechanism:"), expectedId);
+    assert.ok(html.includes("Bedside Watch:"), expectedId);
+    assert.ok(html.includes("Official PI Source:"), expectedId);
+    assert.deepEqual(findDoses(html.replace(/<[^>]+>/g, "\n")), [], `${expectedId} dialog leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(html), false, `${expectedId} dialog leaked claim`);
+  }
+
+  // Multi-perpetrator deduplication across all 4 Round 10 collisions
+  const dedupCases: { ids: string[]; expectedId: string }[] = [
+    { ids: ["venetoclax", "ketoconazole", "ritonavir"], expectedId: "venetoclax-strong-cyp3a4-tls" },
+    { ids: ["voriconazole", "rifampin", "carbamazepine"], expectedId: "voriconazole-strong-inducer" },
+    { ids: ["valproate", "divalproex", "topiramate"], expectedId: "valproate-topiramate-hyperammonemia" },
+    { ids: ["methotrexate", "omeprazole", "pantoprazole"], expectedId: "mtx-ppi-delayed-clearance" },
+  ];
+
+  for (const { ids, expectedId } of dedupCases) {
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, analyze(ids, DEFAULT_HOST).findings, {});
+    assert.deepEqual(
+      (packet.labeledCollisions ?? []).map((c) => c.id),
+      [expectedId],
+      `Expected single deduplicated collision ${expectedId} for ${ids.join("+")}`,
+    );
+    assert.equal(new Set(packet.counselingPoints).size, packet.counselingPoints.length, ids.join("+"));
+    assert.ok(!packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")), ids.join("+"));
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], ids.join("+"));
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], ids.join("+"));
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, ids.join("+"));
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, ids.join("+"));
+  }
+
+  // Negative controls and non-systemic exclusions do not trigger Round 10 collisions
+  for (const negIds of [
+    ["venetoclax", "fluconazole"],
+    ["venetoclax", "isavuconazole"],
+    ["venetoclax", "azithromycin"],
+    ["venetoclax", "ketoconazole-topical"],
+    ["voriconazole", "fluconazole"],
+    ["fluconazole", "rifampin"],
+    ["voriconazole-eye", "rifampin"],
+    ["valproate", "levetiracetam"],
+    ["topiramate", "levetiracetam"],
+    ["methotrexate", "famotidine"],
+  ]) {
+    const packet = buildClinicalPacket(negIds, DEFAULT_HOST, analyze(negIds, DEFAULT_HOST).findings, {});
+    assert.deepEqual(
+      (packet.labeledCollisions ?? []).filter((c) =>
+        [
+          "venetoclax-strong-cyp3a4-tls",
+          "voriconazole-strong-inducer",
+          "valproate-topiramate-hyperammonemia",
+          "mtx-ppi-delayed-clearance",
+        ].includes(c.id),
+      ),
+      [],
+      `Unexpected Round 10 collision for ${negIds.join("+")}`,
+    );
+  }
+});

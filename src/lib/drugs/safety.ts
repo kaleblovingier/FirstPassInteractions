@@ -157,7 +157,11 @@ export type SafetyKind =
   | "ticagrelor-strong-cyp3a4"
   | "dronedarone-cyp3a4-qt"
   | "pimozide-thioridazine-cyp2d6-3a4"
-  | "ranolazine-strong-cyp3a4-inducer";
+  | "ranolazine-strong-cyp3a4-inducer"
+  | "venetoclax-strong-cyp3a4-tls"
+  | "voriconazole-strong-inducer"
+  | "valproate-topiramate-hyperammonemia"
+  | "mtx-ppi-delayed-clearance";
 
 export interface SafetyHit {
   id: SafetyKind;
@@ -1015,7 +1019,7 @@ export function isNaltrexoneOpioidPrecipitatedOverdose(a: string, b: string) {
   return matchesSymmetricPair(a, b, isNaltrexoneAgent, isOpioid);
 }
 
-const CORE_STRONG_CYP3A4_INHIBITORS = [
+export const CORE_STRONG_CYP3A4_INHIBITORS = [
   "ketoconazole",
   "itraconazole",
   "posaconazole",
@@ -1146,6 +1150,52 @@ export function isRanolazineStrongCyp3a4Inducer(a: string, b: string): boolean {
     b,
     (id) => id === "ranolazine",
     hasSystemic(RANOLAZINE_CONTRAINDICATED_PERPETRATORS),
+  );
+}
+
+export const VENETOCLAX_STRONG_CYP3A4_INHIBITORS = new Set<string>(CORE_STRONG_CYP3A4_INHIBITORS);
+
+export function isVenetoclaxStrongCyp3a4Tls(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => !isNonSystemicRoute(id) && id === "venetoclax",
+    hasSystemic(VENETOCLAX_STRONG_CYP3A4_INHIBITORS),
+  );
+}
+
+export const VORICONAZOLE_CONTRAINDICATED_INDUCERS = new Set<string>([
+  ...[...DOAC_INDUCERS].filter((id) => !PHENYTOIN_AGENTS.has(id)),
+  "efavirenz",
+  "ritonavir",
+]);
+
+export function isVoriconazoleStrongInducer(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => !isNonSystemicRoute(id) && id === "voriconazole",
+    hasSystemic(VORICONAZOLE_CONTRAINDICATED_INDUCERS),
+  );
+}
+
+export const TOPIRAMATE_AGENTS = new Set(["topiramate", "topiramate-xr"]);
+
+export function isValproateTopiramateHyperammonemia(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => !isNonSystemicRoute(id) && isValproateAgent(id),
+    hasSystemic(TOPIRAMATE_AGENTS),
+  );
+}
+
+export function isMtxPpiDelayedClearance(a: string, b: string): boolean {
+  return matchesSymmetricPair(
+    a,
+    b,
+    (id) => !isNonSystemicRoute(id) && id === "methotrexate",
+    hasSystemic(PPI),
   );
 }
 
@@ -1971,6 +2021,94 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         "Ranexa Section 4 Contraindications: Ranolazine undergoes extensive intestinal and hepatic metabolism via CYP3A4 (with secondary CYP2D6 clearance) and exhibits concentration-dependent IKr (hERG) potassium channel blockade. Strong CYP3A4 inhibitors (ketoconazole, itraconazole, posaconazole, voriconazole, clarithromycin, ritonavir, cobicistat, Paxlovid, nefazodone) block CYP3A4 elimination and produce a 3.2- to 3.9-fold exposure increase in steady-state ranolazine levels, driving dose-dependent QTc interval prolongation, Torsades de Pointes (TdP), dizziness, nausea, syncope, and acute renal function decline risk in severe renal impairment. Conversely, CYP3A4 inducers (rifampin, carbamazepine, phenytoin, fosphenytoin, phenobarbital, primidone, St. John's wort) profoundly accelerate metabolic clearance—causing up to an ~95% reduction in ranolazine plasma concentrations—and abolish therapeutic antianginal efficacy, risking breakthrough refractory angina and myocardial ischemia. Concomitant use with either strong CYP3A4 inhibitors or CYP3A4 inducers is an absolute labeled contraindication.",
         "Monitor 12-lead ECG (QTc >500 ms or delta QTc >60 ms), syncope, presyncope, dizziness, and serum creatinine/eGFR when strong CYP3A4 inhibitors are implicated; monitor for recurrent anginal chest pain and ischemic ECG changes when CYP3A4 inducers are present. Discontinue contraindicated interacting combinations and coordinate alternative antianginal, antimicrobial, or anticonvulsant therapy. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
         "Ranexa (ranolazine) Prescribing Information Section 4 Contraindications. Jerling M et al. J Clin Pharmacol 2005 (PMID 15778423). Jerling M. Clin Pharmacokinet 2006 (PMID 16640453).",
+      ),
+    );
+  }
+
+  const vt = pair(
+    ids,
+    (id) => !isNonSystemicRoute(id) && id === "venetoclax",
+    hasSystemic(VENETOCLAX_STRONG_CYP3A4_INHIBITORS),
+  );
+  if (vt) {
+    out.push(
+      hit(
+        "venetoclax-strong-cyp3a4-tls",
+        vt[0],
+        vt[1],
+        names(vt[0], vt[1]),
+        "contraindicated",
+        "danger",
+        "venetoclax × strong CYP3A4 inhibitor — fatal Tumor Lysis Syndrome (TLS) exposure surge",
+        "Venclexta Section 4 Contraindications & Section 7: Venetoclax is a selective oral BCL-2 inhibitor cleared primarily via intestinal and hepatic CYP3A4 alongside P-gp and BCRP efflux. Strong CYP3A4 inhibitors (ketoconazole, itraconazole, posaconazole, voriconazole, clarithromycin, ritonavir, cobicistat, Paxlovid, nefazodone) block presystemic and hepatic metabolism, increasing venetoclax peak concentrations ~2.3-fold and systemic AUC ~6- to 8-fold. Concomitant administration is contraindicated during initiation and dose-escalation ramp-up phases in CLL/SLL because supratherapeutic BCL-2 blockade accelerates massive tumor cell apoptosis, precipitating fatal Tumor Lysis Syndrome (TLS)—severe hyperuricemia, hyperkalemia, hyperphosphatemia, secondary hypocalcemia, acute oliguric renal failure requiring dialysis, malignant arrhythmias, and sudden death. Even during steady-state maintenance or AML protocols, strong CYP3A4 inhibitors require strict label-mandated avoidance or oncology-directed exposure adjustment.",
+        "Monitor TLS chemistry panels serially (serum uric acid, potassium, phosphorus, calcium, creatinine/eGFR, LDH), urine output, and cardiac telemetry during initiation, ramp-up, or re-escalation phases; maintain aggressive IV hydration and urate-lowering prophylaxis (allopurinol or rasburicase per hematology protocol). Coordinate oncology/ID antimicrobial or antifungal selection before combining. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Venclexta (venetoclax) Prescribing Information Section 4 Contraindications & Section 7. Eisenmann ED et al. Pharmaceutics 2022 (PMID 35456528). Goosen TC et al. CPT Pharmacometrics Syst Pharmacol 2025 (PMID 41104611).",
+      ),
+    );
+  }
+
+  const vi = pair(
+    ids,
+    (id) => !isNonSystemicRoute(id) && id === "voriconazole",
+    hasSystemic(VORICONAZOLE_CONTRAINDICATED_INDUCERS),
+  );
+  if (vi) {
+    out.push(
+      hit(
+        "voriconazole-strong-inducer",
+        vi[0],
+        vi[1],
+        names(vi[0], vi[1]),
+        "contraindicated",
+        "danger",
+        "voriconazole × strong CYP450 inducer — >90% AUC collapse & invasive fungal failure",
+        "Vfend Section 4 Contraindications & Section 7: Voriconazole exhibits saturable nonlinear hepatic clearance governed by CYP2C19 (major), CYP2C9, and CYP3A4. Potent multi-enzyme CYP450 inducers—rifampin, carbamazepine, long-acting barbiturates (phenobarbital, primidone), St. John's wort, higher-exposure efavirenz, and higher-exposure ritonavir—dramatically accelerate voriconazole clearance and collapse systemic exposure (rifampin lowers voriconazole AUC by ~96% and Cmax by ~93%; ritonavir and carbamazepine likewise drive profound subtherapeutic troughs). Concomitant administration is contraindicated because plummeting voriconazole concentrations lead to loss of antifungal efficacy and fatal progression of invasive aspergillosis, candidemia, or CNS mold infections, with enzyme induction persisting for 1–2 weeks after stopping long-half-life inducers.",
+        "Assess immediately for invasive fungal breakthrough or progression (persistent fever, pulmonary imaging progression, galactomannan or beta-D-glucan trend, positive cultures), obtain voriconazole therapeutic drug monitoring (TDM) troughs if recent inducer exposure occurred, and coordinate infectious-disease substitution to a non-CYP-cleared antifungal (e.g., liposomal amphotericin B or an echinocandin) or non-inducing regimen. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Vfend (voriconazole) Prescribing Information Section 4 Contraindications & Section 7. Li TY et al. J Clin Pharm Ther 2017 (PMID 28177134).",
+      ),
+    );
+  }
+
+  const vp = pair(
+    ids,
+    (id) => !isNonSystemicRoute(id) && isValproateAgent(id),
+    hasSystemic(TOPIRAMATE_AGENTS),
+  );
+  if (vp) {
+    out.push(
+      hit(
+        "valproate-topiramate-hyperammonemia",
+        vp[0],
+        vp[1],
+        names(vp[0], vp[1]),
+        "major",
+        "danger",
+        "valproate / divalproex × topiramate — hyperammonemic encephalopathy & hypothermia",
+        "Depakote & Topamax Warnings & Precautions: Valproate / divalproex suppresses mitochondrial carbamoyl phosphate synthetase I (CPS-I) via N-acetylglutamate depletion and augments renal ammoniagenesis, while topiramate inhibits hepatic mitochondrial carbonic anhydrase V and glutamine synthetase. Co-administration synergistically impairs urea-cycle detoxification and provokes acute or subacute valproate-related hyperammonemic encephalopathy (VHE)—confusion, progressive lethargy, vomiting, ataxia, asterixis, breakthrough seizures, and coma—classically occurring despite normal serum AST/ALT transaminases and therapeutic valproate concentrations. Prescribing information also carries an explicit warning for hypothermia (unintentional drop in core body temperature below 35°C / 95°F) accompanied by somnolence or coma upon initiating topiramate or during sustained co-therapy.",
+        "Obtain prompt plasma ammonia alongside AST/ALT, total/free valproate levels, electrolytes, and acid-base panel whenever unexplained lethargy, vomiting, ataxia, or mental status decline emerges—normal LFTs never exclude VHE; monitor core body temperature for hypothermia. Evaluate discontinuing topiramate and/or valproate and initiating IV L-carnitine (levocarnitine) rescue under neurology/toxicology guidance if symptomatic hyperammonemic encephalopathy develops. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Depakote (divalproex) & Topamax (topiramate) Prescribing Information Warnings & Precautions. Shan Q et al. Front Pharmacol 2025 (PMID 40606599). Huang TK et al. Int J Clin Pharmacol Ther 2025 (PMID 39873559).",
+      ),
+    );
+  }
+
+  const mp = pair(
+    ids,
+    (id) => !isNonSystemicRoute(id) && id === "methotrexate",
+    hasSystemic(PPI),
+  );
+  if (mp) {
+    out.push(
+      hit(
+        "mtx-ppi-delayed-clearance",
+        mp[0],
+        mp[1],
+        names(mp[0], mp[1]),
+        "major",
+        "danger",
+        "methotrexate × proton pump inhibitor (PPI) — BCRP/OAT3 renal delayed elimination",
+        "Methotrexate Warnings & Section 7: Methotrexate and its toxic metabolite 7-hydroxymethotrexate depend primarily on active renal tubular secretion via basolateral OAT3 (SLC22A8) and apical efflux transporters BCRP (ABCG2) and MRP2/4. Proton pump inhibitors (omeprazole, esomeprazole, lansoprazole, pantoprazole, rabeprazole, dexlansoprazole) inhibit renal BCRP and OAT3 tubular transport and alter tubular H+/K+-ATPase acidification, delaying methotrexate elimination and prolonging systemic exposure. Delayed renal clearance precipitates severe, protracted pancytopenia, neutropenic sepsis, acute kidney injury, hepatotoxicity, severe mucositis, and cutaneous toxicity—most prominently during high-exposure oncology infusions, with severe delayed clearance also reported in impaired renal function or chronic regimens.",
+        "Track serial serum methotrexate levels to safe clearance thresholds, maintain IV hydration and urine alkalinization monitoring, and follow serum creatinine/eGFR, CBC with differential, hepatic transaminases, and oral mucosal status (stomatitis, diarrhea). Coordinate temporary PPI interruption or substitution with a non-OAT3/BCRP-inhibiting H2-receptor antagonist (e.g., famotidine) and leucovorin or glucarpidase rescue under oncology/rheumatology direction. The Prescribing Information governs. This desk does not pick the dose or replacement agent.",
+        "Methotrexate Prescribing Information Warnings & Section 7. Jafari F et al. Expert Opin Drug Metab Toxicol 2023 (PMID 36946211). Chakrabarti A et al. Toxicol Rep 2026 (PMID 42255661).",
       ),
     );
   }

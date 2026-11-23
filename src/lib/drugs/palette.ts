@@ -4,6 +4,7 @@
  * and the recent trays kept in this browser.
  */
 import { DRUG_BY_ID, normalizeSearchText, searchDrugs } from "./catalog";
+import { combinationParts, findCombination, type CombinationHit } from "./combos";
 import { labelForIds, type TraySnapshot } from "./tray-history";
 import { groupStations, stationAlias, stationMatches, STATION_LABELS, type StationId } from "./station-groups";
 import { ITEM_KIND_LABEL, type Drug } from "./types";
@@ -33,6 +34,9 @@ export const PALETTE_PAGES = [
   { href: "/enzymes", label: "Enzyme pages", hint: "CYP450 inhibitors, inducers and substrates" },
   { href: "/sources", label: "Sources and label library", hint: "FDA label excerpts, DailyMed links and the FDA interaction table" },
   { href: "/trust", label: "Trust and privacy", hint: "How FirstPass handles data and checks sources" },
+  { href: "/classes", label: "Drug classes", hint: "Browse catalog medicines by class and CYP/P-gp role" },
+  { href: "/for-programs", label: "For programs", hint: "Group and school licensing for pharmacy, nursing, PA and residency programs" },
+  { href: "/for-programs/course-kit", label: "Faculty course kit", hint: "Eight-week pharmacology desk curriculum and exercises" },
 ];
 
 export type PaletteItem =
@@ -47,6 +51,23 @@ export type PaletteItem =
       /** The tray to load, in its saved order. */
       ids: string[];
       ketamineRoute?: TraySnapshot["ketamineRoute"];
+    }
+  | {
+      kind: "pinned";
+      id: string;
+      label: string;
+      hint: string;
+      /** The pinned tray to load, in its saved order. */
+      ids: string[];
+      ketamineRoute?: TraySnapshot["ketamineRoute"];
+    }
+  | {
+      kind: "combo";
+      id: string;
+      label: string;
+      hint: string;
+      ids: string[];
+      combo: CombinationHit;
     };
 
 export interface PaletteGroup {
@@ -56,9 +77,11 @@ export interface PaletteGroup {
 }
 
 const GROUP_LABEL: Record<PaletteItem["kind"], string> = {
+  pinned: "Pinned trays",
   view: "Go to",
   station: "Stations",
   page: "Pages",
+  combo: "Combination products",
   drug: "Add to tray",
   tray: "Recent trays",
 };
@@ -101,17 +124,27 @@ function drugItem(d: Drug): PaletteItem {
   return { kind: "drug", id: d.id, label: d.name, hint: [kind, d.cls, d.brands.slice(0, 2).join(", ")].filter(Boolean).join(" · ") };
 }
 
-/** One palette row for a saved tray. Its id is the tray's items so a row stays put across opens. */
-export function trayItem(snap: TraySnapshot): PaletteItem {
+function snapshotItem(kind: "tray" | "pinned", snap: TraySnapshot): PaletteItem {
   const n = snap.ids.length;
+  const prefix = kind === "pinned" ? "pinned · " : "";
   return {
-    kind: "tray",
-    id: `tray:${snap.ids.join("+")}`,
+    kind,
+    id: `${kind}:${snap.ids.join("+")}`,
     label: labelForIds(snap.ids),
-    hint: `${n} item${n === 1 ? "" : "s"} · loads with default person factors · saved on this browser only`,
+    hint: `${n} item${n === 1 ? "" : "s"} · ${prefix}loads with default person factors · saved on this browser only`,
     ids: snap.ids,
     ketamineRoute: snap.ketamineRoute,
   };
+}
+
+/** One palette row for a saved tray. Its id is the tray's items so a row stays put across opens. */
+export function trayItem(snap: TraySnapshot): PaletteItem {
+  return snapshotItem("tray", snap);
+}
+
+/** One palette row for a pinned tray. */
+export function pinnedItem(snap: TraySnapshot): PaletteItem {
+  return snapshotItem("pinned", snap);
 }
 
 /** Names a saved tray matches on: each item's name, id, brands and aliases. */
@@ -120,6 +153,17 @@ function trayNames(snap: TraySnapshot): string[] {
     const d = DRUG_BY_ID[id];
     return d ? [d.name, d.id, ...d.brands, ...d.aliases] : [id];
   });
+}
+
+function rankSnapshots(
+  snaps: readonly TraySnapshot[],
+  toItem: (snap: TraySnapshot) => PaletteItem,
+  q: string,
+): { item: PaletteItem; tier: number }[] {
+  return snaps
+    .map((snap) => ({ item: toItem(snap), tier: tier(trayNames(snap), false, q) }))
+    .filter((row) => row.tier > 0)
+    .sort((a, b) => b.tier - a.tier);
 }
 
 function group(items: PaletteItem[]): PaletteGroup {
@@ -131,16 +175,25 @@ function group(items: PaletteItem[]): PaletteGroup {
  * in its usual order; drugs need a query and come from the desk search as is.
  * Inside a group, exact names lead, then names that start with the query, then
  * keyword matches (the station picker's filter). Groups follow their best match,
- * and ties keep the order Go to, Stations, Pages, Add to tray, Recent trays.
- * Recent trays lead a blank query; with a query, a tray shows when one of its
- * items matches.
+ * and ties keep the order Go to, Stations, Pages, Combination products, Add to tray,
+ * Pinned trays, Recent trays.
+ * Pinned and recent trays lead a blank query; with a query, a saved tray shows
+ * when one of its items matches.
  */
-export function paletteGroups(query: string, recent: readonly TraySnapshot[] = []): PaletteGroup[] {
+export function paletteGroups(
+  query: string,
+  recent: readonly TraySnapshot[] = [],
+  pinned: readonly TraySnapshot[] = [],
+): PaletteGroup[] {
   const q = normalizeSearchText(query);
   const saved = recent.filter((snap) => snap.ids.length > 0);
+  const pinnedSaved = pinned.filter((snap) => snap.ids.length > 0);
   if (!q) {
     const base = [VIEWS, STATIONS, PAGES].map((entries) => group(entries.map((e) => e.item)));
-    return saved.length ? [group(saved.slice(0, RECENT_TRAY_ROWS).map(trayItem)), ...base] : base;
+    const head: PaletteGroup[] = [];
+    if (pinnedSaved.length) head.push(group(pinnedSaved.map(pinnedItem)));
+    if (saved.length) head.push(group(saved.slice(0, RECENT_TRAY_ROWS).map(trayItem)));
+    return head.length ? [...head, ...base] : base;
   }
   const ranked = [VIEWS, STATIONS, PAGES].map((entries) =>
     entries
@@ -152,14 +205,28 @@ export function paletteGroups(query: string, recent: readonly TraySnapshot[] = [
       .filter((row) => row.tier > 0)
       .sort((a, b) => b.tier - a.tier),
   );
+  const comboHit = findCombination(query);
+  const combos: { item: PaletteItem; tier: number }[] = comboHit
+    ? [
+        {
+          item: {
+            kind: "combo",
+            id: `combo:${comboHit.ids.join("+")}`,
+            label: comboHit.name,
+            hint: `Adds all ingredients · ${combinationParts(comboHit.ids)}`,
+            ids: comboHit.ids,
+            combo: comboHit,
+          },
+          tier: 3,
+        },
+      ]
+    : [];
   const drugs = searchDrugs(query)
     .slice(0, DRUG_ROWS)
     .map((d) => ({ item: drugItem(d), tier: tier([d.name, d.id, ...d.brands, ...d.aliases], true, q) }));
-  const trays = saved
-    .map((snap) => ({ item: trayItem(snap), tier: tier(trayNames(snap), false, q) }))
-    .filter((row) => row.tier > 0)
-    .sort((a, b) => b.tier - a.tier);
-  return [...ranked, drugs, trays]
+  const pinnedRows = rankSnapshots(pinnedSaved, pinnedItem, q);
+  const trays = rankSnapshots(saved, trayItem, q);
+  return [...ranked, combos, drugs, pinnedRows, trays]
     .filter((rows) => rows.length > 0)
     .map((rows) => ({ best: Math.max(...rows.map((row) => row.tier)), group: group(rows.map((row) => row.item)) }))
     .sort((a, b) => b.best - a.best)

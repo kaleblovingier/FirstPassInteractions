@@ -1,25 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
-import { Search, X } from "lucide-react";
+import { Bookmark, Search, X } from "lucide-react";
+import { maxDrugs } from "@/lib/billing/plans";
+import { planCombination } from "@/lib/drugs/combos";
 import { isPaletteShortcut, paletteGroups, type PaletteItem } from "@/lib/drugs/palette";
-import { useDesk } from "@/lib/drugs/store";
-import { readHistory, type TraySnapshot } from "@/lib/drugs/tray-history";
+import { useDesk, usePlan } from "@/lib/drugs/store";
+import { readHistory, sameTraySet, type TraySnapshot } from "@/lib/drugs/tray-history";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 /**
- * Ctrl+K / ⌘K palette: go to a desk view, clinical station or page, or add a
- * drug to the tray. The header button opens it on touch screens.
+ * Ctrl+K / ⌘K palette: go to a desk view, clinical station or page, add a
+ * drug or combination product to the tray, or reopen a pinned or recent tray.
+ * The header button opens it on touch screens.
  */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [statusNote, setStatusNote] = useState("");
   const selected = useDesk((s) => s.selected);
-  // Read when the palette opens: the list lives in this browser only and changes as trays are cleared or swapped.
+  const plan = usePlan();
+  const cap = maxDrugs(plan);
+  // Read when the palette opens: the lists live in this browser only and change as trays are cleared, swapped, or pinned.
   const [recent, setRecent] = useState<TraySnapshot[]>([]);
-  const groups = useMemo(() => paletteGroups(query, recent), [query, recent]);
+  const [pinned, setPinned] = useState<TraySnapshot[]>([]);
+  const groups = useMemo(() => paletteGroups(query, recent, pinned), [query, recent, pinned]);
   const opener = useRef<HTMLElement | null>(null);
   // Off when the pick moves focus itself: to a station, a new page, or the checkout drawer a full tray opens.
   const restore = useRef(true);
@@ -28,7 +35,9 @@ export function CommandPalette() {
     opener.current = from instanceof HTMLElement && from !== document.body ? from : null;
     restore.current = true;
     setRecent(readHistory().recent);
+    setPinned(readHistory().pinned);
     setQuery("");
+    setStatusNote("");
     setOpen(true);
   }
 
@@ -55,8 +64,22 @@ export function CommandPalette() {
     } else if (item.kind === "page") {
       restore.current = false;
       window.location.assign(item.id);
-    } else if (item.kind === "tray") {
+    } else if (item.kind === "tray" || item.kind === "pinned") {
       desk.load(item.ids, item.ketamineRoute ? { ketamineRoute: item.ketamineRoute } : undefined);
+    } else if (item.kind === "combo") {
+      const comboPlan = planCombination(item.combo, selected, cap);
+      if (comboPlan.add.length === 0) {
+        setStatusNote(comboPlan.message);
+        return;
+      }
+      for (const id of comboPlan.add) {
+        if (!desk.add(id)) {
+          restore.current = false;
+          setOpen(false);
+          return;
+        }
+      }
+      setStatusNote("");
     } else if (!desk.add(item.id)) restore.current = false;
     setOpen(false);
   }
@@ -89,12 +112,19 @@ export function CommandPalette() {
           >
             <Dialog.Title className="sr-only">Search everything</Dialog.Title>
             <Dialog.Description className="sr-only">
-              Go to a desk view, clinical station or page, add a drug to the tray, or reopen a recent tray.
+              Go to a desk view, clinical station or page, add a drug or combination product to the tray, or reopen a pinned or recent tray.
             </Dialog.Description>
             <Command label="Search everything" shouldFilter={false} vimBindings={false}>
               <div className="flex items-center gap-2 border-b border-border p-3">
-                <Command.Input asChild value={query} onValueChange={setQuery}>
-                  <Input placeholder="Drug, station, view, page or recent tray" />
+                <Command.Input
+                  asChild
+                  value={query}
+                  onValueChange={(value) => {
+                    setQuery(value);
+                    if (statusNote) setStatusNote("");
+                  }}
+                >
+                  <Input placeholder="Drug, combination, station, view, page or saved tray" />
                 </Command.Input>
                 <Dialog.Close asChild>
                   <Button variant="ghost" size="icon" aria-label="Close">
@@ -115,7 +145,8 @@ export function CommandPalette() {
                     {g.items.map((item) => {
                       const onTray =
                         (item.kind === "drug" && selected.includes(item.id)) ||
-                        (item.kind === "tray" && item.ids.join("+") === selected.join("+"));
+                        ((item.kind === "tray" || item.kind === "pinned") && sameTraySet(item.ids, selected)) ||
+                        (item.kind === "combo" && item.ids.every((id) => selected.includes(id)));
                       const locked = item.kind === "station" && !selected.length;
                       return (
                         <Command.Item
@@ -125,6 +156,9 @@ export function CommandPalette() {
                           onSelect={() => run(item)}
                           className="flex min-h-11 cursor-pointer items-center gap-3 rounded-md px-3 py-2 data-[disabled=true]:cursor-default data-[selected=true]:bg-accent-soft data-[selected=true]:shadow-[inset_0_0_0_2px_var(--color-accent)]"
                         >
+                          {item.kind === "pinned" ? (
+                            <Bookmark className="size-3.5 shrink-0 text-accent" aria-hidden />
+                          ) : null}
                           <span className="min-w-0 flex-1">
                             <span className={cn("block truncate text-sm font-medium", locked ? "text-muted" : "text-fg")}>
                               {item.label}
@@ -140,9 +174,25 @@ export function CommandPalette() {
                   </Command.Group>
                 ))}
               </Command.List>
-              <p role="status" className={groups.length ? "sr-only" : "px-4 pb-5 text-center text-sm text-muted"}>
-                {groups.length ? "" : `No match for “${query.trim()}”. Try a drug's generic or brand name, or a station such as QT.`}
+              <p
+                role="status"
+                className={
+                  statusNote
+                    ? "border-t border-border bg-warn-soft px-4 py-2.5 text-xs text-fg"
+                    : groups.length
+                      ? "sr-only"
+                      : "px-4 pb-5 text-center text-sm text-muted"
+                }
+              >
+                {statusNote
+                  ? statusNote
+                  : groups.length
+                    ? ""
+                    : `No match for “${query.trim()}”. Try a drug's generic or brand name, or a station such as QT.`}
               </p>
+              <div className="border-t border-border bg-bg px-3 py-2 font-mono text-[10px] text-muted">
+                ↑↓ Navigate · ↵ Open · Esc Close
+              </div>
             </Command>
           </Dialog.Content>
         </Dialog.Portal>

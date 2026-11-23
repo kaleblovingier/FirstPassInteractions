@@ -18,9 +18,10 @@ const memoryStorage = {
 Object.defineProperty(globalThis, "localStorage", { value: memoryStorage, configurable: true, writable: true });
 Object.defineProperty(globalThis, "window", { value: globalThis, configurable: true, writable: true });
 
+const { DRUGS } = await import("@/lib/drugs/catalog");
 const { useDesk } = await import("@/lib/drugs/store");
 const { readHistory } = await import("@/lib/drugs/tray-history");
-const { swapDiff, SWAP_COPY } = await import("@/lib/drugs/swap");
+const { sameClassSwapCandidates, swapDiff, SWAP_COPY } = await import("@/lib/drugs/swap");
 const { DEFAULT_HOST, SEVERITY_LABEL } = await import("@/lib/drugs/types");
 const { SwapPreview, SwapResult } = await import("./swap-preview");
 
@@ -88,5 +89,32 @@ describe("swap panel", () => {
     const multi = app.indexOf("<SwapPreview ");
     const single = app.indexOf("<SingleDrug id=");
     assert.ok(single > 0 && multi > single, "panel sits in the multi-item branch");
+  });
+
+  it("renders same-class quick-pick chips with resulting tier labels when idle", () => {
+    const pair = ["simvastatin", "clarithromycin"];
+    const candidates = sameClassSwapCandidates(pair, DEFAULT_HOST, "clarithromycin");
+    const az = candidates.find((c) => c.id === "azithromycin");
+    assert.ok(az);
+    const html = renderToStaticMarkup(<SwapPreview ids={pair} host={DEFAULT_HOST} amounts={{}} />);
+    assert.ok(html.includes("Same class in catalog"));
+    assert.ok(html.includes('aria-label="Same-class swap candidates"'));
+    assert.ok(html.includes("Azithromycin"));
+    assert.ok(html.includes(SEVERITY_LABEL[az.diff.after.highest]));
+    assert.ok(html.includes("h-11 sm:h-9"));
+  });
+
+  it("omits same-class quick-pick section when the selected item has no off-tray peers", () => {
+    const uniqueClass = DRUGS.find(
+      (d) =>
+        d.kind === "drug" &&
+        d.cls &&
+        DRUGS.filter((x) => x.kind === "drug" && x.cls === d.cls && !x.id.startsWith("__")).length === 1,
+    );
+    assert.ok(uniqueClass, "expected at least one single-drug class in catalog");
+    const html = renderToStaticMarkup(
+      <SwapPreview ids={["simvastatin", uniqueClass.id]} host={DEFAULT_HOST} amounts={{}} />,
+    );
+    assert.equal(html.includes("Same class in catalog"), false);
   });
 });

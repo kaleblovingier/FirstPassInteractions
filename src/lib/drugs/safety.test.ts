@@ -37,6 +37,10 @@ import {
   isDronedaroneCyp3a4Qt,
   isPimozideThioridazineCyp2d63a4,
   isRanolazineStrongCyp3a4Inducer,
+  isVenetoclaxStrongCyp3a4Tls,
+  isVoriconazoleStrongInducer,
+  isValproateTopiramateHyperammonemia,
+  isMtxPpiDelayedClearance,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -990,6 +994,198 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.deepEqual(indHits[0].drugIds, ["ranolazine", "rifampin"]);
 
     assert.equal(safetyOnDesk(["ranolazine", "ketoconazole", "rifampin"]).length, 1);
+  });
+
+  it("detects Venetoclax × Strong CYP3A4 Inhibitors as contraindicated fatal TLS exposure surge", () => {
+    for (const perp of [
+      "ketoconazole",
+      "itraconazole",
+      "posaconazole",
+      "voriconazole",
+      "clarithromycin",
+      "ritonavir",
+      "cobicistat",
+      "paxlovid",
+      "nefazodone",
+    ]) {
+      assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", perp), true, `venetoclax + ${perp}`);
+      assert.equal(isVenetoclaxStrongCyp3a4Tls(perp, "venetoclax"), true, `${perp} + venetoclax`);
+    }
+
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "fluconazole"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("fluconazole", "venetoclax"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "isavuconazole"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "azithromycin"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "ketoconazole-topical"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "voriconazole-eye"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "ciprofloxacin-ophthalmic"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax-topical", "ketoconazole"), false);
+    assert.equal(isVenetoclaxStrongCyp3a4Tls("venetoclax", "venetoclax"), false);
+
+    assert.equal(safetyOnDesk(["venetoclax", "fluconazole"]).length, 0);
+    assert.equal(safetyOnDesk(["venetoclax", "isavuconazole"]).length, 0);
+    assert.equal(safetyOnDesk(["venetoclax", "azithromycin"]).length, 0);
+    assert.equal(safetyOnDesk(["venetoclax", "ketoconazole-topical"]).length, 0);
+    assert.equal(safetyOnDesk(["venetoclax", "voriconazole-eye"]).length, 0);
+
+    const ketoHits = safetyOnDesk(["venetoclax", "ketoconazole"]);
+    assert.equal(ketoHits.length, 1);
+    assert.equal(ketoHits[0].id, "venetoclax-strong-cyp3a4-tls");
+    assert.deepEqual(ketoHits[0].drugIds, ["venetoclax", "ketoconazole"]);
+    assert.equal(ketoHits[0].severity, "contraindicated");
+    assert.equal(ketoHits[0].tone, "danger");
+    assert.equal(ketoHits[0].mechanism, "venetoclax × strong CYP3A4 inhibitor — fatal Tumor Lysis Syndrome (TLS) exposure surge");
+    assert.match(ketoHits[0].clinical, /Venclexta Section 4.*ramp-up.*Tumor Lysis Syndrome/i);
+    assert.match(ketoHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\.$/);
+    assert.match(ketoHits[0].source, /Venclexta \(venetoclax\).*35456528.*41104611/);
+
+    const revHits = safetyOnDesk(["paxlovid", "venetoclax"]);
+    assert.equal(revHits.length, 1);
+    assert.equal(revHits[0].id, "venetoclax-strong-cyp3a4-tls");
+    assert.deepEqual(revHits[0].drugIds, ["venetoclax", "paxlovid"]);
+
+    assert.equal(safetyOnDesk(["venetoclax", "ketoconazole", "ritonavir"]).length, 1);
+  });
+
+  it("detects Voriconazole × Strong CYP450 Inducers as contraindicated AUC collapse & fungal failure", () => {
+    for (const ind of [
+      "rifampin",
+      "carbamazepine",
+      "carbamazepine-xr",
+      "carbamazepine-equetro",
+      "phenobarbital",
+      "primidone",
+      "st-johns-wort",
+      "efavirenz",
+      "ritonavir",
+    ]) {
+      assert.equal(isVoriconazoleStrongInducer("voriconazole", ind), true, `voriconazole + ${ind}`);
+      assert.equal(isVoriconazoleStrongInducer(ind, "voriconazole"), true, `${ind} + voriconazole`);
+    }
+
+    assert.equal(isVoriconazoleStrongInducer("voriconazole", "fluconazole"), false);
+    assert.equal(isVoriconazoleStrongInducer("fluconazole", "rifampin"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole", "azithromycin"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole", "phenytoin"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole-eye", "rifampin"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole-eye", "carbamazepine"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole", "rifampin-topical"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole", "phenylephrine-ophthalmic"), false);
+    assert.equal(isVoriconazoleStrongInducer("voriconazole", "voriconazole"), false);
+
+    assert.equal(safetyOnDesk(["voriconazole", "fluconazole"]).length, 0);
+    assert.equal(safetyOnDesk(["fluconazole", "rifampin"]).length, 0);
+    assert.equal(safetyOnDesk(["voriconazole-eye", "rifampin"]).length, 0);
+
+    // Voriconazole + phenytoin remains scoped to phenytoin-cyp2c9-inhibition without colliding
+    const voriPhenyHits = safetyOnDesk(["voriconazole", "phenytoin"]);
+    assert.deepEqual(voriPhenyHits.map((h) => h.id), ["phenytoin-cyp2c9-inhibition"]);
+
+    const rifHits = safetyOnDesk(["voriconazole", "rifampin"]);
+    assert.equal(rifHits.length, 1);
+    assert.equal(rifHits[0].id, "voriconazole-strong-inducer");
+    assert.deepEqual(rifHits[0].drugIds, ["voriconazole", "rifampin"]);
+    assert.equal(rifHits[0].severity, "contraindicated");
+    assert.equal(rifHits[0].tone, "danger");
+    assert.equal(rifHits[0].mechanism, "voriconazole × strong CYP450 inducer — >90% AUC collapse & invasive fungal failure");
+    assert.match(rifHits[0].clinical, /Vfend Section 4.*CYP2C19.*~96%.*invasive aspergillosis/i);
+    assert.match(rifHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\.$/);
+    assert.match(rifHits[0].source, /Vfend \(voriconazole\).*28177134/);
+
+    const ritHits = safetyOnDesk(["ritonavir", "voriconazole"]);
+    assert.equal(ritHits.length, 1);
+    assert.equal(ritHits[0].id, "voriconazole-strong-inducer");
+    assert.deepEqual(ritHits[0].drugIds, ["voriconazole", "ritonavir"]);
+
+    const cbzHits = safetyOnDesk(["carbamazepine", "voriconazole"]);
+    assert.equal(cbzHits.length, 1);
+    assert.equal(cbzHits[0].id, "voriconazole-strong-inducer");
+    assert.deepEqual(cbzHits[0].drugIds, ["voriconazole", "carbamazepine"]);
+
+    assert.equal(safetyOnDesk(["voriconazole", "rifampin", "carbamazepine"]).length, 1);
+  });
+
+  it("detects Valproate / Divalproex × Topiramate as major hyperammonemic encephalopathy & hypothermia risk", () => {
+    for (const vpa of ["valproate", "divalproex", "valproate-sprinkle", "valproate-iv"]) {
+      for (const tpm of ["topiramate", "topiramate-xr"]) {
+        assert.equal(isValproateTopiramateHyperammonemia(vpa, tpm), true, `${vpa} + ${tpm}`);
+        assert.equal(isValproateTopiramateHyperammonemia(tpm, vpa), true, `${tpm} + ${vpa}`);
+      }
+    }
+
+    assert.equal(isValproateTopiramateHyperammonemia("valproate", "levetiracetam"), false);
+    assert.equal(isValproateTopiramateHyperammonemia("divalproex", "levetiracetam"), false);
+    assert.equal(isValproateTopiramateHyperammonemia("topiramate", "levetiracetam"), false);
+    assert.equal(isValproateTopiramateHyperammonemia("valproate", "divalproex"), false);
+    assert.equal(isValproateTopiramateHyperammonemia("valproate-topical", "topiramate"), false);
+    assert.equal(isValproateTopiramateHyperammonemia("valproate", "topiramate-ophthalmic"), false);
+    assert.equal(isValproateTopiramateHyperammonemia("valproate", "valproate"), false);
+
+    assert.equal(safetyOnDesk(["valproate", "levetiracetam"]).length, 0);
+    assert.equal(safetyOnDesk(["topiramate", "levetiracetam"]).length, 0);
+
+    const vpaHits = safetyOnDesk(["valproate", "topiramate"]);
+    assert.equal(vpaHits.length, 1);
+    assert.equal(vpaHits[0].id, "valproate-topiramate-hyperammonemia");
+    assert.deepEqual(vpaHits[0].drugIds, ["valproate", "topiramate"]);
+    assert.equal(vpaHits[0].severity, "major");
+    assert.equal(vpaHits[0].tone, "danger");
+    assert.equal(vpaHits[0].mechanism, "valproate / divalproex × topiramate — hyperammonemic encephalopathy & hypothermia");
+    assert.match(vpaHits[0].clinical, /CPS-I.*carbonic anhydrase V.*AST\/ALT.*hypothermia/i);
+    assert.match(vpaHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\.$/);
+    assert.match(vpaHits[0].source, /Depakote \(divalproex\) & Topamax \(topiramate\).*40606599.*39873559/);
+
+    const divHits = safetyOnDesk(["topiramate", "divalproex"]);
+    assert.equal(divHits.length, 1);
+    assert.equal(divHits[0].id, "valproate-topiramate-hyperammonemia");
+    assert.deepEqual(divHits[0].drugIds, ["divalproex", "topiramate"]);
+
+    assert.equal(safetyOnDesk(["valproate", "divalproex", "topiramate"]).length, 1);
+  });
+
+  it("detects Methotrexate × Proton Pump Inhibitors (PPIs) as major BCRP/OAT3 delayed elimination risk", () => {
+    for (const ppi of [
+      "omeprazole",
+      "esomeprazole",
+      "lansoprazole",
+      "pantoprazole",
+      "rabeprazole",
+      "dexlansoprazole",
+      "omeprazole-sodium-bicarbonate",
+    ]) {
+      assert.equal(isMtxPpiDelayedClearance("methotrexate", ppi), true, `methotrexate + ${ppi}`);
+      assert.equal(isMtxPpiDelayedClearance(ppi, "methotrexate"), true, `${ppi} + methotrexate`);
+    }
+
+    assert.equal(isMtxPpiDelayedClearance("methotrexate", "famotidine"), false);
+    assert.equal(isMtxPpiDelayedClearance("famotidine", "methotrexate"), false);
+    assert.equal(isMtxPpiDelayedClearance("methotrexate", "vonoprazan"), false);
+    assert.equal(isMtxPpiDelayedClearance("methotrexate", "acetaminophen"), false);
+    assert.equal(isMtxPpiDelayedClearance("methotrexate-topical", "omeprazole"), false);
+    assert.equal(isMtxPpiDelayedClearance("methotrexate", "omeprazole-topical"), false);
+    assert.equal(isMtxPpiDelayedClearance("methotrexate", "pantoprazole-ophthalmic"), false);
+    assert.equal(isMtxPpiDelayedClearance("methotrexate", "methotrexate"), false);
+
+    assert.equal(safetyOnDesk(["methotrexate", "famotidine"]).length, 0);
+    assert.equal(safetyOnDesk(["methotrexate", "vonoprazan"]).length, 0);
+
+    const omeHits = safetyOnDesk(["methotrexate", "omeprazole"]);
+    assert.equal(omeHits.length, 1);
+    assert.equal(omeHits[0].id, "mtx-ppi-delayed-clearance");
+    assert.deepEqual(omeHits[0].drugIds, ["methotrexate", "omeprazole"]);
+    assert.equal(omeHits[0].severity, "major");
+    assert.equal(omeHits[0].tone, "danger");
+    assert.equal(omeHits[0].mechanism, "methotrexate × proton pump inhibitor (PPI) — BCRP/OAT3 renal delayed elimination");
+    assert.match(omeHits[0].clinical, /7-hydroxymethotrexate.*OAT3.*BCRP.*pancytopenia/i);
+    assert.match(omeHits[0].watch, /The Prescribing Information governs\. This desk does not pick the dose or replacement agent\.$/);
+    assert.match(omeHits[0].source, /Methotrexate Prescribing Information.*36946211.*42255661/);
+
+    const pantoHits = safetyOnDesk(["pantoprazole", "methotrexate"]);
+    assert.equal(pantoHits.length, 1);
+    assert.equal(pantoHits[0].id, "mtx-ppi-delayed-clearance");
+    assert.deepEqual(pantoHits[0].drugIds, ["methotrexate", "pantoprazole"]);
+
+    assert.equal(safetyOnDesk(["methotrexate", "omeprazole", "pantoprazole"]).length, 1);
   });
 
   it("continues to detect existing high-risk safety collisions", () => {

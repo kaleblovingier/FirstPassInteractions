@@ -1,8 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { analyze } from "./engine";
-import { SWAP_COPY, swapDiff, swapIds } from "./swap";
-import { DEFAULT_HOST, type HostContext } from "./types";
+import { DRUGS } from "./catalog";
+import { SWAP_COPY, sameClassSwapCandidates, swapDiff, swapIds } from "./swap";
+import { DEFAULT_HOST, SEVERITY_RANK, type HostContext } from "./types";
 
 const TRAY = ["simvastatin", "clarithromycin", "amlodipine"];
 
@@ -84,4 +85,57 @@ test("swap copy says teaching only and makes no clearance claim", () => {
   assert.match(SWAP_COPY.caveat, /not a clearance/);
   assert.doesNotMatch(all, /—/);
   assert.doesNotMatch(all, /\bsafe\b|FDA approved|FDA cleared|clinically validated/i);
+});
+
+test("sameClassSwapCandidates finds single-ingredient peers off the tray and ranks lowest severity first", () => {
+  const macrolides = sameClassSwapCandidates(["simvastatin", "clarithromycin"], DEFAULT_HOST, "clarithromycin");
+  assert.ok(macrolides.length >= 2);
+  assert.ok(macrolides.every((c) => c.id !== "clarithromycin" && c.id !== "simvastatin"));
+  const az = macrolides.find((c) => c.id === "azithromycin");
+  const er = macrolides.find((c) => c.id === "erythromycin");
+  assert.ok(az, "includes Azithromycin");
+  assert.ok(er, "includes Erythromycin");
+  assert.ok(macrolides.indexOf(az) < macrolides.indexOf(er), "Azithromycin ranks ahead of Erythromycin");
+  assert.ok(SEVERITY_RANK[az.diff.after.highest] < SEVERITY_RANK[er.diff.after.highest]);
+
+  // Excludes peers that are already on the tray.
+  const withoutErythromycin = sameClassSwapCandidates(
+    ["simvastatin", "clarithromycin", "erythromycin"],
+    DEFAULT_HOST,
+    "clarithromycin",
+  );
+  assert.equal(withoutErythromycin.some((c) => c.id === "erythromycin"), false);
+});
+
+test("sameClassSwapCandidates compares PPIs with clopidogrel and omits combination rows when single peers exist", () => {
+  const ppis = sameClassSwapCandidates(["clopidogrel", "omeprazole"], DEFAULT_HOST, "omeprazole", {}, 10);
+  const panto = ppis.find((c) => c.id === "pantoprazole");
+  const eso = ppis.find((c) => c.id === "esomeprazole");
+  assert.ok(panto, "includes Pantoprazole");
+  assert.ok(eso, "includes Esomeprazole");
+  assert.equal(
+    ppis.some((c) => c.id === "omeprazole-sodium-bicarbonate"),
+    false,
+    "prefers single-ingredient PPIs over combination products",
+  );
+  assert.ok(ppis.indexOf(panto) < ppis.indexOf(eso), "Pantoprazole ranks ahead of Esomeprazole with clopidogrel");
+});
+
+test("sameClassSwapCandidates handles limit clamping, amounts forwarding, and invalid outId", () => {
+  assert.deepEqual(sameClassSwapCandidates(TRAY, DEFAULT_HOST, "not-a-drug"), []);
+  assert.deepEqual(sameClassSwapCandidates(TRAY, DEFAULT_HOST, "warfarin"), []);
+  assert.deepEqual(sameClassSwapCandidates(TRAY, DEFAULT_HOST, "clarithromycin", {}, 0), []);
+  assert.deepEqual(sameClassSwapCandidates(TRAY, DEFAULT_HOST, "clarithromycin", {}, -2), []);
+
+  const limited = sameClassSwapCandidates(["simvastatin", "clarithromycin"], DEFAULT_HOST, "clarithromycin", {
+    simvastatin: 40,
+    clarithromycin: 500,
+  }, 2);
+  assert.equal(limited.length, 2);
+  assert.deepEqual(limited[0]!.diff.after, analyze(limited[0]!.diff.ids, DEFAULT_HOST, { simvastatin: 40 }));
+
+  const noCls = DRUGS.find((d) => d.kind === "drug" && !d.cls);
+  if (noCls) {
+    assert.deepEqual(sameClassSwapCandidates([noCls.id, "simvastatin"], DEFAULT_HOST, noCls.id), []);
+  }
 });

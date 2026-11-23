@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent }
 import { TimingPanel } from "./timing-panel";
 import { SynergyBanner } from "./synergy-banner";
 import { EvidencePanel } from "./evidence-panel";
-import { Copy, Check, RotateCcw, Download, Share2, FileText } from "lucide-react";
+import { Copy, Check, RotateCcw, Download, Share2, FileText, Bookmark, BookmarkCheck, X } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
 import { recheckLicense } from "@/lib/billing/license";
 import { analyze } from "@/lib/drugs/engine";
@@ -45,9 +45,12 @@ import {
 import { useDesk, usePlan, type LoadExtras } from "@/lib/drugs/store";
 import {
   emptyHistory,
+  isTrayPinned,
   labelForIds,
   popUndo,
   readHistory,
+  togglePinTray,
+  unpinTray,
   type TrayHistoryState,
 } from "@/lib/drugs/tray-history";
 import { PLAN_BY_ID } from "@/lib/billing/plans";
@@ -183,7 +186,7 @@ export function DeskApp() {
     bumpTray();
   };
   useEffect(() => {
-    if (!hydrated || selected.length > 0) return;
+    if (!hydrated) return;
     setTrayHistory(readHistory());
   }, [hydrated, selected]);
   useEffect(() => {
@@ -241,6 +244,7 @@ export function DeskApp() {
   const kidney = useDesk((s) => s.kidney);
   const preg = useDesk((s) => s.preg);
   const doses = useDesk((s) => s.doses);
+  const pinnedNow = hydrated && selected.length > 0 && isTrayPinned(selected, trayHistory);
   const host = useMemo<HostContext>(
     () => ({ phenotypes, smoking, ketamineRoute, cannabisRoute, alcohol, age, kidney, preg }),
     [phenotypes, smoking, ketamineRoute, cannabisRoute, alcohol, age, kidney, preg],
@@ -643,6 +647,25 @@ export function DeskApp() {
                     <RotateCcw className="size-3.5" />
                     Clear
                   </Button>
+                  <Button
+                    type="button"
+                    variant={pinnedNow ? "secondary" : "ghost"}
+                    size="sm"
+                    className={pinnedNow ? "text-fg" : "text-muted"}
+                    aria-pressed={pinnedNow}
+                    onClick={() => {
+                      const res = togglePinTray(selected, { ketamineRoute });
+                      setTrayHistory(res.state);
+                      announceTray(res.pinned ? "Pinned tray" : "Unpinned tray");
+                    }}
+                  >
+                    {pinnedNow ? (
+                      <BookmarkCheck className="size-3.5 text-accent" aria-hidden />
+                    ) : (
+                      <Bookmark className="size-3.5" aria-hidden />
+                    )}
+                    {pinnedNow ? "Pinned" : "Pin tray"}
+                  </Button>
                   <Button variant="secondary" size="sm" onClick={() => setView("watch")}>
                     Watch
                   </Button>
@@ -696,8 +719,13 @@ export function DeskApp() {
                   ready={hydrated}
                   undo={trayHistory.undo}
                   recent={trayHistory.recent}
+                  pinned={trayHistory.pinned}
                   onUndo={undoTray}
                   onTrayBump={bumpTray}
+                  onUnpin={(ids) => {
+                    setTrayHistory(unpinTray(ids));
+                    announceTray("Unpinned tray");
+                  }}
                 />
               ) : selected.length === 1 ? (
                 <>
@@ -903,16 +931,20 @@ function EmptyState({
   ready,
   undo,
   recent,
+  pinned,
   onUndo,
   onTrayBump,
+  onUnpin,
 }: {
   onLoad: (ids: string[], extras?: LoadExtras) => void;
   onLoadSample: (sampleId: string) => void;
   ready: boolean;
   undo: ReturnType<typeof readHistory>["undo"];
   recent: ReturnType<typeof readHistory>["recent"];
+  pinned: ReturnType<typeof readHistory>["pinned"];
   onUndo: () => void;
   onTrayBump: () => void;
+  onUnpin: (ids: string[]) => void;
 }) {
   const [lane, setLane] = useState<SampleLane | "all">("all");
   const [showAll, setShowAll] = useState(false);
@@ -967,6 +999,58 @@ function EmptyState({
               </Button>
             </div>
             <CopyCaseLink sampleId={daily.id} className="absolute right-3 top-3" />
+          </div>
+        ) : null}
+        {pinned.length > 0 ? (
+          <div className="mt-4 flex flex-col gap-3 rounded-lg bg-bg px-3 py-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="flex items-center gap-1.5 text-sm font-medium text-fg">
+                <BookmarkCheck className="size-4 text-accent" aria-hidden />
+                Pinned trays
+              </p>
+              <p className="text-xs text-muted">
+                Stored only on this browser — stays put across clears.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {pinned.map((snap) => {
+                const label = labelForIds(snap.ids);
+                return (
+                  <div
+                    key={snap.ids.join("-")}
+                    className="inline-flex max-w-full items-center rounded-sm bg-surface shadow-[var(--shadow-border)]"
+                  >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={!ready}
+                      className="min-w-0 max-w-[14rem] rounded-r-none truncate text-fg hover:bg-surface-2"
+                      title={label}
+                      onClick={() => {
+                        onLoad(
+                          snap.ids,
+                          snap.ketamineRoute ? { ketamineRoute: snap.ketamineRoute } : undefined,
+                        );
+                        onTrayBump();
+                      }}
+                    >
+                      {label}
+                    </Button>
+                    <button
+                      type="button"
+                      disabled={!ready}
+                      aria-label={`Unpin ${label}`}
+                      title={`Unpin ${label}`}
+                      onClick={() => onUnpin(snap.ids)}
+                      className="inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-r-sm border-l border-border text-muted transition-colors hover:bg-danger-soft hover:text-danger disabled:pointer-events-none disabled:opacity-40 pointer-coarse:min-h-11 pointer-coarse:min-w-11"
+                    >
+                      <X className="size-3.5" aria-hidden />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ) : null}
         {undo || recent.length > 0 ? (

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DRUG_BY_ID, searchDrugs } from "@/lib/drugs/catalog";
 import { useDesk } from "@/lib/drugs/store";
-import { SWAP_COPY, swapDiff, type SwapDiff } from "@/lib/drugs/swap";
+import { SWAP_COPY, sameClassSwapCandidates, swapDiff, type SwapDiff } from "@/lib/drugs/swap";
 import { SEVERITY_LABEL, type Finding, type HostContext, type Severity } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { severitySurface } from "./severity";
@@ -110,8 +110,12 @@ export function SwapPreview({
   const inputRef = useRef<HTMLInputElement>(null);
   // Picking a match, Apply swap and Pick another each unmount the button that was pressed.
   const refocus = () => requestAnimationFrame(() => inputRef.current?.focus());
-  const outId = outPick && ids.includes(outPick) ? outPick : ids[ids.length - 1];
+  const outId = outPick && ids.includes(outPick) ? outPick : (ids[ids.length - 1] ?? "");
   const matches = useMemo(() => (query.trim() ? searchDrugs(query, ids).slice(0, PICKS) : []), [query, ids]);
+  const sameClassCandidates = useMemo(
+    () => sameClassSwapCandidates(ids, host, outId, amounts),
+    [ids, host, outId, amounts],
+  );
   const diff = useMemo(
     () => (inId ? swapDiff(ids, host, outId, inId, amounts) : null),
     [ids, host, outId, inId, amounts],
@@ -191,6 +195,33 @@ export function SwapPreview({
         </div>
       </div>
 
+      {!inId && !query.trim() && sameClassCandidates.length > 0 ? (
+        <div className="mt-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+            Same class in catalog · preview a swap
+          </p>
+          <ul aria-label="Same-class swap candidates" className="mt-1.5 flex flex-wrap gap-2">
+            {sameClassCandidates.map((c) => (
+              <li key={c.id}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="h-11 sm:h-9"
+                  onClick={() => {
+                    setInId(c.id);
+                    refocus();
+                  }}
+                >
+                  <span>{c.name}</span>{" "}
+                  <span className={cn("rounded-full px-2 py-0.5 font-mono text-[10px]", chip(c.diff.after.highest))}>
+                    {SEVERITY_LABEL[c.diff.after.highest]}
+                  </span>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {!inId && matches.length > 0 ? (
         <ul aria-label="Replacement matches" className="mt-2 flex flex-wrap gap-2">
           {matches.map((d) => (

@@ -431,6 +431,22 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
     topic: "ranolazine-strong-cyp3a4-inducer",
     text: "Strong enzyme blockers can raise ranolazine blood levels and trigger heart-rhythm changes, dizziness, or nervous-system symptoms, whereas strong enzyme inducers (such as rifampin, carbamazepine, phenytoin, phenobarbital, or St. John's wort) can make ranolazine wear off and stop preventing chest pain. Check with your prescriber or pharmacist before combining these—never stop antianginal or seizure therapy on your own—and seek urgent medical care for fainting, chest pain, severe dizziness, confusion, or numbness or tingling.",
   },
+  "venetoclax-strong-cyp3a4-tls": {
+    topic: "venetoclax-strong-cyp3a4-tls",
+    text: "Strong enzyme-blocking antibiotics, antifungals, antivirals, or antidepressants (such as ketoconazole, itraconazole, posaconazole, voriconazole, clarithromycin, ritonavir, Paxlovid, or nefazodone) can cause venetoclax levels to spike dangerously—especially when starting treatment or stepping up your schedule—triggering rapid cancer-cell breakdown called Tumor Lysis Syndrome (TLS) that can injure your kidneys and heart. Tell your oncology care team and pharmacist before starting or stopping any infection medicine, prescription, or supplement, never adjust venetoclax on your own, keep all hydration instructions and blood-work checks, and seek emergency care right away for nausea or vomiting, muscle cramps or weakness, dark or decreased urine, fluttering or racing heartbeats, confusion, or shortness of breath.",
+  },
+  "voriconazole-strong-inducer": {
+    topic: "voriconazole-strong-inducer",
+    text: "Certain seizure medicines, tuberculosis antibiotics (rifampin), HIV medicines (efavirenz or ritonavir), and St. John's wort speed up how your body clears voriconazole so much that voriconazole can drop too low to fight serious fungal infections. Never start St. John's wort or change seizure, infection, or HIV medicines on your own—stopping seizure medicines suddenly can trigger seizures—ask your infectious-disease doctor or pharmacist whether a different antifungal or non-interacting option is needed, and contact your care team promptly for worsening fever, new or worsening cough, shortness of breath, chest pain, or chills.",
+  },
+  "valproate-topiramate-hyperammonemia": {
+    topic: "valproate-topiramate-hyperammonemia",
+    text: "Taking valproate or divalproex (Depakote) together with topiramate (Topamax) can cause ammonia to build up in the blood (hyperammonemic encephalopathy) or trigger an unexpected drop in body temperature (hypothermia), even when routine liver blood tests look normal. Never stop either seizure or mood medicine abruptly on your own—stopping suddenly can trigger dangerous breakthrough seizures—and contact your prescriber or seek urgent medical care right away for unexplained extreme sleepiness, confusion, trouble thinking clearly, repeated vomiting, unsteady walking, shivering, or feeling unusually cold.",
+  },
+  "mtx-ppi-delayed-clearance": {
+    topic: "mtx-ppi-delayed-clearance",
+    text: "Acid-reducing proton pump inhibitors (PPIs such as omeprazole, esomeprazole, pantoprazole, lansoprazole, or rabeprazole—including over-the-counter heartburn pills) can slow how your kidneys clear methotrexate, allowing methotrexate to build up to harmful levels. Check with your oncology or rheumatology prescriber and pharmacist before taking any prescription or over-the-counter heartburn medicine with methotrexate (they may recommend pausing the PPI or switching to a different acid reducer), never change your methotrexate schedule on your own, keep all blood-count and kidney lab checks, and seek urgent care right away for painful mouth sores, fever or chills, severe diarrhea, unusual bruising or bleeding, or markedly decreased urination.",
+  },
 };
 
 function labeledCollisionCounseling(

@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Timeline } from "@/lib/drugs/types";
-import { TIMING_CAVEAT, TimingSketch } from "./timing-panel";
+import { TIMING_CAVEAT, TimingSketch, formatFiveHalfLives } from "./timing-panel";
 
 const data: Timeline = {
   rows: [
@@ -35,5 +35,72 @@ describe("TimingSketch", () => {
     assert.ok(html.includes("The label clock outlasts the half-life."));
     assert.ok(html.includes("Serious concern"));
     assert.ok(html.includes("Set both times to sketch the overlap."));
+  });
+  it("shows 0 h and 48 h quick pills, ~5 half-lives text, and aria-pressed active state", () => {
+    assert.ok(html.includes('aria-label="Ketamine: 0 hours ago"'));
+    assert.ok(html.includes('aria-label="Ketamine: 48 hours ago"'));
+    assert.ok(html.includes("~5 half-lives (~12.5 h) to ~97% elimination"));
+
+    const activeData: Timeline = {
+      rows: [
+        { id: "ketamine", name: "Ketamine", halfLifeH: 2.5, source: "FirstPass PK shelf", hoursAgo: 4, remaining: 0.33 },
+        { id: "alprazolam", name: "Alprazolam", halfLifeH: 11, source: "FirstPass PK shelf" },
+      ],
+      pairs: [],
+    };
+    const activeHtml = renderToStaticMarkup(<TimingSketch data={activeData} takenAt={{ ketamine: 0 }} onSet={() => {}} />);
+    assert.match(
+      activeHtml,
+      /<button[^>]*border-ink bg-ink text-bg[^>]*aria-pressed="true"[^>]*aria-label="Ketamine: 4 hours ago"[^>]*>4 h<\/button>/,
+    );
+    assert.match(
+      activeHtml,
+      /<button[^>]*aria-pressed="false"[^>]*aria-label="Ketamine: 0 hours ago"[^>]*>0 h<\/button>/,
+    );
+    assert.ok(activeHtml.includes("~5 half-lives (~55 h / 2.3 d)"));
+  });
+  it("renders batch controls only for multi-row shelves with half-lives and disables clear when empty", () => {
+    assert.ok(html.includes("Set all to 0 h"));
+    assert.match(html, /<button[^>]*>Clear all times<\/button>/);
+    assert.doesNotMatch(html, /<button[^>]*disabled=""[^>]*>Clear all times<\/button>/);
+
+    const noTimes: Timeline = {
+      rows: [
+        { id: "ketamine", name: "Ketamine", halfLifeH: 2.5, source: "FirstPass PK shelf" },
+        { id: "alprazolam", name: "Alprazolam", halfLifeH: 11, source: "FirstPass PK shelf" },
+      ],
+      pairs: [],
+    };
+    const noTimesHtml = renderToStaticMarkup(<TimingSketch data={noTimes} takenAt={{}} onSet={() => {}} />);
+    assert.ok(noTimesHtml.includes("Set all to 0 h"));
+    assert.match(noTimesHtml, /<button[^>]*disabled=""[^>]*>Clear all times<\/button>/);
+
+    const singleRow: Timeline = {
+      rows: [{ id: "ketamine", name: "Ketamine", halfLifeH: 2.5, source: "FirstPass PK shelf" }],
+      pairs: [],
+    };
+    const singleHtml = renderToStaticMarkup(<TimingSketch data={singleRow} takenAt={{}} onSet={() => {}} />);
+    assert.equal(singleHtml.includes("Set all to 0 h"), false);
+    assert.equal(singleHtml.includes("Clear all times"), false);
+
+    const noHalfLives: Timeline = {
+      rows: [
+        { id: "ethanol", name: "Alcohol", note: "Cleared at a near-fixed rate, not by half-life." },
+        { id: "alprazolam", name: "Alprazolam" },
+      ],
+      pairs: [],
+    };
+    const noHalfLivesHtml = renderToStaticMarkup(<TimingSketch data={noHalfLives} takenAt={{}} onSet={() => {}} />);
+    assert.equal(noHalfLivesHtml.includes("Set all to 0 h"), false);
+  });
+});
+
+describe("formatFiveHalfLives", () => {
+  it("formats hours below 48 h and adds days at or above 48 h", () => {
+    assert.equal(formatFiveHalfLives(2.5), "~5 half-lives (~12.5 h)");
+    assert.equal(formatFiveHalfLives(3), "~5 half-lives (~15 h)");
+    assert.equal(formatFiveHalfLives(9.6), "~5 half-lives (~48 h / 2 d)");
+    assert.equal(formatFiveHalfLives(10), "~5 half-lives (~50 h / 2.1 d)");
+    assert.equal(formatFiveHalfLives(24), "~5 half-lives (~120 h / 5 d)");
   });
 });

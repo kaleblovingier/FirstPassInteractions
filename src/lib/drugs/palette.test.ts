@@ -1,8 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { searchDrugs } from "./catalog";
-import { DESK_VIEWS, PALETTE_PAGES, isPaletteShortcut, paletteGroups, type PaletteItem } from "./palette";
+import { DESK_VIEWS, PALETTE_PAGES, isPaletteShortcut, paletteGroups, pinnedItem, type PaletteItem } from "./palette";
 import { CLINICAL_TAB_IDS, STATION_LABELS, groupStations } from "./station-groups";
+import type { TraySnapshot } from "./tray-history";
 
 const ids = (query: string, kind: PaletteItem["kind"]) =>
   paletteGroups(query).find((g) => g.kind === kind)?.items.map((i) => i.id) ?? [];
@@ -87,4 +88,50 @@ test("the shortcut is Ctrl+K or ⌘K, never with Alt or Shift or while composing
   assert.ok(!press({ metaKey: true, shiftKey: true }));
   assert.ok(!press({ ctrlKey: true, isComposing: true }));
   assert.ok(!press({ ctrlKey: true, keyCode: 229 }), "IME keydown");
+});
+
+test("includes the new drug classes, program licensing, and course kit pages", () => {
+  const hrefs = PALETTE_PAGES.map((p) => p.href);
+  assert.ok(hrefs.includes("/classes"));
+  assert.ok(hrefs.includes("/for-programs"));
+  assert.ok(hrefs.includes("/for-programs/course-kit"));
+  assert.deepEqual(ids("drug classes", "page"), ["/classes"]);
+  assert.deepEqual(ids("for programs", "page"), ["/for-programs"]);
+  assert.deepEqual(ids("faculty course kit", "page"), ["/for-programs/course-kit"]);
+});
+
+test("pinned trays lead blank queries and match by drug name, brand, or alias", () => {
+  const pinned: TraySnapshot[] = [
+    { ids: ["warfarin", "amiodarone"], ts: 2 },
+    { ids: ["simvastatin", "clarithromycin"], ts: 1 },
+  ];
+  const recent: TraySnapshot[] = [{ ids: ["tramadol", "sertraline"], ts: 3 }];
+
+  const blank = paletteGroups("", recent, pinned);
+  assert.deepEqual(blank.map((g) => g.label), ["Pinned trays", "Recent trays", "Go to", "Stations", "Pages"]);
+  assert.deepEqual(blank[0].items.map((i) => i.id), [pinnedItem(pinned[0]).id, pinnedItem(pinned[1]).id]);
+
+  const byName = paletteGroups("warfarin", recent, pinned).find((g) => g.kind === "pinned");
+  assert.deepEqual(byName?.items.map((i) => i.id), [pinnedItem(pinned[0]).id]);
+
+  const byBrand = paletteGroups("zocor", recent, pinned).find((g) => g.kind === "pinned");
+  assert.deepEqual(byBrand?.items.map((i) => i.id), [pinnedItem(pinned[1]).id]);
+
+  assert.equal(paletteGroups("qt", recent, pinned).find((g) => g.kind === "pinned"), undefined);
+});
+
+test("combination queries emit a Combination products group with ingredients", () => {
+  const percocet = paletteGroups("Percocet");
+  assert.equal(percocet[0]?.kind, "combo");
+  assert.equal(percocet[0]?.label, "Combination products");
+  const item = percocet[0]?.items[0] as Extract<PaletteItem, { kind: "combo" }>;
+  assert.equal(item.label, "Percocet");
+  assert.deepEqual(item.ids, ["oxycodone", "acetaminophen"]);
+  assert.match(item.hint, /^Adds all ingredients · Oxycodone \+ Acetaminophen$/);
+
+  const janumet = paletteGroups("Janumet").find((g) => g.kind === "combo");
+  assert.ok(janumet);
+  const janumetItem = janumet!.items[0] as Extract<PaletteItem, { kind: "combo" }>;
+  assert.equal(janumetItem.label, "Janumet");
+  assert.deepEqual(janumetItem.ids, ["sitagliptin-metformin"]);
 });

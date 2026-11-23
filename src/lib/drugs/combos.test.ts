@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { DRUG_BY_ID, DRUGS, normalizeSearchText } from "./catalog";
 import { COMBINATIONS, findCombination, planCombination } from "./combos";
 import { ClinicalDecisionService, resolveDrugQuery } from "../server/api/cds-service";
+import { findDoses } from "../guards/dose-rule";
 
 function hit(query: string) {
   const c = findCombination(query);
@@ -11,6 +13,7 @@ function hit(query: string) {
 }
 
 test("every combination lists cataloged rows, a label, and names no other entry or row uses", () => {
+  assert.ok(COMBINATIONS.length >= 60, `expected 60+ combinations, got ${COMBINATIONS.length}`);
   const rowKeys = new Set(DRUGS.flatMap((d) => [normalizeSearchText(d.id), normalizeSearchText(d.name)]));
   const seen = new Map<string, string>();
   for (const c of COMBINATIONS) {
@@ -24,6 +27,7 @@ test("every combination lists cataloged rows, a label, and names no other entry 
       seen.set(key, c.names[0]);
     }
   }
+  assert.deepEqual(findDoses(readFileSync("src/lib/drugs/combos.ts", "utf8")), []);
 });
 
 test("combination brands and generic pairs add every ingredient and keep the typed name", () => {
@@ -94,4 +98,109 @@ test("the API resolves a combination name to every ingredient and analyzes them 
   assert.ok(res.success);
   assert.deepEqual(res.data.query.resolvedDrugs.map((d) => d.id).sort(), ["acetaminophen", "hydrocodone", "warfarin"]);
   assert.deepEqual(res.data.query.unresolvedDrugs, []);
+});
+
+test("expanded combination formulary resolves multi-ingredient brands, slash generics, and single-row products", async () => {
+  const multiIngredientCases: Array<[string, string[]]> = [
+    ["Avalide", ["irbesartan", "hctz"]],
+    ["irbesartan/HCTZ", ["irbesartan", "hctz"]],
+    ["Vaseretic", ["enalapril", "hctz"]],
+    ["enalapril/HCTZ", ["enalapril", "hctz"]],
+    ["Atacand HCT", ["candesartan", "hctz"]],
+    ["Micardis HCT", ["telmisartan", "hctz"]],
+    ["Accuretic", ["quinapril", "hctz"]],
+    ["Capozide", ["captopril", "hctz"]],
+    ["Tarka", ["trandolapril", "verapamil"]],
+    ["Twynsta", ["telmisartan", "amlodipine"]],
+    ["Moduretic", ["amiloride", "hctz"]],
+    ["BiDil", ["hydralazine", "isosorbide-dinitrate"]],
+    ["Edarbyclor", ["azilsartan", "chlorthalidone"]],
+    ["Tekturna HCT", ["aliskiren", "hctz"]],
+    ["Metaglip", ["glipizide", "metformin"]],
+    ["Duetact", ["pioglitazone", "glimepiride"]],
+    ["Segluromet", ["ertugliflozin", "metformin"]],
+    ["Steglujan", ["ertugliflozin", "sitagliptin"]],
+    ["Qtern", ["dapagliflozin", "saxagliptin"]],
+    ["Trijardy XR", ["empagliflozin", "linagliptin", "metformin"]],
+    ["empagliflozin/linagliptin/metformin", ["empagliflozin", "linagliptin", "metformin"]],
+    ["Xultophy", ["insulin-degludec", "liraglutide"]],
+    ["Soliqua", ["insulin-glargine", "lixisenatide"]],
+    ["Airsupra", ["albuterol", "budesonide"]],
+    ["albuterol/budesonide", ["albuterol", "budesonide"]],
+    ["Stiolto Respimat", ["tiotropium", "olodaterol"]],
+    ["Bevespi Aerosphere", ["glycopyrrolate", "formoterol"]],
+    ["Namzaric", ["memantine", "donepezil"]],
+    ["memantine/donepezil", ["memantine", "donepezil"]],
+    ["Duexis", ["ibuprofen", "famotidine"]],
+    ["Percodan", ["oxycodone", "aspirin"]],
+    ["EMLA", ["lidocaine", "prilocaine"]],
+    ["Mucinex D", ["guaifenesin", "pseudoephedrine"]],
+    ["Clarinex-D", ["desloratadine", "pseudoephedrine"]],
+    ["Symfi Lo", ["efavirenz", "lamivudine", "tenofovir-df"]],
+    ["Combivir", ["zidovudine", "lamivudine"]],
+    ["Epzicom", ["abacavir", "lamivudine"]],
+    ["Trizivir", ["abacavir", "lamivudine", "zidovudine"]],
+    ["Talicia", ["omeprazole", "amoxicillin", "rifabutin"]],
+    ["Omeclamox-Pak", ["omeprazole", "amoxicillin", "clarithromycin"]],
+    ["Prevpac", ["lansoprazole", "amoxicillin", "clarithromycin"]],
+    ["Voquezna Dual Pak", ["vonoprazan", "amoxicillin"]],
+    ["Voquezna Triple Pak", ["vonoprazan", "amoxicillin", "clarithromycin"]],
+    ["Prempro", ["conjugated-estrogens", "medroxyprogesterone"]],
+    ["Stalevo", ["carbidopa-levodopa", "entacapone"]],
+  ];
+
+  for (const [query, expectedIds] of multiIngredientCases) {
+    assert.deepEqual(hit(query).ids, expectedIds, query);
+    const resolved = resolveDrugQuery(query);
+    assert.equal(resolved.status, "resolved", query);
+    if (resolved.status === "resolved") {
+      assert.equal(resolved.matchedBy, "combination", query);
+      assert.deepEqual(resolved.drugIds, expectedIds, query);
+    }
+  }
+
+  const singleRowCases: Array<[string, string]> = [
+    ["Hyzaar", "losartan-hctz"],
+    ["Diovan HCT", "valsartan-hctz"],
+    ["Zestoretic", "lisinopril-hctz"],
+    ["Prinivil HCT", "lisinopril-hctz"],
+    ["Aldactazide", "spironolactone-hctz"],
+    ["Azor", "olmesartan-amlodipine"],
+    ["Caduet", "atorvastatin-amlodipine"],
+    ["amlodipine/atorvastatin", "atorvastatin-amlodipine"],
+    ["Vytorin", "simvastatin-ezetimibe"],
+    ["ezetimibe/simvastatin", "simvastatin-ezetimibe"],
+    ["Dyazide", "hydrochlorothiazide-triamterene"],
+    ["Maxzide", "hydrochlorothiazide-triamterene"],
+    ["triamterene/HCTZ", "hydrochlorothiazide-triamterene"],
+    ["Synjardy", "empagliflozin-metformin"],
+    ["Synjardy XR", "empagliflozin-metformin"],
+    ["Xigduo XR", "dapagliflozin-metformin"],
+    ["Glyxambi", "empagliflozin-linagliptin"],
+    ["Janumet", "sitagliptin-metformin"],
+    ["Janumet XR", "sitagliptin-metformin"],
+    ["Sinemet", "carbidopa-levodopa"],
+    ["Rytary", "carbidopa-levodopa"],
+    ["Qsymia", "phentermine-topiramate"],
+    ["Malarone", "atovaquone-proguanil"],
+  ];
+
+  for (const [query, expectedId] of singleRowCases) {
+    assert.deepEqual(hit(query).ids, [expectedId], query);
+    const resolved = resolveDrugQuery(query);
+    assert.equal(resolved.status, "resolved", query);
+    if (resolved.status === "resolved") {
+      assert.equal(resolved.drugId, expectedId, query);
+      assert.deepEqual(resolved.drugIds, [expectedId], query);
+    }
+  }
+
+  ClinicalDecisionService.clearCaches();
+  const comboCheck = await ClinicalDecisionService.checkInteractions({ drugs: ["Omeclamox-Pak", "simvastatin"] });
+  assert.ok(comboCheck.success);
+  assert.deepEqual(
+    comboCheck.data.query.resolvedDrugs.map((d) => d.id).sort(),
+    ["amoxicillin", "clarithromycin", "omeprazole", "simvastatin"],
+  );
+  assert.ok(comboCheck.data.summary.totalFindings > 0, "clarithromycin in Omeclamox-Pak should collide with simvastatin");
 });

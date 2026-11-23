@@ -5,6 +5,7 @@
  * a substitution recommendation. Product labeling and the prescriber govern.
  */
 
+import { DRUG_BY_ID, DRUGS } from "./catalog";
 import { analyze } from "./engine";
 import { swapIds } from "./tray-history";
 import { SEVERITY_RANK, type Finding, type HostContext, type Report, type Severity } from "./types";
@@ -85,4 +86,65 @@ export function swapDiff(
     regraded: regraded.sort((a, b) => bySeverity(a.finding, b.finding)),
     kept: same,
   };
+}
+
+export interface SameClassCandidate {
+  id: string;
+  name: string;
+  diff: SwapDiff;
+}
+
+const SAME_CLASS_PEER_CAP = 24;
+
+/**
+ * Evaluate same-class off-tray catalog drugs as swap candidates for `outId`,
+ * preferring single-ingredient peers and ranking lowest resulting severity first.
+ * Teaching comparison only; not a substitution recommendation or clearance.
+ */
+export function sameClassSwapCandidates(
+  ids: string[],
+  host: HostContext,
+  outId: string,
+  amounts: Record<string, number> = {},
+  limit = 5,
+): SameClassCandidate[] {
+  const max = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : 5;
+  if (max === 0 || !ids.includes(outId)) return [];
+  const current = DRUG_BY_ID[outId];
+  if (!current || !current.cls) return [];
+
+  const onTray = new Set(ids);
+  const matchingPeers = DRUGS.filter(
+    (d) =>
+      d.kind === "drug" &&
+      d.cls === current.cls &&
+      d.id !== outId &&
+      !d.id.startsWith("__") &&
+      !onTray.has(d.id),
+  );
+  if (matchingPeers.length === 0) return [];
+
+  const singlePeers = matchingPeers.filter((d) => !d.name.includes("–") && !d.name.includes(" + "));
+  const pool = (singlePeers.length > 0 ? singlePeers : matchingPeers)
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, SAME_CLASS_PEER_CAP);
+
+  const candidates: SameClassCandidate[] = [];
+  for (const peer of pool) {
+    const diff = swapDiff(ids, host, outId, peer.id, amounts);
+    if (diff) candidates.push({ id: peer.id, name: peer.name, diff });
+  }
+
+  candidates.sort((a, b) => {
+    const rankA = a.diff.after.highest === "none" ? 0 : SEVERITY_RANK[a.diff.after.highest];
+    const rankB = b.diff.after.highest === "none" ? 0 : SEVERITY_RANK[b.diff.after.highest];
+    return (
+      rankA - rankB ||
+      a.diff.after.findings.length - b.diff.after.findings.length ||
+      a.name.localeCompare(b.name)
+    );
+  });
+
+  return candidates.slice(0, max);
 }
