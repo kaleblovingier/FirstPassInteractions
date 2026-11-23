@@ -5,7 +5,10 @@ const dispatchLti = async ({ request }: { request: Request }) => {
   return handleLtiRequest(request);
 };
 
-/** LTI 1.3 course links (login, launch, jwks, config). Off unless LTI_ENABLED is "1": 404 otherwise. */
+/**
+ * LTI 1.3 course links (login, launch, deep-link content picker, jwks, config).
+ * Off unless LTI_ENABLED is "1": 404 otherwise.
+ */
 export const Route = createFileRoute("/api/lti/$")({
   server: {
     handlers: {
