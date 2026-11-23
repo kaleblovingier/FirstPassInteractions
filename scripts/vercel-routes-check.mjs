@@ -1,7 +1,7 @@
 // @ts-check
 /** The check behind scripts/check-build-headers.mjs, split out so tests can feed it configs. */
 import { isDeepStrictEqual } from "node:util";
-import { EMBED_PREFIX, headersForPath, vercelRoutes } from "./vercel-routes.mjs";
+import { EMBED_PREFIX, headersForPath, LTI_PREFIX, vercelRoutes } from "./vercel-routes.mjs";
 
 /** Request paths whose effective headers the check probes in the built config. */
 export const PROBE_PATHS = [
@@ -14,13 +14,22 @@ export const PROBE_PATHS = [
   "/embed/pair/warfarin-fluconazole",
   "/embed/drug/warfarin",
   "/embed/class/azole-antifungal",
+  "/api/lti",
+  "/api/lti/login",
+  "/api/lti/launch",
+  "/api/lti/deep-link",
+  "/api/lti/jwks",
+  "/api/ltix/login",
+  "/api/v1/check",
 ];
 
 /**
  * Problems with a Build Output API config.json, or [] when every route made from
  * vercel.json is present, unchanged and before the filesystem and the server,
  * and each probed path ends up with exactly one CSP: frame-ancestors * under
- * /embed/ (and no X-Frame-Options there), the site's own frame-ancestors elsewhere.
+ * /embed/ (and no X-Frame-Options there), the site's own frame-ancestors elsewhere,
+ * except under /api/lti/, which must get no CSP and no X-Frame-Options from these
+ * routes (the LTI handler sends its own) but still gets HSTS.
  * @param {any} config
  * @param {ReturnType<typeof vercelRoutes>} [want]
  * @returns {string[]}
@@ -54,6 +63,12 @@ function probe(routes, want, path) {
   const csp = got.headers["content-security-policy"] ?? "";
   const ancestors = /(?:^|;\s*)frame-ancestors ([^;]*)/.exec(csp)?.[1]?.trim();
   const out = [];
+  if (path.startsWith(LTI_PREFIX)) {
+    if (got.cspRoutes !== 0) out.push(`${path}: ${got.cspRoutes} routes set a Content-Security-Policy, want none (the LTI handler sends its own)`);
+    if (got.headers["x-frame-options"]) out.push(`${path}: LTI paths must not send X-Frame-Options`);
+    if (!got.headers["strict-transport-security"]) out.push(`${path}: missing Strict-Transport-Security`);
+    return out;
+  }
   if (got.cspRoutes !== 1) out.push(`${path}: ${got.cspRoutes} routes set a Content-Security-Policy, want exactly 1`);
   if (csp !== expected) out.push(`${path}: Content-Security-Policy differs from vercel.json`);
   if (path.startsWith(EMBED_PREFIX)) {

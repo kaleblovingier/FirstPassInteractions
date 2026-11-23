@@ -35,6 +35,7 @@ import {
   type LtiPlatform,
 } from "./lti";
 import {
+  LTI_PLAIN_CSP,
   PICKER_TTL_SECONDS,
   handleLaunch,
   handleLogin,
@@ -298,6 +299,37 @@ describe("platform config", () => {
     assert.ok(!body.includes(secretish));
     assert.ok(logs.every((l) => !l.includes(secretish)));
     assert.ok(logs.some((l) => l.includes("lti.config_invalid")));
+  });
+});
+
+describe("CSP on LTI answers (vercel.json sends none under /api/lti/)", () => {
+  it("every plain-text and JSON answer carries the strict CSP", async () => {
+    const cases: [string, string, Record<string, string> | undefined][] = [
+      ["GET", "/api/lti/jwks", undefined],
+      ["GET", "/api/lti/config", undefined],
+      ["GET", "/api/lti/nope", undefined],
+      ["GET", "/api/lti/launch", undefined],
+      ["POST", "/api/lti/launch", { "content-type": "text/plain" }],
+      ["POST", "/api/lti/deep-link", { "content-type": "text/plain" }],
+    ];
+    for (const [method, path, headers] of cases) {
+      const res = await handleLtiRequest(
+        new Request(`${ORIGIN}${path}`, { method, headers, body: method === "POST" ? "x" : undefined }),
+        deps(),
+      );
+      assert.equal(res.headers.get("content-security-policy"), LTI_PLAIN_CSP, `${method} ${path}`);
+    }
+    const off = baseEnv();
+    delete (off as Record<string, string | undefined>).LTI_ENABLED;
+    const res = await handleLtiRequest(new Request(`${ORIGIN}/api/lti/jwks`), deps(off));
+    assert.equal(res.status, 404);
+    assert.equal(res.headers.get("content-security-policy"), LTI_PLAIN_CSP, "the off-switch 404 too");
+  });
+
+  it("the strict CSP loads nothing, posts nothing and sets no base", () => {
+    for (const d of ["default-src 'none'", "base-uri 'none'", "form-action 'none'"])
+      assert.ok(LTI_PLAIN_CSP.includes(d), d);
+    assert.doesNotMatch(LTI_PLAIN_CSP, /unsafe|\*/);
   });
 });
 

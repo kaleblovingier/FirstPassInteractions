@@ -80,7 +80,7 @@
   ],
   "headers": [
     {
-      "source": "/((?!embed/).*)",
+      "source": "/((?!embed/|api/lti/).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
@@ -119,6 +119,19 @@
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\" \"https://checkout.stripe.com\"), usb=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        }
+      ]
+    },
+    {
+      "source": "/api/lti/(.*)",
+      "headers": [
         {
           "key": "Permissions-Policy",
           "value": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\" \"https://checkout.stripe.com\"), usb=()"

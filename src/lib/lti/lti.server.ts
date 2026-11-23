@@ -94,6 +94,15 @@ const NO_STORE = {
   "Referrer-Policy": "no-referrer",
 } as const;
 
+/**
+ * The CSP on every plain-text and JSON answer. vercel.json sends no CSP under
+ * /api/lti/ (the site one would stop Canvas framing the content picker), so the
+ * handler sends its own: nothing may load or post from these bodies. It sets no
+ * frame-ancestors, so an error can still show inside the Canvas frame; a
+ * plain-text body has nothing to click. HTML pages send their own narrower CSP.
+ */
+export const LTI_PLAIN_CSP = "default-src 'none'; base-uri 'none'; form-action 'none'";
+
 /* ---------------- shared state (per server instance) ---------------- */
 
 const remoteSets = new Map<string, JWTVerifyGetKey>();
@@ -137,7 +146,12 @@ export function resetLtiState() {
 function text(status: number, body: string, extra: Record<string, string> = {}): Response {
   return new Response(body, {
     status,
-    headers: { "Content-Type": "text/plain; charset=utf-8", ...NO_STORE, ...extra },
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Security-Policy": LTI_PLAIN_CSP,
+      ...NO_STORE,
+      ...extra,
+    },
   });
 }
 
@@ -161,7 +175,11 @@ function html(
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body, null, 2), {
     status,
-    headers: { "Content-Type": "application/json; charset=utf-8", ...NO_STORE },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Security-Policy": LTI_PLAIN_CSP,
+      ...NO_STORE,
+    },
   });
 }
 

@@ -17,8 +17,9 @@
  * GitHub Pages cannot send response headers, so none of this applies there.
  *
  * Supported `source` shapes: plain paths, the catch-all "/(.*)", a prefix
- * catch-all such as "/embed/(.*)" and its complement "/((?!embed/).*)". Anything
- * else throws at build time rather than being translated wrong.
+ * catch-all such as "/embed/(.*)" or "/api/lti/(.*)", and a complement of one or
+ * more prefixes such as "/((?!embed/|api/lti/).*)". Anything else throws at build
+ * time rather than being translated wrong.
  *
  * Framing: the site CSP's frame-ancestors lists only 'self' and the grok hosts.
  * /embed/* (the iframe-able pair cards, src/routes/embed.pair.$slug.tsx) gets the
@@ -27,6 +28,15 @@
  * path gets exactly one Content-Security-Policy, whatever order or merge Vercel
  * applies; scripts/vercel-routes-check.mjs probes the built config for that.
  * Nothing sends X-Frame-Options (CSP frame-ancestors supersedes it).
+ *
+ * /api/lti/* (LTI 1.3 course links) gets no CSP from here at all, only HSTS and
+ * Permissions-Policy. Canvas frames the deep-link content picker and takes a form
+ * post back from it, which the site CSP's frame-ancestors and form-action would
+ * block. The LTI handler sends its own CSP on every response it makes
+ * (src/lib/lti/lti.server.ts): the picker pages allow framing and posting only
+ * by the one Canvas host that launched them; plain-text and JSON answers send
+ * default-src 'none' (nothing loads, nothing posts) so an error can still show
+ * inside the Canvas frame. Redirects carry none. LTI is off unless LTI_ENABLED=1.
  *
  * CSP notes (vercel.json cannot hold comments):
  * - script-src keeps 'unsafe-inline'. TanStack Start writes each page's router
@@ -59,10 +69,10 @@ export function readVercelJson() {
  */
 export function sourceToSrc(source) {
   if (source === "/(.*)") return "^/(.*)$";
-  const prefix = /^\/([A-Za-z0-9._~-]+)\/\(\.\*\)$/.exec(source);
+  const prefix = /^\/((?:[A-Za-z0-9._~-]+\/)*[A-Za-z0-9._~-]+)\/\(\.\*\)$/.exec(source);
   if (prefix) return `^/${escapeRe(prefix[1])}/(.*)$`;
-  const except = /^\/\(\(\?!([A-Za-z0-9._~-]+)\/\)\.\*\)$/.exec(source);
-  if (except) return `^/((?!${escapeRe(except[1])}/).*)$`;
+  const except = /^\/\(\(\?!((?:[A-Za-z0-9._~-]+\/)+(?:\|(?:[A-Za-z0-9._~-]+\/)+)*)\)\.\*\)$/.exec(source);
+  if (except) return `^/((?!${except[1].split("|").map(escapeRe).join("|")}).*)$`;
   if (!/^\/[A-Za-z0-9._~\-/]*$/.test(source) || source.includes("//")) {
     throw new Error(`[vercel-routes] unsupported source pattern: ${source}`);
   }
@@ -146,3 +156,6 @@ export function embedCsp(csp) {
   const re = /(^|;\s*)frame-ancestors [^;]*/;
   return re.test(csp) ? csp.replace(re, "$1frame-ancestors *") : `${csp}; frame-ancestors *`;
 }
+
+/** Paths under this prefix get no CSP from vercel.json: the LTI handler sends its own. */
+export const LTI_PREFIX = "/api/lti/";
