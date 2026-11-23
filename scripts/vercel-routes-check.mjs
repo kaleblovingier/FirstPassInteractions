@@ -4,7 +4,17 @@ import { isDeepStrictEqual } from "node:util";
 import { EMBED_PREFIX, headersForPath, vercelRoutes } from "./vercel-routes.mjs";
 
 /** Request paths whose effective headers the check probes in the built config. */
-export const PROBE_PATHS = ["/", "/pairs", "/pair/warfarin-fluconazole", "/embed", "/embed/pair/warfarin-fluconazole"];
+export const PROBE_PATHS = [
+  "/",
+  "/pairs",
+  "/pair/warfarin-fluconazole",
+  "/drug/warfarin",
+  "/class/azole-antifungal",
+  "/embed",
+  "/embed/pair/warfarin-fluconazole",
+  "/embed/drug/warfarin",
+  "/embed/class/azole-antifungal",
+];
 
 /**
  * Problems with a Build Output API config.json, or [] when every route made from

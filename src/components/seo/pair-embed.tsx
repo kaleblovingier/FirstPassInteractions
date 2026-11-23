@@ -26,6 +26,14 @@ html,body{background:var(--fpe-bg);color:var(--fpe-fg);min-height:0;margin:0}
 .fpe figcaption{margin-top:4px;font-size:12px;color:var(--fpe-muted)}
 .fpe-open{margin:10px 0 0;font-weight:600}
 .fpe-disc{margin:6px 0 0;font-size:11px;color:var(--fpe-muted)}
+.fpe h2{margin:10px 0 0;font-size:13px;line-height:1.3;font-weight:600}
+.fpe-sub{margin:2px 0 0;font-size:12px;color:var(--fpe-muted)}
+.fpe-list{margin:4px 0 0;padding:0;list-style:none}
+.fpe-list li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 8px;padding:2px 0;border-top:1px solid var(--fpe-border);font-size:13px}
+.fpe-list li:first-child{border-top:0}
+.fpe-tag{color:var(--fpe-muted);font-size:12px}
+.fpe-inline{margin:4px 0 0;font-size:13px}
+.fpe-more{margin:4px 0 0;font-size:12px}
 .fpe-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 `;
 
@@ -102,20 +110,29 @@ async function copyText(text: string, field: HTMLTextAreaElement | null): Promis
   }
 }
 
-/** Collapsed "Embed this card" box on each /pair/<slug> page: the iframe snippet and a Copy button. */
-export function EmbedSnippetDisclosure({ page }: { page: Pick<PairPage, "slug" | "nameA" | "nameB"> }) {
-  const snippet = embedSnippet(page);
+/**
+ * Collapsed "Embed this card" box: the iframe snippet and a Copy button with live
+ * feedback. Used on pair pages, drug hubs and class pages.
+ */
+export function EmbedCodeBox({ snippet, what, label, testId }: {
+  snippet: string;
+  /** Completes "to show {what} as a small card": "this pair", "this drug's pairs". */
+  what: string;
+  /** Screen-reader label for the code field. */
+  label: string;
+  testId: string;
+}) {
   const id = useId();
   const field = useRef<HTMLTextAreaElement>(null);
   const [status, setStatus] = useState("");
   return (
-    <details data-testid="pair-embed" data-print-hide="" className="mt-8 rounded-xl border border-border p-3 text-xs">
+    <details data-testid={testId} data-print-hide="" className="mt-8 rounded-xl border border-border p-3 text-xs">
       <summary className="cursor-pointer font-medium">Embed this card</summary>
       <p className="mt-2 text-muted">
-        Paste this into a course page (Canvas, another LMS or a course site) to show this pair as a small card. It links back here.
+        Paste this into a course page (Canvas, another LMS or a course site) to show {what} as a small card. It links back here.
       </p>
       <label htmlFor={id} className="sr-only">
-        Embed code for {page.nameA} and {page.nameB}
+        {label}
       </label>
       <textarea
         id={id}
@@ -143,5 +160,17 @@ export function EmbedSnippetDisclosure({ page }: { page: Pick<PairPage, "slug" |
         </span>
       </div>
     </details>
+  );
+}
+
+/** The "Embed this card" box on each /pair/<slug> page. */
+export function EmbedSnippetDisclosure({ page }: { page: Pick<PairPage, "slug" | "nameA" | "nameB"> }) {
+  return (
+    <EmbedCodeBox
+      snippet={embedSnippet(page)}
+      what="this pair"
+      label={`Embed code for ${page.nameA} and ${page.nameB}`}
+      testId="pair-embed"
+    />
   );
 }

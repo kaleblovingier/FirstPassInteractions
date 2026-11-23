@@ -13,6 +13,7 @@ import {
 } from "@/lib/seo/pair-copy";
 import { PairDisclaimer } from "./pair-page";
 import { PrintButton, PrintFooter } from "./print-handout";
+import { ClassEmbedBox } from "./hub-embed";
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -140,6 +141,7 @@ export function ClassPageView({ hub }: { hub: ClassHub }) {
           </div>
         ))}
       </section>
+      <ClassEmbedBox hub={hub} />
       <PairDisclaimer />
       <PrintFooter canonical={hub.canonical} />
     </main>
