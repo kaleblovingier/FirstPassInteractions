@@ -1,24 +1,33 @@
 import { beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import {
   SignJWT,
   createLocalJWKSet,
+  decodeProtectedHeader,
   exportJWK,
   generateKeyPair,
+  jwtVerify,
   type CryptoKey,
   type JWK,
 } from "jose";
 import { setLogSink } from "@/lib/server/log";
+import { pairPages } from "@/lib/seo/pair-pages";
+import { COURSE_KIT_MODULES } from "@/lib/seo/course-kit";
 import { Route as LtiRoute } from "@/routes/api/lti/$";
 import {
   CLAIM,
   DEFAULT_TARGET_PATHS,
   canvasConfig,
+  checkReturnUrl,
   decodeStateCookie,
   encodeStateCookie,
+  escapeHtml,
   hasLtiControlChar,
   isSafeAllowPath,
   parsePlatforms,
+  readDeepLinkSettings,
+  resolveLaunchTarget,
   resolveTarget,
   stateCookieName,
   targetAllowlist,
@@ -26,12 +35,14 @@ import {
   type LtiPlatform,
 } from "./lti";
 import {
+  PICKER_TTL_SECONDS,
   handleLaunch,
   handleLogin,
   handleLtiRequest,
   resetLtiState,
   type LtiDeps,
 } from "./lti.server";
+import { RETURN_SCRIPT } from "./picker";
 
 const ORIGIN = "https://firstpass.test";
 const PLATFORM: LtiPlatform = {
@@ -164,6 +175,7 @@ describe("LTI off by default", () => {
         ["GET", "/api/lti/login"],
         ["POST", "/api/lti/login"],
         ["POST", "/api/lti/launch"],
+        ["POST", "/api/lti/deep-link"],
         ["GET", "/api/lti/jwks"],
         ["GET", "/api/lti/config"],
         ["GET", "/api/lti/anything"],
@@ -674,8 +686,15 @@ describe("jwks and config", () => {
     assert.equal(ext.domain, "firstpass.test");
     assert.deepEqual(
       ext.settings.placements.map((p) => [p.placement, p.message_type, p.windowTarget]),
-      [["course_navigation", "LtiResourceLinkRequest", "_blank"]],
+      [
+        ["course_navigation", "LtiResourceLinkRequest", "_blank"],
+        ["link_selection", "LtiDeepLinkingRequest", undefined],
+        ["assignment_selection", "LtiDeepLinkingRequest", undefined],
+      ],
     );
+    for (const p of ext.settings.placements) {
+      assert.equal(p.target_link_uri, `${ORIGIN}/api/lti/launch`, p.placement);
+    }
     assert.ok(!/FDA[- ](cleared|approved)/.test(cfg.description.replace("Not FDA-cleared", "")));
   });
 
@@ -789,5 +808,578 @@ describe("control characters and state cookie hardening", () => {
     );
     assert.equal(badTargetRes.status, 400);
     assert.equal(badTargetRes.headers.get("location"), null);
+  });
+});
+
+/* ---------------- Deep Linking (content picker) ---------------- */
+
+const SCHOOL_HOST = "school.instructure.com";
+const RETURN_URL = `https://${SCHOOL_HOST}/courses/7/deep_linking_response?modal=true`;
+const DL_PLATFORM: LtiPlatform = { ...PLATFORM, deep_link_return_hosts: [SCHOOL_HOST] };
+
+let toolPrivateJwk: JWK | undefined;
+async function toolPrivate(): Promise<JWK> {
+  if (!toolPrivateJwk) {
+    const { privateKey } = await generateKeyPair("RS256", { extractable: true });
+    toolPrivateJwk = { ...(await exportJWK(privateKey)), kid: "tool-key-1" };
+  }
+  return toolPrivateJwk;
+}
+
+async function dlEnv(extra: Record<string, string> = {}): Promise<Record<string, string>> {
+  return baseEnv({
+    LTI_PLATFORMS: JSON.stringify([DL_PLATFORM]),
+    LTI_TOOL_PRIVATE_JWK: JSON.stringify(await toolPrivate()),
+    ...extra,
+  });
+}
+
+function dlSettings(over: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    deep_link_return_url: RETURN_URL,
+    accept_types: ["ltiResourceLink"],
+    accept_presentation_document_targets: ["iframe", "window"],
+    accept_multiple: true,
+    data: "opaque-dl-data",
+    title: "Ignored title",
+    ...over,
+  };
+}
+
+function dlClaims(nonce: string, settings: Record<string, unknown> | null = dlSettings()) {
+  return claims(nonce, {
+    [CLAIM.messageType]: "LtiDeepLinkingRequest",
+    [CLAIM.resourceLink]: undefined,
+    [CLAIM.deepLinkingSettings]: settings,
+  });
+}
+
+const unescape = (s: string) =>
+  s
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+
+function inputValue(page: string, name: string): string | null {
+  const m = new RegExp(`name="${name}" value="([^"]*)"`).exec(page);
+  return m ? unescape(m[1]!) : null;
+}
+
+/** Login + deep linking launch; returns the response, its page and the picker token. */
+async function openPicker(d: LtiDeps, settings?: Record<string, unknown> | null) {
+  const s = await startLogin(d);
+  const idToken = await sign(dlClaims(s.nonce, settings));
+  const res = await launch({ state: s.state, id_token: idToken }, s.cookie, d);
+  const page = await res.text();
+  return { res, page, token: inputValue(page, "token"), s, idToken };
+}
+
+async function submit(fields: [string, string][], d: LtiDeps) {
+  return handleLtiRequest(
+    new Request(`${ORIGIN}/api/lti/deep-link`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(fields).toString(),
+    }),
+    d,
+  );
+}
+
+function returnForm(page: string): { action: string; jwt: string } {
+  const action = /<form id="fp-return" method="post" action="([^"]*)"/.exec(page);
+  const jwt = inputValue(page, "JWT");
+  assert.ok(action && jwt, "return form");
+  return { action: unescape(action[1]!), jwt };
+}
+
+async function toolKeySet(d: LtiDeps) {
+  const res = await handleLtiRequest(new Request(`${ORIGIN}/api/lti/jwks`), d);
+  const body = (await res.json()) as { keys: JWK[] };
+  return { keys: body.keys, set: createLocalJWKSet(body) };
+}
+
+const WEEK1 = `/for-programs/course-kit#${COURSE_KIT_MODULES[0]!.id}`;
+const SOME_PAIR = pairPages().find((p) => p.slug.includes("warfarin")) ?? pairPages()[0]!;
+
+describe("deep linking: picker launch", () => {
+  it("a verified LtiDeepLinkingRequest renders the picker", async () => {
+    const d = deps(await dlEnv());
+    const { res, page, token } = await openPicker(d);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get("content-type")!, /^text\/html/);
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    assert.match(res.headers.get("set-cookie")!, /Max-Age=0/);
+    const csp = res.headers.get("content-security-policy")!;
+    assert.match(csp, /frame-ancestors 'self' https:\/\/school\.instructure\.com/);
+    assert.match(csp, /form-action 'self'/);
+    assert.ok(token && token.split(".").length === 3, "picker token");
+    assert.match(page, /<form method="post" action="\/api\/lti\/deep-link">/);
+    for (const path of [
+      "/for-programs/course-kit",
+      WEEK1,
+      "/practice",
+      "/practice?enzyme=CYP3A4",
+      "/class/",
+    ]) {
+      assert.ok(page.includes(`value="${escapeHtml(path)}`), path);
+    }
+    assert.match(page, /type="checkbox" name="item"/);
+    assert.match(page, /name="q"/);
+    assert.ok(!page.includes("<script"), "picker has no script");
+    assert.ok(!page.includes("Ignored title"));
+    assert.ok(!/FDA[- ]?(cleared|approved)/i.test(page));
+  });
+
+  it("uses radio buttons when the platform takes one item", async () => {
+    const d = deps(await dlEnv());
+    const { page } = await openPicker(d, dlSettings({ accept_multiple: false }));
+    assert.match(page, /type="radio" name="item"/);
+    assert.ok(!page.includes('type="checkbox"'));
+  });
+
+  it("consumes the launch nonce: the same id_token cannot open the picker twice", async () => {
+    const d = deps(await dlEnv());
+    const { res, s, idToken } = await openPicker(d);
+    assert.equal(res.status, 200);
+    const again = await launch({ state: s.state, id_token: idToken }, s.cookie, d);
+    assert.equal(again.status, 401);
+  });
+
+  it("is verified like a resource link launch (iss, aud, azp, exp, nonce, state, deployment, version)", async () => {
+    const d = deps(await dlEnv());
+    const cases: [string, (n: string) => Promise<string>, number][] = [
+      ["aud", (n) => sign(dlClaims(n), { aud: "someone-else" }), 401],
+      ["iss", (n) => sign(dlClaims(n), { iss: "https://evil.example" }), 401],
+      [
+        "azp",
+        (n) =>
+          sign({ ...dlClaims(n), azp: "x" }, { aud: [PLATFORM.client_id, "x"] }),
+        401,
+      ],
+      ["signature", (n) => sign(dlClaims(n), { key: otherKey }), 401],
+      [
+        "expired",
+        (n) =>
+          sign(dlClaims(n), { expSecondsFromNow: -600, iat: Math.floor(Date.now() / 1000) - 900 }),
+        401,
+      ],
+      ["nonce", () => sign(dlClaims("y".repeat(43))), 401],
+      ["deployment", (n) => sign({ ...dlClaims(n), [CLAIM.deploymentId]: "nope" }), 403],
+      ["version", (n) => sign({ ...dlClaims(n), [CLAIM.version]: "1.1" }), 400],
+    ];
+    for (const [name, make, status] of cases) {
+      const s = await startLogin(d);
+      const res = await launch({ state: s.state, id_token: await make(s.nonce) }, s.cookie, d);
+      assert.equal(res.status, status, name);
+      assert.ok(!(await res.text()).includes("<form"), name);
+    }
+    const s = await startLogin(d);
+    const token = await sign(dlClaims(s.nonce));
+    assert.equal((await launch({ state: s.state, id_token: token }, null, d)).status, 401);
+  });
+
+  it("rejects accept_types without ltiResourceLink and missing settings", async () => {
+    const d = deps(await dlEnv());
+    for (const settings of [
+      dlSettings({ accept_types: ["link", "file", "html"] }),
+      dlSettings({ accept_types: "ltiResourceLink" }),
+      dlSettings({ accept_types: undefined }),
+      null,
+    ]) {
+      const { res, token } = await openPicker(d, settings);
+      assert.equal(res.status, 400, JSON.stringify(settings));
+      assert.equal(token, null);
+    }
+  });
+
+  it("checks the return URL: https, on the platform's return hosts, no credentials or fragment", async () => {
+    const d = deps(await dlEnv());
+    for (const url of [
+      `http://${SCHOOL_HOST}/courses/7/deep_linking_response`,
+      "https://evil.example/courses/7/deep_linking_response",
+      `https://${SCHOOL_HOST}.evil.example/x`,
+      `https://user:pw@${SCHOOL_HOST}/x`,
+      `https://${SCHOOL_HOST}/x#frag`,
+      `https://${SCHOOL_HOST}/x\n`,
+      "javascript:alert(1)",
+      "/courses/7/deep_linking_response",
+      undefined,
+    ]) {
+      const { res, token } = await openPicker(d, dlSettings({ deep_link_return_url: url }));
+      assert.equal(res.status, 400, String(url));
+      assert.equal(token, null, String(url));
+    }
+  });
+
+  it("without deep_link_return_hosts only the issuer's host is a return host", () => {
+    assert.equal(
+      checkReturnUrl("https://canvas.instructure.com/courses/1/deep_linking_response", PLATFORM),
+      "https://canvas.instructure.com/courses/1/deep_linking_response",
+    );
+    assert.equal(checkReturnUrl(RETURN_URL, PLATFORM), null);
+    assert.equal(checkReturnUrl(RETURN_URL, DL_PLATFORM), RETURN_URL);
+    assert.equal(
+      checkReturnUrl("https://canvas.instructure.com/x", DL_PLATFORM),
+      null,
+      "an explicit list replaces the issuer host",
+    );
+  });
+
+  it("deep_link_return_hosts must be plain host names", () => {
+    for (const hosts of [["https://school.instructure.com"], ["*.instructure.com"], ["a/b"], []]) {
+      const r = parsePlatforms(JSON.stringify([{ ...PLATFORM, deep_link_return_hosts: hosts }]));
+      assert.equal(r.ok, false, JSON.stringify(hosts));
+    }
+    const ok = parsePlatforms(
+      JSON.stringify([{ ...PLATFORM, deep_link_return_hosts: ["School.Instructure.com", "lms.example.edu:8443"] }]),
+    );
+    assert.ok(ok.ok);
+    assert.deepEqual(ok.platforms[0]!.deep_link_return_hosts, [
+      "school.instructure.com",
+      "lms.example.edu:8443",
+    ]);
+  });
+
+  it("rejects bad data and reads only the settings it needs", () => {
+    assert.equal(readDeepLinkSettings(dlSettings({ data: 42 }), DL_PLATFORM).ok, false);
+    assert.equal(readDeepLinkSettings(dlSettings({ data: "a\nb" }), DL_PLATFORM).ok, false);
+    assert.equal(readDeepLinkSettings(dlSettings({ data: "x".repeat(9000) }), DL_PLATFORM).ok, false);
+    const r = readDeepLinkSettings(
+      dlSettings({ accept_multiple: "yes", accept_presentation_document_targets: ["iframe"] }),
+      DL_PLATFORM,
+    );
+    assert.deepEqual(r, {
+      ok: true,
+      settings: { returnUrl: RETURN_URL, multiple: false, window: false, data: "opaque-dl-data" },
+    });
+  });
+
+  it("answers 500 without a tool private key", async () => {
+    const d = deps(baseEnv({ LTI_PLATFORMS: JSON.stringify([DL_PLATFORM]) }));
+    const { res, token } = await openPicker(d);
+    assert.equal(res.status, 500);
+    assert.equal(token, null);
+  });
+
+  it("refuses a public JWK that does not match the private key", async () => {
+    const d = deps(await dlEnv({ LTI_TOOL_PUBLIC_JWK: JSON.stringify(platformKey.jwk) }));
+    const { res } = await openPicker(d);
+    assert.equal(res.status, 500);
+  });
+
+  it("offers only pages on the launch allowlist", async () => {
+    const d = deps(await dlEnv({ LTI_TARGET_PATHS: "/practice" }));
+    const { page, token } = await openPicker(d);
+    assert.ok(page.includes('value="/practice"'));
+    assert.ok(!page.includes('value="/class/'));
+    assert.ok(!page.includes("/for-programs/course-kit"));
+    const res = await submit(
+      [
+        ["token", token!],
+        ["action", "add"],
+        ["item", `/class/${"statin"}`],
+      ],
+      d,
+    );
+    assert.equal(res.status, 400);
+    const found = await submit(
+      [
+        ["token", token!],
+        ["action", "find"],
+        ["q", SOME_PAIR.nameA],
+      ],
+      d,
+    );
+    assert.ok(!(await found.text()).includes('value="/pair/'), "no pair results off the list");
+  });
+});
+
+describe("deep linking: submit", () => {
+  it("answers with a form that posts a signed LtiDeepLinkingResponse to the return URL", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const picks = [WEEK1, "/practice?enzyme=CYP3A4", `/pair/${SOME_PAIR.slug}`];
+    const res = await submit(
+      [["token", token!], ["action", "add"], ...picks.map((p): [string, string] => ["item", p])],
+      d,
+    );
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    const page = await res.text();
+    const { action, jwt } = returnForm(page);
+    assert.equal(action, RETURN_URL);
+    assert.ok(page.includes(`<script>${RETURN_SCRIPT}</script>`));
+
+    const csp = res.headers.get("content-security-policy")!;
+    const hash = createHash("sha256").update(RETURN_SCRIPT).digest("base64");
+    assert.ok(csp.includes(`script-src 'sha256-${hash}'`), csp);
+    assert.match(csp, /form-action https:\/\/school\.instructure\.com(;|$)/);
+
+    const { keys, set } = await toolKeySet(d);
+    const header = decodeProtectedHeader(jwt);
+    assert.equal(header.alg, "RS256");
+    assert.equal(header.kid, "tool-key-1");
+    assert.equal(header.kid, keys[0]!.kid);
+    const { payload } = await jwtVerify(jwt, set, {
+      algorithms: ["RS256"],
+      issuer: PLATFORM.client_id,
+      audience: PLATFORM.issuer,
+    });
+    assert.equal(payload[CLAIM.messageType], "LtiDeepLinkingResponse");
+    assert.equal(payload[CLAIM.version], "1.3.0");
+    assert.equal(payload[CLAIM.deploymentId], "dep-1");
+    assert.equal(payload[CLAIM.dlData], "opaque-dl-data");
+    assert.equal(typeof payload.nonce, "string");
+    assert.ok((payload.nonce as string).length >= 32);
+    assert.ok(payload.exp! - payload.iat! <= 300 && payload.exp! > payload.iat!);
+    assert.equal(payload.sub, undefined);
+    const items = payload[CLAIM.dlContentItems] as Record<string, unknown>[];
+    assert.equal(items.length, 3);
+    assert.deepEqual(
+      items.map((i) => (i.custom as Record<string, string>).firstpass_path),
+      picks,
+    );
+    for (const item of items) {
+      assert.equal(item.type, "ltiResourceLink");
+      assert.equal(item.url, `${ORIGIN}/api/lti/launch`);
+      assert.equal(typeof item.title, "string");
+      assert.match(item.title as string, /^FirstPass /);
+      assert.deepEqual(item.window, { targetName: "_blank" });
+    }
+    assert.match(items[0]!.title as string, /week 1/);
+    assert.ok((items[2]!.title as string).includes(SOME_PAIR.nameA));
+  });
+
+  it("a returned item launches to its page (week anchor and deck filter kept)", async () => {
+    const d = deps(await dlEnv());
+    for (const [path, expected] of [
+      [WEEK1, `${ORIGIN}${WEEK1}`],
+      ["/practice?enzyme=CYP3A4", `${ORIGIN}/practice?enzyme=CYP3A4`],
+      [`/pair/${SOME_PAIR.slug}`, `${ORIGIN}/pair/${SOME_PAIR.slug}`],
+      ["/class/statin", `${ORIGIN}/class/statin`],
+    ] as const) {
+      const s = await startLogin(d);
+      const res = await launch(
+        {
+          state: s.state,
+          id_token: await sign(claims(s.nonce, { [CLAIM.custom]: { firstpass_path: path } })),
+        },
+        s.cookie,
+        d,
+      );
+      assert.equal(res.status, 303, path);
+      assert.equal(res.headers.get("location"), expected);
+    }
+  });
+
+  it("omits window and data when the platform did not offer them", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(
+      d,
+      dlSettings({ data: undefined, accept_presentation_document_targets: ["iframe"] }),
+    );
+    const res = await submit([["token", token!], ["item", "/practice"]], d);
+    assert.equal(res.status, 200);
+    const { set } = await toolKeySet(d);
+    const { payload } = await jwtVerify(returnForm(await res.text()).jwt, set);
+    assert.equal(payload[CLAIM.dlData], undefined);
+    const items = payload[CLAIM.dlContentItems] as Record<string, unknown>[];
+    assert.equal(items[0]!.window, undefined);
+  });
+
+  it("cancel returns an empty content item list", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const res = await submit([["token", token!], ["action", "cancel"]], d);
+    assert.equal(res.status, 200);
+    const { set } = await toolKeySet(d);
+    const { payload } = await jwtVerify(returnForm(await res.text()).jwt, set);
+    assert.deepEqual(payload[CLAIM.dlContentItems], []);
+  });
+
+  it("find lists pair pages and keeps the token usable", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const found = await submit(
+      [["token", token!], ["action", "find"], ["q", SOME_PAIR.slug], ["item", WEEK1]],
+      d,
+    );
+    assert.equal(found.status, 200);
+    const page = await found.text();
+    assert.ok(page.includes(`value="/pair/${SOME_PAIR.slug}"`));
+    assert.ok(page.includes(`value="${escapeHtml(WEEK1)}" checked`), "selection kept");
+    assert.equal(inputValue(page, "token"), token);
+
+    const none = await submit([["token", token!], ["action", "find"], ["q", "zzqx-not-a-drug"]], d);
+    assert.match(await none.text(), /No pair page matches/);
+
+    const added = await submit([["token", token!], ["action", "add"], ["item", WEEK1]], d);
+    assert.equal(added.status, 200);
+  });
+
+  it("rejects a replayed, tampered, foreign or expired picker token", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const ok = await submit([["token", token!], ["item", "/practice"]], d);
+    assert.equal(ok.status, 200);
+    const replay = await submit([["token", token!], ["item", "/practice"]], d);
+    assert.equal(replay.status, 401);
+    assert.match(await replay.text(), /already used/);
+
+    const fresh = (await openPicker(d)).token!;
+    const [h, p, sig] = fresh.split(".") as [string, string, string];
+    const claimsObj = JSON.parse(Buffer.from(p, "base64url").toString()) as Record<string, unknown>;
+    const forged = Buffer.from(
+      JSON.stringify({ ...claimsObj, ret: "https://evil.example/x" }),
+    ).toString("base64url");
+    const flipped = `${sig.slice(0, -2)}${sig.endsWith("AA") ? "BB" : "AA"}`;
+    const foreign = await new SignJWT(claimsObj)
+      .setProtectedHeader({ alg: "RS256", kid: "tool-key-1", typ: "fp-lti-picker+jwt" })
+      .sign(otherKey.privateKey);
+    for (const [name, bad] of [
+      ["payload", `${h}.${forged}.${sig}`],
+      ["signature", `${h}.${p}.${flipped}`],
+      ["other key", foreign],
+      ["garbage", "not-a-token"],
+      ["platform id_token", await sign(claims("z".repeat(43)))],
+    ] as const) {
+      const res = await submit([["token", bad], ["item", "/practice"]], d);
+      assert.equal(res.status, 401, name);
+      assert.ok(!(await res.text()).includes("fp-return"), name);
+    }
+
+    const later = Math.floor(Date.now() / 1000) + PICKER_TTL_SECONDS + 300;
+    const expired = await submit([["token", fresh], ["item", "/practice"]], { ...d, now: () => later });
+    assert.equal(expired.status, 401);
+    // Still unused, so it works before expiry.
+    assert.equal((await submit([["token", fresh], ["item", "/practice"]], d)).status, 200);
+  });
+
+  it("rejects a token after its deployment is removed from LTI_PLATFORMS", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const removed = deps(
+      await dlEnv({
+        LTI_PLATFORMS: JSON.stringify([{ ...DL_PLATFORM, deployment_ids: ["dep-2"] }]),
+      }),
+    );
+    assert.equal((await submit([["token", token!], ["item", "/practice"]], removed)).status, 403);
+    const moved = deps(
+      await dlEnv({
+        LTI_PLATFORMS: JSON.stringify([{ ...DL_PLATFORM, deep_link_return_hosts: ["other.edu"] }]),
+      }),
+    );
+    assert.equal((await submit([["token", token!], ["item", "/practice"]], moved)).status, 400);
+  });
+
+  it("rejects pages the picker does not offer", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    for (const bad of [
+      "/drug/warfarin",
+      "/api/lti/config",
+      "https://evil.example/practice",
+      "//evil.example/practice",
+      "/pair/not-a-real-pair-slug",
+      "/class/not-a-real-class",
+      "/practice?enzyme=CYP9Z9",
+      "/practice?x=1",
+      "/for-programs/course-kit#nope",
+      "/pairs/../api/stats",
+      "/practice\r\n",
+    ]) {
+      const res = await submit([["token", token!], ["action", "add"], ["item", bad]], d);
+      assert.equal(res.status, 400, bad);
+      assert.ok(!(await res.text()).includes("fp-return"), bad);
+    }
+    // Nothing was consumed by the refusals.
+    assert.equal((await submit([["token", token!], ["item", "/practice"]], d)).status, 200);
+  });
+
+  it("enforces accept_multiple and needs at least one item", async () => {
+    const d = deps(await dlEnv());
+    const single = (await openPicker(d, dlSettings({ accept_multiple: false }))).token!;
+    const two = await submit(
+      [["token", single], ["item", "/practice"], ["item", WEEK1]],
+      d,
+    );
+    assert.equal(two.status, 400);
+    assert.match(await two.text(), /takes one item/);
+    const none = await submit([["token", single], ["action", "add"]], d);
+    assert.equal(none.status, 400);
+    assert.match(await none.text(), /Pick an item first/);
+    const dup = await submit([["token", single], ["item", "/practice"], ["item", "/practice"]], d);
+    assert.equal(dup.status, 200, "the same item twice counts once");
+  });
+
+  it("rejects an unknown action, a non-form body and a missing token", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    assert.equal((await submit([["token", token!], ["action", "delete"]], d)).status, 400);
+    assert.equal((await submit([["item", "/practice"]], d)).status, 400);
+    const res = await handleLtiRequest(
+      new Request(`${ORIGIN}/api/lti/deep-link`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{}",
+      }),
+      d,
+    );
+    assert.equal(res.status, 400);
+    const get = await handleLtiRequest(new Request(`${ORIGIN}/api/lti/deep-link`), d);
+    assert.equal(get.status, 405);
+    assert.equal(get.headers.get("allow"), "POST");
+  });
+
+  it("is 404 when LTI is off, even with a valid token", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const off = deps({ ...(await dlEnv()), LTI_ENABLED: "0" });
+    const res = await submit([["token", token!], ["item", "/practice"]], off);
+    assert.equal(res.status, 404);
+  });
+
+  it("logs reason codes only: no token, data, return URL or item", async () => {
+    const d = deps(await dlEnv());
+    const { token } = await openPicker(d);
+    const res = await submit([["token", token!], ["item", WEEK1]], d);
+    const { jwt } = returnForm(await res.text());
+    const all = logs.join("\n");
+    for (const leak of [token!, jwt, "opaque-dl-data", SCHOOL_HOST, "cyp-basics", "dep-1"]) {
+      assert.ok(!all.includes(leak), leak);
+    }
+    assert.ok(all.includes('"event":"lti.deep_link"'));
+  });
+});
+
+describe("launch target extras", () => {
+  const allow = [...DEFAULT_TARGET_PATHS];
+  it("keeps only known practice filters and course kit week anchors", () => {
+    assert.equal(
+      resolveLaunchTarget("/practice?enzyme=CYP3A4&grade=major&x=1", ORIGIN, allow),
+      "/practice?enzyme=CYP3A4&grade=major",
+    );
+    assert.equal(resolveLaunchTarget("/practice?class=azole-antifungal", ORIGIN, allow), "/practice?class=azole-antifungal");
+    assert.equal(resolveLaunchTarget("/practice?enzyme=CYP9Z9", ORIGIN, allow), "/practice");
+    assert.equal(resolveLaunchTarget("/practice?enzyme=CYP3A4&enzyme=CYP2D6", ORIGIN, allow), "/practice");
+    assert.equal(resolveLaunchTarget("/practice?class=Not%20Slug", ORIGIN, allow), "/practice");
+    assert.equal(resolveLaunchTarget(WEEK1, ORIGIN, allow), WEEK1);
+    assert.equal(
+      resolveLaunchTarget("/for-programs/course-kit#unknown", ORIGIN, allow),
+      "/for-programs/course-kit",
+    );
+    assert.equal(resolveLaunchTarget(`${ORIGIN}/pairs?x=1#y`, ORIGIN, allow), "/pairs");
+    assert.equal(resolveLaunchTarget("/pair/abc#cyp-basics", ORIGIN, allow), "/pair/abc");
+    assert.equal(resolveLaunchTarget("https://evil.example/practice?enzyme=CYP3A4", ORIGIN, allow), null);
+  });
+
+  it("the default list now covers class and pair pages, still not drug pages or the API", () => {
+    assert.equal(resolveTarget("/class/statin", ORIGIN, allow), "/class/statin");
+    assert.equal(resolveTarget("/pair/a-b", ORIGIN, allow), "/pair/a-b");
+    assert.equal(resolveTarget("/classes", ORIGIN, allow), null);
+    assert.equal(resolveTarget("/drug/warfarin", ORIGIN, allow), null);
+    assert.equal(resolveTarget("/api/lti/config", ORIGIN, allow), null);
   });
 });

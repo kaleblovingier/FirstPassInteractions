@@ -2,23 +2,32 @@
  * LTI 1.3 core launch, pure parts: platform config, the redirect allowlist, the state cookie and
  * the Canvas developer-key JSON. The request handling is in ./lti.server.ts.
  *
- * Scope: OIDC third-party login plus LtiResourceLinkRequest only. No Assignment and Grade
- * Services, no Names and Role Provisioning, no Deep Linking. A launch only opens a FirstPass page;
- * it reads no name, email or user id, stores nothing and grants no license.
+ * Scope: OIDC third-party login, LtiResourceLinkRequest and Deep Linking 2.0 (the content picker:
+ * LtiDeepLinkingRequest in, LtiDeepLinkingResponse with ltiResourceLink items out). No Assignment
+ * and Grade Services, no Names and Role Provisioning. A launch only opens a FirstPass page; it
+ * reads no name, email or user id, stores nothing and grants no license.
  * docs/ops/lti-canvas-setup.md has the setup steps.
  */
 
 import { z } from "zod";
 import { calculateJwkThumbprint, type JWK } from "jose";
+import { COURSE_KIT_MODULES, COURSE_KIT_PATH } from "@/lib/seo/course-kit";
+import { GRADES, PRACTICE_ENZYMES } from "@/lib/learn/practice-meta";
 
 export const LTI_BASE_PATH = "/api/lti";
 export const LTI_LOGIN_PATH = `${LTI_BASE_PATH}/login`;
 export const LTI_LAUNCH_PATH = `${LTI_BASE_PATH}/launch`;
 export const LTI_JWKS_PATH = `${LTI_BASE_PATH}/jwks`;
 export const LTI_CONFIG_PATH = `${LTI_BASE_PATH}/config`;
+/** The content picker's form posts here (Deep Linking). */
+export const LTI_DEEP_LINK_PATH = `${LTI_BASE_PATH}/deep-link`;
 
 export const LTI_VERSION = "1.3.0";
 export const LTI_RESOURCE_LINK_REQUEST = "LtiResourceLinkRequest";
+export const LTI_DEEP_LINKING_REQUEST = "LtiDeepLinkingRequest";
+export const LTI_DEEP_LINKING_RESPONSE = "LtiDeepLinkingResponse";
+/** The only content item type the picker returns. */
+export const LTI_RESOURCE_LINK_ITEM = "ltiResourceLink";
 
 /** IMS claim names this tool reads. Nothing else in the id_token is read. */
 export const CLAIM = {
@@ -28,6 +37,10 @@ export const CLAIM = {
   targetLinkUri: "https://purl.imsglobal.org/spec/lti/claim/target_link_uri",
   resourceLink: "https://purl.imsglobal.org/spec/lti/claim/resource_link",
   custom: "https://purl.imsglobal.org/spec/lti/claim/custom",
+  deepLinkingSettings: "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings",
+  /** Deep Linking response claims (written, not read). */
+  dlData: "https://purl.imsglobal.org/spec/lti-dl/claim/data",
+  dlContentItems: "https://purl.imsglobal.org/spec/lti-dl/claim/content_items",
 } as const;
 
 /** Custom field a course designer can set on the placement to pick the page, e.g. firstpass_path=/practice. */
@@ -64,12 +77,23 @@ const httpsUrl = z
 
 const nonEmpty = z.string().trim().min(1).max(512);
 
+/** A bare host name, optionally with a port: lower case, no scheme, path, user or wildcard. */
+const HOST_RE =
+  /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::\d{1,5})?$/;
+const hostName = z.string().trim().toLowerCase().max(260).regex(HOST_RE, "must be a host name");
+
 export const platformSchema = z.object({
   issuer: httpsUrl,
   client_id: nonEmpty,
   auth_endpoint: httpsUrl,
   jwks_uri: httpsUrl,
   deployment_ids: z.array(nonEmpty).min(1).max(100),
+  /**
+   * Hosts the content picker may send its answer back to (deep_link_return_url). Optional;
+   * without it only the issuer's own host is allowed. Canvas cloud needs it: the issuer is
+   * canvas.instructure.com but the return URL is on the school's host (school.instructure.com).
+   */
+  deep_link_return_hosts: z.array(hostName).min(1).max(20).optional(),
 });
 
 export const platformsSchema = z.array(platformSchema).min(1).max(50);
@@ -129,8 +153,18 @@ export function hasLtiControlChar(value: string): boolean {
 
 /* ---------------- redirect allowlist ---------------- */
 
-/** Pages a launch may open. "/" matches the desk only; other entries also match their sub-paths. */
-export const DEFAULT_TARGET_PATHS = ["/", "/practice", "/pairs", "/for-programs"] as const;
+/**
+ * Pages a launch may open. "/" matches the desk only; other entries also match their sub-paths.
+ * "/class" and "/pair" are on the list so the content picker can offer class and pair pages.
+ */
+export const DEFAULT_TARGET_PATHS = [
+  "/",
+  "/practice",
+  "/pairs",
+  "/for-programs",
+  "/class",
+  "/pair",
+] as const;
 
 const SAFE_PATH_RE = /^\/(?:[A-Za-z0-9._~-]+(?:\/[A-Za-z0-9._~-]+)*)?$/;
 
@@ -187,6 +221,131 @@ export function resolveTarget(
   const pathname = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, "") : url.pathname;
   if (pathname.includes("//") || !SAFE_PATH_RE.test(pathname)) return null;
   return pathAllowed(pathname, allow) ? pathname : null;
+}
+
+/** Course kit week anchors a launch may keep (#cyp-basics and so on). */
+const KIT_WEEK_IDS: ReadonlySet<string> = new Set(COURSE_KIT_MODULES.map((m) => m.id));
+const PRACTICE_CLASS_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * resolveTarget plus the few extras a course link may carry, each checked against a fixed list:
+ * on /practice the enzyme, grade and class deck filters, and on the course kit a week anchor.
+ * Every other query parameter and fragment is dropped, as resolveTarget does.
+ */
+export function resolveLaunchTarget(
+  raw: unknown,
+  origin: string,
+  allow: readonly string[],
+): string | null {
+  const path = resolveTarget(raw, origin, allow);
+  if (!path || typeof raw !== "string") return path;
+  const url = new URL(raw.trim(), origin);
+  if (path === "/practice") {
+    const q = new URLSearchParams();
+    const one = (name: string) => {
+      const all = url.searchParams.getAll(name);
+      return all.length === 1 ? all[0]! : undefined;
+    };
+    const enzyme = one("enzyme");
+    if (enzyme && (PRACTICE_ENZYMES as readonly string[]).includes(enzyme)) q.set("enzyme", enzyme);
+    const grade = one("grade");
+    if (grade && (GRADES as readonly string[]).includes(grade)) q.set("grade", grade);
+    const cls = one("class");
+    if (cls && cls.length <= 80 && PRACTICE_CLASS_RE.test(cls)) q.set("class", cls);
+    const s = q.toString();
+    return s ? `${path}?${s}` : path;
+  }
+  if (path === COURSE_KIT_PATH) {
+    const id = url.hash.slice(1);
+    return id && KIT_WEEK_IDS.has(id) ? `${path}#${id}` : path;
+  }
+  return path;
+}
+
+/* ---------------- deep linking ---------------- */
+
+/** Hosts a platform's deep_link_return_url may use: its deep_link_return_hosts, else the issuer's host. */
+export function returnHosts(platform: LtiPlatform): string[] {
+  return platform.deep_link_return_hosts ?? [new URL(platform.issuer).host];
+}
+
+/**
+ * The deep_link_return_url when it is https, has no credentials or fragment, and is on one of
+ * the platform's return hosts. Anything else: null.
+ */
+export function checkReturnUrl(raw: unknown, platform: LtiPlatform): string | null {
+  if (typeof raw !== "string" || !raw || raw.length > 2048 || hasLtiControlChar(raw)) return null;
+  if (raw !== raw.trim() || raw.includes("\\")) return null;
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:" || url.username || url.password || url.hash) return null;
+  return returnHosts(platform).includes(url.host) ? url.toString() : null;
+}
+
+/** Longest deep_linking_settings.data value echoed back. */
+export const DL_DATA_MAX = 8192;
+
+export type DeepLinkSettings = {
+  returnUrl: string;
+  multiple: boolean;
+  /** The platform accepts the "window" presentation target, so items can open in a new tab. */
+  window: boolean;
+  data?: string;
+};
+
+export type DeepLinkSettingsResult =
+  | { ok: true; settings: DeepLinkSettings }
+  | {
+      ok: false;
+      reason: "missing_settings" | "bad_accept_types" | "bad_return_url" | "bad_data";
+    };
+
+/**
+ * Reads deep_linking_settings: deep_link_return_url, accept_types, accept_multiple,
+ * accept_presentation_document_targets and data. Nothing else in it (title, text) is read.
+ */
+export function readDeepLinkSettings(
+  claim: unknown,
+  platform: LtiPlatform,
+): DeepLinkSettingsResult {
+  if (!claim || typeof claim !== "object" || Array.isArray(claim))
+    return { ok: false, reason: "missing_settings" };
+  const c = claim as Record<string, unknown>;
+  const types = c.accept_types;
+  if (!Array.isArray(types) || !types.includes(LTI_RESOURCE_LINK_ITEM))
+    return { ok: false, reason: "bad_accept_types" };
+  const returnUrl = checkReturnUrl(c.deep_link_return_url, platform);
+  if (!returnUrl) return { ok: false, reason: "bad_return_url" };
+  const data = c.data;
+  if (
+    data !== undefined &&
+    (typeof data !== "string" || data.length > DL_DATA_MAX || hasLtiControlChar(data))
+  )
+    return { ok: false, reason: "bad_data" };
+  const targets = c.accept_presentation_document_targets;
+  return {
+    ok: true,
+    settings: {
+      returnUrl,
+      multiple: c.accept_multiple === true,
+      window: Array.isArray(targets) && targets.includes("window"),
+      ...(typeof data === "string" && data ? { data } : {}),
+    },
+  };
+}
+
+/** Escapes text for HTML element content and quoted attributes. */
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 /* ---------------- state cookie ---------------- */
@@ -289,13 +448,44 @@ export const TOOL_TITLE = "FirstPass";
 export const TOOL_DESCRIPTION =
   "FirstPass study desk for drug interactions. Educational reference only. Not FDA-cleared. The Prescribing Information governs.";
 
+export type CanvasPlacement = {
+  placement: string;
+  message_type: string;
+  target_link_uri: string;
+  text: string;
+  windowTarget?: "_blank";
+};
+
 /**
  * Canvas "Paste JSON" configuration for an LTI 1.3 developer key. No scopes (no grades, no
- * rosters), anonymous privacy, one course navigation link that opens in a new tab.
+ * rosters), anonymous privacy, one course navigation link that opens in a new tab, and the
+ * content picker (Deep Linking) in two places: adding a module item or link (link_selection)
+ * and a new assignment with an external tool submission (assignment_selection).
  */
 export function canvasConfig(origin: string) {
   const host = new URL(origin).host;
   const launch = `${origin}${LTI_LAUNCH_PATH}`;
+  const placements: CanvasPlacement[] = [
+    {
+      placement: "course_navigation",
+      message_type: LTI_RESOURCE_LINK_REQUEST,
+      target_link_uri: launch,
+      text: TOOL_TITLE,
+      windowTarget: "_blank",
+    },
+    {
+      placement: "link_selection",
+      message_type: LTI_DEEP_LINKING_REQUEST,
+      target_link_uri: launch,
+      text: TOOL_TITLE,
+    },
+    {
+      placement: "assignment_selection",
+      message_type: LTI_DEEP_LINKING_REQUEST,
+      target_link_uri: launch,
+      text: TOOL_TITLE,
+    },
+  ];
   return {
     title: TOOL_TITLE,
     description: TOOL_DESCRIPTION,
@@ -311,15 +501,7 @@ export function canvasConfig(origin: string) {
         privacy_level: "anonymous",
         settings: {
           text: TOOL_TITLE,
-          placements: [
-            {
-              placement: "course_navigation",
-              message_type: LTI_RESOURCE_LINK_REQUEST,
-              target_link_uri: launch,
-              text: TOOL_TITLE,
-              windowTarget: "_blank",
-            },
-          ],
+          placements,
         },
       },
     ],
