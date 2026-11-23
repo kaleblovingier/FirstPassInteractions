@@ -126,7 +126,7 @@ export function EmbedCodeBox({ snippet, what, label, testId }: {
   const field = useRef<HTMLTextAreaElement>(null);
   const [status, setStatus] = useState("");
   return (
-    <details data-testid={testId} className="mt-8 rounded-xl border border-border p-3 text-xs">
+    <details data-testid={testId} data-print-hide="" className="mt-8 rounded-xl border border-border p-3 text-xs">
       <summary className="cursor-pointer font-medium">Embed this card</summary>
       <p className="mt-2 text-muted">
         Paste this into a course page (Canvas, another LMS or a course site) to show {what} as a small card. It links back here.
