@@ -332,6 +332,85 @@ for (const name of ["Unlock", "Plans"]) {
   await ctx.close();
 }
 
+// 12. Practice with a class filter: answer a card by keyboard, reveal, then reach "Copy set link".
+{
+  const probe = await fresh("/practice");
+  // The class filter as a shared link would carry it: the first class the deck offers.
+  const cls = await probe.page.evaluate(() => {
+    const label = [...document.querySelectorAll("label")].find((l) => l.textContent.startsWith("Drug class"));
+    return [...(label?.control?.options ?? [])].map((o) => o.value).find(Boolean) ?? null;
+  });
+  await probe.ctx.close();
+  check(Boolean(cls), `practice: the deck offers a drug-class filter (${cls})`);
+  if (cls) {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    // The copy may still fall back to the hand-copy field; both outcomes are announced.
+    await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: new URL(base).origin }).catch(() => {});
+    const page = await ctx.newPage();
+    await page.goto(new URL(`/practice?class=${encodeURIComponent(cls)}`, base).href, { waitUntil: "networkidle" });
+    check((await page.getByLabel("Drug class (either drug in the pair)").inputValue()) === cls, "practice: the class filter from the link is selected");
+    await tabTo(page, () => document.activeElement?.matches?.('input[type="radio"][name="grade"]'), "practice card", 150);
+    const groups = [];
+    for (let i = 0; i < 4 && (await page.evaluate(() => document.activeElement?.matches?.('input[type="radio"]'))); i++) {
+      const name = await page.evaluate(() => document.activeElement.name);
+      await page.keyboard.press("Space");
+      groups.push(`${name}${(await page.evaluate(() => document.activeElement.checked)) ? "" : " (not checked)"}`);
+      await page.keyboard.press("Tab");
+      const f = await focusInfo(page);
+      if (!f.body && !f.visible) check(false, `practice card: focus indicator missing on ${f.desc}`);
+    }
+    check(groups.length > 0 && groups.every((g) => !g.includes("not checked")), `practice: Space answers each question group (${groups.join(", ")})`);
+    let f = await focusInfo(page);
+    check(/Reveal answer/.test(f.desc), `practice: Tab after the last answer reaches Reveal answer (got ${f.desc})`);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(400);
+    const answer = page.getByTestId("practice-answer");
+    check((await answer.count()) === 1, "practice: Enter on Reveal answer shows the label answer");
+    check(await answer.evaluate((el) => el === document.activeElement).catch(() => false), "practice: focus moves to the revealed answer");
+    await tabTo(page, () => document.activeElement?.textContent?.trim() === "Copy set link", "practice copy", 20, "Shift+Tab");
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(600);
+    const status = (await page.getByTestId("practice-copy-status").innerText()).trim();
+    check(/Link copied|Couldn't copy/.test(status), `practice: Copy set link works by keyboard and says what happened (${status || "silent"})`);
+    f = await focusInfo(page);
+    check(!f.body, `practice: focus has somewhere to go after Copy set link (got ${f.desc})`);
+    await ctx.close();
+  }
+}
+
+// 13. Course kit: Tab order walks the eight weeks in order; a "Week N" link moves the Tab start into that week.
+{
+  const { ctx, page } = await fresh("/for-programs/course-kit");
+  const weeks = await page.getByTestId("course-kit-module").count();
+  check(weeks === 8, `course kit: eight week modules (${weeks})`);
+  const seen = [];
+  for (let i = 0; i < 400; i++) {
+    await page.keyboard.press("Tab");
+    const f = await focusInfo(page);
+    if (f.body) break;
+    if (!f.visible) check(false, `course kit: focus indicator missing on ${f.desc}`);
+    const week = await page.evaluate(() => {
+      const mods = [...document.querySelectorAll('[data-testid="course-kit-module"]')];
+      return mods.indexOf(document.activeElement?.closest('[data-testid="course-kit-module"]'));
+    });
+    if (week >= 0 && seen.at(-1) !== week) seen.push(week);
+    if (/All programs/.test(f.desc)) break; // last link on the page before the footer
+  }
+  const inOrder = seen.length === weeks && seen.every((w, i) => w === i);
+  check(inOrder, `course kit: Tab reaches every week, in order (${seen.map((w) => w + 1).join(", ")})`);
+  await page.goto(new URL("/for-programs/course-kit", base).href, { waitUntil: "networkidle" });
+  await tabTo(page, () => document.activeElement?.textContent?.trim() === "Week 3", "course kit weeks nav", 120);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(400);
+  await page.keyboard.press("Tab");
+  const third = await page.evaluate(() => {
+    const mods = [...document.querySelectorAll('[data-testid="course-kit-module"]')];
+    return mods.indexOf(document.activeElement?.closest('[data-testid="course-kit-module"]')) + 1;
+  });
+  check(third === 3, `course kit: after "Week 3", Tab continues inside week 3 (got week ${third || "none"})`);
+  await ctx.close();
+}
+
 await browser.close();
 console.log(`\n${notes.length} passed, ${failures.length} failed`);
 process.exit(failures.length ? 1 : 0);
