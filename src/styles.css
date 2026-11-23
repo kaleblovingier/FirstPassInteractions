@@ -243,6 +243,11 @@ main:has([data-testid="drug-hub-intro"]) section > ul > li > a,
 html[data-fp-ack] [data-fp-prehydrate="hcp"],
 html[data-fp-paid] [data-fp-prehydrate="unlock"] { display: none !important; }
 
+/* The /pairs filters need scripts; with scripting off the full list stands alone. */
+@media (scripting: none) {
+  [data-pairs-js] { display: none; }
+}
+
 /* 1.4.12: long unbroken names in headings (e.g. "(nirmatrelvir/ritonavir)") may wrap
    inside the word when user text spacing would otherwise push them past 320px. */
 main :is(h1, h2) { overflow-wrap: anywhere; }
