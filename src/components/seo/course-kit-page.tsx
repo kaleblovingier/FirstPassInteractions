@@ -1,6 +1,8 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FOR_PROGRAMS_PATH, FOR_PROGRAMS_USERS } from "@/lib/seo/for-programs";
+import { SITE_URL } from "@/lib/seo/pair-copy";
+import { printedFromAddress } from "@/lib/seo/print";
 import {
   COURSE_KIT_FRAMING,
   COURSE_KIT_H1,
@@ -9,6 +11,7 @@ import {
   COURSE_KIT_LMS,
   COURSE_KIT_MODULES,
   COURSE_KIT_NAME,
+  COURSE_KIT_URL,
   courseKitCsv,
   courseKitMarkdown,
   courseKitMinutes,
@@ -20,11 +23,15 @@ import {
   practiceHref,
 } from "@/lib/seo/course-kit";
 import { PairDisclaimer } from "./pair-page";
+import { PrintButton, PrintFooter } from "./print-handout";
 
 const KICKER = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted";
 const H2 = "font-serif text-2xl tracking-tight text-fg";
 const CARD = "rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]";
 const LINK = "font-medium text-accent underline";
+
+/** On paper, an activity link is followed by where it lives (the print rule reads data-print-url). */
+const onPaper = (href: string) => printedFromAddress(`${SITE_URL}${href}`);
 
 /** Hands the browser a text file. Built from the plan on the page; nothing is fetched. */
 function download(name: string, text: string, type: string) {
@@ -41,8 +48,8 @@ function download(name: string, text: string, type: string) {
 /** /for-programs/course-kit: eight weekly modules built from packs, lab-book assignments, cases, workups and practice that already exist. */
 export function CourseKitView() {
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10" data-testid="course-kit">
-      <nav aria-label="Breadcrumb" className="text-xs text-muted">
+    <main className="mx-auto max-w-5xl px-4 py-10" data-testid="course-kit" data-print-handout="course-kit">
+      <nav aria-label="Breadcrumb" className="text-xs text-muted" data-print-hide="">
         <a href={FOR_PROGRAMS_PATH} className="underline">For programs</a>
         {" / "}
         <span aria-current="page">{COURSE_KIT_NAME}</span>
@@ -57,7 +64,7 @@ export function CourseKitView() {
         <p className="mt-3 text-sm text-muted">
           {COURSE_KIT_MODULES.length} weeks, about {formatMinutes(courseKitMinutes())} of activities in all.
         </p>
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap" data-testid="course-kit-export">
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap" data-testid="course-kit-export" data-print-hide="">
           <button
             type="button"
             className={cn(buttonVariants(), "min-h-[44px]")}
@@ -72,6 +79,7 @@ export function CourseKitView() {
           >
             Export plan (CSV)
           </button>
+          <PrintButton />
         </div>
       </header>
 
@@ -82,7 +90,7 @@ export function CourseKitView() {
             <li key={h}>{h}</li>
           ))}
         </ul>
-        <nav aria-label="Weeks" className="mt-4">
+        <nav aria-label="Weeks" className="mt-4" data-print-hide="">
           <ol className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
             {COURSE_KIT_MODULES.map((m) => (
               <li key={m.id}>
@@ -122,7 +130,7 @@ export function CourseKitView() {
               {m.activities.map((a) => (
                 <li key={kitTargetHref(a.target)} className="text-sm leading-relaxed" data-testid="course-kit-activity">
                   <span className="text-muted">{KIT_TYPE_LABEL[a.target.kind]}:</span>{" "}
-                  <a href={kitTargetHref(a.target)} className={LINK}>{a.label}</a>{" "}
+                  <a href={kitTargetHref(a.target)} data-print-url={onPaper(kitTargetHref(a.target))} className={LINK}>{a.label}</a>{" "}
                   <span className="text-muted">({a.minutes} min)</span>
                   <br />
                   {a.what}
@@ -134,7 +142,7 @@ export function CourseKitView() {
 
             <p className="mt-4 text-sm leading-relaxed" data-testid="course-kit-check">
               <strong className="font-semibold text-fg">Check for understanding:</strong> {m.check.text}{" "}
-              <a href={practiceHref(m.check.practice)} className={LINK}>Open this practice round</a>
+              <a href={practiceHref(m.check.practice)} data-print-url={onPaper(practiceHref(m.check.practice))} className={LINK}>Open this practice round</a>
             </p>
           </li>
         ))}
@@ -145,7 +153,7 @@ export function CourseKitView() {
         <p className="mt-2 text-sm leading-relaxed" data-testid="course-kit-lms">{COURSE_KIT_LMS}</p>
       </section>
 
-      <section className="mt-12 max-w-2xl" aria-labelledby="license-h">
+      <section className="mt-12 max-w-2xl" aria-labelledby="license-h" data-print-hide="">
         <h2 id="license-h" className={H2}>Teaching with a program license</h2>
         <p className="mt-2 text-sm leading-relaxed">
           A group or site license puts the whole class on the same desk. Licenses, the estimator and the inquiry form are on the main programs page.
@@ -157,6 +165,7 @@ export function CourseKitView() {
       </section>
 
       <PairDisclaimer />
+      <PrintFooter canonical={COURSE_KIT_URL} />
     </main>
   );
 }

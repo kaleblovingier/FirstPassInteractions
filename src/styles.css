@@ -268,3 +268,130 @@ footer :is(a, li, p) {
    With text spacing that min-content is wider than a 320px viewport.
    anywhere is what lets the column shrink; break-word does not change min-content. */
 [data-enzyme-atlas] { overflow-wrap: anywhere; }
+
+/* Printed handouts: pair, class and drug pages and the course kit (src/components/seo/print-handout.tsx).
+   The page's <main> carries data-print-handout. data-print-hide is screen-only chrome inside it,
+   data-print-only is paper-only (the "Printed from" line). The disclaimer, trademark line and
+   label-source links are never hidden. The desk's clinical packet keeps its own print rules
+   (clinical-packet-dialog.tsx); nothing here applies outside a handout except hiding site chrome. */
+[data-print-only] {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 16mm 15mm;
+  }
+
+  /* Site chrome: skip link, site header and nav, and anything marked screen-only. */
+  .skip-link,
+  [data-testid="site-header"],
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  [data-print-only] {
+    display: block;
+  }
+
+  /* Black on white: no page tint, fills or shadows. */
+  html:has([data-print-handout]),
+  html:has([data-print-handout]) body,
+  html:has([data-print-handout]) #content {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  [data-print-handout] {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+
+  [data-print-handout],
+  [data-print-handout] *,
+  [data-print-handout] *::before,
+  [data-print-handout] *::after {
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #8a8a8a !important;
+  }
+
+  /* Links: internal ones read as plain text; an external source (DailyMed, FDA) prints its address. */
+  [data-print-handout] a {
+    text-decoration: none;
+  }
+
+  [data-print-handout] a[href^="http"] {
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+  }
+
+  [data-print-handout] a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+  }
+
+  /* Course kit activities and practice rounds: where each one lives on the site. */
+  [data-print-handout] a[data-print-url]::after {
+    content: " (" attr(data-print-url) ")";
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+  }
+
+  /* "Why this grade" holds the label-source lines, so it prints open even when closed on screen.
+     print-handout.tsx opens it on beforeprint; this rule covers print paths that skip that event. */
+  [data-print-handout] details[data-print-open]::details-content {
+    content-visibility: visible;
+    display: block;
+  }
+
+  [data-print-handout] details[data-print-open] {
+    display: block !important;
+    margin-left: 0 !important;
+  }
+
+  [data-print-handout] details > summary {
+    list-style: none;
+    font-weight: 600;
+  }
+
+  [data-print-handout] details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Keep a quote, a grade basis, a list row or an activity together; keep headings with what follows. */
+  [data-print-handout] :is(figure, blockquote, details, li, [data-testid="grade-basis"], [data-testid="course-kit-check"]) {
+    break-inside: avoid;
+  }
+
+  [data-print-handout] :is(h1, h2, h3) {
+    break-after: avoid;
+  }
+
+  [data-print-handout] p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Course kit: page one is the intro and how-to, then each week starts on its own sheet,
+     so week N is sheet N + 1 and one week can be printed and handed out alone. */
+  [data-print-handout="course-kit"] ol.grid {
+    display: block;
+    max-width: none !important;
+  }
+
+  [data-print-handout="course-kit"] [data-testid="course-kit-module"] {
+    break-before: page;
+    break-inside: auto;
+    padding: 0 !important;
+  }
+
+  [data-print-handout="course-kit"] :is(header, section) {
+    max-width: none !important;
+  }
+}

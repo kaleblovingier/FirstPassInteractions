@@ -7,6 +7,7 @@ import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
 import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { LabelFreshnessLine } from "@/components/label-freshness";
 import { EmbedSnippetDisclosure } from "@/components/seo/pair-embed";
+import { PrintButton, PrintFooter } from "@/components/seo/print-handout";
 
 /** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
 export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?: string }) {
@@ -28,7 +29,7 @@ export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?:
 /** Privacy, Terms and Cookies links, shown under the disclaimer on every public page. */
 export function LegalLinks({ className = "" }: { className?: string }) {
   return (
-    <nav aria-label="Legal" className={className} data-testid="legal-links">
+    <nav aria-label="Legal" className={className} data-testid="legal-links" data-print-hide="">
       <a href="/privacy" className="underline">Privacy</a> · <a href="/terms" className="underline">Terms</a> ·{" "}
       <a href="/cookies" className="underline">Cookies</a>
     </nav>
@@ -49,8 +50,8 @@ export function PairDisclaimer() {
 
 export function PairPageView({ page }: { page: PairPage }) {
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <p className="text-xs text-muted">
+    <main className="mx-auto max-w-2xl px-4 py-10" data-print-handout="pair">
+      <p className="text-xs text-muted" data-print-hide="">
         <a href="/pairs" className="underline">All pairs</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">
@@ -76,19 +77,20 @@ export function PairPageView({ page }: { page: PairPage }) {
         </figure>
       ) : null}
       {page.why.length ? (
-        <details open data-testid="pair-why" className="mt-6 rounded-xl border border-border p-4 text-sm">
+        <details open data-print-open="" data-testid="pair-why" className="mt-6 rounded-xl border border-border p-4 text-sm">
           <summary className="cursor-pointer font-medium">Why this grade</summary>
           {page.why.map((b) => (
             <GradeBasisRow key={`${b.kind}-${b.title}`} basis={b} />
           ))}
         </details>
       ) : null}
-      <p className="mt-6">
+      <p className="mt-6 flex flex-wrap items-center gap-3" data-print-hide="">
         <a href={page.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">
           {PAIR_CTA}
         </a>
+        <PrintButton />
       </p>
-      <p className="mt-4 text-sm" data-testid="pair-hub-links">
+      <p className="mt-4 text-sm" data-testid="pair-hub-links" data-print-hide="">
         All pairs for{" "}
         <a href={drugHubPath(page.drugA)} className="underline">{page.nameA}</a> ·{" "}
         <a href={drugHubPath(page.drugB)} className="underline">{page.nameB}</a>
@@ -106,6 +108,7 @@ export function PairPageView({ page }: { page: PairPage }) {
       ) : null}
       <EmbedSnippetDisclosure page={page} />
       <PairDisclaimer />
+      <PrintFooter canonical={page.canonical} />
     </main>
   );
 }
@@ -162,8 +165,8 @@ export const CITED_ONLY_HUB_INTRO = "Interaction notes for this supplement, quot
 
 export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { name: string; path: string } }) {
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <p className="text-xs text-muted">
+    <main className="mx-auto max-w-2xl px-4 py-10" data-print-handout="drug">
+      <p className="text-xs text-muted" data-print-hide="">
         <a href="/pairs" className="underline">All pairs</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
@@ -180,7 +183,7 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
       <p data-testid="drug-hub-intro" className="mt-3 text-sm text-muted">
         {hub.pairCount === 0 ? CITED_ONLY_HUB_INTRO : fillDrugTemplate(DRUG_HUB_INTRO_TEMPLATE, hub.name)}
       </p>
-      <p className="mt-6">
+      <p className="mt-6" data-print-hide="">
         <a href={hub.deskUrl} className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium">
           {hub.cta}
         </a>
@@ -202,7 +205,7 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
                   {hub.name} and {p.otherName}
                 </a>
                 {p.why ? (
-                  <details data-testid="hub-why" className="ml-1 inline-block align-top">
+                  <details data-print-open="" data-testid="hub-why" className="ml-1 inline-block align-top">
                     <summary className="cursor-pointer text-xs text-muted">Why this grade</summary>
                     <GradeBasisRow basis={p.why} context={`${hub.name} and ${p.otherName}`} />
                   </details>
@@ -226,6 +229,7 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
         </section>
       ) : null}
       <PairDisclaimer />
+      <PrintFooter canonical={hub.canonical} />
     </main>
   );
 }

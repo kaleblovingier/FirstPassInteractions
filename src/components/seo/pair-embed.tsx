@@ -109,7 +109,7 @@ export function EmbedSnippetDisclosure({ page }: { page: Pick<PairPage, "slug" |
   const field = useRef<HTMLTextAreaElement>(null);
   const [status, setStatus] = useState("");
   return (
-    <details data-testid="pair-embed" className="mt-8 rounded-xl border border-border p-3 text-xs">
+    <details data-testid="pair-embed" data-print-hide="" className="mt-8 rounded-xl border border-border p-3 text-xs">
       <summary className="cursor-pointer font-medium">Embed this card</summary>
       <p className="mt-2 text-muted">
         Paste this into a course page (Canvas, another LMS or a course site) to show this pair as a small card. It links back here.

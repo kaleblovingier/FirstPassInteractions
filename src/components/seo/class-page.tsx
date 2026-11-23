@@ -12,6 +12,7 @@ import {
   CLASSES_INDEX_INTRO,
 } from "@/lib/seo/pair-copy";
 import { PairDisclaimer } from "./pair-page";
+import { PrintButton, PrintFooter } from "./print-handout";
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -38,8 +39,8 @@ function MemberLine({ m }: { m: ClassHubMember }) {
 
 export function ClassPageView({ hub }: { hub: ClassHub }) {
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <p className="text-xs text-muted">
+    <main className="mx-auto max-w-2xl px-4 py-10" data-print-handout="class">
+      <p className="text-xs text-muted" data-print-hide="">
         <a href="/classes" className="underline">All classes</a> ·{" "}
         <a href="/pairs" className="underline">All pairs</a>
       </p>
@@ -47,7 +48,7 @@ export function ClassPageView({ hub }: { hub: ClassHub }) {
       <p data-testid="class-intro" className="mt-3 text-sm text-muted">
         {hub.intro}
       </p>
-      <nav aria-label="On this page" className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-sm">
+      <nav aria-label="On this page" data-print-hide="" className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-sm">
         <a href="#drugs" className="underline">
           Drugs ({hub.counts.hubs})
         </a>
@@ -58,16 +59,19 @@ export function ClassPageView({ hub }: { hub: ClassHub }) {
           Pair pages ({hub.counts.pairs})
         </a>
       </nav>
-      <p className="mt-6">
-        <a
-          href={hub.deskUrl}
-          data-testid="class-desk-link"
-          className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium"
-        >
-          {CLASS_HUB_CTA}
-        </a>
+      <div className="mt-6" data-print-hide="">
+        <p className="flex flex-wrap items-center gap-3">
+          <a
+            href={hub.deskUrl}
+            data-testid="class-desk-link"
+            className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-medium"
+          >
+            {CLASS_HUB_CTA}
+          </a>
+          <PrintButton />
+        </p>
         <span className="mt-1 block text-xs text-muted">{hub.deskNames.join(", ")}</span>
-      </p>
+      </div>
       <section id="drugs" className="mt-8" data-testid="class-members">
         <h2 className="text-lg font-semibold">
           {CLASS_HUB_MEMBERS_HEADING} ({hub.counts.hubs})
@@ -137,6 +141,7 @@ export function ClassPageView({ hub }: { hub: ClassHub }) {
         ))}
       </section>
       <PairDisclaimer />
+      <PrintFooter canonical={hub.canonical} />
     </main>
   );
 }
