@@ -1,10 +1,21 @@
-// Accessibility gate: axe-core (WCAG 2.0/2.1/2.2 A+AA tags) plus scripts/wcag22-checks.mjs on every
-// generated /drug, /pair and /enzyme route (read from /sitemap.xml) and the desk's learning tools,
-// at 320 and 1280 px. Exits 1 on any violation, so each new compound is checked automatically.
+// Accessibility gate: axe-core (WCAG 2.0/2.1/2.2 A+AA tags) plus scripts/wcag22-checks.mjs on the
+// generated routes (read from /sitemap.xml), the pages derived from them and the desk's learning
+// tools, at 320 and 1280 px. Exits 1 on any violation, so each new compound is checked automatically.
+// Groups (scripts/a11y-routes.mjs picks the routes):
+//   drug, pair, enzyme  /drug/*, /pair/*, /enzymes and /enzyme/* from the sitemap
+//   class               /classes and /class/* from the sitemap
+//   programs            /for-programs, /for-programs/course-kit and the /for-programs/<audience> pages
+//   embed               /embed/pair/<slug> for a spread of pair slugs (not in the sitemap)
+//   practice            /practice with an enzyme filter, a class filter and a ?set= link
+//   tools               the desk's learning tools, plus /practice, /glossary, /workup, /help when served
+//   stations            opt-in, see below
+// --limit N caps each sitemap-driven type at N (audience pages and embeds at 3); without it every
+// sitemap route runs and 12 embeds.
 //
 // Usage (against a local build: npm run build && npm run preview):
 //   CHROME=/usr/bin/google-chrome node scripts/a11y-gate.mjs http://127.0.0.1:4173 \
-//     [--only drug,pair,enzyme,tools,stations] [--limit N] [--workers 4] [--skip-wcag22] [--json out.json]
+//     [--only drug,pair,enzyme,class,programs,embed,practice,tools,stations] [--limit N] [--workers 4] [--skip-wcag22] [--json out.json] [--list]
+// --list prints the routes it would check and exits without a browser.
 // "stations" (the Library modules and a few clinical-board stations) is opt-in, not in the default
 // set: it has not had a clean run yet. Run it with --only stations, fix what it finds, then add it
 // to the default so CI gates it.
@@ -15,17 +26,21 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { DEFAULT_GROUPS, GROUPS, practiceClassKeys, routeSpecs, sitemapPaths } from "./a11y-routes.mjs";
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); if (i < 0) return d; const v = args[i + 1]; args.splice(i, 2); return v; };
 const flag = (k) => { const i = args.indexOf(k); if (i < 0) return false; args.splice(i, 1); return true; };
-const only = new Set(opt("--only", "drug,pair,enzyme,tools").split(","));
+const only = new Set(opt("--only", DEFAULT_GROUPS.join(",")).split(","));
 const limit = Number(opt("--limit", "0"));
 const workers = Number(opt("--workers", "4"));
 const out = opt("--json", null);
 const skipWcag22 = flag("--skip-wcag22");
+const listOnly = flag("--list");
 const [base] = args;
 if (!base) { console.error("usage: node scripts/a11y-gate.mjs <baseUrl> [options]"); process.exit(2); }
+const unknown = [...only].filter((g) => !GROUPS.includes(g));
+if (unknown.length) { console.error(`a11y-gate: unknown group(s) ${unknown.join(", ")}; known: ${GROUPS.join(", ")}`); process.exit(2); }
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 let axeSource;
@@ -37,34 +52,20 @@ try {
   process.exit(2);
 }
 
-// Learning tools inside the desk: "path@Button>Button" clicks those buttons by accessible name.
-const TOOLS = ["/@Learn", "/@Cases", "/@Enzyme map", "/@Study drill", "/@Study drill>Classic pairs", "/@Study drill>Bedside & toxicology"];
-
 const sitemap = await (await fetch(new URL("/sitemap.xml", base))).text();
-const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
-const pick = (re) => { const l = locs.filter((p) => re.test(p)); return limit ? l.slice(0, limit) : l; };
-// Desk stations. Library modules need no tray; clinical-board stations open from a ?brief= tray
-// (methadone + ondansetron for QT, tacrolimus, norepinephrine, buprenorphine). Confirm is the
-// dose-calculator attestation gate in front of MOUD.
-const TRAY = "methadone,ondansetron,tacrolimus,norepinephrine,buprenorphine";
-const STATIONS = [
-  ...["Receptor Profiler", "Transporter Network", "Cardiac Electrophysiology", "Pharmacogenomics & CPIC",
-    "Toxidromes & Antidotes", "BBB & CNS Penetration", "CYP Induction & TDI", "Renal Tubular Pharmacology"].map((t) => `/@Library>${t}`),
-  ...["QT", "Transplant", "Vasoactive", "MOUD & Harm Reduction>Confirm"].map((s) => `/?brief=${TRAY}@${s}`),
-];
-
-const specs = [
-  ...(only.has("drug") ? pick(/^\/drug\//) : []),
-  ...(only.has("pair") ? pick(/^\/pair\//) : []),
-  ...(only.has("enzyme") ? [...pick(/^\/enzymes?$/), ...pick(/^\/enzyme\//)] : []),
-  ...(only.has("tools") ? TOOLS : []),
-  ...(only.has("stations") ? STATIONS : []),
-];
+// The class filter has to be a key /practice offers; read them from its server-rendered select.
+let classKeys = [];
+if (only.has("practice")) {
+  try { classKeys = practiceClassKeys(await (await fetch(new URL("/practice", base))).text()); } catch { /* not served */ }
+  if (!classKeys.length) console.log("a11y-gate: /practice offered no class filter; skipping the ?class= spec");
+}
+const specs = routeSpecs(sitemapPaths(sitemap), { only: [...only], limit, classKeys });
 // Optional standalone learning routes: gated only when this build serves them.
 for (const p of only.has("tools") ? ["/practice", "/glossary", "/workup", "/help"] : []) {
   try { if ((await fetch(new URL(p, base))).ok) specs.push(p); } catch { /* not served */ }
 }
 console.log(`a11y-gate: ${specs.length} routes x 2 widths`);
+if (listOnly) { for (const s of specs) console.log(s); process.exit(0); }
 
 const browser = await chromium.launch({ ...(process.env.CHROME ? { executablePath: process.env.CHROME } : {}), args: ["--no-sandbox"] });
 const results = [];

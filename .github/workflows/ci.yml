@@ -37,8 +37,13 @@ jobs:
   # it selects; the second step runs wcag22-checks on its own default paths.
   # Keyboard journeys and the search/compare/export smoke are the `journeys`
   # job. This job stays the sitemap pass.
-  # Push and pull_request run a sample: tools, standalone routes, 6 of each generated type.
-  # The nightly schedule crawls every sitemap route under the 180 minute limit.
+  # Push and pull_request run a sample (--limit 6, 47 routes): tools, standalone routes,
+  # 6 each of /drug, /pair, /enzyme and /class, /classes, /for-programs, the course kit,
+  # 3 audience pages, 3 /embed/pair cards (derived from pair slugs; not in the sitemap) and
+  # /practice with an enzyme filter, a class filter and a ?set= link. The class, programs,
+  # embed and practice groups added 18 routes to the 29 the sample had before.
+  # `node scripts/a11y-gate.mjs <url> --limit 6 --list` prints the sample without a browser.
+  # The nightly schedule crawls every sitemap route (and 12 embeds) under the 180 minute limit.
   a11y:
     runs-on: ubuntu-latest
     timeout-minutes: ${{ github.event_name == 'schedule' && 180 || 30 }}
@@ -89,7 +94,8 @@ jobs:
   # Desk keyboard journeys, then search, compare, and export end-to-end.
   # scripts/e2e/license.e2e.mjs is not in this list. Export still imports
   # testKey() from that file; the runner does not execute its default journey.
-  # These are a few desk flows. They do not read the sitemap. The `a11y` job
+  # These are a few desk flows, plus /practice with a class filter and the
+  # course kit's week order. They do not read the sitemap. The `a11y` job
   # keeps that pass and its 180 minute timeout. Against a local production
   # preview the keyboard script took about 50 seconds and the three e2e
   # files about 40 seconds. npm ci, Playwright's Chromium, and the build
