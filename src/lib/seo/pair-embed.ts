@@ -47,9 +47,16 @@ export function escapeAttr(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/** An iframe tag for any FirstPass embed card: src and title escaped, the agreed attributes. */
+export function embedIframe({ src, title, height }: { src: string; title: string; height: number }): string {
+  return `<iframe src="${escapeAttr(src)}" title="${escapeAttr(title)}" width="100%" height="${height}" loading="lazy" style="border:0;max-width:640px"></iframe>`;
+}
+
 /** The iframe snippet a course page pastes in. Always points at the canonical SITE_URL, never the current host. */
 export function embedSnippet(page: Pick<PairPage, "slug" | "nameA" | "nameB">): string {
-  const src = escapeAttr(embedPairUrl(page.slug));
-  const title = escapeAttr(`FirstPass: ${page.nameA} and ${page.nameB} interaction card`);
-  return `<iframe src="${src}" title="${title}" width="100%" height="${EMBED_HEIGHT}" loading="lazy" style="border:0;max-width:640px"></iframe>`;
+  return embedIframe({
+    src: embedPairUrl(page.slug),
+    title: `FirstPass: ${page.nameA} and ${page.nameB} interaction card`,
+    height: EMBED_HEIGHT,
+  });
 }

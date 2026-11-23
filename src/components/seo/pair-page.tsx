@@ -1,12 +1,13 @@
 import { Fragment } from "react";
 import type { PairPage } from "@/lib/seo/pair-pages";
-import { DISCLAIMER_ACTION, DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
+import { CITED_ONLY_HUB_INTRO, DISCLAIMER_ACTION, DRUG_HUB_INTRO_TEMPLATE, fillDrugTemplate, PAIR_CTA, PAIR_DISCLAIMER, PAIRS_INDEX_INTRO } from "@/lib/seo/pair-copy";
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
 import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
 import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { LabelFreshnessLine } from "@/components/label-freshness";
 import { EmbedSnippetDisclosure } from "@/components/seo/pair-embed";
+import { DrugEmbedBox } from "@/components/seo/hub-embed";
 
 /** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
 export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?: string }) {
@@ -158,8 +159,6 @@ export function PairsIndexView({ pages }: { pages: readonly PairIndexEntry[] }) 
   );
 }
 
-export const CITED_ONLY_HUB_INTRO = "Interaction notes for this supplement, quoted from FDA-approved labeling.";
-
 export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { name: string; path: string } }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
@@ -225,6 +224,7 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
           </ul>
         </section>
       ) : null}
+      <DrugEmbedBox hub={hub} />
       <PairDisclaimer />
     </main>
   );

@@ -35,5 +35,7 @@ describe("SiteHeader", () => {
     assert.equal(showsSiteHeader("/pairs"), true);
     assert.equal(showsSiteHeader("/drug/warfarin"), true);
     assert.equal(showsSiteHeader("/embed/pair/warfarin-fluconazole"), false);
+    assert.equal(showsSiteHeader("/embed/drug/paxlovid"), false);
+    assert.equal(showsSiteHeader("/embed/class/statin"), false);
   });
 });
