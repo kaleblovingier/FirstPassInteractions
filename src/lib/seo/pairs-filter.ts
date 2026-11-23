@@ -118,7 +118,12 @@ const PREFILTER_SHEET = "__fpPairsPrefilter";
  * keeps the controls and count (still unfiltered) invisible, through a constructed stylesheet: no element
  * React renders is touched. PairsIndexView removes it after hydration. Initial page load only.
  */
-export const PAIRS_PREFILTER_SCRIPT = `(function(){try{var d=document;if(d.readyState!=="loading"||!d.adoptedStyleSheets||typeof CSSStyleSheet!=="function")return;var p=new URLSearchParams(location.search),q=(p.get("q")||"").slice(0,${PAIRS_Q_MAX}),s=p.get("severity")||"";var t=q.normalize("NFKD").replace(/\\p{Diacritic}/gu,"").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);if(${JSON.stringify(PAIR_SEVERITIES)}.indexOf(s)<0)s="";if(!t.length&&!s)return;var h="html[${PAIRS_PREFILTER_ATTR}] ",r=h+"[data-pairs-list]>li",x=[];for(var i=0;i<t.length;i++)x.push(r+':not([data-k*="'+t[i]+'"])');if(s)x.push(r+':not([data-s="'+s+'"])');var c=new CSSStyleSheet();c.replaceSync(x.join(",")+"{display:none!important}"+h+"[data-pairs-prehydrate]{visibility:hidden}");d.adoptedStyleSheets=d.adoptedStyleSheets.concat(c);window.${PREFILTER_SHEET}=c;d.documentElement.setAttribute("${PAIRS_PREFILTER_ATTR}","");}catch(e){}})();`;
+/** JSON for an inline <script>: escapes the characters that could end the tag or break a JS string. */
+function scriptJson(value: unknown): string {
+  return JSON.stringify(value).replace(/[<>/\u2028\u2029]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
+}
+
+export const PAIRS_PREFILTER_SCRIPT = `(function(){try{var d=document;if(d.readyState!=="loading"||!d.adoptedStyleSheets||typeof CSSStyleSheet!=="function")return;var p=new URLSearchParams(location.search),q=(p.get("q")||"").slice(0,${PAIRS_Q_MAX}),s=p.get("severity")||"";var t=q.normalize("NFKD").replace(/\\p{Diacritic}/gu,"").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);if(${scriptJson(PAIR_SEVERITIES)}.indexOf(s)<0)s="";if(!t.length&&!s)return;var h="html[${PAIRS_PREFILTER_ATTR}] ",r=h+"[data-pairs-list]>li",x=[];for(var i=0;i<t.length;i++)x.push(r+':not([data-k*="'+t[i]+'"])');if(s)x.push(r+':not([data-s="'+s+'"])');var c=new CSSStyleSheet();c.replaceSync(x.join(",")+"{display:none!important}"+h+"[data-pairs-prehydrate]{visibility:hidden}");d.adoptedStyleSheets=d.adoptedStyleSheets.concat(c);window.${PREFILTER_SHEET}=c;d.documentElement.setAttribute("${PAIRS_PREFILTER_ATTR}","");}catch(e){}})();`;
 
 /** Undo PAIRS_PREFILTER_SCRIPT once React draws the filtered list itself. Safe to call more than once. */
 export function clearPairsPrefilter(): void {
