@@ -45,6 +45,10 @@ import {
   isOpioid,
   isOrphineNitazeneSedativeStack,
   isEmergingOpioidAlpha2Adulterant,
+  isProdrugCyp2d6OpioidFailure,
+  isBotanicalStJohnsWortNarrowInducer,
+  isBotanicalBerberineCypVictim,
+  isOtcLithiumOrotateRenalTrap,
 } from "./safety";
 
 describe("safetyOnDesk - Clinical Collision Suite", () => {
@@ -1266,6 +1270,199 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
         ["42996303", "42276321"],
       );
     }
+  });
+
+  it("detects CYP2D6 opioid prodrugs × strong CYP2D6 inhibitors (prodrug-cyp2d6-opioid-failure)", () => {
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "fluoxetine"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("paroxetine", "codeine"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "bupropion"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "quinidine"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "terbinafine"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "cinacalcet"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "mirabegron"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "dextromethorphan-bupropion"), true);
+    assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "auvelity"), true);
+
+    assert.equal(isProdrugCyp2d6OpioidFailure("morphine", "fluoxetine"), false);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "sertraline"), false);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "terbinafine-topical"), false);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "tramadol"), false);
+
+    for (const [prodrug, inhibitor] of [
+      ["codeine", "fluoxetine"],
+      ["tramadol", "bupropion"],
+    ] as const) {
+      const hits = safetyOnDesk([prodrug, inhibitor]);
+      const hit = hits.find((h) => h.id === "prodrug-cyp2d6-opioid-failure");
+      assert.ok(hit, `Expected prodrug-cyp2d6-opioid-failure for ${prodrug} + ${inhibitor}`);
+      assert.deepEqual(hit.drugIds, [prodrug, inhibitor]);
+      assert.equal(hit.severity, "major");
+      assert.equal(hit.regulatoryTier, "label-major");
+      assert.equal(hit.tone, "warn");
+      assert.match(hit.title, /CYP2D6 prodrug bioactivation blockade \(blunted analgesia\)$/);
+      assert.match(hit.clinical, /O-demethylation to morphine.*O-desmethyltramadol \(M1\).*phenoconvert/i);
+      assert.match(hit.watch, /non-CYP2D6-dependent analgesic alternative.*The Prescribing Information governs\./i);
+      assert.match(hit.source, /24458010/);
+      assert.match(hit.source, /16819548/);
+      assert.deepEqual(
+        hit.citations?.map((c) => c.pmid),
+        ["24458010", "16819548"],
+      );
+    }
+  });
+
+  it("detects St. John's wort × narrow-index CYP3A4 / P-gp substrates (botanical-st-johns-wort-narrow-inducer)", () => {
+    for (const victim of [
+      "cyclosporine",
+      "tacrolimus",
+      "sirolimus",
+      "everolimus",
+      "apixaban",
+      "rivaroxaban",
+      "dabigatran",
+      "edoxaban",
+      "warfarin",
+      "digoxin",
+      "ethinyl-estradiol",
+      "indinavir",
+      "irinotecan",
+      "imatinib",
+      "methadone",
+      "midazolam",
+    ]) {
+      assert.equal(isBotanicalStJohnsWortNarrowInducer("st-johns-wort", victim), true, victim);
+      assert.equal(isBotanicalStJohnsWortNarrowInducer(victim, "st-johns-wort"), true, victim);
+    }
+
+    assert.equal(isBotanicalStJohnsWortNarrowInducer("st-johns-wort", "acetaminophen"), false);
+    assert.equal(isBotanicalStJohnsWortNarrowInducer("st-johns-wort", "cyclosporine-ophthalmic"), false);
+    assert.equal(isBotanicalStJohnsWortNarrowInducer("st-johns-wort", "tacrolimus-topical"), false);
+
+    for (const victim of ["apixaban", "tacrolimus"] as const) {
+      const hits = safetyOnDesk(["st-johns-wort", victim]);
+      const hit = hits.find((h) => h.id === "botanical-st-johns-wort-narrow-inducer");
+      assert.ok(hit, `Expected botanical-st-johns-wort-narrow-inducer for st-johns-wort + ${victim}`);
+      assert.deepEqual(hit.drugIds, ["st-johns-wort", victim]);
+      assert.equal(hit.severity, "contraindicated");
+      assert.equal(hit.regulatoryTier, "contraindicated");
+      assert.equal(hit.tone, "danger");
+      assert.match(hit.title, /St\. John's wort \+ .+: Potent PXR CYP3A4 & P-gp induction \(treatment failure \/ rejection risk\)$/);
+      assert.match(hit.clinical, /hyperforin.*pregnane X receptor \(PXR\).*7–14 days.*1–2 weeks/i);
+      assert.match(hit.watch, /Avoid St\. John's wort.*rebound over 1–2 weeks.*The Prescribing Information governs\./i);
+      assert.match(hit.source, /13129991/);
+      assert.match(hit.source, /10546917/);
+      assert.match(hit.source, /10683007/);
+      assert.deepEqual(
+        hit.citations?.map((c) => c.pmid),
+        ["13129991", "10546917", "10683007"],
+      );
+    }
+  });
+
+  it("detects Berberine × calcineurin inhibitors and sensitive CYP2D6/3A4/2C9 substrates (botanical-berberine-cyp-victim)", () => {
+    for (const victim of [
+      "cyclosporine",
+      "tacrolimus",
+      "sirolimus",
+      "everolimus",
+      "dextromethorphan",
+      "atomoxetine",
+      "metoprolol",
+      "midazolam",
+      "simvastatin",
+      "lovastatin",
+      "apixaban",
+      "rivaroxaban",
+      "warfarin",
+      "pimozide",
+      "colchicine",
+      "codeine",
+      "tramadol",
+    ]) {
+      assert.equal(isBotanicalBerberineCypVictim("berberine", victim), true, victim);
+      assert.equal(isBotanicalBerberineCypVictim(victim, "berberine"), true, victim);
+    }
+
+    assert.equal(isBotanicalBerberineCypVictim("berberine", "acetaminophen"), false);
+    assert.equal(isBotanicalBerberineCypVictim("berberine", "cyclosporine-ophthalmic"), false);
+
+    for (const victim of ["cyclosporine", "dextromethorphan"] as const) {
+      const hits = safetyOnDesk(["berberine", victim]);
+      const hit = hits.find((h) => h.id === "botanical-berberine-cyp-victim");
+      assert.ok(hit, `Expected botanical-berberine-cyp-victim for berberine + ${victim}`);
+      assert.deepEqual(hit.drugIds, ["berberine", victim]);
+      assert.equal(hit.severity, "major");
+      assert.equal(hit.regulatoryTier, "label-major");
+      assert.equal(hit.tone, "warn");
+      assert.match(hit.title, /^Berberine \+ .+: Multi-isoform CYP2D6 \/ CYP3A4 \/ CYP2C9 botanical inhibition$/);
+      assert.match(hit.clinical, /CYP2D6, CYP2C9, and CYP3A4.*P-gp efflux.*cyclosporine and tacrolimus/i);
+      assert.match(hit.watch, /clinically active CYP\/P-gp perpetrators.*The Prescribing Information governs\./i);
+      assert.match(hit.source, /21870106/);
+      assert.deepEqual(
+        hit.citations?.map((c) => c.pmid),
+        ["21870106"],
+      );
+    }
+  });
+
+  it("detects OTC Lithium Orotate × prescription lithium or renal lithium-clearance perpetrators (otc-lithium-orotate-renal-trap)", () => {
+    for (const partner of [
+      "lithium",
+      "ibuprofen",
+      "naproxen",
+      "meloxicam",
+      "celecoxib",
+      "diclofenac",
+      "indomethacin",
+      "ketorolac",
+      "lisinopril",
+      "enalapril",
+      "ramipril",
+      "losartan",
+      "valsartan",
+      "olmesartan",
+      "irbesartan",
+      "hctz",
+      "chlorthalidone",
+      "indapamide",
+      "furosemide",
+    ]) {
+      assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", partner), true, partner);
+      assert.equal(isOtcLithiumOrotateRenalTrap(partner, "lithium-orotate"), true, partner);
+    }
+
+    assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", "acetaminophen"), false);
+    assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", "atorvastatin"), false);
+    assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", "lithium-orotate"), false);
+
+    const dupHits = safetyOnDesk(["lithium-orotate", "lithium"]);
+    const dupHit = dupHits.find((h) => h.id === "otc-lithium-orotate-renal-trap");
+    assert.ok(dupHit);
+    assert.deepEqual(dupHit.drugIds, ["lithium-orotate", "lithium"]);
+    assert.equal(dupHit.severity, "major");
+    assert.equal(dupHit.regulatoryTier, "label-major");
+    assert.equal(dupHit.tone, "danger");
+    assert.match(dupHit.title, /^Lithium Orotate \+ Lithium: Unregulated OTC elemental lithium \+ renal clearance impairment \/ duplicate exposure$/);
+    assert.match(dupHit.clinical, /elemental lithium ions.*proximal tubule.*neuro-renal toxicity/i);
+    assert.match(dupHit.watch, /Reconcile all OTC mineral\/nootropic supplements.*The Prescribing Information governs\./i);
+    assert.match(dupHit.source, /8521679/);
+    assert.match(dupHit.source, /22265699/);
+    assert.deepEqual(
+      dupHit.citations?.map((c) => c.pmid),
+      ["8521679", "22265699"],
+    );
+
+    const renalHits = safetyOnDesk(["lithium-orotate", "ibuprofen", "lisinopril"]);
+    const renalHit = renalHits.find((h) => h.id === "otc-lithium-orotate-renal-trap");
+    assert.ok(renalHit);
+    assert.equal(renalHit.severity, "major");
+    assert.equal(renalHit.regulatoryTier, "label-major");
+    assert.equal(renalHit.tone, "danger");
+    assert.match(renalHit.title, /^Lithium Orotate \+ Ibuprofen \/ Lisinopril: Unregulated OTC elemental lithium \+ renal clearance impairment \/ duplicate exposure$/);
+    assert.deepEqual(
+      renalHit.citations?.map((c) => c.pmid),
+      ["8521679", "22265699"],
+    );
   });
 
   it("continues to detect existing high-risk safety collisions", () => {

@@ -17,17 +17,48 @@ import { DrugEmbedBox } from "@/components/seo/hub-embed";
 /** One "Why this grade" row: heading, verbatim detail, and the source link when one is on file. */
 export function GradeBasisRow({ basis, context }: { basis: GradeBasis; context?: string }) {
   return (
-    <div data-testid="grade-basis" data-basis-kind={basis.kind} className="mt-2">
+    <div data-testid="grade-basis" data-basis-kind={basis.kind} className="mt-2 border-t border-border pt-2">
       <p className="text-xs font-medium">{basis.title}</p>
       <p className="mt-0.5 text-xs text-muted">{basis.detail}</p>
       {basis.href ? (
-        <a href={basis.href} rel="noopener" target="_blank" className="text-xs underline">
+        <a href={basis.href} rel="noopener" target="_blank" className="text-xs underline underline-offset-2">
           {sourceLinkText(basis.title, basis.href)}
           {context ? <span className="sr-only">, for {context}</span> : null}
         </a>
       ) : null}
       <LabelFreshnessLine basis={basis} />
     </div>
+  );
+}
+
+/** Shared reference cross-link strip for monograph top and footer navigation (hidden on print). */
+export function ReferenceNav({
+  label = "Reference sections",
+  includeClasses = false,
+  className = "flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted",
+}: {
+  label?: string;
+  includeClasses?: boolean;
+  className?: string;
+}) {
+  return (
+    <nav aria-label={label} className={className} data-print-hide="">
+      {includeClasses ? (
+        <>
+          <a href="/classes" className="underline underline-offset-2 hover:text-fg">All classes</a>
+          <span aria-hidden="true">·</span>
+        </>
+      ) : null}
+      <a href="/pairs" className="underline underline-offset-2 hover:text-fg">All pairs</a>
+      <span aria-hidden="true">·</span>
+      <a href="/enzymes" className="underline underline-offset-2 hover:text-fg">Enzymes</a>
+      <span aria-hidden="true">·</span>
+      <a href="/glossary" className="underline underline-offset-2 hover:text-fg">Glossary</a>
+      <span aria-hidden="true">·</span>
+      <a href="/methodology" className="underline underline-offset-2 hover:text-fg">Methodology</a>
+      <span aria-hidden="true">·</span>
+      <a href="/sources" className="underline underline-offset-2 hover:text-fg">Sources</a>
+    </nav>
   );
 }
 
@@ -44,7 +75,7 @@ export function LegalLinks({ className = "" }: { className?: string }) {
 export function PairDisclaimer() {
   return (
     <>
-      <p data-testid="pair-disclaimer" className="mt-8 text-xs text-muted">
+      <p data-testid="pair-disclaimer" className="mt-8 border-t border-border pt-5 text-xs text-muted">
         {PAIR_DISCLAIMER} {DISCLAIMER_ACTION}
       </p>
       <LegalLinks className="mt-2 text-xs text-muted" />
@@ -56,33 +87,33 @@ export function PairDisclaimer() {
 export function PairPageView({ page }: { page: PairPage }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10" data-print-handout="pair">
-      <p className="text-xs text-muted" data-print-hide="">
-        <a href="/pairs" className="underline">All pairs</a>
-      </p>
+      <ReferenceNav label="Reference sections" />
       <h1 className="mt-2 text-2xl font-semibold">
         {page.nameA} and {page.nameB}
       </h1>
-      <p className="mt-3 text-sm">
-        Desk tier: <strong data-testid="pair-severity">{page.severityLabel}</strong>
-      </p>
-      <p className="mt-2 text-sm">
-        Mechanism: <span data-testid="pair-mechanism">{page.mechanism}</span>
-      </p>
+      <div className="mt-4 divide-y divide-border rounded-lg border border-border bg-surface text-sm">
+        <p className="px-4 py-2.5">
+          Desk tier: <strong data-testid="pair-severity">{page.severityLabel}</strong>
+        </p>
+        <p className="px-4 py-2.5">
+          Mechanism: <span data-testid="pair-mechanism">{page.mechanism}</span>
+        </p>
+      </div>
       {page.quote ? (
         <figure className="mt-6 rounded-xl border border-border bg-bg-sunken/40 p-5">
           <blockquote data-testid="pair-quote" className="text-sm">
             “{page.quote.quote}”
           </blockquote>
-          <figcaption className="mt-3 text-xs text-muted">
+          <figcaption className="mt-3 border-t border-border pt-2.5 text-xs tabular-nums text-muted">
             {page.quote.labelDrug}, section {page.quote.labelSection}.{" "}
-            <a href={page.quote.url} rel="noopener" className="underline">
+            <a href={page.quote.url} rel="noopener" className="underline underline-offset-2">
               DailyMed label
             </a>
           </figcaption>
         </figure>
       ) : null}
       {page.why.length ? (
-        <details open data-print-open="" data-testid="pair-why" className="mt-6 rounded-xl border border-border p-4 text-sm">
+        <details open data-print-open="" data-testid="pair-why" className="mt-6 rounded-xl border border-border bg-surface p-4 text-sm">
           <summary className="cursor-pointer font-medium">Why this grade</summary>
           {page.why.map((b) => (
             <GradeBasisRow key={`${b.kind}-${b.title}`} basis={b} />
@@ -112,6 +143,10 @@ export function PairPageView({ page }: { page: PairPage }) {
         </p>
       ) : null}
       <EmbedSnippetDisclosure page={page} />
+      <ReferenceNav
+        label="More reference pages"
+        className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-4 text-xs text-muted"
+      />
       <PairDisclaimer />
       <PrintFooter canonical={page.canonical} />
     </main>
@@ -123,7 +158,7 @@ export type PairIndexEntry = Pick<PairPage, "slug" | "nameA" | "nameB" | "severi
 
 const NO_PAIRS_SEARCH: PairsSearch = {};
 const FILTER_CHOICE =
-  "flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-surface-2 px-3 text-sm shadow-[var(--shadow-border)] has-[:checked]:bg-accent-soft";
+  "flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-border bg-surface-2 px-3 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent-soft";
 const subscribeNever = () => () => {};
 const searchKey = (s: PairsSearch) => `${s.q ?? ""}|${s.severity ?? ""}`;
 
@@ -149,7 +184,7 @@ export function PairsResults({ pages, filters, onClear }: { pages: readonly Pair
   const shown = active ? keyed.filter(shows).length : keyed.length;
   return (
     <>
-      <p aria-live="polite" aria-atomic="true" data-testid="pairs-count" data-pairs-prehydrate="" className="mt-4 text-sm text-muted">
+      <p aria-live="polite" aria-atomic="true" data-testid="pairs-count" data-pairs-prehydrate="" className="mt-4 text-sm tabular-nums text-muted">
         {pairsCountText(shown, keyed.length)}
       </p>
       <p data-testid="pairs-empty" hidden={!(active && shown === 0)} className="mt-2 text-sm">
@@ -166,10 +201,10 @@ export function PairsResults({ pages, filters, onClear }: { pages: readonly Pair
           Clear filters
         </a>
       </p>
-      <ul data-pairs-list="" data-testid="pairs-list" className="mt-2 space-y-1 text-sm">
+      <ul data-pairs-list="" data-testid="pairs-list" className="mt-2 divide-y divide-border rounded-lg border border-border bg-surface text-sm">
         {keyed.map((p) => (
-          <li key={p.slug} data-k={p.k} data-s={p.s} hidden={!shows(p)}>
-            <a href={`/pair/${p.slug}`} className="underline">
+          <li key={p.slug} data-k={p.k} data-s={p.s} hidden={!shows(p)} className="px-3.5 py-2">
+            <a href={`/pair/${p.slug}`} className="underline underline-offset-2">
               {p.nameA} and {p.nameB}
             </a>{" "}
             <span className="text-muted">· {p.severityLabel}</span>
@@ -228,6 +263,7 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
+      <ReferenceNav label="Reference sections" includeClasses className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted" />
       <h1 className="text-2xl font-semibold">Drug pairs checked against FDA label text</h1>
       <p className="mt-3 text-sm text-muted">{PAIRS_INDEX_INTRO}</p>
       <p data-testid="not-affiliated" className="mt-2 text-xs text-muted">{NOT_AFFILIATED_LINE}</p>
@@ -254,7 +290,7 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
           maxLength={PAIRS_Q_MAX}
           value={hydrated ? text : ""}
           onChange={(e) => update(e.target.value, severity)}
-          className="mt-1 block h-11 w-full rounded-md bg-surface-2 px-3 text-sm text-fg"
+          className="mt-1 block h-11 w-full rounded-md border border-border bg-surface-2 px-3 text-sm text-fg"
         />
         <fieldset className="mt-4">
           <legend className="text-sm font-medium">Desk tier</legend>
@@ -284,7 +320,7 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
           inputRef.current?.focus();
         }}
       />
-      <h2 className="mt-8 text-lg font-semibold">By drug</h2>
+      <h2 className="mt-8 border-t border-border pt-6 text-lg font-semibold">By drug</h2>
       <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm" data-testid="drug-hub-index">
         {drugHubs().map((h) => (
           <li key={h.slug}>
@@ -292,7 +328,7 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
           </li>
         ))}
       </ul>
-      <h2 className="mt-8 text-lg font-semibold">By enzyme</h2>
+      <h2 className="mt-8 border-t border-border pt-6 text-lg font-semibold">By enzyme</h2>
       <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm" data-testid="enzyme-hub-index">
         {enzymeHubs().map((h) => (
           <li key={h.slug}>
@@ -303,10 +339,12 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
           <a href="/enzymes" className="underline">All enzymes</a>
         </li>
       </ul>
-      <p className="mt-8 text-sm" data-testid="for-programs-link">
+      <p className="mt-8 border-t border-border pt-6 text-sm" data-testid="for-programs-link">
         Teaching or running a program? <a href="/for-programs" className="underline">Group and site licenses</a>.
         {" "}How FirstPass handles data: <a href="/trust" className="underline">Trust, privacy and validation</a>.
         {" "}Every label quote and FDA table row: <a href="/sources" className="underline">Sources and label library</a>.
+        {" "}How interaction mechanisms and FDA tiers work: <a href="/methodology" className="underline">Methodology</a>.
+        {" "}Key pharmacology terms: <a href="/glossary" className="underline">Glossary</a>.
       </p>
       <PairDisclaimer />
     </main>
@@ -316,9 +354,7 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
 export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { name: string; path: string } }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10" data-print-handout="drug">
-      <p className="text-xs text-muted" data-print-hide="">
-        <a href="/pairs" className="underline">All pairs</a>
-      </p>
+      <ReferenceNav label="Reference sections" />
       <h1 className="mt-2 text-2xl font-semibold">{hub.name} interactions on FDA labels</h1>
       {classLink ? (
         <p data-testid="drug-hub-class" className="mt-1 text-xs text-muted">
@@ -339,19 +375,19 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
         </a>
       </p>
       {hub.labelNote ? (
-        <section className="mt-8" data-testid="drug-hub-label-note">
+        <section className="mt-8 border-t border-border pt-6" data-testid="drug-hub-label-note">
           <h2 className="text-lg font-semibold">What the FDA label says</h2>
           <p className="mt-2 text-sm [overflow-wrap:anywhere]">{hub.labelNote}</p>
           <p className="mt-1 text-xs text-muted">Cited, not graded. No interaction grade is stored for this supplement.</p>
         </section>
       ) : null}
       {hub.groups.map((g) => (
-        <section key={g.severity} className="mt-8">
+        <section key={g.severity} className="mt-8 border-t border-border pt-6">
           <h2 className="text-lg font-semibold">{g.label}</h2>
-          <ul className="mt-2 space-y-1 text-sm">
+          <ul className="mt-2 divide-y divide-border rounded-lg border border-border bg-surface text-sm">
             {g.pairs.map((p) => (
-              <li key={p.pairSlug}>
-                <a href={`/pair/${p.pairSlug}`} className="underline">
+              <li key={p.pairSlug} className="px-3.5 py-2">
+                <a href={`/pair/${p.pairSlug}`} className="underline underline-offset-2">
                   {hub.name} and {p.otherName}
                 </a>
                 {p.why ? (
@@ -366,12 +402,12 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
         </section>
       ))}
       {hub.enzymes.length ? (
-        <section className="mt-8" data-testid="drug-hub-enzymes">
+        <section className="mt-8 border-t border-border pt-6" data-testid="drug-hub-enzymes">
           <h2 className="text-lg font-semibold">Enzyme roles on the desk</h2>
-          <ul className="mt-2 space-y-1 text-sm">
+          <ul className="mt-2 divide-y divide-border rounded-lg border border-border bg-surface text-sm">
             {hub.enzymes.map((e) => (
-              <li key={e.enzyme}>
-                <a href={e.path} className="underline">{e.enzyme}</a>{" "}
+              <li key={e.enzyme} className="px-3.5 py-2">
+                <a href={e.path} className="underline underline-offset-2">{e.enzyme}</a>{" "}
                 <span className="text-muted">· {e.roles.join(" · ")}</span>
               </li>
             ))}
@@ -379,6 +415,10 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
         </section>
       ) : null}
       <DrugEmbedBox hub={hub} />
+      <ReferenceNav
+        label="More reference pages"
+        className="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-4 text-xs text-muted"
+      />
       <PairDisclaimer />
       <PrintFooter canonical={hub.canonical} />
     </main>

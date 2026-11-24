@@ -204,3 +204,70 @@ test("expanded combination formulary resolves multi-ingredient brands, slash gen
   );
   assert.ok(comboCheck.data.summary.totalFindings > 0, "clarithromycin in Omeclamox-Pak should collide with simvastatin");
 });
+
+test("Round 13 OTC and clinical Rx multi-ingredient brand combinations expand to cataloged rows", async () => {
+  assert.ok(COMBINATIONS.length >= 120, `expected 120+ combinations, got ${COMBINATIONS.length}`);
+
+  const r13Cases: Array<[string, string[]]> = [
+    ["Advil Cold & Sinus", ["ibuprofen", "pseudoephedrine"]],
+    ["Advil Dual Action", ["ibuprofen", "acetaminophen"]],
+    ["Combogesic", ["ibuprofen", "acetaminophen"]],
+    ["Excedrin Tension Headache", ["acetaminophen", "caffeine"]],
+    ["BC Powder", ["aspirin", "caffeine"]],
+    ["Anacin", ["aspirin", "caffeine"]],
+    ["Excedrin Back & Body", ["acetaminophen", "aspirin"]],
+    ["Theraflu Severe Cold", ["acetaminophen", "dextromethorphan", "phenylephrine"]],
+    ["DayQuil Severe", ["acetaminophen", "dextromethorphan", "guaifenesin", "phenylephrine"]],
+    ["Mucinex Fast-Max", ["acetaminophen", "dextromethorphan", "guaifenesin", "phenylephrine"]],
+    ["NyQuil Severe", ["acetaminophen", "dextromethorphan", "doxylamine", "phenylephrine"]],
+    ["Coricidin HBP Cough & Cold", ["chlorpheniramine", "dextromethorphan"]],
+    ["Alka-Seltzer Plus Cold", ["aspirin", "chlorpheniramine", "phenylephrine"]],
+    ["Sudafed PE Pressure + Pain", ["acetaminophen", "phenylephrine"]],
+    ["Tylenol Sinus + Headache", ["acetaminophen", "phenylephrine"]],
+    ["Advil Sinus Congestion & Pain", ["ibuprofen", "phenylephrine"]],
+    ["Benadryl Allergy Plus Congestion", ["diphenhydramine", "phenylephrine"]],
+    ["Imodium Multi-Symptom Relief", ["loperamide", "simethicone"]],
+    ["Robitussin CF", ["dextromethorphan", "guaifenesin", "phenylephrine"]],
+    ["Mucinex Sinus-Max", ["acetaminophen", "guaifenesin", "phenylephrine"]],
+    ["Diclegis", ["doxylamine", "pyridoxine"]],
+    ["Bonjesta", ["doxylamine", "pyridoxine"]],
+    ["Nexlizet", ["bempedoic-acid", "ezetimibe"]],
+    ["Rifamate", ["isoniazid", "rifampin"]],
+    ["Promethazine DM", ["promethazine", "dextromethorphan"]],
+    ["Promethazine with Codeine", ["promethazine", "codeine"]],
+    ["Cheratussin AC", ["guaifenesin", "codeine"]],
+    ["Seglentis", ["celecoxib", "tramadol"]],
+    ["Symbravo", ["meloxicam", "rizatriptan"]],
+    ["Kazano", ["alogliptin", "metformin"]],
+    ["Oseni", ["alogliptin", "pioglitazone"]],
+    ["Byvalson", ["nebivolol", "valsartan"]],
+    ["Prestalia", ["perindopril", "amlodipine"]],
+  ];
+
+  for (const [query, expectedIds] of r13Cases) {
+    assert.deepEqual(hit(query).ids, expectedIds, query);
+    for (const id of expectedIds) {
+      assert.ok(DRUG_BY_ID[id], `${query}: ${id} must exist in DRUG_BY_ID`);
+    }
+    const resolved = resolveDrugQuery(query);
+    assert.equal(resolved.status, "resolved", query);
+    if (resolved.status === "resolved") {
+      assert.equal(resolved.matchedBy, "combination", query);
+      assert.deepEqual(resolved.drugIds, expectedIds, query);
+    }
+  }
+
+  ClinicalDecisionService.clearCaches();
+  const otcSerotoninCheck = await ClinicalDecisionService.checkInteractions({
+    drugs: ["Coricidin HBP Cough & Cold", "phenelzine"],
+  });
+  assert.ok(otcSerotoninCheck.success);
+  assert.deepEqual(
+    otcSerotoninCheck.data.query.resolvedDrugs.map((d) => d.id).sort(),
+    ["chlorpheniramine", "dextromethorphan", "phenelzine"],
+  );
+  assert.ok(
+    otcSerotoninCheck.data.summary.totalFindings > 0,
+    "dextromethorphan in Coricidin HBP should trigger MAOI serotonin collision with phenelzine",
+  );
+});

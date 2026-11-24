@@ -1421,7 +1421,7 @@ function RiskBanner({
   packId: PackId | null;
   onOpenPacket?: () => void;
 }) {
-  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
+  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | "markdown" | null>(null);
   const copyTimer = useRef(0);
   useEffect(() => () => window.clearTimeout(copyTimer.current), []);
   const openCheckout = useDesk((s) => s.openCheckout);
@@ -1432,7 +1432,7 @@ function RiskBanner({
   ).join(", ");
   const names = selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean).join(" + ");
 
-  async function write(kind: "full" | "share" | "plain" | "link", text: string) {
+  async function write(kind: "full" | "share" | "plain" | "link" | "markdown", text: string) {
     try {
       await navigator.clipboard.writeText(text);
       window.clearTimeout(copyTimer.current);
@@ -1493,6 +1493,19 @@ function RiskBanner({
     );
   }
 
+  async function copyMarkdown() {
+    const hostLine = formatMarkdownHostLine(host);
+    await write(
+      "markdown",
+      buildMarkdownRegimenReport({
+        trayIds: selected,
+        report,
+        hostLine,
+        version: SOFTWARE.version,
+      }),
+    );
+  }
+
   return (
     <div className="flex min-w-0 flex-col gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
       <div className="flex min-w-0 flex-wrap items-center gap-3">
@@ -1520,11 +1533,13 @@ function RiskBanner({
           ? "Link copied"
           : copied === "plain"
             ? "Plain-language summary copied"
-            : copied === "share"
-              ? "Share summary copied"
-              : copied === "full"
-                ? "Full report copied"
-                : ""}
+            : copied === "markdown"
+              ? "Copied Markdown"
+              : copied === "share"
+                ? "Share summary copied"
+                : copied === "full"
+                  ? "Full report copied"
+                  : ""}
       </span>
       <div className="flex min-w-0 flex-wrap gap-2">
       {caseId ? (
@@ -1552,6 +1567,16 @@ function RiskBanner({
       >
         {copied === "plain" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
         {copied === "plain" ? "Copied" : "Plain summary"}
+      </Button>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => void copyMarkdown()}
+        className="h-10 min-w-32 shrink-0"
+        title="Copy clinical monograph Markdown report"
+      >
+        {copied === "markdown" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
+        {copied === "markdown" ? "Copied Markdown" : "Copy Markdown"}
       </Button>
       <Button variant="secondary" size="sm" onClick={() => void shareLine()} className="h-10 min-w-24 shrink-0">
         {copied === "share" ? <Check className="size-3.5" aria-hidden="true" /> : <Share2 className="size-3.5" aria-hidden="true" />}
@@ -1933,11 +1958,7 @@ function csv(s: string) {
   return `"${t}"`;
 }
 
-function exportMarkdown(
-  report: ReturnType<typeof analyze>,
-  selected: string[],
-  host: HostContext,
-) {
+function formatMarkdownHostLine(host: HostContext): string | undefined {
   const parts: string[] = [
     ...PHENOTYPE_ENZYMES.filter((e) => host.phenotypes[e] !== "NM").map(
       (e) => `${e} ${host.phenotypes[e]} (${METABOLIZER_LABEL[host.phenotypes[e]]})`,
@@ -1952,10 +1973,18 @@ function exportMarkdown(
     ...(host.ketamineRoute !== "iv" ? [`Ketamine route: ${KETAMINE_ROUTE_LABEL[host.ketamineRoute]}`] : []),
     ...(host.cannabisRoute !== "smoked" ? [`Cannabis route: ${CANNABIS_ROUTE_LABEL[host.cannabisRoute]}`] : []),
   ];
+  return parts.length ? parts.join(" · ") : undefined;
+}
+
+function exportMarkdown(
+  report: ReturnType<typeof analyze>,
+  selected: string[],
+  host: HostContext,
+) {
   const markdown = buildMarkdownRegimenReport({
     trayIds: selected,
     report,
-    hostLine: parts.length ? parts.join(" · ") : undefined,
+    hostLine: formatMarkdownHostLine(host),
     version: SOFTWARE.version,
   });
   const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });

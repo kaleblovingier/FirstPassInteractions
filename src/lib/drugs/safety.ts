@@ -164,7 +164,13 @@ export type SafetyKind =
   | "valproate-topiramate-hyperammonemia"
   | "mtx-ppi-delayed-clearance"
   | "orphine-nitazene-sedative-stack"
-  | "emerging-opioid-alpha2-adulterant";
+  | "emerging-opioid-alpha2-adulterant"
+  | "prodrug-cyp2d6-opioid-failure"
+  | "botanical-st-johns-wort-narrow-inducer"
+  | "botanical-berberine-cyp-victim"
+  | "otc-lithium-orotate-renal-trap";
+
+export type SafetyRegulatoryTier = Severity | "label-major";
 
 export interface SafetyCitation {
   label: string;
@@ -182,7 +188,7 @@ export interface SafetyHit {
   clinical: string;
   watch: string;
   source: string;
-  regulatoryTier?: Severity;
+  regulatoryTier?: SafetyRegulatoryTier;
   detail?: string;
   action?: string;
   citations?: readonly SafetyCitation[];
@@ -1287,6 +1293,188 @@ export const EMERGING_OPIOID_ALPHA2_CITATIONS: readonly SafetyCitation[] = [
   },
 ];
 
+export const CYP2D6_OPIOID_PRODRUG_IDS: ReadonlySet<string> = new Set([
+  "codeine",
+  "tramadol",
+]);
+
+export const STRONG_CYP2D6_PRODRUG_INHIBITOR_IDS: ReadonlySet<string> = new Set([
+  "fluoxetine",
+  "paroxetine",
+  "bupropion",
+  "quinidine",
+  "terbinafine",
+  "cinacalcet",
+  "mirabegron",
+  "dextromethorphan-bupropion",
+  "auvelity",
+]);
+
+export function isCyp2d6OpioidProdrug(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return !isNonSystemicRoute(id) && CYP2D6_OPIOID_PRODRUG_IDS.has(id);
+}
+
+export function isStrongCyp2d6ProdrugInhibitor(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  if (isNonSystemicRoute(id) || CYP2D6_OPIOID_PRODRUG_IDS.has(id)) return false;
+  if (STRONG_CYP2D6_PRODRUG_INHIBITOR_IDS.has(id)) return true;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  return d.enzymes.some((r) => r.enzyme === "CYP2D6" && r.kind === "inhibitor" && r.strength === "strong");
+}
+
+export function isProdrugCyp2d6OpioidFailure(a: string, b: string): boolean {
+  return matchesSymmetricPair(a, b, isCyp2d6OpioidProdrug, isStrongCyp2d6ProdrugInhibitor);
+}
+
+export const ST_JOHNS_WORT_NARROW_VICTIM_IDS: ReadonlySet<string> = new Set([
+  "cyclosporine",
+  "tacrolimus",
+  "sirolimus",
+  "everolimus",
+  "apixaban",
+  "rivaroxaban",
+  "dabigatran",
+  "edoxaban",
+  "warfarin",
+  "digoxin",
+  "ethinyl-estradiol",
+  "indinavir",
+  "irinotecan",
+  "imatinib",
+  "methadone",
+  "midazolam",
+]);
+
+export function isStJohnsWortNarrowVictim(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return !isNonSystemicRoute(id) && ST_JOHNS_WORT_NARROW_VICTIM_IDS.has(id);
+}
+
+export function isBotanicalStJohnsWortNarrowInducer(a: string, b: string): boolean {
+  return matchesSymmetricPair(a, b, (id) => id === "st-johns-wort", isStJohnsWortNarrowVictim);
+}
+
+export const BERBERINE_CYP_VICTIM_IDS: ReadonlySet<string> = new Set([
+  "cyclosporine",
+  "tacrolimus",
+  "sirolimus",
+  "everolimus",
+  "dextromethorphan",
+  "atomoxetine",
+  "metoprolol",
+  "midazolam",
+  "simvastatin",
+  "lovastatin",
+  "apixaban",
+  "rivaroxaban",
+  "warfarin",
+  "pimozide",
+  "colchicine",
+  "codeine",
+  "tramadol",
+]);
+
+export function isBerberineCypVictim(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return !isNonSystemicRoute(id) && BERBERINE_CYP_VICTIM_IDS.has(id);
+}
+
+export function isBotanicalBerberineCypVictim(a: string, b: string): boolean {
+  return matchesSymmetricPair(a, b, (id) => id === "berberine", isBerberineCypVictim);
+}
+
+export const OTC_LITHIUM_OROTATE_PARTNER_IDS: ReadonlySet<string> = new Set([
+  "lithium",
+  "ibuprofen",
+  "naproxen",
+  "meloxicam",
+  "celecoxib",
+  "diclofenac",
+  "indomethacin",
+  "ketorolac",
+  "lisinopril",
+  "enalapril",
+  "ramipril",
+  "losartan",
+  "valsartan",
+  "olmesartan",
+  "irbesartan",
+  "hctz",
+  "chlorthalidone",
+  "indapamide",
+]);
+
+export function isOtcLithiumOrotatePartner(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  if (id === "lithium-orotate" || isNonSystemicRoute(id)) return false;
+  if (OTC_LITHIUM_OROTATE_PARTNER_IDS.has(id)) return true;
+  const d = DRUG_BY_ID[id];
+  if (!d) return false;
+  return (
+    d.pd.includes("nsaid") ||
+    d.pd.includes("acei-arb") ||
+    d.pd.includes("loop-thiazide")
+  );
+}
+
+export function isOtcLithiumOrotateRenalTrap(a: string, b: string): boolean {
+  return matchesSymmetricPair(a, b, (id) => id === "lithium-orotate", isOtcLithiumOrotatePartner);
+}
+
+export const PRODRUG_CYP2D6_OPIOID_FAILURE_CITATIONS: readonly SafetyCitation[] = [
+  {
+    label: "Crews KR et al. Clin Pharmacol Ther 2014 (CPIC guideline for CYP2D6 genotype and codeine therapy)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/24458010/",
+    pmid: "24458010",
+  },
+  {
+    label: "Kirchheiner J et al. Pharmacogenomics J 2007 (CYP2D6 bioactivation pharmacokinetics of codeine to morphine)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/16819548/",
+    pmid: "16819548",
+  },
+];
+
+export const BOTANICAL_ST_JOHNS_WORT_CITATIONS: readonly SafetyCitation[] = [
+  {
+    label: "Markowitz JS et al. JAMA 2003 (St. John's wort CYP3A4 induction in humans)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/13129991/",
+    pmid: "13129991",
+  },
+  {
+    label: "Johne A et al. Clin Pharmacol Ther 1999 (St. John's wort P-gp induction & digoxin interaction)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/10546917/",
+    pmid: "10546917",
+  },
+  {
+    label: "Piscitelli SC et al. Lancet 2000 (Indinavir exposure collapse with St. John's wort)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/10683007/",
+    pmid: "10683007",
+  },
+];
+
+export const BOTANICAL_BERBERINE_CITATIONS: readonly SafetyCitation[] = [
+  {
+    label: "Guo Y et al. Eur J Clin Pharmacol 2012 (repeated berberine administration inhibits human CYP2D6, CYP2C9, and CYP3A4)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/21870106/",
+    pmid: "21870106",
+  },
+];
+
+export const OTC_LITHIUM_OROTATE_CITATIONS: readonly SafetyCitation[] = [
+  {
+    label: "Finley PR et al. Clin Pharmacokinet 1995 (clinical relevance of renal drug interactions with lithium)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/8521679/",
+    pmid: "8521679",
+  },
+  {
+    label: "McKnight RF et al. Lancet 2012 (lithium toxicity profile systematic review and meta-analysis)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/22265699/",
+    pmid: "22265699",
+  },
+];
+
 export function safetyOnDesk(ids: string[]): SafetyHit[] {
   const out: SafetyHit[] = [];
 
@@ -2262,6 +2450,124 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         EMERGING_OPIOID_ALPHA2_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
       citations: EMERGING_OPIOID_ALPHA2_CITATIONS,
     });
+  }
+
+  const prodrugs = uniqueIds
+    .filter((id) => isCyp2d6OpioidProdrug(id))
+    .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+  const cyp2d6Inhibitors = uniqueIds
+    .filter((id) => isStrongCyp2d6ProdrugInhibitor(id))
+    .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+
+  if (prodrugs.length > 0 && cyp2d6Inhibitors.length > 0) {
+    const detail =
+      "Codeine requires hepatic CYP2D6 O-demethylation to morphine and tramadol requires CYP2D6 conversion to O-desmethyltramadol (M1) for μ-opioid analgesia. Strong CYP2D6 inhibitors phenoconvert normal metabolizers into functional poor metabolizers, blunting analgesic efficacy rather than raising active opioid levels—and on tramadol, unmetabolized parent still drives serotonergic and seizure-threshold liability.";
+    const action =
+      "Consider a non-CYP2D6-dependent analgesic alternative rather than escalating the prodrug, and evaluate serotonergic/seizure overlap when tramadol is paired with SSRIs or bupropion.";
+    out.push({
+      id: "prodrug-cyp2d6-opioid-failure",
+      drugIds: [prodrugs[0]!.id, cyp2d6Inhibitors[0]!.id],
+      title: `${prodrugs.map((d) => d.name).join(" / ")} + ${cyp2d6Inhibitors.map((d) => d.name).join(" / ")}: CYP2D6 prodrug bioactivation blockade (blunted analgesia)`,
+      severity: "major",
+      regulatoryTier: "label-major",
+      tone: "warn",
+      mechanism:
+        "CYP2D6 opioid prodrug × strong CYP2D6 inhibitor — phenoconversion & blunted μ-opioid analgesia",
+      clinical: detail,
+      detail,
+      watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
+      action,
+      source:
+        PRODRUG_CYP2D6_OPIOID_FAILURE_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
+      citations: PRODRUG_CYP2D6_OPIOID_FAILURE_CITATIONS,
+    });
+  }
+
+  if (uniqueIds.includes("st-johns-wort")) {
+    const sjwVictims = uniqueIds
+      .filter((id) => isStJohnsWortNarrowVictim(id))
+      .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+    if (sjwVictims.length > 0) {
+      const detail =
+        "Hyperforin in St. John's wort activates the pregnane X receptor (PXR), markedly upregulating intestinal and hepatic CYP3A4 and P-gp efflux over 7–14 days. Clinical trials document severe subtherapeutic collapses of calcineurin inhibitors (transplant rejection), direct oral anticoagulants (thromboembolism), HIV antiretrovirals, digoxin, and hormonal contraceptives, with de-induction lingering 1–2 weeks after discontinuing the botanical.";
+      const action =
+        "Avoid St. John's wort alongside narrow-index CYP3A4 or P-gp substrates; if discontinued after sustained use, expect victim concentrations to rebound over 1–2 weeks as enzyme expression returns to baseline.";
+      out.push({
+        id: "botanical-st-johns-wort-narrow-inducer",
+        drugIds: ["st-johns-wort", sjwVictims[0]!.id],
+        title: `St. John's wort + ${sjwVictims.map((d) => d.name).join(" / ")}: Potent PXR CYP3A4 & P-gp induction (treatment failure / rejection risk)`,
+        severity: "contraindicated",
+        regulatoryTier: "contraindicated",
+        tone: "danger",
+        mechanism:
+          "St. John's wort × narrow-index CYP3A4 / P-gp substrate — potent PXR induction & exposure collapse",
+        clinical: detail,
+        detail,
+        watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
+        action,
+        source:
+          BOTANICAL_ST_JOHNS_WORT_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
+        citations: BOTANICAL_ST_JOHNS_WORT_CITATIONS,
+      });
+    }
+  }
+
+  if (uniqueIds.includes("berberine")) {
+    const berberineVictims = uniqueIds
+      .filter((id) => isBerberineCypVictim(id))
+      .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+    if (berberineVictims.length > 0) {
+      const detail =
+        "Repeated human oral berberine administration significantly inhibits CYP2D6, CYP2C9, and CYP3A4 activity (and P-gp efflux), markedly raising exposure of narrow-index substrates such as cyclosporine and tacrolimus while blunting CYP2D6 prodrug activation.";
+      const action =
+        "Treat concentrated berberine supplements as clinically active CYP/P-gp perpetrators rather than inert herbal nutraceuticals; monitor therapeutic drug concentrations closely on transplant or anticoagulant regimens.";
+      out.push({
+        id: "botanical-berberine-cyp-victim",
+        drugIds: ["berberine", berberineVictims[0]!.id],
+        title: `Berberine + ${berberineVictims.map((d) => d.name).join(" / ")}: Multi-isoform CYP2D6 / CYP3A4 / CYP2C9 botanical inhibition`,
+        severity: "major",
+        regulatoryTier: "label-major",
+        tone: "warn",
+        mechanism:
+          "berberine × narrow-index CYP2D6 / CYP3A4 / CYP2C9 / P-gp substrate — multi-isoform botanical inhibition",
+        clinical: detail,
+        detail,
+        watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
+        action,
+        source:
+          BOTANICAL_BERBERINE_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
+        citations: BOTANICAL_BERBERINE_CITATIONS,
+      });
+    }
+  }
+
+  if (uniqueIds.includes("lithium-orotate")) {
+    const lithiumPartners = uniqueIds
+      .filter((id) => isOtcLithiumOrotatePartner(id))
+      .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
+    if (lithiumPartners.length > 0) {
+      const detail =
+        "Over-the-counter lithium orotate dissociates into elemental lithium ions handled identically by the renal proximal tubule. Stacking with prescription lithium creates duplicate lithium load, while NSAIDs, ACE inhibitors, ARBs, and thiazide diuretics reduce fractional lithium excretion and precipitate cumulative neuro-renal toxicity.";
+      const action =
+        "Reconcile all OTC mineral/nootropic supplements before adjusting prescription lithium or adding NSAIDs, RAAS blockers, or diuretics; monitor serum lithium and renal function if combined.";
+      out.push({
+        id: "otc-lithium-orotate-renal-trap",
+        drugIds: ["lithium-orotate", lithiumPartners[0]!.id],
+        title: `Lithium Orotate + ${lithiumPartners.map((d) => d.name).join(" / ")}: Unregulated OTC elemental lithium + renal clearance impairment / duplicate exposure`,
+        severity: "major",
+        regulatoryTier: "label-major",
+        tone: "danger",
+        mechanism:
+          "OTC lithium orotate × prescription lithium / NSAID / RAAS blocker / diuretic — duplicate elemental lithium & renal retention",
+        clinical: detail,
+        detail,
+        watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
+        action,
+        source:
+          OTC_LITHIUM_OROTATE_CITATIONS.map((c) => `${c.label} (PMID ${c.pmid}; ${c.url})`).join(". ") + ".",
+        citations: OTC_LITHIUM_OROTATE_CITATIONS,
+      });
+    }
   }
 
   return out;

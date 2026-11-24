@@ -58,7 +58,8 @@ export function EnzymePageView({ hub }: { hub: EnzymeHub }) {
     <main className="mx-auto max-w-2xl px-4 py-10">
       <p className="text-xs text-muted">
         <a href="/enzymes" className="underline">All enzymes</a> ·{" "}
-        <a href="/pairs" className="underline">All pairs</a>
+        <a href="/pairs" className="underline">All pairs</a> ·{" "}
+        <a href="/methodology" className="underline">Methodology</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{hub.h1}</h1>
       <p data-testid="enzyme-about" className="mt-3 text-sm">
@@ -164,7 +165,8 @@ export function EnzymesIndexView({ hubs }: { hubs: EnzymeHub[] }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
       <p className="text-xs text-muted">
-        <a href="/pairs" className="underline">All pairs</a>
+        <a href="/pairs" className="underline">All pairs</a> ·{" "}
+        <a href="/methodology" className="underline">Methodology</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{ENZYMES_INDEX_H1}</h1>
       <p className="mt-3 text-sm text-muted">{ENZYMES_INDEX_INTRO}</p>

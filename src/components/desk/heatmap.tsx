@@ -436,7 +436,7 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
         role="region"
         aria-label="Shared enzyme table"
         tabIndex={0}
-        className="overflow-x-auto rounded-lg border border-border bg-surface-2"
+        className="relative overflow-x-auto rounded-lg border border-border bg-surface-2"
       >
         <table className="min-w-full border-separate border-spacing-0 text-left">
           <thead>
@@ -540,7 +540,7 @@ export function CypHeatmap({ drugs, colliding }: { drugs: Drug[]; colliding: Set
                         <td
                           key={enzyme}
                           className={cn(
-                            "border-b border-r border-border px-1.5 py-2 text-center align-middle last:border-r-0 group-last:border-b-0",
+                            "relative border-b border-r border-border px-1.5 py-2 text-center align-middle last:border-r-0 group-last:border-b-0",
                             isColliding ? "bg-danger-soft/20" : "bg-surface",
                           )}
                         >

@@ -124,6 +124,161 @@ export const COMBINATIONS: readonly Combination[] = [
     ids: ["naproxen", "pseudoephedrine"],
     source: "ALEVE-D SINUS AND COLD (NAPROXEN SODIUM, PSEUDOEPHEDRINE HYDROCHLORIDE) TABLET",
   },
+  {
+    names: ["Advil Cold & Sinus", "Advil Cold and Sinus", "ibuprofen/pseudoephedrine"],
+    ids: ["ibuprofen", "pseudoephedrine"],
+    source: "ADVIL COLD AND SINUS (IBUPROFEN AND PSEUDOEPHEDRINE HYDROCHLORIDE) COATED CAPLET",
+  },
+  {
+    names: ["Advil Dual Action", "Combogesic", "ibuprofen/acetaminophen", "acetaminophen/ibuprofen"],
+    ids: ["ibuprofen", "acetaminophen"],
+    source: "ADVIL DUAL ACTION WITH ACETAMINOPHEN (IBUPROFEN AND ACETAMINOPHEN) TABLET, COATED",
+  },
+  {
+    names: ["Excedrin Tension Headache", "acetaminophen/caffeine", "APAP/caffeine"],
+    ids: ["acetaminophen", "caffeine"],
+    source: "EXCEDRIN TENSION HEADACHE (ACETAMINOPHEN AND CAFFEINE) TABLET, COATED",
+  },
+  {
+    names: ["BC Powder", "Anacin", "aspirin/caffeine"],
+    ids: ["aspirin", "caffeine"],
+    source: "BC ORIGINAL FORMULA (ASPIRIN AND CAFFEINE) POWDER; ANACIN (ASPIRIN AND CAFFEINE) TABLET",
+  },
+  {
+    names: ["Excedrin Back & Body", "Excedrin Back and Body", "acetaminophen/aspirin"],
+    ids: ["acetaminophen", "aspirin"],
+    source: "EXCEDRIN BACK AND BODY (ACETAMINOPHEN AND ASPIRIN) TABLET, COATED",
+  },
+  {
+    names: ["Theraflu Severe Cold", "Theraflu Daytime Severe Cold", "acetaminophen/dextromethorphan/phenylephrine"],
+    ids: ["acetaminophen", "dextromethorphan", "phenylephrine"],
+    source: "THERAFLU DAYTIME SEVERE COLD AND COUGH (ACETAMINOPHEN, DEXTROMETHORPHAN HYDROBROMIDE, PHENYLEPHRINE HYDROCHLORIDE) POWDER",
+  },
+  {
+    names: [
+      "DayQuil Severe",
+      "Vicks DayQuil Severe",
+      "DayQuil Severe Cold & Flu",
+      "DayQuil Severe Cold and Flu",
+      "Mucinex Fast-Max",
+      "Tylenol Cold + Flu Severe",
+      "Tylenol Cold and Flu Severe",
+    ],
+    ids: ["acetaminophen", "dextromethorphan", "guaifenesin", "phenylephrine"],
+    source: "VICKS DAYQUIL SEVERE COLD AND FLU (ACETAMINOPHEN, DEXTROMETHORPHAN HYDROBROMIDE, GUAIFENESIN, PHENYLEPHRINE HYDROCHLORIDE) TABLET",
+  },
+  {
+    names: ["NyQuil Severe", "Vicks NyQuil Severe", "NyQuil Severe Cold & Flu", "NyQuil Severe Cold and Flu"],
+    ids: ["acetaminophen", "dextromethorphan", "doxylamine", "phenylephrine"],
+    source: "VICKS NYQUIL SEVERE COLD AND FLU (ACETAMINOPHEN, DEXTROMETHORPHAN HYDROBROMIDE, DOXYLAMINE SUCCINATE, PHENYLEPHRINE HYDROCHLORIDE) TABLET",
+  },
+  {
+    names: ["Coricidin HBP", "Coricidin HBP Cough & Cold", "Coricidin HBP Cough and Cold", "chlorpheniramine/dextromethorphan"],
+    ids: ["chlorpheniramine", "dextromethorphan"],
+    source: "CORICIDIN HBP COUGH AND COLD (CHLORPHENIRAMINE MALEATE AND DEXTROMETHORPHAN HYDROBROMIDE) TABLET",
+  },
+  {
+    names: ["Alka-Seltzer Plus Cold", "aspirin/chlorpheniramine/phenylephrine"],
+    ids: ["aspirin", "chlorpheniramine", "phenylephrine"],
+    source: "ALKA-SELTZER PLUS COLD (ASPIRIN, CHLORPHENIRAMINE MALEATE, PHENYLEPHRINE BITARTRATE) TABLET, EFFERVESCENT",
+  },
+  {
+    names: [
+      "Sudafed PE Pressure + Pain",
+      "Sudafed PE Pressure and Pain",
+      "Tylenol Sinus + Headache",
+      "Tylenol Sinus and Headache",
+      "acetaminophen/phenylephrine",
+    ],
+    ids: ["acetaminophen", "phenylephrine"],
+    source: "SUDAFED PE PRESSURE PLUS PAIN (ACETAMINOPHEN AND PHENYLEPHRINE HYDROCHLORIDE) TABLET; TYLENOL SINUS AND HEADACHE",
+  },
+  {
+    names: ["Advil Sinus Congestion & Pain", "Advil Sinus Congestion and Pain", "ibuprofen/phenylephrine"],
+    ids: ["ibuprofen", "phenylephrine"],
+    source: "ADVIL SINUS CONGESTION AND PAIN (IBUPROFEN AND PHENYLEPHRINE HYDROCHLORIDE) TABLET, COATED",
+  },
+  {
+    names: ["Benadryl Allergy Plus Congestion", "diphenhydramine/phenylephrine"],
+    ids: ["diphenhydramine", "phenylephrine"],
+    source: "BENADRYL ALLERGY PLUS CONGESTION (DIPHENHYDRAMINE HYDROCHLORIDE AND PHENYLEPHRINE HYDROCHLORIDE) TABLET",
+  },
+  {
+    names: ["Imodium Multi-Symptom", "Imodium Multi-Symptom Relief", "loperamide/simethicone"],
+    ids: ["loperamide", "simethicone"],
+    source: "IMODIUM MULTI-SYMPTOM RELIEF (LOPERAMIDE HYDROCHLORIDE AND SIMETHICONE) TABLET",
+  },
+  {
+    names: ["Robitussin CF", "dextromethorphan/guaifenesin/phenylephrine"],
+    ids: ["dextromethorphan", "guaifenesin", "phenylephrine"],
+    source: "ROBITUSSIN PEAK COLD MULTI-SYMPTOM COLD CF (DEXTROMETHORPHAN HYDROBROMIDE, GUAIFENESIN, PHENYLEPHRINE HYDROCHLORIDE) SOLUTION",
+  },
+  {
+    names: ["Mucinex Sinus-Max", "acetaminophen/guaifenesin/phenylephrine"],
+    ids: ["acetaminophen", "guaifenesin", "phenylephrine"],
+    source: "MUCINEX SINUS-MAX SEVERE CONGESTION AND PAIN (ACETAMINOPHEN, GUAIFENESIN, PHENYLEPHRINE HYDROCHLORIDE) TABLET",
+  },
+  // Additional clinical Rx multi-ingredient combinations
+  {
+    names: ["Diclegis", "Bonjesta", "doxylamine/pyridoxine"],
+    ids: ["doxylamine", "pyridoxine"],
+    source: "DICLEGIS (DOXYLAMINE SUCCINATE AND PYRIDOXINE HYDROCHLORIDE) TABLET, DELAYED RELEASE",
+  },
+  {
+    names: ["Nexlizet", "bempedoic acid/ezetimibe"],
+    ids: ["bempedoic-acid", "ezetimibe"],
+    source: "NEXLIZET (BEMPEDOIC ACID AND EZETIMIBE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Rifamate", "isoniazid/rifampin"],
+    ids: ["isoniazid", "rifampin"],
+    source: "RIFAMATE (ISONIAZID AND RIFAMPIN) CAPSULE",
+  },
+  {
+    names: ["Promethazine DM", "promethazine/dextromethorphan"],
+    ids: ["promethazine", "dextromethorphan"],
+    source: "PROMETHAZINE HYDROCHLORIDE AND DEXTROMETHORPHAN HYDROBROMIDE SYRUP",
+  },
+  {
+    names: ["Promethazine with Codeine", "promethazine/codeine"],
+    ids: ["promethazine", "codeine"],
+    source: "PROMETHAZINE HYDROCHLORIDE AND CODEINE PHOSPHATE SOLUTION",
+  },
+  {
+    names: ["Cheratussin AC", "Robitussin AC", "guaifenesin/codeine"],
+    ids: ["guaifenesin", "codeine"],
+    source: "CHERATUSSIN AC (CODEINE PHOSPHATE AND GUAIFENESIN) SOLUTION",
+  },
+  {
+    names: ["Seglentis", "celecoxib/tramadol"],
+    ids: ["celecoxib", "tramadol"],
+    source: "SEGLENTIS (CELECOXIB AND TRAMADOL HYDROCHLORIDE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Symbravo", "meloxicam/rizatriptan"],
+    ids: ["meloxicam", "rizatriptan"],
+    source: "SYMBRAVO (MELOXICAM AND RIZATRIPTAN BENZOATE) TABLET",
+  },
+  {
+    names: ["Kazano", "alogliptin/metformin"],
+    ids: ["alogliptin", "metformin"],
+    source: "KAZANO (ALOGLIPTIN BENZOATE AND METFORMIN HYDROCHLORIDE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Oseni", "alogliptin/pioglitazone"],
+    ids: ["alogliptin", "pioglitazone"],
+    source: "OSENI (ALOGLIPTIN BENZOATE AND PIOGLITAZONE HYDROCHLORIDE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Byvalson", "nebivolol/valsartan"],
+    ids: ["nebivolol", "valsartan"],
+    source: "BYVALSON (NEBIVOLOL HYDROCHLORIDE AND VALSARTAN) TABLET, FILM COATED",
+  },
+  {
+    names: ["Prestalia", "perindopril/amlodipine"],
+    ids: ["perindopril", "amlodipine"],
+    source: "PRESTALIA (PERINDOPRIL ARGININE AND AMLODIPINE BESYLATE) TABLET",
+  },
   // Inhalers
   {
     names: ["DuoNeb", "Combivent", "Combivent Respimat", "ipratropium/albuterol", "albuterol/ipratropium"],

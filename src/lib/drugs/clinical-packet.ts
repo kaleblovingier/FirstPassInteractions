@@ -467,6 +467,22 @@ const LABELED_COUNSELING_BY_ID: Record<string, { topic: string; text: string }> 
     topic: "emerging-opioid-alpha2-adulterant",
     text: "Street or emerging synthetic opioids (fentanyl, nitazenes, orphines, or concentrated 7-OH) adulterated with veterinary alpha-2 sedatives (medetomidine or xylazine) cause deep coma, dangerously slow heart rate, and low blood pressure that persist even after naloxone restores breathing, and repeated exposure can trigger a severe rebound blood-pressure and agitation crisis during withdrawal. Administer naloxone to restore breathing, provide immediate rescue breaths and airway support rather than waiting for the person to wake up, and call 911 immediately.",
   },
+  "prodrug-cyp2d6-opioid-failure": {
+    topic: "prodrug-cyp2d6-opioid-failure",
+    text: "Codeine and tramadol must be activated by a liver enzyme (CYP2D6) before they can provide full pain relief. Taking them with strong CYP2D6-blocking medicines (such as fluoxetine, paroxetine, bupropion, quinidine, terbinafine, or cinacalcet) can block that activation so pain relief fails—do not take extra pain medicine to make up for weak relief, and ask your prescriber or pharmacist about a non-CYP2D6 pain option instead. If tramadol is combined with an antidepressant or bupropion, seek urgent medical care for agitation, heavy sweating, muscle twitching, confusion, or any seizure.",
+  },
+  "botanical-st-johns-wort-narrow-inducer": {
+    topic: "botanical-st-johns-wort-narrow-inducer",
+    text: "St. John's wort strongly speeds up how your body clears many critical prescriptions—including transplant medicines (cyclosporine, tacrolimus, sirolimus, everolimus), blood thinners (apixaban, rivaroxaban, dabigatran, edoxaban, warfarin), digoxin, HIV medicines, and hormonal birth control—which can cause organ rejection, blood clots, stroke, treatment failure, or unintended pregnancy. Avoid St. John's wort with these medicines, and talk with your prescriber or pharmacist before stopping it after regular use because prescription blood levels can rebound over the following one to two weeks.",
+  },
+  "botanical-berberine-cyp-victim": {
+    topic: "botanical-berberine-cyp-victim",
+    text: "Concentrated berberine supplements can block multiple liver enzymes and drug pumps (CYP2D6, CYP3A4, CYP2C9, and P-gp), causing transplant medicines, blood thinners, cholesterol medicines, or heart-rhythm drugs to build up to higher levels while reducing pain relief from codeine or tramadol. Always list berberine and other herbal supplements alongside your prescriptions, check with your prescriber or pharmacist before combining them, and keep all scheduled drug-level and lab checks.",
+  },
+  "otc-lithium-orotate-renal-trap": {
+    topic: "otc-lithium-orotate-renal-trap",
+    text: "Over-the-counter lithium orotate releases the same elemental lithium handled by your kidneys as prescription lithium. Combining it with prescription lithium duplicates lithium exposure, and pairing it with NSAID pain relievers (such as ibuprofen or naproxen), blood-pressure medicines (ACE inhibitors or ARBs), or water pills can cause lithium to build up to toxic levels. Share every mineral and nootropic supplement with your prescriber and pharmacist, stay well hydrated, and seek prompt care for hand shakiness, unsteady walking, slurred speech, confusion, or persistent nausea.",
+  },
 };
 
 function labeledCollisionCounseling(
@@ -476,8 +492,6 @@ function labeledCollisionCounseling(
   hasBenzo: boolean,
   seenTopics: Set<string>,
 ): string | null {
-  if (c.severity !== "contraindicated" && c.tone !== "danger") return null;
-
   if (
     c.id === "opioid-benzo" &&
     ((hasOpioid && hasBenzo) || existingPoints.some((p) => /naloxone|sedatives/i.test(p)))
@@ -491,6 +505,8 @@ function labeledCollisionCounseling(
     seenTopics.add(mapped.topic);
     return withoutDose(mapped.text);
   }
+
+  if (c.severity !== "contraindicated" && c.tone !== "danger") return null;
 
   const topic = `${c.kind}:${c.id}`;
   if (seenTopics.has(topic)) return null;

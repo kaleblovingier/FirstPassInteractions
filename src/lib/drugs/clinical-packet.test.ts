@@ -1154,3 +1154,114 @@ test("buildClinicalPacket: renders Round 11 forensic safety collisions and STREE
     assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
   }
 });
+
+test("buildClinicalPacket: renders Round 13 prodrug, botanical, and OTC lithium safety collisions with dedicated plain-language counseling and zero dose leaks or banned claims", () => {
+  const cases: {
+    ids: string[];
+    expectedId: string;
+    expectedSeverity: "contraindicated" | "major";
+    expectedTone: "danger" | "warn";
+    counselingPattern: RegExp;
+  }[] = [
+    {
+      ids: ["codeine", "fluoxetine"],
+      expectedId: "prodrug-cyp2d6-opioid-failure",
+      expectedSeverity: "major",
+      expectedTone: "warn",
+      counselingPattern: /Codeine and tramadol must be activated.*CYP2D6-blocking medicines.*do not take extra pain medicine/i,
+    },
+    {
+      ids: ["tramadol", "bupropion"],
+      expectedId: "prodrug-cyp2d6-opioid-failure",
+      expectedSeverity: "major",
+      expectedTone: "warn",
+      counselingPattern: /tramadol.*antidepressant or bupropion.*seizure/i,
+    },
+    {
+      ids: ["st-johns-wort", "apixaban"],
+      expectedId: "botanical-st-johns-wort-narrow-inducer",
+      expectedSeverity: "contraindicated",
+      expectedTone: "danger",
+      counselingPattern: /St\. John's wort strongly speeds up.*organ rejection, blood clots, stroke.*one to two weeks/i,
+    },
+    {
+      ids: ["st-johns-wort", "tacrolimus"],
+      expectedId: "botanical-st-johns-wort-narrow-inducer",
+      expectedSeverity: "contraindicated",
+      expectedTone: "danger",
+      counselingPattern: /St\. John's wort.*transplant medicines.*rebound over the following one to two weeks/i,
+    },
+    {
+      ids: ["berberine", "cyclosporine"],
+      expectedId: "botanical-berberine-cyp-victim",
+      expectedSeverity: "major",
+      expectedTone: "warn",
+      counselingPattern: /Concentrated berberine supplements.*CYP2D6, CYP3A4, CYP2C9, and P-gp.*transplant medicines/i,
+    },
+    {
+      ids: ["berberine", "dextromethorphan"],
+      expectedId: "botanical-berberine-cyp-victim",
+      expectedSeverity: "major",
+      expectedTone: "warn",
+      counselingPattern: /Concentrated berberine supplements.*herbal supplements alongside your prescriptions/i,
+    },
+    {
+      ids: ["lithium-orotate", "lithium"],
+      expectedId: "otc-lithium-orotate-renal-trap",
+      expectedSeverity: "major",
+      expectedTone: "danger",
+      counselingPattern: /Over-the-counter lithium orotate.*elemental lithium.*duplicates lithium exposure/i,
+    },
+    {
+      ids: ["lithium-orotate", "ibuprofen", "lisinopril"],
+      expectedId: "otc-lithium-orotate-renal-trap",
+      expectedSeverity: "major",
+      expectedTone: "danger",
+      counselingPattern: /lithium orotate.*NSAID pain relievers.*ACE inhibitors or ARBs.*hand shakiness/i,
+    },
+  ];
+
+  for (const { ids, expectedId, expectedSeverity, expectedTone, counselingPattern } of cases) {
+    const findings = analyze(ids, DEFAULT_HOST).findings;
+    const packet = buildClinicalPacket(ids, DEFAULT_HOST, findings, {});
+
+    const alert = packet.labeledCollisions?.find((c) => c.id === expectedId);
+    assert.ok(alert, `Expected labeled collision ${expectedId} for ${ids.join("+")}`);
+    assert.equal(alert.kind, "safety", expectedId);
+    assert.equal(alert.severity, expectedSeverity, expectedId);
+    assert.equal(alert.tone, expectedTone, expectedId);
+
+    assert.ok(packet.ehrNoteText.includes("[HIGH-ALERT LABELED & INSTITUTIONAL SAFETY COLLISIONS]"), expectedId);
+    assert.ok(packet.ehrNoteText.includes(withoutDose(alert.title)), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Mechanism: ${withoutDose(alert.mechanism)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Bedside Watch: ${withoutDose(alert.watch)}`), expectedId);
+    assert.ok(packet.ehrNoteText.includes(`Official PI Source: ${withoutDose(alert.source)}`), expectedId);
+
+    assert.ok(
+      !packet.counselingPoints.some((cp) => cp.startsWith("High-alert medication interaction (")),
+      `${expectedId} fell back to generic counseling instead of dedicated entry`,
+    );
+    assert.equal(
+      packet.counselingPoints.filter((cp) => counselingPattern.test(cp)).length,
+      1,
+      `${expectedId} should emit exactly one dedicated counseling point`,
+    );
+    assert.match(packet.patientHandoutText, counselingPattern, `${expectedId} missing counseling in patientHandoutText`);
+
+    for (const cp of packet.counselingPoints) {
+      assert.deepEqual(findDoses(cp), [], `${expectedId} counseling leaked dose: ${cp}`);
+      assert.equal(BANNED_REGULATORY_RE.test(cp), false, `${expectedId} counseling leaked regulatory claim: ${cp}`);
+    }
+    assert.deepEqual(findDoses(packet.ehrNoteText), [], `${expectedId} ehrNoteText leaked dose`);
+    assert.deepEqual(findDoses(packet.patientHandoutText), [], `${expectedId} patientHandoutText leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.ehrNoteText), false, `${expectedId} ehrNoteText leaked claim`);
+    assert.equal(BANNED_REGULATORY_RE.test(packet.patientHandoutText), false, `${expectedId} patientHandoutText leaked claim`);
+
+    const html = renderToStaticMarkup(
+      createElement(ClinicalPacketDialog, { open: true, onClose: () => {}, selected: ids, host: DEFAULT_HOST, findings }),
+    );
+    assert.ok(html.includes("High-Alert Labeled &amp; Institutional Safety Collisions"), expectedId);
+    assert.deepEqual(findDoses(html.replace(/<[^>]+>/g, "\n")), [], `${expectedId} dialog leaked dose`);
+    assert.equal(BANNED_REGULATORY_RE.test(html), false, `${expectedId} dialog leaked claim`);
+  }
+});

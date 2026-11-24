@@ -1682,6 +1682,30 @@ export const ROUNDS: Round[] = [
     lane: "street",
     blurb: "HHC acetate (HHC-O) + ethylbromazolam · delayed esterase prodrug redosing · inhaled ketene thermal pyrolysis lung injury · CYP3A4 sedative stack",
   },
+  {
+    id: "r-clinic-codeine-fluoxetine-prodrug-failure",
+    title: "The strong SSRI that turned codeine off instead of up",
+    setting: "clinic",
+    stem: "A patient maintained on fluoxetine for depression undergoes minor outpatient surgery and receives codeine for acute pain. Despite taking codeine as directed, they report virtually no pain relief and ask whether taking extra tablets will help. Earlier pharmacogenomic testing documented normal CYP2D6 metabolism (*1/*1).",
+    ask: "Why does strong CYP2D6 inhibition by fluoxetine blunt morphine formation and analgesia rather than raising active opioid levels, and why is escalating the prodrug hazardous?",
+    teach:
+      "Codeine is an opioid prodrug that depends on hepatic CYP2D6 O-demethylation to morphine for meaningful μ-opioid analgesia. Fluoxetine and its long-lived active metabolite norfluoxetine potently inhibit CYP2D6, phenoconverting a genotypic normal metabolizer (*1/*1) into a functional poor metabolizer for weeks—even after fluoxetine is discontinued. Rather than raising active opioid levels, blocking CYP2D6 collapses morphine generation so analgesia fails while parent codeine accumulates. Escalating codeine will not overcome blocked bioactivation and risks parent-compound adverse effects or abrupt toxicity if CYP2D6 inhibition later resolves; clinicians evaluate a non-CYP2D6-dependent analgesic alternative instead. On tramadol, the same CYP2D6 blockade blunts active O-desmethyltramadol (M1) analgesia while unmetabolized parent still drives serotonergic and seizure-threshold liability.",
+    drugIds: ["codeine", "fluoxetine"],
+    lane: "clinic",
+    blurb: "Codeine + fluoxetine · CYP2D6 prodrug phenoconversion · blunted morphine bioactivation · non-2D6 analgesic alternative",
+  },
+  {
+    id: "r-kitchen-sjw-berberine-apixaban-cascade",
+    title: "The herbal supplement stack pulling a DOAC in opposite directions",
+    setting: "kitchen",
+    stem: "An adult with atrial fibrillation maintained on apixaban adds two over-the-counter botanical supplements from a wellness store: St. John's wort for low mood and concentrated berberine capsules for glucose and lipid support. Two weeks later, they ask at a routine visit whether the two supplements cancel each other out on their blood thinner.",
+    ask: "Why do opposing PXR induction from St. John's wort and multi-isoform CYP3A4/P-gp inhibition from berberine fail to cancel safely on apixaban?",
+    teach:
+      "Apixaban relies on both CYP3A4 metabolism and intestinal/renal P-glycoprotein (P-gp) efflux. Hyperforin in St. John's wort activates the nuclear pregnane X receptor (PXR), transcriptionally upregulating intestinal and hepatic CYP3A4 and P-gp over 7–14 days and collapsing DOAC exposure toward thromboembolic and ischemic stroke failure. Conversely, repeated oral berberine inhibits CYP3A4, CYP2D6, CYP2C9, and P-gp—pushing narrow-index substrate concentrations upward. Transcriptional induction and catalytic inhibition never cancel predictably because their magnitudes, gut-versus-liver distribution, and offset timelines diverge: PXR-driven induction lingers 1–2 weeks after stopping St. John's wort, whereas berberine inhibition fluctuates rapidly with adherence. Stopping St. John's wort while continuing berberine unmasks unopposed CYP3A4/P-gp inhibition and bleeding risk, while pausing berberine during persistent PXR induction leaves apixaban profoundly subtherapeutic. Reconcile all botanicals and avoid unregulated CYP/P-gp perpetrators on narrow-index anticoagulants.",
+    drugIds: ["st-johns-wort", "berberine", "apixaban"],
+    lane: "food",
+    blurb: "St. John's wort + berberine + apixaban · opposing PXR induction vs CYP3A4/P-gp inhibition · unpredictable DOAC failure or bleed rebound",
+  },
   ...ROUNDS_WAVE2,
 ];
 
