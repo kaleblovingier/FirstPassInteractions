@@ -29,6 +29,7 @@ export const PALETTE_PAGES = [
   { href: "/practice", label: "Practice", hint: "Drug-pair recall" },
   { href: "/workup", label: "Workup", hint: "Call every pair in a regimen" },
   { href: "/glossary", label: "Glossary", hint: "Clinical pharmacology terms" },
+  { href: "/methodology", label: "Methodology & PK guide", hint: "First-pass metabolism, FDA DDI potency tiers, induction timelines and prodrug activation" },
   { href: "/help", label: "Help", hint: "How the desk works" },
   { href: "/pairs", label: "Interaction pairs", hint: "Label-sourced pair pages" },
   { href: "/enzymes", label: "Enzyme pages", hint: "CYP450 inhibitors, inducers and substrates" },

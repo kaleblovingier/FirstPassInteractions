@@ -22,13 +22,13 @@ import {
   ChevronRight,
   Droplets,
   Flame,
+  FlaskConical,
   Info,
   Layers,
   Network,
   Plus,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -115,7 +115,7 @@ export function RenalMechanisms() {
       <header className="flex flex-col gap-3 rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-800 dark:text-cyan-400">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-accent-soft border border-accent/30 text-accent">
               <Droplets className="size-6 animate-pulse" />
             </div>
             <div>
@@ -129,7 +129,7 @@ export function RenalMechanisms() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border border-cyan-500/20">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-accent-soft text-accent border border-accent/30">
               <Activity className="size-3.5" />
               FD&amp;C Act § 520(o)(1)(E)
             </span>
@@ -159,7 +159,7 @@ export function RenalMechanisms() {
 
           <div className="text-xs text-muted">
             {activeDeskRenalDrugs.length > 0 ? (
-              <span className="text-cyan-800 dark:text-cyan-400 font-semibold">
+              <span className="text-accent font-semibold tabular-nums">
                 {activeDeskRenalDrugs.length} nephron-active agent{activeDeskRenalDrugs.length > 1 ? "s" : ""} detected
               </span>
             ) : (
@@ -183,7 +183,7 @@ export function RenalMechanisms() {
                     isCritical
                       ? "border-rose-500/50 bg-rose-500/10 text-rose-950 dark:text-rose-100"
                       : isSynergistic
-                        ? "border-cyan-500/50 bg-cyan-500/10 text-cyan-950 dark:text-cyan-100"
+                        ? "border-accent/40 bg-accent-soft/60 text-fg"
                         : "border-amber-500/50 bg-amber-500/10 text-amber-950 dark:text-amber-100",
                   )}
                 >
@@ -195,7 +195,7 @@ export function RenalMechanisms() {
                           isCritical
                             ? "bg-rose-500/20 text-danger dark:text-rose-300 border border-rose-500/30"
                             : isSynergistic
-                              ? "bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30"
+                              ? "bg-accent-soft text-accent border border-accent/30"
                               : "bg-amber-500/20 text-warning dark:text-amber-300 border border-amber-500/30",
                         )}
                       >
@@ -276,12 +276,12 @@ export function RenalMechanisms() {
               className={cn(
                 "flex min-h-[44px] items-center justify-between rounded-lg border px-3 py-2 text-left text-xs transition-all",
                 recentlyLoadedCollision === "sequential"
-                  ? "border-cyan-500 bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 ring-2 ring-cyan-500/30"
-                  : "border-border bg-surface hover:border-cyan-500/50 hover:bg-surface-2 text-fg",
+                  ? "border-accent bg-accent-soft text-accent ring-2 ring-accent/25"
+                  : "border-border bg-surface hover:border-accent/50 hover:bg-surface-2 text-fg",
               )}
             >
               <div>
-                <span className="font-bold block text-cyan-800 dark:text-cyan-400">Sequential Blockade</span>
+                <span className="font-bold block text-accent">Sequential Blockade</span>
                 <span className="text-[11px] text-muted">Furosemide (TAL) + Metolazone (DCT)</span>
               </div>
               <ChevronRight className="size-4 text-muted shrink-0" />
@@ -327,12 +327,12 @@ export function RenalMechanisms() {
               className={cn(
                 "flex min-h-[44px] items-center justify-between rounded-lg border px-3 py-2 text-left text-xs transition-all",
                 recentlyLoadedCollision === "sglt2-loop"
-                  ? "border-indigo-500 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500/30"
-                  : "border-border bg-surface hover:border-indigo-500/50 hover:bg-surface-2 text-fg",
+                  ? "border-info bg-info-soft text-info ring-2 ring-info/25"
+                  : "border-border bg-surface hover:border-info/50 hover:bg-surface-2 text-fg",
               )}
             >
               <div>
-                <span className="font-bold block text-indigo-700 dark:text-indigo-400">SGLT2 + Loop Diuretic</span>
+                <span className="font-bold block text-info">SGLT2 + Loop Diuretic</span>
                 <span className="text-[11px] text-muted">Empagliflozin + Torsemide</span>
               </div>
               <ChevronRight className="size-4 text-muted shrink-0" />
@@ -344,12 +344,12 @@ export function RenalMechanisms() {
               className={cn(
                 "flex min-h-[44px] items-center justify-between rounded-lg border px-3 py-2 text-left text-xs transition-all",
                 recentlyLoadedCollision === "acetazolamide"
-                  ? "border-purple-500 bg-purple-500/15 text-purple-800 dark:text-purple-300 ring-2 ring-purple-500/30"
-                  : "border-border bg-surface hover:border-purple-500/50 hover:bg-surface-2 text-fg",
+                  ? "border-accent bg-accent-soft text-accent ring-2 ring-accent/25"
+                  : "border-border bg-surface hover:border-accent/50 hover:bg-surface-2 text-fg",
               )}
             >
               <div>
-                <span className="font-bold block text-purple-800 dark:text-purple-400">Proximal CA Inhibition</span>
+                <span className="font-bold block text-accent">Proximal CA Inhibition</span>
                 <span className="text-[11px] text-muted">Acetazolamide (Bicarbonaturia)</span>
               </div>
               <ChevronRight className="size-4 text-muted shrink-0" />
@@ -366,11 +366,11 @@ export function RenalMechanisms() {
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 text-xs sm:text-sm font-semibold transition-all",
             activeMainTab === "diagram"
-              ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 shadow-xs"
+              ? "bg-accent-soft text-accent border border-accent/30 shadow-xs"
               : "text-muted hover:bg-surface-2 hover:text-fg",
           )}
         >
-          <Droplets className="size-4 text-cyan-500" />
+          <Droplets className="size-4 text-accent" />
           <span>Nephron Schematic &amp; Segment Focus</span>
         </button>
 
@@ -380,11 +380,11 @@ export function RenalMechanisms() {
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 text-xs sm:text-sm font-semibold transition-all",
             activeMainTab === "matrix"
-              ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 shadow-xs"
+              ? "bg-accent-soft text-accent border border-accent/30 shadow-xs"
               : "text-muted hover:bg-surface-2 hover:text-fg",
           )}
         >
-          <Layers className="size-4 text-indigo-500" />
+          <Layers className="size-4 text-info" />
           <span>Diuretic Comparison Matrix</span>
         </button>
 
@@ -394,7 +394,7 @@ export function RenalMechanisms() {
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 text-xs sm:text-sm font-semibold transition-all",
             activeMainTab === "transporters"
-              ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 shadow-xs"
+              ? "bg-accent-soft text-accent border border-accent/30 shadow-xs"
               : "text-muted hover:bg-surface-2 hover:text-fg",
           )}
         >
@@ -408,7 +408,7 @@ export function RenalMechanisms() {
           className={cn(
             "flex min-h-[44px] items-center gap-2 rounded-lg px-4 text-xs sm:text-sm font-semibold transition-all",
             activeMainTab === "collisions"
-              ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 shadow-xs"
+              ? "bg-accent-soft text-accent border border-accent/30 shadow-xs"
               : "text-muted hover:bg-surface-2 hover:text-fg",
           )}
         >
@@ -432,8 +432,8 @@ export function RenalMechanisms() {
                   className={cn(
                     "flex min-h-[44px] flex-col justify-center rounded-xl border p-2.5 text-left transition-all",
                     isSelected
-                      ? "border-cyan-500 bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 ring-2 ring-cyan-500/20 shadow-sm"
-                      : "border-border bg-surface text-fg hover:border-cyan-500/40 hover:bg-surface-2",
+                      ? "border-accent bg-accent-soft text-accent ring-1 ring-accent/30 shadow-xs"
+                      : "border-border bg-surface text-fg hover:border-accent/50 hover:bg-surface-2",
                   )}
                 >
                   <span className="font-bold text-xs truncate">{seg.shortName}</span>
@@ -448,7 +448,7 @@ export function RenalMechanisms() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
               <div>
                 <h2 className="text-base font-bold text-fg flex items-center gap-2">
-                  <Droplets className="size-5 text-cyan-500" />
+                  <Droplets className="size-5 text-accent" />
                   Interactive Nephron Segmental Architecture
                 </h2>
                 <p className="text-xs text-muted">
@@ -457,7 +457,7 @@ export function RenalMechanisms() {
               </div>
 
               <div className="flex items-center gap-2 text-xs">
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 font-semibold border border-cyan-500/20">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-accent-soft text-accent font-semibold border border-accent/30">
                   Focus: {activeSegment.name}
                 </span>
               </div>
@@ -518,11 +518,11 @@ export function RenalMechanisms() {
                   <path
                     d="M 145 85 C 160 50, 180 50, 195 85 C 210 120, 230 120, 245 85 C 260 50, 280 50, 295 85 L 295 150"
                     fill="none"
-                    stroke={activeSegmentId === "pct" ? "#06b6d4" : "#64748b"}
+                    stroke={activeSegmentId === "pct" ? "#2f5d56" : "#64748b"}
                     strokeWidth={activeSegmentId === "pct" ? "14" : "10"}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="transition-all hover:stroke-cyan-400"
+                    className="transition-all hover:stroke-accent"
                   />
                   {/* Highlight pill */}
                   <rect
@@ -534,19 +534,19 @@ export function RenalMechanisms() {
                     className={cn(
                       "transition-all",
                       activeSegmentId === "pct"
-                        ? "fill-cyan-700 text-white"
-                        : "fill-surface border border-border text-fg",
+                        ? "fill-accent text-accent-fg"
+                        : "fill-surface stroke-border text-fg",
                     )}
                   />
                   <text
                     x="225"
                     y="43"
                     textAnchor="middle"
-                    className={cn("text-[11px] font-bold", activeSegmentId === "pct" ? "fill-white" : "fill-fg")}
+                    className={cn("text-[11px] font-bold", activeSegmentId === "pct" ? "fill-accent-fg" : "fill-fg")}
                   >
                     1. PCT (SGLT2 / CA IV)
                   </text>
-                  <text x="225" y="145" textAnchor="middle" className="fill-cyan-800 dark:text-cyan-400 text-[10px] font-mono">
+                  <text x="225" y="145" textAnchor="middle" className="fill-accent text-[10px] font-mono">
                     65% Na+ • AQP1 Isosmotic
                   </text>
                 </g>
@@ -571,10 +571,10 @@ export function RenalMechanisms() {
                   <path
                     d="M 345 390 L 345 120"
                     fill="none"
-                    stroke={activeSegmentId === "tal" ? "#06b6d4" : "#3b82f6"}
+                    stroke={activeSegmentId === "tal" ? "#2f5d56" : "#3d5c6b"}
                     strokeWidth={activeSegmentId === "tal" ? "16" : "12"}
                     strokeLinecap="round"
-                    className="transition-all hover:stroke-cyan-400"
+                    className="transition-all hover:stroke-accent"
                   />
                   {/* +10 mV Voltage Indicator Badge */}
                   <rect
@@ -586,12 +586,12 @@ export function RenalMechanisms() {
                     className={cn(
                       "transition-all",
                       activeSegmentId === "tal"
-                        ? "fill-cyan-500/20 stroke-cyan-500"
+                        ? "fill-accent-soft stroke-accent"
                         : "fill-surface stroke-border",
                     )}
                     strokeWidth="1.5"
                   />
-                  <text x="425" y="235" textAnchor="middle" className="fill-cyan-800 dark:fill-cyan-400 text-[11px] font-bold">
+                  <text x="425" y="235" textAnchor="middle" className="fill-accent text-[11px] font-bold">
                     +10 mV Potential
                   </text>
                   <text x="425" y="252" textAnchor="middle" className="fill-muted text-[9px]">
@@ -607,14 +607,14 @@ export function RenalMechanisms() {
                     rx="6"
                     className={cn(
                       "transition-all",
-                      activeSegmentId === "tal" ? "fill-cyan-700" : "fill-surface border border-border",
+                      activeSegmentId === "tal" ? "fill-accent" : "fill-surface stroke-border",
                     )}
                   />
                   <text
                     x="365"
                     y="188"
                     textAnchor="middle"
-                    className={cn("text-[11px] font-bold", activeSegmentId === "tal" ? "fill-white" : "fill-fg")}
+                    className={cn("text-[11px] font-bold", activeSegmentId === "tal" ? "fill-accent-fg" : "fill-fg")}
                   >
                     2. TAL (NKCC2)
                   </text>
@@ -635,11 +635,11 @@ export function RenalMechanisms() {
                   <path
                     d="M 450 100 C 475 70, 505 70, 530 100 C 555 130, 580 130, 605 95"
                     fill="none"
-                    stroke={activeSegmentId === "dct" ? "#06b6d4" : "#10b981"}
+                    stroke={activeSegmentId === "dct" ? "#2f5d56" : "#2f6b4a"}
                     strokeWidth={activeSegmentId === "dct" ? "14" : "10"}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="transition-all hover:stroke-cyan-400"
+                    className="transition-all hover:stroke-accent"
                   />
                   {/* DCT Pill */}
                   <rect
@@ -650,14 +650,14 @@ export function RenalMechanisms() {
                     rx="6"
                     className={cn(
                       "transition-all",
-                      activeSegmentId === "dct" ? "fill-cyan-700" : "fill-surface border border-border",
+                      activeSegmentId === "dct" ? "fill-accent" : "fill-surface stroke-border",
                     )}
                   />
                   <text
                     x="545"
                     y="53"
                     textAnchor="middle"
-                    className={cn("text-[11px] font-bold", activeSegmentId === "dct" ? "fill-white" : "fill-fg")}
+                    className={cn("text-[11px] font-bold", activeSegmentId === "dct" ? "fill-accent-fg" : "fill-fg")}
                   >
                     3. DCT (NCC / TRPV5)
                   </text>
@@ -680,14 +680,14 @@ export function RenalMechanisms() {
                     fill="none"
                     stroke={
                       activeSegmentId === "ccd-principal" || activeSegmentId === "ccd-intercalated"
-                        ? "#06b6d4"
-                        : "#8b5cf6"
+                        ? "#2f5d56"
+                        : "#3d5c6b"
                     }
                     strokeWidth={
                       activeSegmentId === "ccd-principal" || activeSegmentId === "ccd-intercalated" ? "18" : "14"
                     }
                     strokeLinecap="round"
-                    className="transition-all hover:stroke-cyan-400"
+                    className="transition-all hover:stroke-accent"
                   />
 
                   {/* Segment 4 Badge: Principal Cells */}
@@ -701,12 +701,12 @@ export function RenalMechanisms() {
                       className={cn(
                         "transition-all cursor-pointer",
                         activeSegmentId === "ccd-principal"
-                          ? "fill-cyan-500/20 stroke-cyan-500"
+                          ? "fill-accent-soft stroke-accent"
                           : "fill-surface stroke-border",
                       )}
                       strokeWidth="1.5"
                     />
-                    <text x="795" y="132" textAnchor="middle" className="fill-cyan-800 dark:fill-cyan-400 text-[11px] font-bold">
+                    <text x="795" y="132" textAnchor="middle" className="fill-accent text-[11px] font-bold">
                       4. CCD Principal (ENaC / MR)
                     </text>
                     <text x="795" y="148" textAnchor="middle" className="fill-muted text-[9px]">
@@ -725,12 +725,12 @@ export function RenalMechanisms() {
                       className={cn(
                         "transition-all cursor-pointer",
                         activeSegmentId === "ccd-intercalated"
-                          ? "fill-cyan-500/20 stroke-cyan-500"
+                          ? "fill-info-soft stroke-info"
                           : "fill-surface stroke-border",
                       )}
                       strokeWidth="1.5"
                     />
-                    <text x="795" y="252" textAnchor="middle" className="fill-purple-800 dark:fill-purple-400 text-[11px] font-bold">
+                    <text x="795" y="252" textAnchor="middle" className="fill-info text-[11px] font-bold">
                       5. CCD Intercalated (&alpha; &amp; &beta;)
                     </text>
                     <text x="795" y="268" textAnchor="middle" className="fill-muted text-[9px]">
@@ -740,9 +740,9 @@ export function RenalMechanisms() {
                 </g>
 
                 {/* Final Urine Exit */}
-                <path d="M 670 420 L 670 445" fill="none" stroke="#06b6d4" strokeWidth="12" strokeLinecap="round" />
-                <polygon points="660,442 680,442 670,455" fill="#06b6d4" />
-                <text x="735" y="445" className="fill-cyan-800 dark:fill-cyan-400 text-[11px] font-bold">
+                <path d="M 670 420 L 670 445" fill="none" stroke="#2f5d56" strokeWidth="12" strokeLinecap="round" />
+                <polygon points="660,442 680,442 670,455" fill="#2f5d56" />
+                <text x="735" y="445" className="fill-accent text-[11px] font-bold">
                   Final Urine Acidification (pH &ge; 4.5)
                 </text>
               </svg>
@@ -754,14 +754,14 @@ export function RenalMechanisms() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border/60 pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 px-2 py-0.5 text-xs font-bold border border-cyan-500/20">
+                  <span className="rounded-md bg-accent-soft text-accent px-2 py-0.5 text-xs font-bold border border-accent/30">
                     {activeSegment.shortName}
                   </span>
                   <h2 className="text-lg sm:text-xl font-bold text-fg">{activeSegment.name}</h2>
                 </div>
                 <p className="text-xs text-muted mt-1">
                   Location: <span className="text-fg font-medium">{activeSegment.anatomicalZone}</span> &bull; Transepithelial Potential:{" "}
-                  <span className="text-cyan-800 dark:text-cyan-400 font-mono font-semibold">
+                  <span className="text-accent font-mono tabular-nums font-semibold">
                     {activeSegment.transepithelialPotential}
                   </span>
                 </p>
@@ -769,7 +769,7 @@ export function RenalMechanisms() {
 
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="rounded-lg bg-surface-2 border border-border px-3 py-1.5 font-medium text-fg">
-                  Fractional Na+ Uptake: <strong className="text-cyan-800 dark:text-cyan-400">{activeSegment.fractionalSodiumReabsorption}</strong>
+                  Fractional Na+ Uptake: <strong className="text-accent tabular-nums">{activeSegment.fractionalSodiumReabsorption}</strong>
                 </span>
                 <span className="rounded-lg bg-surface-2 border border-border px-3 py-1.5 font-medium text-fg">
                   Water Permeability: <strong className="text-fg">{activeSegment.waterPermeability}</strong>
@@ -783,7 +783,7 @@ export function RenalMechanisms() {
               <ul className="space-y-1.5 text-xs text-muted">
                 {activeSegment.keyPhysiologicalMechanisms.map((mech, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <span className="size-1.5 rounded-full bg-cyan-500 mt-1.5 shrink-0" />
+                    <span className="size-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
                     <span className="leading-relaxed">{mech}</span>
                   </li>
                 ))}
@@ -794,7 +794,7 @@ export function RenalMechanisms() {
             <div className="space-y-3 pt-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-fg flex items-center gap-2">
-                  <Network className="size-4 text-cyan-500" />
+                  <Network className="size-4 text-accent" />
                   Active Solute Transporters in {activeSegment.shortName} ({segmentTransporters.length})
                 </h3>
 
@@ -851,7 +851,7 @@ export function RenalMechanisms() {
                 {segmentTransporters.map((t) => (
                   <div
                     key={t.id}
-                    className="flex flex-col justify-between rounded-xl border border-border bg-surface-2 p-3.5 gap-2.5 transition-all hover:border-cyan-500/40"
+                    className="flex flex-col justify-between rounded-xl border border-border bg-surface-2 p-3.5 gap-2.5 transition-all hover:border-accent/50"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
@@ -860,10 +860,10 @@ export function RenalMechanisms() {
                             className={cn(
                               "rounded px-1.5 py-0.5 text-[10px] font-bold uppercase",
                               t.membrane === "apical"
-                                ? "bg-cyan-500/10 text-cyan-800 dark:text-cyan-400 border border-cyan-500/20"
+                                ? "bg-accent-soft text-accent border border-accent/30"
                                 : t.membrane === "basolateral"
                                   ? "bg-amber-500/10 text-warning dark:text-amber-400 border border-amber-500/20"
-                                  : "bg-purple-500/10 text-purple-800 dark:text-purple-400 border border-purple-500/20",
+                                  : "bg-info-soft text-info border border-info/30",
                             )}
                           >
                             {t.membrane}
@@ -876,7 +876,7 @@ export function RenalMechanisms() {
                       <div className="mt-2 text-xs space-y-1">
                         <p className="text-muted">
                           <strong className="text-fg">Solutes: </strong>
-                          <span className="font-mono text-cyan-800 dark:text-cyan-400">{t.solutes.join(", ")}</span> &bull;{" "}
+                          <span className="font-mono text-accent">{t.solutes.join(", ")}</span> &bull;{" "}
                           <strong className="text-fg">Direction: </strong>
                           <span className="capitalize">{t.direction}</span>
                         </p>
@@ -904,13 +904,13 @@ export function RenalMechanisms() {
                               className={cn(
                                 "inline-flex min-h-[38px] items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition-all",
                                 isSelected
-                                  ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30"
-                                  : "bg-surface border border-border text-fg hover:border-cyan-500/40 hover:bg-surface-2",
+                                  ? "bg-accent-soft text-accent border border-accent/30"
+                                  : "bg-surface border border-border text-fg hover:border-accent/50 hover:bg-surface-2",
                               )}
                             >
                               <span>{formatDrug(drugId)}</span>
                               {isSelected ? (
-                                <Check className="size-3 text-cyan-500" />
+                                <Check className="size-3 text-accent" />
                               ) : (
                                 <Plus className="size-3 text-muted" />
                               )}
@@ -998,7 +998,7 @@ export function RenalMechanisms() {
             {/* Clinical Pearls */}
             <div className="rounded-xl border border-border bg-bg-sunken/40 p-3.5 space-y-1.5 text-xs">
               <span className="font-bold text-fg flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-accent" />
+                <FlaskConical className="size-3.5 text-accent" />
                 High-Yield Segmental Pearls:
               </span>
               <ul className="space-y-1 text-muted text-[11px]">
@@ -1018,7 +1018,7 @@ export function RenalMechanisms() {
         <section className="rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)] space-y-5">
           <div className="border-b border-border/60 pb-3">
             <h2 className="text-base sm:text-lg font-bold text-fg flex items-center gap-2">
-              <Layers className="size-5 text-indigo-500" />
+              <Layers className="size-5 text-info" />
               Diuretic &amp; Tubular Modulator Comparison Matrix
             </h2>
             <p className="text-xs text-muted">
@@ -1057,7 +1057,7 @@ export function RenalMechanisms() {
 
                       <td className="p-3">
                         <span className="text-fg font-medium block">{p.molecularTarget}</span>
-                        <span className="text-[11px] text-cyan-800 dark:text-cyan-400 font-semibold">
+                        <span className="text-[11px] text-accent font-semibold tabular-nums">
                           FE_Na: {p.fractionalSodiumExcretion}
                         </span>
                       </td>
@@ -1101,7 +1101,7 @@ export function RenalMechanisms() {
                             p.potassiumEffect.includes("Wasting")
                               ? "text-warning dark:text-amber-400"
                               : p.potassiumEffect.includes("Sparing")
-                                ? "text-indigo-700 dark:text-indigo-400"
+                                ? "text-info"
                                 : "text-fg",
                           )}
                         >
@@ -1112,7 +1112,7 @@ export function RenalMechanisms() {
 
                       <td className="p-3">
                         <span className="font-semibold text-fg block">{p.acidBaseEffect}</span>
-                        <span className="text-[11px] text-cyan-800 dark:text-cyan-400 font-mono">{p.urinePhEffect}</span>
+                        <span className="text-[11px] text-accent font-mono tabular-nums">{p.urinePhEffect}</span>
                       </td>
 
                       <td className="p-3">
@@ -1168,7 +1168,7 @@ export function RenalMechanisms() {
                 <div className="text-xs space-y-1 bg-surface border border-border/80 rounded-lg p-2.5">
                   <p>
                     <strong className="text-fg">Stoichiometry: </strong>
-                    <span className="font-mono text-cyan-800 dark:text-cyan-400">{t.stoichiometry}</span>
+                    <span className="font-mono text-accent">{t.stoichiometry}</span>
                   </p>
                   <p>
                     <strong className="text-fg">Electrochemical Driving Force: </strong>
@@ -1213,7 +1213,7 @@ export function RenalMechanisms() {
               return (
                 <div
                   key={col.id}
-                  className="rounded-xl border border-border bg-surface-2 p-4 sm:p-5 space-y-3.5 transition-all hover:border-cyan-500/40"
+                  className="rounded-xl border border-border bg-surface-2 p-4 sm:p-5 space-y-3.5 transition-all hover:border-accent/50"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-2.5">
                     <div className="flex items-center gap-2">
@@ -1223,7 +1223,7 @@ export function RenalMechanisms() {
                           isCritical
                             ? "bg-rose-500/20 text-danger dark:text-rose-300"
                             : isSynergistic
-                              ? "bg-cyan-500/20 text-cyan-800 dark:text-cyan-300"
+                              ? "bg-accent-soft text-accent border border-accent/30"
                               : "bg-amber-500/20 text-warning dark:text-amber-300",
                         )}
                       >
@@ -1259,11 +1259,11 @@ export function RenalMechanisms() {
                       </div>
                     )}
                     <div className="rounded-lg bg-surface border border-border p-3">
-                      <strong className="text-cyan-800 dark:text-cyan-400 block mb-1">Tubular Transport:</strong>
+                      <strong className="text-accent block mb-1">Tubular Transport:</strong>
                       <p className="text-muted leading-relaxed">{col.mechanismsInvolved.tubularTransport}</p>
                     </div>
                     <div className="rounded-lg bg-surface border border-border p-3">
-                      <strong className="text-purple-800 dark:text-purple-400 block mb-1">Hormonal &amp; Hemodynamic Result:</strong>
+                      <strong className="text-info block mb-1">Hormonal &amp; Hemodynamic Result:</strong>
                       <p className="text-muted leading-relaxed">{col.mechanismsInvolved.hemodynamicConsequence}</p>
                     </div>
                   </div>

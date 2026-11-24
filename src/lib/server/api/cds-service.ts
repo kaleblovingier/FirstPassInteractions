@@ -18,7 +18,7 @@ import {
   streetNameIds,
 } from "../../drugs/catalog";
 import { COMBINATION_BY_KEY } from "../../drugs/combos";
-import { analyze } from "../../drugs/engine";
+import { analyze, enzymeIndex } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
 import {
   FANOUT_STAGES,
@@ -47,6 +47,7 @@ import {
   AnalyzeRequestSchema,
   AutocompleteRequestSchema,
   DrugLookupRequestSchema,
+  ExportRequestSchema,
   InteractionCheckRequestSchema,
   KineticsEvaluationRequestSchema,
   kidneyEgfrConflict,
@@ -54,6 +55,7 @@ import {
 } from "./schemas";
 import {
   ApiProblemError,
+  problemBadRequest,
   problemInternal,
   problemNotFound,
   problemUnprocessable,
@@ -94,7 +96,12 @@ import { vancomycinReportOnDesk } from "../../drugs/vancomycin";
 import { aminoglycosideReportOnDesk } from "../../drugs/aminoglycosides";
 import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
-import { EXPORT_EMPTY } from "../../drugs/brief";
+import {
+  EXPORT_EMPTY,
+  buildMarkdownRegimenReport,
+  buildStructuredRegimenJson,
+  type StructuredRegimenExport,
+} from "../../drugs/brief";
 import { buildInteractionReport, type TriageEntry } from "../../drugs/interaction-report";
 import type { InteractionReport } from "../../../types/interaction";
 
@@ -259,6 +266,19 @@ export interface AnalyzeResult {
   warnings: ApiWarning[];
   data: InteractionReport;
 }
+
+export type ExportRegimenResult =
+  | {
+      format: "json";
+      report: StructuredRegimenExport;
+    }
+  | {
+      format: "markdown";
+      contentType: "text/markdown; charset=utf-8";
+      markdown: string;
+      compounds: number;
+      findings: number;
+    };
 
 export type ServiceResult<T> =
   { success: true; data: T } | { success: false; problem: ProblemDetails };
@@ -820,9 +840,23 @@ function toProblem(error: unknown, operation: string): ProblemDetails {
   );
 }
 
+function formatHostLine(host: HostContext): string | undefined {
+  const parts: string[] = [];
+  if (host.age === "geriatric") parts.push("Geriatric");
+  if (host.kidney === "ckd") {
+    const stage = host.ckdStage ? `CKD stage ${host.ckdStage}` : "CKD";
+    parts.push(host.egfr !== undefined ? `${stage} (eGFR ${host.egfr})` : stage);
+  }
+  if (host.preg === "pregnant") parts.push("Pregnant");
+  else if (host.preg === "lactating") parts.push("Lactating");
+  if (host.smoking) parts.push("Smoker");
+  return parts.length ? parts.join(" · ") : undefined;
+}
+
 export class ClinicalDecisionService {
   /**
-   * Search drug catalog with auto-suggestions. Fuzzy by design; checks resolve exact matches only.
+   * Search drug catalog with auto-suggestions and optional enzyme/role/class filtering.
+   * Fuzzy by design; checks resolve exact matches only.
    */
   static search(rawRequest: unknown): ServiceResult<ApiDrugSummary[]> {
     try {
@@ -833,10 +867,123 @@ export class ClinicalDecisionService {
           problem: problemUnprocessable("Invalid search parameters", val.errors),
         };
       }
-      const { q, limit } = val.data;
-      return { success: true, data: searchDrugs(q).slice(0, limit).map(toApiDrugSummary) };
+      const { q, enzyme, role, cls, limit } = val.data;
+      if (q && !enzyme && !role && !cls) {
+        return { success: true, data: searchDrugs(q).slice(0, limit).map(toApiDrugSummary) };
+      }
+
+      let pool: readonly Drug[];
+      if (q) {
+        pool = searchDrugs(q);
+      } else if (enzyme) {
+        const bucket = enzymeIndex()[enzyme];
+        if (role === "substrate") pool = bucket.substrates;
+        else if (role === "inhibitor") pool = bucket.inhibitors;
+        else if (role === "inducer") pool = bucket.inducers;
+        else {
+          const seen = new Set<string>();
+          const merged: Drug[] = [];
+          for (const d of [...bucket.inhibitors, ...bucket.inducers, ...bucket.substrates]) {
+            if (seen.has(d.id)) continue;
+            seen.add(d.id);
+            merged.push(d);
+          }
+          merged.sort((a, b) => a.name.localeCompare(b.name));
+          pool = merged;
+        }
+      } else {
+        pool = [...DRUGS].sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      const normCls = cls ? normalizeSearchText(cls) : undefined;
+      const filtered = pool.filter((drug) => {
+        if (enzyme && role && !drug.enzymes.some((e) => e.enzyme === enzyme && e.kind === role)) {
+          return false;
+        }
+        if (enzyme && !role && !drug.enzymes.some((e) => e.enzyme === enzyme)) {
+          return false;
+        }
+        if (!enzyme && role && !drug.enzymes.some((e) => e.kind === role)) {
+          return false;
+        }
+        if (normCls && !normalizeSearchText(drug.cls).includes(normCls)) {
+          return false;
+        }
+        return true;
+      });
+
+      return { success: true, data: filtered.slice(0, limit).map(toApiDrugSummary) };
     } catch (error) {
       return { success: false, problem: toProblem(error, "search") };
+    }
+  }
+
+  /**
+   * Export a regimen monograph as structured JSON or Markdown.
+   */
+  static async exportRegimen(rawRequest: unknown): Promise<ServiceResult<ExportRegimenResult>> {
+    try {
+      const val = validateSchema(ExportRequestSchema, rawRequest);
+      if (!val.success) {
+        return {
+          success: false,
+          problem: problemBadRequest("Validation failed for regimen export request", val.errors),
+        };
+      }
+
+      const { host } = resolveHostContext(val.data.host);
+      const drugs = resolveRequestedDrugs(val.data.drugs);
+      if (drugs.query.unresolvedDrugs.length > 0 || !drugs.ids.length) {
+        const invalidParams: InvalidParamError[] = drugs.query.resolution.flatMap((r, i) =>
+          r.status === "resolved"
+            ? []
+            : [{ name: `drugs.${i}`, reason: unresolvedReason(r), value: undefined }],
+        );
+        return {
+          success: false,
+          problem: problemBadRequest(
+            "One or more requested drugs did not match a catalog entry by id, generic name, brand, or alias.",
+            invalidParams,
+          ),
+        };
+      }
+
+      const trayIds = drugs.query.resolvedDrugs.map((d) => d.id);
+      const analysis = engine.analyze(trayIds, copyHost(host));
+      const hostLine = formatHostLine(host);
+
+      if (val.data.format === "markdown") {
+        const markdown = buildMarkdownRegimenReport({
+          trayIds,
+          report: analysis,
+          hostLine,
+        });
+        return {
+          success: true,
+          data: {
+            format: "markdown",
+            contentType: "text/markdown; charset=utf-8",
+            markdown,
+            compounds: trayIds.length,
+            findings: analysis.findings.length,
+          },
+        };
+      }
+
+      const report = buildStructuredRegimenJson({
+        trayIds,
+        report: analysis,
+        hostLine,
+      });
+      return {
+        success: true,
+        data: {
+          format: "json",
+          report,
+        },
+      };
+    } catch (error) {
+      return { success: false, problem: toProblem(error, "export") };
     }
   }
 

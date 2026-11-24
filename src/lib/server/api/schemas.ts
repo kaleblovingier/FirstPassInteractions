@@ -8,6 +8,7 @@
  */
 
 import { z } from "zod";
+import { ENZYMES } from "../../drugs/types";
 import { type InvalidParamError } from "./problem";
 
 export const KidneyCategorySchema = z.enum(["normal", "mild", "moderate", "severe", "esrd"]);
@@ -107,20 +108,60 @@ export const DrugIdentifierSchema = z
     "Drug identifiers must be pharmacological names, not patient identifiers",
   );
 
-export const DrugLookupRequestSchema = z.strictObject({
-  q: z
-    .string()
-    .trim()
-    .min(1, "Search query cannot be empty")
-    .max(100, "Query exceeds max length 100")
-    .refine(
-      (val) => !PHI_PATIENT_ID_REGEX.test(val),
-      "Search queries must be generic or brand drug names; patient health identifiers are prohibited",
-    ),
-  limit: z.coerce.number().int().min(1).max(50).default(10),
-});
+export const SearchQueryTextSchema = z
+  .string()
+  .trim()
+  .min(1, "Search query cannot be empty")
+  .max(100, "Query exceeds max length 100")
+  .refine(
+    (val) => !PHI_PATIENT_ID_REGEX.test(val),
+    "Search queries must be generic or brand drug names; patient health identifiers are prohibited",
+  );
+
+export const SearchEnzymeSchema = z.enum(ENZYMES);
+export const SearchRoleSchema = z.enum(["substrate", "inhibitor", "inducer"]);
+
+export const DrugLookupRequestSchema = z
+  .strictObject({
+    q: SearchQueryTextSchema.optional(),
+    enzyme: SearchEnzymeSchema.optional(),
+    role: SearchRoleSchema.optional(),
+    cls: z
+      .string()
+      .trim()
+      .min(1, "Class filter cannot be empty")
+      .max(100, "Class filter exceeds max length 100")
+      .refine(
+        (val) => !PHI_PATIENT_ID_REGEX.test(val),
+        "Class filters must be pharmacological classes; patient health identifiers are prohibited",
+      )
+      .optional(),
+    limit: z.coerce.number().int().min(1).max(50).default(10),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.q && !data.enzyme && !data.cls) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["q"],
+        message: "Search query (q) or a catalog filter (enzyme or cls) is required",
+      });
+    }
+  });
+
+export const SearchQuerySchema = DrugLookupRequestSchema;
 
 export type DrugLookupRequest = z.infer<typeof DrugLookupRequestSchema>;
+
+export const ExportRequestSchema = z.strictObject({
+  drugs: z
+    .array(DrugIdentifierSchema)
+    .min(1, "At least 1 drug must be provided")
+    .max(30, "Maximum 30 drugs can be exported simultaneously"),
+  format: z.enum(["json", "markdown"]).default("json"),
+  host: HostContextSchema.optional(),
+});
+
+export type ExportRequest = z.infer<typeof ExportRequestSchema>;
 
 export const InteractionCheckRequestSchema = z.strictObject({
   drugs: z
@@ -131,7 +172,7 @@ export const InteractionCheckRequestSchema = z.strictObject({
 });
 
 export const AutocompleteRequestSchema = z.strictObject({
-  q: DrugLookupRequestSchema.shape.q,
+  q: SearchQueryTextSchema,
   limit: z.coerce.number().int().min(1).max(24).default(8),
 });
 

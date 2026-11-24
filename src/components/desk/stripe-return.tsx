@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Info, Loader2, Sparkles, X } from "lucide-react";
+import { Check, Copy, Info, Loader2, ShieldCheck, X } from "lucide-react";
 import { claimStripeCheckout } from "@/lib/billing/stripe";
 import { claimPaypalCheckout } from "@/lib/billing/paypal";
 import { useDesk } from "@/lib/drugs/store";
@@ -47,7 +47,7 @@ export function LicenseActivatedDialog({
       tabIndex={-1}
       // Focus lands here on open so the dialog name is read; it is not a control, so no ring.
       style={{ outline: "none" }}
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 p-0 backdrop-blur-xs animate-in fade-in duration-200 sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/70 p-0 animate-in fade-in duration-200 sm:items-center sm:p-4"
     >
       <div className="relative max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-border bg-surface p-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] shadow-2xl animate-in zoom-in-95 duration-200 sm:max-h-[88dvh] sm:rounded-2xl sm:p-7">
         <button
@@ -61,7 +61,7 @@ export function LicenseActivatedDialog({
 
         <div className="flex items-center gap-3 pr-10">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
-            <Sparkles className="size-5" />
+            <ShieldCheck className="size-5" />
           </div>
           <div>
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">

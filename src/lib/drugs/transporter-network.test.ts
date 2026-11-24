@@ -1,6 +1,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { DRUG_BY_ID } from "./catalog";
+import { findDoses } from "../guards/dose-rule";
 import {
   TRANSPORTERS,
   BARRIER_ARCHITECTURES,
@@ -8,6 +10,7 @@ import {
   TRANSPORTER_REGULATORY_DISCLAIMER,
   getTransporterById,
   findTransportersForDrug,
+  findTransporterCollisionsForPair,
   getAllTransporters,
   getBarrierById,
   getAllBarriers,
@@ -533,5 +536,111 @@ describe("Extended Clearance Concept (ECC) & Transporter-Enzyme Interplay", () =
       }).valid,
       false,
     );
+  });
+});
+
+describe("Botanical & Narrow-Index Transporter Profiles and Collisions", () => {
+  it("maps botanical transporter perpetrators (berberine, piperine, st-johns-wort, green-tea, turmeric) and clinical narrow-index substrates", () => {
+    const pgp = getTransporterById("pgp-abcb1")!;
+    assert.ok(pgp.inhibitors.includes("berberine"));
+    assert.ok(pgp.inhibitors.includes("piperine"));
+    assert.ok(pgp.inhibitors.includes("dronedarone"));
+    assert.ok(pgp.inducers.includes("st-johns-wort"));
+    assert.ok(pgp.substrates.includes("edoxaban"));
+    assert.ok(pgp.substrates.includes("fexofenadine"));
+    assert.ok(pgp.substrates.includes("atorvastatin"));
+    assert.ok(pgp.substrates.includes("dabigatran"));
+    assert.ok(pgp.substrates.includes("apixaban"));
+
+    const bcrp = getTransporterById("bcrp-abcg2")!;
+    assert.ok(bcrp.inhibitors.includes("turmeric"));
+    assert.ok(bcrp.substrates.includes("rosuvastatin"));
+    assert.ok(bcrp.substrates.includes("apixaban"));
+
+    const oatp = getTransporterById("oatp1b1-1b3-slco")!;
+    assert.ok(oatp.inhibitors.includes("green-tea"));
+    assert.ok(oatp.inhibitors.includes("oatp-juice"));
+    assert.ok(oatp.substrates.includes("nadolol"));
+    assert.ok(oatp.substrates.includes("fexofenadine"));
+    assert.ok(oatp.substrates.includes("rosuvastatin"));
+    assert.ok(oatp.substrates.includes("atorvastatin"));
+
+    const oct = getTransporterById("oct2-mate-slc22")!;
+    assert.ok(oct.inhibitors.includes("berberine"));
+    assert.ok(oct.inhibitors.includes("dolutegravir"));
+    assert.ok(oct.inhibitors.includes("pyrimethamine"));
+    assert.ok(oct.substrates.includes("metformin"));
+    assert.ok(oct.substrates.includes("dofetilide"));
+
+    // Multi-transporter botanical & narrow-index lookups via findTransportersForDrug
+    const berberineTransporters = findTransportersForDrug("berberine").map((t) => t.id);
+    assert.ok(berberineTransporters.includes("pgp-abcb1"));
+    assert.ok(berberineTransporters.includes("oct2-mate-slc22"));
+
+    const fexofenadineTransporters = findTransportersForDrug("fexofenadine").map((t) => t.id);
+    assert.ok(fexofenadineTransporters.includes("pgp-abcb1"));
+    assert.ok(fexofenadineTransporters.includes("oatp1b1-1b3-slco"));
+
+    assert.ok(findTransportersForDrug("green-tea").some((t) => t.id === "oatp1b1-1b3-slco"));
+    assert.ok(findTransportersForDrug("piperine").some((t) => t.id === "pgp-abcb1"));
+    assert.ok(findTransportersForDrug("dofetilide").some((t) => t.id === "oct2-mate-slc22"));
+    assert.ok(findTransportersForDrug("edoxaban").some((t) => t.id === "pgp-abcb1"));
+  });
+
+  it("detects high-yield botanical and narrow-index collisions regardless of pair order", () => {
+    const sjwDigoxin = findTransporterCollisionsForPair("st-johns-wort", "digoxin");
+    assert.equal(sjwDigoxin.length, 1);
+    assert.equal(sjwDigoxin[0]!.transporter.id, "pgp-abcb1");
+    assert.equal(sjwDigoxin[0]!.collision.id, "st-johns-wort-digoxin");
+    assert.match(sjwDigoxin[0]!.collision.description, /PXR|ABCB1|MDR1/i);
+
+    const berberineCya = findTransporterCollisionsForPair("cyclosporine", "berberine");
+    assert.equal(berberineCya.length, 1);
+    assert.equal(berberineCya[0]!.transporter.id, "pgp-abcb1");
+    assert.equal(berberineCya[0]!.collision.id, "berberine-cyclosporine");
+
+    const berberineMet = findTransporterCollisionsForPair("berberine", "metformin");
+    assert.equal(berberineMet.length, 1);
+    assert.equal(berberineMet[0]!.transporter.id, "oct2-mate-slc22");
+    assert.equal(berberineMet[0]!.collision.id, "berberine-metformin");
+
+    const piperineDigoxin = findTransporterCollisionsForPair("piperine", "digoxin");
+    assert.equal(piperineDigoxin.length, 1);
+    assert.equal(piperineDigoxin[0]!.collision.id, "piperine-digoxin");
+
+    const dtgMet = findTransporterCollisionsForPair("dolutegravir", "metformin");
+    assert.equal(dtgMet.length, 1);
+    assert.equal(dtgMet[0]!.collision.id, "dolutegravir-metformin");
+
+    const dtgDofetilide = findTransporterCollisionsForPair("dofetilide", "dolutegravir");
+    assert.equal(dtgDofetilide.length, 1);
+    assert.equal(dtgDofetilide[0]!.transporter.id, "oct2-mate-slc22");
+    assert.equal(dtgDofetilide[0]!.collision.severity, "critical");
+    assert.match(dtgDofetilide[0]!.collision.description, /contraindicated/i);
+    assert.match(dtgDofetilide[0]!.collision.hazard, /Torsades de Pointes/i);
+
+    const greenTeaNadolol = findTransporterCollisionsForPair("green-tea", "nadolol");
+    assert.equal(greenTeaNadolol.length, 1);
+    assert.equal(greenTeaNadolol[0]!.transporter.id, "oatp1b1-1b3-slco");
+    assert.match(greenTeaNadolol[0]!.collision.description, /OATP1A2/);
+
+    const greenTeaFexo = findTransporterCollisionsForPair("fexofenadine", "green-tea");
+    assert.equal(greenTeaFexo.length, 1);
+    assert.equal(greenTeaFexo[0]!.collision.id, "green-tea-fexofenadine");
+
+    const edoxabanDronedarone = findTransporterCollisionsForPair("edoxaban", "dronedarone");
+    assert.equal(edoxabanDronedarone.length, 1);
+    assert.equal(edoxabanDronedarone[0]!.transporter.id, "pgp-abcb1");
+
+    const probenecidBaricitinib = findTransporterCollisionsForPair("probenecid", "baricitinib");
+    assert.equal(probenecidBaricitinib.length, 1);
+    assert.equal(probenecidBaricitinib[0]!.transporter.id, "oat1-oat3-slc22");
+
+    assert.deepEqual(findTransporterCollisionsForPair("digoxin", "digoxin"), []);
+    assert.deepEqual(findTransporterCollisionsForPair("", "digoxin"), []);
+  });
+
+  it("maintains zero DOSE_PATTERN matches across src/lib/drugs/transporter-network.ts", () => {
+    assert.deepEqual(findDoses(readFileSync("src/lib/drugs/transporter-network.ts", "utf8")), []);
   });
 });

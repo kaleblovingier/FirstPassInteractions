@@ -2169,6 +2169,148 @@ function multiDrugFindings(drugs: Drug[]): Finding[] {
     });
   }
 
+  // 1. Cumulative multi-inhibitor enzyme saturation & 2. Opposing inhibitor × inducer tug-of-war
+  for (const enzyme of ENZYMES) {
+    const inhDrugs = drugs.filter((d) => perpetratorsOf(d, enzyme, "inhibitor").length > 0);
+    const indDrugs = drugs.filter((d) => perpetratorsOf(d, enzyme, "inducer").length > 0);
+    const subDrugs = drugs.filter((d) => substratesOf(d, enzyme).length > 0);
+
+    if (inhDrugs.length >= 2) {
+      const victims = subDrugs.filter(
+        (s) => inhDrugs.filter((p) => p.id !== s.id).length >= 2,
+      );
+      if (victims.length > 0) {
+        const activationVictims = victims.filter((v) =>
+          substratesOf(v, enzyme).some((r) => r.pathway === "activation"),
+        );
+        const hasActivation = activationVictims.length > 0;
+        const hasStrongOrModInh = inhDrugs.some((d) =>
+          perpetratorsOf(d, enzyme, "inhibitor").some(
+            (r) => r.strength === "strong" || r.strength === "moderate",
+          ),
+        );
+        const hasHighRiskVictim = victims.some((v) =>
+          substratesOf(v, enzyme).some(
+            (r) =>
+              r.sensitivity === "sensitive" || Boolean(r.nti) || r.pathway === "activation",
+          ),
+        );
+        const severity: Severity =
+          hasStrongOrModInh || hasHighRiskVictim ? "major" : "moderate";
+        const involved = [...new Map([...inhDrugs, ...victims].map((d) => [d.id, d])).values()];
+        const ids = involved.map((d) => d.id).sort().join("-");
+        const inhNames = names(inhDrugs.map((d) => d.id)).join(", ");
+        const victimNames = names(victims.map((d) => d.id)).join(", ");
+        const actNames = names(activationVictims.map((d) => d.id)).join(", ");
+        out.push({
+          id: `grp-pk-multi-inh-${enzyme}-${ids}`,
+          severity,
+          kind: "pk",
+          drugIds: involved.map((d) => d.id),
+          headline: hasActivation
+            ? `Compounded ${enzyme} inhibition · prodrug bioactivation blockade`
+            : `Compounded ${enzyme} inhibition · ${inhDrugs.length} inhibitors converging`,
+          enzymes: [enzyme],
+          effect: hasActivation
+            ? "blunted prodrug activation / loss of therapeutic effect"
+            : "compounded substrate exposure above single-pair estimates",
+          mechanism: `multi-inhibitor ${enzyme} convergence (${inhDrugs.length} inhibitors)`,
+          clinical: hasActivation
+            ? `${inhNames} converge to inhibit ${enzyme}, saturating residual enzymatic activity and blocking metabolic bioactivation of prodrug substrate${activationVictims.length === 1 ? "" : "s"} (${actNames}) more deeply than any single pairwise interaction table predicts.`
+            : `${inhNames} converge to inhibit ${enzyme}, saturating residual enzymatic clearance for ${victimNames} more deeply than any single pairwise interaction table predicts. Compounded inhibition raises the risk of unexpected parent-drug accumulation and toxicity.`,
+          tags: ["pk", "multi-inhibitor", "stack", ...(hasActivation ? ["prodrug"] : [])],
+        });
+      }
+    }
+
+    if (inhDrugs.length > 0 && indDrugs.length > 0 && subDrugs.length > 0) {
+      const affectedVictims = subDrugs.filter((s) =>
+        inhDrugs.some(
+          (inh) =>
+            inh.id !== s.id && indDrugs.some((ind) => ind.id !== s.id && ind.id !== inh.id),
+        ),
+      );
+      if (affectedVictims.length > 0) {
+        const activeInh = inhDrugs.filter((inh) =>
+          affectedVictims.some(
+            (s) =>
+              s.id !== inh.id && indDrugs.some((ind) => ind.id !== s.id && ind.id !== inh.id),
+          ),
+        );
+        const activeInd = indDrugs.filter((ind) =>
+          affectedVictims.some(
+            (s) =>
+              s.id !== ind.id && inhDrugs.some((inh) => inh.id !== s.id && inh.id !== ind.id),
+          ),
+        );
+        const involved = [
+          ...new Map([...activeInh, ...activeInd, ...affectedVictims].map((d) => [d.id, d])).values(),
+        ];
+        const ids = involved.map((d) => d.id).sort().join("-");
+        const inhNames = names(activeInh.map((d) => d.id)).join(", ");
+        const indNames = names(activeInd.map((d) => d.id)).join(", ");
+        const victimNames = names(affectedVictims.map((d) => d.id)).join(", ");
+        out.push({
+          id: `grp-pk-opposing-${enzyme}-${ids}`,
+          severity: "major",
+          kind: "pk",
+          drugIds: involved.map((d) => d.id),
+          headline: `Opposing ${enzyme} inhibition + induction on the same tray`,
+          enzymes: [enzyme],
+          effect: "unpredictable, time-varying substrate exposure",
+          mechanism: `opposing ${enzyme} inhibition vs. transcriptional induction`,
+          clinical: `Simultaneous ${enzyme} inhibition (${inhNames}) and induction (${indNames}) create a kinetic tug-of-war on ${victimNames}. Competitive inhibition acts within hours, whereas nuclear-receptor induction (PXR/CAR/AhR) ramps up over days to weeks and lingers after the inducer stops; stopping either perpetrator destabilizes ${victimNames} in the opposite direction.`,
+          tags: ["pk", "opposing", "stack"],
+        });
+      }
+    }
+  }
+
+  // 3. Multi-drug anticholinergic burden stack
+  const ach = drugs.filter((d) => has(d, "anticholinergic"));
+  if (ach.length >= 3) {
+    out.push({
+      id: "grp-ach-" + ach.map((d) => d.id).sort().join("-"),
+      severity: "major",
+      kind: "pd",
+      drugIds: ach.map((d) => d.id),
+      headline: `${ach.length}-drug anticholinergic burden stack`,
+      enzymes: [],
+      effect: "delirium, urinary retention, tachycardia, constipation",
+      mechanism: "cumulative muscarinic M1–M3 blockade",
+      clinical: `${names(ach.map((d) => d.id)).join(", ")} carry additive antimuscarinic burden. Stacking three or more anticholinergic agents substantially increases the risk of delirium, urinary retention, constipation, and tachycardia, especially in older adults.`,
+      tags: ["anticholinergic", "stack"],
+    });
+  }
+
+  // 4. Multi-drug bleeding / hemorrhage stack
+  const primaryBleed = drugs.filter(
+    (d) => has(d, "anticoagulant") || has(d, "antiplatelet") || has(d, "nsaid"),
+  );
+  const bleed = primaryBleed.length
+    ? drugs.filter(
+        (d) =>
+          has(d, "anticoagulant") ||
+          has(d, "antiplatelet") ||
+          has(d, "nsaid") ||
+          has(d, "ssri-snri"),
+      )
+    : [];
+  if (bleed.length >= 3) {
+    out.push({
+      id: "grp-bleed-" + bleed.map((d) => d.id).sort().join("-"),
+      severity: "major",
+      kind: "pd",
+      drugIds: bleed.map((d) => d.id),
+      headline: `${bleed.length}-drug bleeding-risk stack`,
+      enzymes: [],
+      effect: "compounded gastrointestinal and systemic hemorrhage risk",
+      mechanism: "multi-pathway hemostatic impairment",
+      clinical: `${names(bleed.map((d) => d.id)).join(", ")} impair hemostasis or gastric mucosal integrity across multiple pathways. Combining three or more bleeding-risk agents compounds gastrointestinal and systemic hemorrhage risk beyond single-pair estimates.`,
+      tags: ["bleeding", "stack"],
+    });
+  }
+
   return out;
 }
 
@@ -2594,7 +2736,15 @@ export function analyze(
             phenotypes: host as PhenotypeMap,
           }
         : undefined;
-  const base = drugIds.map((id) => DRUG_BY_ID[id]).filter(Boolean);
+  const uniqueIds = [...new Set(drugIds)];
+  const seenDrugIds = new Set<string>();
+  const base: Drug[] = [];
+  for (const id of uniqueIds) {
+    const drug = Object.hasOwn(DRUG_BY_ID, id) ? DRUG_BY_ID[id] : undefined;
+    if (!drug || seenDrugIds.has(drug.id)) continue;
+    seenDrugIds.add(drug.id);
+    base.push(drug);
+  }
   const drugs = ctx ? applyHost(base, ctx) : base;
   const real = drugs.filter((d) => !isVirtual(d.id));
   const findings: Finding[] = [];

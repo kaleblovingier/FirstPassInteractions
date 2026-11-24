@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { DRUGBANK, drugbankSearchUrl, drugbankUrl } from "@/lib/drugs/drugbank";
+import { NO_SINGLE_HALF_LIFE } from "@/lib/drugs/half-lives";
 import { lookupCpicGuideline, lookupLiveSources, searchTrials } from "@/lib/drugs/live-rpc";
 import type { DailyMedHit, FdaLabel, FaersHit, NdcHit, PubchemCard, RecallHit, RxnormCard, ShortageHit, TrialHit } from "@/lib/drugs/live";
 import { LIVERTOX_CAT_TONE, livertoxFor, livertoxUrl } from "@/lib/drugs/livertox";
 import { lactFor, lactmedHomeUrl, lactmedSearchUrl, lactOnDesk, type LactCard } from "@/lib/drugs/lactmed";
+import { halfLifeFor } from "@/lib/drugs/overlap";
 import { CPIC_GENE_DRUG_LIST, pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
@@ -14,8 +16,12 @@ import { CPIC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
   ITEM_KIND_LABEL,
   PHENOTYPE_ENZYMES,
+  type Drug,
+  type EnzymeRole,
   type HostContext,
   type PhenotypeEnzyme,
+  type Strength,
+  type SubstrateSensitivity,
 } from "@/lib/drugs/types";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -155,6 +161,8 @@ export function Dossier({ ids, host }: { ids: string[]; host: HostContext }) {
           ))}
         </div>
       ) : null}
+
+      <MonographPkStrip drug={drug} />
 
       <div className="mt-4">
         {liveTab === "stahl" ? (
@@ -977,4 +985,202 @@ function phenoMatches(gene: string, row: string, host: HostContext): boolean {
   if (p === "UM") return token.includes("UM");
   if (p === "NM") return token.includes("NM") && !token.includes("UM");
   return false;
+}
+
+const INHIBITOR_TIER_HINT: Record<Strength, string> = {
+  strong: "Strong ≥5× AUC",
+  moderate: "Moderate 2–<5×",
+  weak: "Weak 1.25–<2×",
+};
+
+const INDUCER_TIER_HINT: Record<Strength, string> = {
+  strong: "Strong ≥80% ↓AUC",
+  moderate: "Moderate 50–<80% ↓AUC",
+  weak: "Weak 20–<50% ↓AUC",
+};
+
+const SUBSTRATE_TIER_HINT: Record<SubstrateSensitivity, string> = {
+  sensitive: "Sensitive ≥5× AUC",
+  major: "Major 2–<5×",
+  minor: "Minor <2×",
+};
+
+function formatHalfLifeHours(hours: number): string {
+  const rounded = Number.isInteger(hours) ? String(hours) : String(Number(hours.toFixed(2)));
+  return `${rounded} h`;
+}
+
+function formatWashoutWindow(hours: number): string {
+  const washoutH = hours * 5;
+  const washoutDisplay = Number.isInteger(washoutH)
+    ? String(washoutH)
+    : String(Math.round(washoutH * 10) / 10);
+  if (washoutH >= 48) {
+    const days = (washoutH / 24).toFixed(1).replace(/\.0$/, "");
+    return `~${washoutDisplay} h (${days} d) washout`;
+  }
+  return `~${washoutDisplay} h washout`;
+}
+
+function roleChipTone(role: EnzymeRole): string {
+  if (role.kind === "substrate") {
+    if (role.pathway === "activation") {
+      return "border-info/30 bg-info-soft text-info";
+    }
+    if (role.nti) {
+      return "border-danger/30 bg-danger-soft text-danger";
+    }
+    if (role.sensitivity === "sensitive") {
+      return "border-accent/30 bg-accent-soft text-accent";
+    }
+    return "border-border bg-bg-sunken text-fg";
+  }
+  if (role.strength === "strong") {
+    return "border-danger/30 bg-danger-soft text-danger";
+  }
+  if (role.strength === "moderate") {
+    return "border-warn/30 bg-warn-soft text-warn";
+  }
+  return "border-info/30 bg-info-soft text-info";
+}
+
+function roleChipDetail(role: EnzymeRole): { roleLabel: string; tierHint: string; title: string } {
+  if (role.kind === "substrate") {
+    const tierHint = SUBSTRATE_TIER_HINT[role.sensitivity];
+    const qualifiers = [
+      tierHint,
+      ...(role.pathway === "activation" ? ["Prodrug Activation"] : []),
+      ...(role.nti ? ["NTI"] : []),
+    ];
+    return {
+      roleLabel: "Substrate",
+      tierHint,
+      title: `${role.enzyme} substrate (${qualifiers.join(" · ")})`,
+    };
+  }
+  if (role.kind === "inhibitor") {
+    const tierHint = INHIBITOR_TIER_HINT[role.strength];
+    return {
+      roleLabel: "Inhibitor",
+      tierHint,
+      title: `${role.enzyme} inhibitor — FDA DDI tier: ${tierHint}`,
+    };
+  }
+  const tierHint = INDUCER_TIER_HINT[role.strength];
+  return {
+    roleLabel: "Inducer",
+    tierHint,
+    title: `${role.enzyme} inducer — FDA DDI tier: ${tierHint}`,
+  };
+}
+
+function MonographPkStrip({ drug }: { drug: Drug }) {
+  const hasNonLinear = Object.hasOwn(NO_SINGLE_HALF_LIFE, drug.id);
+  const nonLinearNote = hasNonLinear ? NO_SINGLE_HALF_LIFE[drug.id] : undefined;
+  const hl = hasNonLinear ? undefined : halfLifeFor(drug.id);
+
+  return (
+    <section
+      aria-label={`Pharmacokinetic monograph for ${drug.name}`}
+      className="mt-4 border-t border-border pt-4"
+    >
+      <div className="rounded-lg border border-border bg-surface-2 p-3.5">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+              Clinical Monograph · Pharmacokinetics
+            </p>
+            <span className="font-serif text-base font-medium tracking-tight text-fg">
+              {drug.name}
+            </span>
+            <span className="text-xs text-muted">{drug.cls}</span>
+          </div>
+          <a
+            href="/methodology"
+            className="inline-flex min-h-8 items-center font-mono text-[11px] text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          >
+            FDA DDI tiers &amp; washout methodology →
+          </a>
+        </div>
+
+        <div className="mt-3 grid gap-3 border-t border-border pt-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
+          <div className="space-y-1">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+              Elimination t½ &amp; 5 × t½ washout
+            </p>
+            {hasNonLinear ? (
+              <>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex items-center rounded-sm border border-warn/30 bg-warn-soft px-2 py-0.5 font-mono text-[11px] font-medium text-warn tabular-nums">
+                    Non-linear / covalent
+                  </span>
+                </div>
+                {nonLinearNote ? (
+                  <p className="text-xs leading-relaxed text-muted">{nonLinearNote}</p>
+                ) : null}
+              </>
+            ) : hl ? (
+              <>
+                <p className="font-mono text-xs font-medium text-fg tabular-nums">
+                  {formatHalfLifeHours(hl.hours)} · {formatWashoutWindow(hl.hours)}
+                </p>
+                <p className="text-[11px] leading-relaxed text-subtle">
+                  ~97% first-order elimination at 5 × t½ · {hl.source}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-mono text-xs text-muted tabular-nums">Not mapped</p>
+                <p className="text-[11px] leading-relaxed text-subtle">
+                  Typical adult half-life not mapped on this shelf; check Prescribing Information.
+                </p>
+              </>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+              FDA DDI potency &amp; sensitivity roles
+            </p>
+            {drug.enzymes.length > 0 ? (
+              <ul className="flex flex-wrap gap-1.5">
+                {drug.enzymes.map((role) => {
+                  const meta = roleChipDetail(role);
+                  return (
+                    <li
+                      key={`${role.enzyme}-${role.kind}-${role.kind === "substrate" ? role.pathway : role.strength}`}
+                      title={meta.title}
+                      className={cn(
+                        "inline-flex flex-wrap items-center gap-1 rounded-sm border px-2 py-0.5 font-mono text-[11px] tabular-nums",
+                        roleChipTone(role),
+                      )}
+                    >
+                      <span className="font-semibold">{role.enzyme}</span>
+                      <span>{meta.roleLabel}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{meta.tierHint}</span>
+                      {role.kind === "substrate" && role.pathway === "activation" ? (
+                        <span className="ml-0.5 rounded-sm border border-info/40 bg-surface-2 px-1 py-px text-[10px] font-semibold text-info">
+                          Prodrug Activation
+                        </span>
+                      ) : null}
+                      {role.kind === "substrate" && role.nti ? (
+                        <span className="ml-0.5 rounded-sm border border-danger/40 bg-surface-2 px-1 py-px text-[10px] font-semibold text-danger">
+                          NTI
+                        </span>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="text-xs leading-relaxed text-muted">
+                No CYP450 or P-gp roles mapped on this desk; non-CYP, renal, or pharmacodynamic pathways may still apply.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

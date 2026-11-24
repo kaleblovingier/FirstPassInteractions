@@ -1947,6 +1947,46 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     drugIds: ["two-fdck", "desalkylgidazepam"],
     lane: "street",
   },
+  {
+    id: "codeine-fluoxetine-prodrug-failure",
+    title: "Codeine + Fluoxetine (CYP2D6 Prodrug Failure)",
+    blurb:
+      "Strong CYP2D6 inhibition phenoconverts a normal metabolizer into a functional poor metabolizer — blunting morphine formation rather than raising active opioid exposure",
+    drugIds: ["codeine", "fluoxetine"],
+    lane: "clinic",
+  },
+  {
+    id: "sjw-apixaban-pxr-collapse",
+    title: "St. John's Wort + Apixaban (PXR Induction Collapse)",
+    blurb:
+      "Hyperforin PXR activation upregulates intestinal and hepatic CYP3A4 and P-gp over 7–14 days, collapsing DOAC exposure and elevating thromboembolic stroke risk",
+    drugIds: ["st-johns-wort", "apixaban"],
+    lane: "food",
+  },
+  {
+    id: "berberine-cyclosporine-botanical-trap",
+    title: "Berberine + Cyclosporine (Botanical CYP/P-gp Trap)",
+    blurb:
+      "Repeated oral berberine inhibits CYP3A4, CYP2D6, CYP2C9, and P-gp — elevating narrow-index calcineurin inhibitor troughs like a prescription perpetrator",
+    drugIds: ["berberine", "cyclosporine"],
+    lane: "food",
+  },
+  {
+    id: "flmodafinil-ee-omeprazole-stack",
+    title: "Flmodafinil + Ethinyl Estradiol + Omeprazole (Nootropic Stack)",
+    blurb:
+      "Unregulated modafinil analog combining moderate CYP3A4 induction (hormonal contraceptive failure risk) with CYP2C19 inhibition on a classic PPI substrate",
+    drugIds: ["flmodafinil", "ethinyl-estradiol", "omeprazole"],
+    lane: "clinic",
+  },
+  {
+    id: "lithium-orotate-ibuprofen-lisinopril",
+    title: "Lithium Orotate + Ibuprofen (OTC Renal Lithium)",
+    blurb:
+      "Unregulated OTC elemental lithium paired with an NSAID — proximal tubular lithium retention and cumulative neuro-renal toxicity",
+    drugIds: ["lithium-orotate", "ibuprofen"],
+    lane: "clinic",
+  },
   ...SAMPLE_REGIMENS_WAVE2,
 ];
 

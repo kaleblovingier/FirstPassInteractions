@@ -88,7 +88,7 @@ export function LabelPage() {
         data-sticky-bar="top"
         // One scrolling row on a phone. Wrapped, the eight links were four rows tall and the
         // sticky bar covered a quarter of the screen and the top of every section it jumped to.
-        className="sticky top-0 z-10 -mx-1 flex gap-1.5 overflow-x-auto bg-bg/95 px-1 py-2 backdrop-blur-sm sm:flex-wrap sm:overflow-visible"
+        className="sticky top-0 z-10 -mx-1 flex gap-1.5 overflow-x-auto border-b border-border bg-bg px-1 py-2 sm:flex-wrap sm:overflow-visible"
       >
         {TOC.map((item) => (
           <a

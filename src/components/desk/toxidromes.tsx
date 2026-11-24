@@ -31,7 +31,6 @@ import {
   RotateCcw,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Stethoscope,
   Thermometer,
   Wind,
@@ -326,7 +325,7 @@ export function ToxidromeSimulator() {
                 : "text-muted hover:bg-surface/50 hover:text-fg",
             )}
           >
-            <Layers className="size-4 shrink-0 text-cyan-500" />
+            <Layers className="size-4 shrink-0 text-accent" />
             <span>Discriminator Matrix</span>
           </button>
 
@@ -437,10 +436,10 @@ export function ToxidromeSimulator() {
                   <th className="p-3 sm:p-4 w-48 font-semibold text-fg">Clinical Parameter</th>
                   <th className="p-3 sm:p-4 text-warning">Anticholinergic</th>
                   <th className="p-3 sm:p-4 text-success">Cholinergic</th>
-                  <th className="p-3 sm:p-4 text-indigo-700">Opioid</th>
+                  <th className="p-3 sm:p-4 text-info">Opioid</th>
                   <th className="p-3 sm:p-4 text-danger">Sympathomimetic</th>
-                  <th className="p-3 sm:p-4 text-cyan-800">Sedative-Hypnotic</th>
-                  <th className="p-3 sm:p-4 text-purple-800">Serotonergic</th>
+                  <th className="p-3 sm:p-4 text-accent">Sedative-Hypnotic</th>
+                  <th className="p-3 sm:p-4 text-danger">Serotonergic</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -485,7 +484,7 @@ export function ToxidromeSimulator() {
 
           <div className="rounded-lg bg-surface-2 p-3 text-xs text-muted flex items-center justify-between">
             <span className="flex items-center gap-1.5">
-              <Sparkles className="size-4 text-accent" />
+              <Info className="size-4 text-accent" />
               Tip: Click on <strong>6 Classical Toxidromes</strong> or <strong>10 Antidote Pathways</strong> to explore full molecular cards.
             </span>
             <Button
@@ -608,7 +607,7 @@ export function ToxidromeSimulator() {
 
                 <div className="rounded-lg border border-border bg-surface-2 p-3 space-y-1">
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-fg">
-                    <Eye className="size-3.5 text-indigo-500" />
+                    <Eye className="size-3.5 text-info" />
                     <span>Pupils &amp; Eyes</span>
                   </div>
                   <p className="text-xs text-muted pt-1 leading-relaxed">
@@ -618,7 +617,7 @@ export function ToxidromeSimulator() {
 
                 <div className="rounded-lg border border-border bg-surface-2 p-3 space-y-1">
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-fg">
-                    <Droplets className="size-3.5 text-cyan-500" />
+                    <Droplets className="size-3.5 text-accent" />
                     <span>Skin &amp; Moisture</span>
                   </div>
                   <p className="text-xs text-muted pt-1 leading-relaxed">
@@ -631,7 +630,7 @@ export function ToxidromeSimulator() {
 
                 <div className="rounded-lg border border-border bg-surface-2 p-3 space-y-1">
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-fg">
-                    <Activity className="size-3.5 text-purple-500" />
+                    <Activity className="size-3.5 text-warn" />
                     <span>Neuromuscular &amp; Mental</span>
                   </div>
                   <p className="text-xs text-muted pt-1 leading-relaxed">
@@ -846,7 +845,7 @@ export function ToxidromeSimulator() {
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 pt-2 border-t border-border">
               <div className="space-y-3">
                 <h3 className="font-semibold text-sm uppercase tracking-wider text-muted flex items-center gap-1.5">
-                  <Clock className="size-4 text-cyan-500" />
+                  <Clock className="size-4 text-accent" />
                   Pharmacokinetic &amp; Therapeutic Profile
                 </h3>
                 <div className="rounded-lg border border-border bg-surface-2 p-3.5 space-y-2 text-xs">
@@ -935,7 +934,7 @@ export function ToxidromeSimulator() {
               <div className="rounded-lg border border-border bg-surface-2 p-3 space-y-2">
                 <label className="text-xs font-bold text-fg flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <Eye className="size-3.5 text-indigo-500" />
+                    <Eye className="size-3.5 text-info" />
                     Pupil Examination
                   </span>
                   {observedSigns.pupils && (
@@ -972,7 +971,7 @@ export function ToxidromeSimulator() {
               <div className="rounded-lg border border-accent/40 bg-accent-soft/20 p-3 space-y-2">
                 <label className="text-xs font-bold text-fg flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <Droplets className="size-3.5 text-cyan-500" />
+                    <Droplets className="size-3.5 text-accent" />
                     Skin Moisture (Discriminator!)
                   </span>
                   {observedSigns.skin && (
@@ -1120,7 +1119,7 @@ export function ToxidromeSimulator() {
               <div className="rounded-lg border border-border bg-surface-2 p-3 space-y-2">
                 <label className="text-xs font-bold text-fg flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <Activity className="size-3.5 text-purple-500" />
+                    <Activity className="size-3.5 text-info" />
                     Neuromuscular Examination
                   </span>
                   {observedSigns.neuromuscular && (
@@ -1159,7 +1158,7 @@ export function ToxidromeSimulator() {
             <div className="pt-4 border-t border-border space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm uppercase tracking-wider text-muted flex items-center gap-1.5">
-                  <Sparkles className="size-4 text-accent" />
+                  <Stethoscope className="size-4 text-accent" />
                   Differential Toxidrome Match Results ({activeObservedCount} signs entered)
                 </h3>
                 <span className="text-xs text-muted">Ranked by diagnostic compatibility</span>

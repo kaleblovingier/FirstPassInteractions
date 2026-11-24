@@ -4,9 +4,10 @@
  * Implements standard HTTP route dispatching for FirstPass CDS endpoints:
  * - POST /api/cds/check: multi-drug interaction checking with host context
  * - POST /api/cds/kinetics: specialty pharmacokinetic module evaluations
- * - GET /api/cds/search: drug catalog search with pagination
+ * - GET /api/cds/search: drug catalog search with pagination and enzyme/role/class filtering
  * - GET /api/cds/autocomplete: typeahead with how each row matched
  * - POST /api/cds/analyze: one InteractionReport for a tray (optionally with live outside sources)
+ * - POST /api/cds/export: structured JSON or Markdown clinical monograph regimen export
  * - GET /api/cds/health: service health check and regulatory metadata
  *
  * Conforms to 21 U.S.C. § 360j(o)(1)(E) and RFC 7807 problem details error format.
@@ -259,6 +260,7 @@ async function handlePostJsonRoute<T>(
   execute: (
     body: unknown,
   ) => Promise<{ success: true; data: T } | { success: false; problem: ProblemDetails }>,
+  formatResponse?: (data: T) => Response,
 ): Promise<Response> {
   if (method !== "POST") {
     return methodNotAllowedResponse(method, pathname, "POST");
@@ -271,7 +273,7 @@ async function handlePostJsonRoute<T>(
   if (!result.success) {
     return toProblemResponse(result.problem);
   }
-  return Response.json(result.data, { status: 200 });
+  return formatResponse ? formatResponse(result.data) : Response.json(result.data, { status: 200 });
 }
 
 /**
@@ -326,8 +328,17 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
       const q = url.searchParams.has("q") ? (url.searchParams.get("q") ?? undefined) : undefined;
       const limitParam = url.searchParams.get("limit");
       const limit = limitParam !== null ? limitParam : undefined;
+      const enzyme = url.searchParams.has("enzyme")
+        ? (url.searchParams.get("enzyme") ?? undefined)
+        : undefined;
+      const role = url.searchParams.has("role")
+        ? (url.searchParams.get("role") ?? undefined)
+        : undefined;
+      const cls = url.searchParams.has("cls")
+        ? (url.searchParams.get("cls") ?? undefined)
+        : undefined;
 
-      const result = ClinicalDecisionService.search({ q, limit });
+      const result = ClinicalDecisionService.search({ q, limit, enzyme, role, cls });
       if (!result.success) {
         return toProblemResponse(result.problem);
       }
@@ -366,6 +377,27 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
     if (pathname === "/api/cds/kinetics") {
       return await handlePostJsonRoute(request, method, pathname, "kinetics evaluation", (body) =>
         ClinicalDecisionService.evaluateKinetics(body),
+      );
+    }
+
+    // POST /api/cds/export
+    if (pathname === "/api/cds/export") {
+      const wantsMarkdown = /\btext\/markdown\b/i.test(request.headers.get("accept") ?? "");
+      return await handlePostJsonRoute(
+        request,
+        method,
+        pathname,
+        "regimen export",
+        (body) => ClinicalDecisionService.exportRegimen(body),
+        (data) => {
+          if (wantsMarkdown && data.format === "markdown") {
+            return new Response(data.markdown, {
+              status: 200,
+              headers: { "Content-Type": data.contentType },
+            });
+          }
+          return Response.json(data, { status: 200 });
+        },
       );
     }
 

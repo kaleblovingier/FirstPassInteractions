@@ -8,8 +8,8 @@ import {
   Check,
   Info,
   BookOpen,
+  FlaskConical,
   Layers,
-  Sparkles,
   ChevronDown,
   ChevronUp,
   AlertCircle,
@@ -97,8 +97,8 @@ function getTierBadgeClasses(tier: AffinityTier): {
   switch (tier) {
     case "Sub-nanomolar":
       return {
-        badge: "bg-purple-500/15 text-purple-800 dark:text-purple-300 border-purple-500/30",
-        dot: "bg-purple-600",
+        badge: "bg-accent-soft text-accent border-accent/30",
+        dot: "bg-accent",
       };
     case "High":
       return {
@@ -205,7 +205,7 @@ export function ReceptorProfiler() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent">
-              <Sparkles className="size-3.5" />
+              <FlaskConical className="size-3.5" />
               Pharmacological Receptor Profiler
             </div>
             <h1 className="font-serif text-2xl font-bold tracking-tight text-fg sm:text-3xl">
@@ -672,7 +672,7 @@ export function ReceptorProfiler() {
           {/* Clinical Side Effect Divergence Callout */}
           <div className="rounded-xl border border-accent/30 bg-accent-soft/30 p-5 sm:p-6">
             <div className="flex items-start gap-3">
-              <Sparkles className="mt-0.5 size-5 shrink-0 text-accent" />
+              <BookOpen className="mt-0.5 size-5 shrink-0 text-accent" />
               <div className="space-y-2">
                 <h3 className="text-sm font-bold text-fg">
                   Pharmacological & Clinical Side Effect Divergence: Why Profiles Differ
@@ -863,7 +863,7 @@ export function ReceptorProfiler() {
                     <span className="text-fg/80">{target.antagonismConsequences}</span>
                   </div>
                   <div>
-                    <span className="font-bold text-indigo-700 dark:text-indigo-400">
+                    <span className="font-bold text-info">
                       Primary Clinical Implications:{" "}
                     </span>
                     <span className="text-fg/80">{target.primaryClinicalImplications}</span>
@@ -889,7 +889,7 @@ export function ReceptorProfiler() {
       >
         {activeReceptorKey && RECEPTOR_TARGETS[activeReceptorKey] ? (
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs" />
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/70" />
           <Dialog.Content
             className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100dvh-2rem)] max-w-md -translate-y-1/2 overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4"
             onCloseAutoFocus={(e) => {

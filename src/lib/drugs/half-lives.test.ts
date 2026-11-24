@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { findDoses } from "../guards/dose-rule";
 import { DRUG_BY_ID } from "./catalog";
 import { analyze } from "./engine";
 import { HALF_LIVES, NO_SINGLE_HALF_LIFE } from "./half-lives";
@@ -13,12 +15,14 @@ describe("half-lives - the tables", () => {
     }
   });
 
-  it("holds finite, positive hours under a month, each with a source", () => {
-    assert.ok(Object.keys(HALF_LIVES).length >= 47);
+  it("holds finite, positive hours under a month, each with a source, and zero dose patterns", () => {
+    assert.ok(Object.keys(HALF_LIVES).length >= 62);
     for (const [id, row] of Object.entries(HALF_LIVES)) {
       assert.ok(Number.isFinite(row.hours) && row.hours > 0 && row.hours < 720, id);
       assert.ok(row.source.trim().length > 0, id);
     }
+    const src = readFileSync(new URL("./half-lives.ts", import.meta.url), "utf8");
+    assert.deepEqual(findDoses(src), []);
   });
 
   it("never repeats the PK shelf, and never lists an id in both tables", () => {
@@ -164,5 +168,50 @@ describe("half-lives - read through the timing sketch", () => {
     assert.equal(spiroLis.rows.find((row) => row.id === "lisinopril")!.remaining, 0.5);
     assert.equal(spiroLis.pairs[0]!.severity, "major");
     assert.equal(spiroLis.pairs[0]!.activeOverlapPercent, undefined);
+  });
+
+  it("covers round 12 Rx, OTC, prodrug, and nootropic half-lives plus irreversible clopidogrel and esomeprazole notes", () => {
+    const expected: Record<string, number> = {
+      modafinil: 15,
+      armodafinil: 15,
+      melatonin: 0.75,
+      diphenhydramine: 8,
+      acetaminophen: 2.5,
+      lisdexamfetamine: 10,
+      piracetam: 5,
+      aniracetam: 0.5,
+      oxiracetam: 8,
+      ibuprofen: 2,
+      naproxen: 17,
+      cetirizine: 8.3,
+      fexofenadine: 14.4,
+      famotidine: 3.5,
+      donepezil: 70,
+    };
+    for (const [id, hours] of Object.entries(expected)) {
+      assert.ok(Object.hasOwn(HALF_LIVES, id), `${id} missing from HALF_LIVES`);
+      assert.equal(halfLifeFor(id)?.hours, hours, id);
+    }
+
+    // High-frequency PK-shelf items stay sourced from FirstPass PK shelf without duplication.
+    for (const id of ["caffeine", "bupropion", "dextromethorphan", "codeine", "tramadol"]) {
+      assert.equal(halfLifeFor(id)?.source, "FirstPass PK shelf", id);
+    }
+
+    // Irreversible covalent binders suppress misleading short plasma decay bars.
+    assert.equal(halfLifeFor("esomeprazole"), undefined);
+    assert.equal(halfLifeFor("clopidogrel"), undefined);
+    const clopiEso = timeline(
+      ["clopidogrel", "esomeprazole"],
+      { clopidogrel: 12, esomeprazole: 6 },
+      analyze(["clopidogrel", "esomeprazole"]),
+    );
+    const clopiRow = clopiEso.rows.find((row) => row.id === "clopidogrel")!;
+    const esoRow = clopiEso.rows.find((row) => row.id === "esomeprazole")!;
+    assert.equal(clopiRow.remaining, undefined);
+    assert.equal(esoRow.remaining, undefined);
+    assert.match(clopiRow.note ?? "", /P2Y12/i);
+    assert.match(esoRow.note ?? "", /proton pump/i);
+    assert.equal(clopiEso.pairs[0]!.activeOverlapPercent, undefined);
   });
 });

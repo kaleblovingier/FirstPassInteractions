@@ -5,6 +5,7 @@ import {
   AlertOctagon,
   AlertTriangle,
   Baby,
+  BookOpen,
   ChevronRight,
   Droplets,
   HeartPulse,
@@ -12,7 +13,6 @@ import {
   Pill,
   Scale,
   ShieldAlert,
-  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 shadow-xs space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-500/10 text-pink-800 dark:text-pink-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-soft text-accent">
               <Baby className="h-5 w-5" />
             </div>
             <div>
@@ -141,7 +141,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
               className={cn(
                 "text-[11px] font-semibold border",
                 onDesk.hasObstetricDrug
-                  ? "bg-pink-500/10 text-pink-800 dark:text-pink-300 border-pink-300 dark:border-pink-800"
+                  ? "bg-accent-soft text-accent border-accent/30"
                   : "bg-surface-sunken text-muted border-border",
               )}
             >
@@ -778,7 +778,7 @@ export function ObstetricStation({ ids, host }: ObstetricStationProps) {
             {/* WOMAN Trial & Clinical Pearls */}
             <div className="p-3 rounded-lg bg-surface border border-border space-y-1.5">
               <span className="font-semibold text-xs text-fg flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-accent" />
+                <BookOpen className="h-3.5 w-3.5 text-accent" />
                 ACOG &amp; WOMAN Trial Resuscitation Pearls:
               </span>
               <ul className="list-disc pl-4 space-y-1 text-[11px] text-muted">

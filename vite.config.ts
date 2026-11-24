@@ -201,15 +201,15 @@ export default defineConfig(({ command, isPreview }) => ({
           defaultBehavior: [["loader"], ["component"], ["errorComponent"], ["notFoundComponent"]],
         },
       },
-      // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /classes, /class/*, /for-programs, /for-programs/*, /developers, /trust, /sources, /help, /glossary, sitemap.xml). /workup stays server-rendered: its ?case= view differs from a static page.
+      // Static HTML for the public pages (/pairs, /pair/*, /drug/*, /enzymes, /enzyme/*, /classes, /class/*, /for-programs, /for-programs/*, /developers, /trust, /sources, /help, /glossary, /methodology, sitemap.xml). /workup stays server-rendered: its ?case= view differs from a static page.
       // /pairs links to every pair page, /enzymes to every enzyme page, /classes to every class page and /for-programs to every audience page, so crawling covers them all.
       // The desk itself stays server-rendered as before.
       prerender: {
         enabled: true,
         crawlLinks: true,
-        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path.startsWith("/for-programs/") || path === "/developers" || path === "/trust" || path === "/sources" || path === "/help" || path === "/glossary" || path === "/privacy" || path === "/terms" || path === "/cookies" || path === "/enzymes" || path.startsWith("/enzyme/") || path === "/classes" || path.startsWith("/class/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
+        filter: ({ path }) => path === "/pairs" || path === "/for-programs" || path.startsWith("/for-programs/") || path === "/developers" || path === "/trust" || path === "/sources" || path === "/help" || path === "/glossary" || path === "/methodology" || path === "/privacy" || path === "/terms" || path === "/cookies" || path === "/enzymes" || path.startsWith("/enzyme/") || path === "/classes" || path.startsWith("/class/") || path.startsWith("/pair/") || path.startsWith("/drug/") || path === "/sitemap.xml",
       },
-      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/developers" }, { path: "/trust" }, { path: "/sources" }, { path: "/help" }, { path: "/glossary" }, { path: "/privacy" }, { path: "/terms" }, { path: "/cookies" }, { path: "/enzymes" }, { path: "/classes" }, { path: "/sitemap.xml" }],
+      pages: [{ path: "/pairs" }, { path: "/for-programs" }, { path: "/developers" }, { path: "/trust" }, { path: "/sources" }, { path: "/help" }, { path: "/glossary" }, { path: "/methodology" }, { path: "/privacy" }, { path: "/terms" }, { path: "/cookies" }, { path: "/enzymes" }, { path: "/classes" }, { path: "/sitemap.xml" }],
     }),
     ...(command === "build" || isPreview
       ? [

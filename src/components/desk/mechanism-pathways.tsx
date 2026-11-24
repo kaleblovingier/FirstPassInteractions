@@ -16,7 +16,6 @@ import {
   Check,
   ChevronRight,
   BookOpen,
-  Sparkles,
   Zap,
   Info,
   Search,
@@ -49,8 +48,8 @@ const TYPE_CONFIG: Record<
   },
   "ion-channel": {
     label: "Ion Channel",
-    badgeClass: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/40",
-    borderClass: "border-purple-300 dark:border-purple-800/60",
+    badgeClass: "bg-bg-sunken text-fg border-border-strong",
+    borderClass: "border-border-strong",
   },
   messenger: {
     label: "Messenger / Substrate",
@@ -584,7 +583,7 @@ export function MechanismPathways({
         {/* Clinical Pearls & Drug-Drug Collisions Card */}
         <div className="space-y-3 rounded-xl border border-warn/30 bg-warn-soft/30 p-5">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-warn" />
+            <BookOpen className="h-5 w-5 text-warn" />
             <h3 className="font-serif text-lg tracking-tight text-fg">
               Clinical Pearls & Mechanism Collisions
             </h3>

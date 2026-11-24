@@ -8,10 +8,10 @@ import {
   Calculator,
   CheckCircle2,
   Clock,
+  FlaskConical,
   Layers,
   Scale,
   ShieldAlert,
-  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -218,7 +218,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
       <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-700">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent border border-accent/25">
               <Baby className="size-5" />
             </div>
             <div>
@@ -275,7 +275,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
       <div className="rounded-xl border border-border/80 bg-card p-4">
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            <Sparkles className="size-3.5 text-indigo-400" />
+            <FlaskConical className="size-3.5 text-accent" />
             Quick Clinical Archetypes
           </div>
           <span className="text-[11px] text-muted-foreground">Click to simulate developmental physiology</span>
@@ -347,7 +347,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               <option value="years">Years</option>
             </select>
           </div>
-          <p className="mt-1 font-mono text-[10px] text-indigo-700">
+          <p className="mt-1 font-mono tabular-nums text-[10px] text-accent">
             PMA: {report.patientAgeSummary.postmenstrualAgeWeeks} wks
           </p>
         </div>
@@ -437,7 +437,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               onChange={(e) => setIsPostTonsillectomy(e.target.checked)}
               className="rounded border-border text-accent focus:ring-accent"
             />
-            <span className={isPostTonsillectomy ? "font-semibold text-purple-800" : "text-muted-foreground"}>
+            <span className={isPostTonsillectomy ? "font-semibold text-danger" : "text-muted-foreground"}>
               Post-Tonsillectomy
             </span>
           </label>
@@ -516,7 +516,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
 
                 <div className="mt-4 rounded-lg bg-surface-2 p-3 text-xs">
                   <div className="font-semibold text-foreground">Expected Normal for Age:</div>
-                  <div className="mt-1 font-mono text-indigo-700">
+                  <div className="mt-1 font-mono tabular-nums text-accent">
                     {report.renalOntogeny.expectedNormalGfrBracket.minGfr} to{" "}
                     {report.renalOntogeny.expectedNormalGfrBracket.maxGfr} mL/min/1.73m² (mean ~
                     {report.renalOntogeny.expectedNormalGfrBracket.meanGfr})
@@ -531,7 +531,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
               {/* Body Surface Area */}
               <div className="rounded-xl border border-border/80 bg-card p-5">
                 <div className="flex items-center gap-2">
-                  <Calculator className="size-4 text-indigo-400" />
+                  <Calculator className="size-4 text-info" />
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Body Surface Area (BSA)
                   </h4>
@@ -787,7 +787,7 @@ export function PediatricStation({ ids, host }: PediatricStationProps) {
                       {item.isContraindicated ? "CONTRAINDICATED" : "HIGH-ALERT"}
                     </Badge>
                   </div>
-                  <div className="text-[11px] font-medium text-indigo-700">{item.syndromeTitle}</div>
+                  <div className="text-[11px] font-medium text-info">{item.syndromeTitle}</div>
                   <p className="text-muted-foreground leading-relaxed">
                     {item.molecularBiochemicalMechanism}
                   </p>

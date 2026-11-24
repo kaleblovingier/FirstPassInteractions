@@ -272,7 +272,8 @@ export function SourcesView({
     <main className="mx-auto max-w-2xl px-4 py-10">
       <p className="text-xs text-muted">
         <a href="/" className="underline">Desk</a> · <a href="/pairs" className="underline">All pairs</a> ·{" "}
-        <a href="/enzymes" className="underline">Enzymes</a> · <a href="/glossary" className="underline">Glossary</a>
+        <a href="/enzymes" className="underline">Enzymes</a> · <a href="/glossary" className="underline">Glossary</a> ·{" "}
+        <a href="/methodology" className="underline">Methodology</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{SOURCES_H1}</h1>
       <p className="mt-3 text-sm">{SOURCES_INTRO}</p>

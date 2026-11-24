@@ -236,6 +236,118 @@ export const TDM: Record<string, TdmCard> = {
     draw: "During continuous IV maintenance infusion (steady state ~8–10 h; longer in HF or cirrhosis)",
     pearl: "High hepatic extraction ratio (perfusion-limited clearance via CYP1A2/3A4) bound to alpha-1-acid glycoprotein (AAG). Heart failure or cirrhosis halves clearance; acute MI elevates AAG, shifting total vs free levels.",
   },
+  olanzapine: {
+    analyte: "Olanzapine",
+    unit: "ng/mL",
+    trough: "20–80 (AGNP reference range)",
+    toxic: ">100–150: marked sedation, orthostasis, anticholinergic delirium, QTc risk",
+    draw: "Pre-dose trough after ≥5–7 days at steady state (t½ ~30 h)",
+    pearl: "CYP1A2 smoking-sensitive substrate. Smoking induces CYP1A2 and lowers plasma levels; abrupt smoking cessation or adding fluvoxamine can double plasma olanzapine exposure.",
+  },
+  risperidone: {
+    analyte: "Risperidone + 9-hydroxyrisperidone (active moiety)",
+    unit: "ng/mL",
+    trough: "20–60 active moiety (parent + paliperidone)",
+    toxic: ">120 active moiety: extrapyramidal symptoms (EPS), hyperprolactinemia, orthostasis, QTc risk",
+    draw: "Pre-dose trough at steady state; compare parent-to-metabolite ratio (R/9-OH-R) to spot CYP2D6 phenoconversion",
+    pearl: "CYP2D6 converts risperidone to active 9-hydroxyrisperidone (paliperidone). Strong CYP2D6 inhibitors (paroxetine, fluoxetine, bupropion) or CYP2D6 PM status invert the ratio and spike EPS and prolactin toxicity.",
+  },
+  haloperidol: {
+    analyte: "Haloperidol",
+    unit: "ng/mL",
+    trough: "1–10 (AGNP reference range; higher levels rarely add efficacy)",
+    toxic: ">15: severe EPS, akathisia, tardive dyskinesia, QTc prolongation / TdP, NMS",
+    draw: "Pre-dose trough after ≥5–7 days; pair with baseline and follow-up ECG QTc monitoring",
+    pearl: "CYP2D6 and CYP3A4 substrate plus moderate CYP2D6 inhibitor. Strong 2D6/3A4 perpetrator stacks elevate haloperidol levels and compound QTc/TdP risk, especially with IV use or hypokalemia/hypomagnesemia.",
+  },
+  imipramine: {
+    analyte: "Imipramine + desipramine (active moiety)",
+    unit: "ng/mL",
+    trough: "175–300 combined sum",
+    toxic: ">300–500: QRS widening (>100 ms), QTc prolongation, anticholinergic delirium, seizures, hypotension",
+    draw: "Pre-dose trough after ≥5–7 days at steady state; obtain ECG (QRS/QTc) alongside trough",
+    pearl: "CYP2C19 demethylates imipramine to desipramine and CYP2D6 hydroxylates both. CYP2D6 or CYP2C19 inhibition (fluoxetine, paroxetine, fluvoxamine, bupropion) or PM status spikes active moiety exposure and TCA cardiotoxicity.",
+  },
+  desipramine: {
+    analyte: "Desipramine",
+    unit: "ng/mL",
+    trough: "100–300 (AGNP reference range)",
+    toxic: ">300–500: QRS widening, ventricular arrhythmia, anticholinergic delirium, seizures",
+    draw: "Pre-dose trough after ≥5–7 days at steady state; pair with ECG QRS/QTc monitoring",
+    pearl: "Sensitive narrow-therapeutic-index CYP2D6 substrate. Strong CYP2D6 inhibitors (paroxetine, fluoxetine, bupropion, quinidine) or CYP2D6 PM status can multiply plasma exposure several-fold and precipitate cardiotoxicity.",
+  },
+  doxepin: {
+    analyte: "Doxepin + nordoxepin (active moiety)",
+    unit: "ng/mL",
+    trough: "50–150 combined sum (antidepressant range)",
+    toxic: ">300: heavy sedation, anticholinergic delirium, orthostasis, QRS/QTc prolongation, seizures",
+    draw: "Pre-dose trough after ≥5–7 days at steady state; sum parent doxepin plus active nordoxepin",
+    pearl: "CYP2C19 forms active nordoxepin and CYP2D6 clears both. CYP2C19 or CYP2D6 perpetrators (fluvoxamine, fluoxetine, paroxetine, cimetidine) elevate the combined active moiety.",
+  },
+  primidone: {
+    analyte: "Primidone + phenobarbital (active metabolite)",
+    unit: "µg/mL",
+    trough: "Primidone 5–12; derived phenobarbital 15–40",
+    toxic: "Primidone >15 or phenobarbital >40: ataxia, nystagmus, heavy sedation, respiratory depression",
+    draw: "Pre-dose trough for both analytes; derived phenobarbital takes 2–3 weeks to reach steady state",
+    pearl: "Bioactivated to phenobarbital and PEMA; potent broad CYP/P-gp inducer that lowers OCPs, DOACs, and warfarin. Phenytoin and carbamazepine accelerate conversion to phenobarbital, shifting the metabolite ratio upward.",
+  },
+  oxcarbazepine: {
+    analyte: "10-Monohydroxy metabolite (MHD / licarbazepine)",
+    unit: "µg/mL",
+    trough: "3–35 MHD (assay tracks active MHD, not rapidly reduced parent)",
+    toxic: ">35–40 MHD: diplopia, dizziness, ataxia; hyponatremia (Na <130 mEq/L) often occurs inside range",
+    draw: "Pre-dose MHD trough at steady state paired with baseline and periodic serum sodium",
+    pearl: "Prodrug reduced to active MHD (UGT glucuronidation and renal clearance). Moderate CYP3A4 inducer (risks OCP failure) and moderate CYP2C19 inhibitor; hyponatremia risk climbs with SSRIs, thiazides, or older age.",
+  },
+  levetiracetam: {
+    analyte: "Levetiracetam",
+    unit: "µg/mL",
+    trough: "12–46 (ILAE reference range)",
+    toxic: ">46: somnolence, dizziness, behavioral irritability, agitation",
+    draw: "Pre-dose trough; highest yield in pregnancy, severe CKD/dialysis, or adherence checks",
+    pearl: "Predominantly renally excreted unchanged with minimal CYP liability. Pregnancy increases clearance markedly (troughs drop substantially), whereas severe CKD retains drug and heightens sedation and neuropsychiatric toxicity.",
+  },
+  topiramate: {
+    analyte: "Topiramate",
+    unit: "µg/mL",
+    trough: "5–20 (ILAE reference range)",
+    toxic: ">20: cognitive slowing, word-finding aphasia, paresthesias; metabolic acidosis and nephrolithiasis occur inside range",
+    draw: "Pre-dose trough plus baseline and periodic serum bicarbonate (and serum ammonia if paired with valproate)",
+    pearl: "Carbonic anhydrase inhibition drops serum bicarbonate (stacks acidosis with zonisamide or acetazolamide). Co-use with valproate can trigger hyperammonemic encephalopathy and hypothermia even with normal LFTs.",
+  },
+  zonisamide: {
+    analyte: "Zonisamide",
+    unit: "µg/mL",
+    trough: "10–40 (ILAE reference range)",
+    toxic: ">40: somnolence, ataxia, cognitive slowing; metabolic acidosis, oligohidrosis/hyperthermia, and renal stones occur inside range",
+    draw: "Pre-dose trough after ~10–14 days (long t½ ~63 h — avoid premature redraws) plus serum bicarbonate",
+    pearl: "Long-half-life sulfonamide AED partially cleared via CYP3A4. Strong CYP3A4 inducers (carbamazepine, phenytoin, phenobarbital, rifampin) shorten half-life and drop troughs; strong 3A4 inhibitors raise steady-state levels.",
+  },
+  imatinib: {
+    analyte: "Imatinib",
+    unit: "ng/mL",
+    trough: "≥1000 (CML response threshold; GIST ≥1100; typical 1000–3000)",
+    toxic: ">3000: severe periorbital/peripheral edema, cytopenias, hepatotoxicity, fluid retention, QTc prolongation",
+    draw: "Pre-dose trough (Cmin) at steady state (~7 days) during uninterrupted therapy",
+    pearl: "Major CYP3A4 substrate and moderate CYP3A4 inhibitor. Strong CYP3A4 inducers (rifampin, phenytoin, carbamazepine, St. John's wort) drive subtherapeutic troughs (<1000 ng/mL) and loss of oncology response; strong 3A4 inhibitors spike toxicity.",
+  },
+  linezolid: {
+    analyte: "Linezolid",
+    unit: "µg/mL",
+    trough: "2–8 (prolonged therapy >14 days or renal impairment)",
+    toxic: ">8–10: exposure-dependent thrombocytopenia, anemia, lactic acidosis, peripheral/optic neuropathy",
+    draw: "Pre-dose trough after ≥3–5 days during prolonged courses or CrCl <60 mL/min; pair with weekly CBC",
+    pearl: "Renal impairment retains linezolid and its metabolites, driving troughs >8 µg/mL and steep thrombocytopenia and lactic acidosis risk. Reversible nonselective MAOI — watch serotonergic stacks; rifampin lowers exposure.",
+  },
+  "lithium-orotate": {
+    analyte: "Lithium (serum elemental lithium from OTC salt)",
+    unit: "mEq/L",
+    trough: "No established OTC target (Rx lithium maintenance is 0.6–0.8; acute 0.8–1.2)",
+    toxic: ">1.5; severe >2.0 (cumulative renal tubular retention when stacked with Rx lithium or clearance blockers)",
+    draw: "Serum lithium, SCr/eGFR, and electrolytes if co-exposed with Rx lithium, NSAIDs, ACEi/ARBs, or thiazides",
+    pearl: "Unregulated OTC elemental lithium salt lacking FDA approval. Dissociated lithium ions share identical proximal renal reabsorption with prescription lithium — NSAIDs, ACEi/ARBs, and thiazides cut renal clearance, and co-use with Rx lithium creates duplicate exposure.",
+  },
 };
 
 export const TDM_IDS: readonly string[] = Object.keys(TDM);
@@ -250,6 +362,10 @@ export function tdmOnDesk(ids: string[]): Array<{ id: string; card: TdmCard }> {
 
 export function tdmHostNote(id: string, host: HostContext): string | null {
   if (id === "lithium" && host.kidney === "ckd") return "CKD on this host — lithium is renally cleared. The trough will drift up.";
+  if (id === "lithium-orotate") {
+    if (host.kidney === "ckd") return "CKD on this host — dissociated lithium from OTC lithium orotate clears renally and accumulates like prescription lithium. Check serum lithium and SCr.";
+    if (host.age === "geriatric") return "Geriatric host — lower GFR and smaller Vd heighten cumulative elemental lithium retention risk from OTC lithium orotate.";
+  }
   if (id === "digoxin" && host.kidney === "ckd") return "CKD on this host — digoxin clearance falls. Recheck the trough, not just the milligrams.";
   if (id === "lithium" && host.age === "geriatric") return "Geriatric host — smaller Vd and GFR. Toxicity can sit inside a ‘therapeutic’ number.";
   if (id === "vancomycin") {
@@ -273,6 +389,21 @@ export function tdmHostNote(id: string, host: HostContext): string | null {
   if (id === "procainamide" && host.kidney === "ckd") {
     return "CKD on this host — active NAPA metabolite is renally cleared and accumulates even when parent procainamide looks in range. Watch QTc.";
   }
+  if (id === "linezolid" && host.kidney === "ckd") {
+    return "CKD on this host — linezolid trough retention (>8 µg/mL) drives steep thrombocytopenia and lactic acidosis risk during prolonged courses.";
+  }
+  if (id === "levetiracetam") {
+    if (host.preg === "pregnant") return "Pregnancy markedly raises renal levetiracetam clearance — troughs often fall without close monitoring.";
+    if (host.kidney === "ckd") return "CKD on this host — levetiracetam clears renally unchanged; reduced GFR elevates troughs and neuropsychiatric/sedation risk.";
+  }
+  if (id === "oxcarbazepine") {
+    if (host.kidney === "ckd") return "CKD on this host — active MHD metabolite clears renally and accumulates as GFR drops; monitor MHD trough and serum sodium.";
+    if (host.preg === "pregnant") return "Pregnancy accelerates UGT glucuronidation of MHD — serum MHD troughs can fall substantially.";
+    if (host.age === "geriatric") return "Geriatric host — higher SIADH/hyponatremia risk on oxcarbazepine; follow serum sodium alongside MHD trough.";
+  }
+  if (id === "topiramate" && host.preg === "pregnant") {
+    return "Pregnancy lowers topiramate troughs via rising clearance, and topiramate carries oral-cleft teratogenic risk.";
+  }
   if (id === "voriconazole") {
     if (host.phenotypes.CYP2C19 === "PM") {
       return "CYP2C19 poor metabolizer — voriconazole clearance drops sharply. Expect elevated troughs and visual/neurotoxicity without early TDM.";
@@ -281,7 +412,28 @@ export function tdmHostNote(id: string, host: HostContext): string | null {
       return "CYP2C19 ultrarapid metabolizer — voriconazole clears fast and troughs often run subtherapeutic (<1.0 µg/mL).";
     }
   }
+  if (id === "risperidone") {
+    if (host.phenotypes.CYP2D6 === "PM") {
+      return "CYP2D6 poor metabolizer — parent risperidone accumulates with an inverted risperidone/9-OH ratio, elevating EPS and QTc risk.";
+    }
+    if (host.kidney === "ckd") {
+      return "CKD on this host — active 9-hydroxyrisperidone (paliperidone) is renally cleared and accumulates as GFR declines.";
+    }
+  }
+  if (id === "haloperidol" && host.phenotypes.CYP2D6 === "PM") {
+    return "CYP2D6 poor metabolizer — haloperidol clearance drops and troughs climb; monitor EPS and ECG QTc.";
+  }
+  if (id === "desipramine" && host.phenotypes.CYP2D6 === "PM") {
+    return "CYP2D6 poor metabolizer — desipramine is a sensitive 2D6 NTI substrate. Expect multi-fold trough elevation and ECG QRS/QTc risk.";
+  }
+  if (id === "imipramine" && (host.phenotypes.CYP2D6 === "PM" || host.phenotypes.CYP2C19 === "PM")) {
+    return "CYP2D6 or CYP2C19 poor metabolizer — imipramine + desipramine active moiety climbs sharply. Monitor combined trough and ECG QRS/QTc.";
+  }
+  if (id === "doxepin" && (host.phenotypes.CYP2D6 === "PM" || host.phenotypes.CYP2C19 === "PM")) {
+    return "CYP2D6 or CYP2C19 poor metabolizer — doxepin + nordoxepin clearance slows; monitor sedation, anticholinergic burden, and ECG QRS/QTc.";
+  }
   if (id === "clozapine" && host.smoking) return "Daily smoke on this host — 1A2 induction. Expect a lower trough; quitting will raise it.";
+  if (id === "olanzapine" && host.smoking) return "Daily smoke on this host — CYP1A2 induction drops olanzapine troughs; abrupt smoking cessation can double plasma exposure.";
   if (id === "theophylline" && host.smoking) return "Smoke induces 1A2. Theophylline falls; the quit rebound is the toxicity.";
   if (id === "phenytoin" && host.preg === "pregnant") return "Pregnancy — clearance and albumin both move. Free phenytoin is the honest number.";
   if (id === "lamotrigine" && host.preg === "pregnant") return "Pregnancy raises lamotrigine clearance. Levels fall unless you titrate.";

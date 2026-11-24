@@ -16,7 +16,7 @@ import { severitySurface, severityTone } from "./severity";
 import { DeskOnlyNotice, GradePath, SourceReviewNote } from "./basis-review";
 
 const SEVERITY_FILTERS: Array<Severity | "all"> = ["all", "contraindicated", "major", "moderate", "minor"];
-type KindFilter = "all" | "pk" | "pd" | "geno" | "clinic" | "food";
+type KindFilter = "all" | "pk" | "pd" | "geno" | "clinic" | "food" | "multi";
 const KIND_FILTERS: { id: KindFilter; label: string }[] = [
   { id: "all", label: "All kinds" },
   { id: "pk", label: "Levels / timing" },
@@ -24,18 +24,51 @@ const KIND_FILTERS: { id: KindFilter; label: string }[] = [
   { id: "geno", label: "Metabolizer" },
   { id: "clinic", label: "Clinic" },
   { id: "food", label: "Food" },
+  { id: "multi", label: "Multi-drug" },
+];
+
+const CASCADE_BADGES: ReadonlyArray<{
+  tag: "multi-inhibitor" | "opposing" | "prodrug";
+  label: string;
+  className: string;
+}> = [
+  {
+    tag: "multi-inhibitor",
+    label: "Multi-inhibitor saturation",
+    className: "bg-danger-soft text-danger border border-danger/30 font-mono text-[10px]",
+  },
+  {
+    tag: "opposing",
+    label: "Opposing inh/ind tug-of-war",
+    className: "bg-warn-soft text-warn border border-warn/30 font-mono text-[10px]",
+  },
+  {
+    tag: "prodrug",
+    label: "Prodrug activation",
+    className: "bg-info-soft text-info border border-info/30 font-mono text-[10px]",
+  },
 ];
 
 type BulkToggle = { open: boolean; seq: number } | null;
 
+function isMultiDrugStackFinding(f: Finding): boolean {
+  return (
+    f.tags.includes("stack") ||
+    f.tags.includes("multi-inhibitor") ||
+    f.tags.includes("opposing")
+  );
+}
+
 function matchesKind(f: Finding, kind: KindFilter) {
   if (kind === "all") return true;
   if (kind === "food") return f.tags.includes("food");
+  if (kind === "multi") return isMultiDrugStackFinding(f);
   return f.kind === kind;
 }
 
 function matchesQuery(f: Finding, normalizedQuery: string): boolean {
   if (!normalizedQuery) return true;
+  const badgeLabels = CASCADE_BADGES.filter((b) => f.tags.includes(b.tag)).map((b) => b.label);
   const fields = [
     f.headline,
     plainLanguageSummary(f),
@@ -44,6 +77,7 @@ function matchesQuery(f: Finding, normalizedQuery: string): boolean {
     f.mechanism,
     ...f.enzymes,
     ...f.tags,
+    ...badgeLabels,
     ...f.drugIds.map((id) => DRUG_BY_ID[id]?.name ?? ""),
   ];
   return fields.some((part) => part.toLowerCase().includes(normalizedQuery));
@@ -102,6 +136,7 @@ export function FindingList({
       geno: 0,
       clinic: 0,
       food: 0,
+      multi: 0,
     };
     for (const f of scoped) {
       if (matchesKind(f, "pk")) counts.pk += 1;
@@ -109,6 +144,7 @@ export function FindingList({
       if (matchesKind(f, "geno")) counts.geno += 1;
       if (matchesKind(f, "clinic")) counts.clinic += 1;
       if (matchesKind(f, "food")) counts.food += 1;
+      if (matchesKind(f, "multi")) counts.multi += 1;
     }
     return counts;
   }, [scoped]);
@@ -399,6 +435,7 @@ function FindingCard({
   const drugs = [...new Set(finding.drugIds)].map((id) => DRUG_BY_ID[id]).filter(Boolean);
   const plainSummary = plainLanguageSummary(finding);
   const scan = clinicianScan(finding);
+  const cascadeBadges = CASCADE_BADGES.filter((b) => finding.tags.includes(b.tag));
 
   return (
     <li className="rounded-lg bg-surface shadow-[var(--shadow-border)]">
@@ -418,7 +455,20 @@ function FindingCard({
           {SEVERITY_PLAIN[finding.severity]}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-fg">{finding.headline}</span>
+          <span className="flex flex-wrap items-center gap-1.5">
+            <span className="text-sm font-medium text-fg">{finding.headline}</span>
+            {cascadeBadges.map((badge) => (
+              <span
+                key={badge.tag}
+                className={cn(
+                  "inline-flex items-center rounded-sm px-1.5 py-0.5 leading-tight tracking-wide",
+                  badge.className,
+                )}
+              >
+                {badge.label}
+              </span>
+            ))}
+          </span>
           <span className="mt-0.5 block text-xs leading-relaxed text-muted">{plainSummary}</span>
           {scan ? (
             <span className="mt-1 block font-mono text-[11px] leading-relaxed text-fg">{scan}</span>

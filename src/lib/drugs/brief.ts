@@ -3,15 +3,23 @@
  * Pairs first (worst to mild), whole-desk notes after. Educational — not a milligram.
  */
 
+import { DRUG_BY_ID } from "./catalog";
 import { plainLanguageSummary } from "./interaction-summary";
 import { isVirtual } from "./host";
 import { basisFor } from "./basis";
+import { halfLifeFor } from "./overlap";
 import { PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 import {
   SEVERITY_LABEL,
   SEVERITY_RANK,
+  type Enzyme,
+  type EnzymeRole,
   type Finding,
+  type ItemKind,
+  type PdFlag,
+  type Report,
   type Severity,
+  type StackBar,
 } from "./types";
 
 const MAX_BRIEF_IDS = 8;
@@ -177,4 +185,232 @@ export function buildBriefUrl(ids: string[], opts?: { base?: string }): string {
   const url = new URL(base + "/");
   url.searchParams.set("brief", clean.join(","));
   return url.toString();
+}
+
+export interface RegimenCompoundExport {
+  id: string;
+  name: string;
+  cls: string;
+  kind: ItemKind;
+  halfLifeHours: number | null;
+  halfLifeLabel: string | null;
+  enzymes: EnzymeRole[];
+  pd: PdFlag[];
+}
+
+export interface RegimenPathwayRow {
+  enzyme: Enzyme;
+  substrates: string[];
+  inhibitors: string[];
+  inducers: string[];
+  collisions: number;
+  colliding: boolean;
+}
+
+export interface RegimenFindingExport {
+  id: string;
+  severity: Severity;
+  severityLabel: string;
+  kind: Finding["kind"];
+  drugIds: string[];
+  headline: string;
+  enzymes: Enzyme[];
+  effect: string;
+  mechanism: string;
+  clinical: string;
+  plainSummary: string;
+  tags: string[];
+  source: string;
+}
+
+export interface StructuredRegimenExport {
+  software: string;
+  version: string;
+  generatedAt: string;
+  hostLine?: string;
+  compounds: RegimenCompoundExport[];
+  pathwayMatrix: RegimenPathwayRow[];
+  highest: Severity | "none";
+  highestLabel: string;
+  counts: Record<Severity, number>;
+  stacks: StackBar[];
+  findings: RegimenFindingExport[];
+  disclaimer: string;
+  prescribingNote: string;
+}
+
+export interface StructuredRegimenInput {
+  trayIds: string[];
+  report: Report;
+  hostLine?: string;
+  version?: string;
+  generatedAt?: string;
+}
+
+/**
+ * Pure structured JSON monograph export for a regimen tray + analysis report.
+ * Deduplicates tray IDs against the catalog and attaches typical adult half-lives where mapped.
+ */
+export function buildStructuredRegimenJson(input: StructuredRegimenInput): StructuredRegimenExport {
+  const seen = new Set<string>();
+  const compounds: RegimenCompoundExport[] = [];
+  for (const rawId of input.trayIds) {
+    if (!rawId || isVirtual(rawId) || !Object.hasOwn(DRUG_BY_ID, rawId)) continue;
+    const drug = DRUG_BY_ID[rawId];
+    if (!drug || seen.has(drug.id)) continue;
+    seen.add(drug.id);
+    const hl = halfLifeFor(drug.id);
+    compounds.push({
+      id: drug.id,
+      name: drug.name,
+      cls: drug.cls,
+      kind: drug.kind,
+      halfLifeHours: hl ? hl.hours : null,
+      halfLifeLabel: hl ? `${hl.hours} h` : null,
+      enzymes: drug.enzymes.map((role) => ({ ...role })),
+      pd: [...drug.pd],
+    });
+  }
+
+  const pathwayMatrix: RegimenPathwayRow[] = input.report.burden.map((row) => ({
+    enzyme: row.enzyme,
+    substrates: [...row.substrates],
+    inhibitors: [...row.inhibitors],
+    inducers: [...row.inducers],
+    collisions: row.collisions,
+    colliding: row.collisions > 0,
+  }));
+
+  const sortedFindings = [...input.report.findings].sort((a, b) => {
+    const rankDiff = SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity];
+    if (rankDiff) return rankDiff;
+    if (a.kind !== b.kind) return a.kind === "pk" ? -1 : 1;
+    return a.headline.localeCompare(b.headline);
+  });
+
+  const findings: RegimenFindingExport[] = sortedFindings.map((f) => ({
+    id: f.id,
+    severity: f.severity,
+    severityLabel: SEVERITY_LABEL[f.severity],
+    kind: f.kind,
+    drugIds: [...f.drugIds],
+    headline: f.headline,
+    enzymes: [...f.enzymes],
+    effect: f.effect,
+    mechanism: f.mechanism,
+    clinical: f.clinical,
+    plainSummary: plainLanguageSummary(f),
+    tags: [...f.tags],
+    source: findingSourceLine(f),
+  }));
+
+  return {
+    software: SOFTWARE.name,
+    version: input.version ?? SOFTWARE.version,
+    generatedAt: input.generatedAt ?? new Date().toISOString(),
+    ...(input.hostLine ? { hostLine: input.hostLine } : {}),
+    compounds,
+    pathwayMatrix,
+    highest: input.report.highest,
+    highestLabel: SEVERITY_LABEL[input.report.highest],
+    counts: { ...input.report.counts },
+    stacks: input.report.stacks.map((s) => ({ ...s, items: [...s.items] })),
+    findings,
+    disclaimer: EXPORT_NOT_A_DOSE,
+    prescribingNote: PI_FOOTER,
+  };
+}
+
+function escapeMdCell(value: string): string {
+  return value.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+}
+
+function formatEnzymeRole(role: EnzymeRole): string {
+  if (role.kind === "substrate") {
+    const qualifiers: string[] = [role.sensitivity];
+    if (role.pathway === "activation") qualifiers.push("prodrug activation");
+    if (role.nti) qualifiers.push("NTI");
+    return `${role.enzyme} substrate (${qualifiers.join(", ")})`;
+  }
+  return `${role.enzyme} ${role.strength} ${role.kind}`;
+}
+
+const SEVERITY_ORDER: readonly Severity[] = ["contraindicated", "major", "moderate", "minor"];
+
+/**
+ * Pure Clinical Monograph Markdown report for copy/download and API export.
+ */
+export function buildMarkdownRegimenReport(input: {
+  trayIds: string[];
+  report: Report;
+  hostLine?: string;
+  version?: string;
+}): string {
+  const structured = buildStructuredRegimenJson(input);
+  const lines: string[] = [];
+
+  lines.push("# FirstPass Clinical Monograph Regimen Report");
+  lines.push("");
+  lines.push(
+    `- **Regimen:** ${structured.compounds.length ? structured.compounds.map((c) => c.name).join(" + ") : "Empty desk"}`,
+  );
+  lines.push(`- **Highest severity:** ${structured.highestLabel}`);
+  lines.push(
+    `- **Findings:** ${structured.findings.length} total (${structured.counts.contraindicated} ${SEVERITY_LABEL.contraindicated.toLowerCase()}, ${structured.counts.major} ${SEVERITY_LABEL.major.toLowerCase()}, ${structured.counts.moderate} ${SEVERITY_LABEL.moderate.toLowerCase()}, ${structured.counts.minor} ${SEVERITY_LABEL.minor.toLowerCase()})`,
+  );
+  if (structured.hostLine) {
+    lines.push(`- **Host context:** ${structured.hostLine}`);
+  }
+  lines.push(`- **Reference engine:** ${structured.software} ${structured.version}`);
+  lines.push("");
+
+  lines.push("## Regimen Compounds & Metabolic Roles");
+  lines.push("");
+  if (structured.compounds.length === 0) {
+    lines.push("_No catalog compounds on the desk._");
+  } else {
+    lines.push("| Compound | Class | t½ | CYP / P-gp Roles |");
+    lines.push("| --- | --- | --- | --- |");
+    for (const compound of structured.compounds) {
+      const rolesText = compound.enzymes.length
+        ? compound.enzymes.map(formatEnzymeRole).join("; ")
+        : "—";
+      lines.push(
+        `| ${escapeMdCell(compound.name)} | ${escapeMdCell(compound.cls)} | ${escapeMdCell(compound.halfLifeLabel ?? "—")} | ${escapeMdCell(rolesText)} |`,
+      );
+    }
+  }
+  lines.push("");
+
+  lines.push("## Mechanistic Findings");
+  lines.push("");
+  if (structured.findings.length === 0) {
+    lines.push(EXPORT_EMPTY);
+  } else {
+    for (const severity of SEVERITY_ORDER) {
+      const group = structured.findings.filter((f) => f.severity === severity);
+      if (!group.length) continue;
+      lines.push(`### ${SEVERITY_LABEL[severity]} (${group.length})`);
+      lines.push("");
+      for (const f of group) {
+        lines.push(`#### ${f.headline}`);
+        lines.push(`- **Summary:** ${f.plainSummary}`);
+        lines.push(
+          `- **Mechanism:** ${f.mechanism}${f.enzymes.length ? ` (${f.enzymes.join(", ")})` : ""}`,
+        );
+        lines.push(`- **Effect:** ${f.effect}`);
+        lines.push(`- **Clinical rationale:** ${f.clinical}`);
+        lines.push(`- **Source:** ${f.source}`);
+        lines.push("");
+      }
+    }
+  }
+
+  lines.push("---");
+  lines.push("");
+  lines.push(`> ${structured.disclaimer}`);
+  lines.push(">");
+  lines.push(`> ${structured.prescribingNote}`);
+
+  return lines.join("\n").trimEnd();
 }

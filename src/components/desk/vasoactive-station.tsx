@@ -434,7 +434,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
                   </div>
                   <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full bg-purple-500 transition-all"
+                      className="h-full bg-accent transition-all"
                       style={{ width: `${(selectedAgent.receptorProfile.v1a / 4) * 100}%` }}
                     />
                   </div>
@@ -460,7 +460,7 @@ export function VasoactiveStation({ ids, host }: VasoactiveStationProps) {
                   </div>
                   <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full bg-cyan-500 transition-all"
+                      className="h-full bg-info transition-all"
                       style={{ width: `${(selectedAgent.receptorProfile.at1 / 4) * 100}%` }}
                     />
                   </div>

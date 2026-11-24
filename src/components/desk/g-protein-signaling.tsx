@@ -11,7 +11,6 @@ import {
   Info,
   Search,
   Layers,
-  Sparkles,
   Pill,
 } from "lucide-react";
 import {
@@ -107,11 +106,11 @@ export function GProteinSignaling() {
         };
       case "PDE":
         return {
-          pill: "bg-purple-500/15 text-purple-900 border-purple-500/30",
-          cardAccent: "border-l-4 border-l-purple-500",
-          stepActive: "bg-purple-500/20 border-purple-500 text-purple-950 font-semibold shadow-sm",
-          badge: "bg-purple-100 text-purple-900 border-purple-300",
-          btn: "bg-purple-700 hover:bg-purple-800 text-purple-50",
+          pill: "bg-accent-soft text-accent border-accent/30",
+          cardAccent: "border-l-4 border-l-accent",
+          stepActive: "bg-accent-soft border-accent text-fg font-semibold shadow-sm",
+          badge: "bg-accent-soft text-accent border-accent/30",
+          btn: "bg-accent hover:bg-accent/90 text-accent-fg",
         };
     }
   }, [activePathway.gProtein]);
@@ -409,7 +408,7 @@ export function GProteinSignaling() {
         <div className="space-y-3 pt-4 border-t border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-accent" />
+              <BookOpen className="size-4 text-accent" />
               <h3 className="font-serif text-lg font-semibold text-fg">Clinical Pharmacology Pearls & High-Yield Collisions</h3>
             </div>
             <span className="font-mono text-xs text-muted">Autonomic mnemonics & alerts</span>

@@ -145,12 +145,12 @@ describe("public pair pages", () => {
     }
   });
 
-  it("sitemap lists /, /pairs, /enzymes, /classes, /for-programs and its audience pages, the course kit, /developers, /practice, /glossary, /workup, /trust, /sources, /help, /privacy, /terms, /cookies, every pair canonical, every drug hub, every indexable enzyme hub and every class hub", () => {
+  it("sitemap lists /, /pairs, /enzymes, /classes, /for-programs and its audience pages, the course kit, /developers, /practice, /glossary, /methodology, /workup, /trust, /sources, /help, /privacy, /terms, /cookies, every pair canonical, every drug hub, every indexable enzyme hub and every class hub", () => {
     const xml = sitemapXml();
     const hubCount = drugHubs().length;
     const enzymeCount = enzymeHubs().filter((h) => h.indexable).length;
     const classCount = classHubs().length;
-    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 16 + audienceUrls().length + hubCount + enzymeCount + classCount);
+    assert.equal((xml.match(/<loc>/g) ?? []).length, pages.length + 17 + audienceUrls().length + hubCount + enzymeCount + classCount);
     assert.ok(xml.includes(`<loc>${SITE_URL}/classes</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/for-programs/course-kit</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/trust</loc>`));
@@ -158,6 +158,7 @@ describe("public pair pages", () => {
     assert.ok(xml.includes(`<loc>${SITE_URL}/sources</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/practice</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/glossary</loc>`));
+    assert.ok(xml.includes(`<loc>${SITE_URL}/methodology</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/workup</loc>`));
     assert.ok(xml.includes(`<loc>${SITE_URL}/help</loc>`));
     for (const p of pages) assert.ok(xml.includes(`<loc>${p.canonical}</loc>`), p.slug);

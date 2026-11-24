@@ -161,6 +161,7 @@ describe("FindingList", () => {
     assert.match(html, /aria-pressed="false"[^>]*>Metabolizer\s*<span[^>]*>\(1\)<\/span>/);
     assert.match(html, /aria-pressed="false"[^>]*>Clinic\s*<span[^>]*>\(1\)<\/span>/);
     assert.match(html, /aria-pressed="false"[^>]*>Food\s*<span[^>]*>\(1\)<\/span>/);
+    assert.match(html, /aria-pressed="false"[^>]*>Multi-drug\s*<span[^>]*>\(0\)<\/span>/);
 
     // Focus by Medicine strip includes real catalog meds sorted by descending count then name, excluding __smoke
     assert.match(html, /role="group" aria-label="Filter collisions by medicine"/);
@@ -238,6 +239,40 @@ describe("FindingList", () => {
     const scopedText = stripTags(scopedHtml);
     assert.ok(scopedText.includes("All (3)"));
     assert.equal(scopedHtml.includes("Filter collisions by keyword"), false);
+  });
+
+  it("renders Multi-inhibitor saturation and Prodrug activation badges plus Multi-drug filter count for fluoxetine + bupropion + codeine", () => {
+    const findings = analyze(["fluoxetine", "bupropion", "codeine"], DEFAULT_HOST).findings;
+    const html = renderToStaticMarkup(<FindingList findings={findings} />);
+    const text = stripTags(html);
+
+    assert.match(
+      html,
+      /bg-danger-soft text-danger border border-danger\/30 font-mono text-\[10px\][^>]*>Multi-inhibitor saturation</,
+    );
+    assert.match(
+      html,
+      /bg-info-soft text-info border border-info\/30 font-mono text-\[10px\][^>]*>Prodrug activation</,
+    );
+    assert.match(html, /aria-pressed="false"[^>]*>Multi-drug\s*<span[^>]*>\(1\)<\/span>/);
+    assert.ok(text.includes("Compounded CYP2D6 inhibition"));
+    assert.deepEqual(findDoses(text), []);
+    assert.equal(BANNED_REGULATORY_RE.test(text), false);
+  });
+
+  it("renders Opposing inh/ind tug-of-war badge and Multi-drug filter count for rifampin + ketoconazole + midazolam", () => {
+    const findings = analyze(["rifampin", "ketoconazole", "midazolam"], DEFAULT_HOST).findings;
+    const html = renderToStaticMarkup(<FindingList findings={findings} />);
+    const text = stripTags(html);
+
+    assert.match(
+      html,
+      /bg-warn-soft text-warn border border-warn\/30 font-mono text-\[10px\][^>]*>Opposing inh\/ind tug-of-war</,
+    );
+    assert.match(html, /aria-pressed="false"[^>]*>Multi-drug\s*<span[^>]*>\(1\)<\/span>/);
+    assert.ok(text.includes("Opposing CYP3A4 inhibition + induction on the same tray"));
+    assert.deepEqual(findDoses(text), []);
+    assert.equal(BANNED_REGULATORY_RE.test(text), false);
   });
 
   it("keeps source and rendered output free of administered doses and banned regulatory claims", () => {

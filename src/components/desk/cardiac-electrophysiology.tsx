@@ -9,7 +9,7 @@ import {
   BookOpen,
   Info,
   Heart,
-  Sparkles,
+  FlaskConical,
   Gauge,
   Sliders,
   Flame,
@@ -488,7 +488,7 @@ export function CardiacElectrophysiology() {
               : "text-muted hover:bg-surface-2/60 hover:text-fg",
           )}
         >
-          <BookOpen className="size-4 text-cyan-500" />
+          <BookOpen className="size-4 text-accent" />
           <span>Vaughan Williams Classes</span>
         </button>
         <button
@@ -516,7 +516,7 @@ export function CardiacElectrophysiology() {
               : "text-muted hover:bg-surface-2/60 hover:text-fg",
           )}
         >
-          <Zap className="size-4 text-purple-500" />
+          <Zap className="size-4 text-info" />
           <span>Ion Channels ({allChannels.length})</span>
         </button>
         <button
@@ -601,8 +601,8 @@ export function CardiacElectrophysiology() {
                           flux.direction === "inward"
                             ? "bg-rose-500/10 text-danger dark:text-rose-300 border border-rose-500/20"
                             : flux.direction === "outward"
-                            ? "bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border border-cyan-500/20"
-                            : "bg-purple-500/10 text-purple-800 dark:text-purple-300 border border-purple-500/20",
+                            ? "bg-accent-soft text-accent border border-accent/30"
+                            : "bg-info-soft text-info border border-info/30",
                         )}
                       >
                         {flux.direction}
@@ -655,7 +655,7 @@ export function CardiacElectrophysiology() {
                 className={cn(
                   "min-h-[44px] whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold border transition-all",
                   selectedClassId === cls.id
-                    ? "bg-cyan-500/15 border-cyan-500 text-fg shadow-sm"
+                    ? "bg-accent-soft border-accent text-accent shadow-xs"
                     : "bg-surface border-border text-muted hover:bg-surface-2 hover:text-fg",
                 )}
               >
@@ -667,13 +667,13 @@ export function CardiacElectrophysiology() {
           <div className="rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)] flex flex-col gap-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-accent">
                   {currentClass.code}
                 </span>
                 <h3 className="text-xl font-bold text-fg">{currentClass.name}</h3>
                 <p className="text-xs text-muted mt-0.5">{currentClass.subheading}</p>
               </div>
-              <span className="rounded-full bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 text-xs font-semibold text-cyan-800 dark:text-cyan-300">
+              <span className="rounded-full bg-accent-soft border border-accent/30 px-3 py-1 text-xs font-semibold text-accent">
                 {currentClass.useDependenceProfile}
               </span>
             </div>
@@ -854,7 +854,7 @@ export function CardiacElectrophysiology() {
             >
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 text-[11px] font-mono font-bold text-purple-800 dark:text-purple-300">
+                  <span className="rounded-md bg-info-soft border border-info/30 px-2 py-0.5 text-[11px] font-mono font-bold text-info">
                     {channel.gene}
                   </span>
                   <span className="text-[11px] font-mono text-muted">
@@ -1037,7 +1037,7 @@ export function CardiacElectrophysiology() {
           {/* 1-Tap Preset Scenario Loaders */}
           <div className="rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)] flex flex-col gap-3">
             <h3 className="text-sm font-bold text-fg uppercase tracking-wider flex items-center gap-2">
-              <Sparkles className="size-4 text-accent" />
+              <FlaskConical className="size-4 text-accent" />
               1-Tap High-Risk Electrophysiology Test Presets
             </h3>
             <p className="text-xs text-muted">

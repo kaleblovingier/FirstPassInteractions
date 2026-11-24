@@ -154,6 +154,10 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "apixaban",
       "rivaroxaban",
       "daraxonrasib",
+      "edoxaban",
+      "fexofenadine",
+      "atorvastatin",
+      "everolimus",
     ],
     inhibitors: [
       "verapamil",
@@ -167,6 +171,11 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "cyclosporine",
       "vepdegestrant",
       "daraxonrasib",
+      "berberine",
+      "piperine",
+      "dronedarone",
+      "cobicistat",
+      "quercetin",
     ],
     inducers: [
       "rifampin",
@@ -174,6 +183,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "carbamazepine",
       "phenytoin",
       "phenobarbital",
+      "apalutamide",
     ],
     probeOrInvestigationalInhibitors: [
       "Elacridar (GF120918 - third generation dual P-gp/BCRP investigational inhibitor)",
@@ -334,6 +344,76 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         literatureCitation:
           "Greiner B, et al. The role of intestinal P-glycoprotein in the interaction of digoxin and rifampin. J Clin Invest. 1999;104(2):147-153 (PMID: 10411543).",
       },
+      {
+        id: "st-johns-wort-digoxin",
+        title: "St. John's Wort + Digoxin PXR-Driven Intestinal P-gp (MDR1) Induction",
+        drugPair: ["st-johns-wort", "digoxin"],
+        description:
+          "Hyperforin in St. John's wort activates pregnane X receptor (PXR), markedly upregulating duodenal ABCB1 (P-gp / MDR1) expression and decreasing oral digoxin AUC by ~25% and trough concentrations by ~33%. The same botanical P-gp induction axis collapses oral bioavailability of dabigatran, apixaban, cyclosporine, and tacrolimus.",
+        hazard:
+          "Subtherapeutic cardiac glycoside exposure, breakthrough rapid ventricular response in atrial fibrillation, or decompensated heart failure.",
+        severity: "high",
+        mechanismDetail:
+          "PXR-mediated transcriptional induction increases enterocyte brush-border P-gp density, accelerating luminal back-transport of unchanged digoxin prior to portal absorption and persisting after botanical discontinuation.",
+        literatureCitation:
+          "Johne A, et al. Clin Pharmacol Ther. 1999;66(4):338-345 (PMID: 10546917); Durr D, et al. Clin Pharmacol Ther. 2000;68(6):598-604 (PMID: 11180019).",
+      },
+      {
+        id: "st-johns-wort-cyclosporine",
+        title: "St. John's Wort + Cyclosporine Dual P-gp & CYP3A4 Induction Graft Failure",
+        drugPair: ["st-johns-wort", "cyclosporine"],
+        description:
+          "St. John's wort strongly induces enterocyte and hepatic ABCB1 (P-gp) alongside CYP3A4 via PXR activation, slashing cyclosporine trough concentrations by ~40–60% and precipitating acute transplant rejection.",
+        hazard:
+          "Subtherapeutic calcineurin inhibitor troughs and acute cellular or antibody-mediated solid organ allograft rejection.",
+        severity: "critical",
+        mechanismDetail:
+          "Concerted upregulation of intestinal apical P-gp extrusion and CYP3A4 oxidation lowers both oral absorbed fraction (Fa * Fg) and systemic persistence of cyclosporine and tacrolimus.",
+        literatureCitation:
+          "Ruschitzka F, et al. Acute heart transplant rejection due to Saint John's wort. Lancet. 2000;355(9203):548-549 (PMID: 10683007).",
+      },
+      {
+        id: "berberine-cyclosporine",
+        title: "Berberine + Cyclosporine Botanical P-gp & CYP3A4 Efflux Inhibition",
+        drugPair: ["berberine", "cyclosporine"],
+        description:
+          "Berberine inhibits intestinal and hepatic P-glycoprotein (ABCB1) as well as CYP3A4, markedly elevating cyclosporine AUC (~34–75%) and blood trough concentrations in transplant recipients while also amplifying exposure of narrow-index P-gp substrates such as digoxin.",
+        hazard:
+          "Supratherapeutic calcineurin inhibitor toxicity: nephrotoxicity, hypertension, tremor, neurotoxicity, and opportunistic infection risk.",
+        severity: "high",
+        mechanismDetail:
+          "Suppression of enterocyte apical P-gp back-transport and CYP3A4 presystemic metabolism increases oral bioavailability and slows hepatobiliary clearance of cyclosporine.",
+        literatureCitation:
+          "Wu X, et al. Effects of berberine on the blood concentration of cyclosporin A in renal transplanted recipients: clinical and pharmacokinetic study. Eur J Clin Pharmacol. 2005;61(8):567-572 (PMID: 16133554).",
+      },
+      {
+        id: "piperine-digoxin",
+        title: "Piperine + Digoxin Botanical P-gp Bioenhancer Efflux Blockade",
+        drugPair: ["piperine", "digoxin"],
+        description:
+          "Piperine (black pepper alkaloid bioenhancer) inhibits human P-glycoprotein (ABCB1) efflux transport alongside CYP3A4, increasing net mucosal-to-serosal oral absorption of co-administered P-gp substrates such as digoxin, fexofenadine, and cyclosporine.",
+        hazard:
+          "Unintended elevation in systemic exposure of narrow-therapeutic-index P-gp substrates, risking digitalis toxicity and arrhythmia.",
+        severity: "moderate",
+        mechanismDetail:
+          "Direct inhibition of enterocyte apical ABCB1 efflux reduces luminal extrusion of lipophilic and amphipathic substrates, enhancing presystemic absorption across the intestinal epithelium.",
+        literatureCitation:
+          "Bhardwaj RK, et al. Piperine, a major constituent of black pepper, inhibits human P-glycoprotein and CYP3A4. J Pharmacol Exp Ther. 2002;302(2):645-650 (PMID: 12065725).",
+      },
+      {
+        id: "edoxaban-dronedarone",
+        title: "Edoxaban + Dronedarone Intestinal P-gp Inhibition Bleeding Surge",
+        drugPair: ["edoxaban", "dronedarone"],
+        description:
+          "Edoxaban undergoes minimal CYP metabolism and depends heavily on intestinal and renal P-glycoprotein (ABCB1) efflux for absorption gating and excretion. Dronedarone potently inhibits P-gp, increasing edoxaban AUC by ~85% and Cmax by ~46%.",
+        hazard:
+          "Elevated factor Xa inhibition and heightened major gastrointestinal or intracranial hemorrhage hazard.",
+        severity: "high",
+        mechanismDetail:
+          "Potent ABCB1 inhibition by dronedarone and its N-debutyldronedarone metabolite elevates intestinal fraction absorbed (Fa) and reduces renal/biliary efflux clearance of edoxaban.",
+        literatureCitation:
+          "Mendell J, et al. Drug-drug interaction studies of cardiovascular drugs involving P-glycoprotein, an efflux transporter, on the pharmacokinetics of edoxaban, an oral factor Xa inhibitor. Am J Cardiovasc Drugs. 2013;13(5):331-342 (PMID: 23572581).",
+      },
     ],
     pharmacokineticImpact:
       "Modulates bioavailability (F), central nervous system penetration, biliary clearance, and renal tubular secretion. Inhibition increases systemic AUC and CNS distribution; induction decreases bioavailability.",
@@ -410,6 +490,8 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "ritonavir",
       "paxlovid",
       "tavapadon",
+      "turmeric",
+      "cobicistat",
     ],
     inducers: [],
     probeOrInvestigationalInhibitors: [
@@ -475,6 +557,20 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         literatureCitation:
           "Simonson SG, et al. Clin Pharmacol Ther. 2004;76(2):167-177 (PMID: 15289793); Varma MV, et al. Pharm Res. 2015 (PMID: 26155985).",
       },
+      {
+        id: "sulfasalazine-turmeric",
+        title: "Sulfasalazine + Turmeric (Curcumin) Intestinal BCRP Efflux Inhibition",
+        drugPair: ["sulfasalazine", "turmeric"],
+        description:
+          "Curcuminoids in turmeric inhibit enterocyte apical BCRP (ABCG2), elevating systemic plasma AUC of the BCRP probe substrate sulfasalazine roughly 3.2-fold in human pharmacokinetic studies.",
+        hazard:
+          "Elevated systemic sulfasalazine exposure with increased risk of sulfonamide hypersensitivity, gastrointestinal intolerance, or hematologic toxicity.",
+        severity: "moderate",
+        mechanismDetail:
+          "Inhibition of intestinal apical ABCG2 efflux permits unattenuated mucosal absorption of sulfasalazine, bypassing its intended luminal restriction.",
+        literatureCitation:
+          "Kusuhara H, et al. Pharmacokinetic interaction study of sulphasalazine in healthy subjects and the impact of curcumin as an in vivo inhibitor of BCRP. Br J Pharmacol. 2012;166(6):1793-1803 (PMID: 22300167).",
+      },
     ],
     pharmacokineticImpact:
       "Dictates oral bioavailability (especially of rosuvastatin and sulfasalazine), biliary elimination of conjugates, and blood-brain barrier restriction. Polymorphisms (c.421C>A) further amplify susceptibility.",
@@ -492,11 +588,12 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
     id: "oatp1b1-1b3-slco",
     gene: "SLCO1B1 & SLCO1B3",
     name: "Organic Anion Transporting Polypeptide 1B1 / 1B3 (OATP1B1/OATP1B3)",
-    aliases: ["OATP1B1", "OATP1B3", "OATP-C", "OATP2", "SLCO1B1", "SLCO1B3", "LST-1"],
+    aliases: ["OATP1B1", "OATP1B3", "OATP1A2", "OATP2B1", "OATP-C", "OATP2", "SLCO1B1", "SLCO1B3", "SLCO1A2", "LST-1"],
     family: "SLC Influx",
     atpDependent: false,
     primaryLocations: [
       "Basolateral (sinusoidal) membrane of hepatocytes (mediates uptake of drugs from portal blood into liver)",
+      "Intestinal enterocyte apical brush border (related SLCO1A2/OATP1A2 & SLCO2B1/OATP2B1 uptake carriers mediating oral absorption of nadolol and fexofenadine)",
     ],
     membraneVectors: [
       {
@@ -506,9 +603,16 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         anatomicalSite: "Hepatocyte Sinusoidal Membrane",
         vectorSummary: "Extracts organic anions from portal and systemic blood across sinusoidal endothelium into hepatocyte cytoplasm for metabolism and biliary secretion.",
       },
+      {
+        membrane: "apical",
+        direction: "influx",
+        organ: "Small Intestine",
+        anatomicalSite: "Enterocyte Brush Border (OATP1A2 / OATP2B1)",
+        vectorSummary: "Mediates luminal-to-enterocyte oral uptake of hydrophilic substrates (nadolol, fexofenadine), vulnerable to blockade by green tea catechins (EGCG) and fruit juices.",
+      },
     ],
     physiologicalRole:
-      "Sodium-independent solute carrier specialized for hepatic first-pass extraction. Mediates sinusoidal uptake of endogenous bile acids, conjugated bilirubin, and anionic lipophilic pharmaceuticals into hepatocytes.",
+      "Sodium-independent solute carriers governing hepatic first-pass sinusoidal extraction (OATP1B1/1B3) and intestinal luminal uptake (OATP1A2/2B1). Mediate transport of endogenous bile acids, conjugated bilirubin, statins, and hydrophilic beta-blockers/antihistamines.",
     substrates: [
       "atorvastatin",
       "rosuvastatin",
@@ -518,6 +622,10 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "repaglinide",
       "bosentan",
       "valsartan",
+      "nadolol",
+      "fexofenadine",
+      "olmesartan",
+      "telmisartan",
     ],
     inhibitors: [
       "cyclosporine",
@@ -527,6 +635,10 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "eltrombopag",
       "ritonavir",
       "paxlovid",
+      "green-tea",
+      "oatp-juice",
+      "cobicistat",
+      "glecaprevir",
     ],
     inducers: [],
     probeOrInvestigationalInhibitors: [],
@@ -615,6 +727,48 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         literatureCitation:
           "Treiber A, et al. The organic anion transporting polypeptide 1B1 mediates the hepatic uptake of bosentan. Mol Pharmacol. 2007;72(2):481-488.",
       },
+      {
+        id: "green-tea-nadolol",
+        title: "Green Tea Extract (EGCG) + Nadolol Intestinal OATP1A2 Uptake Collapse",
+        drugPair: ["green-tea", "nadolol"],
+        description:
+          "Epigallocatechin gallate (EGCG) and catechins in green tea potently inhibit intestinal apical OATP1A2 (SLCO1A2) alongside hepatic OATP1B1, slashing oral nadolol AUC and Cmax by ~85% and markedly blunting systolic blood pressure reduction.",
+        hazard:
+          "Profound loss of beta-adrenergic blockade, rebound hypertension, angina breakthrough, or loss of portal-hypertension prophylaxis.",
+        severity: "high",
+        mechanismDetail:
+          "Nadolol is a hydrophilic, non-metabolized beta-blocker dependent on enterocyte apical OATP1A2 influx for oral absorption; EGCG blocks luminal uptake directly within the gut wall.",
+        literatureCitation:
+          "Misaka S, et al. Green tea ingestion greatly reduces plasma concentrations of nadolol in healthy subjects. Clin Pharmacol Ther. 2014;95(4):432-438 (PMID: 24419562).",
+      },
+      {
+        id: "green-tea-fexofenadine",
+        title: "Green Tea Extract (EGCG) + Fexofenadine OATP1A2 Bioavailability Blunting",
+        drugPair: ["green-tea", "fexofenadine"],
+        description:
+          "Green tea catechins (EGCG) inhibit enterocyte apical OATP1A2 uptake of fexofenadine while modulating OATP1B1/1B3 transport, reducing fexofenadine systemic AUC and Cmax by ~25–30%.",
+        hazard:
+          "Attenuated H1-antihistamine efficacy and suboptimal allergic symptom control from impaired intestinal absorption.",
+        severity: "moderate",
+        mechanismDetail:
+          "Fexofenadine relies on intestinal OATP1A2 influx to oppose P-gp efflux across the enterocyte brush border; botanical catechin blockade shifts net flux away from systemic absorption.",
+        literatureCitation:
+          "Misaka S, et al. Effects of single green tea ingestion on pharmacokinetics of fexofenadine in healthy volunteers. Br J Clin Pharmacol. 2022;88(5):2382-2389 (PMID: 34873733).",
+      },
+      {
+        id: "oatp-juice-fexofenadine",
+        title: "Apple / Orange Juice + Fexofenadine Food-Transporter OATP1A2 Arrest",
+        drugPair: ["oatp-juice", "fexofenadine"],
+        description:
+          "Flavonoid glycosides (naringin, hesperidin) in grapefruit, orange, and apple juices inhibit intestinal apical OATP1A2 uptake, cutting oral fexofenadine bioavailability by ~60–70%.",
+        hazard:
+          "Substantial loss of oral antihistamine systemic exposure and therapeutic failure.",
+        severity: "moderate",
+        mechanismDetail:
+          "Luminal dietary flavonoids directly inhibit enterocyte SLCO1A2 influx independently of CYP enzymes, blocking intestinal uptake of fexofenadine.",
+        literatureCitation:
+          "Dresser GK, et al. Fruit juices inhibit organic anion transporting polypeptide-mediated drug uptake to decrease the oral availability of fexofenadine. Clin Pharmacol Ther. 2002;71(1):11-20 (PMID: 11823753).",
+      },
     ],
     pharmacokineticImpact:
       "Controls the hepatic clearance and first-pass extraction ratio (Eh) of statins and other organic anions. Inhibition causes marked elevation in systemic AUC without altering renal excretion.",
@@ -658,11 +812,19 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "methotrexate",
       "furosemide",
       "ciprofloxacin",
+      "tenofovir-df",
+      "acyclovir",
+      "oseltamivir",
+      "baricitinib",
+      "bumetanide",
     ],
     inhibitors: [
       "probenecid",
       "indomethacin",
       "ibuprofen",
+      "naproxen",
+      "ketorolac",
+      "diclofenac",
     ],
     inducers: [],
     probeOrInvestigationalInhibitors: [],
@@ -723,6 +885,20 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         literatureCitation:
           "Tracey RB, et al. Severe methotrexate toxicity induced by indomethacin co-administration. Med J Aust. 1986;144(7):391-392.",
       },
+      {
+        id: "probenecid-baricitinib",
+        title: "Probenecid Strong OAT3 Blockade Doubling Baricitinib Exposure",
+        drugPair: ["probenecid", "baricitinib"],
+        description:
+          "Baricitinib relies predominantly on active renal tubular secretion via basolateral OAT3 (SLC22A8). Strong OAT3 inhibition by probenecid cuts baricitinib renal clearance by ~69% and doubles systemic AUC.",
+        hazard:
+          "Escalated JAK-inhibitor exposure with heightened risk of serious infection, cytopenias, and venous thromboembolism.",
+        severity: "high",
+        mechanismDetail:
+          "Competitive blockade of SLC22A8 basolateral anion uptake prevents tubular entry of unchanged baricitinib, serving as a canonical FDA index OAT3 clinical collision.",
+        literatureCitation:
+          "Posada MM, et al. Prediction of transporter-mediated drug-drug interactions for baricitinib. Clin Transl Sci. 2017;10(6):509-519 (PMID: 28749581).",
+      },
     ],
     pharmacokineticImpact:
       "Mediates active renal clearance (Clr) of anionic drugs and loop diuretics. Inhibition doubles or triples systemic exposure of cleared substrates and delays diuretic delivery to the luminal site of action.",
@@ -769,12 +945,20 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
       "metformin",
       "cisplatin",
       "atenolol",
+      "dofetilide",
+      "varenicline",
+      "procainamide",
     ],
     inhibitors: [
       "cimetidine",
       "dolutegravir",
       "ranolazine",
       "tmp-smx",
+      "berberine",
+      "trimethoprim",
+      "pyrimethamine",
+      "vandetanib",
+      "cobicistat",
     ],
     inducers: [],
     probeOrInvestigationalInhibitors: [],
@@ -834,6 +1018,48 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
           "Trimethoprim inhibits basolateral OCT2 and apical MATE transporters, reducing the renal clearance of organic cations.",
         literatureCitation:
           "Wang Z, et al. Organic Cation Transporters (OCTs) and Multidrug and Toxin Extrusion (MATE) Transporters in Renal Drug Disposition. AAPS J. 2016;18(3):616-628.",
+      },
+      {
+        id: "dolutegravir-dofetilide",
+        title: "Dolutegravir + Dofetilide Contraindicated OCT2/MATE1 Renal Secretion Arrest",
+        drugPair: ["dolutegravir", "dofetilide"],
+        description:
+          "Dofetilide is a narrow-therapeutic-index Class III antiarrhythmic eliminated primarily unchanged by glomerular filtration and active renal tubular cation secretion via OCT2 and MATE1. Dolutegravir potently blocks OCT2/MATE1, elevating plasma dofetilide concentrations; concurrent administration is contraindicated in FDA labeling.",
+        hazard:
+          "Marked exposure-dependent QTc prolongation, polymorphic ventricular tachycardia (Torsades de Pointes), and sudden cardiac death.",
+        severity: "critical",
+        mechanismDetail:
+          "Potent inhibition of basolateral SLC22A2 (OCT2) influx and apical SLC47A1 (MATE1) extrusion arrests active renal clearance of dofetilide, pushing unbound plasma levels into the proarrhythmic zone.",
+        literatureCitation:
+          "FDA Prescribing Information for TIVICAY (dolutegravir) and TIKOSYN (dofetilide); Reese MJ, et al. Drug Metab Dispos. 2013;41(2):353-361 (PMID: 23132334).",
+      },
+      {
+        id: "cimetidine-dofetilide",
+        title: "Cimetidine + Dofetilide Contraindicated Renal Cation Blockade",
+        drugPair: ["cimetidine", "dofetilide"],
+        description:
+          "Cimetidine selectively inhibits renal tubular OCT2/MATE1 secretion of dofetilide, increasing systemic dofetilide exposure by ~13–48% in an exposure-dependent manner; concurrent use is contraindicated in FDA labeling.",
+        hazard:
+          "Excessive QTc prolongation and life-threatening Torsades de Pointes arrhythmia.",
+        severity: "critical",
+        mechanismDetail:
+          "Competitive blockade of renal proximal tubular cation transporters reduces active secretory clearance of unchanged dofetilide without altering glomerular filtration.",
+        literatureCitation:
+          "Abel S, et al. Effect of cimetidine and ranitidine on pharmacokinetics and pharmacodynamics of a single dose of dofetilide. Br J Clin Pharmacol. 2000;49(1):64-71 (PMID: 10606839).",
+      },
+      {
+        id: "berberine-metformin",
+        title: "Berberine + Metformin OCT1/OCT2/MATE1 Cation Transport Interference",
+        drugPair: ["berberine", "metformin"],
+        description:
+          "Berberine inhibits organic cation transporters OCT1, OCT2, and MATE1, reducing renal tubular secretion of metformin while also competing for hepatic OCT1 uptake and altering systemic versus tissue metformin disposition.",
+        hazard:
+          "Elevated plasma metformin concentrations, amplified gastrointestinal intolerance, and heightened lactic acidosis hazard in patients with reduced renal reserve.",
+        severity: "moderate",
+        mechanismDetail:
+          "Inhibition of basolateral renal OCT2 and apical MATE1 slows urinary elimination of metformin while hepatic OCT1 blockade modifies intrahepatic partitioning.",
+        literatureCitation:
+          "Shi R, et al. Berberine inhibits OCT1/OCT2/MATE1-mediated metformin transport and alters metformin pharmacokinetics. Drug Metab Dispos. 2018;46(11):1661-1669; Kwon M, et al. Pharmaceutics. 2020;12(9):882 (PMID: 32948019).",
       },
     ],
     pharmacokineticImpact:
@@ -1066,6 +1292,28 @@ export function getAllTransporters(): readonly TransporterInfo[] {
   return TRANSPORTERS;
 }
 
+/** Finds every documented clinical transporter collision involving an unordered drug pair. */
+export function findTransporterCollisionsForPair(
+  drugA: string,
+  drugB: string,
+): Array<{ transporter: TransporterInfo; collision: TransporterCollision }> {
+  const a = drugA.trim().toLowerCase();
+  const b = drugB.trim().toLowerCase();
+  if (!a || !b || a === b) return [];
+
+  const matches: Array<{ transporter: TransporterInfo; collision: TransporterCollision }> = [];
+  for (const transporter of TRANSPORTERS) {
+    for (const collision of transporter.clinicalCollisions) {
+      const p0 = collision.drugPair[0].toLowerCase();
+      const p1 = collision.drugPair[1].toLowerCase();
+      if ((p0 === a && p1 === b) || (p0 === b && p1 === a)) {
+        matches.push({ transporter, collision });
+      }
+    }
+  }
+  return matches;
+}
+
 export function getBarrierById(id: BarrierId): BarrierArchitecture | null {
   return BARRIER_ARCHITECTURES.find((b) => b.id === id) ?? null;
 }
@@ -1159,7 +1407,7 @@ export const ECCS_CLASS_PROFILES: readonly EccsClassProfile[] = [
     primaryClearanceRoute: "Renal filtration + OCT2/MATE or P-gp active tubular/intestinal efflux",
     rateLimitingStep: "Transporter-mediated secretion or intestinal P-gp absorption gating",
     keyTransportersAndEnzymes: ["SLC22A2 (OCT2)", "SLC47A1/2 (MATE1/2-K)", "ABCB1 (P-gp)"],
-    exemplarDrugIds: ["metformin", "atenolol", "digoxin", "dabigatran"],
+    exemplarDrugIds: ["metformin", "atenolol", "digoxin", "dabigatran", "edoxaban", "fexofenadine", "nadolol", "dofetilide"],
     ddiVulnerability: "Susceptible to OCT2/MATE blockade (dolutegravir, cimetidine + metformin) or intestinal P-gp inhibition/induction (rifampin + dabigatran/digoxin).",
   },
 ];

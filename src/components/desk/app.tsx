@@ -8,7 +8,13 @@ import { recheckLicense } from "@/lib/billing/license";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { plainWordsReport } from "@/lib/drugs/quick-chips";
-import { deskReportText, EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
+import {
+  buildMarkdownRegimenReport,
+  deskReportText,
+  EXPORT_EMPTY,
+  EXPORT_NOT_A_DOSE,
+  findingSourceLine,
+} from "@/lib/drugs/brief";
 import { parseDoses } from "@/lib/drugs/dosing";
 import { applyHost, FIRST_PASS_NMDA } from "@/lib/drugs/host";
 import { treesFor } from "@/lib/drugs/metabolites";
@@ -413,7 +419,7 @@ export function DeskApp() {
       {/* Server-rendered so it does not push the page down after hydration (CLS); a returning
           visitor who already acknowledged it is hidden before paint by the root head script. */}
       {!hydrated || !hcpAck ? (
-        <aside aria-label="Clinical education disclaimer" data-fp-prehydrate={hydrated ? undefined : "hcp"} className="border-b border-border bg-warn-soft/90 backdrop-blur-sm">
+        <aside aria-label="Clinical education disclaimer" data-fp-prehydrate={hydrated ? undefined : "hcp"} className="border-b border-border bg-warn-soft">
           <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm leading-relaxed text-fg">
@@ -1415,7 +1421,7 @@ function RiskBanner({
   packId: PackId | null;
   onOpenPacket?: () => void;
 }) {
-  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | null>(null);
+  const [copied, setCopied] = useState<"full" | "share" | "plain" | "link" | "markdown" | null>(null);
   const copyTimer = useRef(0);
   useEffect(() => () => window.clearTimeout(copyTimer.current), []);
   const openCheckout = useDesk((s) => s.openCheckout);
@@ -1426,7 +1432,7 @@ function RiskBanner({
   ).join(", ");
   const names = selected.map((id) => DRUG_BY_ID[id]?.name).filter(Boolean).join(" + ");
 
-  async function write(kind: "full" | "share" | "plain" | "link", text: string) {
+  async function write(kind: "full" | "share" | "plain" | "link" | "markdown", text: string) {
     try {
       await navigator.clipboard.writeText(text);
       window.clearTimeout(copyTimer.current);
@@ -1487,6 +1493,19 @@ function RiskBanner({
     );
   }
 
+  async function copyMarkdown() {
+    const hostLine = formatMarkdownHostLine(host);
+    await write(
+      "markdown",
+      buildMarkdownRegimenReport({
+        trayIds: selected,
+        report,
+        hostLine,
+        version: SOFTWARE.version,
+      }),
+    );
+  }
+
   return (
     <div className="flex min-w-0 flex-col gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
       <div className="flex min-w-0 flex-wrap items-center gap-3">
@@ -1514,11 +1533,13 @@ function RiskBanner({
           ? "Link copied"
           : copied === "plain"
             ? "Plain-language summary copied"
-            : copied === "share"
-              ? "Share summary copied"
-              : copied === "full"
-                ? "Full report copied"
-                : ""}
+            : copied === "markdown"
+              ? "Copied Markdown"
+              : copied === "share"
+                ? "Share summary copied"
+                : copied === "full"
+                  ? "Full report copied"
+                  : ""}
       </span>
       <div className="flex min-w-0 flex-wrap gap-2">
       {caseId ? (
@@ -1546,6 +1567,16 @@ function RiskBanner({
       >
         {copied === "plain" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
         {copied === "plain" ? "Copied" : "Plain summary"}
+      </Button>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => void copyMarkdown()}
+        className="h-10 min-w-32 shrink-0"
+        title="Copy clinical monograph Markdown report"
+      >
+        {copied === "markdown" ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
+        {copied === "markdown" ? "Copied Markdown" : "Copy Markdown"}
       </Button>
       <Button variant="secondary" size="sm" onClick={() => void shareLine()} className="h-10 min-w-24 shrink-0">
         {copied === "share" ? <Check className="size-3.5" aria-hidden="true" /> : <Share2 className="size-3.5" aria-hidden="true" />}
@@ -1606,6 +1637,27 @@ function RiskBanner({
         >
           <Download className="size-3.5" aria-hidden="true" />
           CSV · Founding
+        </Button>
+      )}
+      {plan === "lab" ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="h-10 shrink-0"
+          onClick={() => exportMarkdown(report, selected, host)}
+        >
+          <Download className="size-3.5" aria-hidden="true" />
+          Markdown
+        </Button>
+      ) : (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="h-10 shrink-0"
+          onClick={() => openCheckout("lab", foundingGateCopy("export").reason, "life")}
+        >
+          <Download className="size-3.5" aria-hidden="true" />
+          Markdown · Founding
         </Button>
       )}
       </div>
@@ -1904,6 +1956,44 @@ function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
 function csv(s: string) {
   const t = s.replace(/"/g, '""');
   return `"${t}"`;
+}
+
+function formatMarkdownHostLine(host: HostContext): string | undefined {
+  const parts: string[] = [
+    ...PHENOTYPE_ENZYMES.filter((e) => host.phenotypes[e] !== "NM").map(
+      (e) => `${e} ${host.phenotypes[e]} (${METABOLIZER_LABEL[host.phenotypes[e]]})`,
+    ),
+    ...(host.smoking ? ["Tobacco smoke: daily (CYP1A2 induction)"] : []),
+    ...(host.alcohol !== "off" ? [`Alcohol: ${ALCOHOL_LABEL[host.alcohol]}`] : []),
+    ...(host.age === "geriatric" ? ["Geriatric"] : []),
+    ...(host.kidney === "ckd" ? ["CKD"] : []),
+    ...(host.preg && host.preg !== "off"
+      ? [host.preg === "pregnant" ? "Pregnant" : "Lactating"]
+      : []),
+    ...(host.ketamineRoute !== "iv" ? [`Ketamine route: ${KETAMINE_ROUTE_LABEL[host.ketamineRoute]}`] : []),
+    ...(host.cannabisRoute !== "smoked" ? [`Cannabis route: ${CANNABIS_ROUTE_LABEL[host.cannabisRoute]}`] : []),
+  ];
+  return parts.length ? parts.join(" · ") : undefined;
+}
+
+function exportMarkdown(
+  report: ReturnType<typeof analyze>,
+  selected: string[],
+  host: HostContext,
+) {
+  const markdown = buildMarkdownRegimenReport({
+    trayIds: selected,
+    report,
+    hostLine: formatMarkdownHostLine(host),
+    version: SOFTWARE.version,
+  });
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "firstpass-desk.md";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 

@@ -529,7 +529,7 @@ export function PlansPage() {
       </p>
 
       {!checkoutOpen ? (
-        <div data-sticky-bar="bottom" className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
+        <div data-sticky-bar="bottom" className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:hidden">
           <div className="mx-auto flex max-w-md min-w-0 items-stretch gap-2">
             {founding ? null : (
               <Button className="h-auto min-h-[44px] flex-1 min-w-0 whitespace-normal py-2 text-center [overflow-wrap:anywhere] cursor-pointer" onClick={unlock}>

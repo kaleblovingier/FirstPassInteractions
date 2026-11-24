@@ -23,6 +23,7 @@ export function GlossaryView() {
       <a href="#terms" className="skip-link">Skip to the terms</a>
       <p className="text-xs text-muted">
         <a href="/pairs" className="underline">All pairs</a> · <a href="/enzymes" className="underline">All enzymes</a> ·{" "}
+        <a href="/methodology" className="underline">Methodology</a> ·{" "}
         <a href="/practice" className="underline">Practice</a>
       </p>
       <h1 className="mt-2 text-2xl font-semibold">{GLOSSARY_H1}</h1>

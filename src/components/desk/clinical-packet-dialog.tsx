@@ -203,7 +203,7 @@ export function ClinicalPacketDialog({
       role="dialog"
       aria-modal="true"
       aria-labelledby="packet-dialog-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-2 sm:p-4 md:p-6 backdrop-blur-xs print-dialog-container overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-2 sm:p-4 md:p-6 print-dialog-container overflow-y-auto"
     >
       <style>{`
         @media print {
@@ -253,7 +253,7 @@ export function ClinicalPacketDialog({
               : ""}
         </span>
         {/* Sticky Utility Header */}
-        <div className="no-print sticky top-0 z-10 flex min-w-0 flex-wrap items-center justify-between gap-2.5 border-b border-border bg-surface/95 px-4 py-3 sm:px-5 sm:py-3.5 backdrop-blur-sm rounded-t-2xl">
+        <div className="no-print sticky top-0 z-10 flex min-w-0 flex-wrap items-center justify-between gap-2.5 border-b border-border bg-surface px-4 py-3 sm:px-5 sm:py-3.5 rounded-t-2xl">
           <div className="flex min-w-0 items-center gap-2.5">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent">
               <FileText className="size-4" aria-hidden="true" />

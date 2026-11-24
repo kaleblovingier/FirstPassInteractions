@@ -168,6 +168,7 @@ export function sitemapXml(): string {
     COURSE_KIT_URL,
     `${SITE_URL}/practice`,
     `${SITE_URL}/glossary`,
+    `${SITE_URL}/methodology`,
     `${SITE_URL}/workup`,
     `${SITE_URL}/trust`,
     `${SITE_URL}/sources`,

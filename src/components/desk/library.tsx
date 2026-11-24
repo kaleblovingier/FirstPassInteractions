@@ -17,7 +17,6 @@ import {
   Droplets,
   Flame,
   ShieldAlert,
-  Sparkles,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -187,7 +186,7 @@ export function Formulary() {
               : "text-muted hover:bg-surface/50 hover:text-fg",
           )}
         >
-          <Layers className="size-4 shrink-0 text-indigo-500" />
+          <Layers className="size-4 shrink-0 text-info" />
           <span>Mechanism Intersect Engine</span>
         </button>
 
@@ -203,7 +202,7 @@ export function Formulary() {
               : "text-muted hover:bg-surface/50 hover:text-fg",
           )}
         >
-          <TrendingUp className="size-4 shrink-0 text-purple-500" />
+          <TrendingUp className="size-4 shrink-0 text-accent" />
           <span>PK &amp; Nonlinear Kinetics</span>
         </button>
 
@@ -219,7 +218,7 @@ export function Formulary() {
               : "text-muted hover:bg-surface/50 hover:text-fg",
           )}
         >
-          <ArrowLeftRight className="size-4 shrink-0 text-cyan-500" />
+          <ArrowLeftRight className="size-4 shrink-0 text-info" />
           <span>Transporter Network</span>
         </button>
 
@@ -299,7 +298,7 @@ export function Formulary() {
               : "text-muted hover:bg-surface/50 hover:text-fg",
           )}
         >
-          <Brain className="size-4 shrink-0 text-cyan-500" />
+          <Brain className="size-4 shrink-0 text-info" />
           <span>BBB &amp; CNS Penetration</span>
         </button>
 
@@ -331,7 +330,7 @@ export function Formulary() {
               : "text-muted hover:bg-surface/50 hover:text-fg",
           )}
         >
-          <Droplets className="size-4 shrink-0 text-cyan-600 dark:text-cyan-400" />
+          <Droplets className="size-4 shrink-0 text-info" />
           <span>Renal Tubular Pharmacology</span>
         </button>
       </div>
@@ -688,7 +687,7 @@ function CompoundsShelf() {
         ) : null}
       </div>
 
-      <div data-sticky-bar="top" className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 bg-bg/95 px-1 py-2 backdrop-blur-sm">
+      <div data-sticky-bar="top" className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-2 border-b border-border bg-bg px-1 py-2">
         <p className="text-xs text-muted" role="status" aria-atomic="true">
           <span className="font-mono tabular-nums">{rows.length}</span> shown
           {selected.length ? (
@@ -890,7 +889,6 @@ function ContraindicatedConditionsView() {
       <div className="space-y-6">
         {/* Prominent, elegant Founding Paywall banner */}
         <section className="relative overflow-hidden rounded-2xl border border-accent/30 bg-surface p-6 shadow-lg sm:p-8">
-          <div className="absolute right-0 top-0 -mr-16 -mt-16 size-56 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl space-y-3">
               <div className="flex flex-wrap items-center gap-2">
@@ -922,7 +920,7 @@ function ContraindicatedConditionsView() {
                 }
                 className="min-h-[44px] w-full px-6 text-sm font-semibold sm:w-auto shadow-md"
               >
-                <Sparkles className="mr-2 size-4" />
+                <Lock className="mr-2 size-4" />
                 Unlock Founding ($79 once)
               </Button>
               <p className="text-xs text-muted">

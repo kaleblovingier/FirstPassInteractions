@@ -20,7 +20,6 @@ import {
   Search,
   Shield,
   ShieldAlert,
-  Sparkles,
   Users,
   Baby,
 } from "lucide-react";
@@ -342,7 +341,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp: _onOpe
 
           <div className="rounded-lg border border-border/60 bg-surface-raised p-2.5">
             <div className="flex items-center gap-1.5 font-medium text-[11px] text-fg">
-              <Baby className="size-3.5 text-purple-500 shrink-0" />
+              <Baby className="size-3.5 text-accent shrink-0" />
               <span>MotherToBaby</span>
             </div>
             <div className="mt-1 flex items-baseline justify-between">
@@ -377,7 +376,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp: _onOpe
                   report.hasUrgentMatch ? "bg-danger" : "bg-primary",
                 )}
               >
-                <Sparkles className="size-4" />
+                <LifeBuoy className="size-4" />
               </div>
               <div>
                 <h3 className="font-serif text-sm font-semibold text-fg">
@@ -429,7 +428,7 @@ export function ResourcePanel({ ids: propIds, host: propHost, onOpenHelp: _onOpe
               )}
               {report.activeContextFlags.hasManufacturerPapMatch && (
                 <Badge tone="ok" className="gap-1 text-[10px]">
-                  <Sparkles className="size-3" />
+                  <Check className="size-3" />
                   Manufacturer PAP Match
                 </Badge>
               )}
