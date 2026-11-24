@@ -1298,6 +1298,11 @@ export const CYP2D6_OPIOID_PRODRUG_IDS: ReadonlySet<string> = new Set([
   "tramadol",
 ]);
 
+/**
+ * Strong CYP2D6 inhibitors only. Moderate inhibitors (mirabegron, duloxetine,
+ * sertraline) stay out on purpose: this set bypasses the catalog strength check
+ * below, and the catalog grades them moderate, which is what their labels say.
+ */
 export const STRONG_CYP2D6_PRODRUG_INHIBITOR_IDS: ReadonlySet<string> = new Set([
   "fluoxetine",
   "paroxetine",
@@ -1305,7 +1310,6 @@ export const STRONG_CYP2D6_PRODRUG_INHIBITOR_IDS: ReadonlySet<string> = new Set(
   "quinidine",
   "terbinafine",
   "cinacalcet",
-  "mirabegron",
   "dextromethorphan-bupropion",
   "auvelity",
 ]);
@@ -1328,11 +1332,26 @@ export function isProdrugCyp2d6OpioidFailure(a: string, b: string): boolean {
   return matchesSymmetricPair(a, b, isCyp2d6OpioidProdrug, isStrongCyp2d6ProdrugInhibitor);
 }
 
-export const ST_JOHNS_WORT_NARROW_VICTIM_IDS: ReadonlySet<string> = new Set([
+/**
+ * Victims whose labels treat St. John's wort as a do-not-use, and where the
+ * published exposure drop is a collapse rather than a dent: antiretrovirals
+ * (indinavir AUC −57%, trough −81%) and the calcineurin / mTOR transplant
+ * immunosuppressants, where the failure mode is graft rejection.
+ */
+export const ST_JOHNS_WORT_CONTRAINDICATED_VICTIM_IDS: ReadonlySet<string> = new Set([
+  "indinavir",
   "cyclosporine",
   "tacrolimus",
   "sirolimus",
   "everolimus",
+]);
+
+/**
+ * Victims where the labels say avoid or monitor rather than contraindicate, and
+ * where the measured effect is real but far smaller — digoxin AUC fell 25% in
+ * Johne 1999 and 18% in Dürr 2000. Graded major, not contraindicated.
+ */
+export const ST_JOHNS_WORT_MAJOR_VICTIM_IDS: ReadonlySet<string> = new Set([
   "apixaban",
   "rivaroxaban",
   "dabigatran",
@@ -1340,16 +1359,25 @@ export const ST_JOHNS_WORT_NARROW_VICTIM_IDS: ReadonlySet<string> = new Set([
   "warfarin",
   "digoxin",
   "ethinyl-estradiol",
-  "indinavir",
   "irinotecan",
   "imatinib",
   "methadone",
   "midazolam",
 ]);
 
+export const ST_JOHNS_WORT_NARROW_VICTIM_IDS: ReadonlySet<string> = new Set([
+  ...ST_JOHNS_WORT_CONTRAINDICATED_VICTIM_IDS,
+  ...ST_JOHNS_WORT_MAJOR_VICTIM_IDS,
+]);
+
 export function isStJohnsWortNarrowVictim(idOrDrug: string | { id: string }): boolean {
   const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
   return !isNonSystemicRoute(id) && ST_JOHNS_WORT_NARROW_VICTIM_IDS.has(id);
+}
+
+export function isStJohnsWortContraindicatedVictim(idOrDrug: string | { id: string }): boolean {
+  const id = typeof idOrDrug === "string" ? idOrDrug : idOrDrug.id;
+  return !isNonSystemicRoute(id) && ST_JOHNS_WORT_CONTRAINDICATED_VICTIM_IDS.has(id);
 }
 
 export function isBotanicalStJohnsWortNarrowInducer(a: string, b: string): boolean {
@@ -1385,6 +1413,27 @@ export function isBotanicalBerberineCypVictim(a: string, b: string): boolean {
   return matchesSymmetricPair(a, b, (id) => id === "berberine", isBerberineCypVictim);
 }
 
+/**
+ * Thiazide and thiazide-like diuretics only. Finley 1995 puts the clinically
+ * meaningful lithium-retention effect here (serum lithium up 25–40% on starting
+ * a thiazide) and reports loop and potassium-sparing diuretics as having "minor
+ * variable effects", so the `loop-thiazide` pd flag is too coarse to match on:
+ * it also carries furosemide, bumetanide, torsemide and ethacrynic acid.
+ */
+export const LITHIUM_RETENTION_THIAZIDE_IDS: ReadonlySet<string> = new Set([
+  "hctz",
+  "hydrochlorothiazide",
+  "chlorothiazide",
+  "bendroflumethiazide",
+  "chlorthalidone",
+  "indapamide",
+  "metolazone",
+  "valsartan-hctz",
+  "diovan-hct",
+  "hydrochlorothiazide-triamterene",
+  "maxzide",
+]);
+
 export const OTC_LITHIUM_OROTATE_PARTNER_IDS: ReadonlySet<string> = new Set([
   "lithium",
   "ibuprofen",
@@ -1401,9 +1450,7 @@ export const OTC_LITHIUM_OROTATE_PARTNER_IDS: ReadonlySet<string> = new Set([
   "valsartan",
   "olmesartan",
   "irbesartan",
-  "hctz",
-  "chlorthalidone",
-  "indapamide",
+  ...LITHIUM_RETENTION_THIAZIDE_IDS,
 ]);
 
 export function isOtcLithiumOrotatePartner(idOrDrug: string | { id: string }): boolean {
@@ -1412,11 +1459,7 @@ export function isOtcLithiumOrotatePartner(idOrDrug: string | { id: string }): b
   if (OTC_LITHIUM_OROTATE_PARTNER_IDS.has(id)) return true;
   const d = DRUG_BY_ID[id];
   if (!d) return false;
-  return (
-    d.pd.includes("nsaid") ||
-    d.pd.includes("acei-arb") ||
-    d.pd.includes("loop-thiazide")
-  );
+  return d.pd.includes("nsaid") || d.pd.includes("acei-arb");
 }
 
 export function isOtcLithiumOrotateRenalTrap(a: string, b: string): boolean {
@@ -1430,9 +1473,10 @@ export const PRODRUG_CYP2D6_OPIOID_FAILURE_CITATIONS: readonly SafetyCitation[] 
     pmid: "24458010",
   },
   {
-    label: "Kirchheiner J et al. Pharmacogenomics J 2007 (CYP2D6 bioactivation pharmacokinetics of codeine to morphine)",
-    url: "https://pubmed.ncbi.nlm.nih.gov/16819548/",
-    pmid: "16819548",
+    label:
+      "Laugesen S et al. Clin Pharmacol Ther 2005 (paroxetine cut (+)-M1 formation 67% and reduced, without abolishing, the hypoalgesic effect of tramadol)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/15903129/",
+    pmid: "15903129",
   },
 ];
 
@@ -1443,12 +1487,19 @@ export const BOTANICAL_ST_JOHNS_WORT_CITATIONS: readonly SafetyCitation[] = [
     pmid: "13129991",
   },
   {
-    label: "Johne A et al. Clin Pharmacol Ther 1999 (St. John's wort P-gp induction & digoxin interaction)",
+    label:
+      "Johne A et al. Clin Pharmacol Ther 1999 (St. John's wort cut digoxin AUC 25% over 10 days; the authors proposed P-gp induction as the mechanism)",
     url: "https://pubmed.ncbi.nlm.nih.gov/10546917/",
     pmid: "10546917",
   },
   {
-    label: "Piscitelli SC et al. Lancet 2000 (Indinavir exposure collapse with St. John's wort)",
+    label:
+      "Dürr D et al. Clin Pharmacol Ther 2000 (St. John's wort induces intestinal P-glycoprotein/MDR1 and intestinal and hepatic CYP3A4; digoxin exposure −18%)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/11180019/",
+    pmid: "11180019",
+  },
+  {
+    label: "Piscitelli SC et al. Lancet 2000 (indinavir AUC −57% and 8-h trough −81% with St. John's wort)",
     url: "https://pubmed.ncbi.nlm.nih.gov/10683007/",
     pmid: "10683007",
   },
@@ -1456,20 +1507,29 @@ export const BOTANICAL_ST_JOHNS_WORT_CITATIONS: readonly SafetyCitation[] = [
 
 export const BOTANICAL_BERBERINE_CITATIONS: readonly SafetyCitation[] = [
   {
-    label: "Guo Y et al. Eur J Clin Pharmacol 2012 (repeated berberine administration inhibits human CYP2D6, CYP2C9, and CYP3A4)",
+    label:
+      "Guo Y et al. Eur J Clin Pharmacol 2012 (two weeks of repeated oral berberine raised the dextromethorphan/dextrorphan ratio ninefold, doubled the losartan/E-3174 ratio and raised midazolam AUC 40% in healthy volunteers)",
     url: "https://pubmed.ncbi.nlm.nih.gov/21870106/",
     pmid: "21870106",
+  },
+  {
+    label:
+      "Wu X et al. Eur J Clin Pharmacol 2005 (repeated oral berberine raised cyclosporine AUC 34.5% and trough 88% in renal transplant recipients, attributed to CYP3A4 inhibition)",
+    url: "https://pubmed.ncbi.nlm.nih.gov/16133554/",
+    pmid: "16133554",
   },
 ];
 
 export const OTC_LITHIUM_OROTATE_CITATIONS: readonly SafetyCitation[] = [
   {
-    label: "Finley PR et al. Clin Pharmacokinet 1995 (clinical relevance of renal drug interactions with lithium)",
+    label:
+      "Finley PR et al. Clin Pharmacokinet 1995 (thiazides raise lithium concentrations 25–40%; loop and potassium-sparing diuretics have minor variable effects; ACE-inhibitor evidence is weaker)",
     url: "https://pubmed.ncbi.nlm.nih.gov/8521679/",
     pmid: "8521679",
   },
   {
-    label: "McKnight RF et al. Lancet 2012 (lithium toxicity profile systematic review and meta-analysis)",
+    label:
+      "McKnight RF et al. Lancet 2012 (lithium toxicity profile: reduced urinary concentrating ability, hypothyroidism, hyperparathyroidism; background on what a raised level costs, not an interaction study)",
     url: "https://pubmed.ncbi.nlm.nih.gov/22265699/",
     pmid: "22265699",
   },
@@ -2488,19 +2548,25 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
       .filter((id) => isStJohnsWortNarrowVictim(id))
       .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
     if (sjwVictims.length > 0) {
+      const collapseVictims = sjwVictims.filter((d) => isStJohnsWortContraindicatedVictim(d.id));
+      const isCollapse = collapseVictims.length > 0;
+      const magnitude = isCollapse
+        ? "Indinavir AUC fell 57% and its trough 81%, and sustained use has driven calcineurin-inhibitor concentrations subtherapeutic to the point of graft rejection."
+        : "The measured effect is real but smaller than a collapse: digoxin AUC fell 25% in Johne 1999 and 18% in Dürr 2000, and alprazolam AUC halved in Markowitz 2003.";
       const detail =
-        "Hyperforin in St. John's wort activates the pregnane X receptor (PXR), markedly upregulating intestinal and hepatic CYP3A4 and P-gp efflux over 7–14 days. Clinical trials document severe subtherapeutic collapses of calcineurin inhibitors (transplant rejection), direct oral anticoagulants (thromboembolism), HIV antiretrovirals, digoxin, and hormonal contraceptives, with de-induction lingering 1–2 weeks after discontinuing the botanical.";
-      const action =
-        "Avoid St. John's wort alongside narrow-index CYP3A4 or P-gp substrates; if discontinued after sustained use, expect victim concentrations to rebound over 1–2 weeks as enzyme expression returns to baseline.";
+        `Hyperforin in St. John's wort activates the pregnane X receptor (PXR), upregulating intestinal and hepatic CYP3A4 and intestinal P-gp over 7–14 days. ${magnitude} De-induction lingers 1–2 weeks after the botanical is stopped, so victim concentrations rebound over that window.`;
+      const action = isCollapse
+        ? "Avoid St. John's wort with antiretrovirals and transplant immunosuppressants; if it has been taken for weeks, expect victim concentrations to rebound over 1–2 weeks after it stops."
+        : "Avoid St. John's wort alongside narrow-index CYP3A4 or P-gp substrates, or monitor the victim's effect closely; if it has been taken for weeks, expect concentrations to rebound over 1–2 weeks after it stops.";
       out.push({
         id: "botanical-st-johns-wort-narrow-inducer",
-        drugIds: ["st-johns-wort", sjwVictims[0]!.id],
-        title: `St. John's wort + ${sjwVictims.map((d) => d.name).join(" / ")}: Potent PXR CYP3A4 & P-gp induction (treatment failure / rejection risk)`,
-        severity: "contraindicated",
-        regulatoryTier: "contraindicated",
-        tone: "danger",
+        drugIds: ["st-johns-wort", (collapseVictims[0] ?? sjwVictims[0])!.id],
+        title: `St. John's wort + ${sjwVictims.map((d) => d.name).join(" / ")}: PXR CYP3A4 & P-gp induction (${isCollapse ? "treatment failure / rejection risk" : "reduced victim exposure"})`,
+        severity: isCollapse ? "contraindicated" : "major",
+        regulatoryTier: isCollapse ? "contraindicated" : "label-major",
+        tone: isCollapse ? "danger" : "warn",
         mechanism:
-          "St. John's wort × narrow-index CYP3A4 / P-gp substrate — potent PXR induction & exposure collapse",
+          "St. John's wort × narrow-index CYP3A4 / P-gp substrate — PXR induction & reduced victim exposure",
         clinical: detail,
         detail,
         watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
@@ -2518,9 +2584,9 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
       .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
     if (berberineVictims.length > 0) {
       const detail =
-        "Repeated human oral berberine administration significantly inhibits CYP2D6, CYP2C9, and CYP3A4 activity (and P-gp efflux), markedly raising exposure of narrow-index substrates such as cyclosporine and tacrolimus while blunting CYP2D6 prodrug activation.";
+        "Two weeks of oral berberine inhibited CYP2D6 strongly in healthy volunteers (dextromethorphan/dextrorphan ratio up ninefold) and CYP2C9 and CYP3A4 more modestly (losartan ratio doubled; midazolam AUC up 40%, a weak-inhibitor effect by FDA criteria). In renal transplant recipients it raised cyclosporine AUC 34.5% and trough concentrations 88%. The CYP2D6 signal also cuts bioactivation of CYP2D6 prodrugs such as codeine and tramadol. Other narrow-index CYP3A4 substrates on this desk are flagged by shared pathway, not by their own human data.";
       const action =
-        "Treat concentrated berberine supplements as clinically active CYP/P-gp perpetrators rather than inert herbal nutraceuticals; monitor therapeutic drug concentrations closely on transplant or anticoagulant regimens.";
+        "Treat concentrated berberine supplements as clinically active CYP perpetrators rather than inert nutraceuticals; monitor drug concentrations on transplant or anticoagulant regimens.";
       out.push({
         id: "botanical-berberine-cyp-victim",
         drugIds: ["berberine", berberineVictims[0]!.id],
@@ -2529,7 +2595,7 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
         regulatoryTier: "label-major",
         tone: "warn",
         mechanism:
-          "berberine × narrow-index CYP2D6 / CYP3A4 / CYP2C9 / P-gp substrate — multi-isoform botanical inhibition",
+          "berberine × narrow-index CYP2D6 / CYP3A4 / CYP2C9 substrate — multi-isoform botanical inhibition",
         clinical: detail,
         detail,
         watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,
@@ -2547,18 +2613,18 @@ export function safetyOnDesk(ids: string[]): SafetyHit[] {
       .map((id) => DRUG_BY_ID[id] ?? { id, name: id });
     if (lithiumPartners.length > 0) {
       const detail =
-        "Over-the-counter lithium orotate dissociates into elemental lithium ions handled identically by the renal proximal tubule. Stacking with prescription lithium creates duplicate lithium load, while NSAIDs, ACE inhibitors, ARBs, and thiazide diuretics reduce fractional lithium excretion and precipitate cumulative neuro-renal toxicity.";
+        "Lithium is cleared almost entirely by the kidney, so anything that alters tubular handling moves the serum level. Thiazide and thiazide-like diuretics raise it most (25–40% on starting one); NSAIDs are linked to lithium toxicity with wide between-patient variation; ACE inhibitors and ARBs may impair elimination on weaker evidence. Loop and potassium-sparing diuretics have only minor, variable effects and are not flagged here. Over-the-counter lithium orotate adds elemental lithium of its own, and the amount per dose is not standardized across supplements, so the added intake on top of prescription lithium cannot be read off the label.";
       const action =
-        "Reconcile all OTC mineral/nootropic supplements before adjusting prescription lithium or adding NSAIDs, RAAS blockers, or diuretics; monitor serum lithium and renal function if combined.";
+        "Reconcile OTC mineral and nootropic supplements before adjusting prescription lithium or adding an NSAID, a RAAS blocker, or a thiazide; monitor serum lithium and renal function if combined.";
       out.push({
         id: "otc-lithium-orotate-renal-trap",
         drugIds: ["lithium-orotate", lithiumPartners[0]!.id],
-        title: `Lithium Orotate + ${lithiumPartners.map((d) => d.name).join(" / ")}: Unregulated OTC elemental lithium + renal clearance impairment / duplicate exposure`,
+        title: `Lithium Orotate + ${lithiumPartners.map((d) => d.name).join(" / ")}: Unstandardized OTC elemental lithium + reduced renal lithium clearance`,
         severity: "major",
         regulatoryTier: "label-major",
         tone: "danger",
         mechanism:
-          "OTC lithium orotate × prescription lithium / NSAID / RAAS blocker / diuretic — duplicate elemental lithium & renal retention",
+          "OTC lithium orotate × prescription lithium / NSAID / RAAS blocker / thiazide — added elemental lithium & reduced renal clearance",
         clinical: detail,
         detail,
         watch: `${action} The Prescribing Information governs. This desk does not pick the dose or replacement agent.`,

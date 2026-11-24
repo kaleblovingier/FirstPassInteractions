@@ -34,9 +34,20 @@ export function normalizeText(s: string): string {
     .replace(/[^a-z0-9]+/g, "");
 }
 
-/** Every PMID written into non-test source, with the first place it appears. */
-export function collectInlinePmids(): Map<string, string> {
-  const found = new Map<string, string>();
+export interface InlineCitation {
+  /** path:line where the PMID first appears. */
+  where: string;
+  /** The whole source line it was written on, which usually carries the citation text. */
+  line: string;
+}
+
+/**
+ * Every PMID written into non-test source, with the first place it appears and the
+ * text written beside it. The line matters: a PMID can be real and still belong to
+ * a different paper than the sentence citing it, which no existence check catches.
+ */
+export function collectInlineCitations(): Map<string, InlineCitation> {
+  const found = new Map<string, InlineCitation>();
   const walk = (dir: string) => {
     for (const name of readdirSync(dir)) {
       const path = join(dir, name);
@@ -45,7 +56,9 @@ export function collectInlinePmids(): Map<string, string> {
         const lines = readFileSync(path, "utf8").split(/\r?\n/);
         lines.forEach((line, i) => {
           for (const m of line.matchAll(/(?:PMIDs?\b[:\s"]*|pmid:\s*"|pubmed\.ncbi\.nlm\.nih\.gov\/(?:\?term=)?)(\d{4,9})/gi)) {
-            if (!found.has(m[1])) found.set(m[1], `${relative(root, path).replace(/\\/g, "/")}:${i + 1}`);
+            if (!found.has(m[1])) {
+              found.set(m[1], { where: `${relative(root, path).replace(/\\/g, "/")}:${i + 1}`, line });
+            }
           }
         });
       }
@@ -53,6 +66,11 @@ export function collectInlinePmids(): Map<string, string> {
   };
   walk(resolve(root, "src"));
   return found;
+}
+
+/** Every PMID written into non-test source, with the first place it appears. */
+export function collectInlinePmids(): Map<string, string> {
+  return new Map([...collectInlineCitations()].map(([pmid, c]) => [pmid, c.where]));
 }
 
 interface Summary {

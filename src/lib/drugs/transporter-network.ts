@@ -398,7 +398,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         mechanismDetail:
           "Direct inhibition of enterocyte apical ABCB1 efflux reduces luminal extrusion of lipophilic and amphipathic substrates, enhancing presystemic absorption across the intestinal epithelium.",
         literatureCitation:
-          "Bhardwaj RK, et al. Piperine, a major constituent of black pepper, inhibits human P-glycoprotein and CYP3A4. J Pharmacol Exp Ther. 2002;302(2):645-650 (PMID: 12065725).",
+          "Bhardwaj RK, et al. Piperine, a major constituent of black pepper, inhibits human P-glycoprotein and CYP3A4. J Pharmacol Exp Ther. 2002;302(2):645-650 (PMID: 12130727).",
       },
       {
         id: "edoxaban-dronedarone",
@@ -412,7 +412,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         mechanismDetail:
           "Potent ABCB1 inhibition by dronedarone and its N-debutyldronedarone metabolite elevates intestinal fraction absorbed (Fa) and reduces renal/biliary efflux clearance of edoxaban.",
         literatureCitation:
-          "Mendell J, et al. Drug-drug interaction studies of cardiovascular drugs involving P-glycoprotein, an efflux transporter, on the pharmacokinetics of edoxaban, an oral factor Xa inhibitor. Am J Cardiovasc Drugs. 2013;13(5):331-342 (PMID: 23572581).",
+          "Mendell J, et al. Drug-drug interaction studies of cardiovascular drugs involving P-glycoprotein, an efflux transporter, on the pharmacokinetics of edoxaban, an oral factor Xa inhibitor. Am J Cardiovasc Drugs. 2013;13(5):331-342 (PMID: 23784266).",
       },
     ],
     pharmacokineticImpact:
@@ -569,7 +569,7 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         mechanismDetail:
           "Inhibition of intestinal apical ABCG2 efflux permits unattenuated mucosal absorption of sulfasalazine, bypassing its intended luminal restriction.",
         literatureCitation:
-          "Kusuhara H, et al. Pharmacokinetic interaction study of sulphasalazine in healthy subjects and the impact of curcumin as an in vivo inhibitor of BCRP. Br J Pharmacol. 2012;166(6):1793-1803 (PMID: 22300167).",
+          "Kusuhara H, et al. Pharmacokinetic interaction study of sulphasalazine in healthy subjects and the impact of curcumin as an in vivo inhibitor of BCRP. Br J Pharmacol. 2012;166(6):1793-1803 (PMID: 22300367).",
       },
     ],
     pharmacokineticImpact:
@@ -746,14 +746,14 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Green Tea Extract (EGCG) + Fexofenadine OATP1A2 Bioavailability Blunting",
         drugPair: ["green-tea", "fexofenadine"],
         description:
-          "Green tea catechins (EGCG) inhibit enterocyte apical OATP1A2 uptake of fexofenadine while modulating OATP1B1/1B3 transport, reducing fexofenadine systemic AUC and Cmax by ~25–30%.",
+          "Green tea catechins (EGCG) inhibit enterocyte apical OATP1A2 uptake of fexofenadine while modulating OATP1B1/1B3 transport, cutting fexofenadine AUC by ~70% and 24-hour urinary recovery by ~67% in healthy volunteers.",
         hazard:
           "Attenuated H1-antihistamine efficacy and suboptimal allergic symptom control from impaired intestinal absorption.",
         severity: "moderate",
         mechanismDetail:
           "Fexofenadine relies on intestinal OATP1A2 influx to oppose P-gp efflux across the enterocyte brush border; botanical catechin blockade shifts net flux away from systemic absorption.",
         literatureCitation:
-          "Misaka S, et al. Effects of single green tea ingestion on pharmacokinetics of fexofenadine in healthy volunteers. Br J Clin Pharmacol. 2022;88(5):2382-2389 (PMID: 34873733).",
+          "Misaka S, et al. Exposure of fexofenadine, but not pseudoephedrine, is markedly decreased by green tea extract in healthy volunteers. Clin Pharmacol Ther. 2022;112(3):627-634 (PMID: 35678032).",
       },
       {
         id: "oatp-juice-fexofenadine",
@@ -1052,14 +1052,14 @@ export const TRANSPORTERS: readonly TransporterInfo[] = [
         title: "Berberine + Metformin OCT1/OCT2/MATE1 Cation Transport Interference",
         drugPair: ["berberine", "metformin"],
         description:
-          "Berberine inhibits organic cation transporters OCT1, OCT2, and MATE1, reducing renal tubular secretion of metformin while also competing for hepatic OCT1 uptake and altering systemic versus tissue metformin disposition.",
+          "Berberine inhibits organic cation transporters OCT1, OCT2 and MATE1 in vitro (IC50 18.8, 1.02 and 10.7 µM). In rats the net in vivo result was lower metformin exposure, not higher: berberine cut metformin Cmax, AUC(0-4h) and urinary and biliary excretion while raising its kidney tissue concentration, because intestinal absorption was inhibited alongside tubular secretion.",
         hazard:
-          "Elevated plasma metformin concentrations, amplified gastrointestinal intolerance, and heightened lactic acidosis hazard in patients with reduced renal reserve.",
+          "Net direction in humans is unestablished. The animal data point to reduced metformin exposure and possible loss of glycemic control, with drug retained in renal tissue rather than plasma; the two are frequently combined for diabetes, so the pair is worth reconciling rather than assumed safe.",
         severity: "moderate",
         mechanismDetail:
-          "Inhibition of basolateral renal OCT2 and apical MATE1 slows urinary elimination of metformin while hepatic OCT1 blockade modifies intrahepatic partitioning.",
+          "Berberine blocks basolateral renal OCT2 and apical MATE1 secretion and hepatic OCT1 uptake, but also inhibits intestinal metformin absorption, so the transporter effects do not sum to a simple rise in plasma exposure. Evidence is in vitro and in rats; no human pharmacokinetic study of this pair is cited here.",
         literatureCitation:
-          "Shi R, et al. Berberine inhibits OCT1/OCT2/MATE1-mediated metformin transport and alters metformin pharmacokinetics. Drug Metab Dispos. 2018;46(11):1661-1669; Kwon M, et al. Pharmaceutics. 2020;12(9):882 (PMID: 32948019).",
+          "Shi R, et al. Organic cation transporter and multidrug and toxin extrusion 1 co-mediated interaction between metformin and berberine. Eur J Pharm Sci. 2019;127:282-290 (PMID: 30428337).",
       },
     ],
     pharmacokineticImpact:
