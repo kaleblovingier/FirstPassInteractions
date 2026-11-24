@@ -158,21 +158,24 @@ What the server checks:
   one `ltiResourceLink` item per choice (title, the launch URL, and
   `firstpass_path`). Items ask to open in a new tab when Canvas offers that.
   For a module item, also tick **Load in a new tab** in Canvas if it is shown:
-  a FirstPass page opened inside a Canvas frame is blocked by the site CSP.
+  a FirstPass page (outside `/api/lti/`) opened inside a Canvas frame is
+  blocked by the site CSP.
 
 What you need before it works:
 
 - `LTI_TOOL_PRIVATE_JWK` set (the picker answers 500 without it).
 - `deep_link_return_hosts` in `LTI_PLATFORMS` for Canvas cloud.
-- **The site-wide CSP in `vercel.json` must allow it.** Canvas shows the picker
-  inside a frame on the school's Canvas host, and the answer is a form post to
-  that host. Today the site CSP sends `frame-ancestors 'self'` plus the grok
-  hosts and `form-action 'self' https://checkout.stripe.com` on every path,
-  `/api/lti/*` included, so a browser will refuse to show the picker in Canvas
-  and refuse the post back. The picker pages send their own, narrower CSP
-  (framing and form posts only to that Canvas host), but the site one still
-  applies on top. Giving `/api/lti/*` its own header rule in `vercel.json` (and
-  `scripts/vercel-routes.mjs`) is a separate decision; it is not made here.
+- **The site-wide CSP does not apply under `/api/lti/`.** Canvas shows the
+  picker inside a frame on the school's Canvas host, and the answer is a form
+  post to that host, which the site CSP (`frame-ancestors 'self'` plus the grok
+  hosts, `form-action 'self' https://checkout.stripe.com`) would block. So
+  `vercel.json` gives `/api/lti/*` its own header rule with HSTS and
+  Permissions-Policy only, and the LTI handler sends its own CSP on every
+  answer: the picker and its return page allow framing and posting only by the
+  one Canvas host that launched them, and plain-text and JSON answers send
+  `default-src 'none'; base-uri 'none'; form-action 'none'`. Redirects carry
+  none. `scripts/check-build-headers.mjs` fails the build if the built config
+  puts a CSP on an `/api/lti/` path or leaves one off any other path.
 - Safari blocks the login cookie inside a frame, so the picker launch can fail
   there with "This launch expired or was not started here". Chrome and Firefox
   keep it. Fixing that needs the LTI platform storage messages, not built.

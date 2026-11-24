@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { contentSecurityPolicy, embedCsp, headersForPath, readVercelJson, sourceToSrc, vercelRoutes } from "./vercel-routes.mjs";
+import { contentSecurityPolicy, embedCsp, headersForPath, LTI_PREFIX, readVercelJson, sourceToSrc, vercelRoutes } from "./vercel-routes.mjs";
 import { checkBuildConfig, PROBE_PATHS } from "./vercel-routes-check.mjs";
 
 /** The frame-ancestors every non-embed path has always sent. */
@@ -24,7 +24,7 @@ test("the CSP keeps its hard limits", () => {
 
 test("/embed/* may be framed by any site; every other path keeps the old frame-ancestors", () => {
   const site = contentSecurityPolicy();
-  for (const path of ["/", "/pairs", "/pair/warfarin-fluconazole", "/pair/x/", "/embed", "/embedded/pair/x", "/x/embed/pair/y"]) {
+  for (const path of ["/", "/pairs", "/pair/warfarin-fluconazole", "/pair/x/", "/embed", "/embedded/pair/x", "/x/embed/pair/y", "/api/lti", "/api/ltix/login", "/x/api/lti/login"]) {
     assert.equal(contentSecurityPolicy(undefined, path), site, path);
     assert.ok(contentSecurityPolicy(undefined, path).includes(SITE_ANCESTORS), path);
   }
@@ -46,7 +46,7 @@ test("/embed/* may be framed by any site; every other path keeps the old frame-a
 
 test("every response gets the security headers before anything else routes", () => {
   const [site, embed] = vercelRoutes();
-  assert.equal(site.src, "^/((?!embed/).*)$");
+  assert.equal(site.src, "^/((?!embed/|api/lti/).*)$");
   assert.equal(embed.src, "^/embed/(.*)$");
   for (const r of [site, embed]) {
     assert.equal(r.continue, true);
@@ -81,8 +81,13 @@ test("sourceToSrc refuses patterns it cannot translate", () => {
   assert.equal(sourceToSrc("/sw.js"), "^/sw\\.js/?$");
   assert.equal(sourceToSrc("/embed/(.*)"), "^/embed/(.*)$");
   assert.equal(sourceToSrc("/((?!embed/).*)"), "^/((?!embed/).*)$");
+  assert.equal(sourceToSrc("/((?!embed/|api/lti/).*)"), "^/((?!embed/|api/lti/).*)$");
+  assert.equal(sourceToSrc("/api/lti/(.*)"), "^/api/lti/(.*)$");
+  assert.equal(sourceToSrc("/a.b/(.*)"), "^/a\\.b/(.*)$");
   assert.throws(() => sourceToSrc("/((?!a|b).*)"));
-  assert.throws(() => sourceToSrc("/a/b/(.*)"));
+  assert.throws(() => sourceToSrc("/((?!a/|).*)"));
+  assert.throws(() => sourceToSrc("/a/(.*)/b"));
+  assert.throws(() => sourceToSrc("/a//(.*)"));
   assert.throws(() => sourceToSrc("/drug/:slug"));
   assert.throws(() => sourceToSrc("/(.*).js"));
   assert.throws(() => vercelRoutes({ redirects: [{ source: "/a", destination: "https://example.com" }] }));
@@ -109,4 +114,25 @@ test("checkBuildConfig accepts our routes ahead of Nitro's and rejects the old o
   const noEmbed = checkBuildConfig({ version: 3, routes: [...oldRoutes, ...NITRO_TAIL] }, oldRoutes);
   assert.ok(noEmbed.some((p) => p.includes("embed pages need frame-ancestors *")), noEmbed.join("; "));
   assert.deepEqual(checkBuildConfig({ routes: [] }, []), ["vercel.json sends no Content-Security-Policy"]);
+});
+
+test("/api/lti/* gets HSTS and Permissions-Policy but no CSP: the LTI handler sends its own", () => {
+  const routes = vercelRoutes();
+  const site = routes[0];
+  for (const path of ["/api/lti/login", "/api/lti/launch", "/api/lti/deep-link", "/api/lti/jwks", "/api/lti/config", "/api/lti/"]) {
+    assert.ok(path.startsWith(LTI_PREFIX));
+    const { headers, cspRoutes } = headersForPath(routes, path);
+    assert.equal(cspRoutes, 0, `${path} gets no CSP from vercel.json`);
+    assert.equal(headers["content-security-policy"], undefined, path);
+    assert.equal(headers["x-frame-options"], undefined, path);
+    assert.equal(headers["strict-transport-security"], site.headers["Strict-Transport-Security"], path);
+    assert.equal(headers["permissions-policy"], site.headers["Permissions-Policy"], path);
+  }
+  // Referrer-Policy and nosniff come from the handler (no-referrer, nosniff), so the route leaves them alone.
+  const lti = routes.find((r) => r.src === "^/api/lti/(.*)$");
+  assert.deepEqual(Object.keys(lti?.headers ?? {}).sort(), ["Permissions-Policy", "Strict-Transport-Security"]);
+  // A built config that still put the site CSP on /api/lti/ fails the check.
+  const leaky = [{ src: "^/(.*)$", headers: { "Content-Security-Policy": contentSecurityPolicy() }, continue: true }, ...routes, ...NITRO_TAIL];
+  const problems = checkBuildConfig({ version: 3, routes: leaky });
+  assert.ok(problems.some((p) => p.startsWith("/api/lti/") && p.includes("want none")), problems.join("; "));
 });
