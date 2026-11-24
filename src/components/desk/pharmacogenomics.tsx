@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Dna,
   ExternalLink,
+  FlaskConical,
   Info,
   Layers,
   Pill,
@@ -29,7 +30,6 @@ import {
   Search,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -219,7 +219,7 @@ export function Pharmacogenomics() {
               : "text-muted hover:bg-surface/50 hover:text-fg",
           )}
         >
-          <Sparkles className="size-4 shrink-0 text-amber-500" />
+          <FlaskConical className="size-4 shrink-0 text-warn" />
           <span>Molecular HLA Groove Visualizer</span>
         </button>
 
@@ -442,7 +442,7 @@ export function Pharmacogenomics() {
                                   : isDec
                                   ? "bg-amber-500/15 text-warning dark:text-amber-400"
                                   : isInc
-                                  ? "bg-purple-500/15 text-purple-800 dark:text-purple-400"
+                                  ? "bg-info-soft text-info"
                                   : "bg-emerald-500/15 text-success dark:text-emerald-400",
                               )}
                             >
@@ -824,7 +824,7 @@ export function Pharmacogenomics() {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-purple-500/20 px-2 py-0.5 font-mono text-xs font-bold text-purple-800 dark:text-purple-400">
+                    <span className="rounded-md bg-info-soft px-2 py-0.5 font-mono text-xs font-bold text-info">
                       HLA-B*15:02 &amp; HLA-A*31:01
                     </span>
                     <h4 className="text-base font-bold text-fg">
@@ -873,7 +873,7 @@ export function Pharmacogenomics() {
                 </div>
 
                 <div className="rounded-xl border border-border/60 bg-surface p-3.5 space-y-1.5">
-                  <div className="flex items-center gap-2 font-mono text-xs font-bold text-purple-800 dark:text-purple-400">
+                  <div className="flex items-center gap-2 font-mono text-xs font-bold text-info">
                     <span>02</span>
                     <span>TCR Engagement</span>
                   </div>
@@ -1353,7 +1353,7 @@ function MetabolicFluxSimulation({
             {
               name: "2-Step CYP Bioactivation to Active Thiol (CYP2C19)",
               percentage: activeThiolFlux,
-              color: isPm ? "bg-danger animate-pulse" : isUm ? "bg-purple-500" : "bg-emerald-500",
+              color: isPm ? "bg-danger animate-pulse" : isUm ? "bg-info" : "bg-ok",
               note: isPm
                 ? "1% flux -> Severe bioactivation block (High Stent Thrombosis Hazard)"
                 : isUm

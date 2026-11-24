@@ -27,7 +27,6 @@ import {
   Shield,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -136,7 +135,7 @@ export function TransporterNetwork() {
         {deskOverlap.length > 0 && (
           <div className="mt-4 rounded-lg border border-accent/30 bg-accent-soft/30 p-3 sm:p-4">
             <div className="flex items-start gap-2.5">
-              <Sparkles className="mt-0.5 size-4 shrink-0 text-accent" />
+              <Activity className="mt-0.5 size-4 shrink-0 text-accent" />
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                   Active Desk Transporter Overlap ({deskOverlap.length} {deskOverlap.length === 1 ? "drug" : "drugs"})
@@ -270,7 +269,7 @@ export function TransporterNetwork() {
                 : "border-border bg-surface text-fg hover:bg-surface-2",
             )}
           >
-            <Network className="size-4 shrink-0 text-violet-500" />
+            <Network className="size-4 shrink-0 text-info" />
             <div className="min-w-0">
               <p className="truncate font-semibold">All Transporters</p>
               <p className="truncate text-[11px] text-muted">Matrix & Families</p>

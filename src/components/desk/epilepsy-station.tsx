@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   Activity,
   AlertTriangle,
+  BookOpen,
   Brain,
   CheckCircle2,
   Droplets,
@@ -9,7 +10,6 @@ import {
   Layers,
   Scale,
   ShieldAlert,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -336,10 +336,10 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
           </div>
 
           {/* Phase 2 Card */}
-          <div className="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4 sm:p-5 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-purple-500/20 pb-2">
+          <div className="rounded-xl border border-accent/30 bg-accent-soft/40 p-4 sm:p-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-accent/20 pb-2">
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-600 text-[11px] font-bold text-white">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-[11px] font-bold text-accent-fg">
                   2
                 </span>
                 <h3 className="font-serif font-bold text-base text-fg">
@@ -535,7 +535,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
                       {c.calculatedDoseMg} {c.drugId === "fosphenytoin" ? "mg PE" : "mg"}
                     </td>
                     <td className="p-2.5 text-muted">{c.maxInfusionRate}</td>
-                    <td className="p-2.5 text-center font-bold text-purple-800 dark:text-purple-400">
+                    <td className="p-2.5 text-center font-bold tabular-nums text-accent">
                       {c.esett60MinEfficacyPct}%
                       <span className="text-[9px] text-muted block font-mono font-normal">
                         ({c.esettEfficacyCi95})
@@ -739,10 +739,10 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* 23.4% Saline Card */}
-              <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+              <div className="rounded-xl border border-info/35 bg-info-soft/45 p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-info/20 pb-2">
                   <div className="flex items-center gap-2">
-                    <Droplets className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                    <Droplets className="h-4 w-4 text-info" />
                     <span className="font-serif font-bold text-sm text-fg">
                       {osmotherapy.hypertonicSaline234.agentName}
                     </span>
@@ -754,11 +754,11 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
 
                 <div className="rounded-md bg-surface p-3 text-center border border-border">
                   <span className="text-[10px] text-muted block">Standard Resuscitation Bolus:</span>
-                  <span className="font-mono text-xl font-bold text-fg">30 mL IV Bolus</span>
+                  <span className="font-mono tabular-nums text-xl font-bold text-fg">30 mL IV Bolus</span>
                   <span className="text-[11px] text-muted block mt-0.5">
                     Infuse over {osmotherapy.hypertonicSaline234.infusionTimeMinutes}
                   </span>
-                  <span className="text-[10px] text-cyan-800 dark:text-cyan-300 block font-mono mt-1">
+                  <span className="text-[10px] text-info block font-mono tabular-nums mt-1">
                     Delivers 120 mEq Na+ &amp; 120 mEq Cl- (8,008 mOsm/L)
                   </span>
                 </div>
@@ -860,7 +860,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
       {/* 3. Clinical Pearls & Guideline Insights */}
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 space-y-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-amber-500" />
+          <BookOpen className="h-4 w-4 text-warn" />
           <span className="font-serif font-bold text-sm text-fg">
             Neuro-Intensivist &amp; Clinical Pharmacotherapy Practice Pearls
           </span>

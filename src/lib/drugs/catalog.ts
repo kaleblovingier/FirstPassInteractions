@@ -9,6 +9,7 @@ import { MODERN_WAVE3_FORMULARY } from "./catalog-modern-wave3";
 import { MODERN_WAVE4_FORMULARY } from "./catalog-modern-wave4";
 import { MODERN_WAVE5_FORMULARY } from "./catalog-modern-wave5";
 import { MODERN_WAVE6_FORMULARY } from "./catalog-modern-wave6";
+import { MODERN_WAVE7_FORMULARY } from "./catalog-modern-wave7";
 import { hasDrugbank } from "./drugbank";
 import { hasPgx } from "./pgx";
 import { hasCite } from "./pubmed";
@@ -921,7 +922,7 @@ const raw: Drug[] = [
     "Serotonin syndrome with MAOIs, SSRIs, MDMA, DXM",
     {
       kind: "herb",
-      aliases: ["5-htp", "5htp", "tryptophan", "l-tryptophan"],
+      aliases: ["5-htp", "5htp", "oxitriptan", "5-hydroxytryptophan"],
       note: "Feeds 5-HT synthesis. Stacked with an SSRI or MAOI this is a serotonergic load, not a gentle sleep aid.",
     }),
   d("goldenseal", "Goldenseal", [], "CYP2D6 / 3A4 herbal inhibitor",
@@ -2014,7 +2015,7 @@ const raw: Drug[] = [
     "Bleeding; modest 3A4/2C9 inhibition at extract doses",
     {
       kind: "herb",
-      aliases: ["curcumin", "curcuma", "golden milk", "meriva"],
+      aliases: ["curcumin", "curcuminoids", "curcuma", "golden milk", "meriva"],
       note: "Piperine is often co-formulated to raise curcumin — that adds the black-pepper 3A4/P-gp hit already on this shelf. The spice in food is not this extract.",
     }),
   d("vitamin-e", "Vitamin E (high-dose)", [], "Tocopherol supplement",
@@ -2401,7 +2402,7 @@ const raw: Drug[] = [
     "APAP antidote — not a CYP perpetrator",
     {
       kind: "herb",
-      aliases: ["n-acetylcysteine", "acetylcysteine", "n-acetyl cysteine"],
+      aliases: ["n-acetylcysteine", "n-acetyl-l-cysteine", "acetylcysteine", "n-acetyl cysteine"],
       note: "The acetaminophen antidote sold as a mucolytic and 'liver support.' CYP/PD stays quiet. Does not retire NAPQI from chronic alcohol plus APAP.",
     }),
   d("charcoal", "Activated charcoal", [], "Oral adsorbent",
@@ -2864,6 +2865,7 @@ const afterLabel = new Set([...afterFda, ...LABEL_NAMED_SHELF.map((d) => d.id)])
 const afterWave3 = new Set([...afterLabel, ...MODERN_WAVE3_FORMULARY.map((d) => d.id)]);
 const afterWave4 = new Set([...afterWave3, ...MODERN_WAVE4_FORMULARY.map((d) => d.id)]);
 const afterWave5 = new Set([...afterWave4, ...MODERN_WAVE5_FORMULARY.map((d) => d.id)]);
+const afterWave6 = new Set([...afterWave5, ...MODERN_WAVE6_FORMULARY.map((d) => d.id)]);
 export const DRUGS: Drug[] = [
   ...raw,
   ...clinicExtra,
@@ -2875,6 +2877,7 @@ export const DRUGS: Drug[] = [
   ...MODERN_WAVE4_FORMULARY.filter((d) => !afterWave3.has(d.id)),
   ...MODERN_WAVE5_FORMULARY.filter((d) => !afterWave4.has(d.id)),
   ...MODERN_WAVE6_FORMULARY.filter((d) => !afterWave5.has(d.id)),
+  ...MODERN_WAVE7_FORMULARY.filter((d) => !afterWave6.has(d.id)),
 ];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 
@@ -3105,6 +3108,14 @@ export function searchDrugs(query: string, excludeIds: string[] = []): Drug[] {
       "kanna",
       "rhodiola",
       "phenibut",
+      "aniracetam",
+      "oxiracetam",
+      "pramiracetam",
+      "fasoracetam",
+      "coluracetam",
+      "nefiracetam",
+      "bromantane",
+      "flmodafinil",
     ];
     return nootropicOrder
       .map((id) => DRUG_BY_ID[id])

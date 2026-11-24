@@ -26,7 +26,7 @@ import {
   Plus,
   Search,
   Flame,
-  Sparkles,
+  FlaskConical,
   Layers,
 } from "lucide-react";
 
@@ -158,7 +158,7 @@ export function CnsPenetrationMatrix() {
       <header className="flex flex-col gap-3 rounded-2xl bg-surface border border-border p-5 sm:p-6 shadow-[var(--shadow-border)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-800 dark:text-cyan-400">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-accent-soft border border-accent/30 text-accent">
               <Brain className="size-6 animate-pulse" />
             </div>
             <div>
@@ -172,7 +172,7 @@ export function CnsPenetrationMatrix() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border border-cyan-500/20">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-accent-soft text-accent border border-accent/30">
               <Activity className="size-3.5" />
               FD&amp;C Act § 520(o)(1)(E)
             </span>
@@ -181,7 +181,7 @@ export function CnsPenetrationMatrix() {
 
         {/* Regulatory Posture Notice */}
         <div className="rounded-xl bg-bg-sunken border border-border/80 p-3.5 text-xs leading-relaxed text-muted flex items-start gap-2.5">
-          <Info className="size-4 shrink-0 text-cyan-500 mt-0.5" />
+          <Info className="size-4 shrink-0 text-accent mt-0.5" />
           <div>
             <span className="font-semibold text-fg">Non-Prescriptive Clinical Decision Support Notice: </span>
             {CNS_PENETRATION_REGULATORY_DISCLAIMER}
@@ -191,8 +191,8 @@ export function CnsPenetrationMatrix() {
 
       {/* Feedback Toast */}
       {feedbackMessage && (
-        <div className="rounded-xl bg-cyan-500/15 border border-cyan-500/30 p-3.5 text-xs font-semibold text-cyan-900 dark:text-cyan-100 flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
-          <Sparkles className="size-4 shrink-0 text-cyan-500" />
+        <div className="rounded-xl bg-accent-soft border border-accent/30 p-3.5 text-xs font-semibold text-fg flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
+          <Check className="size-4 shrink-0 text-accent" />
           <span>{feedbackMessage}</span>
         </div>
       )}
@@ -205,7 +205,7 @@ export function CnsPenetrationMatrix() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-fg flex items-center gap-2">
-              <Shield className="size-5 text-cyan-500" />
+              <Shield className="size-5 text-accent" />
               Desk Tray CNS Penetration Audit
             </h2>
             <p className="text-xs text-muted">
@@ -232,7 +232,7 @@ export function CnsPenetrationMatrix() {
                     ? "bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-100"
                     : risk.severity === "warning"
                     ? "bg-amber-500/10 border-amber-500/30 text-amber-950 dark:text-amber-100"
-                    : "bg-cyan-500/10 border-cyan-500/30 text-cyan-950 dark:text-cyan-100",
+                    : "bg-info-soft border-info/30 text-fg",
                 )}
               >
                 <div className="flex items-start gap-2.5 mb-2">
@@ -241,7 +241,7 @@ export function CnsPenetrationMatrix() {
                   ) : risk.severity === "warning" ? (
                     <AlertTriangle className="size-5 shrink-0 text-amber-500 mt-0.5" />
                   ) : (
-                    <Info className="size-5 shrink-0 text-cyan-500 mt-0.5" />
+                    <Info className="size-5 shrink-0 text-info mt-0.5" />
                   )}
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -253,7 +253,7 @@ export function CnsPenetrationMatrix() {
                             ? "bg-rose-700 text-white"
                             : risk.severity === "warning"
                             ? "bg-amber-700 text-white"
-                            : "bg-cyan-700 text-white",
+                            : "bg-info text-white",
                         )}
                       >
                         {risk.severity}
@@ -266,11 +266,11 @@ export function CnsPenetrationMatrix() {
                 <div className="mt-2.5 space-y-2 border-t border-border/40 pt-2.5 text-[11px] leading-relaxed">
                   <div>
                     <span className="font-bold">Biophysical Mechanism: </span>
-                    <span className="text-muted dark:text-muted/80">{risk.biophysicalMechanism}</span>
+                    <span className="text-muted">{risk.biophysicalMechanism}</span>
                   </div>
                   <div>
                     <span className="font-bold">Actionable Clinical Considerations:</span>
-                    <ul className="list-disc list-inside mt-1 space-y-0.5 text-muted dark:text-muted/80">
+                    <ul className="list-disc list-inside mt-1 space-y-0.5 text-muted">
                       {risk.actionableConsiderations.map((c, i) => (
                         <li key={i}>{c}</li>
                       ))}
@@ -302,7 +302,7 @@ export function CnsPenetrationMatrix() {
                         scoreResult.level === "High"
                           ? "bg-emerald-500/20 text-success dark:text-emerald-300 border border-emerald-500/30"
                           : scoreResult.level === "Moderate"
-                          ? "bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30"
+                          ? "bg-info-soft text-info border border-info/30"
                           : scoreResult.level === "Low"
                           ? "bg-amber-500/20 text-warning dark:text-amber-300 border border-amber-500/30"
                           : "bg-slate-500/20 text-slate-700 dark:text-slate-300 border border-slate-500/30",
@@ -317,11 +317,11 @@ export function CnsPenetrationMatrix() {
                 <div className="mt-2.5 pt-2 border-t border-border/50 flex items-center justify-between text-[11px]">
                   <div>
                     <span className="text-muted">BBP Score: </span>
-                    <span className="font-mono font-bold text-fg">{scoreResult.score}/100</span>
+                    <span className="font-mono tabular-nums font-bold text-fg">{scoreResult.score}/100</span>
                   </div>
                   <div>
                     <span className="text-muted">CSF/Plasma: </span>
-                    <span className="font-mono font-bold text-fg">~{scoreResult.csfPlasmaRatioEstimatePercent}%</span>
+                    <span className="font-mono tabular-nums font-bold text-fg">~{scoreResult.csfPlasmaRatioEstimatePercent}%</span>
                   </div>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export function CnsPenetrationMatrix() {
                   load(reg.drugIds);
                   showFeedback(`Loaded '${reg.title}' (${reg.drugIds.join(", ")}) onto Desk Tray`);
                 }}
-                className="flex flex-col text-left rounded-xl border border-border bg-surface p-3 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 min-h-[44px]"
+                className="flex flex-col text-left rounded-xl border border-border bg-surface p-3 transition-all hover:border-accent/50 hover:bg-accent-soft/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent min-h-[44px]"
               >
                 <div className="flex items-center justify-between gap-1 mb-1">
                   <span className="font-bold text-xs text-fg">{reg.title}</span>
@@ -356,7 +356,7 @@ export function CnsPenetrationMatrix() {
                   </span>
                 </div>
                 <p className="text-[11px] text-muted line-clamp-2 leading-relaxed">{reg.description}</p>
-                <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-cyan-800 dark:text-cyan-400">
+                <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-accent">
                   <Plus className="size-3" />
                   <span>Load {reg.drugIds.length} drugs onto tray</span>
                 </div>
@@ -374,7 +374,7 @@ export function CnsPenetrationMatrix() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-fg flex items-center gap-2">
-              <Layers className="size-5 text-cyan-500" />
+              <Layers className="size-5 text-accent" />
               BBB Neurovascular Unit Architecture &amp; Inflammation Simulator
             </h2>
             <p className="text-xs text-muted">
@@ -391,7 +391,7 @@ export function CnsPenetrationMatrix() {
               aria-checked={isMeningesInflamed}
               onClick={() => setIsMeningesInflamed(!isMeningesInflamed)}
               className={cn(
-                "flex min-h-[44px] items-center gap-2.5 rounded-xl border px-3.5 py-2 text-xs font-bold transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500",
+                "flex min-h-[44px] items-center gap-2.5 rounded-xl border px-3.5 py-2 text-xs font-bold transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                 isMeningesInflamed
                   ? "bg-rose-500/15 border-rose-500/40 text-rose-900 dark:text-rose-100"
                   : "bg-emerald-500/15 border-emerald-500/40 text-emerald-900 dark:text-emerald-100",
@@ -433,7 +433,7 @@ export function CnsPenetrationMatrix() {
                   ? "Inflammation Active: Paracellular Tight Junction Breakdown"
                   : "Physiological Baseline: High Transendothelial Electrical Resistance (>1500 Ω·cm²)"}
               </span>
-              <p className="text-xs leading-relaxed text-muted dark:text-muted/90">
+              <p className="text-xs leading-relaxed text-muted">
                 {isMeningesInflamed
                   ? "Bacterial lysis and pathogen-associated molecular patterns (peptidoglycan, teichoic acid, endotoxin) trigger microglial and endothelial release of TNF-α, IL-1β, and matrix metalloproteinases (MMP-2/9). MMPs degrade claudin-5 and occludin extracellular loops, widening paracellular clefts and allowing hydrophilic beta-lactams (ceftriaxone, ampicillin, meropenem) and vancomycin to leak into CSF."
                   : "Brain capillary endothelial cells are joined by continuous, non-fenestrated tight junctions (claudin-5, occludin, ZO-1 complexes), conferring high electrical resistance (>1500-2000 Ω·cm²). Paracellular water and solute flux is sealed. Only small, lipophilic molecules with low polar surface area (TPSA < 90 Å²) and low H-bonding can cross via transcellular passive diffusion unless transported by active carriers."}
@@ -469,15 +469,15 @@ export function CnsPenetrationMatrix() {
 
             {/* Circulating Drug Molecules */}
             <g transform="translate(180, 50)">
-              <circle cx="0" cy="0" r="5" fill="#06b6d4" />
+              <circle cx="0" cy="0" r="5" fill="#2f5d56" />
               <text x="8" y="4" fill="var(--fg)" fontSize="9">Lipophilic Drug</text>
             </g>
             <g transform="translate(360, 45)">
-              <rect x="-4" y="-4" width="8" height="8" fill="#f59e0b" />
+              <rect x="-4" y="-4" width="8" height="8" fill="#80541b" />
               <text x="8" y="4" fill="var(--fg)" fontSize="9">Polar Beta-Lactam</text>
             </g>
             <g transform="translate(560, 60)">
-              <polygon points="0,-5 5,5 -5,5" fill="#a855f7" />
+              <polygon points="0,-5 5,5 -5,5" fill="#3d5c6b" />
               <text x="8" y="4" fill="var(--fg)" fontSize="9">P-gp Substrate (Loperamide)</text>
             </g>
 
@@ -489,8 +489,8 @@ export function CnsPenetrationMatrix() {
               width="310"
               height="60"
               rx="6"
-              fill={inspectedHotspot === "endothelium" ? "rgba(6, 182, 212, 0.25)" : "rgba(6, 182, 212, 0.12)"}
-              stroke="#06b6d4"
+              fill={inspectedHotspot === "endothelium" ? "rgba(47, 93, 86, 0.22)" : "rgba(47, 93, 86, 0.10)"}
+              stroke="#2f5d56"
               strokeWidth="2"
               className="cursor-pointer transition-all"
               onClick={() => setInspectedHotspot("endothelium")}
@@ -505,8 +505,8 @@ export function CnsPenetrationMatrix() {
               width="310"
               height="60"
               rx="6"
-              fill={inspectedHotspot === "endothelium" ? "rgba(6, 182, 212, 0.25)" : "rgba(6, 182, 212, 0.12)"}
-              stroke="#06b6d4"
+              fill={inspectedHotspot === "endothelium" ? "rgba(47, 93, 86, 0.22)" : "rgba(47, 93, 86, 0.10)"}
+              stroke="#2f5d56"
               strokeWidth="2"
               className="cursor-pointer transition-all"
               onClick={() => setInspectedHotspot("endothelium")}
@@ -520,10 +520,10 @@ export function CnsPenetrationMatrix() {
               className="cursor-pointer"
               onClick={() => setInspectedHotspot("efflux")}
             >
-              <rect x="-25" y="-8" width="50" height="16" rx="4" fill="#a855f7" stroke="#7e22ce" strokeWidth="1.5" />
+              <rect x="-25" y="-8" width="50" height="16" rx="4" fill="#3d5c6b" stroke="#2c4450" strokeWidth="1.5" />
               <text x="0" y="3" fill="#ffffff" fontSize="8" fontWeight="bold" textAnchor="middle">P-gp (ABCB1)</text>
               {/* Efflux arrow pumping back into blood */}
-              <path d="M 0 -10 L 0 -22 M -4 -16 L 0 -22 L 4 -16" stroke="#a855f7" strokeWidth="2" fill="none" />
+              <path d="M 0 -10 L 0 -22 M -4 -16 L 0 -22 L 4 -16" stroke="#3d5c6b" strokeWidth="2" fill="none" />
             </g>
 
             <g
@@ -531,9 +531,9 @@ export function CnsPenetrationMatrix() {
               className="cursor-pointer"
               onClick={() => setInspectedHotspot("efflux")}
             >
-              <rect x="-25" y="-8" width="50" height="16" rx="4" fill="#a855f7" stroke="#7e22ce" strokeWidth="1.5" />
+              <rect x="-25" y="-8" width="50" height="16" rx="4" fill="#3d5c6b" stroke="#2c4450" strokeWidth="1.5" />
               <text x="0" y="3" fill="#ffffff" fontSize="8" fontWeight="bold" textAnchor="middle">BCRP (ABCG2)</text>
-              <path d="M 0 -10 L 0 -22 M -4 -16 L 0 -22 L 4 -16" stroke="#a855f7" strokeWidth="2" fill="none" />
+              <path d="M 0 -10 L 0 -22 M -4 -16 L 0 -22 L 4 -16" stroke="#3d5c6b" strokeWidth="2" fill="none" />
             </g>
 
             {/* INTERCELLULAR TIGHT JUNCTION CLEFT (Between Cell A and Cell B: x=360 to x=440) */}
@@ -618,16 +618,16 @@ export function CnsPenetrationMatrix() {
             </g>
 
             {/* 5. Brain Parenchyma / Interstitial Space & Neurons */}
-            <rect x="20" y="300" width="760" height="45" rx="6" fill="rgba(168, 85, 247, 0.08)" stroke="rgba(168, 85, 247, 0.25)" />
+            <rect x="20" y="300" width="760" height="45" rx="6" fill="rgba(61, 92, 107, 0.08)" stroke="rgba(61, 92, 107, 0.28)" />
             <text x="35" y="325" fill="var(--fg)" fontSize="11" fontWeight="bold">Brain Parenchyma &amp; Interstitial Fluid (ISF / Neurons)</text>
             <text x="35" y="338" fill="var(--muted)" fontSize="9">Direct site of therapeutic neuro-receptors (H1, Beta-1, Mu-Opioid, GABA-A, SV2A)</text>
           </svg>
 
           {/* Hotspot Inspection Inspector Drawer */}
           {inspectedHotspot && (
-            <div className="mt-4 rounded-xl border border-cyan-500/30 bg-surface p-4 text-xs">
+            <div className="mt-4 rounded-xl border border-accent/30 bg-surface p-4 text-xs">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-sm text-cyan-800 dark:text-cyan-400 uppercase tracking-wide">
+                <span className="font-bold text-sm text-accent uppercase tracking-wide">
                   {inspectedHotspot === "tight-junctions"
                     ? "Intercellular Tight Junctions (Claudin-5 / Occludin / ZO-1)"
                     : inspectedHotspot === "endothelium"
@@ -661,7 +661,7 @@ export function CnsPenetrationMatrix() {
                   onClick={() => setInspectedHotspot("tight-junctions")}
                   className={cn(
                     "px-2.5 py-1 rounded-md border min-h-[36px]",
-                    inspectedHotspot === "tight-junctions" ? "bg-cyan-500/20 border-cyan-500 text-fg" : "border-border text-muted",
+                    inspectedHotspot === "tight-junctions" ? "bg-accent-soft border-accent text-accent" : "border-border text-muted",
                   )}
                 >
                   Tight Junctions
@@ -671,7 +671,7 @@ export function CnsPenetrationMatrix() {
                   onClick={() => setInspectedHotspot("endothelium")}
                   className={cn(
                     "px-2.5 py-1 rounded-md border min-h-[36px]",
-                    inspectedHotspot === "endothelium" ? "bg-cyan-500/20 border-cyan-500 text-fg" : "border-border text-muted",
+                    inspectedHotspot === "endothelium" ? "bg-accent-soft border-accent text-accent" : "border-border text-muted",
                   )}
                 >
                   Endothelium
@@ -681,7 +681,7 @@ export function CnsPenetrationMatrix() {
                   onClick={() => setInspectedHotspot("efflux")}
                   className={cn(
                     "px-2.5 py-1 rounded-md border min-h-[36px]",
-                    inspectedHotspot === "efflux" ? "bg-cyan-500/20 border-cyan-500 text-fg" : "border-border text-muted",
+                    inspectedHotspot === "efflux" ? "bg-accent-soft border-accent text-accent" : "border-border text-muted",
                   )}
                 >
                   Efflux Pumps
@@ -691,7 +691,7 @@ export function CnsPenetrationMatrix() {
                   onClick={() => setInspectedHotspot("pericytes")}
                   className={cn(
                     "px-2.5 py-1 rounded-md border min-h-[36px]",
-                    inspectedHotspot === "pericytes" ? "bg-cyan-500/20 border-cyan-500 text-fg" : "border-border text-muted",
+                    inspectedHotspot === "pericytes" ? "bg-accent-soft border-accent text-accent" : "border-border text-muted",
                   )}
                 >
                   Pericytes
@@ -701,7 +701,7 @@ export function CnsPenetrationMatrix() {
                   onClick={() => setInspectedHotspot("astrocytes")}
                   className={cn(
                     "px-2.5 py-1 rounded-md border min-h-[36px]",
-                    inspectedHotspot === "astrocytes" ? "bg-cyan-500/20 border-cyan-500 text-fg" : "border-border text-muted",
+                    inspectedHotspot === "astrocytes" ? "bg-accent-soft border-accent text-accent" : "border-border text-muted",
                   )}
                 >
                   Astrocyte End-Feet
@@ -720,7 +720,7 @@ export function CnsPenetrationMatrix() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-fg flex items-center gap-2">
-              <Sparkles className="size-5 text-amber-500" />
+              <FlaskConical className="size-5 text-warn" />
               High-Yield Drug Class Divergences
             </h2>
             <p className="text-xs text-muted">
@@ -855,7 +855,7 @@ export function CnsPenetrationMatrix() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-fg flex items-center gap-2">
-              <Activity className="size-5 text-cyan-500" />
+              <Activity className="size-5 text-accent" />
               CNS Penetration Scorecard &amp; Biophysical Formulary
             </h2>
             <p className="text-xs text-muted">
@@ -875,7 +875,7 @@ export function CnsPenetrationMatrix() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search drug name, class, or indication (e.g., diphenhydramine, ceftriaxone, delirium)..."
-              className="w-full rounded-xl border border-border bg-bg-sunken pl-10 pr-4 py-2.5 text-xs sm:text-sm text-fg placeholder:text-muted focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 min-h-[44px]"
+              className="w-full rounded-xl border border-border bg-bg-sunken pl-10 pr-4 py-2.5 text-xs sm:text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent min-h-[44px]"
             />
           </div>
 
@@ -901,7 +901,7 @@ export function CnsPenetrationMatrix() {
                 className={cn(
                   "min-h-[36px] px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all",
                   selectedCategory === cat
-                    ? "bg-cyan-700 text-white border-cyan-700"
+                    ? "bg-accent text-accent-fg border-accent"
                     : "bg-bg-sunken text-muted border-border hover:text-fg hover:bg-surface",
                 )}
               >
@@ -921,7 +921,7 @@ export function CnsPenetrationMatrix() {
                 className={cn(
                   "min-h-[36px] px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all",
                   selectedPermeability === lvl
-                    ? "bg-cyan-700 text-white border-cyan-700"
+                    ? "bg-accent text-accent-fg border-accent"
                     : "bg-bg-sunken text-muted border-border hover:text-fg hover:bg-surface",
                 )}
               >
@@ -940,7 +940,7 @@ export function CnsPenetrationMatrix() {
             return (
               <div
                 key={p.drugId}
-                className="flex flex-col justify-between rounded-xl border border-border bg-surface p-4 text-xs shadow-xs transition-all hover:border-cyan-500/40"
+                className="flex flex-col justify-between rounded-xl border border-border bg-surface p-4 text-xs shadow-xs transition-all hover:border-accent/50"
               >
                 <div className="space-y-2.5">
                   {/* Top Row: Name, Class, Level Badge */}
@@ -955,7 +955,7 @@ export function CnsPenetrationMatrix() {
                         bbp.level === "High"
                           ? "bg-emerald-500/15 text-success dark:text-emerald-300 border-emerald-500/30"
                           : bbp.level === "Moderate"
-                          ? "bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 border-cyan-500/30"
+                          ? "bg-info-soft text-info border-info/30"
                           : bbp.level === "Low"
                           ? "bg-amber-500/15 text-warning dark:text-amber-300 border-amber-500/30"
                           : "bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/30",
@@ -969,25 +969,25 @@ export function CnsPenetrationMatrix() {
                   <div className="rounded-lg bg-bg-sunken p-2.5 border border-border/60 space-y-1.5">
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="font-semibold text-muted">BBP Score:</span>
-                      <span className="font-mono font-bold text-fg">{bbp.score} / 100</span>
+                      <span className="font-mono tabular-nums font-bold text-fg">{bbp.score} / 100</span>
                     </div>
                     <div className="w-full bg-border/40 h-2 rounded-full overflow-hidden">
                       <div
                         className={cn(
                           "h-full transition-all duration-300",
-                          bbp.score >= 65 ? "bg-emerald-500" : bbp.score >= 40 ? "bg-cyan-500" : bbp.score >= 20 ? "bg-amber-500" : "bg-slate-400",
+                          bbp.score >= 65 ? "bg-ok" : bbp.score >= 40 ? "bg-accent" : bbp.score >= 20 ? "bg-warn" : "bg-subtle",
                         )}
                         style={{ width: `${bbp.score}%` }}
                       />
                     </div>
                     <div className="flex items-center justify-between text-[11px] pt-0.5">
                       <span className="text-muted">Estimated CSF/Plasma Ratio:</span>
-                      <span className="font-mono font-bold text-fg">~{bbp.csfPlasmaRatioEstimatePercent}%</span>
+                      <span className="font-mono tabular-nums font-bold text-fg">~{bbp.csfPlasmaRatioEstimatePercent}%</span>
                     </div>
                   </div>
 
                   {/* Biophysical Chips */}
-                  <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono">
+                  <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono tabular-nums">
                     <div className="rounded bg-bg-sunken p-1 text-center border border-border/60">
                       <div className="text-muted text-[9px]">MW</div>
                       <div className="font-bold text-fg">{p.biophysical.molecularWeight} Da</div>
@@ -1008,7 +1008,7 @@ export function CnsPenetrationMatrix() {
                       HBD: {p.biophysical.hBondDonors} / HBA: {p.biophysical.hBondAcceptors}
                     </span>
                     {p.biophysical.pgpSubstrate ? (
-                      <span className="rounded bg-purple-500/15 text-purple-800 dark:text-purple-300 font-bold px-1.5 py-0.5 border border-purple-500/30">
+                      <span className="rounded bg-info-soft text-info font-bold px-1.5 py-0.5 border border-info/30">
                         P-gp Substrate
                       </span>
                     ) : (
@@ -1051,7 +1051,7 @@ export function CnsPenetrationMatrix() {
                       "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold transition-all min-h-[44px] sm:min-h-[36px]",
                       isOnTray
                         ? "bg-emerald-500/20 text-success dark:text-emerald-300 border border-emerald-500/30"
-                        : "bg-cyan-700 text-white hover:bg-cyan-800",
+                        : "bg-accent text-accent-fg hover:bg-accent/90",
                     )}
                   >
                     {isOnTray ? (

@@ -8,7 +8,13 @@ import { recheckLicense } from "@/lib/billing/license";
 import { analyze } from "@/lib/drugs/engine";
 import { plainLanguageSummary } from "@/lib/drugs/interaction-summary";
 import { plainWordsReport } from "@/lib/drugs/quick-chips";
-import { deskReportText, EXPORT_EMPTY, EXPORT_NOT_A_DOSE, findingSourceLine } from "@/lib/drugs/brief";
+import {
+  buildMarkdownRegimenReport,
+  deskReportText,
+  EXPORT_EMPTY,
+  EXPORT_NOT_A_DOSE,
+  findingSourceLine,
+} from "@/lib/drugs/brief";
 import { parseDoses } from "@/lib/drugs/dosing";
 import { applyHost, FIRST_PASS_NMDA } from "@/lib/drugs/host";
 import { treesFor } from "@/lib/drugs/metabolites";
@@ -413,7 +419,7 @@ export function DeskApp() {
       {/* Server-rendered so it does not push the page down after hydration (CLS); a returning
           visitor who already acknowledged it is hidden before paint by the root head script. */}
       {!hydrated || !hcpAck ? (
-        <aside aria-label="Clinical education disclaimer" data-fp-prehydrate={hydrated ? undefined : "hcp"} className="border-b border-border bg-warn-soft/90 backdrop-blur-sm">
+        <aside aria-label="Clinical education disclaimer" data-fp-prehydrate={hydrated ? undefined : "hcp"} className="border-b border-border bg-warn-soft">
           <div className="mx-auto flex max-w-6xl flex-col gap-3.5 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm leading-relaxed text-fg">
@@ -1608,6 +1614,27 @@ function RiskBanner({
           CSV · Founding
         </Button>
       )}
+      {plan === "lab" ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="h-10 shrink-0"
+          onClick={() => exportMarkdown(report, selected, host)}
+        >
+          <Download className="size-3.5" aria-hidden="true" />
+          Markdown
+        </Button>
+      ) : (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="h-10 shrink-0"
+          onClick={() => openCheckout("lab", foundingGateCopy("export").reason, "life")}
+        >
+          <Download className="size-3.5" aria-hidden="true" />
+          Markdown · Founding
+        </Button>
+      )}
       </div>
     </div>
   );
@@ -1904,6 +1931,40 @@ function exportCsv(report: ReturnType<typeof analyze>, selected: string[]) {
 function csv(s: string) {
   const t = s.replace(/"/g, '""');
   return `"${t}"`;
+}
+
+function exportMarkdown(
+  report: ReturnType<typeof analyze>,
+  selected: string[],
+  host: HostContext,
+) {
+  const parts: string[] = [
+    ...PHENOTYPE_ENZYMES.filter((e) => host.phenotypes[e] !== "NM").map(
+      (e) => `${e} ${host.phenotypes[e]} (${METABOLIZER_LABEL[host.phenotypes[e]]})`,
+    ),
+    ...(host.smoking ? ["Tobacco smoke: daily (CYP1A2 induction)"] : []),
+    ...(host.alcohol !== "off" ? [`Alcohol: ${ALCOHOL_LABEL[host.alcohol]}`] : []),
+    ...(host.age === "geriatric" ? ["Geriatric"] : []),
+    ...(host.kidney === "ckd" ? ["CKD"] : []),
+    ...(host.preg && host.preg !== "off"
+      ? [host.preg === "pregnant" ? "Pregnant" : "Lactating"]
+      : []),
+    ...(host.ketamineRoute !== "iv" ? [`Ketamine route: ${KETAMINE_ROUTE_LABEL[host.ketamineRoute]}`] : []),
+    ...(host.cannabisRoute !== "smoked" ? [`Cannabis route: ${CANNABIS_ROUTE_LABEL[host.cannabisRoute]}`] : []),
+  ];
+  const markdown = buildMarkdownRegimenReport({
+    trayIds: selected,
+    report,
+    hostLine: parts.length ? parts.join(" · ") : undefined,
+    version: SOFTWARE.version,
+  });
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "firstpass-desk.md";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 

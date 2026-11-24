@@ -153,3 +153,119 @@ test("deskReportText: an empty desk says nothing matched, never that the pair is
   assert.match(text, /not a green light/);
   assert.doesNotMatch(text, /\bsafe\b|no interaction/i);
 });
+
+test("buildStructuredRegimenJson & buildMarkdownRegimenReport: empty tray produces clean empty export with disclaimers", async () => {
+  const {
+    buildMarkdownRegimenReport,
+    buildStructuredRegimenJson,
+    EXPORT_EMPTY,
+    EXPORT_NOT_A_DOSE,
+  } = await import("./brief.ts");
+  const { analyze } = await import("./engine.ts");
+  const { PI_FOOTER } = await import("../regulatory.ts");
+  const { DOSE_PATTERN } = await import("../guards/dose-rule.ts");
+
+  const report = analyze([]);
+  const json = buildStructuredRegimenJson({
+    trayIds: [],
+    report,
+    generatedAt: "2026-11-24T00:00:00.000Z",
+  });
+  assert.equal(json.compounds.length, 0);
+  assert.equal(json.pathwayMatrix.length, 0);
+  assert.equal(json.findings.length, 0);
+  assert.equal(json.highest, "none");
+  assert.equal(json.disclaimer, EXPORT_NOT_A_DOSE);
+  assert.equal(json.prescribingNote, PI_FOOTER);
+  assert.equal(json.generatedAt, "2026-11-24T00:00:00.000Z");
+
+  const md = buildMarkdownRegimenReport({ trayIds: [], report });
+  assert.match(md, /^# FirstPass Clinical Monograph Regimen Report/m);
+  assert.match(md, /## Regimen Compounds & Metabolic Roles/);
+  assert.match(md, /## Mechanistic Findings/);
+  assert.ok(md.includes(EXPORT_EMPTY));
+  assert.ok(md.includes(EXPORT_NOT_A_DOSE));
+  assert.ok(md.includes(PI_FOOTER));
+  assert.deepEqual(md.match(DOSE_PATTERN) ?? [], []);
+});
+
+test("buildStructuredRegimenJson & buildMarkdownRegimenReport: 2-drug tray includes half-lives, pathway matrix, and sources", async () => {
+  const {
+    buildMarkdownRegimenReport,
+    buildStructuredRegimenJson,
+    EXPORT_NOT_A_DOSE,
+    findingSourceLine,
+  } = await import("./brief.ts");
+  const { analyze } = await import("./engine.ts");
+  const { DEFAULT_HOST } = await import("./types.ts");
+  const { DOSE_PATTERN } = await import("../guards/dose-rule.ts");
+
+  const trayIds = ["clarithromycin", "simvastatin", "clarithromycin"];
+  const report = analyze(trayIds, DEFAULT_HOST);
+  const json = buildStructuredRegimenJson({
+    trayIds,
+    report,
+    hostLine: "Geriatric · CKD stage 3",
+  });
+
+  // Deduplicates trayIds against DRUG_BY_ID
+  assert.deepEqual(
+    json.compounds.map((c) => c.id),
+    ["clarithromycin", "simvastatin"],
+  );
+  const clarith = json.compounds.find((c) => c.id === "clarithromycin")!;
+  const simva = json.compounds.find((c) => c.id === "simvastatin")!;
+  assert.equal(clarith.halfLifeHours, 7);
+  assert.equal(clarith.halfLifeLabel, "7 h");
+  assert.equal(simva.halfLifeHours, 3);
+  assert.equal(simva.halfLifeLabel, "3 h");
+
+  const cyp3a4 = json.pathwayMatrix.find((row) => row.enzyme === "CYP3A4");
+  assert.ok(cyp3a4);
+  assert.equal(cyp3a4.colliding, true);
+  assert.ok(cyp3a4.collisions > 0);
+  assert.ok(cyp3a4.inhibitors.includes("clarithromycin"));
+  assert.ok(cyp3a4.substrates.includes("simvastatin"));
+
+  assert.equal(json.highest, "contraindicated");
+  assert.equal(json.hostLine, "Geriatric · CKD stage 3");
+  assert.ok(json.findings.length > 0);
+  assert.equal(json.findings[0]!.source, findingSourceLine(report.findings[0]!));
+  assert.match(json.findings[0]!.plainSummary, /In plain English:/);
+
+  const md = buildMarkdownRegimenReport({
+    trayIds,
+    report,
+    hostLine: "Geriatric · CKD stage 3",
+  });
+  assert.match(md, /\| Compound \| Class \| t½ \| CYP \/ P-gp Roles \|/);
+  assert.match(md, /\| Clarithromycin \|.*\| 7 h \|/);
+  assert.match(md, /\| Simvastatin \|.*\| 3 h \|/);
+  assert.match(md, /Host context:\*\* Geriatric · CKD stage 3/);
+  assert.match(md, /### Avoid together/);
+  assert.ok(md.includes(EXPORT_NOT_A_DOSE));
+  assert.deepEqual(md.match(DOSE_PATTERN) ?? [], []);
+});
+
+test("buildStructuredRegimenJson & buildMarkdownRegimenReport: 3+ drug cascade tray groups findings and stays dose-free", async () => {
+  const { buildMarkdownRegimenReport, buildStructuredRegimenJson } = await import("./brief.ts");
+  const { analyze } = await import("./engine.ts");
+  const { DEFAULT_HOST } = await import("./types.ts");
+  const { DOSE_PATTERN } = await import("../guards/dose-rule.ts");
+
+  const trayIds = ["rifampin", "ketoconazole", "midazolam", "sertraline"];
+  const report = analyze(trayIds, DEFAULT_HOST);
+  const json = buildStructuredRegimenJson({ trayIds, report });
+
+  assert.equal(json.compounds.length, 4);
+  const sert = json.compounds.find((c) => c.id === "sertraline")!;
+  assert.equal(sert.halfLifeHours, 26);
+  assert.equal(sert.halfLifeLabel, "26 h");
+  assert.ok(json.findings.some((f) => f.id.startsWith("grp-pk-opposing-CYP3A4-")));
+  assert.ok(json.stacks.length > 0);
+
+  const md = buildMarkdownRegimenReport({ trayIds, report });
+  assert.match(md, /Opposing CYP3A4 inhibition \+ induction on the same tray/);
+  assert.deepEqual(md.match(DOSE_PATTERN) ?? [], []);
+  assert.deepEqual(JSON.stringify(json).match(DOSE_PATTERN) ?? [], []);
+});

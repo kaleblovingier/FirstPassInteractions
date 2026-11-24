@@ -6,12 +6,12 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
+  FlaskConical,
   Info,
   Layers,
   Plus,
   Shield,
   ShieldAlert,
-  Sparkles,
   TrendingDown,
   TrendingUp,
   Zap,
@@ -97,7 +97,7 @@ const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
     id: "clarithromycin-rifampin",
     title: "Clarithromycin + Rifampin (Opposing Collision)",
     badge: "Opposing Collision",
-    badgeColor: "border-purple-500/30 bg-purple-500/10 text-purple-800",
+    badgeColor: "border-info/30 bg-info-soft text-info",
     drugIds: ["clarithromycin", "rifampin"],
     stopDay: 10,
     highlightMechanism: "Suicidal Inactivation vs Transcriptional Induction",
@@ -336,7 +336,7 @@ export function CypKineticsSimulator() {
               : "bg-surface text-muted hover:bg-surface/80 hover:text-fg",
           )}
         >
-          <Sparkles className="size-4" />
+          <FlaskConical className="size-4" />
           Nuclear Pathways (PXR / CAR / AhR)
         </button>
         <button
@@ -794,7 +794,7 @@ export function CypKineticsSimulator() {
                         : activeDayPoint.phase === "steady-state"
                           ? "border-amber-500/40 text-warning"
                           : activeDayPoint.phase === "offset-recovery"
-                            ? "border-purple-500/40 text-purple-800"
+                            ? "border-accent/40 text-accent"
                             : "border-emerald-500/40 text-success",
                     )}
                   >
@@ -1112,7 +1112,7 @@ export function CypKineticsSimulator() {
                             : isInd
                               ? "border-amber-500/40 bg-amber-500/15 text-warning"
                               : isVic
-                                ? "border-purple-500/40 bg-purple-500/15 text-purple-800"
+                                ? "border-info/40 bg-info-soft text-info"
                                 : "border-border/60 bg-surface text-fg",
                         )}
                       >

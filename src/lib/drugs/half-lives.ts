@@ -237,6 +237,91 @@ export const HALF_LIVES: Record<string, HalfLifeRow> = {
     hours: 18,
     source: `${LABEL}: oral solution under fed state (matched fed immediate-release tablet)`,
   },
+  // Note: caffeine (5 h), bupropion (21 h), dextromethorphan (3 h), codeine (3 h), and
+  // tramadol (6 h) are already served by the FirstPass PK shelf (pk.ts) and are intentionally
+  // not repeated here.
+  // Provigil PI Section 12.3: effective elimination half-life after multiple doses is about 15 hours
+  // (range 12 to 15 hours); steady state reached in 2 to 4 days.
+  modafinil: {
+    hours: 15,
+    source: `${LABEL} (Provigil): about 15 hours, range 12 to 15 hours; steady state in 2 to 4 days`,
+  },
+  // Nuvigil PI Section 12.3: R-enantiomer exhibits monophasic terminal elimination half-life of about 15 hours.
+  armodafinil: {
+    hours: 15,
+    source: `${LABEL} (Nuvigil): about 15 hours (R-enantiomer monophasic terminal elimination)`,
+  },
+  // Standard clinical pharmacology: immediate-release oral melatonin elimination half-life ~0.5 to 1 hour
+  // (typical ~0.75 hours) with rapid CYP1A2 hepatic first-pass clearance.
+  melatonin: {
+    hours: 0.75,
+    source: "Clinical pharmacology: typical immediate-release about 0.75 hours, range 0.5 to 1 hour; rapid CYP1A2 clearance",
+  },
+  // Standard clinical pharmacology / FDA antihistamine monograph: typical adult elimination half-life ~8 hours
+  // (range 4 to 12 hours; prolonged in older adults).
+  diphenhydramine: {
+    hours: 8,
+    source: "Clinical pharmacology: about 8 hours in adults, range 4 to 12 hours; longer in older adults",
+  },
+  // FDA acetaminophen labeling / clinical pharmacology: plasma elimination half-life ~2 to 3 hours (typical 2.5 hours)
+  // in normal hepatic function.
+  acetaminophen: {
+    hours: 2.5,
+    source: `${LABEL}: about 2.5 hours, range 2 to 3 hours in normal hepatic function`,
+  },
+  // Vyvanse PI Section 12.3: parent lisdexamfetamine hydrolyzes in red blood cells with plasma t1/2 < 1 hour;
+  // active d-amphetamine terminal elimination half-life averages ~10 hours in healthy adults.
+  lisdexamfetamine: {
+    hours: 10,
+    source: `${LABEL} (Vyvanse): active d-amphetamine about 10 hours; parent prodrug hydrolyzes in red blood cells in under 1 hour`,
+  },
+  // Nootropil SmPC / clinical pharmacology: plasma elimination half-life 4 to 5 hours in adults with normal
+  // renal function (>95% unchanged renal excretion).
+  piracetam: {
+    hours: 5,
+    source: "Nootropil SmPC / clinical pharmacology: 4 to 5 hours; >95% unchanged renal excretion; the top is used",
+  },
+  // Standard clinical pharmacology: parent aniracetam undergoes extensive hepatic first-pass hydrolysis
+  // (parent t1/2 ~0.5 hours; active N-anisoyl-GABA metabolite ~1 to 2 hours).
+  aniracetam: {
+    hours: 0.5,
+    source: "Clinical pharmacology: parent about 0.5 hours; active N-anisoyl-GABA metabolite 1 to 2 hours after hepatic first-pass hydrolysis",
+  },
+  // Standard clinical pharmacology: water-soluble racetam excreted largely unchanged renally; adult t1/2 ~8 hours.
+  oxiracetam: {
+    hours: 8,
+    source: "Clinical pharmacology: about 8 hours with normal kidney function; predominantly unchanged renal excretion",
+  },
+  // FDA Motrin / Advil PI Section 12.3: serum elimination half-life is 1.8 to 2.0 hours.
+  ibuprofen: {
+    hours: 2,
+    source: `${LABEL}: 1.8 to 2 hours; the top is used`,
+  },
+  // FDA Naprosyn PI Section 12.3: mean biological half-life in plasma is approximately 12 to 17 hours.
+  naproxen: {
+    hours: 17,
+    source: `${LABEL}: 12 to 17 hours; the top is used`,
+  },
+  // FDA Zyrtec PI Section 12.3: mean elimination half-life is approximately 8.3 hours in healthy adults.
+  cetirizine: {
+    hours: 8.3,
+    source: `${LABEL}: about 8.3 hours in adults with normal kidney function`,
+  },
+  // FDA Allegra PI Section 12.3: mean elimination half-life is 14.4 hours in healthy volunteers.
+  fexofenadine: {
+    hours: 14.4,
+    source: `${LABEL}: about 14.4 hours in healthy adults`,
+  },
+  // FDA Pepcid PI Section 12.3: elimination half-life is 2.5 to 3.5 hours with normal renal function.
+  famotidine: {
+    hours: 3.5,
+    source: `${LABEL}: 2.5 to 3.5 hours with normal kidney function; the top is used`,
+  },
+  // FDA Aricept PI Section 12.3: elimination half-life is about 70 hours.
+  donepezil: {
+    hours: 70,
+    source: LABEL,
+  },
 };
 
 const MAOI_NOTE =
@@ -300,4 +385,12 @@ export const NO_SINGLE_HALF_LIFE: Record<string, string> = {
   // Protonix Delayed-Release, set_id 08098cb2-c048-4640-f387-6beec4a38936 (2026-05-18)
   pantoprazole:
     "Irreversible binding to the parietal proton pump sustains acid suppression well past its roughly 1-hour plasma half-life on the label, so a plasma decay bar would understate its effect.",
+  // Nexium PI Section 12.3: plasma elimination half-life is about 1 to 1.5 hours (~1.3 hours),
+  // whereas irreversible covalent H+/K+-ATPase proton-pump inhibition lasts over 24 hours.
+  esomeprazole:
+    "Irreversible covalent binding to the parietal H+/K+-ATPase proton pump sustains acid suppression past 24 hours despite a roughly 1.3-hour plasma half-life on the Nexium label, so a plasma decay bar would understate its effect.",
+  // Plavix PI Section 12.3: parent clopidogrel plasma elimination half-life is about 6 hours,
+  // while its active thiol metabolite irreversibly blocks platelet P2Y12 receptors for the 7 to 10 day platelet lifespan.
+  clopidogrel:
+    "Irreversible covalent blockade of platelet P2Y12 receptors lasts the 7 to 10 day lifespan of circulating platelets despite a roughly 6-hour parent plasma half-life on the Plavix label, so a plasma decay bar would understate lingering antiplatelet effect.",
 };

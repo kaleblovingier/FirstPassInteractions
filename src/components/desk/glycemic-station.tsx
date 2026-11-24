@@ -8,11 +8,11 @@ import {
   Clock,
   Droplets,
   Flame,
+  FlaskConical,
   Info,
   Pill,
   Scale,
   ShieldAlert,
-  Sparkles,
   Timer,
   Zap,
 } from "lucide-react";
@@ -864,7 +864,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="rounded-lg border border-border/70 bg-surface-sunken p-3.5 text-xs space-y-2">
                 <h4 className="font-bold text-fg flex items-center gap-1.5">
-                  <Sparkles className="h-4 w-4 text-purple-500" />
+                  <FlaskConical className="h-4 w-4 text-accent" />
                   Pharmacodynamic Antidote Mechanism
                 </h4>
                 <p className="text-[11px] text-muted leading-relaxed">
@@ -950,7 +950,7 @@ export function GlycemicStation({ ids, host }: GlycemicStationProps) {
 
               <div className="rounded-lg border border-border/70 bg-surface-sunken p-3 text-center">
                 <div className="text-xs text-muted">Rule of 1800 ISF</div>
-                <div className="text-xl font-bold font-mono text-purple-800 dark:text-purple-400 mt-0.5">
+                <div className="text-xl font-bold font-mono text-accent mt-0.5">
                   1 u : {inpatientRegimen.correctionScale.ruleOf1800Isf} <span className="text-xs font-normal text-muted">mg/dL</span>
                 </div>
                 <div className="text-[10px] text-muted mt-1">1800 / TDD sensitivity factor</div>
