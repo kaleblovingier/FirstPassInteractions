@@ -532,17 +532,17 @@
   "checked": "2026-11-24"
  },
  {
-  "pmid": "12065725",
-  "year": 2002,
-  "journal": "J Pharmacol Exp Ther",
-  "title": "A novel method to assess initial sensitivity and acute functional tolerance to hypnotic effects of ethanol.",
-  "checked": "2026-11-24"
- },
- {
   "pmid": "12099384",
   "year": 2001,
   "journal": "Am J Transplant",
   "title": "Bilateral pharmacokinetic interaction between cyclosporine A and atorvastatin in renal transplant recipients.",
+  "checked": "2026-11-24"
+ },
+ {
+  "pmid": "12130727",
+  "year": 2002,
+  "journal": "J Pharmacol Exp Ther",
+  "title": "Piperine, a major constituent of black pepper, inhibits human P-glycoprotein and CYP3A4.",
   "checked": "2026-11-24"
  },
  {
@@ -746,6 +746,13 @@
   "year": 2005,
   "journal": "Clin Pharmacol Ther",
   "title": "In vivo effects of goldenseal, kava kava, black cohosh, and valerian on human cytochrome P450 1A2, 2D6, 2E1, and 3A4/5 phenotypes.",
+  "checked": "2026-11-24"
+ },
+ {
+  "pmid": "15903129",
+  "year": 2005,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Paroxetine, a cytochrome P450 2D6 inhibitor, diminishes the stereoselective O-demethylation and reduces the hypoalgesic effect of tramadol.",
   "checked": "2026-11-24"
  },
  {
@@ -1183,10 +1190,10 @@
   "checked": "2026-11-24"
  },
  {
-  "pmid": "22300167",
+  "pmid": "22300367",
   "year": 2012,
-  "journal": "Foodborne Pathog Dis",
-  "title": "Development of PCR primers and a DNA macroarray for the simultaneous detection of major Staphylococcus species using groESL gene.",
+  "journal": "Br J Pharmacol",
+  "title": "Pharmacokinetic interaction study of sulphasalazine in healthy subjects and the impact of curcumin as an in vivo inhibitor of BCRP.",
   "checked": "2026-11-24"
  },
  {
@@ -1281,17 +1288,17 @@
   "checked": "2026-11-24"
  },
  {
-  "pmid": "23572581",
-  "year": 2013,
-  "journal": "Proc Natl Acad Sci U S A",
-  "title": "Parametric representation of open quantum systems and cross-over from quantum to classical environment.",
-  "checked": "2026-11-24"
- },
- {
   "pmid": "23698643",
   "year": 2013,
   "journal": "Clin Pharmacol Ther",
   "title": "Clinical Pharmacogenetics Implementation Consortium guidelines for CYP2C19 genotype and clopidogrel therapy: 2013 update.",
+  "checked": "2026-11-24"
+ },
+ {
+  "pmid": "23784266",
+  "year": 2013,
+  "journal": "Am J Cardiovasc Drugs",
+  "title": "Drug-drug interaction studies of cardiovascular drugs involving P-glycoprotein, an efflux transporter, on the pharmacokinetics of edoxaban, an oral factor Xa inhibitor.",
   "checked": "2026-11-24"
  },
  {
@@ -1624,6 +1631,13 @@
   "checked": "2026-11-24"
  },
  {
+  "pmid": "30428337",
+  "year": 2019,
+  "journal": "Eur J Pharm Sci",
+  "title": "Organic cation transporter and multidrug and toxin extrusion 1 co-mediated interaction between metformin and berberine.",
+  "checked": "2026-11-24"
+ },
+ {
   "pmid": "30447069",
   "year": 2019,
   "journal": "Clin Pharmacol Ther",
@@ -1641,7 +1655,7 @@
   "pmid": "30852710",
   "year": 2019,
   "journal": "Curr Psychiatry Rep",
-  "title": "Phenibut (β-Phenyl-γ-Aminobutyric Acid): an Easily Obtainable \"Dietary Supplement\" With Propensities for Physical Dependence and Addiction.",
+  "title": "Phenibut (\u03b2-Phenyl-\u03b3-Aminobutyric Acid): an Easily Obtainable \"Dietary Supplement\" With Propensities for Physical Dependence and Addiction.",
   "checked": "2026-11-24"
  },
  {
@@ -1743,13 +1757,6 @@
   "checked": "2026-11-24"
  },
  {
-  "pmid": "32948019",
-  "year": 2020,
-  "journal": "Polymers (Basel)",
-  "title": "Serviceability and Flexural Behavior of Concrete Beams Reinforced with Basalt Fiber-Reinforced Polymer (BFRP) Bars Exposed to Harsh Conditions.",
-  "checked": "2026-11-24"
- },
- {
   "pmid": "33033962",
   "year": 2020,
   "journal": "AAPS J",
@@ -1785,13 +1792,6 @@
   "checked": "2026-11-24"
  },
  {
-  "pmid": "34873733",
-  "year": 2022,
-  "journal": "Pediatr Dermatol",
-  "title": "Erythematous rash and postinfectious acral desquamation due to Streptococcus dysgalactiae subspecies equisimilis infection in a child.",
-  "checked": "2026-11-24"
- },
- {
   "pmid": "35034351",
   "year": 2022,
   "journal": "Clin Pharmacol Ther",
@@ -1802,7 +1802,7 @@
   "pmid": "35084120",
   "year": 2022,
   "journal": "Pharmacol Res Perspect",
-  "title": "Tapentadol shows lower intrinsic efficacy at µ receptor than morphine and oxycodone.",
+  "title": "Tapentadol shows lower intrinsic efficacy at \u00b5 receptor than morphine and oxycodone.",
   "checked": "2026-11-24"
  },
  {
@@ -1831,6 +1831,13 @@
   "year": 2022,
   "journal": "Transplant Proc",
   "title": "Paxlovid (Nirmatelvir/Ritonavir) and Tacrolimus Drug-Drug Interaction in a Kidney Transplant Patient with SARS-2-CoV infection: A Case Report.",
+  "checked": "2026-11-24"
+ },
+ {
+  "pmid": "35678032",
+  "year": 2022,
+  "journal": "Clin Pharmacol Ther",
+  "title": "Exposure of Fexofenadine, but Not Pseudoephedrine, Is Markedly Decreased by Green Tea Extract in Healthy Volunteers.",
   "checked": "2026-11-24"
  },
  {
@@ -1865,7 +1872,7 @@
   "pmid": "36443477",
   "year": 2022,
   "journal": "Sci Rep",
-  "title": "Clinical application of 3D-Slicer + 3D printing guide combined with transcranial neuroendoscopic in minimally invasive neurosurgery.",
+  "title": "Clinical application of 3D-Slicer\u2009+\u20093D printing guide combined with transcranial neuroendoscopic in minimally invasive neurosurgery.",
   "checked": "2026-11-24"
  },
  {
@@ -1907,7 +1914,7 @@
   "pmid": "37139824",
   "year": 2023,
   "journal": "J Am Geriatr Soc",
-  "title": "American Geriatrics Society 2023 updated AGS Beers Criteria® for potentially inappropriate medication use in older adults.",
+  "title": "American Geriatrics Society 2023 updated AGS Beers Criteria\u00ae for potentially inappropriate medication use in older adults.",
   "checked": "2026-11-24"
  },
  {
@@ -2033,7 +2040,7 @@
   "pmid": "42034717",
   "year": 2026,
   "journal": "Arch Toxicol",
-  "title": "Fatal intoxications with nitazenes: postmortem findings, toxicology, and in vitro characterization at the μ-opioid receptor of six nitazene analogues.",
+  "title": "Fatal intoxications with nitazenes: postmortem findings, toxicology, and in vitro characterization at the \u03bc-opioid receptor of six nitazene analogues.",
   "checked": "2026-11-24"
  },
  {

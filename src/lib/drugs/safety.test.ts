@@ -1279,12 +1279,15 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "quinidine"), true);
     assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "terbinafine"), true);
     assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "cinacalcet"), true);
-    assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "mirabegron"), true);
     assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "dextromethorphan-bupropion"), true);
     assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "auvelity"), true);
 
     assert.equal(isProdrugCyp2d6OpioidFailure("morphine", "fluoxetine"), false);
     assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "sertraline"), false);
+    // Moderate CYP2D6 inhibitors stay out: the catalog and the FDA label both grade
+    // mirabegron moderate, and this rule speaks only to strong inhibition.
+    assert.equal(isProdrugCyp2d6OpioidFailure("tramadol", "mirabegron"), false);
+    assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "duloxetine"), false);
     assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "terbinafine-topical"), false);
     assert.equal(isProdrugCyp2d6OpioidFailure("codeine", "tramadol"), false);
 
@@ -1303,10 +1306,12 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
       assert.match(hit.clinical, /O-demethylation to morphine.*O-desmethyltramadol \(M1\).*phenoconvert/i);
       assert.match(hit.watch, /non-CYP2D6-dependent analgesic alternative.*The Prescribing Information governs\./i);
       assert.match(hit.source, /24458010/);
-      assert.match(hit.source, /16819548/);
+      // Laugesen 2005 (paroxetine blunting tramadol analgesia) replaced Kirchheiner 2007,
+      // which measured ultrarapid metabolizers and so pointed the opposite way.
+      assert.match(hit.source, /15903129/);
       assert.deepEqual(
         hit.citations?.map((c) => c.pmid),
-        ["24458010", "16819548"],
+        ["24458010", "15903129"],
       );
     }
   });
@@ -1338,7 +1343,9 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.equal(isBotanicalStJohnsWortNarrowInducer("st-johns-wort", "cyclosporine-ophthalmic"), false);
     assert.equal(isBotanicalStJohnsWortNarrowInducer("st-johns-wort", "tacrolimus-topical"), false);
 
-    for (const victim of ["apixaban", "tacrolimus"] as const) {
+    // Contraindicated is reserved for the victims whose labels say do-not-use and whose
+    // published drop is a collapse: antiretrovirals and transplant immunosuppressants.
+    for (const victim of ["tacrolimus", "cyclosporine", "sirolimus", "everolimus", "indinavir"] as const) {
       const hits = safetyOnDesk(["st-johns-wort", victim]);
       const hit = hits.find((h) => h.id === "botanical-st-johns-wort-narrow-inducer");
       assert.ok(hit, `Expected botanical-st-johns-wort-narrow-inducer for st-johns-wort + ${victim}`);
@@ -1346,17 +1353,40 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
       assert.equal(hit.severity, "contraindicated");
       assert.equal(hit.regulatoryTier, "contraindicated");
       assert.equal(hit.tone, "danger");
-      assert.match(hit.title, /St\. John's wort \+ .+: Potent PXR CYP3A4 & P-gp induction \(treatment failure \/ rejection risk\)$/);
-      assert.match(hit.clinical, /hyperforin.*pregnane X receptor \(PXR\).*7–14 days.*1–2 weeks/i);
+      assert.match(hit.title, /St\. John's wort \+ .+: PXR CYP3A4 & P-gp induction \(treatment failure \/ rejection risk\)$/);
+      assert.match(hit.clinical, /hyperforin.*pregnane X receptor \(PXR\).*Indinavir AUC fell 57%.*1–2 weeks/i);
       assert.match(hit.watch, /Avoid St\. John's wort.*rebound over 1–2 weeks.*The Prescribing Information governs\./i);
       assert.match(hit.source, /13129991/);
       assert.match(hit.source, /10546917/);
+      assert.match(hit.source, /11180019/);
       assert.match(hit.source, /10683007/);
       assert.deepEqual(
         hit.citations?.map((c) => c.pmid),
-        ["13129991", "10546917", "10683007"],
+        ["13129991", "10546917", "11180019", "10683007"],
       );
     }
+
+    // Everything else the labels treat as avoid-or-monitor is major, not contraindicated.
+    // Johne 1999 measured a 25% fall in digoxin exposure and Dürr 2000 an 18% fall.
+    for (const victim of ["apixaban", "digoxin", "warfarin", "midazolam", "methadone", "imatinib"] as const) {
+      const hit = safetyOnDesk(["st-johns-wort", victim]).find(
+        (h) => h.id === "botanical-st-johns-wort-narrow-inducer",
+      );
+      assert.ok(hit, `Expected botanical-st-johns-wort-narrow-inducer for st-johns-wort + ${victim}`);
+      assert.equal(hit.severity, "major", victim);
+      assert.equal(hit.regulatoryTier, "label-major", victim);
+      assert.equal(hit.tone, "warn", victim);
+      assert.match(hit.title, /\(reduced victim exposure\)$/);
+      assert.match(hit.clinical, /digoxin AUC fell 25%/);
+    }
+
+    // A collapse-tier victim anywhere on the desk sets the grade for the whole finding.
+    const mixed = safetyOnDesk(["st-johns-wort", "digoxin", "tacrolimus"]).find(
+      (h) => h.id === "botanical-st-johns-wort-narrow-inducer",
+    );
+    assert.ok(mixed);
+    assert.equal(mixed.severity, "contraindicated");
+    assert.deepEqual(mixed.drugIds, ["st-johns-wort", "tacrolimus"]);
   });
 
   it("detects Berberine × calcineurin inhibitors and sensitive CYP2D6/3A4/2C9 substrates (botanical-berberine-cyp-victim)", () => {
@@ -1395,12 +1425,17 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
       assert.equal(hit.regulatoryTier, "label-major");
       assert.equal(hit.tone, "warn");
       assert.match(hit.title, /^Berberine \+ .+: Multi-isoform CYP2D6 \/ CYP3A4 \/ CYP2C9 botanical inhibition$/);
-      assert.match(hit.clinical, /CYP2D6, CYP2C9, and CYP3A4.*P-gp efflux.*cyclosporine and tacrolimus/i);
-      assert.match(hit.watch, /clinically active CYP\/P-gp perpetrators.*The Prescribing Information governs\./i);
+      // The detail now carries the measured magnitudes and claims no P-gp arm, which
+      // Guo 2012 never ran, and no tacrolimus data, which nobody here has.
+      assert.match(hit.clinical, /ninefold.*losartan ratio doubled; midazolam AUC up 40%/i);
+      assert.match(hit.clinical, /cyclosporine AUC 34\.5% and trough concentrations 88%/i);
+      assert.doesNotMatch(hit.clinical, /P-gp/);
+      assert.match(hit.watch, /clinically active CYP perpetrators.*The Prescribing Information governs\./i);
       assert.match(hit.source, /21870106/);
+      assert.match(hit.source, /16133554/);
       assert.deepEqual(
         hit.citations?.map((c) => c.pmid),
-        ["21870106"],
+        ["21870106", "16133554"],
       );
     }
   });
@@ -1425,7 +1460,7 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
       "hctz",
       "chlorthalidone",
       "indapamide",
-      "furosemide",
+      "metolazone",
     ]) {
       assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", partner), true, partner);
       assert.equal(isOtcLithiumOrotateRenalTrap(partner, "lithium-orotate"), true, partner);
@@ -1434,6 +1469,11 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", "acetaminophen"), false);
     assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", "atorvastatin"), false);
     assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", "lithium-orotate"), false);
+    // Finley 1995 puts thiazides at a 25–40% rise and calls loop and potassium-sparing
+    // diuretics minor and variable, so they no longer fire a thiazide-grade claim.
+    for (const diuretic of ["furosemide", "bumetanide", "torsemide", "spironolactone", "amiloride"] as const) {
+      assert.equal(isOtcLithiumOrotateRenalTrap("lithium-orotate", diuretic), false, diuretic);
+    }
 
     const dupHits = safetyOnDesk(["lithium-orotate", "lithium"]);
     const dupHit = dupHits.find((h) => h.id === "otc-lithium-orotate-renal-trap");
@@ -1442,9 +1482,11 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.equal(dupHit.severity, "major");
     assert.equal(dupHit.regulatoryTier, "label-major");
     assert.equal(dupHit.tone, "danger");
-    assert.match(dupHit.title, /^Lithium Orotate \+ Lithium: Unregulated OTC elemental lithium \+ renal clearance impairment \/ duplicate exposure$/);
-    assert.match(dupHit.clinical, /elemental lithium ions.*proximal tubule.*neuro-renal toxicity/i);
-    assert.match(dupHit.watch, /Reconcile all OTC mineral\/nootropic supplements.*The Prescribing Information governs\./i);
+    assert.match(dupHit.title, /^Lithium Orotate \+ Lithium: Unstandardized OTC elemental lithium \+ reduced renal lithium clearance$/);
+    assert.match(dupHit.clinical, /Thiazide and thiazide-like diuretics raise it most \(25–40%/i);
+    assert.match(dupHit.clinical, /Loop and potassium-sparing diuretics have only minor, variable effects/i);
+    assert.match(dupHit.clinical, /not standardized across supplements/i);
+    assert.match(dupHit.watch, /Reconcile OTC mineral and nootropic supplements.*The Prescribing Information governs\./i);
     assert.match(dupHit.source, /8521679/);
     assert.match(dupHit.source, /22265699/);
     assert.deepEqual(
@@ -1458,7 +1500,7 @@ describe("safetyOnDesk - Clinical Collision Suite", () => {
     assert.equal(renalHit.severity, "major");
     assert.equal(renalHit.regulatoryTier, "label-major");
     assert.equal(renalHit.tone, "danger");
-    assert.match(renalHit.title, /^Lithium Orotate \+ Ibuprofen \/ Lisinopril: Unregulated OTC elemental lithium \+ renal clearance impairment \/ duplicate exposure$/);
+    assert.match(renalHit.title, /^Lithium Orotate \+ Ibuprofen \/ Lisinopril: Unstandardized OTC elemental lithium \+ reduced renal lithium clearance$/);
     assert.deepEqual(
       renalHit.citations?.map((c) => c.pmid),
       ["8521679", "22265699"],

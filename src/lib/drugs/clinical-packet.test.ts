@@ -1178,10 +1178,12 @@ test("buildClinicalPacket: renders Round 13 prodrug, botanical, and OTC lithium 
       counselingPattern: /tramadol.*antidepressant or bupropion.*seizure/i,
     },
     {
+      // A DOAC is an avoid-grade victim, not a labeled contraindication, so the packet
+      // carries it as major. The counseling paragraph is the same either way.
       ids: ["st-johns-wort", "apixaban"],
       expectedId: "botanical-st-johns-wort-narrow-inducer",
-      expectedSeverity: "contraindicated",
-      expectedTone: "danger",
+      expectedSeverity: "major",
+      expectedTone: "warn",
       counselingPattern: /St\. John's wort strongly speeds up.*organ rejection, blood clots, stroke.*one to two weeks/i,
     },
     {
