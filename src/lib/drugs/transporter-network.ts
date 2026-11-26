@@ -1702,6 +1702,35 @@ export function calculateGutPgpCyp3aSynergy(input: GutInterplayInput): GutInterp
   };
 }
 
+export interface DrugTransporterRoleSummary {
+  transporterId: string;
+  gene: string;
+  shortName: string;
+  roles: Array<"Substrate" | "Inhibitor" | "Inducer">;
+}
+
+/** Returns all mapped membrane transporter roles (Substrate / Inhibitor / Inducer) for a catalog drug ID. */
+export function getTransporterRolesForDrug(drugId: string): DrugTransporterRoleSummary[] {
+  const norm = typeof drugId === "string" ? drugId.trim().toLowerCase() : "";
+  if (!norm) return [];
+  const out: DrugTransporterRoleSummary[] = [];
+  for (const t of TRANSPORTERS) {
+    const roles: Array<"Substrate" | "Inhibitor" | "Inducer"> = [];
+    if (t.substrates.includes(norm)) roles.push("Substrate");
+    if (t.inhibitors.includes(norm)) roles.push("Inhibitor");
+    if (t.inducers.includes(norm)) roles.push("Inducer");
+    if (roles.length > 0) {
+      out.push({
+        transporterId: t.id,
+        gene: t.gene,
+        shortName: t.aliases[0] ?? t.gene,
+        roles,
+      });
+    }
+  }
+  return out;
+}
+
 /** Validates that every drug ID referenced in transporters, collisions, and ECCS profiles exists in `DRUG_BY_ID`. */
 export function validateTransporterCatalogIntegrity(): {
   valid: boolean;

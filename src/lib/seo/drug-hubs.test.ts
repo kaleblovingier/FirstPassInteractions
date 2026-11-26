@@ -169,4 +169,18 @@ describe("hubs with pairs keep the shared intro", () => {
     assert.ok(html.includes("These are pairs with"));
     assert.ok(!html.includes("Interaction notes for this supplement"));
   });
+
+  it("renders structured PK, CPIC pharmacogenomics, transporter, and kinetics snapshots on mapped drug hubs", () => {
+    const simva = hubs.find((h) => h.drugId === "simvastatin")!;
+    const simvaHtml = html(simva);
+    assert.ok(simvaHtml.includes('data-testid="drug-hub-pk-profile"'));
+    assert.ok(simvaHtml.includes("SLCO1B1"));
+    assert.ok(simvaHtml.includes("OATP1B1"));
+    assert.ok(simvaHtml.includes("/methodology"));
+
+    const keto = hubs.find((h) => h.drugId === "ketoconazole")!;
+    const ketoHtml = html(keto);
+    assert.ok(ketoHtml.includes("8 h"));
+    assert.ok(ketoHtml.includes("Kᵢ 0.015 µM"));
+  });
 });

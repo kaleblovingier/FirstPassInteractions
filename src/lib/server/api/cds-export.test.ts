@@ -89,6 +89,9 @@ test("POST /api/cds/export returns structured JSON monograph export by default a
   );
   assert.equal(payload.report.compounds[0]!.halfLifeHours, 7);
   assert.equal(payload.report.compounds[1]!.halfLifeHours, 3);
+  assert.ok(payload.report.compounds[1]!.cpicGenes.some((g) => g.gene === "SLCO1B1"));
+  assert.ok(payload.report.compounds[1]!.transporters.some((t) => t.gene.includes("SLCO1B1")));
+  assert.ok(payload.report.compounds[0]!.perpetratorKinetics.some((k) => k.mode === "tdi"));
   assert.equal(payload.report.highest, "contraindicated");
   assert.match(payload.report.hostLine ?? "", /Geriatric/);
   assert.match(payload.report.hostLine ?? "", /CKD stage 3/);

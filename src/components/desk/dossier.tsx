@@ -18,7 +18,7 @@ import { CPIC_GENE_DRUG_LIST, pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
-import { TRANSPORTERS } from "@/lib/drugs/transporter-network";
+import { getTransporterRolesForDrug } from "@/lib/drugs/transporter-network";
 import { CPIC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
   ITEM_KIND_LABEL,
@@ -1081,30 +1081,12 @@ function roleChipDetail(role: EnzymeRole): { roleLabel: string; tierHint: string
   };
 }
 
-function transporterRolesFor(drugId: string): Array<{ gene: string; shortName: string; roles: string[] }> {
-  const out: Array<{ gene: string; shortName: string; roles: string[] }> = [];
-  for (const t of TRANSPORTERS) {
-    const roles: string[] = [];
-    if (t.substrates.includes(drugId)) roles.push("Substrate");
-    if (t.inhibitors.includes(drugId)) roles.push("Inhibitor");
-    if (t.inducers.includes(drugId)) roles.push("Inducer");
-    if (roles.length > 0) {
-      out.push({
-        gene: t.gene,
-        shortName: t.aliases[0] ?? t.gene,
-        roles,
-      });
-    }
-  }
-  return out;
-}
-
 function MonographPkStrip({ drug }: { drug: Drug }) {
   const hasNonLinear = Object.hasOwn(NO_SINGLE_HALF_LIFE, drug.id);
   const nonLinearNote = hasNonLinear ? NO_SINGLE_HALF_LIFE[drug.id] : undefined;
   const hl = hasNonLinear ? undefined : halfLifeFor(drug.id);
   const cpicHits = getInteractionsForDrug(drug.id);
-  const transporters = transporterRolesFor(drug.id);
+  const transporters = getTransporterRolesForDrug(drug.id);
   const tdi = getTdiPerpetratorById(drug.id);
   const inducer = getNuclearInducerById(drug.id);
   const competitive = getCompetitiveInhibitorById(drug.id);
