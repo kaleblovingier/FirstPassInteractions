@@ -98,11 +98,15 @@ function filterPillClass(active: boolean, activeClass: string, dimmed = false): 
 export function FindingList({
   findings,
   trayIds,
+  newIds = [],
 }: {
   findings: Finding[];
   /** When set, only show findings whose real drugs are all on the tray. */
   trayIds?: string[];
+  /** Items the last tray change added; rows that involve them are marked New. */
+  newIds?: readonly string[];
 }) {
+  const isNew = (f: Finding) => f.drugIds.some((id) => newIds.includes(id));
   const [filter, setFilter] = useState<Severity | "all">("all");
   const [kind, setKind] = useState<KindFilter>("all");
   const [drugFocus, setDrugFocus] = useState<string>("all");
@@ -395,7 +399,7 @@ export function FindingList({
               </p>
               <ol className="space-y-2">
                 {pairs.map((f) => (
-                  <FindingCard key={f.id} finding={f} bulkToggle={bulkToggle} />
+                  <FindingCard key={f.id} finding={f} bulkToggle={bulkToggle} isNew={isNew(f)} />
                 ))}
               </ol>
             </div>
@@ -407,7 +411,7 @@ export function FindingList({
               </p>
               <ol className="space-y-2">
                 {deskNotes.map((f) => (
-                  <FindingCard key={f.id} finding={f} bulkToggle={bulkToggle} />
+                  <FindingCard key={f.id} finding={f} bulkToggle={bulkToggle} isNew={isNew(f)} />
                 ))}
               </ol>
             </div>
@@ -421,9 +425,11 @@ export function FindingList({
 function FindingCard({
   finding,
   bulkToggle,
+  isNew = false,
 }: {
   finding: Finding;
   bulkToggle: BulkToggle;
+  isNew?: boolean;
 }) {
   const [open, setOpen] = useState(() =>
     bulkToggle ? bulkToggle.open : startsOpen(finding),
@@ -457,6 +463,11 @@ function FindingCard({
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-1.5">
             <span className="text-sm font-medium text-fg">{finding.headline}</span>
+            {isNew ? (
+              <span className="inline-flex items-center rounded-sm border border-ink/40 px-1.5 py-0.5 font-mono text-[10px] leading-tight tracking-wide text-fg">
+                New
+              </span>
+            ) : null}
             {cascadeBadges.map((badge) => (
               <span
                 key={badge.tag}

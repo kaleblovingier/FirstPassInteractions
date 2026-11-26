@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { TimingPanel } from "./timing-panel";
 import { SynergyBanner } from "./synergy-banner";
+import { JustAddedNote } from "./just-added-note";
+import { appendedIds } from "@/lib/drugs/just-added";
 import { EvidencePanel } from "./evidence-panel";
 import { Copy, Check, RotateCcw, Download, Share2, FileText, Bookmark, BookmarkCheck, X } from "lucide-react";
 import { DRUG_BY_ID, DRUGS } from "@/lib/drugs/catalog";
@@ -258,6 +260,13 @@ export function DeskApp() {
   );
   const amounts = useMemo(() => parseDoses(doses), [doses]);
   const report = useMemo(() => analyze(selected, host, amounts), [selected, host, amounts]);
+  // What the last tray change appended, for "Adding X brought…"; any other change clears it.
+  const prevSelected = useRef(selected);
+  const [newIds, setNewIds] = useState<string[]>([]);
+  useEffect(() => {
+    setNewIds(appendedIds(prevSelected.current, selected));
+    prevSelected.current = selected;
+  }, [selected]);
   const hostDrugs = useMemo(
     () => applyHost(selected.map((id) => DRUG_BY_ID[id]).filter(Boolean), host),
     [selected, host],
@@ -698,6 +707,7 @@ export function DeskApp() {
                 />
               ) : null}
 
+              {newIds.length > 0 ? <JustAddedNote ids={newIds} findings={report.findings} /> : null}
               {selected.length > 0 ? <SynergyBanner ids={selected} report={report} /> : null}
               {selected.length > 0 ? (
                 <CheckBoard
@@ -765,7 +775,7 @@ export function DeskApp() {
                           <StackMeters stacks={report.stacks} />
                         </Paywall>
                       ) : null}
-                      <FindingList findings={report.findings} />
+                      <FindingList findings={report.findings} newIds={newIds} />
                     </>
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
@@ -839,7 +849,7 @@ export function DeskApp() {
                       <Suspense fallback={<DeskFallback />}>
 <CollisionMap selected={selected} findings={report.findings} />
 </Suspense>
-                      <FindingList findings={report.findings} />
+                      <FindingList findings={report.findings} newIds={newIds} />
                     </>
                   ) : (
                     <DeskCoach ids={selected} findingsCount={report.findings.length} />
