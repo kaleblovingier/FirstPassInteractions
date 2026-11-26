@@ -176,6 +176,17 @@ export const SearchPgxSchema = z
     "Unrecognized pharmacogene filter. Supported CPIC genes include CYP2D6, CYP2C19, CYP2C9, CYP3A5, SLCO1B1, VKORC1, UGT1A1, TPMT, NUDT15, DPYD, G6PD, HLA-B*57:01, HLA-B*58:01, HLA-B*15:02, and HLA-A*31:01.",
   );
 
+export const SearchTdmSchema = z.preprocess((val) => {
+  if (val === undefined) return undefined;
+  if (typeof val === "boolean") return val;
+  if (typeof val === "string") {
+    const norm = val.trim().toLowerCase();
+    if (norm === "true" || norm === "1") return true;
+    if (norm === "false" || norm === "0") return false;
+  }
+  return val;
+}, z.boolean().optional());
+
 export const DrugLookupRequestSchema = z
   .strictObject({
     q: SearchQueryTextSchema.optional(),
@@ -183,6 +194,7 @@ export const DrugLookupRequestSchema = z
     role: SearchRoleSchema.optional(),
     transporter: SearchTransporterSchema.optional(),
     pgx: SearchPgxSchema.optional(),
+    tdm: SearchTdmSchema,
     cls: z
       .string()
       .trim()
@@ -196,11 +208,11 @@ export const DrugLookupRequestSchema = z
     limit: z.coerce.number().int().min(1).max(50).default(10),
   })
   .superRefine((data, ctx) => {
-    if (!data.q && !data.enzyme && !data.cls && !data.transporter && !data.pgx) {
+    if (!data.q && !data.enzyme && !data.cls && !data.transporter && !data.pgx && data.tdm === undefined) {
       ctx.addIssue({
         code: "custom",
         path: ["q"],
-        message: "Search query (q) or a catalog filter (enzyme, transporter, pgx, or cls) is required",
+        message: "Search query (q) or a catalog filter (enzyme, transporter, pgx, tdm, or cls) is required",
       });
     }
   });

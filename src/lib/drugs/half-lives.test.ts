@@ -247,4 +247,41 @@ describe("half-lives - read through the timing sketch", () => {
       assert.ok(Object.hasOwn(NO_SINGLE_HALF_LIFE, id), id);
     }
   });
+
+  it("covers round 21 adult half-lives (106+ rows) plus aspirin and azathioprine caveats", () => {
+    assert.ok(Object.keys(HALF_LIVES).length >= 106, `Expected >=106 HALF_LIVES, got ${Object.keys(HALF_LIVES).length}`);
+    assert.ok(Object.keys(NO_SINGLE_HALF_LIFE).length >= 20);
+
+    const expectedR21: Record<string, number> = {
+      desvenlafaxine: 11,
+      vortioxetine: 66,
+      hydroxyzine: 20,
+      dolutegravir: 14,
+      trimethoprim: 10,
+      probenecid: 8,
+      montelukast: 5.5,
+      sumatriptan: 2.5,
+      levothyroxine: 168,
+      dexamethasone: 4.5,
+      amoxicillin: 1.3,
+      metronidazole: 8,
+      labetalol: 8,
+      atenolol: 7,
+      nadolol: 24,
+      hctz: 15,
+      chlorthalidone: 60,
+      valsartan: 6,
+      irbesartan: 15,
+      telmisartan: 24,
+      olmesartan: 13,
+      methotrexate: 10,
+    };
+    for (const [id, hours] of Object.entries(expectedR21)) {
+      assert.equal(halfLifeFor(id)?.hours, hours, id);
+    }
+    for (const id of ["aspirin", "azathioprine"]) {
+      assert.equal(halfLifeFor(id), undefined, id);
+      assert.ok(Object.hasOwn(NO_SINGLE_HALF_LIFE, id), id);
+    }
+  });
 });

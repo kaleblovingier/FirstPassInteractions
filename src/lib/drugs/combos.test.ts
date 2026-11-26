@@ -271,3 +271,42 @@ test("Round 13 OTC and clinical Rx multi-ingredient brand combinations expand to
     "dextromethorphan in Coricidin HBP should trigger MAOI serotonin collision with phenelzine",
   );
 });
+
+test("Round 21 antiplatelet, GI, HIV/TB, and antihypertensive combinations resolve cleanly", async () => {
+  assert.ok(COMBINATIONS.length >= 139, `expected 139+ combinations, got ${COMBINATIONS.length}`);
+  const r21Cases: Array<[string, string[]]> = [
+    ["Yosprala", ["aspirin", "omeprazole"]],
+    ["Aggrenox", ["aspirin", "dipyridamole"]],
+    ["Kombiglyze XR", ["saxagliptin-metformin"]],
+    ["Pepcid Complete", ["famotidine", "calcium", "magnesium"]],
+    ["Zegerid", ["omeprazole-sodium-bicarbonate"]],
+    ["Truvada", ["emtricitabine", "tenofovir-df"]],
+    ["Triumeq", ["abacavir", "dolutegravir", "lamivudine"]],
+    ["Dovato", ["dolutegravir-lamivudine"]],
+    ["Juluca", ["dolutegravir-rilpivirine"]],
+    ["Rifater", ["isoniazid", "pyrazinamide", "rifampin"]],
+    ["Clorpres", ["clonidine", "chlorthalidone"]],
+    ["Inderide", ["propranolol", "hctz"]],
+    ["Corzide", ["nadolol", "bendroflumethiazide"]],
+  ];
+  for (const [query, expectedIds] of r21Cases) {
+    assert.deepEqual(hit(query).ids, expectedIds, query);
+    const resolved = resolveDrugQuery(query);
+    assert.equal(resolved.status, "resolved", query);
+    if (resolved.status === "resolved") {
+      assert.equal(resolved.matchedBy, "combination", query);
+      assert.deepEqual(resolved.drugIds, expectedIds, query);
+    }
+  }
+
+  ClinicalDecisionService.clearCaches();
+  const rifaterWarfarin = await ClinicalDecisionService.checkInteractions({
+    drugs: ["Rifater", "warfarin"],
+  });
+  assert.ok(rifaterWarfarin.success);
+  assert.deepEqual(
+    rifaterWarfarin.data.query.resolvedDrugs.map((d) => d.id).sort(),
+    ["isoniazid", "pyrazinamide", "rifampin", "warfarin"],
+  );
+  assert.ok(rifaterWarfarin.data.summary.totalFindings > 0);
+});

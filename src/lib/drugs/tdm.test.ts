@@ -14,10 +14,10 @@ function hostWith(patch: Partial<HostContext>): HostContext {
   };
 }
 
-test("TDM covers at least 42 high-alert drugs, every key exists in DRUG_BY_ID with complete fields and zero dose matches", () => {
-  assert.ok(TDM_IDS.length >= 42, `expected at least 42 TDM protocols, got ${TDM_IDS.length}`);
+test("TDM covers at least 54 high-alert drugs, every key exists in DRUG_BY_ID with complete fields and zero dose matches", () => {
+  assert.ok(TDM_IDS.length >= 54, `expected at least 54 TDM protocols, got ${TDM_IDS.length}`);
   assert.equal(TDM_IDS.length, Object.keys(TDM).length);
-  assert.equal(Object.keys(TDM).length, 42);
+  assert.equal(Object.keys(TDM).length, 54);
 
   for (const id of TDM_IDS) {
     assert.ok(DRUG_BY_ID[id], `${id} must exist in DRUG_BY_ID`);
@@ -250,4 +250,42 @@ test("tdmHostNote surfaces CKD, geriatric, smoking, pregnancy, and CYP2C19/CYP2D
     tdmHostNote("doxepin", hostWith({ phenotypes: { ...DEFAULT_HOST.phenotypes, CYP2D6: "PM" } })) ?? "",
     /nordoxepin/i,
   );
+
+  // Round 21 expanded TDM protocols & host notes
+  for (const id of [
+    "flecainide",
+    "mexiletine",
+    "disopyramide",
+    "ethosuximide",
+    "lacosamide",
+    "clomipramine",
+    "aripiprazole",
+    "quetiapine",
+    "paliperidone",
+    "flucytosine",
+    "isavuconazole",
+    "cefepime",
+  ]) {
+    assert.equal(hasTdm(id), true, `${id} should have TDM`);
+    assert.equal(tdmHostNote(id, DEFAULT_HOST), null, `${id} should have no note on DEFAULT_HOST`);
+  }
+  assert.match(
+    tdmHostNote("flecainide", hostWith({ phenotypes: { ...DEFAULT_HOST.phenotypes, CYP2D6: "PM" } })) ?? "",
+    /QRS/i,
+  );
+  assert.match(tdmHostNote("flecainide", hostWith({ kidney: "ckd" })) ?? "", /proarrhythmia/i);
+  assert.match(tdmHostNote("mexiletine", hostWith({ smoking: true })) ?? "", /CYP1A2/i);
+  assert.match(tdmHostNote("disopyramide", hostWith({ age: "geriatric" })) ?? "", /anticholinergic/i);
+  assert.match(tdmHostNote("lacosamide", hostWith({ kidney: "ckd" })) ?? "", /PR-interval/i);
+  assert.match(
+    tdmHostNote("clomipramine", hostWith({ phenotypes: { ...DEFAULT_HOST.phenotypes, CYP2C19: "PM" } })) ?? "",
+    /desmethylclomipramine/i,
+  );
+  assert.match(
+    tdmHostNote("aripiprazole", hostWith({ phenotypes: { ...DEFAULT_HOST.phenotypes, CYP2D6: "PM" } })) ?? "",
+    /146 h/i,
+  );
+  assert.match(tdmHostNote("paliperidone", hostWith({ kidney: "ckd" })) ?? "", /EPS/i);
+  assert.match(tdmHostNote("flucytosine", hostWith({ kidney: "ckd" })) ?? "", /bone marrow/i);
+  assert.match(tdmHostNote("cefepime", hostWith({ kidney: "ckd", age: "geriatric" })) ?? "", /encephalopathy/i);
 });

@@ -407,6 +407,116 @@ export const HALF_LIVES: Record<string, HalfLifeRow> = {
     hours: 55,
     source: `${LABEL} (Sustiva): 40 to 55 hours after multiple doses; the top is used`,
   },
+  // FDA Pristiq PI Section 12.3: mean terminal elimination half-life of desvenlafaxine is approximately 11 hours.
+  desvenlafaxine: {
+    hours: 11,
+    source: `${LABEL} (Pristiq): approximately 11 hours`,
+  },
+  // FDA Trintellix PI Section 12.3: mean terminal elimination half-life of vortioxetine is approximately 66 hours.
+  vortioxetine: {
+    hours: 66,
+    source: `${LABEL} (Trintellix): approximately 66 hours`,
+  },
+  // FDA Vistaril / Atarax PI Section 12.3: mean elimination half-life in healthy adults is about 20 hours (longer in older adults).
+  hydroxyzine: {
+    hours: 20,
+    source: `${LABEL}: about 20 hours in healthy adults (prolonged in older adults)`,
+  },
+  // FDA Tivicay PI Section 12.3: terminal elimination half-life of dolutegravir is approximately 14 hours.
+  dolutegravir: {
+    hours: 14,
+    source: `${LABEL} (Tivicay): approximately 14 hours`,
+  },
+  // FDA trimethoprim PI Section 12.3: serum elimination half-life is 8 to 10 hours in normal renal function.
+  trimethoprim: {
+    hours: 10,
+    source: `${LABEL}: 8 to 10 hours with normal kidney function; the top is used`,
+  },
+  // FDA probenecid PI Section 12.3: plasma half-life ranges from 3 to 8 hours (longer at higher plasma concentrations).
+  probenecid: {
+    hours: 8,
+    source: `${LABEL}: 3 to 8 hours; the top is used`,
+  },
+  // FDA Singulair PI Section 12.3: mean plasma half-life of montelukast ranged from 2.7 to 5.5 hours in healthy young adults.
+  montelukast: {
+    hours: 5.5,
+    source: `${LABEL} (Singulair): 2.7 to 5.5 hours; the top is used`,
+  },
+  // FDA Imitrex PI Section 12.3: elimination half-life of sumatriptan is approximately 2.5 hours.
+  sumatriptan: {
+    hours: 2.5,
+    source: `${LABEL} (Imitrex): approximately 2.5 hours`,
+  },
+  // FDA Synthroid PI Section 12.3: elimination half-life of levothyroxine is 6 to 7 days (144 to 168 hours) in euthyroid adults.
+  levothyroxine: {
+    hours: 168,
+    source: `${LABEL} (Synthroid): 6 to 7 days in euthyroid adults; 168 hours is used`,
+  },
+  // FDA Decadron PI / clinical pharmacology: plasma elimination half-life is 3.5 to 4.5 hours (biologic HPA suppression lasts 36 to 54 hours).
+  dexamethasone: {
+    hours: 4.5,
+    source: `${LABEL}: plasma half-life 3.5 to 4.5 hours (biologic effect lasts 36 to 54 hours); top plasma value is used`,
+  },
+  // FDA amoxicillin PI Section 12.3: elimination half-life is approximately 61.3 minutes to 1.3 hours in normal renal function.
+  amoxicillin: {
+    hours: 1.3,
+    source: `${LABEL}: about 1 to 1.3 hours with normal kidney function; the top is used`,
+  },
+  // FDA Flagyl PI Section 12.3: average elimination half-life of metronidazole in healthy subjects is 8 hours.
+  metronidazole: {
+    hours: 8,
+    source: `${LABEL} (Flagyl): average about 8 hours`,
+  },
+  // FDA Normodyne / Trandate PI Section 12.3: plasma elimination half-life is approximately 6 to 8 hours after oral administration.
+  labetalol: {
+    hours: 8,
+    source: `${LABEL}: 6 to 8 hours; the top is used`,
+  },
+  // FDA Tenormin PI Section 12.3: elimination half-life is approximately 6 to 7 hours in normal renal function.
+  atenolol: {
+    hours: 7,
+    source: `${LABEL} (Tenormin): 6 to 7 hours with normal kidney function; the top is used`,
+  },
+  // FDA Corgard PI Section 12.3: plasma elimination half-life of nadolol is 20 to 24 hours in normal renal function.
+  nadolol: {
+    hours: 24,
+    source: `${LABEL} (Corgard): 20 to 24 hours with normal kidney function; the top is used`,
+  },
+  // FDA Microzide PI Section 12.3: plasma elimination half-life of hydrochlorothiazide ranges from 5.6 to 14.8 hours.
+  hctz: {
+    hours: 15,
+    source: `${LABEL}: 5.6 to 14.8 hours; rounded top (15 hours) is used`,
+  },
+  // FDA Thalitone PI Section 12.3: elimination half-life of chlorthalidone averages 40 to 60 hours.
+  chlorthalidone: {
+    hours: 60,
+    source: `${LABEL}: 40 to 60 hours; the top is used`,
+  },
+  // FDA Diovan PI Section 12.3: valsartan shows an average elimination half-life of about 6 hours.
+  valsartan: {
+    hours: 6,
+    source: `${LABEL} (Diovan): about 6 hours`,
+  },
+  // FDA Avapro PI Section 12.3: terminal elimination half-life of irbesartan averages 11 to 15 hours.
+  irbesartan: {
+    hours: 15,
+    source: `${LABEL} (Avapro): 11 to 15 hours; the top is used`,
+  },
+  // FDA Micardis PI Section 12.3: terminal elimination half-life of telmisartan is approximately 24 hours.
+  telmisartan: {
+    hours: 24,
+    source: `${LABEL} (Micardis): approximately 24 hours`,
+  },
+  // FDA Benicar PI Section 12.3: terminal elimination half-life of olmesartan is approximately 13 hours.
+  olmesartan: {
+    hours: 13,
+    source: `${LABEL} (Benicar): approximately 13 hours`,
+  },
+  // FDA methotrexate PI Section 12.3: terminal half-life is reported as 3 to 10 hours in rheumatologic/psoriasis therapy (8 to 15 hours in oncology).
+  methotrexate: {
+    hours: 10,
+    source: `${LABEL}: 3 to 10 hours in standard anti-inflammatory therapy (8 to 15 hours in oncology) with normal kidney function; 10 hours is used`,
+  },
 };
 
 const MAOI_NOTE =
@@ -490,4 +600,12 @@ export const NO_SINGLE_HALF_LIFE: Record<string, string> = {
   // with a terminal half-life of 200 to 400 hours sustaining prolonged CYP2D6 inhibition.
   terbinafine:
     "Terbinafine partitions deeply into adipose, skin, and nail tissue with a 200 to 400 hour terminal elimination phase on the label, keeping CYP2D6 inhibition active weeks after stopping.",
+  // Aspirin PI / clinical pharmacology: parent acetylsalicylic acid has a ~15-20 minute plasma half-life,
+  // while irreversible COX-1 acetylation lasts the 7 to 10 day platelet lifespan.
+  aspirin:
+    "Irreversible acetylation of platelet COX-1 sustains antiplatelet inhibition across the 7 to 10 day platelet lifespan despite a roughly 20-minute plasma half-life for parent aspirin, so a parent decay bar would understate lingering bleeding risk.",
+  // Imuran PI Section 12.3: azathioprine is rapidly cleaved to 6-mercaptopurine and phosphorylated into
+  // long-lived intracellular 6-thioguanine nucleotides that govern myelosuppression over days to weeks.
+  azathioprine:
+    "Azathioprine is rapidly cleaved to 6-mercaptopurine and converted intracellularly into long-lived thioguanine nucleotides that govern myelosuppression over days to weeks, so a parent plasma half-life would understate lingering exposure.",
 };

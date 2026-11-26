@@ -584,6 +584,72 @@ export const COMBINATIONS: readonly Combination[] = [
     ids: ["carbidopa-levodopa", "entacapone"],
     source: "CARBIDOPA, LEVODOPA AND ENTACAPONE TABLET, FILM COATED (generic of Stalevo)",
   },
+  // Antiplatelet, GI, HIV/TB, and antihypertensive combinations (Round 21 expansion)
+  {
+    names: ["Yosprala", "aspirin/omeprazole"],
+    ids: ["aspirin", "omeprazole"],
+    source: "YOSPRALA (ASPIRIN AND OMEPRAZOLE) TABLET, DELAYED RELEASE",
+  },
+  {
+    names: ["Aggrenox", "aspirin/dipyridamole"],
+    ids: ["aspirin", "dipyridamole"],
+    source: "AGGRENOX (ASPIRIN AND DIPYRIDAMOLE) CAPSULE, EXTENDED RELEASE",
+  },
+  {
+    names: ["Kombiglyze XR", "Kombiglyze"],
+    ids: ["saxagliptin-metformin"],
+    source: "KOMBIGLYZE XR (SAXAGLIPTIN AND METFORMIN HYDROCHLORIDE) TABLET, FILM COATED, EXTENDED RELEASE",
+  },
+  {
+    names: ["Pepcid Complete", "famotidine/calcium carbonate/magnesium hydroxide"],
+    ids: ["famotidine", "calcium", "magnesium"],
+    source: "PEPCID COMPLETE (FAMOTIDINE, CALCIUM CARBONATE, AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE",
+  },
+  {
+    names: ["Zegerid", "Zegerid OTC"],
+    ids: ["omeprazole-sodium-bicarbonate"],
+    source: "ZEGERID (OMEPRAZOLE AND SODIUM BICARBONATE) CAPSULE",
+  },
+  {
+    names: ["Truvada", "emtricitabine/tenofovir DF", "FTC/TDF"],
+    ids: ["emtricitabine", "tenofovir-df"],
+    source: "TRUVADA (EMTRICITABINE AND TENOFOVIR DISOPROXIL FUMARATE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Triumeq", "abacavir/dolutegravir/lamivudine"],
+    ids: ["abacavir", "dolutegravir", "lamivudine"],
+    source: "TRIUMEQ (ABACAVIR, DOLUTEGRAVIR, AND LAMIVUDINE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Dovato"],
+    ids: ["dolutegravir-lamivudine"],
+    source: "DOVATO (DOLUTEGRAVIR AND LAMIVUDINE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Juluca"],
+    ids: ["dolutegravir-rilpivirine"],
+    source: "JULUCA (DOLUTEGRAVIR AND RILPIVIRINE) TABLET, FILM COATED",
+  },
+  {
+    names: ["Rifater", "isoniazid/pyrazinamide/rifampin"],
+    ids: ["isoniazid", "pyrazinamide", "rifampin"],
+    source: "RIFATER (RIFAMPIN, ISONIAZID, AND PYRAZINAMIDE) TABLET",
+  },
+  {
+    names: ["Clorpres", "clonidine/chlorthalidone"],
+    ids: ["clonidine", "chlorthalidone"],
+    source: "CLORPRES (CLONIDINE HYDROCHLORIDE AND CHLORTHALIDONE) TABLET",
+  },
+  {
+    names: ["Inderide", "propranolol/HCTZ", "propranolol/hydrochlorothiazide"],
+    ids: ["propranolol", "hctz"],
+    source: "PROPRANOLOL HYDROCHLORIDE AND HYDROCHLOROTHIAZIDE TABLET (generic of Inderide)",
+  },
+  {
+    names: ["Corzide", "nadolol/bendroflumethiazide"],
+    ids: ["nadolol", "bendroflumethiazide"],
+    source: "NADOLOL AND BENDROFLUMETHIAZIDE TABLET (generic of Corzide)",
+  },
   // Combinations with a single combined row already in the catalog
   {
     names: ["Hyzaar"],

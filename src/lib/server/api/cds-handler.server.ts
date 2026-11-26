@@ -350,11 +350,14 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
       const pgx = url.searchParams.has("pgx")
         ? (url.searchParams.get("pgx") ?? undefined)
         : undefined;
+      const tdm = url.searchParams.has("tdm")
+        ? (url.searchParams.get("tdm") ?? undefined)
+        : undefined;
       const cls = url.searchParams.has("cls")
         ? (url.searchParams.get("cls") ?? undefined)
         : undefined;
 
-      const result = ClinicalDecisionService.search({ q, limit, enzyme, role, transporter, pgx, cls });
+      const result = ClinicalDecisionService.search({ q, limit, enzyme, role, transporter, pgx, tdm, cls });
       if (!result.success) {
         return toProblemResponse(result.problem);
       }

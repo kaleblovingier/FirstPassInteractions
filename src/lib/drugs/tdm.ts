@@ -348,6 +348,102 @@ export const TDM: Record<string, TdmCard> = {
     draw: "Serum lithium, SCr/eGFR, and electrolytes if co-exposed with Rx lithium, NSAIDs, ACEi/ARBs, or thiazides",
     pearl: "Unregulated OTC elemental lithium salt lacking FDA approval. Dissociated lithium ions share identical proximal renal reabsorption with prescription lithium — NSAIDs, ACEi/ARBs, and thiazides cut renal clearance, and co-use with Rx lithium creates duplicate exposure.",
   },
+  flecainide: {
+    analyte: "Flecainide",
+    unit: "ng/mL",
+    trough: "200–1000 (many electrophysiology centers target 200–700)",
+    toxic: ">1000: QRS widening (>25% over baseline), bundle branch block, proarrhythmia / ventricular tachycardia, negative inotropy",
+    draw: "Pre-dose trough after ≥4–5 days at steady state paired with serial 12-lead ECG QRS intervals",
+    pearl: "Sensitive narrow-therapeutic-index CYP2D6 and renal-clearance Class IC antiarrhythmic. CYP2D6 PM status, strong 2D6 inhibitors (fluoxetine, paroxetine, bupropion, quinidine), amiodarone, or CKD elevate troughs and precipitate lethal ventricular proarrhythmia.",
+  },
+  mexiletine: {
+    analyte: "Mexiletine",
+    unit: "µg/mL",
+    trough: "0.5–2.0",
+    toxic: ">2.0: tremor, dizziness, ataxia, blurred vision, nystagmus, hypotension, bradycardia, seizures",
+    draw: "Pre-dose trough after ≥3–4 days at steady state",
+    pearl: "Cleared via CYP2D6 and CYP1A2. Fluvoxamine (strong CYP1A2 inhibitor) and strong CYP2D6 inhibitors (propafenone, quinidine, fluoxetine, paroxetine) elevate plasma levels, while rifampin, phenytoin, and smoking accelerate clearance; urinary pH extremes alter renal excretion.",
+  },
+  disopyramide: {
+    analyte: "Disopyramide",
+    unit: "µg/mL",
+    trough: "2.0–5.0 (concentration-dependent protein binding; free levels diverge at higher concentrations)",
+    toxic: ">5–7: QTc prolongation / TdP, QRS widening, acute decompensated heart failure, severe urinary retention, anticholinergic delirium, hypoglycemia",
+    draw: "Pre-dose trough paired with 12-lead ECG (QRS/QTc) and renal function",
+    pearl: "CYP3A4 and renal-clearance Class IA antiarrhythmic with potent antimuscarinic and negative-inotropic effects. Strong CYP3A4 inhibitors (clarithromycin, azoles, ritonavir) or CKD spike unbound exposure; CYP3A4 inducers (rifampin, phenytoin) collapse antiarrhythmic coverage.",
+  },
+  ethosuximide: {
+    analyte: "Ethosuximide",
+    unit: "µg/mL",
+    trough: "40–100 (ILAE reference range)",
+    toxic: ">100–150: lethargy, ataxia, hiccups, gastrointestinal distress, neuropsychiatric changes; blood dyscrasias occur independently of level",
+    draw: "Pre-dose trough after ~10–14 days (adult t½ ~50–60 h)",
+    pearl: "Predominantly cleared via CYP3A4. Strong CYP3A4 inducers (carbamazepine, phenytoin, phenobarbital, rifampin) drop troughs and invite breakthrough absence seizures, whereas valproate and strong 3A4 inhibitors elevate steady-state concentrations.",
+  },
+  lacosamide: {
+    analyte: "Lacosamide",
+    unit: "µg/mL",
+    trough: "10–20 (ILAE reference range)",
+    toxic: ">20: dizziness, diplopia, ataxia, PR-interval prolongation, second- or third-degree AV block",
+    draw: "Pre-dose trough at steady state (~3 days) paired with ECG PR interval in conduction disease",
+    pearl: "Eliminated renally (~40% unchanged) and via CYP2C19/CYP2C9/CYP3A4. Strong CYP inducers lower troughs modestly, whereas severe CKD or combined strong CYP2C19/3A4 inhibition in renal impairment retains lacosamide and widens the PR interval.",
+  },
+  clomipramine: {
+    analyte: "Clomipramine + desmethylclomipramine (active moiety)",
+    unit: "ng/mL",
+    trough: "230–450 combined sum (AGNP reference range)",
+    toxic: ">450–600: seizures (highest seizure liability among TCAs), QRS/QTc prolongation, serotonin toxicity, anticholinergic delirium",
+    draw: "Pre-dose trough after ≥7–10 days at steady state (long-lived active metabolite); pair with ECG QRS/QTc",
+    pearl: "CYP2C19 demethylates clomipramine to noradrenergic desmethylclomipramine while CYP2D6 hydroxylates both. Fluvoxamine, fluoxetine, paroxetine, or CYP2D6/2C19 PM status sharply elevate parent and active-moiety exposure and seizure risk.",
+  },
+  aripiprazole: {
+    analyte: "Aripiprazole + dehydroaripiprazole (active moiety)",
+    unit: "ng/mL",
+    trough: "100–350 parent (150–500 combined active moiety; AGNP reference range)",
+    toxic: ">500–1000 active moiety: severe akathisia, somnolence, orthostasis, extrapyramidal symptoms",
+    draw: "Pre-dose trough after ≥14 days (t½ ~75 h; longer ~146 h in CYP2D6 PM — avoid premature redraws)",
+    pearl: "Dual CYP2D6 and CYP3A4 substrate. FDA labeling specifically calls out CYP2D6 poor metabolizers and dual CYP2D6/3A4 inhibitors (paroxetine, fluoxetine, quinidine, ketoconazole, clarithromycin), whereas carbamazepine and strong 3A4 inducers cut exposure by ~70%.",
+  },
+  quetiapine: {
+    analyte: "Quetiapine",
+    unit: "ng/mL",
+    trough: "100–500 (AGNP reference range; norquetiapine contributes antidepressant activity)",
+    toxic: ">1000: profound sedation, orthostatic hypotension, tachycardia, anticholinergic delirium, QTc prolongation",
+    draw: "Pre-dose trough at steady state; interpret carefully relative to time since last intake given rapid ~6–7 h half-life",
+    pearl: "Sensitive CYP3A4 substrate. Strong CYP3A4 inhibitors (ketoconazole, clarithromycin, ritonavir/Paxlovid) multiply quetiapine AUC several-fold (contraindicated on Paxlovid), while strong 3A4 inducers (phenytoin, carbamazepine, rifampin) strip exposure by >80%.",
+  },
+  paliperidone: {
+    analyte: "Paliperidone (9-hydroxyrisperidone)",
+    unit: "ng/mL",
+    trough: "20–60 (AGNP reference range)",
+    toxic: ">120: extrapyramidal symptoms, marked hyperprolactinemia, orthostasis, QTc prolongation",
+    draw: "Pre-dose trough at steady state (oral ~4–5 days; long-acting injectables require extended stabilization)",
+    pearl: "Active metabolite of risperidone eliminated predominantly unchanged by the kidneys (~59%) with minimal CYP450 dependence. Renal impairment (CKD) retains paliperidone and raises EPS/QTc liability; strong P-gp/3A4 inducers (carbamazepine) lower exposure ~37%.",
+  },
+  flucytosine: {
+    analyte: "Flucytosine (5-FC)",
+    unit: "µg/mL",
+    trough: "Peak 30–80 (2 h post-oral intake; avoid sustained peaks >100)",
+    toxic: ">100: severe dose-dependent bone marrow aplasia (leukopenia, thrombocytopenia), hepatotoxicity, enterocolitis",
+    draw: "2-hour post-intake peak after 3–5 days and after any decline in renal function; pair with frequent CBC and LFTs",
+    pearl: "Narrow-therapeutic-index pyrimidine antifungal excreted >90% unchanged by glomerular filtration. Co-administered amphotericin B nephrotoxicity rapidly reduces GFR and spikes flucytosine peaks into marrow toxicity unless closely monitored.",
+  },
+  isavuconazole: {
+    analyte: "Isavuconazole",
+    unit: "µg/mL",
+    trough: "2.0–5.0 (selective TDM in severe hepatic disease, refractory mold infection, or strong perpetrator exposure)",
+    toxic: ">5–7: transaminitis, gastrointestinal intolerance, fatigue; uniquely shortens QTc (contraindicated in familial short QT syndrome)",
+    draw: "Pre-dose trough after ≥7–14 days (long terminal half-life ~130 h)",
+    pearl: "Sensitive CYP3A4 substrate and moderate CYP3A4/P-gp inhibitor. Strong CYP3A4 inhibitors (ketoconazole, high-exposure ritonavir) and strong CYP3A4 inducers (rifampin, carbamazepine, phenobarbital, St. John's wort) are labeled contraindicated.",
+  },
+  cefepime: {
+    analyte: "Cefepime",
+    unit: "µg/mL",
+    trough: "Target unbound trough >1–4× MIC (neurotoxicity threshold typically >20–22 total trough)",
+    toxic: ">20–22 trough: cefepime-induced neurotoxicity (encephalopathy, myoclonus, aphasia, non-convulsive status epilepticus)",
+    draw: "Pre-dose trough (or steady-state level on continuous infusion) in critically ill patients with fluctuating GFR or unexplained encephalopathy",
+    pearl: "Fourth-generation cephalosporin cleared almost exclusively by glomerular filtration. Impaired GFR, geriatric age, or critical-illness AKI rapidly push troughs past the GABA-A antagonistic neurotoxicity threshold even when routine seizure workup looks unremarkable.",
+  },
 };
 
 export const TDM_IDS: readonly string[] = Object.keys(TDM);
@@ -431,6 +527,56 @@ export function tdmHostNote(id: string, host: HostContext): string | null {
   }
   if (id === "doxepin" && (host.phenotypes.CYP2D6 === "PM" || host.phenotypes.CYP2C19 === "PM")) {
     return "CYP2D6 or CYP2C19 poor metabolizer — doxepin + nordoxepin clearance slows; monitor sedation, anticholinergic burden, and ECG QRS/QTc.";
+  }
+  if (id === "flecainide") {
+    if (host.phenotypes.CYP2D6 === "PM") {
+      return "CYP2D6 poor metabolizer — flecainide clearance drops sharply; monitor trough and ECG QRS widening closely.";
+    }
+    if (host.kidney === "ckd") {
+      return "CKD on this host — impaired renal clearance retains flecainide and raises QRS-widening and proarrhythmia risk.";
+    }
+  }
+  if (id === "mexiletine") {
+    if (host.phenotypes.CYP2D6 === "PM") {
+      return "CYP2D6 poor metabolizer — mexiletine elimination slows and neurotoxic troughs climb.";
+    }
+    if (host.smoking) {
+      return "Daily smoke on this host — CYP1A2 induction accelerates mexiletine clearance and lowers troughs; quitting can cause rebound elevation.";
+    }
+  }
+  if (id === "disopyramide") {
+    if (host.kidney === "ckd") {
+      return "CKD on this host — disopyramide renal elimination falls, increasing QTc/QRS proarrhythmia and anticholinergic toxicity.";
+    }
+    if (host.age === "geriatric") {
+      return "Geriatric host — high anticholinergic burden, urinary retention, negative inotropy, and reduced renal reserve amplify disopyramide toxicity.";
+    }
+  }
+  if (id === "lacosamide" && host.kidney === "ckd") {
+    return "CKD on this host — reduced renal clearance retains lacosamide and increases dizziness and PR-interval prolongation risk.";
+  }
+  if (id === "clomipramine" && (host.phenotypes.CYP2D6 === "PM" || host.phenotypes.CYP2C19 === "PM")) {
+    return "CYP2D6 or CYP2C19 poor metabolizer — clomipramine + desmethylclomipramine active moiety climbs sharply, elevating seizure and ECG QRS/QTc risk.";
+  }
+  if (id === "aripiprazole" && host.phenotypes.CYP2D6 === "PM") {
+    return "CYP2D6 poor metabolizer — aripiprazole elimination half-life nearly doubles (~146 h) and steady-state active moiety rises substantially.";
+  }
+  if (id === "paliperidone" && host.kidney === "ckd") {
+    return "CKD on this host — paliperidone clears predominantly unchanged via the kidneys; reduced GFR elevates EPS, hyperprolactinemia, and QTc risk.";
+  }
+  if (id === "flucytosine" && host.kidney === "ckd") {
+    return "CKD on this host — flucytosine is >90% renally excreted; impaired GFR rapidly spikes peak concentrations (>100 µg/mL) and bone marrow aplasia risk.";
+  }
+  if (id === "cefepime") {
+    if (host.kidney === "ckd" && host.age === "geriatric") {
+      return "CKD and geriatric age on this host — markedly reduced GFR drives high cefepime troughs (>20 µg/mL) and encephalopathy / non-convulsive status epilepticus risk.";
+    }
+    if (host.kidney === "ckd") {
+      return "CKD on this host — cefepime clears renally unchanged; accumulating troughs (>20 µg/mL) precipitate myoclonus, encephalopathy, and non-convulsive seizures.";
+    }
+    if (host.age === "geriatric") {
+      return "Geriatric host — lower GFR raises risk of cefepime trough retention and unrecognized beta-lactam neurotoxicity.";
+    }
   }
   if (id === "clozapine" && host.smoking) return "Daily smoke on this host — 1A2 induction. Expect a lower trough; quitting will raise it.";
   if (id === "olanzapine" && host.smoking) return "Daily smoke on this host — CYP1A2 induction drops olanzapine troughs; abrupt smoking cessation can double plasma exposure.";

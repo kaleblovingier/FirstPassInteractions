@@ -934,8 +934,8 @@ export class ClinicalDecisionService {
           problem: problemUnprocessable("Invalid search parameters", val.errors),
         };
       }
-      const { q, enzyme, role, transporter, pgx, cls, limit } = val.data;
-      if (q && !enzyme && !role && !transporter && !pgx && !cls) {
+      const { q, enzyme, role, transporter, pgx, tdm, cls, limit } = val.data;
+      if (q && !enzyme && !role && !transporter && !pgx && tdm === undefined && !cls) {
         return { success: true, data: searchDrugs(q).slice(0, limit).map(toApiDrugSummary) };
       }
 
@@ -994,6 +994,9 @@ export class ClinicalDecisionService {
           return false;
         }
         if (pgxIds && !pgxIds.has(drug.id)) {
+          return false;
+        }
+        if (tdm !== undefined && Object.hasOwn(TDM, drug.id) !== tdm) {
           return false;
         }
         if (normCls && !normalizeSearchText(drug.cls).includes(normCls)) {

@@ -113,6 +113,36 @@ test("GET /api/cds/search supports indexed membrane transporter and CPIC pgx fil
     new Request("http://localhost/api/cds/search?pgx=GENE999"),
   );
   assert.equal(badPgx.status, 422);
+
+  // TDM boolean filter (standalone and combined with enzyme)
+  resetApiMeters();
+  const tdmAllRes = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?tdm=true&limit=50"),
+  );
+  assert.equal(tdmAllRes.status, 200);
+  const tdmAll = (await tdmAllRes.json()) as ApiDrugSummary[];
+  assert.equal(tdmAll.length, 50);
+  assert.ok(tdmAll.some((r) => r.id === "flecainide" || r.id === "cefepime" || r.id === "lithium"));
+
+  resetApiMeters();
+  const tdm2d6Res = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?tdm=true&enzyme=CYP2D6&limit=20"),
+  );
+  assert.equal(tdm2d6Res.status, 200);
+  const tdm2d6 = (await tdm2d6Res.json()) as ApiDrugSummary[];
+  assert.ok(tdm2d6.some((r) => r.id === "flecainide"));
+  assert.ok(tdm2d6.some((r) => r.id === "aripiprazole"));
+  assert.equal(
+    tdm2d6.some((r) => r.id === "codeine"),
+    false,
+    "Non-TDM CYP2D6 drug must be excluded when tdm=true",
+  );
+
+  resetApiMeters();
+  const badTdm = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?tdm=maybe"),
+  );
+  assert.equal(badTdm.status, 422);
 });
 
 test("POST /api/cds/export returns structured JSON monograph export by default and explicitly", async () => {
