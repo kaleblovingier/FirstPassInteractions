@@ -1706,6 +1706,42 @@ export const ROUNDS: Round[] = [
     lane: "food",
     blurb: "St. John's wort + berberine + apixaban · opposing PXR induction vs CYP3A4/P-gp inhibition · unpredictable DOAC failure or bleed rebound",
   },
+  {
+    id: "r-clinic-slco1b1-simvastatin-myopathy",
+    title: "The statin myopathy where hepatic uptake failed alongside CYP3A4",
+    setting: "clinic",
+    stem: "A patient maintained on simvastatin receives a course of clarithromycin for community-acquired pneumonia. Within a week they develop proximal thigh myalgias, dark urine, and markedly elevated creatine kinase. Prior pharmacogenomic panel results in the chart also document a decreased-function SLCO1B1*5 allele.",
+    ask: "How do hepatic sinusoidal OATP1B1 (SLCO1B1) transport impairment and CYP3A4 mechanism-based inactivation compound systemic simvastatin acid exposure?",
+    teach:
+      "Simvastatin lactone undergoes extensive presystemic CYP3A4 oxidation and hydrolyzes to active simvastatin acid, which depends on hepatic sinusoidal OATP1B1 (encoded by SLCO1B1) uptake to reach hepatocyte HMG-CoA reductase and undergo clearance. Clarithromycin delivers a double hit: mechanism-based (time-dependent) CYP3A4 inactivation blocks lactone metabolism while OATP1B1 inhibition restricts hepatic influx, spiking systemic simvastatin exposure and triggering rhabdomyolysis—a labeled contraindication. Carrying a decreased-function SLCO1B1*5 allele (CPIC Level A) impairs sinusoidal statin uptake even before a perpetrator drug arrives, compounding myopathy risk further. Open the Pharmacogenomics & CPIC and Transporters tabs to inspect SLCO1B1 hepatic flux.",
+    drugIds: ["simvastatin", "clarithromycin"],
+    lane: "clinic",
+    blurb: "Simvastatin + clarithromycin · SLCO1B1 (OATP1B1) hepatic uptake + CYP3A4 TDI dual-barrier collapse · CPIC Level A myopathy risk",
+  },
+  {
+    id: "r-ward-allopurinol-hlab5801-xo",
+    title: "The gout prophylaxis that carried both a genetic screen and a purine trap",
+    setting: "ward",
+    stem: "An older adult with gout and autoimmune disease maintained on azathioprine is started on allopurinol after a painful podagra flare. Two weeks later they are admitted with profound pancytopenia and mucositis, while a separate consult notes no prior HLA-B*58:01 testing had been reviewed.",
+    ask: "Which two distinct pharmacology axes govern allopurinol safety here—one enzymatic and one immunogenetic?",
+    teach:
+      "Allopurinol and its long-lived active metabolite oxypurinol inhibit xanthine oxidase (XO), the primary inactivation enzyme for 6-mercaptopurine derived from azathioprine. Blocking XO shunts purine flux toward cytotoxic 6-thioguanine nucleotides, precipitating severe myelosuppression and pancytopenia unless azathioprine is swapped or adjusted per Prescribing Information. Independently of purine enzymology, allopurinol carries a CPIC Level A immunogenetic association with HLA-B*58:01: oxypurinol binds directly inside the HLA-B*58:01 peptide-binding groove, triggering cytotoxic CD8+ T-cell severe cutaneous adverse reactions (SJS/TEN and DRESS). Open the Pharmacogenomics & CPIC tab to review HLA-B*58:01 screening alongside XO inhibition.",
+    drugIds: ["allopurinol", "azathioprine"],
+    lane: "clinic",
+    blurb: "Allopurinol + azathioprine · xanthine oxidase purine-shunt myelosuppression · CPIC Level A HLA-B*58:01 SCAR axis",
+  },
+  {
+    id: "r-kitchen-polygala-fluoxetine-botanical-stack",
+    title: "The nootropic root extract stacked onto an SSRI",
+    setting: "kitchen",
+    stem: "An adult stable on fluoxetine for depression begins taking a concentrated Polygala tenuifolia (yuan zhi) nootropic extract purchased online for focus and mood. Several days later they report restlessness, diaphoresis, tremor, and brisk reflexes without any prescription change.",
+    ask: "Why does a traditional botanical root extract with no established CYP grade still surface a serotonergic stacking warning beside fluoxetine?",
+    teach:
+      "Polygala tenuifolia extracts contain tenuifolin, 3,6'-disinapoyl sucrose, and xanthones with preclinical triple monoamine reuptake inhibition and mild MAO-B modulation. Even when human CYP450 clinical DDI data are sparse, pharmacodynamic serotonergic tone stacks directly on top of fluoxetine's potent serotonin transporter (SERT) blockade—and fluoxetine's active metabolite norfluoxetine sustains that background for roughly five weeks after stopping. Reconciling unregulated nootropics and herbal extracts is essential whenever unexplained autonomic or neuromuscular serotonergic signs emerge.",
+    drugIds: ["polygala-tenuifolia", "fluoxetine"],
+    lane: "food",
+    blurb: "Polygala tenuifolia + fluoxetine · Wave 8 botanical monoamine modulator × long-washout SSRI serotonergic stack",
+  },
   ...ROUNDS_WAVE2,
 ];
 

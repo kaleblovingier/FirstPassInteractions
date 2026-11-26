@@ -8,6 +8,8 @@
  */
 
 import { z } from "zod";
+import { PHARMACOGENES } from "../../drugs/pharmacogenomics";
+import { TRANSPORTERS, type TransporterInfo } from "../../drugs/transporter-network";
 import { ENZYMES } from "../../drugs/types";
 import { type InvalidParamError } from "./problem";
 
@@ -121,11 +123,65 @@ export const SearchQueryTextSchema = z
 export const SearchEnzymeSchema = z.enum(ENZYMES);
 export const SearchRoleSchema = z.enum(["substrate", "inhibitor", "inducer"]);
 
+function normToken(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+/** Resolves a transporter query string (id, gene symbol, or alias such as "P-gp", "OATP1B1", "BCRP", "OAT3", "OCT2") to its TransporterInfo entry. */
+export function resolveTransporterFilter(raw: string): TransporterInfo | undefined {
+  const token = normToken(raw);
+  if (!token) return undefined;
+  return TRANSPORTERS.find((tx) => {
+    const candidates = [tx.id, tx.gene, ...tx.gene.split(/[&/]/), ...tx.aliases];
+    return candidates.some((c) => normToken(c) === token);
+  });
+}
+
+/** Resolves a CPIC pharmacogene query string (e.g. "SLCO1B1", "CYP2D6", "HLA-B*58:01", "HLA-B5801") to its canonical geneId. */
+export function resolvePgxGeneFilter(raw: string): string | undefined {
+  const token = normToken(raw);
+  if (!token) return undefined;
+  const hit = PHARMACOGENES.find(
+    (g) => normToken(g.id) === token || normToken(g.symbol) === token,
+  );
+  return hit?.id;
+}
+
+export const SearchTransporterSchema = z
+  .string()
+  .trim()
+  .min(1, "Transporter filter cannot be empty")
+  .max(60, "Transporter filter exceeds max length 60")
+  .refine(
+    (val) => !PHI_PATIENT_ID_REGEX.test(val),
+    "Transporter filters must name a membrane transporter; patient identifiers are prohibited",
+  )
+  .refine(
+    (val) => resolveTransporterFilter(val) !== undefined,
+    "Unrecognized transporter filter. Supported transporters include P-gp (ABCB1), BCRP (ABCG2), OATP1B1/OATP1B3 (SLCO1B1), OAT1/OAT3, and OCT2/MATE1.",
+  );
+
+export const SearchPgxSchema = z
+  .string()
+  .trim()
+  .min(1, "Pharmacogene filter cannot be empty")
+  .max(40, "Pharmacogene filter exceeds max length 40")
+  .refine(
+    (val) => !PHI_PATIENT_ID_REGEX.test(val),
+    "Pharmacogene filters must name a CPIC gene symbol; patient identifiers are prohibited",
+  )
+  .refine(
+    (val) => resolvePgxGeneFilter(val) !== undefined,
+    "Unrecognized pharmacogene filter. Supported CPIC genes include CYP2D6, CYP2C19, CYP2C9, CYP3A5, SLCO1B1, VKORC1, UGT1A1, TPMT, NUDT15, DPYD, G6PD, HLA-B*57:01, HLA-B*58:01, HLA-B*15:02, and HLA-A*31:01.",
+  );
+
 export const DrugLookupRequestSchema = z
   .strictObject({
     q: SearchQueryTextSchema.optional(),
     enzyme: SearchEnzymeSchema.optional(),
     role: SearchRoleSchema.optional(),
+    transporter: SearchTransporterSchema.optional(),
+    pgx: SearchPgxSchema.optional(),
     cls: z
       .string()
       .trim()
@@ -139,11 +195,11 @@ export const DrugLookupRequestSchema = z
     limit: z.coerce.number().int().min(1).max(50).default(10),
   })
   .superRefine((data, ctx) => {
-    if (!data.q && !data.enzyme && !data.cls) {
+    if (!data.q && !data.enzyme && !data.cls && !data.transporter && !data.pgx) {
       ctx.addIssue({
         code: "custom",
         path: ["q"],
-        message: "Search query (q) or a catalog filter (enzyme or cls) is required",
+        message: "Search query (q) or a catalog filter (enzyme, transporter, pgx, or cls) is required",
       });
     }
   });

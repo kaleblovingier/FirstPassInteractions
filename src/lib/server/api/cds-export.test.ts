@@ -69,6 +69,52 @@ test("GET /api/cds/search supports cls filtering without q and combined q + enzy
   assert.equal(badEnzyme.status, 422);
 });
 
+test("GET /api/cds/search supports indexed membrane transporter and CPIC pgx filtering", async () => {
+  resetApiMeters();
+  const oatpInhRes = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?transporter=OATP1B1&role=inhibitor&limit=20"),
+  );
+  assert.equal(oatpInhRes.status, 200);
+  const oatpInh = (await oatpInhRes.json()) as ApiDrugSummary[];
+  assert.ok(oatpInh.some((r) => r.id === "cyclosporine"));
+  assert.ok(oatpInh.some((r) => r.id === "gemfibrozil"));
+  assert.equal(
+    oatpInh.some((r) => r.id === "rosuvastatin"),
+    false,
+    "Substrate rosuvastatin must not appear under role=inhibitor",
+  );
+
+  resetApiMeters();
+  const pgxSlcoRes = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?pgx=SLCO1B1&limit=20"),
+  );
+  assert.equal(pgxSlcoRes.status, 200);
+  const slcoDrugs = (await pgxSlcoRes.json()) as ApiDrugSummary[];
+  assert.ok(slcoDrugs.some((r) => r.id === "simvastatin"));
+  assert.ok(slcoDrugs.some((r) => r.id === "atorvastatin"));
+
+  resetApiMeters();
+  const pgxHlaRes = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?pgx=HLA-B*58:01&limit=10"),
+  );
+  assert.equal(pgxHlaRes.status, 200);
+  const hlaDrugs = (await pgxHlaRes.json()) as ApiDrugSummary[];
+  assert.ok(hlaDrugs.some((r) => r.id === "allopurinol"));
+
+  // Unrecognized transporter or pgx filter returns 422
+  resetApiMeters();
+  const badTx = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?transporter=NOTATRANSPORTER"),
+  );
+  assert.equal(badTx.status, 422);
+
+  resetApiMeters();
+  const badPgx = await handleCdsRequest(
+    new Request("http://localhost/api/cds/search?pgx=GENE999"),
+  );
+  assert.equal(badPgx.status, 422);
+});
+
 test("POST /api/cds/export returns structured JSON monograph export by default and explicitly", async () => {
   resetApiMeters();
   const res = await handleCdsRequest(

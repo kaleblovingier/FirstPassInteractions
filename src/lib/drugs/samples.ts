@@ -1987,6 +1987,30 @@ export const SAMPLE_REGIMENS: SampleRegimen[] = [
     drugIds: ["lithium-orotate", "ibuprofen"],
     lane: "clinic",
   },
+  {
+    id: "polygala-fluoxetine-serotonin",
+    title: "Polygala tenuifolia + Fluoxetine (Botanical Serotonergic Stack)",
+    blurb:
+      "Concentrated yuan zhi monoamine-modulating root extract paired with a long-washout SSRI — additive serotonergic tone",
+    drugIds: ["polygala-tenuifolia", "fluoxetine"],
+    lane: "food",
+  },
+  {
+    id: "baicalin-alprazolam-sedation",
+    title: "Baicalin + Alprazolam (Flavone GABA-A Stack)",
+    blurb:
+      "Scutellaria baicalensis GABA-A positive-modulating flavone paired with a triazolobenzodiazepine — additive CNS sedation",
+    drugIds: ["baicalin", "alprazolam"],
+    lane: "food",
+  },
+  {
+    id: "fisetin-warfarin-bleeding",
+    title: "Fisetin + Warfarin (Senolytic Flavonol Caution)",
+    blurb:
+      "Senolytic flavonol combining weak CYP2C9 inhibition with antiplatelet caution alongside narrow-index S-warfarin",
+    drugIds: ["fisetin", "warfarin"],
+    lane: "food",
+  },
   ...SAMPLE_REGIMENS_WAVE2,
 ];
 
