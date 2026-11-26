@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { handleCdsRequest } from "./cds-handler.server";
 import { resetApiMeters } from "./api-access.server";
 import { ClinicalDecisionService } from "./cds-service";
-import type { ApiDrugSummary, ExportRegimenResult } from "./cds-service";
+import type { ApiDrugMonographResult, ApiDrugSummary, ExportRegimenResult } from "./cds-service";
 import type { ProblemDetails } from "./problem";
 import { DOSE_PATTERN } from "../../guards/dose-rule";
 
@@ -185,4 +185,65 @@ test("POST /api/cds/export enforces 405 Method Not Allowed and 400 Bad Request o
     assert.equal(dup.data.report.compounds.length, 1);
     assert.equal(dup.data.report.findings.length, 0);
   }
+});
+
+test("GET /api/cds/monograph/:id returns complete PK, CPIC PGx, transporter, kinetics, washout, and TDM monograph", async () => {
+  resetApiMeters();
+  const simvaRes = await handleCdsRequest(new Request("http://localhost/api/cds/monograph/simvastatin"));
+  assert.equal(simvaRes.status, 200);
+  const simva = (await simvaRes.json()) as ApiDrugMonographResult;
+  assert.equal(simva.monograph.id, "simvastatin");
+  assert.equal(simva.monograph.halfLife?.kind, "linear");
+  assert.ok(simva.monograph.cpicGenes.some((g) => g.geneSymbol === "SLCO1B1"));
+  assert.ok(simva.monograph.transporters.some((t) => t.gene.includes("SLCO1B1")));
+  assert.match(simva.monograph.disclaimer, /Educational reference only/);
+  assert.deepEqual(JSON.stringify(simva).match(DOSE_PATTERN) ?? [], []);
+
+  // Brand name resolution (Prozac -> fluoxetine) + TDI + washout clock
+  resetApiMeters();
+  const prozacRes = await handleCdsRequest(new Request("http://localhost/api/cds/monograph/Prozac"));
+  assert.equal(prozacRes.status, 200);
+  const prozac = (await prozacRes.json()) as ApiDrugMonographResult;
+  assert.equal(prozac.monograph.id, "fluoxetine");
+  assert.ok(prozac.monograph.perpetratorKinetics.tdi !== null);
+  assert.ok(prozac.monograph.washoutClocks.some((w) => w.days === 35));
+
+  // Non-linear / active-metabolite caveat + HLA-B*58:01
+  resetApiMeters();
+  const alloRes = await handleCdsRequest(new Request("http://localhost/api/cds/monograph/allopurinol"));
+  assert.equal(alloRes.status, 200);
+  const allo = (await alloRes.json()) as ApiDrugMonographResult;
+  assert.equal(allo.monograph.halfLife?.kind, "non-linear");
+  assert.ok(allo.monograph.cpicGenes.some((g) => g.geneSymbol === "HLA-B*58:01"));
+
+  // Competitive Ki + 5x washout
+  resetApiMeters();
+  const ketoRes = await handleCdsRequest(new Request("http://localhost/api/cds/monograph/ketoconazole"));
+  assert.equal(ketoRes.status, 200);
+  const keto = (await ketoRes.json()) as ApiDrugMonographResult;
+  assert.equal(keto.monograph.halfLife?.kind, "linear");
+  if (keto.monograph.halfLife?.kind === "linear") {
+    assert.equal(keto.monograph.halfLife.hours, 8);
+    assert.equal(keto.monograph.halfLife.washout5xHours, 40);
+  }
+  assert.equal(keto.monograph.perpetratorKinetics.competitive?.kiMicromolar, 0.015);
+
+  // TDM window (lithium)
+  resetApiMeters();
+  const liRes = await handleCdsRequest(new Request("http://localhost/api/cds/monograph/lithium"));
+  assert.equal(liRes.status, 200);
+  const li = (await liRes.json()) as ApiDrugMonographResult;
+  assert.equal(li.monograph.tdm?.analyte, "Lithium");
+
+  // 404 on unknown compound, 405 on POST
+  resetApiMeters();
+  const missingRes = await handleCdsRequest(new Request("http://localhost/api/cds/monograph/nonexistent-drug-xyz"));
+  assert.equal(missingRes.status, 404);
+
+  resetApiMeters();
+  const badMethod = await handleCdsRequest(
+    postJson("http://localhost/api/cds/monograph/simvastatin", {}),
+  );
+  assert.equal(badMethod.status, 405);
+  assert.equal(badMethod.headers.get("allow"), "GET");
 });

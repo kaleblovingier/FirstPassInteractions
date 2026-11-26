@@ -61,8 +61,15 @@ export const DEVELOPERS_ENDPOINTS: readonly DevelopersEndpoint[] = [
   {
     method: "GET",
     path: "/api/cds/search",
-    summary: "Search the drug catalog by generic or brand name.",
-    request: "?q=warfarin&limit=10 (limit 1 to 50, default 10)",
+    summary: "Search the drug catalog by generic or brand name, or filter by CYP/P-gp isoform, role (substrate/inhibitor/inducer), or drug class.",
+    request: "?q=warfarin&enzyme=CYP2C9&role=substrate&limit=10 (limit 1 to 50, default 10)",
+    keyed: true,
+  },
+  {
+    method: "GET",
+    path: "/api/cds/monograph/:id",
+    summary: "Structured clinical monograph for one compound: adult half-life or non-linear caveat, FDA CYP/P-gp roles, CPIC pharmacogenes, membrane transporters, perpetrator kinetics (TDI/inducer/Ki), washout clocks, and TDM window.",
+    request: "/api/cds/monograph/simvastatin (accepts canonical id, brand, or alias)",
     keyed: true,
   },
   {
@@ -91,6 +98,13 @@ export const DEVELOPERS_ENDPOINTS: readonly DevelopersEndpoint[] = [
     path: "/api/cds/kinetics",
     summary: "Teaching pharmacokinetic modules for a list of drugs.",
     request: '{ "drugs": ["vancomycin"], "modules": ["vancomycin"], "host": { ... } } (modules is optional; omit it for all)',
+    keyed: true,
+  },
+  {
+    method: "POST",
+    path: "/api/cds/export",
+    summary: "Export a structured JSON or Markdown monograph report for a multi-drug tray, including half-lives, CYP/P-gp matrix, CPIC pharmacogenes, membrane transporters, perpetrator kinetics, findings, and sources. Send Accept: text/markdown with format=markdown for raw Markdown.",
+    request: '{ "drugs": ["fluoxetine", "bupropion", "codeine"], "format": "markdown", "host": { ... } } (format: json | markdown)',
     keyed: true,
   },
 ];
