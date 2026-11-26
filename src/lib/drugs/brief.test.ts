@@ -266,6 +266,43 @@ test("buildStructuredRegimenJson & buildMarkdownRegimenReport: 3+ drug cascade t
 
   const md = buildMarkdownRegimenReport({ trayIds, report });
   assert.match(md, /Opposing CYP3A4 inhibition \+ induction on the same tray/);
+  assert.match(md, /## Pharmacogenomics, Transporters & Perpetrator Kinetics/);
+  assert.match(md, /Ki 0\.015 µM/);
+  assert.match(md, /PXR inducer/);
+  assert.deepEqual(md.match(DOSE_PATTERN) ?? [], []);
+  assert.deepEqual(JSON.stringify(json).match(DOSE_PATTERN) ?? [], []);
+});
+
+test("buildStructuredRegimenJson & buildMarkdownRegimenReport: includes CPIC PGx, membrane transporters, and non-linear half-life caveats", async () => {
+  const { buildMarkdownRegimenReport, buildStructuredRegimenJson } = await import("./brief.ts");
+  const { analyze } = await import("./engine.ts");
+  const { DEFAULT_HOST } = await import("./types.ts");
+  const { DOSE_PATTERN } = await import("../guards/dose-rule.ts");
+
+  const trayIds = ["simvastatin", "allopurinol", "clopidogrel"];
+  const report = analyze(trayIds, DEFAULT_HOST);
+  const json = buildStructuredRegimenJson({ trayIds, report });
+
+  const simva = json.compounds.find((c) => c.id === "simvastatin")!;
+  assert.ok(simva.cpicGenes.some((g) => g.gene === "SLCO1B1" && g.cpicLevel === "Level A"));
+  assert.ok(simva.transporters.some((t) => t.gene.includes("SLCO1B1") && t.roles.includes("Substrate")));
+
+  const allo = json.compounds.find((c) => c.id === "allopurinol")!;
+  assert.equal(allo.halfLifeHours, null);
+  assert.equal(allo.halfLifeLabel, "Non-linear / covalent");
+  assert.match(allo.nonLinearHalfLifeNote ?? "", /oxypurinol/i);
+  assert.ok(allo.cpicGenes.some((g) => g.gene === "HLA-B*58:01"));
+
+  const clop = json.compounds.find((c) => c.id === "clopidogrel")!;
+  assert.equal(clop.halfLifeLabel, "Non-linear / covalent");
+  assert.ok(clop.cpicGenes.some((g) => g.gene === "CYP2C19" && g.fdaBoxedWarning));
+  assert.ok(clop.perpetratorKinetics.some((k) => k.mode === "tdi"));
+
+  const md = buildMarkdownRegimenReport({ trayIds, report });
+  assert.match(md, /## Pharmacogenomics, Transporters & Perpetrator Kinetics/);
+  assert.match(md, /SLCO1B1 \(Level A\)/);
+  assert.match(md, /HLA-B\*58:01/);
+  assert.match(md, /Non-linear \/ covalent/);
   assert.deepEqual(md.match(DOSE_PATTERN) ?? [], []);
   assert.deepEqual(JSON.stringify(json).match(DOSE_PATTERN) ?? [], []);
 });

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { DEVELOPERS_ENDPOINTS } from "../../seo/developers";
 import { handleCdsRequest } from "./cds-handler.server";
-import { OPENAPI_PATH, OPENAPI_ROUTE_PATHS, openApiDocument } from "./openapi";
+import { OPENAPI_PATH, OPENAPI_ROUTE_PATHS, openApiDocument, openApiPath } from "./openapi";
 
 type Doc = {
   openapi: string;
@@ -14,8 +14,9 @@ describe("OpenAPI document - generated from the request schemas", () => {
   it("is OpenAPI 3.1 and lists every endpoint /developers documents, with the same method", () => {
     assert.equal(doc.openapi, "3.1.0");
     for (const e of DEVELOPERS_ENDPOINTS) {
-      assert.ok(doc.paths[e.path]?.[e.method.toLowerCase()], `${e.method} ${e.path}`);
+      assert.ok(doc.paths[openApiPath(e.path)]?.[e.method.toLowerCase()], `${e.method} ${e.path}`);
     }
+    assert.deepEqual(doc.paths["/api/cds/monograph/{id}"]!.get!.parameters!.map((p) => p.name), ["id"]);
   });
 
   it("describes each body and query from its schema", () => {
@@ -30,7 +31,8 @@ describe("OpenAPI document - generated from the request schemas", () => {
     assert.equal(res.status, 200);
     assert.equal(((await res.json()) as Doc).openapi, "3.1.0");
     for (const path of OPENAPI_ROUTE_PATHS) {
-      const probe = await handleCdsRequest(new Request(`http://localhost${path}`, { method: "DELETE" }));
+      const url = `http://localhost${path.replace("{id}", "warfarin")}`;
+      const probe = await handleCdsRequest(new Request(url, { method: "DELETE" }));
       assert.notEqual(probe.status, 404, path);
     }
   });

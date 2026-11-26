@@ -5,6 +5,7 @@
  * - POST /api/cds/check: multi-drug interaction checking with host context
  * - POST /api/cds/kinetics: specialty pharmacokinetic module evaluations
  * - GET /api/cds/search: drug catalog search with pagination and enzyme/role/class filtering
+ * - GET /api/cds/monograph/:id: structured clinical monograph (PK, CPIC PGx, transporters, kinetics, TDM)
  * - GET /api/cds/autocomplete: typeahead with how each row matched
  * - POST /api/cds/analyze: one InteractionReport for a tray (optionally with live outside sources)
  * - POST /api/cds/export: structured JSON or Markdown clinical monograph regimen export
@@ -348,6 +349,27 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
         : undefined;
 
       const result = ClinicalDecisionService.search({ q, limit, enzyme, role, cls });
+      if (!result.success) {
+        return toProblemResponse(result.problem);
+      }
+      return Response.json(result.data, { status: 200 });
+    }
+
+    // GET /api/cds/monograph/:id
+    if (pathname.startsWith("/api/cds/monograph/")) {
+      if (method !== "GET") {
+        return methodNotAllowedResponse(method, pathname, "GET");
+      }
+      const rawSegment = pathname.slice("/api/cds/monograph/".length);
+      let decodedId = rawSegment;
+      try {
+        decodedId = decodeURIComponent(rawSegment);
+      } catch {
+        return toProblemResponse(
+          problemBadRequest("Malformed compound identifier in monograph path", undefined, pathname),
+        );
+      }
+      const result = ClinicalDecisionService.getMonograph(decodedId);
       if (!result.success) {
         return toProblemResponse(result.problem);
       }

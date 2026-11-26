@@ -4,6 +4,15 @@ import { CITED_ONLY_HUB_INTRO, DISCLAIMER_ACTION, DRUG_HUB_INTRO_TEMPLATE, fillD
 import { drugHubPath, drugHubs, type DrugHub } from "@/lib/seo/drug-hubs";
 import { NOT_AFFILIATED_LINE, TRADEMARK_LINE } from "@/lib/seo/legal";
 import { enzymeHubs, enzymePath } from "@/lib/seo/enzyme-hubs";
+import {
+  getCompetitiveInhibitorById,
+  getNuclearInducerById,
+  getTdiPerpetratorById,
+} from "@/lib/drugs/cyp-kinetics";
+import { NO_SINGLE_HALF_LIFE } from "@/lib/drugs/half-lives";
+import { halfLifeFor } from "@/lib/drugs/overlap";
+import { getInteractionsForDrug } from "@/lib/drugs/pharmacogenomics";
+import { getTransporterRolesForDrug } from "@/lib/drugs/transporter-network";
 import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { LabelFreshnessLine } from "@/components/label-freshness";
 import { EmbedSnippetDisclosure } from "@/components/seo/pair-embed";
@@ -351,6 +360,126 @@ export function PairsIndexView({ pages, search = NO_PAIRS_SEARCH, onSearch }: {
   );
 }
 
+function formatHubWashout(hours: number): string {
+  const w = hours * 5;
+  const hLabel = Number.isInteger(w) ? String(w) : String(Math.round(w * 10) / 10);
+  if (w >= 48) {
+    const days = (w / 24).toFixed(1).replace(/\.0$/, "");
+    return `~${hLabel} h (${days} d)`;
+  }
+  return `~${hLabel} h`;
+}
+
+function DrugHubPkProfile({ drugId }: { drugId: string }) {
+  const hasNonLinear = Object.hasOwn(NO_SINGLE_HALF_LIFE, drugId);
+  const hl = hasNonLinear ? undefined : halfLifeFor(drugId);
+  const cpicHits = getInteractionsForDrug(drugId);
+  const transporters = getTransporterRolesForDrug(drugId);
+  const tdi = getTdiPerpetratorById(drugId);
+  const inducer = getNuclearInducerById(drugId);
+  const comp = getCompetitiveInhibitorById(drugId);
+
+  if (!hasNonLinear && !hl && cpicHits.length === 0 && transporters.length === 0 && !tdi && !inducer && !comp) {
+    return null;
+  }
+
+  return (
+    <section
+      className="mt-8 border-t border-border pt-6"
+      data-testid="drug-hub-pk-profile"
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-serif text-lg font-semibold text-fg">
+          Pharmacokinetics &amp; pharmacogenomics snapshot
+        </h2>
+        <a
+          href="/methodology"
+          data-print-hide=""
+          className="font-mono text-xs text-accent underline underline-offset-2"
+        >
+          FDA potency tiers &amp; washout methodology →
+        </a>
+      </div>
+      <dl className="mt-3 divide-y divide-border rounded-lg border border-border bg-surface text-xs">
+        {hasNonLinear || hl ? (
+          <div className="grid gap-1 px-3.5 py-2.5 sm:grid-cols-[12rem_1fr]">
+            <dt className="font-mono text-[11px] uppercase tracking-wider text-muted">
+              Adult elimination t½
+            </dt>
+            <dd className="font-mono tabular-nums text-fg">
+              {hasNonLinear
+                ? "Non-linear / covalent or active-metabolite kinetics (check FDA Prescribing Information)"
+                : `${hl!.hours} h · ${formatHubWashout(hl!.hours)} at 5 × t½`}
+            </dd>
+          </div>
+        ) : null}
+        {cpicHits.length > 0 ? (
+          <div className="grid gap-1 px-3.5 py-2.5 sm:grid-cols-[12rem_1fr]">
+            <dt className="font-mono text-[11px] uppercase tracking-wider text-muted">
+              CPIC pharmacogenes
+            </dt>
+            <dd className="flex flex-wrap gap-1.5">
+              {cpicHits.map((ix) => (
+                <span
+                  key={ix.id}
+                  className="inline-flex items-center gap-1 rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-fg"
+                >
+                  <span className="font-semibold text-accent">{ix.geneSymbol}</span>
+                  <span>· {ix.cpicLevel}</span>
+                  {ix.fdaBoxedWarning ? <span className="text-danger">· FDA Boxed</span> : null}
+                </span>
+              ))}
+            </dd>
+          </div>
+        ) : null}
+        {transporters.length > 0 ? (
+          <div className="grid gap-1 px-3.5 py-2.5 sm:grid-cols-[12rem_1fr]">
+            <dt className="font-mono text-[11px] uppercase tracking-wider text-muted">
+              Membrane transporters
+            </dt>
+            <dd className="flex flex-wrap gap-1.5">
+              {transporters.map((t) => (
+                <span
+                  key={t.gene}
+                  className="inline-flex items-center gap-1 rounded border border-border bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-fg"
+                >
+                  <span className="font-semibold text-info">{t.shortName}</span>
+                  <span className="text-muted">({t.gene})</span>
+                  <span>· {t.roles.join(" / ")}</span>
+                </span>
+              ))}
+            </dd>
+          </div>
+        ) : null}
+        {tdi || inducer || comp ? (
+          <div className="grid gap-1 px-3.5 py-2.5 sm:grid-cols-[12rem_1fr]">
+            <dt className="font-mono text-[11px] uppercase tracking-wider text-muted">
+              Perpetrator kinetics
+            </dt>
+            <dd className="flex flex-wrap gap-1.5 font-mono text-[11px] tabular-nums text-fg">
+              {tdi ? (
+                <span className="inline-flex items-center rounded border border-danger/30 bg-danger-soft px-2 py-0.5 text-danger">
+                  Mechanism-based inactivator ({tdi.targetIsoforms.join("/")})
+                </span>
+              ) : null}
+              {inducer ? (
+                <span className="inline-flex items-center rounded border border-warn/30 bg-warn-soft px-2 py-0.5 text-warn">
+                  {inducer.receptor} transcriptional inducer ({inducer.inducedIsoforms.join("/")}; ~{inducer.offsetWashoutWeeks} wk offset)
+                </span>
+              ) : null}
+              {comp ? (
+                <span className="inline-flex items-center rounded border border-ok/30 bg-ok-soft px-2 py-0.5 text-ok">
+                  Reversible inhibitor ({comp.targetIsoforms.join("/")}; Kᵢ {comp.kiMicromolar} µM)
+                </span>
+              ) : null}
+            </dd>
+          </div>
+        ) : null}
+      </dl>
+    </section>
+  );
+}
+
 export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { name: string; path: string } }) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-10" data-print-handout="drug">
@@ -414,6 +543,7 @@ export function DrugHubView({ hub, classLink }: { hub: DrugHub; classLink?: { na
           </ul>
         </section>
       ) : null}
+      <DrugHubPkProfile drugId={hub.drugId} />
       <DrugEmbedBox hub={hub} />
       <ReferenceNav
         label="More reference pages"

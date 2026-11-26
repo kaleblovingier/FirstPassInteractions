@@ -24,6 +24,7 @@ type JsonSchema = Record<string, unknown>;
 const ROUTES: ReadonlyArray<{ path: string; method: "get" | "post"; operationId: string; query?: z.ZodType; body?: z.ZodType }> = [
   { path: "/api/cds/health", method: "get", operationId: "health" },
   { path: "/api/cds/search", method: "get", operationId: "search", query: DrugLookupRequestSchema },
+  { path: "/api/cds/monograph/{id}", method: "get", operationId: "monograph" },
   { path: "/api/cds/autocomplete", method: "get", operationId: "autocomplete", query: AutocompleteRequestSchema },
   { path: "/api/cds/analyze", method: "post", operationId: "analyze", body: AnalyzeRequestSchema },
   { path: "/api/cds/check", method: "post", operationId: "check", body: InteractionCheckRequestSchema },
@@ -73,20 +74,31 @@ const problem = (description: string) => ({
   content: { "application/problem+json": { schema: { $ref: "#/components/schemas/Problem" } } },
 });
 
+/** /developers writes a path parameter as ":id"; OpenAPI writes it as "{id}". */
+export const openApiPath = (path: string) => path.replace(/:(\w+)/g, "{$1}");
+
 function operation(route: (typeof ROUTES)[number]) {
-  const documented = DEVELOPERS_ENDPOINTS.find((e) => e.path === route.path);
+  const documented = DEVELOPERS_ENDPOINTS.find((e) => openApiPath(e.path) === route.path);
+  const pathParams = [...route.path.matchAll(/\{(\w+)\}/g)].map(([, name]) => ({
+    name,
+    in: "path",
+    required: true,
+    schema: { type: "string" },
+    description: "A catalog id, generic name or brand.",
+  }));
   const open = route.operationId === "health" || route.operationId === "openapi";
   return {
     operationId: route.operationId,
     summary: documented?.summary.split(/(?<=\.)\s/)[0] ?? "This OpenAPI document.",
     ...(documented ? { description: documented.summary } : {}),
-    ...(route.query ? { parameters: queryParameters(route.query) } : {}),
+    ...(route.query || pathParams.length ? { parameters: [...pathParams, ...(route.query ? queryParameters(route.query) : [])] } : {}),
     ...(route.body ? { requestBody: { required: true, content: { "application/json": { schema: inputSchema(route.body) } } } } : {}),
     // A key raises the limit; without one a caller gets the anonymous limit.
     security: open ? [] : [{}, { bearerKey: [] }, { headerKey: [] }],
     responses: {
       "200": { description: "OK", content: { "application/json": { schema: { type: "object" } } } },
       ...(route.query || route.body ? { "400": problem("The request could not be read."), "422": problem("The request failed validation.") } : {}),
+      ...(pathParams.length ? { "400": problem("The id in the path could not be read."), "404": problem("No catalog entry matches that id.") } : {}),
       ...(open ? {} : { "401": problem("The key is invalid, tampered or past its end month."), "429": problem("Over the rate limit; see Retry-After.") }),
       "405": problem("Method not allowed."),
     },

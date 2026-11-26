@@ -4,10 +4,18 @@
  */
 
 import { DRUG_BY_ID } from "./catalog";
+import {
+  getCompetitiveInhibitorById,
+  getNuclearInducerById,
+  getTdiPerpetratorById,
+} from "./cyp-kinetics";
+import { NO_SINGLE_HALF_LIFE } from "./half-lives";
 import { plainLanguageSummary } from "./interaction-summary";
 import { isVirtual } from "./host";
 import { basisFor } from "./basis";
 import { halfLifeFor } from "./overlap";
+import { getInteractionsForDrug } from "./pharmacogenomics";
+import { getTransporterRolesForDrug } from "./transporter-network";
 import { PI_FOOTER, SOFTWARE } from "@/lib/regulatory";
 import {
   SEVERITY_LABEL,
@@ -194,8 +202,24 @@ export interface RegimenCompoundExport {
   kind: ItemKind;
   halfLifeHours: number | null;
   halfLifeLabel: string | null;
+  nonLinearHalfLifeNote: string | null;
   enzymes: EnzymeRole[];
   pd: PdFlag[];
+  cpicGenes: Array<{
+    gene: string;
+    cpicLevel: string;
+    fdaBoxedWarning: boolean;
+    guidelineTitle: string;
+  }>;
+  transporters: Array<{
+    gene: string;
+    shortName: string;
+    roles: string[];
+  }>;
+  perpetratorKinetics: Array<{
+    mode: "tdi" | "induction" | "competitive";
+    summary: string;
+  }>;
 }
 
 export interface RegimenPathwayRow {
@@ -259,16 +283,55 @@ export function buildStructuredRegimenJson(input: StructuredRegimenInput): Struc
     const drug = DRUG_BY_ID[rawId];
     if (!drug || seen.has(drug.id)) continue;
     seen.add(drug.id);
-    const hl = halfLifeFor(drug.id);
+    const hasNonLinear = Object.hasOwn(NO_SINGLE_HALF_LIFE, drug.id);
+    const nonLinearHalfLifeNote = hasNonLinear ? NO_SINGLE_HALF_LIFE[drug.id]! : null;
+    const hl = hasNonLinear ? undefined : halfLifeFor(drug.id);
+    const cpicGenes = getInteractionsForDrug(drug.id).map((ix) => ({
+      gene: ix.geneSymbol,
+      cpicLevel: ix.cpicLevel,
+      fdaBoxedWarning: ix.fdaBoxedWarning,
+      guidelineTitle: ix.guidelineTitle,
+    }));
+    const transporters = getTransporterRolesForDrug(drug.id).map((t) => ({
+      gene: t.gene,
+      shortName: t.shortName,
+      roles: [...t.roles],
+    }));
+    const perpetratorKinetics: RegimenCompoundExport["perpetratorKinetics"] = [];
+    const tdi = getTdiPerpetratorById(drug.id);
+    if (tdi) {
+      perpetratorKinetics.push({
+        mode: "tdi",
+        summary: `MBI/TDI (${tdi.targetIsoforms.join("/")}; ${tdi.recoveryTimeDays})`,
+      });
+    }
+    const ind = getNuclearInducerById(drug.id);
+    if (ind) {
+      perpetratorKinetics.push({
+        mode: "induction",
+        summary: `${ind.receptor} inducer (${ind.inducedIsoforms.join("/")}; ~${ind.offsetWashoutWeeks} wk offset)`,
+      });
+    }
+    const comp = getCompetitiveInhibitorById(drug.id);
+    if (comp) {
+      perpetratorKinetics.push({
+        mode: "competitive",
+        summary: `Competitive inhibitor (${comp.targetIsoforms.join("/")}; Ki ${comp.kiMicromolar} µM; ~${comp.offsetHours} h offset)`,
+      });
+    }
     compounds.push({
       id: drug.id,
       name: drug.name,
       cls: drug.cls,
       kind: drug.kind,
       halfLifeHours: hl ? hl.hours : null,
-      halfLifeLabel: hl ? `${hl.hours} h` : null,
+      halfLifeLabel: hl ? `${hl.hours} h` : nonLinearHalfLifeNote ? "Non-linear / covalent" : null,
+      nonLinearHalfLifeNote,
       enzymes: drug.enzymes.map((role) => ({ ...role })),
       pd: [...drug.pd],
+      cpicGenes,
+      transporters,
+      perpetratorKinetics,
     });
   }
 
@@ -381,6 +444,39 @@ export function buildMarkdownRegimenReport(input: {
     }
   }
   lines.push("");
+
+  const extendedCompounds = structured.compounds.filter(
+    (c) =>
+      c.cpicGenes.length > 0 ||
+      c.transporters.length > 0 ||
+      c.perpetratorKinetics.length > 0 ||
+      c.nonLinearHalfLifeNote !== null,
+  );
+  if (extendedCompounds.length > 0) {
+    lines.push("## Pharmacogenomics, Transporters & Perpetrator Kinetics");
+    lines.push("");
+    for (const c of extendedCompounds) {
+      const notes: string[] = [];
+      if (c.cpicGenes.length > 0) {
+        notes.push(
+          `CPIC PGx: ${c.cpicGenes.map((g) => `${g.gene} (${g.cpicLevel}${g.fdaBoxedWarning ? ", FDA Boxed" : ""})`).join("; ")}`,
+        );
+      }
+      if (c.transporters.length > 0) {
+        notes.push(
+          `Transporters: ${c.transporters.map((t) => `${t.shortName} (${t.gene}: ${t.roles.join("/")})`).join("; ")}`,
+        );
+      }
+      if (c.perpetratorKinetics.length > 0) {
+        notes.push(`Kinetics: ${c.perpetratorKinetics.map((k) => k.summary).join("; ")}`);
+      }
+      if (c.nonLinearHalfLifeNote) {
+        notes.push(`Elimination caveat: ${c.nonLinearHalfLifeNote}`);
+      }
+      lines.push(`- **${c.name}:** ${notes.join(" · ")}`);
+    }
+    lines.push("");
+  }
 
   lines.push("## Mechanistic Findings");
   lines.push("");

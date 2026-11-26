@@ -114,7 +114,7 @@ export function DevelopersView() {
 
       <section id="limits" aria-labelledby="limits-h" className="mt-10">
         <H2 id="limits">Rate limits</H2>
-        <div className="mt-3 overflow-x-auto">
+        <div role="region" aria-label="API rate limits table" tabIndex={0} className="relative mt-3 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border">

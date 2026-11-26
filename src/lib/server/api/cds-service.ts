@@ -19,8 +19,22 @@ import {
 } from "../../drugs/catalog";
 import { COMBINATION_BY_KEY } from "../../drugs/combos";
 import { readMedList } from "../../drugs/med-list";
+import {
+  getCompetitiveInhibitorById,
+  getNuclearInducerById,
+  getTdiPerpetratorById,
+} from "../../drugs/cyp-kinetics";
 import { analyze, enzymeIndex } from "../../drugs/engine";
-import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
+import { NO_SINGLE_HALF_LIFE } from "../../drugs/half-lives";
+import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual, washoutsFor } from "../../drugs/host";
+import { halfLifeFor } from "../../drugs/overlap";
+import { getInteractionsForDrug } from "../../drugs/pharmacogenomics";
+import { TDM, type TdmCard } from "../../drugs/tdm";
+import {
+  getTransporterRolesForDrug,
+  type DrugTransporterRoleSummary,
+} from "../../drugs/transporter-network";
+import { PI_FOOTER } from "../../regulatory";
 import {
   FANOUT_STAGES,
   FANOUT_RULE,
@@ -99,6 +113,7 @@ import { detectToxidromesOnTray } from "../../drugs/toxidromes";
 import { detectArrhythmiaCollisions } from "../../drugs/cardiac-electrophysiology";
 import {
   EXPORT_EMPTY,
+  EXPORT_NOT_A_DOSE,
   buildMarkdownRegimenReport,
   buildStructuredRegimenJson,
   type StructuredRegimenExport,
@@ -284,6 +299,54 @@ export type ExportRegimenResult =
 
 export type ServiceResult<T> =
   { success: true; data: T } | { success: false; problem: ProblemDetails };
+
+export interface ApiDrugMonographResult {
+  meta: ApiResponseMeta;
+  monograph: {
+    id: string;
+    name: string;
+    brands: string[];
+    cls: string;
+    kind: Drug["kind"];
+    aliases: string[];
+    toxicityHint: string;
+    note: string | null;
+    halfLife:
+      | { kind: "linear"; hours: number; washout5xHours: number; source: string }
+      | { kind: "non-linear"; note: string }
+      | null;
+    enzymes: Drug["enzymes"];
+    pd: Drug["pd"];
+    cpicGenes: Array<{
+      id: string;
+      geneSymbol: string;
+      cpicLevel: string;
+      therapeuticArea: string;
+      fdaBoxedWarning: boolean;
+      guidelineTitle: string;
+      guidelineUrl: string;
+    }>;
+    transporters: DrugTransporterRoleSummary[];
+    perpetratorKinetics: {
+      tdi: { targetIsoforms: string[]; subMechanismLabel: string; recoveryTimeDays: string } | null;
+      inducer: {
+        receptor: string;
+        inducedIsoforms: string[];
+        onsetLagDays: number;
+        offsetWashoutWeeks: number;
+      } | null;
+      competitive: {
+        targetIsoforms: string[];
+        kiMicromolar: number;
+        offsetHours: number;
+      } | null;
+    };
+    washoutClocks: Array<{ days: number; label: string }>;
+    tdm: TdmCard | null;
+    disclaimer: string;
+    prescribingNote: string;
+  };
+}
 
 type KineticsModuleRunner = (drugIds: string[], host: HostContext) => unknown;
 
@@ -1236,6 +1299,116 @@ export class ClinicalDecisionService {
       };
     } catch (error) {
       return { success: false, problem: toProblem(error, "kinetics") };
+    }
+  }
+
+  /**
+   * Retrieve a complete structured clinical pharmacology monograph for a single catalog compound.
+   */
+  static getMonograph(rawId: string): ServiceResult<ApiDrugMonographResult> {
+    const startedAt = performance.now();
+    try {
+      const trimmed = typeof rawId === "string" ? rawId.trim() : "";
+      if (!trimmed || trimmed.length > 120) {
+        return {
+          success: false,
+          problem: problemNotFound(`Compound monograph '${trimmed}' not found`),
+        };
+      }
+      const direct = catalogDrug(trimmed.toLowerCase());
+      let drug = direct;
+      if (!drug) {
+        const resolved = resolveRequestedDrugs([trimmed]);
+        const firstId = resolved.ids[0];
+        if (firstId) drug = catalogDrug(firstId);
+      }
+      if (!drug) {
+        return {
+          success: false,
+          problem: problemNotFound(`Compound monograph '${trimmed}' not found`),
+        };
+      }
+
+      const hasNonLinear = Object.hasOwn(NO_SINGLE_HALF_LIFE, drug.id);
+      const hl = hasNonLinear ? undefined : halfLifeFor(drug.id);
+      const halfLife = hasNonLinear
+        ? ({ kind: "non-linear", note: NO_SINGLE_HALF_LIFE[drug.id]! } as const)
+        : hl
+          ? ({
+              kind: "linear",
+              hours: hl.hours,
+              washout5xHours: Math.round(hl.hours * 5 * 10) / 10,
+              source: hl.source,
+            } as const)
+          : null;
+
+      const cpicGenes = getInteractionsForDrug(drug.id).map((ix) => ({
+        id: ix.id,
+        geneSymbol: ix.geneSymbol,
+        cpicLevel: ix.cpicLevel,
+        therapeuticArea: ix.therapeuticArea,
+        fdaBoxedWarning: ix.fdaBoxedWarning,
+        guidelineTitle: ix.guidelineTitle,
+        guidelineUrl: ix.guidelineUrl,
+      }));
+      const transporters = getTransporterRolesForDrug(drug.id);
+      const tdi = getTdiPerpetratorById(drug.id);
+      const ind = getNuclearInducerById(drug.id);
+      const comp = getCompetitiveInhibitorById(drug.id);
+      const washoutClocks = washoutsFor([drug.id]).map((w) => ({ days: w.days, label: w.label }));
+      const tdm = Object.hasOwn(TDM, drug.id) ? TDM[drug.id]! : null;
+
+      return {
+        success: true,
+        data: {
+          meta: responseMeta(INTERACTIONS_ENGINE, startedAt, false),
+          monograph: {
+            id: drug.id,
+            name: drug.name,
+            brands: [...drug.brands],
+            cls: drug.cls,
+            kind: drug.kind,
+            aliases: [...drug.aliases],
+            toxicityHint: drug.toxicityHint,
+            note: drug.note ?? null,
+            halfLife,
+            enzymes: drug.enzymes.map((e) => ({ ...e })),
+            pd: [...drug.pd],
+            cpicGenes,
+            transporters,
+            perpetratorKinetics: {
+              tdi: tdi
+                ? {
+                    targetIsoforms: [...tdi.targetIsoforms],
+                    subMechanismLabel: tdi.subMechanismLabel,
+                    recoveryTimeDays: tdi.recoveryTimeDays,
+                  }
+                : null,
+              inducer: ind
+                ? {
+                    receptor: ind.receptor,
+                    inducedIsoforms: [...ind.inducedIsoforms],
+                    onsetLagDays: ind.onsetLagDays,
+                    offsetWashoutWeeks: ind.offsetWashoutWeeks,
+                  }
+                : null,
+              competitive: comp
+                ? {
+                    targetIsoforms: [...comp.targetIsoforms],
+                    kiMicromolar: comp.kiMicromolar,
+                    offsetHours: comp.offsetHours,
+                  }
+                : null,
+            },
+            washoutClocks,
+            tdm: tdm ? { ...tdm } : null,
+            disclaimer: EXPORT_NOT_A_DOSE,
+            prescribingNote: PI_FOOTER,
+          },
+        },
+      };
+    } catch (error) {
+      return { success: false, problem: toProblem(error, "monograph") };
     }
   }
 

@@ -60,7 +60,14 @@ describe("/developers", () => {
 
   it("documents every endpoint, both ways to send a key, the limits and the error shapes", () => {
     for (const e of DEVELOPERS_ENDPOINTS) assert.ok(body.includes(e.path), e.path);
-    for (const p of ["/api/cds/health", "/api/cds/search", "/api/cds/check", "/api/cds/kinetics"]) {
+    for (const p of [
+      "/api/cds/health",
+      "/api/cds/search",
+      "/api/cds/monograph/:id",
+      "/api/cds/check",
+      "/api/cds/kinetics",
+      "/api/cds/export",
+    ]) {
       assert.ok(DEVELOPERS_ENDPOINTS.some((e) => e.path === p), p);
     }
     assert.match(body, /Authorization: Bearer <key>/);
