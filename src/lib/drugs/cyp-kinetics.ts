@@ -824,6 +824,116 @@ export const COMPETITIVE_INHIBITORS: readonly CompetitiveInhibitor[] = [
     highRiskVictimSubstrates: ["metoprolol"],
     citations: ["Guengerich FP, et al. Mol Pharmacol 1986", "Otton SV, et al. Clin Pharmacol Ther 1988"],
   },
+  {
+    drugId: "ketoconazole",
+    name: "Ketoconazole",
+    targetIsoforms: ["CYP3A4", "CYP3A5"],
+    kiMicromolar: 0.015,
+    offsetHours: 16,
+    clinicalPearl:
+      "Archetypal nanomolar Type II reversible heme ligand for CYP3A4 (unbound Ki ≈ 15 nM) plus potent P-gp inhibitor. Elevates oral midazolam AUC >10-fold during active exposure while washing out rapidly over 24–48 hours once cleared.",
+    highRiskVictimSubstrates: ["midazolam", "simvastatin", "tacrolimus", "apixaban"],
+    citations: ["Greenblatt DJ, et al. Clin Pharmacol Ther 2011", "FDA Clinical DDI Guidance (Index CYP3A4 Inhibitor)"],
+  },
+  {
+    drugId: "itraconazole",
+    name: "Itraconazole",
+    targetIsoforms: ["CYP3A4"],
+    kiMicromolar: 0.03,
+    offsetHours: 72,
+    clinicalPearl:
+      "Current FDA-preferred strong CYP3A4 and P-gp index inhibitor. Although binding is reversible, three sequential active metabolites (hydroxy-, keto-, and N-desalkyl-itraconazole) share nanomolar CYP3A4 affinity and extend functional offset for 3–5 days post-stop.",
+    highRiskVictimSubstrates: ["midazolam", "simvastatin", "tacrolimus", "rivaroxaban"],
+    citations: ["Templeton IE, et al. Clin Pharmacol Ther 2008", "FDA Clinical DDI Table (Strong CYP3A4 Index Inhibitor)"],
+  },
+  {
+    drugId: "voriconazole",
+    name: "Voriconazole",
+    targetIsoforms: ["CYP3A4", "CYP2C19", "CYP2C9"],
+    kiMicromolar: 0.6,
+    offsetHours: 24,
+    clinicalPearl:
+      "Broad triazole inhibitor spanning CYP3A4, CYP2C19, and CYP2C9 with capacity-limited nonlinear parent kinetics. Dramatically raises tacrolimus, sirolimus, midazolam, and warfarin exposure while also depending on CYP2C19 for its own clearance.",
+    highRiskVictimSubstrates: ["tacrolimus", "midazolam", "warfarin", "simvastatin"],
+    citations: ["Jeong S, et al. Drug Metab Dispos 2009", "FDA Prescribing Information (VFEND / Voriconazole)"],
+  },
+  {
+    drugId: "bupropion",
+    name: "Bupropion",
+    targetIsoforms: ["CYP2D6"],
+    kiMicromolar: 1.8,
+    offsetHours: 48,
+    clinicalPearl:
+      "Clinical CYP2D6 blockade is driven predominantly by circulating metabolites (hydroxybupropion, threohydrobupropion, erythrohydrobupropion) rather than parent drug alone, sustaining strong CYP2D6 phenoconversion for roughly 5–7 days after stopping.",
+    highRiskVictimSubstrates: ["metoprolol", "codeine", "tramadol", "atomoxetine"],
+    citations: ["Reese MJ, et al. Drug Metab Dispos 2008", "FDA Prescribing Information (WELLBUTRIN / Bupropion)"],
+  },
+  {
+    drugId: "terbinafine",
+    name: "Terbinafine",
+    targetIsoforms: ["CYP2D6"],
+    kiMicromolar: 0.03,
+    offsetHours: 96,
+    clinicalPearl:
+      "Nanomolar reversible CYP2D6 inhibitor (Ki ≈ 30 nM) that partitions extensively into adipose, skin, and nail compartments. Because terminal washout spans weeks, CYP2D6 phenoconversion persists long after an oral antifungal course ends.",
+    highRiskVictimSubstrates: ["metoprolol", "codeine", "tramadol", "atomoxetine"],
+    citations: ["Abdel-Rahman SM, et al. Clin Pharmacol Ther 1999", "Venkatakrishnan K, et al. J Clin Pharmacol 2000"],
+  },
+  {
+    drugId: "omeprazole",
+    name: "Omeprazole",
+    targetIsoforms: ["CYP2C19"],
+    kiMicromolar: 2.0,
+    offsetHours: 24,
+    clinicalPearl:
+      "Classic moderate-to-strong CYP2C19 inhibitor (with a sulfone metabolite component contributing to time-dependent persistence). Blunts two-step CYP2C19 bioactivation of clopidogrel and slows diazepam, citalopram, and voriconazole clearance.",
+    highRiskVictimSubstrates: ["clopidogrel", "warfarin"],
+    citations: ["Ogilvie BW, et al. Drug Metab Dispos 2011", "FDA Prescribing Information (PRILOSEC / Omeprazole)"],
+  },
+  {
+    drugId: "esomeprazole",
+    name: "Esomeprazole",
+    targetIsoforms: ["CYP2C19"],
+    kiMicromolar: 1.5,
+    offsetHours: 24,
+    clinicalPearl:
+      "S-enantiomer of omeprazole exhibiting slower first-pass clearance and pronounced CYP2C19 autoinhibition. Carries the same CYP2C19 clopidogrel bioactivation warning as racemic omeprazole, contrasting with low-affinity pantoprazole.",
+    highRiskVictimSubstrates: ["clopidogrel", "warfarin"],
+    citations: ["Andersson T, et al. Clin Pharmacokinet 2001", "FDA Prescribing Information (NEXIUM / Esomeprazole)"],
+  },
+  {
+    drugId: "cimetidine",
+    name: "Cimetidine",
+    targetIsoforms: ["CYP2D6", "CYP1A2", "CYP3A4"],
+    kiMicromolar: 8.0,
+    offsetHours: 12,
+    clinicalPearl:
+      "Imidazole H2-receptor antagonist coordinating CYP heme iron across multiple isoforms while simultaneously blocking renal OCT2/MATE1 tubular secretion (raising metformin, dofetilide, and procainamide levels). Rapid reversible offset tracks its ~2-hour half-life.",
+    highRiskVictimSubstrates: ["theophylline", "warfarin", "metoprolol"],
+    citations: ["Levine M, et al. Clin Pharmacokinet 1998", "Somogyi A, et al. Clin Pharmacokinet 1987"],
+  },
+  {
+    drugId: "berberine",
+    name: "Berberine",
+    targetIsoforms: ["CYP2D6", "CYP3A4", "CYP2C9"],
+    kiMicromolar: 4.2,
+    offsetHours: 18,
+    clinicalPearl:
+      "Widely used OTC isoquinoline alkaloid supplement shown in human probe cocktail studies to suppress CYP2D6, CYP3A4, and CYP2C9 activity alongside P-gp efflux, elevating cyclosporine and narrow-index victim exposure.",
+    highRiskVictimSubstrates: ["tacrolimus", "midazolam", "metoprolol", "warfarin"],
+    citations: ["Guo Y, et al. Eur J Clin Pharmacol 2012", "Wu X, et al. Clin Pharmacol Ther 2005"],
+  },
+  {
+    drugId: "piperine",
+    name: "Piperine",
+    targetIsoforms: ["CYP3A4"],
+    kiMicromolar: 5.5,
+    offsetHours: 12,
+    clinicalPearl:
+      "Black pepper alkaloid formulated into curcumin and botanical supplements specifically to block intestinal CYP3A4 first-pass metabolism and P-gp efflux; bystander prescription substrates taken concurrently experience elevated oral bioavailability.",
+    highRiskVictimSubstrates: ["midazolam", "theophylline", "simvastatin"],
+    citations: ["Bhardwaj RK, et al. J Pharmacol Exp Ther 2002", "Volak LP, et al. Drug Metab Dispos 2008"],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -1000,6 +1110,87 @@ export const SENSITIVE_VICTIM_SUBSTRATES: readonly SensitiveVictimSubstrate[] = 
   },
 ];
 
+/** Preset classic clinical case studies for 1-tap loading and teaching in the CYP Kinetics Simulator. */
+export interface ClinicalScenarioPreset {
+  id: string;
+  title: string;
+  badge: string;
+  badgeColor: string;
+  drugIds: string[];
+  stopDay: number;
+  highlightMechanism: string;
+  teachingSummary: string;
+}
+
+export const CYP_KINETICS_PRESETS: readonly ClinicalScenarioPreset[] = [
+  {
+    id: "ritonavir-midazolam",
+    title: "Ritonavir + Midazolam (TDI Knockout)",
+    badge: "MBI / TDI Knockout",
+    badgeColor: "border-danger/30 bg-danger-soft text-danger",
+    drugIds: ["ritonavir", "midazolam"],
+    stopDay: 10,
+    highlightMechanism: "Suicidal Apoprotein Alkylation & MIC Coordination",
+    teachingSummary:
+      "Ritonavir rapidly inactivates CYP3A4 down to <15% within 48h. Stopping ritonavir does NOT clear the block: oral midazolam exposure remains high until de novo CYP3A4 is resynthesized (kdeg turnover ~48h).",
+  },
+  {
+    id: "rifampin-tacrolimus",
+    title: "Rifampin + Tacrolimus (PXR Induction)",
+    badge: "PXR Induction",
+    badgeColor: "border-warn/30 bg-warn-soft text-warn",
+    drugIds: ["rifampin", "tacrolimus"],
+    stopDay: 10,
+    highlightMechanism: "Transcriptional PXR-RXR ER6/DR3 Activation",
+    teachingSummary:
+      "Rifampin drives CYP3A4 and P-gp to >350% with a 3–5 day lag. Tacrolimus levels collapse, precipitating organ transplant rejection. Discontinuation leaves a 2–3 week offset lag before clearance normalizes.",
+  },
+  {
+    id: "grapefruit-simvastatin",
+    title: "Grapefruit + Simvastatin (Enterocyte Suicide)",
+    badge: "Intestinal MBI",
+    badgeColor: "border-warn/30 bg-warn-soft text-warn",
+    drugIds: ["grapefruit", "simvastatin"],
+    stopDay: 7,
+    highlightMechanism: "Furanocoumarin Epoxide Apoprotein Alkylation",
+    teachingSummary:
+      "Bergamottin destroys enterocyte intestinal CYP3A4 first-pass metabolism. Simvastatin oral bioavailability multiplies >10-fold, triggering rhabdomyolysis. Recovery requires enterocyte regeneration over 24–72h.",
+  },
+  {
+    id: "tobacco-clozapine",
+    title: "Tobacco Smoke + Clozapine (AhR Cessation)",
+    badge: "AhR Induction & Cessation",
+    badgeColor: "border-info/30 bg-info-soft text-info",
+    drugIds: ["tobacco-smoking", "clozapine"],
+    stopDay: 10,
+    highlightMechanism: "PAH-AhR-ARNT XRE Promoter Activation",
+    teachingSummary:
+      "Combustion PAHs induce CYP1A2 via AhR, lowering clozapine levels by ~50%. Inpatient smoking cessation removes the inducer; over 1–2 weeks CYP1A2 activity declines to baseline, causing toxic clozapine spikes and seizures.",
+  },
+  {
+    id: "clarithromycin-rifampin",
+    title: "Clarithromycin + Rifampin (Opposing Collision)",
+    badge: "Opposing Collision",
+    badgeColor: "border-info/30 bg-info-soft text-info",
+    drugIds: ["clarithromycin", "rifampin"],
+    stopDay: 10,
+    highlightMechanism: "Suicidal Inactivation vs Transcriptional Induction",
+    teachingSummary:
+      "Opposing kinetic collision: Rifampin transcriptionally ramps CYP3A4 synthesis while Clarithromycin continuously inactivates newly formed enzyme via nitroso-heme complex. Highly volatile kinetics.",
+  },
+  {
+    id: "fluconazole-midazolam",
+    title: "Fluconazole + Midazolam (Competitive Contrast)",
+    badge: "Competitive Reversible",
+    badgeColor: "border-ok/30 bg-ok-soft text-ok",
+    drugIds: ["fluconazole", "midazolam"],
+    stopDay: 10,
+    highlightMechanism: "Reversible Heme Iron Coordination (Ki governed)",
+    teachingSummary:
+      "Contrasting model: Fluconazole binds reversibly without damaging the enzyme apoprotein. Upon drug clearance, active enzyme capacity rebounds to 100% within 48–72 hours.",
+  },
+];
+
 // All referenced drug IDs dynamically aggregated for catalog integrity verification
 export const ALL_REFERENCED_DRUG_IDS: readonly string[] = Array.from(
   new Set([
@@ -1009,6 +1200,7 @@ export const ALL_REFERENCED_DRUG_IDS: readonly string[] = Array.from(
     ...COMPETITIVE_INHIBITORS.flatMap((c) => [c.drugId, ...c.highRiskVictimSubstrates]),
     ...NUCLEAR_RECEPTOR_PATHWAYS.flatMap((r) => r.canonicalInducerIds),
     ...SENSITIVE_VICTIM_SUBSTRATES.map((v) => v.drugId),
+    ...CYP_KINETICS_PRESETS.flatMap((p) => p.drugIds),
   ]),
 );
 
@@ -1358,17 +1550,28 @@ export function calculateEnzymeTrajectory(
 
     // Isoform approximations for visualization
     const isoforms: Record<string, number> = {
-      CYP3A4: activeTdi.some((t) => t.targetIsoforms.includes("CYP3A4")) || activeInducers.some((i) => i.inducedIsoforms.includes("CYP3A4"))
-        ? pt.activePoolPct
-        : 100,
-      CYP1A2: activeInducers.some((i) => i.inducedIsoforms.includes("CYP1A2")) || activeCompetitive.some((c) => c.targetIsoforms.includes("CYP1A2"))
-        ? pt.activePoolPct
-        : 100,
-      CYP2C9: activeInducers.some((i) => i.inducedIsoforms.includes("CYP2C9")) || activeCompetitive.some((c) => c.targetIsoforms.includes("CYP2C9"))
-        ? pt.activePoolPct
-        : 100,
+      CYP3A4:
+        activeTdi.some((t) => t.targetIsoforms.includes("CYP3A4")) ||
+        activeInducers.some((i) => i.inducedIsoforms.includes("CYP3A4")) ||
+        activeCompetitive.some((c) => c.targetIsoforms.includes("CYP3A4"))
+          ? pt.activePoolPct
+          : 100,
+      CYP1A2:
+        activeInducers.some((i) => i.inducedIsoforms.includes("CYP1A2")) ||
+        activeCompetitive.some((c) => c.targetIsoforms.includes("CYP1A2"))
+          ? pt.activePoolPct
+          : 100,
+      CYP2C9:
+        activeInducers.some((i) => i.inducedIsoforms.includes("CYP2C9")) ||
+        activeCompetitive.some((c) => c.targetIsoforms.includes("CYP2C9"))
+          ? pt.activePoolPct
+          : 100,
       CYP2B6: activeInducers.some((i) => i.inducedIsoforms.includes("CYP2B6")) ? pt.activePoolPct : 100,
-      CYP2D6: activeTdi.some((t) => t.targetIsoforms.includes("CYP2D6")) ? pt.activePoolPct : 100,
+      CYP2D6:
+        activeTdi.some((t) => t.targetIsoforms.includes("CYP2D6")) ||
+        activeCompetitive.some((c) => c.targetIsoforms.includes("CYP2D6"))
+          ? pt.activePoolPct
+          : 100,
     };
 
     return {

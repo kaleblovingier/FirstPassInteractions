@@ -408,7 +408,7 @@ export function ClinicalPacketDialog({
             </div>
 
             {/* CPIC Enzyme Phenotypes Table */}
-            <div role="region" aria-label="Modeled phenotypes table" tabIndex={0} className="overflow-x-auto rounded-lg border border-border">
+            <div role="region" aria-label="Modeled phenotypes table" tabIndex={0} className="relative overflow-x-auto rounded-lg border border-border">
               <table className="w-full text-left text-xs">
                 <thead className="bg-bg-sunken font-mono text-[10px] uppercase text-muted border-b border-border">
                   <tr>
@@ -449,7 +449,7 @@ export function ClinicalPacketDialog({
               </h3>
             </div>
 
-            <div role="region" aria-label="Medication table" tabIndex={0} className="overflow-x-auto rounded-lg border border-border">
+            <div role="region" aria-label="Medication table" tabIndex={0} className="relative overflow-x-auto rounded-lg border border-border">
               <table className="w-full text-left text-xs">
                 <thead className="bg-bg-sunken font-mono text-[10px] uppercase text-muted border-b border-border">
                   <tr>

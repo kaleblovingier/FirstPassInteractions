@@ -197,7 +197,12 @@ export function MethodologyView() {
             </dl>
           </div>
 
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2">
+          <div
+            role="region"
+            aria-label="Presystemic route contrast table"
+            tabIndex={0}
+            className="relative mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2"
+          >
             <table className="w-full min-w-[36rem] border-collapse text-left text-xs">
               <thead className="border-b border-border bg-surface font-mono text-[11px] uppercase tracking-[0.1em] text-subtle">
                 <tr>
@@ -244,7 +249,12 @@ export function MethodologyView() {
           <SectionHeading meta={secFda} />
           <p className="mt-4 text-sm leading-relaxed text-fg">{FDA_TIERS_INTRO}</p>
 
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2">
+          <div
+            role="region"
+            aria-label="FDA DDI potency and substrate sensitivity table"
+            tabIndex={0}
+            className="relative mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2"
+          >
             <table className="w-full min-w-[40rem] border-collapse text-left text-xs">
               <thead className="border-b border-border bg-surface font-mono text-[11px] uppercase tracking-[0.1em] text-subtle">
                 <tr>
@@ -304,7 +314,12 @@ export function MethodologyView() {
           <SectionHeading meta={secKinetics} />
           <p className="mt-4 text-sm leading-relaxed text-fg">{KINETICS_INTRO}</p>
 
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2">
+          <div
+            role="region"
+            aria-label="CYP450 inhibition, TDI, and induction kinetic timelines"
+            tabIndex={0}
+            className="relative mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2"
+          >
             <table className="w-full min-w-[44rem] border-collapse text-left text-xs">
               <thead className="border-b border-border bg-surface font-mono text-[11px] uppercase tracking-[0.1em] text-subtle">
                 <tr>
@@ -386,7 +401,12 @@ export function MethodologyView() {
             failure / loss of efficacy).
           </div>
 
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2">
+          <div
+            role="region"
+            aria-label="Prodrug bioactivation traps table"
+            tabIndex={0}
+            className="relative mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2"
+          >
             <table className="w-full min-w-[42rem] border-collapse text-left text-xs">
               <thead className="border-b border-border bg-surface font-mono text-[11px] uppercase tracking-[0.1em] text-subtle">
                 <tr>
@@ -447,7 +467,12 @@ export function MethodologyView() {
           <SectionHeading meta={secTransporters} />
           <p className="mt-4 text-sm leading-relaxed text-fg">{TRANSPORTERS_INTRO}</p>
 
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2">
+          <div
+            role="region"
+            aria-label="Drug transporter pathways table"
+            tabIndex={0}
+            className="relative mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2"
+          >
             <table className="w-full min-w-[42rem] border-collapse text-left text-xs">
               <thead className="border-b border-border bg-surface font-mono text-[11px] uppercase tracking-[0.1em] text-subtle">
                 <tr>
@@ -535,7 +560,12 @@ export function MethodologyView() {
           <SectionHeading meta={secEvidence} />
           <p className="mt-4 text-sm leading-relaxed text-fg">{EVIDENCE_INTRO}</p>
 
-          <div className="mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2">
+          <div
+            role="region"
+            aria-label="Evidence hierarchy table"
+            tabIndex={0}
+            className="relative mt-5 overflow-x-auto rounded-lg border border-border bg-surface-2"
+          >
             <table className="w-full min-w-[38rem] border-collapse text-left text-xs">
               <thead className="border-b border-border bg-surface font-mono text-[11px] uppercase tracking-[0.1em] text-subtle">
                 <tr>

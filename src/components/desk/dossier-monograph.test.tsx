@@ -134,6 +134,42 @@ describe("Dossier Clinical Monograph Pharmacokinetic Strip", () => {
     assert.equal(LOW_CONTRAST_RE.test(stripHtml), false);
   });
 
+  it("renders CPIC Level A pharmacogenomics badges, membrane transporter roles, and quantitative CYP kinetics in MonographPkStrip", () => {
+    const simvaText = stripTags(
+      extractMonographStrip(renderToStaticMarkup(<Dossier ids={["simvastatin"]} host={DEFAULT_HOST} />)),
+    );
+    assert.ok(simvaText.includes("CPIC Pharmacogenomics"));
+    assert.ok(simvaText.includes("SLCO1B1"));
+    assert.ok(simvaText.includes("CPIC Level A"));
+    assert.ok(simvaText.includes("Membrane Transporters"));
+    assert.ok(simvaText.includes("OATP1B1"));
+
+    const alloText = stripTags(
+      extractMonographStrip(renderToStaticMarkup(<Dossier ids={["allopurinol"]} host={DEFAULT_HOST} />)),
+    );
+    assert.ok(alloText.includes("HLA-B*58:01"));
+    assert.ok(alloText.includes("Non-linear / covalent"));
+    assert.ok(alloText.includes("oxypurinol"));
+
+    const ketoText = stripTags(
+      extractMonographStrip(renderToStaticMarkup(<Dossier ids={["ketoconazole"]} host={DEFAULT_HOST} />)),
+    );
+    assert.ok(ketoText.includes("8 h · ~40 h washout"));
+    assert.ok(ketoText.includes("Perpetrator Kinetics"));
+    assert.ok(ketoText.includes("Kᵢ 0.015 µM"));
+
+    const fluoxText = stripTags(
+      extractMonographStrip(renderToStaticMarkup(<Dossier ids={["fluoxetine"]} host={DEFAULT_HOST} />)),
+    );
+    assert.ok(fluoxText.includes("MBI/TDI"));
+
+    const rifaText = stripTags(
+      extractMonographStrip(renderToStaticMarkup(<Dossier ids={["rifampin"]} host={DEFAULT_HOST} />)),
+    );
+    assert.ok(rifaText.includes("PXR Inducer"));
+    assert.ok(rifaText.includes("2.5 wk offset"));
+  });
+
   it("keeps dossier.tsx source free of low-contrast classes, banned editorial hues, doses, and regulatory claims", () => {
     assert.deepEqual(findDoses(dossierSource), []);
     assert.equal(BANNED_REGULATORY_RE.test(dossierSource), false);

@@ -2430,6 +2430,14 @@ export function getGeneById(id: string): Pharmacogene | null {
   );
 }
 
+/** Resolve a CPIC interaction's geneId to the matching Gene Explorer tab, keeping HLA-B*58:01 distinct from HLA-B*57:01. */
+export function resolveGeneExplorerTarget(geneId: string): string {
+  const matched = getGeneById(geneId);
+  if (matched) return matched.id;
+  if (geneId.includes("HLA-B")) return "HLA-B5701";
+  return geneId;
+}
+
 export function getAllPgxInteractions(): readonly PgxInteraction[] {
   return PGX_INTERACTIONS;
 }

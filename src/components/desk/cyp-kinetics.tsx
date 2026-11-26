@@ -23,6 +23,8 @@ import { DRUG_BY_ID } from "@/lib/drugs/catalog";
 import { useDesk } from "@/lib/drugs/store";
 import {
   CYP_KINETICS_REGULATORY_DISCLAIMER,
+  CYP_KINETICS_PRESETS,
+  COMPETITIVE_INHIBITORS,
   MOLECULAR_MODES,
   TDI_PERPETRATORS,
   NUCLEAR_INDUCERS,
@@ -30,92 +32,14 @@ import {
   SENSITIVE_VICTIM_SUBSTRATES,
   calculateEnzymeTrajectory,
   detectTdiInductionOnTray,
+  type ClinicalScenarioPreset,
   type MolecularModeId,
   type NuclearReceptorType,
   type EnzymeTrajectoryResult,
   type TrajectoryPoint,
 } from "@/lib/drugs/cyp-kinetics";
 
-/** Preset classic clinical case studies for 1-tap loading and teaching */
-interface ClinicalScenarioPreset {
-  id: string;
-  title: string;
-  badge: string;
-  badgeColor: string;
-  drugIds: string[];
-  stopDay: number;
-  highlightMechanism: string;
-  teachingSummary: string;
-}
-
-const PRESET_SCENARIOS: readonly ClinicalScenarioPreset[] = [
-  {
-    id: "ritonavir-midazolam",
-    title: "Ritonavir + Midazolam (TDI Knockout)",
-    badge: "MBI / TDI Knockout",
-    badgeColor: "border-rose-500/30 bg-rose-500/10 text-danger",
-    drugIds: ["ritonavir", "midazolam"],
-    stopDay: 10,
-    highlightMechanism: "Suicidal Apoprotein Alkylation & MIC Coordination",
-    teachingSummary:
-      "Ritonavir rapidly inactivates CYP3A4 down to <15% within 48h. Stopping ritonavir does NOT clear the block: oral midazolam exposure remains high until de novo CYP3A4 is resynthesized (kdeg turnover ~48h).",
-  },
-  {
-    id: "rifampin-tacrolimus",
-    title: "Rifampin + Tacrolimus (PXR Induction)",
-    badge: "PXR Induction",
-    badgeColor: "border-amber-500/30 bg-amber-500/10 text-warning",
-    drugIds: ["rifampin", "tacrolimus"],
-    stopDay: 10,
-    highlightMechanism: "Transcriptional PXR-RXR ER6/DR3 Activation",
-    teachingSummary:
-      "Rifampin drives CYP3A4 and P-gp to >350% with a 3–5 day lag. Tacrolimus levels collapse, precipitating organ transplant rejection. Discontinuation leaves a 2–3 week offset lag before clearance normalizes.",
-  },
-  {
-    id: "grapefruit-simvastatin",
-    title: "Grapefruit + Simvastatin (Enterocyte Suicide)",
-    badge: "Intestinal MBI",
-    badgeColor: "border-orange-500/30 bg-orange-500/10 text-orange-800",
-    drugIds: ["grapefruit", "simvastatin"],
-    stopDay: 7,
-    highlightMechanism: "Furanocoumarin Epoxide Apoprotein Alkylation",
-    teachingSummary:
-      "Bergamottin destroys enterocyte intestinal CYP3A4 first-pass metabolism. Simvastatin oral bioavailability multiplies >10-fold, triggering rhabdomyolysis. Recovery requires enterocyte regeneration over 24–72h.",
-  },
-  {
-    id: "tobacco-clozapine",
-    title: "Tobacco Smoke + Clozapine (AhR Cessation)",
-    badge: "AhR Induction & Cessation",
-    badgeColor: "border-sky-500/30 bg-sky-500/10 text-sky-800",
-    drugIds: ["tobacco", "clozapine"],
-    stopDay: 10,
-    highlightMechanism: "PAH-AhR-ARNT XRE Promoter Activation",
-    teachingSummary:
-      "Combustion PAHs induce CYP1A2 via AhR, lowering clozapine levels by ~50%. Inpatient smoking cessation removes the inducer; over 1–2 weeks CYP1A2 activity declines to baseline, causing toxic clozapine spikes and seizures.",
-  },
-  {
-    id: "clarithromycin-rifampin",
-    title: "Clarithromycin + Rifampin (Opposing Collision)",
-    badge: "Opposing Collision",
-    badgeColor: "border-info/30 bg-info-soft text-info",
-    drugIds: ["clarithromycin", "rifampin"],
-    stopDay: 10,
-    highlightMechanism: "Suicidal Inactivation vs Transcriptional Induction",
-    teachingSummary:
-      "Opposing kinetic collision: Rifampin transcriptionally ramps CYP3A4 synthesis while Clarithromycin continuously inactivates newly formed enzyme via nitroso-heme complex. Highly volatile kinetics.",
-  },
-  {
-    id: "fluconazole-midazolam",
-    title: "Fluconazole + Midazolam (Competitive Contrast)",
-    badge: "Competitive Reversible",
-    badgeColor: "border-emerald-500/30 bg-emerald-500/10 text-success",
-    drugIds: ["fluconazole", "midazolam"],
-    stopDay: 10,
-    highlightMechanism: "Reversible Heme Iron Coordination (Ki governed)",
-    teachingSummary:
-      "Contrasting model: Fluconazole binds reversibly without damaging the enzyme apoprotein. Upon drug clearance, active enzyme capacity rebounds to 100% within 48–72 hours.",
-  },
-];
+const PRESET_SCENARIOS = CYP_KINETICS_PRESETS;
 
 const svgWidth = 800;
 const svgHeight = 320;
@@ -242,10 +166,10 @@ export function CypKineticsSimulator() {
               <span className="flex size-9 items-center justify-center rounded-lg bg-accent/15 text-accent shadow-sm">
                 <Zap className="size-5" />
               </span>
-              <h1 className="text-xl font-bold tracking-tight text-fg sm:text-2xl">
+              <h1 className="font-serif text-xl font-bold tracking-tight text-fg sm:text-2xl">
                 Cytochrome P450 TDI & Nuclear Induction Simulator
               </h1>
-              <Badge className="border border-sky-500/30 bg-sky-500/10 text-xs font-medium text-sky-800">
+              <Badge className="border border-info/30 bg-info-soft text-xs font-medium text-info">
                 FD&C Act § 520(o)(1)(E) CDS
               </Badge>
             </div>
@@ -464,35 +388,45 @@ export function CypKineticsSimulator() {
               </span>
               {[
                 { id: "ritonavir", label: "Ritonavir (TDI)", type: "tdi" },
+                { id: "cobicistat", label: "Cobicistat (TDI)", type: "tdi" },
                 { id: "clarithromycin", label: "Clarithromycin (TDI)", type: "tdi" },
                 { id: "grapefruit", label: "Grapefruit (TDI)", type: "tdi" },
+                { id: "amiodarone", label: "Amiodarone (TDI)", type: "tdi" },
+                { id: "fluoxetine", label: "Fluoxetine (TDI)", type: "tdi" },
                 { id: "rifampin", label: "Rifampin (PXR)", type: "ind" },
+                { id: "st-johns-wort", label: "St. John's wort (PXR)", type: "ind" },
+                { id: "modafinil", label: "Modafinil (PXR)", type: "ind" },
                 { id: "carbamazepine", label: "Carbamazepine (PXR)", type: "ind" },
                 { id: "phenobarbital", label: "Phenobarbital (CAR)", type: "ind" },
-                { id: "tobacco", label: "Tobacco (AhR)", type: "ind" },
+                { id: "tobacco-smoking", label: "Tobacco Smoke (AhR)", type: "ind" },
+                { id: "ketoconazole", label: "Ketoconazole (Comp)", type: "comp" },
                 { id: "fluconazole", label: "Fluconazole (Comp)", type: "comp" },
                 { id: "ciprofloxacin", label: "Ciprofloxacin (Comp)", type: "comp" },
+                { id: "bupropion", label: "Bupropion (Comp)", type: "comp" },
+                { id: "berberine", label: "Berberine (Comp)", type: "comp" },
                 { id: "midazolam", label: "Midazolam (Victim)", type: "vic" },
                 { id: "simvastatin", label: "Simvastatin (Victim)", type: "vic" },
                 { id: "tacrolimus", label: "Tacrolimus (Victim)", type: "vic" },
                 { id: "clozapine", label: "Clozapine (Victim)", type: "vic" },
+                { id: "warfarin", label: "Warfarin (Victim)", type: "vic" },
               ].map((drug) => {
                 const isActive = effectiveSimulatedDrugIds.includes(drug.id);
                 return (
                   <button
                     key={drug.id}
                     type="button"
+                    aria-pressed={isActive}
                     onClick={() => toggleSandboxDrug(drug.id)}
                     className={cn(
                       "flex min-h-[44px] items-center gap-1 rounded-full px-3 py-1.5 text-xs transition-all",
                       isActive
                         ? drug.type === "tdi"
-                          ? "border border-rose-500/40 bg-rose-500/20 text-danger"
+                          ? "border border-danger/40 bg-danger-soft text-danger"
                           : drug.type === "ind"
-                            ? "border border-amber-500/40 bg-amber-500/20 text-warning"
+                            ? "border border-warn/40 bg-warn-soft text-warn"
                             : drug.type === "comp"
-                              ? "border border-emerald-500/40 bg-emerald-500/20 text-success"
-                              : "border border-sky-500/40 bg-sky-500/20 text-sky-800"
+                              ? "border border-ok/40 bg-ok-soft text-ok"
+                              : "border border-info/40 bg-info-soft text-info"
                         : "border border-border/60 bg-bg/60 text-muted hover:border-border hover:text-fg",
                     )}
                   >
@@ -520,7 +454,7 @@ export function CypKineticsSimulator() {
             <div className="rounded-xl border border-border/70 bg-surface p-3.5 shadow-sm sm:p-4">
               <span className="text-[11px] font-medium text-muted">Nadir Activity</span>
               <div className="mt-1 flex items-center gap-1.5 font-bold text-sm sm:text-base">
-                <TrendingDown className="size-4 text-rose-400" />
+                <TrendingDown className="size-4 text-danger" />
                 <span className={cn(trajectory.nadirPct < 30 ? "text-danger" : "text-fg")}>
                   {trajectory.nadirPct}%
                 </span>
@@ -531,7 +465,7 @@ export function CypKineticsSimulator() {
             <div className="rounded-xl border border-border/70 bg-surface p-3.5 shadow-sm sm:p-4">
               <span className="text-[11px] font-medium text-muted">Peak Activity</span>
               <div className="mt-1 flex items-center gap-1.5 font-bold text-sm sm:text-base">
-                <TrendingUp className="size-4 text-amber-400" />
+                <TrendingUp className="size-4 text-warn" />
                 <span className={cn(trajectory.peakPct > 150 ? "text-warning" : "text-fg")}>
                   {trajectory.peakPct}%
                 </span>
@@ -542,7 +476,7 @@ export function CypKineticsSimulator() {
             <div className="rounded-xl border border-border/70 bg-surface p-3.5 shadow-sm sm:p-4">
               <span className="text-[11px] font-medium text-muted">90% Baseline Recovery</span>
               <div className="mt-1 flex items-center gap-1.5 font-bold text-sm sm:text-base">
-                <Clock className="size-4 text-sky-400" />
+                <Clock className="size-4 text-accent" />
                 <span className="text-fg">
                   {trajectory.recoveryDay90Pct !== null ? `Day ${trajectory.recoveryDay90Pct}` : "In Equilibrium"}
                 </span>
@@ -559,45 +493,47 @@ export function CypKineticsSimulator() {
           <section className="rounded-xl border border-border/70 bg-surface p-4 shadow-sm sm:p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="font-bold text-base text-fg">Active CYP Enzyme Pool Trajectory</h3>
+                <h3 className="font-serif font-bold text-base text-fg">Active CYP Enzyme Pool Trajectory</h3>
                 <p className="text-xs text-muted">
                   Interactive simulation showing rapid TDI apoprotein knockout vs delayed nuclear induction and recovery curves.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="flex items-center gap-1 text-muted">
-                  <span className="inline-block size-2 rounded-full bg-rose-400" /> &lt;30% Toxicity Risk
+                  <span className="inline-block size-2 rounded-full bg-danger" /> &lt;30% Toxicity Risk
                 </span>
                 <span className="flex items-center gap-1 text-muted">
-                  <span className="inline-block size-2 rounded-full bg-emerald-400" /> 80–120% Baseline
+                  <span className="inline-block size-2 rounded-full bg-ok" /> 80–120% Baseline
                 </span>
                 <span className="flex items-center gap-1 text-muted">
-                  <span className="inline-block size-2 rounded-full bg-amber-400" /> &gt;200% Loss of Efficacy
+                  <span className="inline-block size-2 rounded-full bg-warn" /> &gt;200% Loss of Efficacy
                 </span>
               </div>
             </div>
 
             {/* The SVG Visualization */}
-            <div className="relative mt-4 w-full overflow-hidden rounded-lg bg-bg/80 p-2 sm:p-4">
+            <div className="relative mt-4 w-full overflow-hidden rounded-lg border border-border bg-bg/80 p-2 sm:p-4">
               <svg
                 viewBox={`0 0 ${svgWidth} ${svgHeight}`}
                 className="h-auto w-full overflow-visible select-none"
+                role="img"
+                aria-label={`Active CYP enzyme pool trajectory chart (${trajectory.dominantMechanism})`}
               >
                 <defs>
-                  {/* Linear gradient for area */}
+                  {/* Calibrated reference-laboratory area fill */}
                   <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="0%"
                       stopColor={
                         trajectory.dominantMechanism === "TDI / Mechanism-Based"
-                          ? "#f43f5e"
+                          ? "#A62639"
                           : trajectory.dominantMechanism === "Nuclear Induction"
-                            ? "#f59e0b"
-                            : "#06b6d4"
+                            ? "#B86B11"
+                            : "#1F4E5B"
                       }
-                      stopOpacity="0.35"
+                      stopOpacity="0.28"
                     />
-                    <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.0" />
+                    <stop offset="100%" stopColor="#1F4E5B" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
@@ -609,7 +545,7 @@ export function CypKineticsSimulator() {
                     y={scaleY(maxY)}
                     width={graphWidth}
                     height={scaleY(200) - scaleY(maxY)}
-                    fill="#f59e0b"
+                    fill="#B86B11"
                     fillOpacity="0.07"
                   />
                 )}
@@ -619,8 +555,8 @@ export function CypKineticsSimulator() {
                   y={scaleY(120)}
                   width={graphWidth}
                   height={scaleY(80) - scaleY(120)}
-                  fill="#10b981"
-                  fillOpacity="0.06"
+                  fill="#266858"
+                  fillOpacity="0.07"
                 />
                 {/* 3. TDI severe toxicity zone (<30%) */}
                 <rect
@@ -628,7 +564,7 @@ export function CypKineticsSimulator() {
                   y={scaleY(30)}
                   width={graphWidth}
                   height={scaleY(0) - scaleY(30)}
-                  fill="#f43f5e"
+                  fill="#A62639"
                   fillOpacity="0.1"
                 />
 
@@ -642,9 +578,9 @@ export function CypKineticsSimulator() {
                         y1={y}
                         x2={svgWidth - padding.right}
                         y2={y}
-                        stroke={val === 100 ? "#10b981" : "currentColor"}
+                        stroke={val === 100 ? "#266858" : "currentColor"}
                         strokeDasharray={val === 100 ? "4 4" : "2 4"}
-                        strokeOpacity={val === 100 ? 0.6 : 0.15}
+                        strokeOpacity={val === 100 ? 0.65 : 0.15}
                         strokeWidth={val === 100 ? 1.5 : 1}
                       />
                       <text
@@ -652,8 +588,8 @@ export function CypKineticsSimulator() {
                         y={y + 4}
                         textAnchor="end"
                         className={cn(
-                          "text-[10px] fill-current",
-                          val === 100 ? "font-bold text-success" : "text-muted",
+                          "font-mono text-[10px] tabular-nums fill-current",
+                          val === 100 ? "font-bold text-ok" : "text-muted",
                         )}
                       >
                         {val}%
@@ -681,7 +617,7 @@ export function CypKineticsSimulator() {
                         x={x}
                         y={svgHeight - padding.bottom + 16}
                         textAnchor="middle"
-                        className="text-[10px] fill-current text-muted"
+                        className="font-mono text-[10px] tabular-nums fill-current text-muted"
                       >
                         D{day}
                       </text>
@@ -696,7 +632,7 @@ export function CypKineticsSimulator() {
                     y1={padding.top}
                     x2={scaleX(stopDay)}
                     y2={svgHeight - padding.bottom}
-                    stroke="#f43f5e"
+                    stroke="#A62639"
                     strokeWidth={2}
                     strokeDasharray="4 4"
                   />
@@ -706,15 +642,16 @@ export function CypKineticsSimulator() {
                     width={88}
                     height={18}
                     rx={4}
-                    fill="#1f2937"
-                    stroke="#f43f5e"
+                    fill="#181D23"
+                    stroke="#A62639"
                     strokeWidth={1}
                   />
                   <text
                     x={scaleX(stopDay)}
                     y={padding.top - 8}
                     textAnchor="middle"
-                    className="text-[9px] font-bold fill-current text-danger"
+                    fill="#FAF9F5"
+                    className="font-mono text-[9px] font-bold tabular-nums"
                   >
                     Stopped (D{stopDay})
                   </text>
@@ -729,10 +666,10 @@ export function CypKineticsSimulator() {
                   fill="none"
                   stroke={
                     trajectory.dominantMechanism === "TDI / Mechanism-Based"
-                      ? "#f43f5e"
+                      ? "#A62639"
                       : trajectory.dominantMechanism === "Nuclear Induction"
-                        ? "#f59e0b"
-                        : "#06b6d4"
+                        ? "#B86B11"
+                        : "#1F4E5B"
                   }
                   strokeWidth={2.8}
                   strokeLinecap="round"
@@ -758,15 +695,15 @@ export function CypKineticsSimulator() {
                         cx={x}
                         cy={y}
                         r={isSelected ? 6 : pt.day === stopDay ? 5 : 3}
-                        fill={isSelected ? "#38bdf8" : "#0f172a"}
+                        fill={isSelected ? "#2B6777" : "#181D23"}
                         stroke={
                           isSelected
-                            ? "#ffffff"
+                            ? "#FAF9F5"
                             : pt.activePoolPct < 30
-                              ? "#f43f5e"
+                              ? "#A62639"
                               : pt.activePoolPct > 150
-                                ? "#f59e0b"
-                                : "#06b6d4"
+                                ? "#B86B11"
+                                : "#1F4E5B"
                         }
                         strokeWidth={isSelected ? 2.5 : 1.5}
                       />
@@ -834,6 +771,74 @@ export function CypKineticsSimulator() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </section>
+
+          {/* Competitive Reversible Inhibitor Ki Reference Matrix */}
+          <section className="rounded-xl border border-border/70 bg-surface p-4 shadow-sm sm:p-6">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="font-serif font-bold text-base text-fg">
+                  Reversible Competitive CYP Inhibitors (Kᵢ &amp; Washout Reference)
+                </h3>
+                <p className="text-xs text-muted">
+                  Quantitative apparent inhibition constants (Kᵢ) and functional washout half-lives across clinical &amp; botanical perpetrators.
+                </p>
+              </div>
+              <span className="font-mono text-xs tabular-nums text-muted">
+                {COMPETITIVE_INHIBITORS.length} cataloged perpetrators
+              </span>
+            </div>
+            <div
+              role="region"
+              aria-label="Competitive CYP inhibitor Ki reference table"
+              tabIndex={0}
+              className="relative mt-4 overflow-x-auto rounded-lg border border-border"
+            >
+              <table className="w-full min-w-[40rem] border-collapse text-left text-xs">
+                <thead className="border-b border-border bg-surface-2 font-mono text-[11px] uppercase tracking-wider text-subtle">
+                  <tr>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Perpetrator</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Isoforms</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Apparent Kᵢ</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Offset t½</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Key Victims</th>
+                    <th scope="col" className="px-3 py-2.5 text-right font-medium">Tray</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border bg-surface">
+                  {COMPETITIVE_INHIBITORS.map((comp) => (
+                    <tr key={comp.drugId} className="align-middle hover:bg-surface-2/60">
+                      <td className="px-3 py-2.5 font-semibold text-fg">{comp.name}</td>
+                      <td className="px-3 py-2.5 font-mono text-[11px] text-accent">
+                        {comp.targetIsoforms.join(", ")}
+                      </td>
+                      <td className="px-3 py-2.5 font-mono tabular-nums text-fg">
+                        {comp.kiMicromolar} µM
+                      </td>
+                      <td className="px-3 py-2.5 font-mono tabular-nums text-muted">
+                        ~{comp.offsetHours} h
+                      </td>
+                      <td className="px-3 py-2.5 text-muted">
+                        {comp.highRiskVictimSubstrates
+                          .map((v) => DRUG_BY_ID[v]?.name ?? v)
+                          .join(", ")}
+                      </td>
+                      <td className="px-3 py-2.5 text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleAddDrugToDesk(comp.drugId)}
+                          className="min-h-[36px] text-xs"
+                        >
+                          <Plus className="mr-1 size-3 text-accent" />
+                          Add
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </section>
         </div>
@@ -1144,7 +1149,7 @@ export function CypKineticsSimulator() {
                     )}
                   >
                     <div className="flex items-center gap-2 font-bold">
-                      <AlertOctagon className="size-4 shrink-0 text-rose-400" />
+                      <AlertOctagon className="size-4 shrink-0 text-danger" />
                       <span>{alert.title}</span>
                     </div>
                     <p className="mt-1 text-fg/90">{alert.mechanism}</p>

@@ -4,6 +4,7 @@ import {
   PGX_INTERACTIONS,
   PHARMACOGENOMICS_REGULATORY_DISCLAIMER,
   getGeneById,
+  resolveGeneExplorerTarget,
   getAllPgxInteractions,
   getTherapeuticAreas,
   detectPgxRisksOnTray,
@@ -405,7 +406,7 @@ export function Pharmacogenomics() {
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
                 Key Clinical Alleles &amp; Functional Activity Scores ({activeGene.alleles.length} Defined)
               </h4>
-              <div role="region" aria-label="Allele table" tabIndex={0} className="overflow-x-auto rounded-xl border border-border/60">
+              <div role="region" aria-label="Allele table" tabIndex={0} className="relative overflow-x-auto rounded-xl border border-border/60">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-bg-sunken font-mono text-muted uppercase border-b border-border/60">
                     <tr>
@@ -449,7 +450,7 @@ export function Pharmacogenomics() {
                               {allele.functionality}
                             </span>
                           </td>
-                          <td className="p-3 font-mono font-bold">{allele.activityScore}</td>
+                          <td className="p-3 font-mono font-bold tabular-nums">{allele.activityScore}</td>
                           <td className="p-3 text-fg/80">{allele.description}</td>
                         </tr>
                       );
@@ -661,7 +662,7 @@ export function Pharmacogenomics() {
                         size="sm"
                         className="min-h-[44px] text-xs gap-1.5"
                         onClick={() => {
-                          setSelectedGeneId(ix.geneId.includes("HLA-B") ? "HLA-B5701" : ix.geneId);
+                          setSelectedGeneId(resolveGeneExplorerTarget(ix.geneId));
                           setSubView("explorer");
                         }}
                       >
@@ -1007,7 +1008,7 @@ export function Pharmacogenomics() {
                           <button
                             type="button"
                             onClick={() => {
-                              setSelectedGeneId(risk.geneId.includes("HLA-B") ? "HLA-B5701" : risk.geneId);
+                              setSelectedGeneId(resolveGeneExplorerTarget(risk.geneId));
                               setSubView("explorer");
                             }}
                             className="font-mono text-xs font-bold text-accent hover:underline flex items-center gap-1 min-h-[44px]"
@@ -1280,6 +1281,58 @@ export function Pharmacogenomics() {
                   <ArrowRight className="size-3" />
                 </div>
               </button>
+
+              {/* Preset 10: Simvastatin SLCO1B1 Statin Myopathy */}
+              <button
+                type="button"
+                onClick={() =>
+                  handleLoadPreset("statin-slco1b1", ["simvastatin", "atorvastatin"], "SLCO1B1", "PF")
+                }
+                className="flex min-h-[44px] flex-col justify-between rounded-xl border border-border/80 bg-bg-sunken p-4 text-left hover:border-accent hover:bg-surface transition-all group"
+              >
+                <div>
+                  <div className="flex items-center justify-between font-mono text-xs font-bold text-accent">
+                    <span>Cardiology / Lipids</span>
+                    <span>SLCO1B1</span>
+                  </div>
+                  <h4 className="mt-1 text-sm font-bold text-fg group-hover:text-accent">
+                    SLCO1B1 (*5) Statin Myopathy &amp; Hepatic Uptake Loss
+                  </h4>
+                  <p className="mt-1 text-xs text-muted leading-relaxed">
+                    Decreased OATP1B1 hepatic influx raises systemic simvastatin acid exposure, elevating myopathy and rhabdomyolysis liability.
+                  </p>
+                </div>
+                <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-accent">
+                  <span>Load Simvastatin &amp; Atorvastatin</span>
+                  <ArrowRight className="size-3" />
+                </div>
+              </button>
+
+              {/* Preset 11: Allopurinol HLA-B*58:01 SCAR */}
+              <button
+                type="button"
+                onClick={() =>
+                  handleLoadPreset("allo-hlab5801", ["allopurinol"], "HLA-B5801", "Carrier")
+                }
+                className="flex min-h-[44px] flex-col justify-between rounded-xl border border-border/80 bg-bg-sunken p-4 text-left hover:border-accent hover:bg-surface transition-all group"
+              >
+                <div>
+                  <div className="flex items-center justify-between font-mono text-xs font-bold text-accent">
+                    <span>Rheumatology / Immunology</span>
+                    <span>HLA-B*58:01</span>
+                  </div>
+                  <h4 className="mt-1 text-sm font-bold text-fg group-hover:text-accent">
+                    Allopurinol / Oxypurinol SCAR &amp; SJS/TEN Hazard
+                  </h4>
+                  <p className="mt-1 text-xs text-muted leading-relaxed">
+                    HLA-B*58:01 presentation of oxypurinol drives severe cutaneous adverse reactions (DRESS, SJS/TEN) especially with renal impairment.
+                  </p>
+                </div>
+                <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-accent">
+                  <span>Load Allopurinol</span>
+                  <ArrowRight className="size-3" />
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -1441,6 +1494,40 @@ function MetabolicFluxSimulation({
         };
       }
 
+      case "SLCO1B1": {
+        const isPoor = phenotype.code === "PF" || phenotype.code === "PM";
+        const isDec = phenotype.code === "DF" || phenotype.code === "IM";
+        const hepaticUptake = isPoor ? 20 : isDec ? 50 : 85;
+        const systemicRetention = 100 - hepaticUptake;
+
+        return {
+          title: "SLCO1B1 (OATP1B1) Hepatic Statin Influx vs Systemic Myopathy Exposure",
+          probeDrug: "Simvastatin Acid",
+          paths: [
+            {
+              name: "Hepatic Sinusoidal OATP1B1 Uptake (Target Site Delivery)",
+              percentage: hepaticUptake,
+              color: isPoor ? "bg-muted" : isDec ? "bg-warn" : "bg-ok",
+              note: isPoor
+                ? "20% hepatic influx -> Markedly reduced hepatocyte uptake and elevated peripheral exposure"
+                : isDec
+                ? "50% hepatic influx -> Intermediate OATP1B1 transport impairment"
+                : "85% hepatic influx -> Normal sinusoidal clearance into hepatocytes",
+            },
+            {
+              name: "Systemic Plasma & Skeletal Muscle Exposure",
+              percentage: systemicRetention,
+              color: isPoor ? "bg-danger" : isDec ? "bg-warn" : "bg-accent",
+              note: isPoor
+                ? "80% systemic retention -> >3-fold simvastatin acid AUC elevation and high myopathy risk"
+                : isDec
+                ? "50% systemic retention -> Moderate elevation in statin-associated musculoskeletal symptoms"
+                : "15% systemic retention -> Standard baseline systemic exposure",
+            },
+          ],
+        };
+      }
+
       default: {
         // Generic enzymatic clearance
         const clearanceFlux = isPm ? 15 : isIm ? 50 : isUm ? 95 : 75;
@@ -1490,7 +1577,7 @@ function MetabolicFluxSimulation({
           <div key={idx} className="space-y-1">
             <div className="flex items-center justify-between text-xs">
               <span className="font-medium text-fg">{p.name}</span>
-              <span className="font-mono font-bold text-fg">{p.percentage}%</span>
+              <span className="font-mono font-bold tabular-nums text-fg">{p.percentage}%</span>
             </div>
             {/* Progress bar */}
             <div className="h-3 w-full rounded-full bg-surface border border-border/60 overflow-hidden">

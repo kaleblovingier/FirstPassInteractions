@@ -64,10 +64,25 @@ const INDUCERS = new Set([
   "carbamazepine",
   "phenobarbital",
   "primidone",
+  "phenytoin",
   "st-johns-wort",
   "efavirenz",
+  "apalutamide",
+  "enzalutamide",
+  "modafinil",
+  "armodafinil",
 ]);
-const INHIBITORS = new Set(["fluoxetine", "amiodarone", "bupropion"]);
+const INHIBITORS = new Set([
+  "fluoxetine",
+  "amiodarone",
+  "bupropion",
+  "terbinafine",
+  "paroxetine",
+  "ritonavir",
+  "cobicistat",
+  "clarithromycin",
+  "grapefruit",
+]);
 const MAOI_IRREVERSIBLE = new Set(["phenelzine", "tranylcypromine", "isocarboxazid"]);
 const MAOI_REVERSIBLE = new Set(["moclobemide", "harmaline"]);
 

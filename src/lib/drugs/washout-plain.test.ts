@@ -62,8 +62,17 @@ test("days in words, number unchanged", () => {
 });
 
 test("every mapped washout row gets a plain offset kind", async () => {
-  const { WASHOUT } = await import("./host.ts");
-  for (const w of WASHOUT) {
+  const { WASHOUT, EXTENDED_WASHOUT, washoutsFor } = await import("./host.ts");
+  const allRows = [...WASHOUT, ...EXTENDED_WASHOUT];
+  assert.ok(allRows.length >= 12, "Expanded washout table should cover inducers, TDI, and depot inhibitors");
+  for (const w of allRows) {
     assert.notEqual(washoutOffsetKind(w), null, w.ids.join(","));
   }
+  assert.equal(washoutsFor(["phenytoin"]).length, 1);
+  assert.equal(washoutsFor(["apalutamide"]).length, 1);
+  assert.equal(washoutsFor(["modafinil"]).length, 1);
+  assert.equal(washoutsFor(["terbinafine"]).length, 1);
+  assert.equal(washoutsFor(["cobicistat"]).length, 1);
+  assert.equal(washoutOffsetKind(washoutsFor(["modafinil"])[0]!), "inducer");
+  assert.equal(washoutOffsetKind(washoutsFor(["cobicistat"])[0]!), "inhibitor");
 });

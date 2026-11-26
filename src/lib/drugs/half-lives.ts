@@ -322,6 +322,91 @@ export const HALF_LIVES: Record<string, HalfLifeRow> = {
     hours: 70,
     source: LABEL,
   },
+  // FDA Nizoral PI Section 12.3: biphasic elimination with terminal half-life approximately 8 hours.
+  ketoconazole: {
+    hours: 8,
+    source: `${LABEL}: biphasic elimination with terminal half-life about 8 hours`,
+  },
+  // FDA Tagamet PI Section 12.3: plasma half-life is approximately 2 hours with normal renal function.
+  cimetidine: {
+    hours: 2,
+    source: `${LABEL}: about 2 hours with normal kidney function`,
+  },
+  // FDA Pravachol PI Section 12.3: plasma elimination half-life of oral pravastatin is 1.8 hours (rounded to 2 hours).
+  pravastatin: {
+    hours: 2,
+    source: `${LABEL}: about 1.8 to 2 hours`,
+  },
+  // FDA Inderal PI Section 12.3: plasma elimination half-life is approximately 3 to 6 hours (typically ~4 hours; top 6 hours).
+  propranolol: {
+    hours: 6,
+    source: `${LABEL}: 3 to 6 hours; the top is used`,
+  },
+  // FDA Zebeta PI Section 12.3: plasma elimination half-life is 9 to 12 hours in healthy adults.
+  bisoprolol: {
+    hours: 12,
+    source: `${LABEL}: 9 to 12 hours; the top is used`,
+  },
+  // FDA Cardizem CD PI Section 12.3: apparent elimination half-life after single or multiple extended-release doses is 5 to 8 hours (up to 9 hours).
+  diltiazem: {
+    hours: 8,
+    source: `${LABEL}: 3.5 to 4.5 hours immediate release, 5 to 8 hours extended release; the top is used`,
+  },
+  // FDA Calan / Verelan PI Section 12.3: elimination half-life ranges from 4.5 to 12 hours after multiple oral dosing due to saturable first-pass clearance.
+  verapamil: {
+    hours: 12,
+    source: `${LABEL}: 4.5 to 12 hours after multiple oral doses; the top is used`,
+  },
+  // FDA Tegretol PI Section 12.3: steady-state elimination half-life after auto-induction is 12 to 17 hours (initial single dose 25 to 65 hours).
+  carbamazepine: {
+    hours: 17,
+    source: `${LABEL}: 12 to 17 hours after auto-induction (25 to 65 hours before induction); steady-state top is used`,
+  },
+  // FDA phenobarbital labeling / clinical pharmacology: mean adult plasma elimination half-life is 79 hours (range 53 to 118 hours).
+  phenobarbital: {
+    hours: 79,
+    source: `${LABEL}: mean adult half-life about 79 hours (range 53 to 118 hours)`,
+  },
+  // FDA Lamictal PI Section 12.3: mean elimination half-life in healthy adults on monotherapy is about 25 to 33 hours (shortened by inducers, doubled by valproate).
+  lamotrigine: {
+    hours: 33,
+    source: `${LABEL}: 25 to 33 hours on monotherapy (markedly prolonged with valproate, shortened with inducers); top of monotherapy range is used`,
+  },
+  // FDA Zofran PI Section 12.3: mean elimination half-life in adults ranges from 3 to 6 hours (longer in older adults and hepatic impairment).
+  ondansetron: {
+    hours: 6,
+    source: `${LABEL}: 3 to 6 hours in adults; the top is used`,
+  },
+  // FDA Celebrex PI Section 12.3: effective elimination half-life under fasted conditions is approximately 11 hours (prolonged in CYP2C9 poor metabolizers).
+  celecoxib: {
+    hours: 11,
+    source: `${LABEL}: about 11 hours (longer in CYP2C9 poor metabolizers)`,
+  },
+  // FDA Tybost PI Section 12.3: median terminal plasma half-life of cobicistat is approximately 3 to 4 hours.
+  cobicistat: {
+    hours: 4,
+    source: `${LABEL}: 3 to 4 hours; the top is used`,
+  },
+  // FDA Norvir PI Section 12.3: plasma elimination half-life of ritonavir is approximately 3 to 5 hours.
+  ritonavir: {
+    hours: 5,
+    source: `${LABEL}: 3 to 5 hours; the top is used`,
+  },
+  // FDA Erleada PI Section 12.3: mean effective half-life of apalutamide at steady state is about 3 days (72 hours).
+  apalutamide: {
+    hours: 72,
+    source: `${LABEL} (Erleada): effective steady-state half-life about 3 days (72 hours)`,
+  },
+  // FDA Xtandi PI Section 12.3: mean terminal half-life of enzalutamide after a single oral dose is 5.8 days (about 139 hours; active N-desmethyl metabolite ~7.8 days).
+  enzalutamide: {
+    hours: 139,
+    source: `${LABEL} (Xtandi): about 5.8 days (139 hours; active N-desmethyl metabolite ~7.8 days)`,
+  },
+  // FDA Sustiva PI Section 12.3: terminal elimination half-life after multiple doses is 40 to 55 hours.
+  efavirenz: {
+    hours: 55,
+    source: `${LABEL} (Sustiva): 40 to 55 hours after multiple doses; the top is used`,
+  },
 };
 
 const MAOI_NOTE =
@@ -393,4 +478,16 @@ export const NO_SINGLE_HALF_LIFE: Record<string, string> = {
   // while its active thiol metabolite irreversibly blocks platelet P2Y12 receptors for the 7 to 10 day platelet lifespan.
   clopidogrel:
     "Irreversible covalent blockade of platelet P2Y12 receptors lasts the 7 to 10 day lifespan of circulating platelets despite a roughly 6-hour parent plasma half-life on the Plavix label, so a plasma decay bar would understate lingering antiplatelet effect.",
+  // Zyloprim PI Section 12.3: parent allopurinol plasma half-life is 1 to 2 hours, whereas its active
+  // xanthine oxidase inhibitor metabolite oxypurinol has a ~15 hour half-life (markedly prolonged in CKD).
+  allopurinol:
+    "Its active metabolite oxypurinol carries most xanthine oxidase inhibition and outlasts parent allopurinol (about 15 hours versus 1 to 2 hours on the label, and longer in kidney impairment), so the parent half-life would understate lingering exposure.",
+  // Sporanox PI Section 12.3: itraconazole exhibits nonlinear dose-dependent pharmacokinetics and three
+  // sequential active metabolites (led by hydroxy-itraconazole) that extend strong CYP3A4 blockade for days.
+  itraconazole:
+    "Itraconazole follows nonlinear pharmacokinetics with active metabolites (including hydroxy-itraconazole) that keep CYP3A4 blocked for 3 to 5 days after stopping, so a single first-order half-life would mislead.",
+  // Lamisil PI Section 12.3: terbinafine exhibits multiphasic elimination from adipose, skin, and nail depots
+  // with a terminal half-life of 200 to 400 hours sustaining prolonged CYP2D6 inhibition.
+  terbinafine:
+    "Terbinafine partitions deeply into adipose, skin, and nail tissue with a 200 to 400 hour terminal elimination phase on the label, keeping CYP2D6 inhibition active weeks after stopping.",
 };

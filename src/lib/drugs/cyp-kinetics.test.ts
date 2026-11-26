@@ -705,5 +705,36 @@ describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
       }
       assert.equal(validateCypCatalogIntegrity().valid, true);
     });
+
+    it("covers Round 15 expanded reversible competitive CYP inhibitors (Ki & offset)", () => {
+      assert.ok(COMPETITIVE_INHIBITORS.length >= 14);
+      for (const id of [
+        "ketoconazole",
+        "itraconazole",
+        "voriconazole",
+        "bupropion",
+        "terbinafine",
+        "omeprazole",
+        "esomeprazole",
+        "cimetidine",
+        "berberine",
+        "piperine",
+      ]) {
+        const entry = getCompetitiveInhibitorById(id);
+        assert.ok(entry, `Expected competitive inhibitor ${id}`);
+        assert.ok(entry.kiMicromolar > 0);
+        assert.ok(entry.offsetHours > 0);
+      }
+
+      const berbTraj = calculateEnzymeTrajectory(["berberine"], 30, 10);
+      assert.equal(berbTraj.dominantMechanism, "Competitive Reversible");
+      assert.ok(berbTraj.points[5].isoforms.CYP3A4 < 100, "Berberine must depress CYP3A4 isoform readout");
+      assert.ok(berbTraj.points[5].isoforms.CYP2D6 < 100, "Berberine must depress CYP2D6 isoform readout");
+
+      const ketoMidaz = detectTdiInductionOnTray(["ketoconazole", "midazolam"]);
+      assert.equal(ketoMidaz.hasCollision, true);
+      assert.equal(ketoMidaz.collisionType, "competitive-inhibition");
+      assert.ok(ketoMidaz.kineticAlerts.some((a) => a.id === "competitive-victim-ketoconazole-midazolam"));
+    });
   });
 });
