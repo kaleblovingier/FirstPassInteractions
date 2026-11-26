@@ -10,6 +10,7 @@ import { MODERN_WAVE4_FORMULARY } from "./catalog-modern-wave4";
 import { MODERN_WAVE5_FORMULARY } from "./catalog-modern-wave5";
 import { MODERN_WAVE6_FORMULARY } from "./catalog-modern-wave6";
 import { MODERN_WAVE7_FORMULARY } from "./catalog-modern-wave7";
+import { MODERN_WAVE8_FORMULARY } from "./catalog-modern-wave8";
 import { hasDrugbank } from "./drugbank";
 import { hasPgx } from "./pgx";
 import { hasCite } from "./pubmed";
@@ -2866,6 +2867,7 @@ const afterWave3 = new Set([...afterLabel, ...MODERN_WAVE3_FORMULARY.map((d) => 
 const afterWave4 = new Set([...afterWave3, ...MODERN_WAVE4_FORMULARY.map((d) => d.id)]);
 const afterWave5 = new Set([...afterWave4, ...MODERN_WAVE5_FORMULARY.map((d) => d.id)]);
 const afterWave6 = new Set([...afterWave5, ...MODERN_WAVE6_FORMULARY.map((d) => d.id)]);
+const afterWave7 = new Set([...afterWave6, ...MODERN_WAVE7_FORMULARY.map((d) => d.id)]);
 export const DRUGS: Drug[] = [
   ...raw,
   ...clinicExtra,
@@ -2878,6 +2880,7 @@ export const DRUGS: Drug[] = [
   ...MODERN_WAVE5_FORMULARY.filter((d) => !afterWave4.has(d.id)),
   ...MODERN_WAVE6_FORMULARY.filter((d) => !afterWave5.has(d.id)),
   ...MODERN_WAVE7_FORMULARY.filter((d) => !afterWave6.has(d.id)),
+  ...MODERN_WAVE8_FORMULARY.filter((d) => !afterWave7.has(d.id)),
 ];
 export const DRUG_BY_ID: Record<string, Drug> = Object.fromEntries(DRUGS.map((x) => [x.id, x]));
 
