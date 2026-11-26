@@ -240,7 +240,8 @@ function Row({
             can mean something else (K is often potassium). Pick it only if that is what the list means.
           </p>
         ) : null}
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+        {/* Rows apart enough for 24 px touch targets when the choices wrap (WCAG 2.5.8). */}
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-3">
           {[...row.options.map((d) => ({ value: d.id, label: d.name })), { value: "", label: "None of these" }].map((o) => (
             <label key={o.value || "none"} className="inline-flex items-center gap-1.5 text-xs text-fg">
               <input

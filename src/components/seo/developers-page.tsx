@@ -147,7 +147,15 @@ export function DevelopersView() {
             </li>
           ))}
         </ul>
-        <pre className="mt-3 overflow-x-auto rounded-lg bg-bg-sunken p-3 font-mono text-xs">{DEVELOPERS_ERROR_SHAPE}</pre>
+        {/* Focusable so a keyboard can scroll it on narrow screens. */}
+        <pre
+          tabIndex={0}
+          role="region"
+          aria-label="Example error response"
+          className="mt-3 overflow-x-auto rounded-lg bg-bg-sunken p-3 font-mono text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          {DEVELOPERS_ERROR_SHAPE}
+        </pre>
       </section>
 
       <section id="rules" aria-labelledby="rules-h" className="mt-10">
