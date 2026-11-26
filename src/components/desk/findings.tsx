@@ -28,7 +28,7 @@ const KIND_FILTERS: { id: KindFilter; label: string }[] = [
 ];
 
 const CASCADE_BADGES: ReadonlyArray<{
-  tag: "multi-inhibitor" | "opposing" | "prodrug";
+  tag: "multi-inhibitor" | "opposing" | "prodrug" | "transporter";
   label: string;
   className: string;
 }> = [
@@ -47,7 +47,20 @@ const CASCADE_BADGES: ReadonlyArray<{
     label: "Prodrug activation",
     className: "bg-info-soft text-info border border-info/30 font-mono text-[10px]",
   },
+  {
+    tag: "transporter",
+    label: "Transporter barrier",
+    className: "bg-accent-soft text-accent border border-accent/30 font-mono text-[10px]",
+  },
 ];
+
+function cascadeBadgesFor(f: Finding) {
+  const hasTransporter =
+    f.tags.includes("transporter") || f.tags.includes("oatp") || f.enzymes.includes("P-gp");
+  return CASCADE_BADGES.filter((b) =>
+    b.tag === "transporter" ? hasTransporter : f.tags.includes(b.tag),
+  );
+}
 
 type BulkToggle = { open: boolean; seq: number } | null;
 
@@ -68,7 +81,7 @@ function matchesKind(f: Finding, kind: KindFilter) {
 
 function matchesQuery(f: Finding, normalizedQuery: string): boolean {
   if (!normalizedQuery) return true;
-  const badgeLabels = CASCADE_BADGES.filter((b) => f.tags.includes(b.tag)).map((b) => b.label);
+  const badgeLabels = cascadeBadgesFor(f).map((b) => b.label);
   const fields = [
     f.headline,
     plainLanguageSummary(f),
@@ -441,7 +454,7 @@ function FindingCard({
   const drugs = [...new Set(finding.drugIds)].map((id) => DRUG_BY_ID[id]).filter(Boolean);
   const plainSummary = plainLanguageSummary(finding);
   const scan = clinicianScan(finding);
-  const cascadeBadges = CASCADE_BADGES.filter((b) => finding.tags.includes(b.tag));
+  const cascadeBadges = cascadeBadgesFor(finding);
 
   return (
     <li className="rounded-lg bg-surface shadow-[var(--shadow-border)]">

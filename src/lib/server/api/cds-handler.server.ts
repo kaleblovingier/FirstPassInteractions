@@ -344,11 +344,17 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
       const role = url.searchParams.has("role")
         ? (url.searchParams.get("role") ?? undefined)
         : undefined;
+      const transporter = url.searchParams.has("transporter")
+        ? (url.searchParams.get("transporter") ?? undefined)
+        : undefined;
+      const pgx = url.searchParams.has("pgx")
+        ? (url.searchParams.get("pgx") ?? undefined)
+        : undefined;
       const cls = url.searchParams.has("cls")
         ? (url.searchParams.get("cls") ?? undefined)
         : undefined;
 
-      const result = ClinicalDecisionService.search({ q, limit, enzyme, role, cls });
+      const result = ClinicalDecisionService.search({ q, limit, enzyme, role, transporter, pgx, cls });
       if (!result.success) {
         return toProblemResponse(result.problem);
       }

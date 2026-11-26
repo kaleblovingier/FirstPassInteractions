@@ -2,6 +2,7 @@ import { DRUG_BY_ID } from "./catalog";
 import { CLINIC } from "./clinic";
 import { applyHost, isVirtual, WASHOUT } from "./host";
 import { phenoconversionFindings } from "./pheno-convert";
+import { TRANSPORTERS } from "./transporter-network";
 import { udsFindings } from "./uds";
 import { protocolFindings } from "./cyp-protocol";
 import { doseFindings } from "./dosing";
@@ -2218,7 +2219,13 @@ function multiDrugFindings(drugs: Drug[]): Finding[] {
           clinical: hasActivation
             ? `${inhNames} converge to inhibit ${enzyme}, saturating residual enzymatic activity and blocking metabolic bioactivation of prodrug substrate${activationVictims.length === 1 ? "" : "s"} (${actNames}) more deeply than any single pairwise interaction table predicts.`
             : `${inhNames} converge to inhibit ${enzyme}, saturating residual enzymatic clearance for ${victimNames} more deeply than any single pairwise interaction table predicts. Compounded inhibition raises the risk of unexpected parent-drug accumulation and toxicity.`,
-          tags: ["pk", "multi-inhibitor", "stack", ...(hasActivation ? ["prodrug"] : [])],
+          tags: [
+            "pk",
+            "multi-inhibitor",
+            "stack",
+            ...(enzyme === "P-gp" ? ["transporter"] : []),
+            ...(hasActivation ? ["prodrug"] : []),
+          ],
         });
       }
     }
@@ -2308,6 +2315,43 @@ function multiDrugFindings(drugs: Drug[]): Finding[] {
       mechanism: "multi-pathway hemostatic impairment",
       clinical: `${names(bleed.map((d) => d.id)).join(", ")} impair hemostasis or gastric mucosal integrity across multiple pathways. Combining three or more bleeding-risk agents compounds gastrointestinal and systemic hemorrhage risk beyond single-pair estimates.`,
       tags: ["bleeding", "stack"],
+    });
+  }
+
+  // 5. Multi-inhibitor membrane transporter barrier saturation (P-gp, BCRP, OATP1B1/1B3, OAT1/3, OCT2/MATE1)
+  const pgpCoveredVictims = new Set(
+    out
+      .filter((f) => f.id.startsWith("grp-pk-multi-inh-P-gp-"))
+      .flatMap((f) => f.drugIds),
+  );
+  for (const tx of TRANSPORTERS) {
+    const txInh = drugs.filter((d) => tx.inhibitors.includes(d.id));
+    if (txInh.length < 2) continue;
+    const txSub = drugs.filter((d) => tx.substrates.includes(d.id));
+    const victims = txSub.filter(
+      (s) => txInh.filter((p) => p.id !== s.id).length >= 2,
+    );
+    if (!victims.length) continue;
+    // Avoid duplicating a P-gp multi-inhibitor finding already emitted by ENZYMES loop for the same victims.
+    if (tx.id === "pgp-abcb1" && victims.every((v) => pgpCoveredVictims.has(v.id))) {
+      continue;
+    }
+    const shortName = tx.aliases[0] ?? tx.gene;
+    const involved = [...new Map([...txInh, ...victims].map((d) => [d.id, d])).values()];
+    const ids = involved.map((d) => d.id).sort().join("-");
+    const inhNames = names(txInh.map((d) => d.id)).join(", ");
+    const victimNames = names(victims.map((d) => d.id)).join(", ");
+    out.push({
+      id: `grp-tx-multi-inh-${tx.id}-${ids}`,
+      severity: "major",
+      kind: "pk",
+      drugIds: involved.map((d) => d.id),
+      headline: `Compounded ${shortName} (${tx.gene}) barrier inhibition · ${txInh.length} inhibitors converging`,
+      enzymes: tx.id === "pgp-abcb1" ? ["P-gp"] : [],
+      effect: "compounded transmembrane exposure shift beyond single-pair estimates",
+      mechanism: `multi-inhibitor ${shortName} (${tx.gene}) ${tx.family.toLowerCase()} convergence`,
+      clinical: `${inhNames} converge to inhibit ${tx.name}, compounding barrier disruption for ${victimNames}. Concurrent blockade by ${txInh.length} transporter inhibitors restricts efflux or uptake clearance more deeply than single-pair interaction tables predict.`,
+      tags: ["pk", "transporter", "multi-inhibitor", "stack", shortName],
     });
   }
 

@@ -132,7 +132,57 @@ test("multiDrugFindings detects 3-drug bleeding / hemorrhage stack and avoids fa
   );
 });
 
-test("2-drug pair invariant: 2-drug trays emit zero grp-pk-*, grp-ach-*, or grp-bleed-* findings", () => {
+test("multiDrugFindings detects multi-inhibitor membrane transporter barrier saturation across OATP1B1, OCT2/MATE1, OAT1/3, BCRP, and P-gp", () => {
+  // OATP1B1/1B3 hepatic sinusoidal influx convergence: Clarithromycin + Gemfibrozil + Atorvastatin
+  const oatpReport = analyze(["clarithromycin", "gemfibrozil", "atorvastatin"], DEFAULT_HOST);
+  const oatpHit = oatpReport.findings.find((f) => f.id.startsWith("grp-tx-multi-inh-oatp1b1-1b3-slco-"));
+  assert.ok(oatpHit, "Expected OATP1B1/1B3 multi-inhibitor transporter finding");
+  assert.equal(oatpHit.severity, "major");
+  assert.equal(oatpHit.kind, "pk");
+  assert.ok(oatpHit.tags.includes("transporter"));
+  assert.ok(oatpHit.tags.includes("multi-inhibitor"));
+  assert.ok(oatpHit.tags.includes("stack"));
+  assert.match(oatpHit.headline, /OATP1B1.*2 inhibitors converging/);
+  assert.deepEqual(oatpHit.clinical.match(DOSE_PATTERN) ?? [], []);
+
+  // OCT2/MATE1 renal cation secretion convergence: Dolutegravir + Cimetidine + Metformin
+  const oct2Report = analyze(["dolutegravir", "cimetidine", "metformin"], DEFAULT_HOST);
+  const oct2Hit = oct2Report.findings.find((f) => f.id.startsWith("grp-tx-multi-inh-oct2-mate-slc22-"));
+  assert.ok(oct2Hit, "Expected OCT2/MATE1 multi-inhibitor transporter finding");
+  assert.equal(oct2Hit.severity, "major");
+  assert.deepEqual([...oct2Hit.drugIds].sort(), ["cimetidine", "dolutegravir", "metformin"]);
+  assert.deepEqual(oct2Hit.clinical.match(DOSE_PATTERN) ?? [], []);
+
+  // OAT1/OAT3 renal anion secretion convergence: Probenecid + Ibuprofen + Methotrexate
+  const oatReport = analyze(["probenecid", "ibuprofen", "methotrexate"], DEFAULT_HOST);
+  const oatHit = oatReport.findings.find((f) => f.id.startsWith("grp-tx-multi-inh-oat1-oat3-slc22-"));
+  assert.ok(oatHit, "Expected OAT1/OAT3 multi-inhibitor transporter finding");
+  assert.equal(oatHit.severity, "major");
+  assert.deepEqual([...oatHit.drugIds].sort(), ["ibuprofen", "methotrexate", "probenecid"]);
+
+  // BCRP + OATP1B1 dual non-CYP transporter hit on the same 3 drugs must NOT collapse in dedupe()
+  const dualTxReport = analyze(["cyclosporine", "ritonavir", "rosuvastatin"], DEFAULT_HOST);
+  assert.ok(
+    dualTxReport.findings.some((f) => f.id.startsWith("grp-tx-multi-inh-bcrp-abcg2-")),
+    "Expected BCRP multi-inhibitor finding",
+  );
+  assert.ok(
+    dualTxReport.findings.some((f) => f.id.startsWith("grp-tx-multi-inh-oatp1b1-1b3-slco-")),
+    "Expected OATP1B1 multi-inhibitor finding preserved alongside BCRP",
+  );
+
+  // P-gp botanical + prescription convergence: Berberine + Verapamil + Digoxin
+  const pgpReport = analyze(["berberine", "verapamil", "digoxin"], DEFAULT_HOST);
+  const pgpHit = pgpReport.findings.find(
+    (f) =>
+      f.id.startsWith("grp-tx-multi-inh-pgp-abcb1-") ||
+      f.id.startsWith("grp-pk-multi-inh-P-gp-"),
+  );
+  assert.ok(pgpHit, "Expected P-gp multi-inhibitor transporter finding");
+  assert.ok(pgpHit.tags.includes("transporter"));
+});
+
+test("2-drug pair invariant: 2-drug trays emit zero grp-pk-*, grp-tx-*, grp-ach-*, or grp-bleed-* findings", () => {
   const twoDrugTrays: [string, string][] = [
     ["fluvoxamine", "theophylline"],
     ["fluvoxamine", "cimetidine"],
@@ -143,6 +193,9 @@ test("2-drug pair invariant: 2-drug trays emit zero grp-pk-*, grp-ach-*, or grp-
     ["diphenhydramine", "amitriptyline"],
     ["warfarin", "aspirin"],
     ["clarithromycin", "simvastatin"],
+    ["dolutegravir", "metformin"],
+    ["probenecid", "methotrexate"],
+    ["cyclosporine", "rosuvastatin"],
   ];
 
   for (const pair of twoDrugTrays) {
@@ -150,6 +203,7 @@ test("2-drug pair invariant: 2-drug trays emit zero grp-pk-*, grp-ach-*, or grp-
     const unexpected = r.findings.filter(
       (f) =>
         f.id.startsWith("grp-pk-") ||
+        f.id.startsWith("grp-tx-") ||
         f.id.startsWith("grp-ach-") ||
         f.id.startsWith("grp-bleed-"),
     );

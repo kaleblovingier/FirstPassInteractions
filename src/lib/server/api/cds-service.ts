@@ -28,7 +28,7 @@ import { analyze, enzymeIndex } from "../../drugs/engine";
 import { NO_SINGLE_HALF_LIFE } from "../../drugs/half-lives";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual, washoutsFor } from "../../drugs/host";
 import { halfLifeFor } from "../../drugs/overlap";
-import { getInteractionsForDrug } from "../../drugs/pharmacogenomics";
+import { getInteractionsForDrug, getInteractionsForGene } from "../../drugs/pharmacogenomics";
 import { TDM, type TdmCard } from "../../drugs/tdm";
 import {
   getTransporterRolesForDrug,
@@ -66,6 +66,8 @@ import {
   InteractionCheckRequestSchema,
   KineticsEvaluationRequestSchema,
   kidneyEgfrConflict,
+  resolvePgxGeneFilter,
+  resolveTransporterFilter,
   validateSchema,
 } from "./schemas";
 import {
@@ -932,10 +934,27 @@ export class ClinicalDecisionService {
           problem: problemUnprocessable("Invalid search parameters", val.errors),
         };
       }
-      const { q, enzyme, role, cls, limit } = val.data;
-      if (q && !enzyme && !role && !cls) {
+      const { q, enzyme, role, transporter, pgx, cls, limit } = val.data;
+      if (q && !enzyme && !role && !transporter && !pgx && !cls) {
         return { success: true, data: searchDrugs(q).slice(0, limit).map(toApiDrugSummary) };
       }
+
+      const resolvedTx = transporter ? resolveTransporterFilter(transporter) : undefined;
+      const txIds = resolvedTx
+        ? new Set(
+            role === "substrate"
+              ? resolvedTx.substrates
+              : role === "inhibitor"
+                ? resolvedTx.inhibitors
+                : role === "inducer"
+                  ? resolvedTx.inducers
+                  : [...resolvedTx.inhibitors, ...resolvedTx.inducers, ...resolvedTx.substrates],
+          )
+        : undefined;
+      const resolvedPgxGeneId = pgx ? resolvePgxGeneFilter(pgx) : undefined;
+      const pgxIds = resolvedPgxGeneId
+        ? new Set(getInteractionsForGene(resolvedPgxGeneId).map((ix) => ix.drugId))
+        : undefined;
 
       let pool: readonly Drug[];
       if (q) {
@@ -968,7 +987,13 @@ export class ClinicalDecisionService {
         if (enzyme && !role && !drug.enzymes.some((e) => e.enzyme === enzyme)) {
           return false;
         }
-        if (!enzyme && role && !drug.enzymes.some((e) => e.kind === role)) {
+        if (!enzyme && !resolvedTx && role && !drug.enzymes.some((e) => e.kind === role)) {
+          return false;
+        }
+        if (txIds && !txIds.has(drug.id)) {
+          return false;
+        }
+        if (pgxIds && !pgxIds.has(drug.id)) {
           return false;
         }
         if (normCls && !normalizeSearchText(drug.cls).includes(normCls)) {

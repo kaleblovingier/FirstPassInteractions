@@ -275,6 +275,31 @@ describe("FindingList", () => {
     assert.equal(BANNED_REGULATORY_RE.test(text), false);
   });
 
+  it("renders Transporter barrier badge on multi-inhibitor OCT2/MATE1 cascade and 2-drug P-gp findings", () => {
+    const oct2Findings = analyze(["dolutegravir", "cimetidine", "metformin"], DEFAULT_HOST).findings;
+    const oct2Html = renderToStaticMarkup(<FindingList findings={oct2Findings} />);
+    const oct2Text = stripTags(oct2Html);
+
+    assert.match(
+      oct2Html,
+      /bg-accent-soft text-accent border border-accent\/30 font-mono text-\[10px\][^>]*>Transporter barrier</,
+    );
+    assert.match(
+      oct2Html,
+      /bg-danger-soft text-danger border border-danger\/30 font-mono text-\[10px\][^>]*>Multi-inhibitor saturation</,
+    );
+    assert.match(oct2Html, /aria-pressed="false"[^>]*>Multi-drug\s*<span[^>]*>\(1\)<\/span>/);
+    assert.ok(oct2Text.includes("Compounded OCT2"));
+    assert.deepEqual(findDoses(oct2Text), []);
+
+    const pgpFindings = analyze(["clarithromycin", "digoxin"], DEFAULT_HOST).findings;
+    const pgpHtml = renderToStaticMarkup(<FindingList findings={pgpFindings} />);
+    assert.match(
+      pgpHtml,
+      /bg-accent-soft text-accent border border-accent\/30 font-mono text-\[10px\][^>]*>Transporter barrier</,
+    );
+  });
+
   it("keeps source and rendered output free of administered doses and banned regulatory claims", () => {
     const html = renderToStaticMarkup(<FindingList findings={MULTI_DRUG_FIVE_FINDINGS} />);
     const text = stripTags(html);

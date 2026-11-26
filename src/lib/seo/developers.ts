@@ -61,8 +61,8 @@ export const DEVELOPERS_ENDPOINTS: readonly DevelopersEndpoint[] = [
   {
     method: "GET",
     path: "/api/cds/search",
-    summary: "Search the drug catalog by generic or brand name, or filter by CYP/P-gp isoform, role (substrate/inhibitor/inducer), or drug class.",
-    request: "?q=warfarin&enzyme=CYP2C9&role=substrate&limit=10 (limit 1 to 50, default 10)",
+    summary: "Search the drug catalog by generic or brand name, or filter by CYP/P-gp isoform, membrane transporter (P-gp, BCRP, OATP1B1, OAT1/3, OCT2/MATE1), CPIC pharmacogene (pgx), role (substrate/inhibitor/inducer), or drug class.",
+    request: "?q=warfarin&enzyme=CYP2C9&role=substrate&transporter=OATP1B1&pgx=SLCO1B1&limit=10 (limit 1 to 50, default 10)",
     keyed: true,
   },
   {
