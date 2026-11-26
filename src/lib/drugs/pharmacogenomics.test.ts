@@ -35,6 +35,8 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
       "G6PD",
       "CYP3A5",
       "UGT1A1",
+      "SLCO1B1",
+      "HLA-B5801",
     ];
 
     for (const gid of expectedGeneIds) {
@@ -576,6 +578,18 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
         const citText = ix.citations.join(" ");
         assert.match(citText, /Clin Pharmacol Ther|N Engl J Med|Nature|Blood|FDA/i);
       }
+    });
+
+    it("covers Round 14 CPIC Level A additions (SLCO1B1, HLA-B*58:01, atomoxetine, ondansetron, celecoxib)", () => {
+      assert.ok(PHARMACOGENES.length >= 15);
+      assert.ok(PGX_INTERACTIONS.length >= 30);
+      assert.ok(getGeneById("SLCO1B1"));
+      assert.ok(getGeneById("HLA-B5801"));
+      for (const drugId of ["simvastatin", "atorvastatin", "allopurinol", "atomoxetine", "ondansetron", "celecoxib"]) {
+        assert.ok(getInteractionsForDrug(drugId).length >= 1, `Expected CPIC interaction for ${drugId}`);
+      }
+      const integrity = validatePharmacogenomicsCatalogIntegrity();
+      assert.equal(integrity.valid, true, integrity.missingDrugIds.join(", "));
     });
   });
 });

@@ -34,7 +34,7 @@ test("every related id resolves to another term", () => {
 });
 
 test("every entry cites an https source and links only to pages that exist", () => {
-  const pages = new Set(["/enzymes", "/pairs", "/practice"]);
+  const pages = new Set(["/enzymes", "/pairs", "/practice", "/methodology"]);
   for (const t of GLOSSARY) {
     assert.ok(t.source.title.trim(), t.id);
     assert.equal(new URL(t.source.url).protocol, "https:", t.id);

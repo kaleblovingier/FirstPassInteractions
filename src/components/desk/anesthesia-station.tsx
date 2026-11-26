@@ -3,12 +3,12 @@ import { oneOf } from "./narrow";
 import {
   Activity,
   AlertCircle,
+  BookOpen,
   CheckCircle2,
   Flame,
   HeartPulse,
   Layers,
   ShieldAlert,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -979,7 +979,7 @@ export function AnesthesiaStation({ ids, host }: AnesthesiaStationProps) {
       {/* 3. Clinical Pearls & Bedside Guidance */}
       <div className="rounded-xl border border-border bg-surface p-4 sm:p-5 space-y-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-accent" />
+          <BookOpen className="h-4 w-4 text-accent" />
           <span className="font-serif font-bold text-sm text-fg">Critical Care &amp; Anesthesia Clinical Pearls</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-muted leading-relaxed">

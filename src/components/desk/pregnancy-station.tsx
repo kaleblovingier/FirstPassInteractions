@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Activity, AlertCircle, AlertTriangle, Baby, HeartPulse, ShieldAlert, Sparkles } from "lucide-react";
+import { Activity, AlertCircle, AlertTriangle, Baby, BookOpen, HeartPulse, ShieldAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -350,7 +350,7 @@ export function PregnancyPanel({ ids, host }: { ids: string[]; host: HostContext
       {/* High-Yield Clinical Pharmacology Pearls */}
       <div className="rounded-lg border border-accent/30 bg-accent-soft/20 p-4 space-y-2 text-xs">
         <div className="flex items-center gap-1.5 text-accent font-semibold text-sm">
-          <Sparkles className="h-4 w-4" />
+          <BookOpen className="h-4 w-4" />
           <span>Perinatal Clinical Pharmacology Pearls</span>
         </div>
         <ul className="space-y-1.5 list-disc list-inside text-fg leading-relaxed">

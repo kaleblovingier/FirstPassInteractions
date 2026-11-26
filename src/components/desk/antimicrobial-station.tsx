@@ -2,12 +2,12 @@ import { useMemo, useState } from "react";
 import {
   Activity,
   AlertTriangle,
+  BookOpen,
   Clock,
   Flame,
   Gauge,
   Info,
   ShieldAlert,
-  Sparkles,
   Stethoscope,
   Zap,
 } from "lucide-react";
@@ -280,7 +280,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
             stationTab === "pearls" ? "bg-accent text-accent-fg font-semibold" : "text-muted hover:text-fg bg-surface"
           )}
         >
-          <Sparkles className="h-3.5 w-3.5" />
+          <BookOpen className="h-3.5 w-3.5" />
           <span>4. Stewardship Pearls &amp; Evidence</span>
         </button>
       </div>
@@ -1205,7 +1205,7 @@ export function AntimicrobialPanel({ ids, host }: { ids: string[]; host: HostCon
         <div className="space-y-4">
           <section className="rounded-lg border border-accent/30 bg-accent-soft/15 p-4 space-y-3">
             <div className="flex items-center gap-2 text-accent font-semibold text-xs">
-              <Sparkles className="h-4 w-4" />
+              <BookOpen className="h-4 w-4" />
               <span>Infectious Disease &amp; Antimicrobial Pharmacotherapy Pearls</span>
             </div>
             <ul className="list-disc list-inside space-y-2 text-[11px] text-muted leading-relaxed">

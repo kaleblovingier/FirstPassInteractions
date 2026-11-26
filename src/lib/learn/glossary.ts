@@ -727,6 +727,72 @@ const TERMS: GlossaryTerm[] = [
     links: [{ label: "Label-sourced drug pairs", href: "/pairs" }],
     source: CFR_LABEL,
   },
+  {
+    id: "nuclear-receptor-induction",
+    term: "Nuclear receptor induction",
+    aka: ["PXR induction", "CAR induction", "AhR induction", "transcriptional enzyme induction"],
+    definition:
+      "Ligand binding to nuclear receptors such as PXR, CAR, or AhR increases transcription of CYP and transporter genes, ramping up clearance over 3 to 14 days. Because newly synthesized enzyme degrades slowly, induction can linger for 1 to 2 weeks after the inducer stops.",
+    onDesk: "The Library's CYP Induction & TDI station and Methodology guide model onset lag and de-induction washout.",
+    related: ["inducer", "cytochrome-p450", "half-life", "steady-state"],
+    links: [{ label: "Methodology & PK guide", href: "/methodology" }],
+    source: M12,
+  },
+  {
+    id: "michaelis-menten-kinetics",
+    term: "Michaelis-Menten kinetics",
+    aka: ["saturable clearance", "zero-order kinetics", "nonlinear pharmacokinetics"],
+    definition:
+      "Capacity-limited elimination in which metabolizing enzymes approach saturation near usual concentrations, as seen with phenytoin or high-intake salicylate. Once clearance saturates, modest intake changes produce disproportionately steep rises in plasma concentration.",
+    onDesk: "The Library's PK & Nonlinear Kinetics tab simulates saturable clearance alongside steady-state curves.",
+    related: ["clearance", "half-life", "steady-state", "therapeutic-drug-monitoring"],
+    links: [{ label: "Methodology & PK guide", href: "/methodology" }],
+    source: STEADY_STATE,
+  },
+  {
+    id: "efflux-transporter",
+    term: "Efflux transporter",
+    aka: ["ABC transporter", "ATP-binding cassette efflux pump"],
+    definition:
+      "An ATP-driven membrane pump such as P-glycoprotein (ABCB1) or BCRP (ABCG2) that exports drugs out of enterocytes, brain capillaries, hepatocytes, or renal tubules. Blocking gut-wall efflux raises oral bioavailability and amplifies CYP3A4 first-pass interactions.",
+    onDesk: "The CYP450 & P-gp matrix and Transporter Network station map efflux pumps beside metabolic isoforms.",
+    related: ["p-glycoprotein", "bcrp", "first-pass-effect", "bioavailability"],
+    links: [{ label: "Methodology & PK guide", href: "/methodology" }],
+    source: M12,
+  },
+  {
+    id: "uptake-transporter",
+    term: "Uptake transporter",
+    aka: ["influx transporter", "SLC transporter", "solute carrier"],
+    definition:
+      "A solute-carrier membrane protein such as OATP1B1, OATP1B3, OAT1/3, or OCT2 that carries drugs into hepatocytes or renal tubular cells for clearance. Inhibiting hepatic or renal uptake traps the substrate in plasma and elevates systemic AUC.",
+    onDesk: "The Transporter Network station and Methodology guide separate uptake traps from CYP enzyme inhibition.",
+    related: ["oatp1b1-oatp1b3", "oat1-oat3", "oct2", "clearance"],
+    links: [{ label: "Methodology & PK guide", href: "/methodology" }],
+    source: M12,
+  },
+  {
+    id: "washout-period",
+    term: "Washout period",
+    aka: ["washout window", "de-induction window", "five half-lives"],
+    definition:
+      "The interval required after stopping a drug for residual parent drug, irreversible enzyme inactivation, or nuclear-receptor induction to clear before starting a conflicting agent. Depending on mechanism, washout can span five half-lives or several weeks.",
+    onDesk: "Compound dossiers display five-half-life estimates and non-linear or covalent caveats beside washout cards.",
+    related: ["half-life", "time-dependent-inhibition", "inducer", "steady-state"],
+    links: [{ label: "Methodology & PK guide", href: "/methodology" }],
+    source: M12,
+  },
+  {
+    id: "enzyme-saturation",
+    term: "Multi-inhibitor enzyme saturation",
+    aka: ["cumulative CYP inhibition", "inhibitor stacking"],
+    definition:
+      "Convergence of two or more inhibitors on the same CYP isoform or transporter in one regimen, exhausting residual metabolic capacity beyond single-pair estimates. When the shared victim is an activation prodrug, stacked inhibition can extinguish active metabolite formation.",
+    onDesk: "Trays with three or more medicines surface multi-inhibitor saturation and opposing tug-of-war cards automatically.",
+    related: ["inhibitor", "prodrug", "phenoconversion", "pharmacokinetic-interaction"],
+    links: [{ label: "Methodology & PK guide", href: "/methodology" }],
+    source: M12,
+  },
 ];
 
 // Codepoint order of the lowercased term: identical on the server and in every browser.

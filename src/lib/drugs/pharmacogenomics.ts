@@ -1053,6 +1053,138 @@ export const PHARMACOGENES: Pharmacogene[] = [
       "FDA Prescribing Information (CAMPTOSAR / Irinotecan): Warnings and Precautions & Clinical Pharmacology.",
     ],
   },
+
+  // 14. SLCO1B1 (OATP1B1)
+  {
+    id: "SLCO1B1",
+    symbol: "SLCO1B1",
+    name: "Solute Carrier Organic Anion Transporter Family Member 1B1 (OATP1B1)",
+    chromosomeLocation: "12p12.1",
+    ncbiGeneId: "10599",
+    systemRole:
+      "Hepatic sinusoidal basolateral uptake transporter mediating active hepatocellular entry of HMG-CoA reductase inhibitors (statins), bilirubin, and organic anions.",
+    molecularMechanism:
+      "The missense c.521T>C variant (p.Val174Ala, rs4149056, carried on *5 and *15 haplotypes) impairs membrane localization and transport kinetics of OATP1B1, reducing hepatic statin extraction and driving sharp systemic plasma AUC elevation.",
+    alleles: [
+      {
+        allele: "*1",
+        name: "Reference Normal Function Allele",
+        functionality: "Normal Function",
+        activityScore: 1,
+        description: "Normal sinusoidal OATP1B1 expression and hepatic statin uptake clearance.",
+      },
+      {
+        allele: "*5",
+        name: "c.521T>C (p.Val174Ala)",
+        functionality: "No Function",
+        activityScore: 0,
+        description: "Loss-of-function missense variant markedly decreasing hepatic OATP1B1 influx of simvastatin acid and atorvastatin.",
+        nucleotideChange: "c.521T>C",
+        proteinChange: "p.Val174Ala",
+        rsId: "rs4149056",
+      },
+      {
+        allele: "*15",
+        name: "c.388A>G + c.521T>C Haplotype",
+        functionality: "No Function",
+        activityScore: 0,
+        description: "Common no-function haplotype carrying c.521T>C in cis with c.388A>G; equivalent statin myopathy liability to *5.",
+        nucleotideChange: "c.388A>G; c.521T>C",
+        proteinChange: "p.Asn130Asp; p.Val174Ala",
+        rsId: "rs4149056",
+      },
+      {
+        allele: "*37",
+        name: "c.388A>G (p.Asn130Asp)",
+        functionality: "Normal Function",
+        activityScore: 1,
+        description: "Common polymorphic allele with preserved hepatic statin uptake activity.",
+        nucleotideChange: "c.388A>G",
+        proteinChange: "p.Asn130Asp",
+        rsId: "rs2306283",
+      },
+    ],
+    phenotypes: [
+      {
+        code: "NF",
+        name: "Normal Function",
+        activityScoreRange: "Two normal-function alleles",
+        genotypeExamples: ["*1/*1", "*1/*37", "*37/*37"],
+        clinicalSummary: "Normal hepatic sinusoidal statin extraction and baseline risk of statin-associated musculoskeletal symptoms (SAMS).",
+        populationFrequencyNotes: "~65–75% across European and East Asian populations.",
+      },
+      {
+        code: "DF",
+        name: "Decreased Function",
+        activityScoreRange: "One normal + one no-function allele",
+        genotypeExamples: ["*1/*5", "*1/*15", "*37/*15"],
+        clinicalSummary: "Reduced OATP1B1 hepatic statin entry elevating systemic simvastatin acid exposure and SAMS risk.",
+        populationFrequencyNotes: "~20–30% in European and East Asian ancestries.",
+      },
+      {
+        code: "PF",
+        name: "Poor Function",
+        activityScoreRange: "Two no-function alleles",
+        genotypeExamples: ["*5/*5", "*5/*15", "*15/*15"],
+        clinicalSummary: "Severely impaired OATP1B1 uptake causing >3-fold simvastatin acid systemic exposure surge and marked rhabdomyolysis liability.",
+        populationFrequencyNotes: "~2–4% in European and East Asian ancestries.",
+      },
+    ],
+    primaryDrugs: ["simvastatin", "atorvastatin", "rosuvastatin", "pravastatin"],
+    citations: [
+      "Cooper-DeHoff RM, et al. CPIC Guideline for SLCO1B1, ABCG2, and CYP2C9 and Statin-Associated Musculoskeletal Symptoms. Clin Pharmacol Ther. 2022.",
+      "FDA Prescribing Information (ZOCOR / Simvastatin): Clinical Pharmacology & Warnings.",
+    ],
+  },
+
+  // 15. HLA-B*58:01
+  {
+    id: "HLA-B5801",
+    symbol: "HLA-B*58:01",
+    name: "Human Leukocyte Antigen B*58:01",
+    chromosomeLocation: "6p21.33",
+    ncbiGeneId: "3106",
+    systemRole:
+      "MHC Class I antigen-presenting receptor implicated in severe cutaneous adverse reactions (SCAR) to allopurinol and its active metabolite oxypurinol.",
+    molecularMechanism:
+      "Oxypurinol binds non-covalently inside the antigen-binding groove of the HLA-B*58:01 molecule, triggering clonal expansion of cytotoxic CD8+ T lymphocytes targeting keratinocytes and precipitating Stevens-Johnson syndrome (SJS), toxic epidermal necrolysis (TEN), or DRESS.",
+    alleles: [
+      {
+        allele: "HLA-B*58:01 Negative",
+        name: "Absence of HLA-B*58:01",
+        functionality: "Normal Function",
+        activityScore: 1,
+        description: "Baseline population risk for allopurinol cutaneous hypersensitivity.",
+      },
+      {
+        allele: "HLA-B*58:01 Positive",
+        name: "Carrier of HLA-B*58:01",
+        functionality: "No Function",
+        activityScore: 0,
+        description: "High-risk MHC Class I susceptibility allele conferring markedly elevated odds of fatal SJS/TEN or DRESS upon allopurinol exposure.",
+      },
+    ],
+    phenotypes: [
+      {
+        code: "NEG",
+        name: "HLA-B*58:01 Negative",
+        genotypeExamples: ["Negative"],
+        clinicalSummary: "Substantially reduced risk of allopurinol-induced SCAR; standard clinical vigilance still applies.",
+      },
+      {
+        code: "POS",
+        name: "HLA-B*58:01 Positive",
+        genotypeExamples: ["Heterozygous or Homozygous Carrier"],
+        clinicalSummary: "Allopurinol is strongly contraindicated by CPIC Level A guidance due to severe, potentially fatal SJS/TEN and DRESS hypersensitivity.",
+        populationFrequencyNotes: "Carrier prevalence ~6–12% in Han Chinese, Korean, and Thai ancestries; ~3–4% in African American ancestry; ~1–2% in European ancestry.",
+      },
+    ],
+    primaryDrugs: ["allopurinol"],
+    citations: [
+      "Saito Y, et al. CPIC Guidelines for HLA-B Genotype and Allopurinol Dosing: 2015 Update. Clin Pharmacol Ther. 2016.",
+      "American College of Rheumatology Guideline for the Management of Gout (HLA-B*58:01 conditional testing recommendation).",
+    ],
+  },
 ];
 
 /**
@@ -2057,6 +2189,224 @@ export const PGX_INTERACTIONS: PgxInteraction[] = [
     citations: [
       "Gammal RS, et al. Clin Pharmacol Ther. 2016;99(4):363-369 (PMID: 26417955).",
       "FDA Prescribing Information (REYATAZ / Atazanavir): Warnings and Precautions.",
+    ],
+  },
+
+  // 25. Simvastatin / SLCO1B1
+  {
+    id: "simvastatin-slco1b1",
+    drugId: "simvastatin",
+    drugName: "Simvastatin",
+    geneId: "SLCO1B1",
+    geneSymbol: "SLCO1B1",
+    cpicLevel: "Level A",
+    therapeuticArea: "Cardiology",
+    guidelineTitle: "CPIC Guideline for SLCO1B1, ABCG2, and CYP2C9 and Statin-Associated Musculoskeletal Symptoms (2022)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-statins/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Function (*5/*5, *5/*15, *15/*15)",
+        clinicalConsequence:
+          "Markedly elevated risk of severe statin-associated musculoskeletal symptoms (SAMS), myopathy, and myoglobinuric rhabdomyolysis.",
+        pharmacokineticMechanism:
+          "Biallelic loss of hepatic sinusoidal OATP1B1 uptake causes >3-fold elevation in systemic active simvastatin acid AUC, exposing skeletal myocytes to toxic concentrations.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Avoid simvastatin and select an alternative statin with lower SLCO1B1 dependence (such as fluvastatin, pravastatin, or adjusted rosuvastatin/atorvastatin) per lipid-lowering targets.",
+        severity: "critical",
+      },
+      {
+        phenotype: "Decreased Function (*1/*5, *1/*15)",
+        clinicalConsequence:
+          "Elevated risk of simvastatin myopathy compared with normal-function carriers, particularly when compounded by CYP3A4 inhibitors.",
+        pharmacokineticMechanism:
+          "Partial loss of hepatic OATP1B1 influx elevates systemic simvastatin acid exposure roughly 1.5-to-2-fold.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Prefer an alternative statin with lower myopathy risk or consult full prescribing limits and avoid concurrent CYP3A4/OATP1B1 perpetrators.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Simvastatin lactone is hydrolyzed to active simvastatin acid, which depends heavily on hepatic sinusoidal OATP1B1 (SLCO1B1) for hepatocellular uptake and clearance. Loss-of-function c.521T>C variants trap simvastatin acid in systemic circulation, causing skeletal muscle mitochondrial toxicity and myopathy.",
+    fdaLabelSection: "Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Cooper-DeHoff RM, et al. Clin Pharmacol Ther. 2022 (CPIC Statin & SLCO1B1 Guideline).",
+      "FDA Prescribing Information (ZOCOR / Simvastatin): Warnings and Precautions.",
+    ],
+  },
+
+  // 26. Atorvastatin / SLCO1B1
+  {
+    id: "atorvastatin-slco1b1",
+    drugId: "atorvastatin",
+    drugName: "Atorvastatin",
+    geneId: "SLCO1B1",
+    geneSymbol: "SLCO1B1",
+    cpicLevel: "Level A",
+    therapeuticArea: "Cardiology",
+    guidelineTitle: "CPIC Guideline for SLCO1B1, ABCG2, and CYP2C9 and Statin-Associated Musculoskeletal Symptoms (2022)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-statins/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Function (*5/*5, *5/*15, *15/*15)",
+        clinicalConsequence:
+          "Increased systemic atorvastatin exposure and heightened risk of myalgia, creatine kinase elevation, and myopathy — especially when co-prescribed with CYP3A4 or OATP1B1 inhibitors.",
+        pharmacokineticMechanism:
+          "Impaired hepatic OATP1B1 uptake raises systemic atorvastatin AUC roughly 2-to-2.5-fold and reduces hepatic clearance reserve.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Consider conservative starting intensity or an alternative statin (e.g., rosuvastatin or pravastatin with appropriate monitoring) and evaluate concurrent CYP3A4/OATP perpetrators.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Atorvastatin requires hepatic OATP1B1 (SLCO1B1) influx prior to CYP3A4 oxidation. Biallelic SLCO1B1 c.521T>C variants reduce first-pass hepatocellular uptake and amplify myopathy susceptibility.",
+    fdaLabelSection: "Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Cooper-DeHoff RM, et al. Clin Pharmacol Ther. 2022 (CPIC Statin & SLCO1B1 Guideline).",
+      "FDA Prescribing Information (LIPITOR / Atorvastatin): Clinical Pharmacology.",
+    ],
+  },
+
+  // 27. Allopurinol / HLA-B*58:01
+  {
+    id: "allopurinol-hla-b5801",
+    drugId: "allopurinol",
+    drugName: "Allopurinol",
+    geneId: "HLA-B5801",
+    geneSymbol: "HLA-B*58:01",
+    cpicLevel: "Level A",
+    therapeuticArea: "Rheumatology & Immunology",
+    guidelineTitle: "CPIC Guidelines for HLA-B Genotype and Allopurinol Dosing (2015 Update)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-allopurinol-and-hla-b/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "HLA-B*58:01 Positive Carrier",
+        clinicalConsequence:
+          "Dramatically elevated risk of life-threatening severe cutaneous adverse reactions (SCAR), including Stevens-Johnson syndrome (SJS), toxic epidermal necrolysis (TEN), and DRESS syndrome.",
+        pharmacokineticMechanism:
+          "Pharmacodynamic MHC Class I immune presentation: oxypurinol binds directly to the HLA-B*58:01 peptide-binding groove, activating cytotoxic T-cell-mediated keratinocyte apoptosis.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Allopurinol is contraindicated in known HLA-B*58:01 carriers; select an alternative urate-lowering agent (such as febuxostat) per clinical indication.",
+        severity: "critical",
+      },
+    ],
+    molecularMechanism:
+      "Allopurinol's active xanthine oxidase inhibitor metabolite, oxypurinol, interacts non-covalently with HLA-B*58:01 on antigen-presenting cells, provoking severe T-cell-mediated epidermal necrosis (SJS/TEN) and systemic eosinophilia (DRESS).",
+    fdaLabelSection: "Warnings and Precautions",
+    citations: [
+      "Saito Y, et al. Clin Pharmacol Ther. 2016 (CPIC HLA-B*58:01 & Allopurinol Guideline).",
+      "FDA Prescribing Information (ZYLOPRIM / Allopurinol): Warnings and Precautions.",
+    ],
+  },
+
+  // 28. Atomoxetine / CYP2D6
+  {
+    id: "atomoxetine-cyp2d6",
+    drugId: "atomoxetine",
+    drugName: "Atomoxetine",
+    geneId: "CYP2D6",
+    geneSymbol: "CYP2D6",
+    cpicLevel: "Level A",
+    therapeuticArea: "Psychiatry",
+    guidelineTitle: "CPIC Guideline for CYP2D6 and Atomoxetine Therapy (2019)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-atomoxetine-based-on-cyp2d6-genotype/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (Activity Score 0)",
+        clinicalConsequence:
+          "Approximately 10-fold higher steady-state atomoxetine AUC and markedly prolonged elimination half-life, increasing risk of tachycardia, hypertension, insomnia, dry mouth, and treatment discontinuation.",
+        pharmacokineticMechanism:
+          "CYP2D6 catalyzes the primary 4-hydroxylation clearance route of atomoxetine; absent CYP2D6 activity shunts clearance through slow minor CYP2C19 pathways.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Anticipate markedly higher exposure and slower attainment of steady state; consult FDA Prescribing Information titration caps and monitor blood pressure, heart rate, and tolerability closely.",
+        severity: "high",
+      },
+      {
+        phenotype: "Ultrarapid Metabolizer (Activity Score > 2.25)",
+        clinicalConsequence:
+          "Lower steady-state atomoxetine concentrations and increased likelihood of suboptimal ADHD symptom response.",
+        pharmacokineticMechanism:
+          "Accelerated CYP2D6 4-hydroxylation rapidly clears parent atomoxetine.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Monitor clinical response closely and consider non-CYP2D6-dependent ADHD therapies if therapeutic response remains inadequate.",
+        severity: "moderate",
+      },
+    ],
+    molecularMechanism:
+      "Atomoxetine is a selective norepinephrine reuptake inhibitor cleared predominantly by CYP2D6 aromatic 4-hydroxylation. Genetic CYP2D6 deficiency or strong CYP2D6 inhibition (fluoxetine, paroxetine, bupropion) elevates systemic exposure up to 10-fold.",
+    fdaLabelSection: "Dosage and Administration, Drug Interactions, Clinical Pharmacology",
+    citations: [
+      "Brown JT, et al. Clin Pharmacol Ther. 2019 (CPIC CYP2D6 & Atomoxetine Guideline).",
+      "FDA Prescribing Information (STRATTERA / Atomoxetine): Clinical Pharmacology.",
+    ],
+  },
+
+  // 29. Ondansetron / CYP2D6
+  {
+    id: "ondansetron-cyp2d6",
+    drugId: "ondansetron",
+    drugName: "Ondansetron",
+    geneId: "CYP2D6",
+    geneSymbol: "CYP2D6",
+    cpicLevel: "Level A",
+    therapeuticArea: "Oncology",
+    guidelineTitle: "CPIC Guideline for CYP2D6 Genotype and Ondansetron / Tropisetron Therapy (2017)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-ondansetron-and-tropisetron-and-cyp2d6-genotype/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "Ultrarapid Metabolizer (Activity Score > 2.25)",
+        clinicalConsequence:
+          "Higher incidence of breakthrough chemotherapy-induced or postoperative nausea and vomiting (antiemetic failure).",
+        pharmacokineticMechanism:
+          "Gene duplication (*1xN / *2xN) accelerates CYP2D6-mediated inactivation of ondansetron, lowering plasma concentrations below the antiemetic threshold.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Select an alternative 5-HT3 receptor antagonist not predominantly cleared by CYP2D6 (such as granisetron) in known CYP2D6 ultrarapid metabolizers.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Although CYP1A2 and CYP3A4 participate in ondansetron metabolism, CYP2D6 gene duplication significantly accelerates systemic clearance and reduces antiemetic protection in clinical oncology and perioperative cohorts.",
+    fdaLabelSection: "Clinical Pharmacology",
+    citations: [
+      "Bell GC, et al. Clin Pharmacol Ther. 2017 (CPIC CYP2D6 & Ondansetron Guideline).",
+      "FDA Prescribing Information (ZOFRAN / Ondansetron): Clinical Pharmacology.",
+    ],
+  },
+
+  // 30. Celecoxib / CYP2C9
+  {
+    id: "celecoxib-cyp2c9",
+    drugId: "celecoxib",
+    drugName: "Celecoxib",
+    geneId: "CYP2C9",
+    geneSymbol: "CYP2C9",
+    cpicLevel: "Level A",
+    therapeuticArea: "Pain & Neurology",
+    guidelineTitle: "CPIC Guideline for CYP2C9 and Nonsteroidal Anti-Inflammatory Drugs (2020)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-nsaids-based-on-cyp2c9-genotype/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*3/*3, *2/*3)",
+        clinicalConsequence:
+          "Two-to-three-fold elevation in systemic celecoxib AUC and prolonged half-life, increasing risk of gastrointestinal bleeding, renal injury, hypertension, and cardiovascular thrombotic events.",
+        pharmacokineticMechanism:
+          "CYP2C9 mediates the rate-limiting methyl-hydroxylation clearance of celecoxib; loss-of-function alleles markedly delay hepatic elimination.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Consult FDA Prescribing Information poor-metabolizer guidance for conservative initiation or select an alternative analgesic not predominantly cleared by CYP2C9.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Celecoxib is a selective COX-2 inhibitor cleared primarily by CYP2C9 methyl hydroxylation to inactive carboxylic acid metabolites. Reduced CYP2C9 function or strong CYP2C9 inhibition (fluconazole) elevates systemic NSAID exposure and adverse cardiovascular/GI/renal risk.",
+    fdaLabelSection: "Boxed Warning, Dosage and Administration, Use in Specific Populations, Clinical Pharmacology",
+    citations: [
+      "Theken KN, et al. Clin Pharmacol Ther. 2020 (CPIC CYP2C9 & NSAIDs Guideline).",
+      "FDA Prescribing Information (CELEBREX / Celecoxib): Use in Specific Populations (Poor Metabolizers of CYP2C9).",
     ],
   },
 ];

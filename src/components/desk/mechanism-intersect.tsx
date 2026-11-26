@@ -13,11 +13,11 @@ import {
   Activity,
   AlertTriangle,
   Flame,
+  FlaskConical,
   HeartPulse,
   Info,
   Layers,
   Moon,
-  Sparkles,
   Zap,
 } from "lucide-react";
 
@@ -296,7 +296,7 @@ export function MechanismIntersect() {
               {/* Molecular Mechanism Box */}
               <div className="mt-4 rounded-lg bg-bg-sunken p-3.5">
                 <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-accent">
-                  <Sparkles className="size-3.5" />
+                  <FlaskConical className="size-3.5" />
                   <span>Molecular Signaling Cascade</span>
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">

@@ -10,7 +10,6 @@ import {
   Layers,
   RotateCcw,
   ShieldAlert,
-  Sparkles,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -174,7 +173,7 @@ export function PkTdmMechanisms() {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
-                <Sparkles className="size-3.5" />
+                <ShieldAlert className="size-3.5" />
                 FD&C Act § 520(o)(1)(E)
               </span>
               <span className="rounded-full bg-bg-sunken px-2.5 py-0.5 text-xs font-medium text-muted">
@@ -1199,7 +1198,7 @@ export function PkTdmMechanisms() {
         {/* Bedside Clinical Pearls */}
         <div className="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-border)] space-y-3">
           <div className="flex items-center gap-2 border-b border-border pb-3">
-            <Sparkles className="size-4 text-accent" />
+            <BookOpen className="size-4 text-accent" />
             <h4 className="font-serif text-lg font-bold text-fg">Bedside & TDM Clinical Pearls</h4>
           </div>
           <ul className="space-y-2.5 text-xs text-muted">

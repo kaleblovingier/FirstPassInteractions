@@ -693,5 +693,17 @@ describe("Cytochrome P450 TDI & Nuclear Induction Simulator", () => {
       assert.equal(negTraj.points.length, 1);
       assert.equal(negTraj.points[0].activePoolPct, 100);
     });
+
+    it("covers Round 14 clinical TDI perpetrators and PXR/CAR nuclear-receptor inducers", () => {
+      assert.ok(TDI_PERPETRATORS.length >= 14);
+      assert.ok(NUCLEAR_INDUCERS.length >= 11);
+      for (const id of ["cobicistat", "amiodarone", "gemfibrozil", "clopidogrel", "fluoxetine"]) {
+        assert.ok(getTdiPerpetratorById(id), `Expected TDI perpetrator ${id}`);
+      }
+      for (const id of ["modafinil", "efavirenz", "apalutamide", "enzalutamide"]) {
+        assert.ok(getNuclearInducerById(id), `Expected nuclear inducer ${id}`);
+      }
+      assert.equal(validateCypCatalogIntegrity().valid, true);
+    });
   });
 });

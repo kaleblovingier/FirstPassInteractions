@@ -26,6 +26,10 @@ const DISALLOWED_PATTERNS: readonly { label: string; re: RegExp }[] = [
     label: "backdrop-blur glassmorphism utility",
     re: /\bbackdrop-blur(?:-[a-z0-9]+)?\b/g,
   },
+  {
+    label: "decorative Sparkles icon",
+    re: /\bSparkles\b/g,
+  },
 ];
 
 function walkTsxFiles(dir: string): string[] {
@@ -63,6 +67,7 @@ test("editorial UI guard: catches disallowed palettes, gradients, and backdrop-b
   assert.equal(scanSource('className="bg-gradient-to-r from-surface to-bg"').length, 1);
   assert.equal(scanSource('className="bg-bg/95 backdrop-blur-sm"').length, 1);
   assert.equal(scanSource('className="bg-ink/70 backdrop-blur"').length, 1);
+  assert.equal(scanSource('<Sparkles className="size-4" />').length, 1);
   assert.equal(
     scanSource(
       'className="border-b border-border bg-surface text-fg bg-accent-soft text-accent text-info text-warn text-danger text-ok"',

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ShieldAlert, Sparkles, Stethoscope } from "lucide-react";
+import { BookOpen, ShieldAlert, Stethoscope } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -391,7 +391,7 @@ export function PhenytoinPanel({ ids, host }: { ids: string[]; host: HostContext
       {/* Clinical Pearls Shelf */}
       <section className="rounded-lg border border-accent/30 bg-accent-soft/15 p-4 space-y-2">
         <div className="flex items-center gap-2 text-accent font-semibold text-xs">
-          <Sparkles className="h-4 w-4" />
+          <BookOpen className="h-4 w-4" />
           <span>Phenytoin Clinical Pharmacokinetics Pearls</span>
         </div>
         <ul className="list-disc list-inside space-y-1 text-[11px] text-muted leading-relaxed">
