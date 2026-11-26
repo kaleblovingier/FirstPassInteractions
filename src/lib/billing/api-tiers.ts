@@ -88,7 +88,7 @@ export const API_KEY_RE = /^FP-API-([DE])(\d{4})(\d{2})-([0-9A-F]{8})-([0-9A-F]{
 export const API_KEY_HEADER = "x-api-key";
 
 /** Paths under /api/cds that never need a key and are never metered. */
-export const API_OPEN_PATHS: readonly string[] = ["/api/cds/health"];
+export const API_OPEN_PATHS: readonly string[] = ["/api/cds/health", "/api/cds/openapi.json"];
 
 /** "10 requests per minute". */
 export function describeLimit(limit: ApiLimit): string {

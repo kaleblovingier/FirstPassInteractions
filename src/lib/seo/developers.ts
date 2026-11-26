@@ -76,7 +76,7 @@ export const DEVELOPERS_ENDPOINTS: readonly DevelopersEndpoint[] = [
     method: "POST",
     path: "/api/cds/analyze",
     summary: "One teaching report for a tray: every pair, the synergy alerts by mechanism, and curated literature, as an InteractionReport. Set live to true to add quoted TripSit, OpenFDA label and PubMed rows; a source that fails is named in warnings. A street name resolves last (matchedBy street-name) and always comes with a warning, because slang can mean more than one thing. /check and /search keep their shapes; matchedBy there can now also read street-name.",
-    request: '{ "substances": ["Molly", { "name": "alprazolam", "ingestionTimeHoursAgo": 12 }], "host": { ... }, "live": false } (1 to 20 substances; hours 0 to 720; host and live are optional)',
+    request: '{ "substances": ["Molly", { "name": "alprazolam", "ingestionTimeHoursAgo": 12 }], "host": { ... }, "live": false } (1 to 20 substances; hours 0 to 720; host and live are optional). Or send { "text": "<a pasted medication list>" } instead of substances: one name per line or comma, doses and schedules ignored, the first 20 names analyzed.',
     keyed: true,
   },
   {
@@ -92,6 +92,19 @@ export const DEVELOPERS_ENDPOINTS: readonly DevelopersEndpoint[] = [
     summary: "Teaching pharmacokinetic modules for a list of drugs.",
     request: '{ "drugs": ["vancomycin"], "modules": ["vancomycin"], "host": { ... } } (modules is optional; omit it for all)',
     keyed: true,
+  },
+  {
+    method: "POST",
+    path: "/api/cds/export",
+    summary: "The findings for a list of drugs as one report, in JSON or Markdown.",
+    request: '{ "drugs": ["warfarin", "fluconazole"], "format": "markdown", "host": { ... } } (1 to 30 drugs; format json or markdown, default json; host is optional)',
+    keyed: true,
+  },
+  {
+    method: "GET",
+    path: "/api/cds/openapi.json",
+    summary: "This API as an OpenAPI 3.1 document, generated from the same schemas that check each request, for client generators and API tools. Open: no key, no rate limit.",
+    keyed: false,
   },
 ];
 

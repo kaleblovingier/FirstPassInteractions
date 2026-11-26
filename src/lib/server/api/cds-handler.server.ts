@@ -21,6 +21,7 @@ import {
   STATUTORY_CDS_DISCLAIMER,
 } from "./cds-service";
 import { admitCdsRequest, withHeaders } from "./api-access.server";
+import { OPENAPI_PATH, openApiDocument } from "./openapi";
 import {
   createProblemDetails,
   problemBadRequest,
@@ -318,6 +319,14 @@ async function route(request: Request, url: URL, pathname: string): Promise<Resp
         modulesCount: CDS_MODULES_COUNT,
       };
       return Response.json(healthData, { status: 200 });
+    }
+
+    // GET /api/cds/openapi.json
+    if (pathname === OPENAPI_PATH) {
+      if (method !== "GET") {
+        return methodNotAllowedResponse(method, pathname, "GET");
+      }
+      return Response.json(openApiDocument(), { status: 200 });
     }
 
     // GET /api/cds/search

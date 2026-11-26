@@ -1,7 +1,7 @@
 /**
  * Who may call /api/cds/*, and how often.
  *
- * - /api/cds/health is open: no key, no meter (API_OPEN_PATHS).
+ * - /api/cds/health and /api/cds/openapi.json are open: no key, no meter (API_OPEN_PATHS).
  * - No key: allowed, counted per client address (clientKey: IPv4, or IPv6 /64) at the anonymous limit.
  * - A key (Authorization: Bearer <key>, or x-api-key): checked by signature and end month, then counted
  *   per key at its tier's limit. A bad, tampered or ended key is a 401, never a silent downgrade.

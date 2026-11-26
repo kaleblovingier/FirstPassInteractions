@@ -18,6 +18,7 @@ import {
   streetNameIds,
 } from "../../drugs/catalog";
 import { COMBINATION_BY_KEY } from "../../drugs/combos";
+import { readMedList } from "../../drugs/med-list";
 import { analyze, enzymeIndex } from "../../drugs/engine";
 import { CHRONIC_ETOH, HOST_ETOH_CNS, SMOKE, isVirtual } from "../../drugs/host";
 import {
@@ -149,7 +150,8 @@ export type ApiWarningCode =
   | "pediatric-age-not-modeled"
   | "lactation-not-applied"
   | "module-failed"
-  | "no-mapped-findings";
+  | "no-mapped-findings"
+  | "text-truncated";
 
 /** Something the result does not reflect, stated instead of silently dropped. */
 export interface ApiWarning {
@@ -1033,7 +1035,20 @@ export class ClinicalDecisionService {
         };
       }
       const { host, warnings } = resolveHostContext(val.data.host);
-      const requested = val.data.substances.map((s) => (typeof s === "string" ? { name: s } : s));
+      // A pasted list is read like the desk's paste box: names only, doses dropped.
+      const read = val.data.text === undefined ? null : readMedList(val.data.text);
+      if (read && read.names.length === 0) {
+        return {
+          success: false,
+          problem: problemUnprocessable("Validation failed for analyze request", [
+            { name: "text", reason: "No medicine names were found in text." },
+          ]),
+        };
+      }
+      // The same 20 the substances list allows.
+      const substances = val.data.substances ?? read?.names.slice(0, 20) ?? [];
+      const leftOut = read ? read.names.length - substances.length + read.more : 0;
+      const requested = substances.map((s) => (typeof s === "string" ? { name: s } : s));
       const drugs = resolveRequestedDrugs(requested.map((s) => s.name));
       if (!drugs.ids.length) {
         return { success: false, problem: noneResolvedProblem(drugs.query.resolution) };
@@ -1051,6 +1066,13 @@ export class ClinicalDecisionService {
       });
 
       const extra: ApiWarning[] = [];
+      if (leftOut > 0) {
+        extra.push({
+          code: "text-truncated",
+          field: "text",
+          detail: `Analyzed the first ${substances.length} names in text; ${leftOut} more were left out. A missing row is not a clearance.`,
+        });
+      }
       let report: InteractionReport;
       let cached = false;
       if (val.data.live) {

@@ -9,6 +9,7 @@
 
 import { z } from "zod";
 import { ENZYMES } from "../../drugs/types";
+import { MED_LIST_MAX_CHARS } from "../../drugs/med-list";
 import { type InvalidParamError } from "./problem";
 
 export const KidneyCategorySchema = z.enum(["normal", "mild", "moderate", "severe", "esrd"]);
@@ -185,14 +186,27 @@ export const AnalyzeSubstanceSchema = z.union([
   }),
 ]);
 
-export const AnalyzeRequestSchema = z.strictObject({
-  substances: z
-    .array(AnalyzeSubstanceSchema)
-    .min(1, "At least 1 substance must be provided")
-    .max(20, "Maximum 20 substances can be analyzed simultaneously"),
-  host: HostContextSchema.optional(),
-  live: z.boolean().default(false),
-});
+export const AnalyzeRequestSchema = z
+  .strictObject({
+    substances: z
+      .array(AnalyzeSubstanceSchema)
+      .min(1, "At least 1 substance must be provided")
+      .max(20, "Maximum 20 substances can be analyzed simultaneously")
+      .optional(),
+    /** A pasted medication list, read like the desk's "Paste a medication list". Send it instead of substances. */
+    text: z
+      .string()
+      .trim()
+      .min(1, "text is empty")
+      .max(MED_LIST_MAX_CHARS, `text is longer than ${MED_LIST_MAX_CHARS} characters`)
+      .optional(),
+    host: HostContextSchema.optional(),
+    live: z.boolean().default(false),
+  })
+  .refine((body) => (body.substances === undefined) !== (body.text === undefined), {
+    message: "Send substances or text: one of them, not both.",
+    path: ["substances"],
+  });
 
 export type InteractionCheckRequest = z.infer<typeof InteractionCheckRequestSchema>;
 
