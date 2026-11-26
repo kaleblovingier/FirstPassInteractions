@@ -191,7 +191,45 @@ export const WASHOUT: Array<{ ids: string[]; days: number; label: string }> = [
   },
 ];
 
+/**
+ * Additional perpetrator washout reference clocks surfaced in the desk's
+ * "How long it lingers" teaching panel via `washoutsFor()` without inflating
+ * unrelated two-drug pair grades in `engine.ts`.
+ */
+export const EXTENDED_WASHOUT: Array<{ ids: string[]; days: number; label: string }> = [
+  {
+    ids: ["phenytoin"],
+    days: 14,
+    label:
+      "Phenytoin activates CAR and PXR; elevated CYP3A4/2C9/2B6 clearance persists roughly 1–2 weeks after stopping.",
+  },
+  {
+    ids: ["apalutamide", "enzalutamide"],
+    days: 28,
+    label:
+      "Strong oncology PXR inducers combine multi-day active metabolite half-lives with slow CYP3A4/2C9/2C19 enzyme turnover; de-induction persists roughly a full month after stopping.",
+  },
+  {
+    ids: ["modafinil", "armodafinil"],
+    days: 28,
+    label:
+      "Moderate CYP3A4 induction outlasts plasma clearance; labeling specifies backup contraception during therapy and for one month after the final dose.",
+  },
+  {
+    ids: ["terbinafine"],
+    days: 14,
+    label:
+      "Lipophilic tissue depots keep CYP2D6 suppressed for weeks after an oral terbinafine course finishes, prolonging TCA, beta-blocker, and prodrug interactions.",
+  },
+  {
+    ids: ["paroxetine", "ritonavir", "cobicistat", "clarithromycin", "grapefruit"],
+    days: 5,
+    label:
+      "Mechanism-based CYP inactivators destroy active enzyme molecules; clearance does not recover until enterocytes and hepatocytes synthesize replacement protein over 3–7 days.",
+  },
+];
+
 export function washoutsFor(ids: string[]) {
   const set = new Set(ids);
-  return WASHOUT.filter((w) => w.ids.some((id) => set.has(id)));
+  return [...WASHOUT, ...EXTENDED_WASHOUT].filter((w) => w.ids.some((id) => set.has(id)));
 }
