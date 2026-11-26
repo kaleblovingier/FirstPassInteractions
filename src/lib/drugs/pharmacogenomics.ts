@@ -2409,6 +2409,320 @@ export const PGX_INTERACTIONS: PgxInteraction[] = [
       "FDA Prescribing Information (CELEBREX / Celecoxib): Use in Specific Populations (Poor Metabolizers of CYP2C9).",
     ],
   },
+
+  // 31. Sertraline / CYP2C19
+  {
+    id: "sertraline-cyp2c19",
+    drugId: "sertraline",
+    drugName: "Sertraline",
+    geneId: "CYP2C19",
+    geneSymbol: "CYP2C19",
+    cpicLevel: "Level A",
+    therapeuticArea: "Psychiatry",
+    guidelineTitle: "CPIC Guideline for CYP2D6, CYP2C19, CYP2B6, SLC6A4, and HTR2A Genotypes and Serotonin Reuptake Inhibitor Antidepressants (2023)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-ssri-and-snri-antidepressants/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*2/*2, *2/*3, *3/*3)",
+        clinicalConsequence:
+          "Elevated plasma sertraline concentrations and higher likelihood of gastrointestinal intolerance, sedation, sexual dysfunction, or serotonergic adverse effects.",
+        pharmacokineticMechanism:
+          "CYP2C19 catalyzes N-demethylation of sertraline to less-active N-desmethylsertraline; loss of CYP2C19 function prolongs parent sertraline persistence.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Consider a more conservative titration ceiling or select an alternative antidepressant not predominantly cleared by CYP2C19.",
+        severity: "moderate",
+      },
+      {
+        phenotype: "Ultrarapid Metabolizer (*17/*17)",
+        clinicalConsequence:
+          "Lower steady-state sertraline plasma exposure and potential risk of suboptimal antidepressant efficacy.",
+        pharmacokineticMechanism:
+          "Increased CYP2C19 transcriptional expression accelerates hepatic N-demethylation.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Monitor therapeutic response closely and evaluate alternative antidepressant options if clinical response remains inadequate.",
+        severity: "informational",
+      },
+    ],
+    molecularMechanism:
+      "Sertraline undergoes multi-pathway hepatic N-demethylation with CYP2C19 (alongside CYP2B6) serving as the principal polymorphic clearance axis highlighted in the 2023 CPIC SSRI guideline.",
+    fdaLabelSection: "Boxed Warning, Clinical Pharmacology",
+    citations: [
+      "Bousman CA, et al. Clin Pharmacol Ther. 2023 (CPIC SSRI/SNRI Antidepressant Guideline).",
+      "FDA Prescribing Information (ZOLOFT / Sertraline): Clinical Pharmacology.",
+    ],
+  },
+
+  // 32. Fluvoxamine / CYP2D6
+  {
+    id: "fluvoxamine-cyp2d6",
+    drugId: "fluvoxamine",
+    drugName: "Fluvoxamine",
+    geneId: "CYP2D6",
+    geneSymbol: "CYP2D6",
+    cpicLevel: "Level A",
+    therapeuticArea: "Psychiatry",
+    guidelineTitle: "CPIC Guideline for CYP2D6, CYP2C19, CYP2B6, SLC6A4, and HTR2A Genotypes and Serotonin Reuptake Inhibitor Antidepressants (2023)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-ssri-and-snri-antidepressants/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (Activity Score 0)",
+        clinicalConsequence:
+          "Substantially higher systemic fluvoxamine exposure, increasing adverse gastrointestinal, central nervous system, and CYP1A2/CYP2C19 perpetrator interaction intensity.",
+        pharmacokineticMechanism:
+          "CYP2D6 mediates key oxidative demethylation clearance of fluvoxamine; absent CYP2D6 function slows elimination and amplifies nonlinear accumulation.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Favor conservative starting exposure or select an alternative SSRI not predominantly metabolized by CYP2D6.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Fluvoxamine is both a potent CYP1A2/CYP2C19 inhibitor and a polymorphic CYP2D6 substrate; CYP2D6 poor metabolizers experience pronounced parent exposure elevation and heightened toxicity risk.",
+    fdaLabelSection: "Boxed Warning, Drug Interactions, Clinical Pharmacology",
+    citations: [
+      "Bousman CA, et al. Clin Pharmacol Ther. 2023 (CPIC SSRI/SNRI Antidepressant Guideline).",
+      "FDA Prescribing Information (Fluvoxamine): Clinical Pharmacology.",
+    ],
+  },
+
+  // 33. Paroxetine / CYP2D6
+  {
+    id: "paroxetine-cyp2d6",
+    drugId: "paroxetine",
+    drugName: "Paroxetine",
+    geneId: "CYP2D6",
+    geneSymbol: "CYP2D6",
+    cpicLevel: "Level A",
+    therapeuticArea: "Psychiatry",
+    guidelineTitle: "CPIC Guideline for CYP2D6, CYP2C19, CYP2B6, SLC6A4, and HTR2A Genotypes and Serotonin Reuptake Inhibitor Antidepressants (2023)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-ssri-and-snri-antidepressants/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Ultrarapid Metabolizer (Activity Score > 2.25)",
+        clinicalConsequence:
+          "Markedly reduced or undetectable plasma paroxetine concentrations leading to high risk of antidepressant treatment failure.",
+        pharmacokineticMechanism:
+          "Gene duplication (*1xN / *2xN) overwhelms paroxetine's mechanism-based CYP2D6 autoinhibition, accelerating presystemic hepatic extraction.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Select an alternative antidepressant not predominantly cleared by CYP2D6 in known CYP2D6 ultrarapid metabolizers.",
+        severity: "high",
+      },
+      {
+        phenotype: "Poor Metabolizer (Activity Score 0)",
+        clinicalConsequence:
+          "Higher initial systemic paroxetine concentrations and increased anticholinergic, sedative, and serotonergic side effects.",
+        pharmacokineticMechanism:
+          "Loss of CYP2D6 catalytic capacity removes paroxetine's high-affinity clearance pathway from the outset of therapy.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Consider an alternative SSRI or cautious conservative titration per Prescribing Information.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Paroxetine is cleared via saturable, mechanism-based autoinhibited CYP2D6 oxidation. Ultrarapid metabolizers escape autoinhibition and fail therapy, whereas poor metabolizers accumulate early adverse exposure.",
+    fdaLabelSection: "Boxed Warning, Clinical Pharmacology",
+    citations: [
+      "Bousman CA, et al. Clin Pharmacol Ther. 2023 (CPIC SSRI/SNRI Antidepressant Guideline).",
+      "FDA Prescribing Information (PAXIL / Paroxetine): Clinical Pharmacology.",
+    ],
+  },
+
+  // 34. Ibuprofen / CYP2C9
+  {
+    id: "ibuprofen-cyp2c9",
+    drugId: "ibuprofen",
+    drugName: "Ibuprofen",
+    geneId: "CYP2C9",
+    geneSymbol: "CYP2C9",
+    cpicLevel: "Level A",
+    therapeuticArea: "Pain & Neurology",
+    guidelineTitle: "CPIC Guideline for CYP2C9 and Nonsteroidal Anti-Inflammatory Drugs (2020)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-nsaids-based-on-cyp2c9-genotype/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*3/*3, *2/*3)",
+        clinicalConsequence:
+          "Elevated plasma S-ibuprofen exposure and prolonged half-life, elevating risks of upper gastrointestinal ulceration/bleeding, acute kidney injury, hypertension, and cardiovascular events.",
+        pharmacokineticMechanism:
+          "CYP2C9 catalyzes primary 2- and 3-hydroxylation of pharmacologically active S-ibuprofen; poor-metabolizer alleles significantly impair clearance.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Favor the lowest effective exposure for the shortest duration, monitor renal and GI safety closely, or choose an analgesic not predominantly cleared by CYP2C9.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Active S-ibuprofen depends predominantly on CYP2C9 oxidation for hepatic clearance. Genetic CYP2C9 deficiency or strong CYP2C9 inhibitors (fluconazole) extend NSAID half-life and heighten mucosal/renal/cardiovascular toxicity.",
+    fdaLabelSection: "Boxed Warning, Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Theken KN, et al. Clin Pharmacol Ther. 2020 (CPIC CYP2C9 & NSAIDs Guideline).",
+      "FDA Prescribing Information (Ibuprofen): Boxed Warning & Clinical Pharmacology.",
+    ],
+  },
+
+  // 35. Meloxicam / CYP2C9
+  {
+    id: "meloxicam-cyp2c9",
+    drugId: "meloxicam",
+    drugName: "Meloxicam",
+    geneId: "CYP2C9",
+    geneSymbol: "CYP2C9",
+    cpicLevel: "Level A",
+    therapeuticArea: "Pain & Neurology",
+    guidelineTitle: "CPIC Guideline for CYP2C9 and Nonsteroidal Anti-Inflammatory Drugs (2020)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-nsaids-based-on-cyp2c9-genotype/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*3/*3, *2/*3)",
+        clinicalConsequence:
+          "Pronounced systemic accumulation of long-half-life meloxicam (often >3-fold AUC elevation), conferring high risk of GI hemorrhage, renal injury, and cardiovascular thrombotic events.",
+        pharmacokineticMechanism:
+          "Meloxicam has an intrinsically long elimination half-life (~15–20 h) cleared primarily by CYP2C9; loss of CYP2C9 markedly delays steady-state washout.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Choose an alternative therapy not predominantly metabolized by CYP2C9 (or with a shorter half-life) in CYP2C9 poor metabolizers.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Because meloxicam combines long baseline persistence with predominant CYP2C9 metabolic clearance, CYP2C9 poor-metabolizer genotypes drive sustained toxic accumulation across repeated dosing intervals.",
+    fdaLabelSection: "Boxed Warning, Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Theken KN, et al. Clin Pharmacol Ther. 2020 (CPIC CYP2C9 & NSAIDs Guideline).",
+      "FDA Prescribing Information (MOBIC / Meloxicam): Boxed Warning & Clinical Pharmacology.",
+    ],
+  },
+
+  // 36. Omeprazole / CYP2C19
+  {
+    id: "omeprazole-cyp2c19",
+    drugId: "omeprazole",
+    drugName: "Omeprazole",
+    geneId: "CYP2C19",
+    geneSymbol: "CYP2C19",
+    cpicLevel: "Level A",
+    therapeuticArea: "Pain & Neurology",
+    guidelineTitle: "CPIC Guideline for CYP2C19 and Proton Pump Inhibitor Dosing (2020)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/cpic-guideline-for-proton-pump-inhibitors-and-cyp2c19/",
+    fdaBoxedWarning: false,
+    phenotypeRisks: [
+      {
+        phenotype: "Ultrarapid Metabolizer (*17/*17)",
+        clinicalConsequence:
+          "Accelerated omeprazole inactivation resulting in lower intragastric pH control and higher rates of H. pylori eradication failure or refractory erosive esophagitis.",
+        pharmacokineticMechanism:
+          "CYP2C19 catalyzes ~80% of omeprazole 5-hydroxylation clearance; *17 gain-of-function alleles markedly reduce systemic AUC available to reach parietal H+/K+-ATPase.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Anticipate reduced acid suppression in CYP2C19 ultrarapid metabolizers and evaluate non-CYP2C19-dependent acid-suppression strategies (such as rabeprazole) per clinical guidelines.",
+        severity: "moderate",
+      },
+      {
+        phenotype: "Poor Metabolizer (*2/*2, *2/*3, *3/*3)",
+        clinicalConsequence:
+          "Multi-fold increase in systemic omeprazole AUC during chronic therapy, raising long-term PPI adverse-event exposure (hypomagnesemia, C. difficile, bone/renal signals).",
+        pharmacokineticMechanism:
+          "Loss of CYP2C19 hydroxylation shunts clearance to slower CYP3A4 sulfonation, sustaining high systemic plasma levels.",
+        cpicRecommendation:
+          "CPIC Level A consensus: For chronic maintenance indications once healed, consult clinical guidelines regarding conservative maintenance strategies to minimize excess systemic PPI exposure.",
+        severity: "moderate",
+      },
+    ],
+    molecularMechanism:
+      "Omeprazole is predominantly cleared by CYP2C19 5-hydroxylation (and also acts as a mechanism-based CYP2C19 inhibitor). CYP2C19 *17 ultrarapid alleles risk acid-suppression failure, whereas *2/*3 poor metabolizers experience 5- to 10-fold higher systemic AUC.",
+    fdaLabelSection: "Clinical Pharmacology (Pharmacogenomics)",
+    citations: [
+      "Lima JJ, et al. Clin Pharmacol Ther. 2021 (CPIC CYP2C19 & Proton Pump Inhibitors Guideline).",
+      "FDA Prescribing Information (PRILOSEC / Omeprazole): Clinical Pharmacology.",
+    ],
+  },
+
+  // 37. Clomipramine / CYP2C19
+  {
+    id: "clomipramine-cyp2c19",
+    drugId: "clomipramine",
+    drugName: "Clomipramine",
+    geneId: "CYP2C19",
+    geneSymbol: "CYP2C19",
+    cpicLevel: "Level A",
+    therapeuticArea: "Psychiatry",
+    guidelineTitle: "CPIC Guideline for CYP2D6 and CYP2C19 Genotypes and Dosing of Tricyclic Antidepressants (2017)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-tricyclic-antidepressants-and-cyp2d6-and-cyp2c19/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*2/*2, *2/*3, *3/*3)",
+        clinicalConsequence:
+          "Marked elevation of parent serotonergic clomipramine relative to desmethylclomipramine, heightening risk of seizures, QRS/QTc cardiotoxicity, and serotonergic adverse effects.",
+        pharmacokineticMechanism:
+          "CYP2C19 catalyzes N-demethylation of tertiary-amine clomipramine to secondary-amine desmethylclomipramine; absent CYP2C19 traps parent drug.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Avoid tertiary-amine tricyclics when feasible in CYP2C19 poor metabolizers, or use therapeutic drug monitoring and ECG surveillance if clinically required.",
+        severity: "high",
+      },
+      {
+        phenotype: "Ultrarapid Metabolizer (*17/*17)",
+        clinicalConsequence:
+          "Accelerated conversion to desmethylclomipramine and altered serotonergic/noradrenergic balance, risking suboptimal OCD/antidepressant response or noradrenergic adverse effects.",
+        pharmacokineticMechanism:
+          "Increased CYP2C19 activity rapidly depletes parent clomipramine in favor of the active secondary-amine metabolite.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Prefer an alternative non-CYP2C19 antidepressant or guide therapy with combined parent-plus-metabolite therapeutic drug monitoring.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Tertiary-amine clomipramine relies on CYP2C19 for N-demethylation to noradrenergic desmethylclomipramine and CYP2D6 for hydroxylation of both compounds; CPIC assigns Level A actionable guidance across both loci.",
+    fdaLabelSection: "Boxed Warning, Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Hicks JK, et al. Clin Pharmacol Ther. 2017 (CPIC CYP2D6/CYP2C19 & Tricyclic Antidepressants Update).",
+      "FDA Prescribing Information (ANAFRANIL / Clomipramine): Clinical Pharmacology.",
+    ],
+  },
+
+  // 38. Imipramine / CYP2C19
+  {
+    id: "imipramine-cyp2c19",
+    drugId: "imipramine",
+    drugName: "Imipramine",
+    geneId: "CYP2C19",
+    geneSymbol: "CYP2C19",
+    cpicLevel: "Level A",
+    therapeuticArea: "Psychiatry",
+    guidelineTitle: "CPIC Guideline for CYP2D6 and CYP2C19 Genotypes and Dosing of Tricyclic Antidepressants (2017)",
+    guidelineUrl: "https://cpicpgx.org/guidelines/guideline-for-tricyclic-antidepressants-and-cyp2d6-and-cyp2c19/",
+    fdaBoxedWarning: true,
+    phenotypeRisks: [
+      {
+        phenotype: "Poor Metabolizer (*2/*2, *2/*3, *3/*3)",
+        clinicalConsequence:
+          "Elevated parent imipramine exposure and altered imipramine-to-desipramine ratio, increasing anticholinergic delirium, orthostatic hypotension, and QRS/QTc cardiotoxicity.",
+        pharmacokineticMechanism:
+          "CYP2C19 mediates N-demethylation of imipramine to active desipramine; loss-of-function alleles accumulate parent drug.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Avoid tertiary-amine tricyclics when alternatives exist, or monitor combined imipramine plus desipramine plasma levels and ECG closely.",
+        severity: "high",
+      },
+      {
+        phenotype: "Ultrarapid Metabolizer (*17/*17)",
+        clinicalConsequence:
+          "Rapid depletion of parent imipramine with elevated desipramine ratio, risking suboptimal clinical response or heightened noradrenergic adverse effects.",
+        pharmacokineticMechanism:
+          "Enhanced CYP2C19 expression accelerates N-demethylation of imipramine.",
+        cpicRecommendation:
+          "CPIC Level A consensus: Consider a non-CYP2C19-dependent antidepressant or employ therapeutic drug monitoring of both parent and active metabolite.",
+        severity: "high",
+      },
+    ],
+    molecularMechanism:
+      "Imipramine is demethylated by CYP2C19 to desipramine and hydroxylated by CYP2D6; dual polymorphic sensitivity places imipramine alongside amitriptyline and clomipramine in the CPIC Level A TCA guideline.",
+    fdaLabelSection: "Boxed Warning, Warnings and Precautions, Clinical Pharmacology",
+    citations: [
+      "Hicks JK, et al. Clin Pharmacol Ther. 2017 (CPIC CYP2D6/CYP2C19 & Tricyclic Antidepressants Update).",
+      "FDA Prescribing Information (TOFRANIL / Imipramine): Clinical Pharmacology.",
+    ],
+  },
 ];
 
 /**

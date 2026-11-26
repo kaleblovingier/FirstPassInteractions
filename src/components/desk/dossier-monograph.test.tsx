@@ -170,6 +170,26 @@ describe("Dossier Clinical Monograph Pharmacokinetic Strip", () => {
     assert.ok(rifaText.includes("2.5 wk offset"));
   });
 
+  it("renders Therapeutic Drug Monitoring (TDM) analyte, reference window, and sampling cue inside MonographPkStrip", () => {
+    for (const [drugId, expectedAnalyte, expectedRange] of [
+      ["lithium", "Lithium (mEq/L)", "0.6–1.2"],
+      ["flecainide", "Flecainide (ng/mL)", "200–1000"],
+      ["cefepime", "Cefepime (µg/mL)", "1–4× MIC"],
+    ] as const) {
+      const stripHtml = extractMonographStrip(
+        renderToStaticMarkup(<Dossier ids={[drugId]} host={DEFAULT_HOST} />),
+      );
+      const text = stripTags(stripHtml);
+      assert.ok(text.includes("Therapeutic Drug Monitoring (TDM)"), drugId);
+      assert.ok(text.includes(expectedAnalyte), `${drugId}: ${expectedAnalyte}`);
+      assert.ok(text.includes(expectedRange), `${drugId}: ${expectedRange}`);
+      assert.ok(text.includes("Sampling cue:"), drugId);
+      assert.deepEqual(findDoses(text), [], drugId);
+      assert.equal(LOW_CONTRAST_RE.test(stripHtml), false, drugId);
+      assert.equal(BANNED_REGULATORY_RE.test(text), false, drugId);
+    }
+  });
+
   it("keeps dossier.tsx source free of low-contrast classes, banned editorial hues, doses, and regulatory claims", () => {
     assert.deepEqual(findDoses(dossierSource), []);
     assert.equal(BANNED_REGULATORY_RE.test(dossierSource), false);

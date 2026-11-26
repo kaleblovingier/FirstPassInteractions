@@ -591,5 +591,27 @@ describe("Pharmacogenomics & CPIC Drug-Gene Mechanism Matrix", () => {
       const integrity = validatePharmacogenomicsCatalogIntegrity();
       assert.equal(integrity.valid, true, integrity.missingDrugIds.join(", "));
     });
+
+    it("covers Round 22 CPIC Level A Wave 2 additions (SSRIs, NSAIDs, PPI, and TCAs — 39+ rows)", () => {
+      assert.ok(PGX_INTERACTIONS.length >= 39, `Expected >= 39 CPIC interactions, got ${PGX_INTERACTIONS.length}`);
+      for (const [drugId, gene] of [
+        ["sertraline", "CYP2C19"],
+        ["fluvoxamine", "CYP2D6"],
+        ["paroxetine", "CYP2D6"],
+        ["ibuprofen", "CYP2C9"],
+        ["meloxicam", "CYP2C9"],
+        ["omeprazole", "CYP2C19"],
+        ["clomipramine", "CYP2C19"],
+        ["imipramine", "CYP2C19"],
+      ] as const) {
+        const hits = getInteractionsForDrug(drugId);
+        assert.ok(
+          hits.some((ix) => ix.geneId === gene && ix.cpicLevel === "Level A"),
+          `Expected CPIC Level A ${drugId} x ${gene}`,
+        );
+      }
+      const integrity = validatePharmacogenomicsCatalogIntegrity();
+      assert.equal(integrity.valid, true, integrity.missingDrugIds.join(", "));
+    });
   });
 });

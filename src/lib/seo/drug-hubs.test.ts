@@ -182,5 +182,16 @@ describe("hubs with pairs keep the shared intro", () => {
     const ketoHtml = html(keto);
     assert.ok(ketoHtml.includes("8 h"));
     assert.ok(ketoHtml.includes("Kᵢ 0.015 µM"));
+
+    const cbz = hubs.find((h) => h.drugId === "carbamazepine")!;
+    const cbzHtml = html(cbz);
+    assert.ok(cbzHtml.includes("Therapeutic monitoring"));
+    assert.ok(cbzHtml.includes("Carbamazepine (µg/mL)"));
+    assert.ok(cbzHtml.includes("4–12"));
+
+    const tacro = hubs.find((h) => h.drugId === "tacrolimus")!;
+    const tacroHtml = html(tacro);
+    assert.ok(tacroHtml.includes("Therapeutic monitoring"));
+    assert.ok(tacroHtml.includes("Tacrolimus (ng/mL)"));
   });
 });

@@ -12,6 +12,7 @@ import {
 import { NO_SINGLE_HALF_LIFE } from "@/lib/drugs/half-lives";
 import { halfLifeFor } from "@/lib/drugs/overlap";
 import { getInteractionsForDrug } from "@/lib/drugs/pharmacogenomics";
+import { tdmFor } from "@/lib/drugs/tdm";
 import { getTransporterRolesForDrug } from "@/lib/drugs/transporter-network";
 import { sourceLinkText, type GradeBasis } from "@/lib/drugs/grade-provenance";
 import { LabelFreshnessLine } from "@/components/label-freshness";
@@ -378,8 +379,9 @@ function DrugHubPkProfile({ drugId }: { drugId: string }) {
   const tdi = getTdiPerpetratorById(drugId);
   const inducer = getNuclearInducerById(drugId);
   const comp = getCompetitiveInhibitorById(drugId);
+  const tdm = tdmFor(drugId);
 
-  if (!hasNonLinear && !hl && cpicHits.length === 0 && transporters.length === 0 && !tdi && !inducer && !comp) {
+  if (!hasNonLinear && !hl && cpicHits.length === 0 && transporters.length === 0 && !tdi && !inducer && !comp && !tdm) {
     return null;
   }
 
@@ -472,6 +474,17 @@ function DrugHubPkProfile({ drugId }: { drugId: string }) {
                   Reversible inhibitor ({comp.targetIsoforms.join("/")}; Kᵢ {comp.kiMicromolar} µM)
                 </span>
               ) : null}
+            </dd>
+          </div>
+        ) : null}
+        {tdm ? (
+          <div className="grid gap-1 px-3.5 py-2.5 sm:grid-cols-[12rem_1fr]">
+            <dt className="font-mono text-[11px] uppercase tracking-wider text-muted">
+              Therapeutic monitoring
+            </dt>
+            <dd className="font-mono tabular-nums text-fg">
+              {tdm.analyte}
+              {tdm.unit ? ` (${tdm.unit})` : ""} · teaching target {tdm.trough.replace(/\bfree\b/gi, "unbound")}
             </dd>
           </div>
         ) : null}

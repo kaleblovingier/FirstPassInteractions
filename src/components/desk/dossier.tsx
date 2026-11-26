@@ -18,6 +18,7 @@ import { CPIC_GENE_DRUG_LIST, pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
+import { tdmFor } from "@/lib/drugs/tdm";
 import { getTransporterRolesForDrug } from "@/lib/drugs/transporter-network";
 import { CPIC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
@@ -1090,6 +1091,7 @@ function MonographPkStrip({ drug }: { drug: Drug }) {
   const tdi = getTdiPerpetratorById(drug.id);
   const inducer = getNuclearInducerById(drug.id);
   const competitive = getCompetitiveInhibitorById(drug.id);
+  const tdm = tdmFor(drug.id);
   const hasExtendedMetadata =
     cpicHits.length > 0 || transporters.length > 0 || Boolean(tdi || inducer || competitive);
 
@@ -1293,6 +1295,27 @@ function MonographPkStrip({ drug }: { drug: Drug }) {
                 </ul>
               </div>
             ) : null}
+          </div>
+        ) : null}
+
+        {tdm ? (
+          <div className="mt-3 border-t border-border pt-3">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                Therapeutic Drug Monitoring (TDM)
+              </p>
+              <span className="inline-flex items-center rounded-sm border border-accent/30 bg-accent-soft px-2 py-0.5 font-mono text-[11px] font-medium tabular-nums text-accent">
+                {tdm.analyte}
+                {tdm.unit ? ` (${tdm.unit})` : ""}
+              </span>
+            </div>
+            <p className="mt-1.5 font-mono text-xs tabular-nums text-fg">
+              Reference window: {tdm.trough}
+              {tdm.unit && !tdm.trough.includes(tdm.unit) ? ` ${tdm.unit}` : ""}
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-muted">
+              Sampling cue: {tdm.draw}.
+            </p>
           </div>
         ) : null}
       </div>
