@@ -70,6 +70,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MonographNote } from "@/components/label-freshness";
 import { DrugSearch } from "./search";
+import { MedListPaste } from "./med-list-paste";
 import { FindingList } from "./findings";
 import { DeskCoach } from "./coach";
 import { CheckBoard } from "./check";
@@ -567,6 +568,7 @@ export function DeskApp() {
           <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div className="min-w-0 space-y-4">
               <DrugSearch />
+              <MedListPaste />
               {/* Chip live region often ignores removals; say them in a separate status. */}
               <span key={trayNote.n} role="status" aria-live="polite" className="sr-only">
                 {trayNote.text}
