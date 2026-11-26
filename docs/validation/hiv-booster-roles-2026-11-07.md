@@ -28,7 +28,7 @@ Saved sources only (no live site was reachable from the build machine): FDA Tabl
 
 ## Method
 
-Every unordered pair of catalog entries that includes one of the five rows (9,760 pairs over 1,955 entries) is run through `analyze()` twice: with the added roles removed from the five rows in memory (this equals main: checked), and as shipped on this branch. The pair grade is the highest finding that involves both drugs (`pairSeverity` in the label tests). Default host, no amounts. A second scan with no host context is listed below where it differs. A full scan of all 1.8 million catalog pairs on main and on this branch found no moved pair outside these rows.
+Every unordered pair of catalog entries that includes one of the five rows (9,820 pairs over 1,967 entries) is run through `analyze()` twice: with the added roles removed from the five rows in memory (this equals main: checked), and as shipped on this branch. The pair grade is the highest finding that involves both drugs (`pairSeverity` in the label tests). Default host, no amounts. A second scan with no host context is listed below where it differs. A full scan of all 1.8 million catalog pairs on main and on this branch found no moved pair outside these rows.
 
 ## Summary
 
