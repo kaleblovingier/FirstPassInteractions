@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import { DRUG_BY_ID } from "@/lib/drugs/catalog";
+import {
+  getCompetitiveInhibitorById,
+  getNuclearInducerById,
+  getTdiPerpetratorById,
+} from "@/lib/drugs/cyp-kinetics";
 import { DRUGBANK, drugbankSearchUrl, drugbankUrl } from "@/lib/drugs/drugbank";
 import { NO_SINGLE_HALF_LIFE } from "@/lib/drugs/half-lives";
 import { lookupCpicGuideline, lookupLiveSources, searchTrials } from "@/lib/drugs/live-rpc";
@@ -8,10 +13,12 @@ import type { DailyMedHit, FdaLabel, FaersHit, NdcHit, PubchemCard, RecallHit, R
 import { LIVERTOX_CAT_TONE, livertoxFor, livertoxUrl } from "@/lib/drugs/livertox";
 import { lactFor, lactmedHomeUrl, lactmedSearchUrl, lactOnDesk, type LactCard } from "@/lib/drugs/lactmed";
 import { halfLifeFor } from "@/lib/drugs/overlap";
+import { getInteractionsForDrug } from "@/lib/drugs/pharmacogenomics";
 import { CPIC_GENE_DRUG_LIST, pgxFor, type PgxCard } from "@/lib/drugs/pgx";
 import { citesFor, pubmedSearchUrl, pubmedUrl, type Cite, type LiveCite } from "@/lib/drugs/pubmed";
 import { searchPubmed } from "@/lib/drugs/pubmed-rpc";
 import { stahlFor, type Occupancy, type StahlCard } from "@/lib/drugs/stahl";
+import { TRANSPORTERS } from "@/lib/drugs/transporter-network";
 import { CPIC_CREDIT, NLM_ATTRIBUTION } from "@/lib/seo/legal";
 import {
   ITEM_KIND_LABEL,
@@ -1074,10 +1081,35 @@ function roleChipDetail(role: EnzymeRole): { roleLabel: string; tierHint: string
   };
 }
 
+function transporterRolesFor(drugId: string): Array<{ gene: string; shortName: string; roles: string[] }> {
+  const out: Array<{ gene: string; shortName: string; roles: string[] }> = [];
+  for (const t of TRANSPORTERS) {
+    const roles: string[] = [];
+    if (t.substrates.includes(drugId)) roles.push("Substrate");
+    if (t.inhibitors.includes(drugId)) roles.push("Inhibitor");
+    if (t.inducers.includes(drugId)) roles.push("Inducer");
+    if (roles.length > 0) {
+      out.push({
+        gene: t.gene,
+        shortName: t.aliases[0] ?? t.gene,
+        roles,
+      });
+    }
+  }
+  return out;
+}
+
 function MonographPkStrip({ drug }: { drug: Drug }) {
   const hasNonLinear = Object.hasOwn(NO_SINGLE_HALF_LIFE, drug.id);
   const nonLinearNote = hasNonLinear ? NO_SINGLE_HALF_LIFE[drug.id] : undefined;
   const hl = hasNonLinear ? undefined : halfLifeFor(drug.id);
+  const cpicHits = getInteractionsForDrug(drug.id);
+  const transporters = transporterRolesFor(drug.id);
+  const tdi = getTdiPerpetratorById(drug.id);
+  const inducer = getNuclearInducerById(drug.id);
+  const competitive = getCompetitiveInhibitorById(drug.id);
+  const hasExtendedMetadata =
+    cpicHits.length > 0 || transporters.length > 0 || Boolean(tdi || inducer || competitive);
 
   return (
     <section
@@ -1180,6 +1212,107 @@ function MonographPkStrip({ drug }: { drug: Drug }) {
             )}
           </div>
         </div>
+
+        {hasExtendedMetadata ? (
+          <div className="mt-3 grid gap-3 border-t border-border pt-3 sm:grid-cols-3">
+            {cpicHits.length > 0 ? (
+              <div className="space-y-1.5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                  CPIC Pharmacogenomics
+                </p>
+                <ul className="flex flex-wrap gap-1.5">
+                  {cpicHits.map((ix) => (
+                    <li
+                      key={ix.id}
+                      title={`${ix.guidelineTitle} (${ix.cpicLevel})`}
+                      className={cn(
+                        "inline-flex flex-wrap items-center gap-1 rounded-sm border px-2 py-0.5 font-mono text-[11px] tabular-nums",
+                        ix.fdaBoxedWarning
+                          ? "border-danger/30 bg-danger-soft text-danger"
+                          : "border-accent/30 bg-accent-soft text-accent",
+                      )}
+                    >
+                      <span className="font-semibold">{ix.geneSymbol}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>CPIC {ix.cpicLevel}</span>
+                      {ix.fdaBoxedWarning ? (
+                        <span className="ml-0.5 rounded-sm border border-danger/40 bg-surface-2 px-1 py-px text-[10px] font-semibold text-danger">
+                          Boxed
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {transporters.length > 0 ? (
+              <div className="space-y-1.5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                  Membrane Transporters
+                </p>
+                <ul className="flex flex-wrap gap-1.5">
+                  {transporters.map((t) => (
+                    <li
+                      key={t.gene}
+                      title={`${t.shortName} (${t.gene}): ${t.roles.join(" / ")}`}
+                      className="inline-flex flex-wrap items-center gap-1 rounded-sm border border-info/30 bg-info-soft px-2 py-0.5 font-mono text-[11px] text-info"
+                    >
+                      <span className="font-semibold">{t.shortName}</span>
+                      <span className="text-[10px] opacity-80">({t.gene})</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{t.roles.join(" / ")}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {tdi || inducer || competitive ? (
+              <div className="space-y-1.5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                  Perpetrator Kinetics
+                </p>
+                <ul className="flex flex-wrap gap-1.5">
+                  {tdi ? (
+                    <li
+                      title={tdi.subMechanismLabel}
+                      className="inline-flex flex-wrap items-center gap-1 rounded-sm border border-danger/30 bg-danger-soft px-2 py-0.5 font-mono text-[11px] tabular-nums text-danger"
+                    >
+                      <span className="font-semibold">MBI/TDI</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{tdi.targetIsoforms.join("/")}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{tdi.recoveryTimeDays}</span>
+                    </li>
+                  ) : null}
+                  {inducer ? (
+                    <li
+                      title={`${inducer.receptorFullName}: ${inducer.dnaResponseElement}`}
+                      className="inline-flex flex-wrap items-center gap-1 rounded-sm border border-warn/30 bg-warn-soft px-2 py-0.5 font-mono text-[11px] tabular-nums text-warn"
+                    >
+                      <span className="font-semibold">{inducer.receptor} Inducer</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{inducer.offsetWashoutWeeks} wk offset</span>
+                    </li>
+                  ) : null}
+                  {competitive ? (
+                    <li
+                      title={`Reversible competitive inhibition across ${competitive.targetIsoforms.join(", ")}`}
+                      className="inline-flex flex-wrap items-center gap-1 rounded-sm border border-ok/30 bg-ok-soft px-2 py-0.5 font-mono text-[11px] tabular-nums text-ok"
+                    >
+                      <span className="font-semibold">Competitive</span>
+                      <span aria-hidden="true">·</span>
+                      <span>Kᵢ {competitive.kiMicromolar} µM</span>
+                      <span aria-hidden="true">·</span>
+                      <span>~{competitive.offsetHours} h offset</span>
+                    </li>
+                  ) : null}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </section>
   );

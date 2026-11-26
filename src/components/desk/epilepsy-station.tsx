@@ -510,7 +510,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
             </Badge>
           </div>
 
-          <div role="region" aria-label="Antiseizure loading dose table" tabIndex={0} className="overflow-x-auto">
+          <div role="region" aria-label="Antiseizure loading dose table" tabIndex={0} className="relative overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-sunken text-muted font-medium">
@@ -639,7 +639,7 @@ export function EpilepsyStation({ ids, host }: EpilepsyStationProps) {
           </div>
 
           {/* Milestone Decay Curve Table */}
-          <div role="region" aria-label="Receptor change by seizure duration table" tabIndex={0} className="overflow-x-auto">
+          <div role="region" aria-label="Receptor change by seizure duration table" tabIndex={0} className="relative overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-surface-sunken text-muted font-medium">

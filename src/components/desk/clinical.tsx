@@ -3179,7 +3179,7 @@ function SteroidsPanel({ report }: { report: SteroidReport }) {
           Relative anti-inflammatory potency, mineralocorticoid effect, and biologic duration of action.
         </p>
 
-        <div role="region" aria-label="Glucocorticoid reference table" tabIndex={0} className="mt-3 overflow-x-auto">
+        <div role="region" aria-label="Glucocorticoid reference table" tabIndex={0} className="relative mt-3 overflow-x-auto">
           <table className="w-full text-left font-mono text-xs">
             <thead>
               <tr className="border-b border-subtle text-muted">
@@ -4072,7 +4072,7 @@ function IronPanel({ ids }: { ids: string[] }) {
           Elemental iron concentration, maximum single infusion dose, test-dose mandates, and FGF23 hypophosphatemia.
         </p>
 
-        <div role="region" aria-label="Parenteral iron table" tabIndex={0} className="mt-3 overflow-x-auto">
+        <div role="region" aria-label="Parenteral iron table" tabIndex={0} className="relative mt-3 overflow-x-auto">
           <table className="w-full text-left font-mono text-xs">
             <thead>
               <tr className="border-b border-subtle text-muted">
@@ -4318,7 +4318,7 @@ function DigoxinPanel({ ids }: { ids: string[] }) {
           P-gp inhibitors reduce renal and biliary digoxin clearance by 30–50%, prompting labeled dose reductions.
         </p>
 
-        <div role="region" aria-label="P-gp perpetrator table" tabIndex={0} className="mt-3 overflow-x-auto">
+        <div role="region" aria-label="P-gp perpetrator table" tabIndex={0} className="relative mt-3 overflow-x-auto">
           <table className="w-full text-left font-mono text-xs">
             <thead>
               <tr className="border-b border-subtle text-muted">
@@ -5255,7 +5255,7 @@ function AminoglycosidesPanel({ ids }: { ids: string[] }) {
           Target peaks (Cmax:MIC ≥8–10) and troughs for conventional multi-dose regimens and enterococcal endocarditis synergy.
         </p>
 
-        <div role="region" aria-label="Aminoglycoside dosing reference table" tabIndex={0} className="mt-3 overflow-x-auto">
+        <div role="region" aria-label="Aminoglycoside dosing reference table" tabIndex={0} className="relative mt-3 overflow-x-auto">
           <table className="w-full text-left font-mono text-xs">
             <thead>
               <tr className="border-b border-subtle text-muted">

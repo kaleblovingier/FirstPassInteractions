@@ -214,4 +214,37 @@ describe("half-lives - read through the timing sketch", () => {
     assert.match(esoRow.note ?? "", /proton pump/i);
     assert.equal(clopiEso.pairs[0]!.activeOverlapPercent, undefined);
   });
+
+  it("covers round 16 adult half-lives (84+ rows) plus allopurinol, itraconazole, and terbinafine caveats", () => {
+    assert.ok(Object.keys(HALF_LIVES).length >= 84, `Expected >=84 HALF_LIVES, got ${Object.keys(HALF_LIVES).length}`);
+    assert.ok(Object.keys(NO_SINGLE_HALF_LIFE).length >= 18);
+
+    const expectedR16: Record<string, number> = {
+      ketoconazole: 8,
+      cimetidine: 2,
+      pravastatin: 2,
+      propranolol: 6,
+      bisoprolol: 12,
+      diltiazem: 8,
+      verapamil: 12,
+      carbamazepine: 17,
+      phenobarbital: 79,
+      lamotrigine: 33,
+      ondansetron: 6,
+      celecoxib: 11,
+      cobicistat: 4,
+      ritonavir: 5,
+      apalutamide: 72,
+      enzalutamide: 139,
+      efavirenz: 55,
+    };
+    for (const [id, hours] of Object.entries(expectedR16)) {
+      assert.equal(halfLifeFor(id)?.hours, hours, id);
+    }
+
+    for (const id of ["allopurinol", "itraconazole", "terbinafine"]) {
+      assert.equal(halfLifeFor(id), undefined, id);
+      assert.ok(Object.hasOwn(NO_SINGLE_HALF_LIFE, id), id);
+    }
+  });
 });
